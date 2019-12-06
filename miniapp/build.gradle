@@ -2,13 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+
 // Android plugin - For publishing to artifactory.
-apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
+//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
 // Documentation plugins.
 //apply from: "$CONFIG.internalConfigDir/documentation/userguide.gradle"
-apply from: "$CONFIG.configDir/documentation/doclava/android.gradle"
+//apply from: "$CONFIG.configDir/documentation/doclava/android.gradle"
 // Publishing documentation to RakSDTD.com via FTP.
-apply from: "$CONFIG.internalConfigDir/documentation/publish.gradle"
+//apply from: "$CONFIG.internalConfigDir/documentation/publish.gradle"
 
 android {
   compileSdkVersion androidCompileSdk
@@ -25,21 +26,22 @@ android {
   buildTypes {
     release {
       useProguard false
+      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
     }
     debug {
       useProguard false
+      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_STG')}\"")
       debuggable true
     }
     dev {
       useProguard false
+      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_DEV')}\"")
       debuggable true
     }
   }
 
   compileOptions {
-    // Source code java level(Source code of this project).
     sourceCompatibility JavaVersion.VERSION_1_8
-    // Target JVM level(JVM on Android devices).
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
@@ -72,8 +74,12 @@ afterEvaluate {
 dependencies {
   compileOnly "javax.annotation:jsr250-api:$jsr250"
 
-  implementation project(':feature-download'), project(':feature-display'), project(':core')
+  implementation "androidx.appcompat:appcompat:$androidx_appcompat"
   implementation "androidx.core:core-ktx:$androidx_coreKtx"
+  implementation "androidx.work:work-runtime-ktx:$androidx_work"
+
+  implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+  implementation "com.squareup.retrofit2:retrofit:$retrofit"
   implementation "com.google.dagger:dagger:$dagger"
   implementation "com.jakewharton.timber:timber:$timber"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -82,18 +88,20 @@ dependencies {
 
   testImplementation "androidx.test.ext:junit:$androidx_test_ext"
   testImplementation "androidx.work:work-testing:$androidx_work"
-  testImplementation "com.google.truth:truth:$truth"
   testImplementation "org.mockito:mockito-android:$mockito"
   testImplementation "org.mockito:mockito-core:$mockito"
   testImplementation "org.robolectric:robolectric:$robolectric"
+  testImplementation "com.google.truth:truth:$truth"
+  testImplementation "com.squareup.retrofit2:retrofit-mock:$retrofit"
+
 }
 
 tasks.whenTaskAdded { task ->
   preBuild.dependsOn 'formatKotlin'
 }
 
-publishing {
-  publications {
-    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
-  }
-}
+//publishing {
+//  publications {
+//    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
+//  }
+//}

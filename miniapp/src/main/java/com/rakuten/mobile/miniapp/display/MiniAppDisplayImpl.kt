@@ -4,6 +4,7 @@ import android.app.Activity
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.rakuten.mobile.miniapp.platform.R
 import java.io.File
 import timber.log.Timber
 

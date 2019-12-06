@@ -1,6 +1,6 @@
 package com.rakuten.mobile.miniapp.download.network.client
 
-import com.rakuten.mobile.miniapp.core.BuildConfig
+import com.rakuten.mobile.miniapp.platform.BuildConfig
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import okhttp3.ConnectionPool

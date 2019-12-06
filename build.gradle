@@ -19,21 +19,21 @@ buildscript {
   ext.timber = '4.7.1'
   ext.truth = '1.0'
 
-  // Build Config.
-  apply from: 'config/index.gradle'
-  // Internal Build Config.
-  apply from: 'config-internal/index.gradle'
-  // Add custom gradle task: CheckGradleFilesForSnapshotDependencies.
-  apply from: "$CONFIG.configDir/buildSrc/build.gradle"
+//  Build Config.
+//  apply from: 'config/index.gradle'
+//  Internal Build Config.
+//  apply from: 'config-internal/index.gradle'
+//  Add custom gradle task: CheckGradleFilesForSnapshotDependencies.
+//  apply from: "$CONFIG.configDir/buildSrc/build.gradle"
 
-  repositories {
-    google()
-    gradle()
-    jcenter()
-    jitpack()
-  }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0'
+    repositories {
+//    jcenter()
+//    jitpack()
+//    gradle()
+      google()
+    }
+    classpath 'com.android.tools.build:gradle:3.5.2'
     classpath "digital.wup:android-maven-publish:3.6.2"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -46,12 +46,12 @@ plugins {
 
 allprojects {
   repositories {
-    artifactoryRelease()
-    artifactorySnapshot()
-    mobileLibs()
+//    artifactoryRelease()
+//    artifactorySnapshot()
+//    jitpack()
     google()
     jcenter()
-    jitpack()
+//    mobileLibs()
   }
 
   gradle.projectsEvaluated {
