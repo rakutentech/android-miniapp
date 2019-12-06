@@ -3,11 +3,7 @@ package com.rakuten.mobile.miniapp.download.utility
 import android.content.Context
 import com.rakuten.mobile.miniapp.core.utils.LocalUrlParser
 import com.rakuten.mobile.miniapp.download.DownloadMiniAppImpl
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import javax.inject.Inject
 import okhttp3.ResponseBody
 import timber.log.Timber

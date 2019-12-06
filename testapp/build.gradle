@@ -21,18 +21,15 @@ android {
     dev {
       debuggable true
       minifyEnabled false
-      signingConfig signingConfigs.release
     }
     debug {
       debuggable true
       minifyEnabled false
-      signingConfig signingConfigs.release
     }
     release {
       minifyEnabled true
       debuggable true
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-      signingConfig signingConfigs.release
     }
   }
 
