@@ -96,8 +96,9 @@ dependencies {
 
 }
 
-tasks.whenTaskAdded { task ->
-  preBuild.dependsOn 'formatKotlin'
+apply from: '../config/quality/detekt/android.gradle'
+dependencies {
+  detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
 
 //publishing {

@@ -35,8 +35,8 @@ buildscript {
 }
 
 plugins {
+  id 'io.gitlab.arturbosch.detekt' version '1.1.1'
   id 'net.ltgt.errorprone' version '0.7'
-  id 'org.jmailen.kotlinter' version "2.1.1"
 }
 
 allprojects {
@@ -51,22 +51,6 @@ allprojects {
       options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
       options.compilerArgs << "-Xmaxerrs" << "500"
     }
-  }
-}
-
-subprojects {
-  // Kotlin linter tool. Source code in '/src/java' can take advantage of gradle task:
-  // formatKotlin, but '/src/kotlin' can't.
-  apply plugin: 'org.jmailen.kotlinter'
-
-  kotlinter {
-    ignoreFailures = false
-    indentSize = 2
-    continuationIndentSize = 2
-    reporters = ['checkstyle', 'plain']
-    experimentalRules = false
-    disabledRules = []
-    fileBatchSize = 30
   }
 }
 
