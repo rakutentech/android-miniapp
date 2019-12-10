@@ -96,11 +96,16 @@ dependencies {
 
 }
 
+apply from: "../config/quality/checkstyle/android.gradle"
 apply from: '../config/quality/detekt/android.gradle'
 dependencies {
   detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
 
+apply from: '../config/quality/jacoco/android.gradle'
+jacoco {
+  toolVersion = "0.8.3"
+}
 //publishing {
 //  publications {
 //    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
