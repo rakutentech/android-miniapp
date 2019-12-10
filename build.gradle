@@ -20,11 +20,7 @@ buildscript {
   ext.truth = '1.0'
 
 //  Build Config.
-//  apply from: 'config/index.gradle'
-//  Internal Build Config.
-//  apply from: 'config-internal/index.gradle'
-//  Add custom gradle task: CheckGradleFilesForSnapshotDependencies.
-//  apply from: "$CONFIG.configDir/buildSrc/build.gradle"
+  apply from: 'config/index.gradle'
 
   dependencies {
     repositories {
