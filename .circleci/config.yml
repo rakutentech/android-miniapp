@@ -1,0 +1,120 @@
+version: 2
+
+gradle_cache_key: &gradle_cache_key gradle-{{ checksum "build.gradle" }}-{{ checksum "miniapp/build.gradle" }}
+maven_cache_key: &maven_cache_key maven-{{ checksum "miniapp/src/test/AndroidManifest.xml" }}
+
+jobs:
+  build:
+    docker:
+      - image: circleci/android:api-28
+    working_directory: ~/code
+    environment:
+      JVM_OPTS: "-Xmx3200m"
+    steps:
+      - checkout
+      - run: git submodule update --init
+      - restore_cache:
+          key: *gradle_cache_key
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: *gradle_cache_key
+      - restore_cache:
+          ## Robolectric uses maven to download sources, so we must use a different cache for maven
+          key: *maven_cache_key
+      - run:
+          name: Run Tests
+          command: ./gradlew check
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: *maven_cache_key
+      - run:
+          name: Assemble AAR
+          command: ./gradlew assemble
+      - run:
+          name: Current Version
+          command: ./gradlew currentVersion
+      - run:
+          name: Upload Code Coverage
+          command: bash <(curl -s https://codecov.io/bash)
+      - store_artifacts:
+          path: miniapp/build/reports
+          destination: reports/
+      - store_test_results:
+          path: miniapp/build/test-results
+      - store_artifacts:
+          path: miniapp/build/outputs/aar
+          destination: aar/
+      - store_artifacts:
+          path: sample/build/outputs/apk
+          destination: sample/
+      - persist_to_workspace:
+          root: ~/code
+          paths:
+            - miniapp/build/outputs/aar
+            - miniapp/build/javadocs
+
+  publish:
+    docker:
+      - image: circleci/android:api-28
+    working_directory: ~/code
+    environment:
+      JVM_OPTS: "-Xmx3200m"
+    steps:
+      - checkout
+      - run: git submodule update --init
+      - run:
+          name: Current Version
+          command: ./gradlew cV
+      - run:
+          name: Publish Artifacts
+          command: ./gradlew publish
+      - run:
+          name: Publish Documentation
+          command: |
+            set -e
+            ./gradlew generatePublishableDocs
+            if [[ ! $CIRCLE_TAG == *"-"* ]]; then
+              git checkout gh-pages
+              cp -R miniapp/build/publishableDocs/docs/. ./docs
+              cp -R miniapp/build/publishableDocs/_versions/. ./_versions
+              git add docs _versions
+              git config user.name "CI Publisher"
+              git config user.email "dev-opensource@mail.rakuten.com"
+              git commit -m "Publish documentation for $CIRCLE_TAG"
+              git push origin gh-pages
+            else
+              echo "Documentation not published for snapshot version"
+            fi
+
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+      - release-verification:
+          type: approval
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish:
+          requires:
+            - release-verification
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

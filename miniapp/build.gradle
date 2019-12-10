@@ -106,6 +106,7 @@ apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
   toolVersion = "0.8.3"
 }
+
 //publishing {
 //  publications {
 //    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
