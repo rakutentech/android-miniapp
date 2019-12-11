@@ -11,25 +11,8 @@ android {
     targetSdkVersion androidCompileSdk
     versionCode versionCode
     versionName version
-
+    buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    release {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
-    }
-    debug {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_STG')}\"")
-      debuggable true
-    }
-    dev {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_DEV')}\"")
-      debuggable true
-    }
   }
 
   compileOptions {
