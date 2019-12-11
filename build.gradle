@@ -9,6 +9,7 @@ buildscript {
   ext.androidx_test_ext = '1.1.2-alpha02'
   ext.androidx_testRunner = '1.3.0-alpha02'
   ext.androidx_work = '2.3.0-alpha01'
+  ext.dokka_version = '0.10.0'
   ext.dagger = '2.24'
   ext.jsr250 = '1.0'
   ext.junit = '4.12'
@@ -25,6 +26,7 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:3.5.3'
     classpath "digital.wup:android-maven-publish:3.6.2"
+    classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 

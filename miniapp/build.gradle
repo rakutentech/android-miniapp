@@ -3,14 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-// Android plugin - For publishing to artifactory.
-//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
-// Documentation plugins.
-//apply from: "$CONFIG.internalConfigDir/documentation/userguide.gradle"
-//apply from: "$CONFIG.configDir/documentation/doclava/android.gradle"
-// Publishing documentation to RakSDTD.com via FTP.
-//apply from: "$CONFIG.internalConfigDir/documentation/publish.gradle"
-
 android {
   compileSdkVersion androidCompileSdk
 
@@ -107,8 +99,12 @@ jacoco {
   toolVersion = "0.8.3"
 }
 
+apply from: '../gradle/documentation.gradle'
+
 //publishing {
 //  publications {
 //    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
 //  }
 //}
+// Android plugin - For publishing to artifactory.
+//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
