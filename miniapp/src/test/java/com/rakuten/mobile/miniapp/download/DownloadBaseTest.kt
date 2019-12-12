@@ -20,6 +20,6 @@ open class DownloadBaseTest {
     const val FILE_URL = "https://dev-domain-url.com/version" +
         "/17bccee1-17f0-44fa-8cb8-2da89eb49905/js/index.html"
 
-    const val BASE_URL = "https://dev-domain-url.com/"
+    const val BASE_URL = "https://www.example.com/"
   }
 }
