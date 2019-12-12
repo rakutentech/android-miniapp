@@ -9,6 +9,7 @@ buildscript {
   ext.androidx_test_ext = '1.1.2-alpha02'
   ext.androidx_testRunner = '1.3.0-alpha02'
   ext.androidx_work = '2.3.0-alpha01'
+  ext.dokka_version = '0.10.0'
   ext.dagger = '2.24'
   ext.jsr250 = '1.0'
   ext.junit = '4.12'
@@ -20,38 +21,31 @@ buildscript {
   ext.truth = '1.0'
 
 //  Build Config.
-//  apply from: 'config/index.gradle'
-//  Internal Build Config.
-//  apply from: 'config-internal/index.gradle'
-//  Add custom gradle task: CheckGradleFilesForSnapshotDependencies.
-//  apply from: "$CONFIG.configDir/buildSrc/build.gradle"
+  apply from: 'config/index.gradle'
 
   dependencies {
-    repositories {
-//    jcenter()
-//    jitpack()
-//    gradle()
-      google()
-    }
-    classpath 'com.android.tools.build:gradle:3.5.2'
+    classpath 'com.android.tools.build:gradle:3.5.3'
     classpath "digital.wup:android-maven-publish:3.6.2"
+    classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+
+  repositories {
+    google()
+    jcenter()
   }
 }
 
 plugins {
+  id 'io.gitlab.arturbosch.detekt' version '1.1.1'
   id 'net.ltgt.errorprone' version '0.7'
-  id 'org.jmailen.kotlinter' version "2.1.1"
+  id 'pl.allegro.tech.build.axion-release' version '1.10.2'
 }
 
 allprojects {
   repositories {
-//    artifactoryRelease()
-//    artifactorySnapshot()
-//    jitpack()
     google()
     jcenter()
-//    mobileLibs()
   }
 
   gradle.projectsEvaluated {
@@ -60,22 +54,6 @@ allprojects {
       options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
       options.compilerArgs << "-Xmaxerrs" << "500"
     }
-  }
-}
-
-subprojects {
-  // Kotlin linter tool. Source code in '/src/java' can take advantage of gradle task:
-  // formatKotlin, but '/src/kotlin' can't.
-  apply plugin: 'org.jmailen.kotlinter'
-
-  kotlinter {
-    ignoreFailures = false
-    indentSize = 2
-    continuationIndentSize = 2
-    reporters = ['checkstyle', 'plain']
-    experimentalRules = false
-    disabledRules = []
-    fileBatchSize = 30
   }
 }
 
@@ -90,3 +68,5 @@ tasks.withType(JavaCompile) {
   options.fork = true
   options.incremental = true
 }
+
+project.version = scmVersion.version

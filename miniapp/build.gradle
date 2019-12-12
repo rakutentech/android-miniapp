@@ -3,14 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-// Android plugin - For publishing to artifactory.
-//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
-// Documentation plugins.
-//apply from: "$CONFIG.internalConfigDir/documentation/userguide.gradle"
-//apply from: "$CONFIG.configDir/documentation/doclava/android.gradle"
-// Publishing documentation to RakSDTD.com via FTP.
-//apply from: "$CONFIG.internalConfigDir/documentation/publish.gradle"
-
 android {
   compileSdkVersion androidCompileSdk
 
@@ -19,25 +11,8 @@ android {
     targetSdkVersion androidCompileSdk
     versionCode versionCode
     versionName version
-
+    buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    release {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
-    }
-    debug {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_STG')}\"")
-      debuggable true
-    }
-    dev {
-      useProguard false
-      buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL_DEV')}\"")
-      debuggable true
-    }
   }
 
   compileOptions {
@@ -96,12 +71,27 @@ dependencies {
 
 }
 
-tasks.whenTaskAdded { task ->
-  preBuild.dependsOn 'formatKotlin'
+apply from: "../config/quality/checkstyle/android.gradle"
+apply from: '../config/quality/detekt/android.gradle'
+dependencies {
+  detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
+
+detekt {
+  baseline = file("detekt-baseline.xml")
+}
+
+apply from: '../config/quality/jacoco/android.gradle'
+jacoco {
+  toolVersion = "0.8.3"
+}
+
+apply from: '../gradle/documentation.gradle'
 
 //publishing {
 //  publications {
 //    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
 //  }
 //}
+// Android plugin - For publishing to artifactory.
+//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"

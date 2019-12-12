@@ -18,10 +18,6 @@ android {
   }
 
   buildTypes {
-    dev {
-      debuggable true
-      minifyEnabled false
-    }
     debug {
       debuggable true
       minifyEnabled false
