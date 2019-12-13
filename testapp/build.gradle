@@ -8,7 +8,7 @@ android {
   buildToolsVersion androidBuildTool
 
   defaultConfig {
-    applicationId "com.rakuten.mobile.miniapp.test"
+    applicationId "com.rakuten.tech.mobile.miniapps.sample"
     minSdkVersion androidMinSdk
     targetSdkVersion androidCompileSdk
     versionCode versionCode

@@ -11,7 +11,7 @@ android {
     targetSdkVersion androidCompileSdk
     versionCode versionCode
     versionName version
-    buildConfigField('String', 'MINI_APP_BASE_URL', "\"${property('MINI_APP_BASE_URL')}\"")
+    buildConfigField "String", "MINI_APP_BASE_URL", "\"https://www.example.com/\""
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
@@ -88,10 +88,14 @@ jacoco {
 
 apply from: '../gradle/documentation.gradle'
 
-//publishing {
-//  publications {
-//    miniapps(MavenPublication, androidArtifact(artifactId: 'miniapp-platform'))
-//  }
-//}
-// Android plugin - For publishing to artifactory.
-//apply from: "$CONFIG.internalConfigDir/publish/android.gradle"
+apply from: '../config/publish/android.gradle'
+publishing {
+  publications {
+    MiniApp(MavenPublication, androidArtifact())
+  }
+}
+
+def isSnapshot = project.version.contains('-')
+if (isSnapshot) {
+  apply from: '../config/publish/artifactory.gradle'
+}
