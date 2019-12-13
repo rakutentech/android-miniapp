@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/rakutentech/android-miniapps.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapps)
+
 # MiniApps SDK for Android
 
 Provides a set of tools and capabilities to show miniapps in Android Applications. The SDK offers features like fetching, caching and displaying of miniapps. 
