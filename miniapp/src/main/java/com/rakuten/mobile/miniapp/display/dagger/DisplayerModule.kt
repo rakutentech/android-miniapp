@@ -17,7 +17,5 @@ class DisplayerModule {
      */
     @AppScope
     @Provides
-    fun provideMiniAppDisplayer(): MiniAppDisplayer {
-        return MiniAppDisplayImpl()
-    }
+    fun provideMiniAppDisplayer(): MiniAppDisplayer = MiniAppDisplayImpl()
 }

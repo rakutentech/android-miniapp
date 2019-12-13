@@ -5,7 +5,11 @@ import com.rakuten.mobile.miniapp.core.utils.LocalUrlParser
 import com.rakuten.mobile.miniapp.download.DownloadMiniAppImpl
 import okhttp3.ResponseBody
 import timber.log.Timber
-import java.io.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import javax.inject.Inject
 
 /**

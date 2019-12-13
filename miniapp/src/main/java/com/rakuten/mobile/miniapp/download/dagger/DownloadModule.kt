@@ -21,43 +21,33 @@ class DownloadModule {
      */
     @Provides
     @AppScope
-    fun provideDownloadMiniApp(): MiniAppDownloader {
-        return DownloadMiniAppImpl()
-    }
+    fun provideDownloadMiniApp(): MiniAppDownloader = DownloadMiniAppImpl()
 
     /**
      * Provides MiniAppFileWriter to dagger.
      */
     @Provides
     @AppScope
-    fun provideFileWriter(): MiniAppFileWriter {
-        return MiniAppFileWriter()
-    }
+    fun provideFileWriter(): MiniAppFileWriter = MiniAppFileWriter()
 
     /**
      * Provides DownloadScheduler to dagger.
      */
     @Provides
     @AppScope
-    fun provideDownloadScheduler(): DownloadScheduler {
-        return DownloadScheduler()
-    }
+    fun provideDownloadScheduler(): DownloadScheduler = DownloadScheduler()
 
     /**
      * Provides LocalUrlParser to dagger.
      */
     @Provides
     @AppScope
-    fun provideUrlParser(): LocalUrlParser {
-        return LocalUrlParser()
-    }
+    fun provideUrlParser(): LocalUrlParser = LocalUrlParser()
 
     /**
      * Provides RetrofitClient to dagger.
      */
     @Provides
     @AppScope
-    fun providerRetrofitClient(): RetrofitClient {
-        return RetrofitClient()
-    }
+    fun providerRetrofitClient(): RetrofitClient = RetrofitClient()
 }
