@@ -69,4 +69,13 @@ tasks.withType(JavaCompile) {
   options.incremental = true
 }
 
+scmVersion {
+  useHighestVersion = true
+  tag {
+    prefix = 'v'
+    versionSeparator = ''
+    versionIncrementer 'incrementMinor'
+  }
+}
+
 project.version = scmVersion.version

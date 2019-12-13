@@ -1,2 +1,1 @@
 include ':testapp', ':miniapp'
-rootProject.name = 'android-miniapp'
