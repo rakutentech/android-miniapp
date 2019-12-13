@@ -22,39 +22,40 @@ import retrofit2.Response
 @RunWith(AndroidJUnit4::class)
 class FileDownloadListenerTest : DownloadBaseTest() {
 
-  private val APP_ID = "78d85043-d04f-486a-8212-bf2601cb63a2"
-  private val PATH = "/path/example/"
-  private lateinit var fileDownloadListener: FileDownloadListener
-  @Mock
-  lateinit var mockCall: Call<ResponseBody>
-  @Mock
-  lateinit var mockResponse: Response<ResponseBody>
-  @Mock
-  lateinit var mockFileWriter: MiniAppFileWriter
+    private val APP_ID = "78d85043-d04f-486a-8212-bf2601cb63a2"
+    private val PATH = "/path/example/"
+    private lateinit var fileDownloadListener: FileDownloadListener
+    @Mock
+    lateinit var mockCall: Call<ResponseBody>
+    @Mock
+    lateinit var mockResponse: Response<ResponseBody>
+    @Mock
+    lateinit var mockFileWriter: MiniAppFileWriter
 
-  @Before
-  fun setup() {
-    initMocks(this)
-    Mockito.`when`(mockResponse.body()).thenReturn(ResponseBody.create(null, ""))
-    CoreImpl.context = getApplicationContext()
-    fileDownloadListener = FileDownloadListener(APP_ID, PATH)
-  }
+    @Before
+    fun setup() {
+        initMocks(this)
+        Mockito.`when`(mockResponse.body()).thenReturn(ResponseBody.create(null, ""))
+        CoreImpl.context = getApplicationContext()
+        fileDownloadListener = FileDownloadListener(APP_ID, PATH)
+    }
 
-  @Test
-  fun shouldLazyInjectNotThrowException() {
-    // Initialize SDK with context.
-    CoreImpl.context = getApplicationContext()
-    fileDownloadListener.onResponse(mockCall, mockResponse)
-  }
+    @Test
+    fun shouldLazyInjectNotThrowException() {
+        // Initialize SDK with context.
+        CoreImpl.context = getApplicationContext()
+        fileDownloadListener.onResponse(mockCall, mockResponse)
+    }
 
-  @Test
-  fun shouldInvokeWriteResponseBodyToDisk() {
-    // Initialize SDK with context.
-    fileDownloadListener.fileWriter = mockFileWriter
+    @Test
+    fun shouldInvokeWriteResponseBodyToDisk() {
+        // Initialize SDK with context.
+        fileDownloadListener.fileWriter = mockFileWriter
 
-    fileDownloadListener.onResponse(mockCall, mockResponse)
+        fileDownloadListener.onResponse(mockCall, mockResponse)
 
-    verify(fileDownloadListener.fileWriter).writeResponseBodyToDisk(
-        mockResponse.body()!!, APP_ID, PATH)
-  }
+        verify(fileDownloadListener.fileWriter).writeResponseBodyToDisk(
+            mockResponse.body()!!, APP_ID, PATH
+        )
+    }
 }

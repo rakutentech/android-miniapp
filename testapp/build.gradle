@@ -4,51 +4,51 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-  compileSdkVersion androidCompileSdk
-  buildToolsVersion androidBuildTool
+    compileSdkVersion androidCompileSdk
+    buildToolsVersion androidBuildTool
 
-  defaultConfig {
-    applicationId "com.rakuten.tech.mobile.miniapps.sample"
-    minSdkVersion androidMinSdk
-    targetSdkVersion androidCompileSdk
-    versionCode versionCode
-    versionName versionName
+    defaultConfig {
+        applicationId "com.rakuten.tech.mobile.miniapps.sample"
+        minSdkVersion androidMinSdk
+        targetSdkVersion androidCompileSdk
+        versionCode versionCode
+        versionName versionName
 
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    debug {
-      debuggable true
-      minifyEnabled false
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    release {
-      minifyEnabled true
-      debuggable true
-      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
-  }
 
 }
 
 dependencies {
-  implementation 'androidx.appcompat:appcompat:1.0.2'
-  compileOnly "javax.annotation:jsr250-api:$jsr250"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    compileOnly "javax.annotation:jsr250-api:$jsr250"
 
-  implementation project(':miniapp')
-  implementation "androidx.appcompat:appcompat:$androidx_appcompat"
-  implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta2"
-  implementation "androidx.core:core-ktx:$androidx_coreKtx"
-  implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04'
-  implementation 'com.google.android.material:material:1.1.0-alpha10'
-  implementation "com.google.dagger:dagger-android:$dagger"
-  implementation "com.google.dagger:dagger:$dagger"
-  implementation "com.jakewharton.timber:timber:$timber"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation project(':miniapp')
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta2"
+    implementation "androidx.core:core-ktx:$androidx_coreKtx"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation "com.google.dagger:dagger-android:$dagger"
+    implementation "com.google.dagger:dagger:$dagger"
+    implementation "com.jakewharton.timber:timber:$timber"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-  kapt "com.google.dagger:dagger-compiler:$dagger"
+    kapt "com.google.dagger:dagger-compiler:$dagger"
 
-  testImplementation "junit:junit:$junit"
-  androidTestImplementation 'androidx.test:runner:1.3.0-alpha02'
-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
+    testImplementation "junit:junit:$junit"
+    androidTestImplementation 'androidx.test:runner:1.3.0-alpha02'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
 }

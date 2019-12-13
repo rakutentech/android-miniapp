@@ -13,31 +13,31 @@ import javax.inject.Inject
  */
 class DownloadScheduler @Inject constructor() {
 
-  /**
-   * Dagger injected variable.
-   */
-  @Inject
-  lateinit var context: Context
+    /**
+     * Dagger injected variable.
+     */
+    @Inject
+    lateinit var context: Context
 
-  init {
-    DaggerDownloadComponent.create().inject(this)
-  }
-
-  /**
-   * Scheduling download MiniApp in the background.
-   *
-   * @param endpoint Manifest endpoint without base url.
-   */
-  fun scheduleDownload(endpoint: String) {
-    val data = workDataOf(DownloadWorker.MANIFEST_URL_ENDPOINT_KEY to endpoint)
-
-    val downloadWorkRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
-        .addTag(DownloadWorker.WORK_TAG)
-        .setInputData(data)
-        .build()
-
-    if (::context.isInitialized) {
-      WorkManager.getInstance(context).enqueue(downloadWorkRequest)
+    init {
+        DaggerDownloadComponent.create().inject(this)
     }
-  }
+
+    /**
+     * Scheduling download MiniApp in the background.
+     *
+     * @param endpoint Manifest endpoint without base url.
+     */
+    fun scheduleDownload(endpoint: String) {
+        val data = workDataOf(DownloadWorker.MANIFEST_URL_ENDPOINT_KEY to endpoint)
+
+        val downloadWorkRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
+            .addTag(DownloadWorker.WORK_TAG)
+            .setInputData(data)
+            .build()
+
+        if (::context.isInitialized) {
+            WorkManager.getInstance(context).enqueue(downloadWorkRequest)
+        }
+    }
 }

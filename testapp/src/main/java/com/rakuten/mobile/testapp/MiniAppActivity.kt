@@ -11,9 +11,9 @@ import com.rakuten.mobile.testapp.MainActivity.Companion.VERSION_ID
  */
 class MiniAppActivity : AppCompatActivity() {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    MiniAppPlatformImpl().displayMiniApp(APP_ID, VERSION_ID, this)
-  }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MiniAppPlatformImpl().displayMiniApp(APP_ID, VERSION_ID, this)
+    }
 
 }

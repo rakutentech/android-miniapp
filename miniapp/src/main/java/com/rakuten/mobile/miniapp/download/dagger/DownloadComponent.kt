@@ -15,28 +15,28 @@ import dagger.Component
 @AppScope
 @Component(modules = [ContextModule::class, DownloadModule::class])
 interface DownloadComponent {
-  /**
-   * Dagger injecting target object.
-   */
-  fun inject(target: DownloadScheduler)
+    /**
+     * Dagger injecting target object.
+     */
+    fun inject(target: DownloadScheduler)
 
-  /**
-   * Dagger injecting target object.
-   */
-  fun inject(target: FileDownloadListener)
+    /**
+     * Dagger injecting target object.
+     */
+    fun inject(target: FileDownloadListener)
 
-  /**
-   * Dagger injecting target object.
-   */
-  fun inject(target: DownloadMiniAppImpl)
+    /**
+     * Dagger injecting target object.
+     */
+    fun inject(target: DownloadMiniAppImpl)
 
-  /**
-   * Dagger injecting target object.
-   */
-  fun inject(target: MiniAppFileWriter)
+    /**
+     * Dagger injecting target object.
+     */
+    fun inject(target: MiniAppFileWriter)
 
-  /**
-   * Dagger injecting target object.
-   */
-  fun inject(target: DownloadWorker)
+    /**
+     * Dagger injecting target object.
+     */
+    fun inject(target: DownloadWorker)
 }

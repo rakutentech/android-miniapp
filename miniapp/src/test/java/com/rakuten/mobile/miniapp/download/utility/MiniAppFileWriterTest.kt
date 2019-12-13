@@ -18,24 +18,24 @@ import org.mockito.MockitoAnnotations.initMocks
 @RunWith(AndroidJUnit4::class)
 class MiniAppFileWriterTest : DownloadBaseTest() {
 
-  @Mock
-  private lateinit var responseBody: ResponseBody
-  private lateinit var miniWriter: MiniAppFileWriter
+    @Mock
+    private lateinit var responseBody: ResponseBody
+    private lateinit var miniWriter: MiniAppFileWriter
 
-  @Before
-  fun setup() {
-    CoreImpl.context = getApplicationContext()
-    initMocks(this)
-    miniWriter = MiniAppFileWriter()
-  }
+    @Before
+    fun setup() {
+        CoreImpl.context = getApplicationContext()
+        initMocks(this)
+        miniWriter = MiniAppFileWriter()
+    }
 
-  @Test
-  fun shouldInjectUrlParser() {
-    assertThat(miniWriter.localUrlParser).isNotNull()
-  }
+    @Test
+    fun shouldInjectUrlParser() {
+        assertThat(miniWriter.localUrlParser).isNotNull()
+    }
 
-  @Test
-  fun shouldWriteNotThrowException() {
-    miniWriter.writeResponseBodyToDisk(responseBody, "appid", "fileURL")
-  }
+    @Test
+    fun shouldWriteNotThrowException() {
+        miniWriter.writeResponseBodyToDisk(responseBody, "appid", "fileURL")
+    }
 }

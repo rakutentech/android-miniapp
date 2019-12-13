@@ -13,15 +13,15 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class RetrofitClientTest : DownloadBaseTest() {
 
-  private lateinit var retrofitClient: RetrofitClient
+    private lateinit var retrofitClient: RetrofitClient
 
-  @Before
-  fun setup() {
-    retrofitClient = RetrofitClient()
-  }
+    @Before
+    fun setup() {
+        retrofitClient = RetrofitClient()
+    }
 
-  @Test
-  fun shouldSetBaseURLInRetrofit() {
-    assertThat(retrofitClient.retrofit.baseUrl().url().toString()).isEqualTo(BASE_URL)
-  }
+    @Test
+    fun shouldSetBaseURLInRetrofit() {
+        assertThat(retrofitClient.retrofit.baseUrl().url().toString()).isEqualTo(BASE_URL)
+    }
 }

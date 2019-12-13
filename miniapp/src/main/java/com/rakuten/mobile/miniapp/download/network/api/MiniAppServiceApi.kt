@@ -12,17 +12,17 @@ import retrofit2.http.Url
  */
 interface MiniAppServiceApi {
 
-  /**
-   * Get request for /manifest endpoint.
-   */
-  @GET("/{manifest}")
-  fun getManifest(@Path("manifest", encoded = true) manifestEndpoint: String):
-      Call<ManifestResponse.Manifest>
+    /**
+     * Get request for /manifest endpoint.
+     */
+    @GET("/{manifest}")
+    fun getManifest(@Path("manifest", encoded = true) manifestEndpoint: String):
+            Call<ManifestResponse.Manifest>
 
-  /**
-   * Get request for downloading files from file storage. This method will be invoked once per
-   * file download.
-   */
-  @GET
-  fun getFile(@Url url: String): Call<ResponseBody>
+    /**
+     * Get request for downloading files from file storage. This method will be invoked once per
+     * file download.
+     */
+    @GET
+    fun getFile(@Url url: String): Call<ResponseBody>
 }

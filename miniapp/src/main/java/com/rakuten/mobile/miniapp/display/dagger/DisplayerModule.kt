@@ -12,12 +12,12 @@ import dagger.Provides
 @Module
 class DisplayerModule {
 
-  /**
-   * Providing MiniAppDisplayImpl object.
-   */
-  @AppScope
-  @Provides
-  fun provideMiniAppDisplayer(): MiniAppDisplayer {
-    return MiniAppDisplayImpl()
-  }
+    /**
+     * Providing MiniAppDisplayImpl object.
+     */
+    @AppScope
+    @Provides
+    fun provideMiniAppDisplayer(): MiniAppDisplayer {
+        return MiniAppDisplayImpl()
+    }
 }

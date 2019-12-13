@@ -12,12 +12,12 @@ import dagger.Provides
 @Module
 class ContextModule {
 
-  /**
-   * Dagger provides context
-   */
-  @AppScope
-  @Provides
-  fun provideContext(): Context {
-    return CoreImpl.context!!
-  }
+    /**
+     * Dagger provides context
+     */
+    @AppScope
+    @Provides
+    fun provideContext(): Context {
+        return CoreImpl.context!!
+    }
 }

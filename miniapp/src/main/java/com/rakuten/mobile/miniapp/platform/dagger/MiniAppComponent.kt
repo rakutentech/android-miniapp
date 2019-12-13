@@ -12,8 +12,8 @@ import dagger.Component
 @AppScope
 @Component(modules = [DownloadModule::class, DisplayerModule::class])
 interface MiniAppComponent {
-  /**
-   * Injecting target class.
-   */
-  fun inject(target: MiniAppPlatformImpl)
+    /**
+     * Injecting target class.
+     */
+    fun inject(target: MiniAppPlatformImpl)
 }

@@ -7,8 +7,8 @@ import android.app.Activity
  */
 interface MiniAppDisplayer {
 
-  /**
-   * Display mini app based on mini app ID and version ID to the host activity.
-   */
-  fun displayMiniApp(miniAppId: String, versionId: String, hostActivity: Activity)
+    /**
+     * Display mini app based on mini app ID and version ID to the host activity.
+     */
+    fun displayMiniApp(miniAppId: String, versionId: String, hostActivity: Activity)
 }
