@@ -1,0 +1,14 @@
+markdown: kramdown
+plugins:
+  - github-pages
+remote_theme: rakutentech/android-buildconfig@gh-pages-theme
+
+title: Mini Apps SDK for Android
+description: Provide means to integrate mini apps into Android applications.
+repository: rakutentech/android-miniapps
+
+docs_path: docs
+api_docs_path: api
+
+collections:
+  versions:
