@@ -1,0 +1,21 @@
+version: 2
+
+## Empty config file to prevent CircleCi from running when commits are pushed to gh-pages branch
+jobs:
+  build:
+    docker:
+      - image: circleci/android:api-29
+    steps:
+      - run:
+          command: echo ""
+
+workflows:
+  version: 2
+
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
