@@ -16,48 +16,38 @@ import dagger.Provides
 @Module
 class DownloadModule {
 
-  /**
-   * Provides DownloadMiniApp to dagger.
-   */
-  @Provides
-  @AppScope
-  fun provideDownloadMiniApp(): MiniAppDownloader {
-    return DownloadMiniAppImpl()
-  }
+    /**
+     * Provides DownloadMiniApp to dagger.
+     */
+    @Provides
+    @AppScope
+    fun provideDownloadMiniApp(): MiniAppDownloader = DownloadMiniAppImpl()
 
-  /**
-   * Provides MiniAppFileWriter to dagger.
-   */
-  @Provides
-  @AppScope
-  fun provideFileWriter(): MiniAppFileWriter {
-    return MiniAppFileWriter()
-  }
+    /**
+     * Provides MiniAppFileWriter to dagger.
+     */
+    @Provides
+    @AppScope
+    fun provideFileWriter(): MiniAppFileWriter = MiniAppFileWriter()
 
-  /**
-   * Provides DownloadScheduler to dagger.
-   */
-  @Provides
-  @AppScope
-  fun provideDownloadScheduler(): DownloadScheduler {
-    return DownloadScheduler()
-  }
+    /**
+     * Provides DownloadScheduler to dagger.
+     */
+    @Provides
+    @AppScope
+    fun provideDownloadScheduler(): DownloadScheduler = DownloadScheduler()
 
-  /**
-   * Provides LocalUrlParser to dagger.
-   */
-  @Provides
-  @AppScope
-  fun provideUrlParser(): LocalUrlParser {
-    return LocalUrlParser()
-  }
+    /**
+     * Provides LocalUrlParser to dagger.
+     */
+    @Provides
+    @AppScope
+    fun provideUrlParser(): LocalUrlParser = LocalUrlParser()
 
-  /**
-   * Provides RetrofitClient to dagger.
-   */
-  @Provides
-  @AppScope
-  fun providerRetrofitClient(): RetrofitClient {
-    return RetrofitClient()
-  }
+    /**
+     * Provides RetrofitClient to dagger.
+     */
+    @Provides
+    @AppScope
+    fun providerRetrofitClient(): RetrofitClient = RetrofitClient()
 }

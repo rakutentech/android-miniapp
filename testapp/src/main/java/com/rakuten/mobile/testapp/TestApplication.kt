@@ -8,11 +8,11 @@ import com.rakuten.mobile.miniapp.platform.MiniAppPlatformImpl
  */
 class TestApplication : Application() {
 
-  /**
-   * OnResume callback from Android system.
-   */
-  override fun onCreate() {
-    super.onCreate()
-    MiniAppPlatformImpl().debugLogging(true).init(this)
-  }
+    /**
+     * OnResume callback from Android system.
+     */
+    override fun onCreate() {
+        super.onCreate()
+        MiniAppPlatformImpl().debugLogging(true).init(this)
+    }
 }

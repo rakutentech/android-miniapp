@@ -19,25 +19,25 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class DownloadWorkerTest : DownloadBaseTest() {
 
-  private lateinit var context: Context
+    private lateinit var context: Context
 
-  @Before
-  fun setup() {
-    context = getApplicationContext()
-    WorkManagerTestInitHelper.initializeTestWorkManager(context)
-  }
+    @Before
+    fun setup() {
+        context = getApplicationContext()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context)
+    }
 
-  @Test
-  fun shouldRunDownloadWorkerOnce() {
-    val input = workDataOf(DownloadWorker.MANIFEST_URL_ENDPOINT_KEY to MANIFEST_URL)
-    val request = OneTimeWorkRequestBuilder<DownloadWorker>().setInputData(input).build()
-    val workManager = WorkManager.getInstance(context)
-    workManager.enqueue(request)
+    @Test
+    fun shouldRunDownloadWorkerOnce() {
+        val input = workDataOf(DownloadWorker.MANIFEST_URL_ENDPOINT_KEY to MANIFEST_URL)
+        val request = OneTimeWorkRequestBuilder<DownloadWorker>().setInputData(input).build()
+        val workManager = WorkManager.getInstance(context)
+        workManager.enqueue(request)
 
-    val attempts = workManager.getWorkInfoById(request.id).get().runAttemptCount
+        val attempts = workManager.getWorkInfoById(request.id).get().runAttemptCount
 
-    assertThat(attempts).isEqualTo(1)
-  }
+        assertThat(attempts).isEqualTo(1)
+    }
 
-  // TODO: Add more tests which includes network requests and logic in doWork().
+    // TODO: Add more tests which includes network requests and logic in doWork().
 }

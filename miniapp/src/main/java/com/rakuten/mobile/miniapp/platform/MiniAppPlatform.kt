@@ -9,30 +9,30 @@ import com.rakuten.mobile.miniapp.core.exceptions.MiniAppPlatformException
  */
 interface MiniAppPlatform {
 
-  /**
-   * Initializing MiniApp SDK.
-   */
-  fun init(applicationContext: Context): MiniAppPlatform
+    /**
+     * Initializing MiniApp SDK.
+     */
+    fun init(applicationContext: Context): MiniAppPlatform
 
-  /**
-   * Download the MiniApp based on manifest manifestEndpoint which shouldn't include base URL.
-   */
-  @Throws(MiniAppPlatformException::class)
-  fun download(manifestEndpoint: String)
+    /**
+     * Download the MiniApp based on manifest manifestEndpoint which shouldn't include base URL.
+     */
+    @Throws(MiniAppPlatformException::class)
+    fun download(manifestEndpoint: String)
 
-  /**
-   * Display mini app based on mini app's ID and version. If mini app doesn't exist locally, it will
-   * be downloaded first, then displayed.
-   */
-  fun displayMiniApp(miniAppId: String, versionId: String, hostActivity: Activity)
+    /**
+     * Display mini app based on mini app's ID and version. If mini app doesn't exist locally, it will
+     * be downloaded first, then displayed.
+     */
+    fun displayMiniApp(miniAppId: String, versionId: String, hostActivity: Activity)
 
-  /**
-   * Turning on debug logging.
-   */
-  fun debugLogging(shouldLog: Boolean): MiniAppPlatform
+    /**
+     * Turning on debug logging.
+     */
+    fun debugLogging(shouldLog: Boolean): MiniAppPlatform
 
-  /**
-   * Checks if MiniApp Platform has been initialized.
-   */
-  fun isInitialized(): Boolean
+    /**
+     * Checks if MiniApp Platform has been initialized.
+     */
+    fun isInitialized(): Boolean
 }

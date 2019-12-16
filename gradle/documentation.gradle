@@ -3,11 +3,11 @@ apply plugin: 'org.jetbrains.dokka'
 def docsBuildDirectory = "$buildDir/kdocs"
 
 dokka {
-  outputFormat = 'markdown'
-  outputDirectory = "$docsBuildDirectory"
-  configuration {
-    includeNonPublic = false
-  }
+    outputFormat = 'markdown'
+    outputDirectory = "$docsBuildDirectory"
+    configuration {
+        includeNonPublic = false
+    }
 }
 
 def (major, minor) = project.version.tokenize('.')
@@ -17,27 +17,27 @@ def docsDirectory = "$buildDir/publishableDocs"
 def docsVersionDirectory = "$docsDirectory/docs/$version"
 
 task copyKDocs(type: Copy) {
-  dependsOn dokka
-  from "$docsBuildDirectory/$project.name"
-  into "$docsVersionDirectory/api"
+    dependsOn dokka
+    from "$docsBuildDirectory/$project.name"
+    into "$docsVersionDirectory/api"
 }
 
 task copyUserGuide(type: Copy) {
-  from "USERGUIDE.md"
-  into docsVersionDirectory
-  rename "USERGUIDE.md", "index.md"
+    from "USERGUIDE.md"
+    into docsVersionDirectory
+    rename "USERGUIDE.md", "index.md"
 }
 
 task generatePublishableDocs {
-  dependsOn copyKDocs
-  dependsOn copyUserGuide
-  doLast {
-    def versionFile = file("$docsDirectory/_versions/${version}.md")
-    versionFile.parentFile.mkdirs()
-    versionFile.text = """
+    dependsOn copyKDocs
+    dependsOn copyUserGuide
+    doLast {
+        def versionFile = file("$docsDirectory/_versions/${version}.md")
+        versionFile.parentFile.mkdirs()
+        versionFile.text = """
       ---
       version: $version
       ---
     """.stripIndent().trim()
-  }
+    }
 }

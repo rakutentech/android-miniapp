@@ -4,98 +4,98 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-  compileSdkVersion androidCompileSdk
+    compileSdkVersion androidCompileSdk
 
-  defaultConfig {
-    minSdkVersion androidMinSdk
-    targetSdkVersion androidCompileSdk
-    versionCode versionCode
-    versionName version
-    buildConfigField "String", "MINI_APP_BASE_URL", "\"https://www.example.com/\""
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
+    defaultConfig {
+        minSdkVersion androidMinSdk
+        targetSdkVersion androidCompileSdk
+        versionCode versionCode
+        versionName version
+        buildConfigField "String", "MINI_APP_BASE_URL", "\"https://www.example.com/\""
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8
-  }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
 
-  sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-    test.java.srcDirs += 'src/test/kotlin'
-  }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 
-  testOptions {
-    unitTests.returnDefaultValues = true
-    unitTests.includeAndroidResources = true
-  }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+    }
 
-  buildToolsVersion = androidBuildTool
+    buildToolsVersion = androidBuildTool
 }
 
 // Prevents test code compiled into binary.
 afterEvaluate {
-  android.sourceSets.all { sourceSet ->
-    if (!sourceSet.name.startsWith("test")) {
-      sourceSet.kotlin.setSrcDirs([])
+    android.sourceSets.all { sourceSet ->
+        if (!sourceSet.name.startsWith("test")) {
+            sourceSet.kotlin.setSrcDirs([])
+        }
     }
-  }
 }
 
 dependencies {
-  compileOnly "javax.annotation:jsr250-api:$jsr250"
+    compileOnly "javax.annotation:jsr250-api:$jsr250"
 
-  implementation "androidx.appcompat:appcompat:$androidx_appcompat"
-  implementation "androidx.core:core-ktx:$androidx_coreKtx"
-  implementation "androidx.work:work-runtime-ktx:$androidx_work"
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    implementation "androidx.core:core-ktx:$androidx_coreKtx"
+    implementation "androidx.work:work-runtime-ktx:$androidx_work"
 
-  implementation "com.squareup.retrofit2:converter-gson:$retrofit"
-  implementation "com.squareup.retrofit2:retrofit:$retrofit"
-  implementation "com.google.dagger:dagger:$dagger"
-  implementation "com.jakewharton.timber:timber:$timber"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.google.dagger:dagger:$dagger"
+    implementation "com.jakewharton.timber:timber:$timber"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-  kapt "com.google.dagger:dagger-compiler:$dagger"
+    kapt "com.google.dagger:dagger-compiler:$dagger"
 
-  testImplementation "androidx.test.ext:junit:$androidx_test_ext"
-  testImplementation "androidx.work:work-testing:$androidx_work"
-  testImplementation "org.mockito:mockito-android:$mockito"
-  testImplementation "org.mockito:mockito-core:$mockito"
-  testImplementation "org.robolectric:robolectric:$robolectric"
-  testImplementation "com.google.truth:truth:$truth"
-  testImplementation "com.squareup.retrofit2:retrofit-mock:$retrofit"
+    testImplementation "androidx.test.ext:junit:$androidx_test_ext"
+    testImplementation "androidx.work:work-testing:$androidx_work"
+    testImplementation "org.mockito:mockito-android:$mockito"
+    testImplementation "org.mockito:mockito-core:$mockito"
+    testImplementation "org.robolectric:robolectric:$robolectric"
+    testImplementation "com.google.truth:truth:$truth"
+    testImplementation "com.squareup.retrofit2:retrofit-mock:$retrofit"
 
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
 apply from: '../config/quality/detekt/android.gradle'
 dependencies {
-  detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
 
 detekt {
-  baseline = file("detekt-baseline.xml")
+    baseline = file("detekt-baseline.xml")
 }
 
 apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
-  toolVersion = "0.8.3"
+    toolVersion = "0.8.3"
 }
 
 apply from: '../gradle/documentation.gradle'
 
 apply from: '../config/publish/android.gradle'
 publishing {
-  publications {
-    MiniApp(MavenPublication, androidArtifact())
-  }
+    publications {
+        MiniApp(MavenPublication, androidArtifact())
+    }
 }
 
 def isSnapshot = project.version.contains('-')
 if (isSnapshot) {
-  apply from: '../config/publish/artifactory.gradle'
+    apply from: '../config/publish/artifactory.gradle'
 }

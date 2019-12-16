@@ -17,21 +17,21 @@ import org.mockito.MockitoAnnotations.initMocks
 @RunWith(AndroidJUnit4::class)
 class DownloadMiniAppImplTest : DownloadBaseTest() {
 
-  @Mock
-  lateinit var mockDownloadScheduler: DownloadScheduler
-  lateinit var downloadMiniApp: DownloadMiniAppImpl
+    @Mock
+    lateinit var mockDownloadScheduler: DownloadScheduler
+    lateinit var downloadMiniApp: DownloadMiniAppImpl
 
-  @Before
-  fun setup() {
-    initMocks(this)
-    CoreImpl.context = getApplicationContext()
-    downloadMiniApp = DownloadMiniAppImpl()
-  }
+    @Before
+    fun setup() {
+        initMocks(this)
+        CoreImpl.context = getApplicationContext()
+        downloadMiniApp = DownloadMiniAppImpl()
+    }
 
-  @Test
-  fun shouldScheduleDownloadMiniApp() {
-    downloadMiniApp.downloadScheduler = mockDownloadScheduler
-    downloadMiniApp.downloadMiniApp("")
-    Mockito.verify(downloadMiniApp.downloadScheduler).scheduleDownload("")
-  }
+    @Test
+    fun shouldScheduleDownloadMiniApp() {
+        downloadMiniApp.downloadScheduler = mockDownloadScheduler
+        downloadMiniApp.downloadMiniApp("")
+        Mockito.verify(downloadMiniApp.downloadScheduler).scheduleDownload("")
+    }
 }

@@ -10,22 +10,22 @@ import javax.inject.Inject
  */
 class DownloadMiniAppImpl : MiniAppDownloader {
 
-  /**
-   * Dagger injected object.
-   */
-  @Inject
-  lateinit var downloadScheduler: DownloadScheduler
+    /**
+     * Dagger injected object.
+     */
+    @Inject
+    lateinit var downloadScheduler: DownloadScheduler
 
-  init {
-    daggerDownloadComponent.inject(this)
-  }
+    init {
+        daggerDownloadComponent.inject(this)
+    }
 
-  override fun downloadMiniApp(manifestEndpoint: String) {
-    // TODO: Should validate endpoint and its format.
-    downloadScheduler.scheduleDownload(manifestEndpoint)
-  }
+    override fun downloadMiniApp(manifestEndpoint: String) {
+        // TODO: Should validate endpoint and its format.
+        downloadScheduler.scheduleDownload(manifestEndpoint)
+    }
 
-  companion object {
-    val daggerDownloadComponent: DownloadComponent = DaggerDownloadComponent.create()
-  }
+    companion object {
+        val daggerDownloadComponent: DownloadComponent = DaggerDownloadComponent.create()
+    }
 }

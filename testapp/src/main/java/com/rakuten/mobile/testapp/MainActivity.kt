@@ -15,36 +15,36 @@ import timber.log.Timber
  */
 class MainActivity : AppCompatActivity() {
 
-  /**
-   * OnCreate callback from Android system.
-   */
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
-    val viewPager: ViewPager = findViewById(R.id.view_pager)
-    viewPager.adapter = sectionsPagerAdapter
-    val tabs: TabLayout = findViewById(R.id.tabs)
-    tabs.setupWithViewPager(viewPager)
-    val fab: FloatingActionButton = findViewById(R.id.fab)
+    /**
+     * OnCreate callback from Android system.
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
+        val viewPager: ViewPager = findViewById(R.id.view_pager)
+        viewPager.adapter = sectionsPagerAdapter
+        val tabs: TabLayout = findViewById(R.id.tabs)
+        tabs.setupWithViewPager(viewPager)
+        val fab: FloatingActionButton = findViewById(R.id.fab)
 
-    fab.setOnClickListener { view ->
-      startActivity(Intent(this, MiniAppActivity::class.java))
+        fab.setOnClickListener { view ->
+            startActivity(Intent(this, MiniAppActivity::class.java))
+        }
     }
-  }
 
-  /**
-   * OnResume callback from Android system.
-   */
-  override fun onResume() {
-    super.onResume()
-    MiniAppPlatformImpl().download("miniapp/$APP_ID/version/$VERSION_ID/manifest/")
+    /**
+     * OnResume callback from Android system.
+     */
+    override fun onResume() {
+        super.onResume()
+        MiniAppPlatformImpl().download("miniapp/$APP_ID/version/$VERSION_ID/manifest/")
 
-    Timber.tag("Mini_").d("Start downloading miniapp")
-  }
+        Timber.tag("Mini_").d("Start downloading miniapp")
+    }
 
-  companion object {
-    const val APP_ID = "b9247b09-c534-48c5-bcc5-0644907d22f8"
-    const val VERSION_ID = "9761a1dc-a1cb-4730-92ac-e9aa09a87531"
-  }
+    companion object {
+        const val APP_ID = "b9247b09-c534-48c5-bcc5-0644907d22f8"
+        const val VERSION_ID = "9761a1dc-a1cb-4730-92ac-e9aa09a87531"
+    }
 }

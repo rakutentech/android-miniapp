@@ -5,8 +5,8 @@ package com.rakuten.mobile.miniapp.download
  */
 interface MiniAppDownloader {
 
-  /**
-   * Download mini app based on manifest manifestEndpoint.
-   */
-  fun downloadMiniApp(manifestEndpoint: String)
+    /**
+     * Download mini app based on manifest manifestEndpoint.
+     */
+    fun downloadMiniApp(manifestEndpoint: String)
 }

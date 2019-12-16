@@ -8,12 +8,12 @@ import android.content.Context
  */
 class CoreImpl {
 
-  companion object {
-    /**
-     * Host App's application context.
-     */
-    @SuppressLint("StaticFieldLeak")
-    @JvmStatic
-    var context: Context? = null
-  }
+    companion object {
+        /**
+         * Host App's application context.
+         */
+        @SuppressLint("StaticFieldLeak")
+        @JvmStatic
+        var context: Context? = null
+    }
 }
