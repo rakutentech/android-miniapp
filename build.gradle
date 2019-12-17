@@ -55,6 +55,17 @@ allprojects {
             options.compilerArgs << "-Xmaxerrs" << "500"
         }
     }
+
+    scmVersion {
+        useHighestVersion = true
+        tag {
+            prefix = 'v'
+            versionSeparator = ''
+            versionIncrementer 'incrementMinor'
+        }
+    }
+
+    project.version = scmVersion.version
 }
 
 tasks.withType(Test) {
@@ -68,14 +79,3 @@ tasks.withType(JavaCompile) {
     options.fork = true
     options.incremental = true
 }
-
-scmVersion {
-    useHighestVersion = true
-    tag {
-        prefix = 'v'
-        versionSeparator = ''
-        versionIncrementer 'incrementMinor'
-    }
-}
-
-project.version = scmVersion.version
