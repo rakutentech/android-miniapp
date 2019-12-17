@@ -1,16 +1,11 @@
-apply plugin: 'com.android.application'
+apply from: '../config/android/application.gradle'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion androidCompileSdk
-    buildToolsVersion androidBuildTool
-
     defaultConfig {
         applicationId "com.rakuten.tech.mobile.miniapps.sample"
-        minSdkVersion androidMinSdk
-        targetSdkVersion androidCompileSdk
         versionCode versionCode
         versionName versionName
 
@@ -28,7 +23,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {

@@ -1,16 +1,11 @@
-apply plugin: 'com.android.library'
+apply from: '../config/android/library.gradle'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion androidCompileSdk
 
     defaultConfig {
-        minSdkVersion androidMinSdk
-        targetSdkVersion androidCompileSdk
-        versionCode versionCode
-        versionName version
         buildConfigField "String", "MINI_APP_BASE_URL", "\"https://www.example.com/\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
