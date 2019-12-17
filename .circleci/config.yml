@@ -55,8 +55,7 @@ jobs:
       - persist_to_workspace:
           root: ~/code
           paths:
-            - miniapp/build/outputs/aar
-            - miniapp/build/javadocs
+            - miniapp/build/
 
   publish:
     docker:

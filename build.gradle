@@ -1,8 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.androidBuildTool = '29.0.2'
-    ext.androidCompileSdk = 29
-    ext.androidMinSdk = 21
     ext.androidx_appcompat = '1.1.0'
     ext.androidx_coreKtx = '1.2.0-alpha04'
     ext.androidx_espressoCore = '3.3.0-alpha02'
@@ -22,6 +20,7 @@ buildscript {
 
 //  Build Config.
     apply from: 'config/index.gradle'
+    CONFIG.versions.android.sdk.min = 21
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
