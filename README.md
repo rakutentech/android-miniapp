@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/rakutentech/android-miniapps.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapps)
+[![CircleCI](https://circleci.com/gh/rakutentech/android-miniapp.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapp)
 [![codecov](https://codecov.io/gh/rakutentech/android-miniapps/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-miniapps)
 
 # MiniApps SDK for Android
