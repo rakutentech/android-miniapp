@@ -43,7 +43,7 @@ class MiniAppFileWriter {
         val fileName = localUrlParser.getFileName(fileUrl)
 
         try {
-            val dir = "${context.filesDir?.path}/$MINI_APPS_PATH/$appId/$versionId/$path"
+            val dir = "${context.filesDir?.path}/$MINI_APP_PATH/$appId/$versionId/$path"
 
             File(dir).mkdirs()
             val file = File(dir, fileName)
@@ -94,7 +94,7 @@ class MiniAppFileWriter {
 
     companion object {
         private const val TAG = "Mini_FileWriter"
-        private const val MINI_APPS_PATH = "miniapps"
+        private const val MINI_APP_PATH = "miniapp"
         private const val FILE_WRITE_BATCH_SIZE = 4096
     }
 }

@@ -46,7 +46,7 @@ class MiniAppDisplayImpl : MiniAppDisplayer {
         indexDir: String,
         miniAppId: String,
         versionId: String
-    ): String = "file://$indexDir/miniapps/$miniAppId/$versionId/index.html"
+    ): String = "file://$indexDir/miniapp/$miniAppId/$versionId/index.html"
 
     /**
      * Mini App Web Client.

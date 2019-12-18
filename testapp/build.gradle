@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     defaultConfig {
-        applicationId "com.rakuten.tech.mobile.miniapps.sample"
+        applicationId "com.rakuten.tech.mobile.miniapp.sample"
         versionCode versionCode
         versionName versionName
 

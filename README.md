@@ -1,9 +1,9 @@
-[![CircleCI](https://circleci.com/gh/rakutentech/android-miniapps.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapps)
-[![codecov](https://codecov.io/gh/rakutentech/android-miniapps/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-miniapps)
+[![CircleCI](https://circleci.com/gh/rakutentech/android-miniapp.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapp)
+[![codecov](https://codecov.io/gh/rakutentech/android-miniapp/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-miniapp)
 
-# MiniApps SDK for Android
+# MiniApp SDK for Android
 
-Provides a set of tools and capabilities to show miniapps in Android Applications. The SDK offers features like fetching, caching and displaying of miniapps. 
+Provides a set of tools and capabilities to show mini app in Android Applications. The SDK offers features like fetching, caching and displaying of mini app. 
 For instructions on implementing in an android application, the User Guide will be made available soon.
 
 ## How to build
