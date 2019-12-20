@@ -1,5 +1,4 @@
 package com.rakuten.mobile.miniapp.display
 
-internal class Displayer {
-
-}
+@SuppressWarnings("UseDataClass")
+internal class Displayer(val realMiniAppView: RealMiniAppView)

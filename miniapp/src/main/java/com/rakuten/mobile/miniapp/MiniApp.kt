@@ -2,7 +2,7 @@ package com.rakuten.mobile.miniapp
 
 /**
  * This represents the contract between the consuming application and the SDK
- * by which operations in the mini app ecosystem are exposed
+ * by which operations in the mini app ecosystem are exposed.
  */
 interface MiniApp {
 
@@ -10,7 +10,7 @@ interface MiniApp {
      * Provides a [List] of type [MiniAppInfo] when obtained successfully, and an
      * [error] when fetching fails from the backend server for any reason.
      */
-    suspend fun list(
+    suspend fun listMiniApp(
         success: (List<MiniAppInfo>) -> Unit,
         error: (Exception) -> Unit
     )

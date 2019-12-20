@@ -1,5 +1,3 @@
 package com.rakuten.mobile.miniapp
 
-internal class QrCodeParser {
-
-}
+internal class QrCodeParser

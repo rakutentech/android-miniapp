@@ -1,10 +1,22 @@
 package com.rakuten.mobile.miniapp
 
-@Suppress("TodoComment")
-internal class RealMiniApp: MiniApp{
+import com.rakuten.mobile.miniapp.display.Displayer
+import com.rakuten.mobile.miniapp.miniapp.MiniAppDownloader
+import com.rakuten.mobile.miniapp.miniapp.MiniAppLister
 
-    override suspend fun list(success: (List<MiniAppInfo>) -> Unit, error: (Exception) -> Unit) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+@Suppress("TodoComment")
+internal class RealMiniApp(
+    val qrCodeParser: QrCodeParser,
+    val miniAppDownloader: MiniAppDownloader,
+    val displayer: Displayer,
+    val miniAppLister: MiniAppLister
+) : MiniApp {
+
+    override suspend fun listMiniApp(
+        success: (List<MiniAppInfo>) -> Unit,
+        error: (Exception) -> Unit
+    ) {
+        TODO("not implemented")
     }
 
     override suspend fun create(
@@ -12,7 +24,7 @@ internal class RealMiniApp: MiniApp{
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
     override suspend fun createFromQrCode(
@@ -20,7 +32,6 @@ internal class RealMiniApp: MiniApp{
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
-
 }

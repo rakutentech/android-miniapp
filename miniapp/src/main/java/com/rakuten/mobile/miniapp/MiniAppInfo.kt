@@ -3,7 +3,7 @@ package com.rakuten.mobile.miniapp
 import android.net.Uri
 
 /**
- * This represents a Mini App entity
+ * This represents a Mini App entity.
  */
 data class MiniAppInfo(
     val name: String,

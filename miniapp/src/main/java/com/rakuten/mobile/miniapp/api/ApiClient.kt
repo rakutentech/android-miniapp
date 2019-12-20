@@ -1,5 +1,8 @@
 package com.rakuten.mobile.miniapp.api
 
-internal class ApiClient {
-
-}
+@SuppressWarnings("UseDataClass")
+internal class ApiClient(
+    val listRequest: ListRequest,
+    val manifestRequest: ManifestRequest,
+    val downloadFileRequest: DownloadFileRequest
+)

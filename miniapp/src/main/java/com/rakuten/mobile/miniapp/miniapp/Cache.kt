@@ -1,5 +1,3 @@
 package com.rakuten.mobile.miniapp.miniapp
 
-internal class Cache {
-
-}
+internal class Cache

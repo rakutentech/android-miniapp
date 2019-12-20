@@ -1,5 +1,4 @@
 package com.rakuten.mobile.miniapp.storage
 
-internal class MiniAppStorage {
-
-}
+@SuppressWarnings("UseDataClass")
+internal class MiniAppStorage(val fileWriter: FileWriter)
