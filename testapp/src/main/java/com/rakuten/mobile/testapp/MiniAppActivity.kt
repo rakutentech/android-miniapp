@@ -2,7 +2,7 @@ package com.rakuten.mobile.testapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.rakuten.mobile.miniapp.platform.MiniAppPlatformImpl
+import com.rakuten.mobile.miniapp.legacy.platform.MiniAppPlatformImpl
 import com.rakuten.mobile.testapp.MainActivity.Companion.APP_ID
 import com.rakuten.mobile.testapp.MainActivity.Companion.VERSION_ID
 

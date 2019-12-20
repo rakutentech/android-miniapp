@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
-import com.rakuten.mobile.miniapp.platform.MiniAppPlatformImpl
+import com.rakuten.mobile.miniapp.legacy.platform.MiniAppPlatformImpl
 import com.rakuten.mobile.testapp.ui.main.SectionsPagerAdapter
 import timber.log.Timber
 

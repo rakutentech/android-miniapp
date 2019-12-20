@@ -1,6 +1,6 @@
 <!--This is a test mock Android Manifest file used by Robolectric tests-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rakuten.mobile.miniapp.platform"
+    package="com.rakuten.mobile.miniapp.legacy.platform"
     android:versionCode="1"
     android:versionName="0.0">
 

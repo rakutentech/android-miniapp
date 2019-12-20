@@ -1,7 +1,7 @@
 package com.rakuten.mobile.testapp
 
 import android.app.Application
-import com.rakuten.mobile.miniapp.platform.MiniAppPlatformImpl
+import com.rakuten.mobile.miniapp.legacy.platform.MiniAppPlatformImpl
 
 /**
  * Test app's application class.
