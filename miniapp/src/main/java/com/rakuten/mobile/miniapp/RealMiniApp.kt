@@ -4,7 +4,7 @@ import com.rakuten.mobile.miniapp.display.Displayer
 import com.rakuten.mobile.miniapp.miniapp.MiniAppDownloader
 import com.rakuten.mobile.miniapp.miniapp.MiniAppLister
 
-@Suppress("TodoComment")
+@Suppress("TodoComment", "NotImplementedDeclaration")
 internal class RealMiniApp(
     val qrCodeParser: QrCodeParser,
     val miniAppDownloader: MiniAppDownloader,

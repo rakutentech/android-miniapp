@@ -19,11 +19,6 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
-
     testOptions {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
@@ -48,13 +43,16 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.work:work-runtime-ktx:$androidx_work"
 
+    implementation "com.jakewharton.timber:timber:$timber"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
-    implementation "com.google.dagger:dagger:$dagger"
-    implementation "com.jakewharton.timber:timber:$timber"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     kapt "com.google.dagger:dagger-compiler:$dagger"
+    implementation "com.google.dagger:dagger:$dagger"
+
+    kapt "com.rakuten.tech.mobile:manifest-config-processor:0.1.0"
+    implementation "com.rakuten.tech.mobile:manifest-config-annotations:0.1.0"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "androidx.work:work-testing:$androidx_work"

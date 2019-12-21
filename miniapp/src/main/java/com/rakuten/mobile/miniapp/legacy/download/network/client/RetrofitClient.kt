@@ -1,6 +1,6 @@
 package com.rakuten.mobile.miniapp.legacy.download.network.client
 
-import com.rakuten.mobile.miniapp.legacy.platform.BuildConfig
+import com.rakuten.mobile.miniapp.BuildConfig
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
