@@ -18,6 +18,10 @@
             android:value="${baseUrl}" />
 
         <meta-data
+            android:name="com.rakuten.mobile.miniapp.HostAppVersion"
+            android:value="${hostAppVersion}" />
+
+        <meta-data
             android:name="com.rakuten.mobile.ras.AppId"
             android:value="${appId}" />
 
