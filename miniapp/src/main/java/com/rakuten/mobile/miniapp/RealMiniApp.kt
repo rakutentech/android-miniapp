@@ -6,7 +6,6 @@ import com.rakuten.mobile.miniapp.miniapp.MiniAppLister
 
 @Suppress("TodoComment", "NotImplementedDeclaration")
 internal class RealMiniApp(
-    val qrCodeParser: QrCodeParser,
     val miniAppDownloader: MiniAppDownloader,
     val displayer: Displayer,
     val miniAppLister: MiniAppLister
@@ -21,14 +20,6 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        success: (MiniAppView) -> Unit,
-        error: (Exception) -> Unit
-    ) {
-        TODO("not implemented")
-    }
-
-    override suspend fun createFromQrCode(
-        qrCode: String,
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
     ) {
