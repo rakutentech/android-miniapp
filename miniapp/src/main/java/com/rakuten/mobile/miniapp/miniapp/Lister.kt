@@ -1,3 +1,3 @@
 package com.rakuten.mobile.miniapp.miniapp
 
-internal class MiniAppLister
+internal class Lister

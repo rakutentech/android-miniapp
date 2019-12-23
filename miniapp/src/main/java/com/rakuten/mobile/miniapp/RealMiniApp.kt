@@ -1,14 +1,14 @@
 package com.rakuten.mobile.miniapp
 
 import com.rakuten.mobile.miniapp.display.Displayer
-import com.rakuten.mobile.miniapp.miniapp.MiniAppDownloader
-import com.rakuten.mobile.miniapp.miniapp.MiniAppLister
+import com.rakuten.mobile.miniapp.miniapp.Downloader
+import com.rakuten.mobile.miniapp.miniapp.Lister
 
 @Suppress("TodoComment", "NotImplementedDeclaration")
 internal class RealMiniApp(
-    val miniAppDownloader: MiniAppDownloader,
+    val downloader: Downloader,
     val displayer: Displayer,
-    val miniAppLister: MiniAppLister
+    val lister: Lister
 ) : MiniApp {
 
     override suspend fun listMiniApp(
