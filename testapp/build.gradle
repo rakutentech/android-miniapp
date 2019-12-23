@@ -4,10 +4,20 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    def property = { key ->
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+    }
+
     defaultConfig {
-        applicationId "com.rakuten.tech.mobile.miniapp.sample"
         versionCode versionCode
         versionName versionName
+
+        manifestPlaceholders = [
+                baseUrl: property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+                hostAppVersion: property("HOST_APP_VERSION") ?: "",
+                appId: property("HOST_APP_ID") ?: "",
+                subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: ""
+        ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

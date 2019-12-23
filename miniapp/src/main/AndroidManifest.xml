@@ -1,1 +1,14 @@
-<manifest package="com.rakuten.mobile.miniapp.platform" />
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rakuten.tech.mobile.miniapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <provider
+            android:name="com.rakuten.tech.mobile.miniapp.MiniappSdkInitializer"
+            android:authorities="${applicationId}.MiniappSdkInitializer"
+            android:exported="false"
+            android:initOrder="99" />
+    </application>
+</manifest>
