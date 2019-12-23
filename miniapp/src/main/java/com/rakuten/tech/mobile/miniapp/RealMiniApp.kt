@@ -9,7 +9,7 @@ internal class RealMiniApp(
     val downloader: Downloader,
     val displayer: Displayer,
     val lister: Lister
-) : MiniApp {
+) : MiniApp() {
 
     override suspend fun listMiniApp(
         success: (List<MiniAppInfo>) -> Unit,

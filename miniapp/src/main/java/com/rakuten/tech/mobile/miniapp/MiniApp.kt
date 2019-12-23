@@ -9,13 +9,13 @@ import com.rakuten.tech.mobile.miniapp.miniapp.Lister
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-interface MiniApp {
+abstract class MiniApp internal constructor() {
 
     /**
      * Provides a [List] of type [MiniAppInfo] when obtained successfully, and an
      * [error] when fetching fails from the backend server for any reason.
      */
-    suspend fun listMiniApp(
+    abstract suspend fun listMiniApp(
         success: (List<MiniAppInfo>) -> Unit,
         error: (Exception) -> Unit
     )
@@ -25,7 +25,7 @@ interface MiniApp {
      * Provides [MiniAppView] when successful and an [error] when there is some issue
      * during fetching, downloading or creating a view.
      */
-    suspend fun create(
+    abstract suspend fun create(
         appId: String,
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
