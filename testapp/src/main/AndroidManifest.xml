@@ -14,19 +14,19 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data
-            android:name="com.rakuten.mobile.miniapp.BaseUrl"
+            android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="${baseUrl}" />
 
         <meta-data
-            android:name="com.rakuten.mobile.miniapp.HostAppVersion"
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
             android:value="${hostAppVersion}" />
 
         <meta-data
-            android:name="com.rakuten.mobile.ras.AppId"
+            android:name="com.rakuten.tech.mobile.ras.AppId"
             android:value="${appId}" />
 
         <meta-data
-            android:name="com.rakuten.mobile.ras.ProjectSubscriptionKey"
+            android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="${subscriptionKey}" />
 
         <activity

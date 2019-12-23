@@ -20,25 +20,25 @@ class MiniappSdkInitializer : ContentProvider() {
         /**
          * Base Url for the mini app backend.
          **/
-        @MetaData(key = "com.rakuten.mobile.miniapp.BaseUrl")
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.BaseUrl")
         fun baseUrl(): String
 
         /**
          * Host app version for the mini app backend.
          **/
-        @MetaData(key = "com.rakuten.mobile.miniapp.HostAppVersion")
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppVersion")
         fun hostAppVersion(): String
 
         /**
          * App Id assigned to host App.
          **/
-        @MetaData(key = "com.rakuten.mobile.ras.AppId")
+        @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
         fun appId(): String
 
         /**
          * Subscription Key for the registered host app.
          **/
-        @MetaData(key = "com.rakuten.mobile.ras.ProjectSubscriptionKey")
+        @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectSubscriptionKey")
         fun subscriptionKey(): String
     }
 
