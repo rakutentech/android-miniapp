@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
@@ -10,7 +9,8 @@ import retrofit2.Retrofit
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val hostAppVersion: String,
-    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
+    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
+    private val listingApi: ListingApi = retrofit.create(ListingApi::class.java)
 ) {
 
     constructor(
@@ -26,6 +26,11 @@ internal class ApiClient @VisibleForTesting constructor(
         ),
         hostAppVersion = hostAppVersion
     )
+
+    suspend fun list(): List<ListingEntity> {
+        val request = listingApi.list(hostAppVersion = hostAppVersion)
+        return requestExecutor.executeRequest(request)
+    }
 }
 
 internal class RetrofitRequestExecutor(
@@ -72,7 +77,5 @@ class MiniAppHttpException(
      * Readable message of error response in the format
      * "HTTP {CODE} {STATUS MESSAGE}: {ERROR MESSAGE}".
      */
-    override fun message(): String {
-        return "${super.message()}: $errorMessage"
-    }
+    override fun message() = "${super.message()}: $errorMessage"
 }

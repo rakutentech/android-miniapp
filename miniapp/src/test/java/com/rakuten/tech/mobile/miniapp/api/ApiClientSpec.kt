@@ -1,16 +1,59 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.*
+import org.amshove.kluent.When
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-open class ApiClientSpec
+open class ApiClientSpec {
+
+    private val mockRetrofitClient: Retrofit = mock()
+    private val mockRequestExecutor: RetrofitRequestExecutor = mock()
+    private val mockListingApi: ListingApi = mock()
+
+    @Test
+    fun `should fetch the list of mini apps`() = runBlockingTest {
+        val listingEntity = ListingEntity(
+            id = "test_id",
+            versionId = "test_version",
+            name = "test_name",
+            description = "test_description",
+            icon = "test_icon",
+            files = listOf("https://www.example.com")
+        )
+        val mockCall: Call<List<ListingEntity>> = mock()
+        When calling mockListingApi.list(any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(listingEntity)
+
+        val apiClient = createApiClient(listingApi = mockListingApi)
+
+        apiClient.list()[0] shouldEqual listingEntity
+    }
+
+    private fun createApiClient(
+        retrofit: Retrofit = mockRetrofitClient,
+        hostAppVersion: String = "test_version",
+        requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
+        listingApi: ListingApi = mockListingApi
+    ) = ApiClient(
+        retrofit = retrofit,
+        hostAppVersion = hostAppVersion,
+        requestExecutor = requestExecutor,
+        listingApi = listingApi
+    )
+}
 
 open class RetrofitRequestExecutorSpec private constructor(
     internal val mockServer: MockWebServer
