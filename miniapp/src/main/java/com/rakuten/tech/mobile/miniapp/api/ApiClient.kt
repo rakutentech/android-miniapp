@@ -5,12 +5,14 @@ import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.util.UUID
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val hostAppVersion: String,
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
-    private val listingApi: ListingApi = retrofit.create(ListingApi::class.java)
+    private val listingApi: ListingApi = retrofit.create(ListingApi::class.java),
+    private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java)
 ) {
 
     constructor(
@@ -29,6 +31,11 @@ internal class ApiClient @VisibleForTesting constructor(
 
     suspend fun list(): List<ListingEntity> {
         val request = listingApi.list(hostAppVersion = hostAppVersion)
+        return requestExecutor.executeRequest(request)
+    }
+
+    suspend fun fetchFileList(miniAppId: UUID, versionId: UUID): ManifestEntity {
+        val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId)
         return requestExecutor.executeRequest(request)
     }
 }

@@ -16,12 +16,14 @@ import org.junit.Test
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.UUID
 
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()
     private val mockRequestExecutor: RetrofitRequestExecutor = mock()
     private val mockListingApi: ListingApi = mock()
+    private val mockManifestApi: ManifestApi = mock()
 
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
@@ -42,16 +44,34 @@ open class ApiClientSpec {
         apiClient.list()[0] shouldEqual listingEntity
     }
 
+    @Test
+    fun `should fetch the file list of a mini app`() = runBlockingTest {
+        val fileList = listOf("https://www.example.com", "https://www.example1.com")
+        val manifestEntity = ManifestEntity(fileList)
+        val mockCall: Call<ManifestEntity> = mock()
+        When calling
+                mockManifestApi
+                    .fetchFileListFromManifest(any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns ManifestEntity(fileList)
+
+        val apiClient = createApiClient(manifestApi = mockManifestApi)
+
+        apiClient
+            .fetchFileList(UUID.randomUUID(), UUID.randomUUID()) shouldEqual manifestEntity
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostAppVersion: String = "test_version",
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
-        listingApi: ListingApi = mockListingApi
+        listingApi: ListingApi = mockListingApi,
+        manifestApi: ManifestApi = mockManifestApi
     ) = ApiClient(
         retrofit = retrofit,
         hostAppVersion = hostAppVersion,
         requestExecutor = requestExecutor,
-        listingApi = listingApi
+        listingApi = listingApi,
+        manifestApi = manifestApi
     )
 }
 
