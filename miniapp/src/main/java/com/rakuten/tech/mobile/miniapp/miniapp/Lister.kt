@@ -1,3 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.miniapp
 
-internal class Lister
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
+
+internal class Lister(client: ApiClient)

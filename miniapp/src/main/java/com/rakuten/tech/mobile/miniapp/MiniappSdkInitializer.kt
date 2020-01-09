@@ -39,7 +39,7 @@ class MiniappSdkInitializer : ContentProvider() {
          * App Id assigned to host App.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
-        fun appId(): String
+        fun rasAppId(): String
 
         /**
          * Subscription Key for the registered host app.
@@ -53,12 +53,17 @@ class MiniappSdkInitializer : ContentProvider() {
 
         val manifestConfig = AppManifestConfig(context)
         val storage = MiniAppStorage(FileWriter())
-        val apiClient = ApiClient()
+        val apiClient = ApiClient(
+            baseUrl = manifestConfig.baseUrl(),
+            rasAppId = manifestConfig.rasAppId(),
+            subscriptionKey = manifestConfig.subscriptionKey(),
+            hostAppVersion = manifestConfig.hostAppVersion()
+        )
 
         MiniApp.init(
             downloader = Downloader(storage, apiClient),
             displayer = Displayer(),
-            lister = Lister()
+            lister = Lister(apiClient)
         )
 
         return true

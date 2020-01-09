@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.miniapp.Lister
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
+@Suppress("UnnecessaryAbstractClass")
 abstract class MiniApp internal constructor() {
 
     /**
