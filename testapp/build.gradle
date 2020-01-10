@@ -36,23 +36,24 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.2'
     compileOnly "javax.annotation:jsr250-api:$jsr250"
 
     implementation project(':miniapp')
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
-    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta2"
+    implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha04'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
-    implementation "com.google.dagger:dagger-android:$dagger"
-    implementation "com.google.dagger:dagger:$dagger"
-    implementation "com.jakewharton.timber:timber:$timber"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    implementation "com.google.android.material:material:$material"
+    implementation "com.google.dagger:dagger-android:$dagger"
+    implementation "com.google.dagger:dagger:$dagger"
     kapt "com.google.dagger:dagger-compiler:$dagger"
 
+    implementation "com.jakewharton.timber:timber:$timber"
+
     testImplementation "junit:junit:$junit"
-    androidTestImplementation 'androidx.test:runner:1.3.0-alpha02'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
+    androidTestImplementation "androidx.test:runner:$runner"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espressoCore"
 }
