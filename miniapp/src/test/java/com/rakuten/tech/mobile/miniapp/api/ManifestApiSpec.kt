@@ -9,7 +9,6 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.UUID
 
 open class ManifestApiSpec private constructor(
     internal val mockServer: MockWebServer
@@ -46,12 +45,11 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
     fun `should fetch files information of a mini app using the 'manifest' endpoint`() {
         mockServer.enqueue(createResponse())
 
-        val miniappId = UUID.randomUUID()
-        val versionId = UUID.randomUUID()
-
         retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(miniappId, versionId)
-            .execute()
+            .fetchFileListFromManifest(
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION
+            ).execute()
 
         mockServer.takeRequest().requestUrl!!.encodedPath shouldEndWith "manifest"
     }
@@ -60,14 +58,13 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
     fun `should fetch files information of a specific mini app version`() {
         mockServer.enqueue(createResponse())
 
-        val miniappId = UUID.randomUUID()
-        val versionId = UUID.randomUUID()
-
         retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(miniappId, versionId)
-            .execute()
+            .fetchFileListFromManifest(
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION
+            ).execute()
 
-        mockServer.takeRequest().path!! shouldContain "miniapp/$miniappId/version/$versionId/"
+        mockServer.takeRequest().path!! shouldContain "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
     }
 }
 
@@ -79,11 +76,8 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
     fun setup() {
         mockServer.enqueue(createResponse())
 
-        val miniappId = UUID.randomUUID()
-        val versionId = UUID.randomUUID()
-
         manifestEntity = retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(miniappId, versionId)
+            .fetchFileListFromManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
             .execute().body()!!
     }
 

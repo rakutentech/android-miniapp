@@ -5,7 +5,6 @@ import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.util.UUID
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
@@ -34,7 +33,7 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
-    suspend fun fetchFileList(miniAppId: UUID, versionId: UUID): ManifestEntity {
+    suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId)
         return requestExecutor.executeRequest(request)
     }

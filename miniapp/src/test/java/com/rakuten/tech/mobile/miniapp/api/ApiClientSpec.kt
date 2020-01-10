@@ -16,7 +16,9 @@ import org.junit.Test
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.UUID
+
+internal const val TEST_ID_MINIAPP = "5f0ed952-36ab-43e2-a285-b237c11e23cb"
+internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812a5"
 
 open class ApiClientSpec {
 
@@ -52,12 +54,17 @@ open class ApiClientSpec {
         When calling
                 mockManifestApi
                     .fetchFileListFromManifest(any(), any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns ManifestEntity(fileList)
+        When calling
+                mockRequestExecutor
+                    .executeRequest(mockCall) itReturns ManifestEntity(fileList)
 
         val apiClient = createApiClient(manifestApi = mockManifestApi)
 
         apiClient
-            .fetchFileList(UUID.randomUUID(), UUID.randomUUID()) shouldEqual manifestEntity
+            .fetchFileList(
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION
+            ) shouldEqual manifestEntity
     }
 
     private fun createApiClient(
