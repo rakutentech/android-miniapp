@@ -4,10 +4,10 @@
     package="com.rakuten.tech.mobile.miniapp.testapp">
 
     <application
+        android:name="com.rakuten.tech.mobile.testapp.legacy.TestApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.rakuten.tech.mobile.testapp.TestApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -30,6 +30,7 @@
             android:value="${subscriptionKey}" />
 
         <activity
+            android:name="com.rakuten.tech.mobile.testapp.legacy.MainActivity"
             android:label="@string/app_name"
             android:name="com.rakuten.tech.mobile.testapp.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -41,13 +42,13 @@
         </activity>
 
         <activity
+            android:name="com.rakuten.tech.mobile.testapp.legacy.MiniAppActivity"
             android:label="Mini App"
-            android:name="com.rakuten.tech.mobile.testapp.MiniAppActivity"
-            android:parentActivityName="com.rakuten.tech.mobile.testapp.MainActivity"
+            android:parentActivityName="com.rakuten.tech.mobile.testapp.legacy.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rakuten.mobile.testapp.com.rakuten.tech.mobile.testapp.MainActivity" />
+                android:value="com.rakuten.tech.mobile.testapp.legacy.MainActivity" />
         </activity>
     </application>
 
