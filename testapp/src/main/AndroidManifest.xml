@@ -13,27 +13,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
-            android:value="${baseUrl}" />
-
-        <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
-            android:value="${hostAppVersion}" />
-
-        <meta-data
-            android:name="com.rakuten.tech.mobile.ras.AppId"
-            android:value="${appId}" />
-
-        <meta-data
-            android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
-            android:value="${subscriptionKey}" />
-
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.legacy.MainActivity"
-            android:label="@string/app_name"
-            android:name="com.rakuten.tech.mobile.testapp.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name="com.rakuten.tech.mobile.testapp.MiniAppListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,6 +21,23 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
+            android:value="${baseUrl}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
+            android:value="${hostAppVersion}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.ras.AppId"
+            android:value="${appId}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
+            android:value="${subscriptionKey}" />
+
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.legacy.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.legacy.MiniAppActivity"
             android:label="Mini App"

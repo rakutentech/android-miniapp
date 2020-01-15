@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.miniapp.Downloader
 import com.rakuten.tech.mobile.miniapp.miniapp.Lister
@@ -18,7 +19,7 @@ abstract class MiniApp internal constructor() {
      */
     abstract suspend fun listMiniApp(
         success: (List<MiniAppInfo>) -> Unit,
-        error: (Exception) -> Unit
+        error: (MiniAppHttpException) -> Unit
     )
 
     /**

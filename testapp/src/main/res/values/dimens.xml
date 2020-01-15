@@ -5,4 +5,16 @@
     <dimen name="appbar_padding">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+
+    <dimen name="small_8">8dp</dimen>
+    <dimen name="small_12">12dp</dimen>
+    <dimen name="medium_16">16dp</dimen>
+    <dimen name="large_24">24dp</dimen>
+
+    <dimen name="text_large_18">18sp</dimen>
+    <dimen name="text_large_16">16sp</dimen>
+    <dimen name="text_medium_14">14sp</dimen>
+
+    <dimen name="miniapp_icon_size">48dp</dimen>
+
 </resources>
