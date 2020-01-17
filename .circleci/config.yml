@@ -49,15 +49,16 @@ jobs:
       - store_artifacts:
           path: miniapp/build/outputs/aar
           destination: aar/
-      - store_artifacts:
-          path: sample/build/outputs/apk
-          destination: sample/
+      - persist_to_workspace:
+          root: testapp/build/outputs/apk/debug
+          paths:
+            - testapp-debug.apk
       - persist_to_workspace:
           root: ~/code
           paths:
             - miniapp/build/
 
-  publish:
+  publish-sdk:
     docker:
       - image: circleci/android:api-28
     working_directory: ~/code
@@ -66,6 +67,8 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init
+      - attach_workspace:
+          at: ./
       - run:
           name: Current Version
           command: ./gradlew cV
@@ -90,6 +93,28 @@ jobs:
               echo "Documentation not published for snapshot version"
             fi
 
+  deploy-test-app:
+    docker:
+      - image: circleci/node
+    working_directory: ~/code
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Install App Center CLI
+          command: npm init --yes && npm install appcenter-cli
+      - run:
+          name: Upload APK to App Center
+          command: >
+            npx appcenter distribute release
+            --group Testers
+            --file testapp-debug.apk
+            --app $APP_CENTER_APP_NAME
+            --release-notes $CIRCLE_BUILD_URL
+            --token $APP_CENTER_TOKEN
+            --quiet
+            --debug
+
 workflows:
   version: 2
   build-and-release:
@@ -109,7 +134,7 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - publish:
+      - publish-sdk:
           requires:
             - release-verification
           filters:
@@ -117,3 +142,9 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - deploy-test-app:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
