@@ -2,8 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.miniapp.Downloader
-import com.rakuten.tech.mobile.miniapp.miniapp.Lister
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -45,14 +43,14 @@ abstract class MiniApp internal constructor() {
         fun instance(): MiniApp = instance
 
         internal fun init(
-            downloader: Downloader,
+            miniAppDownloader: MiniAppDownloader,
             displayer: Displayer,
-            lister: Lister
+            miniAppLister: MiniAppLister
         ) {
             instance = RealMiniApp(
-                downloader = downloader,
+                miniAppDownloader = miniAppDownloader,
                 displayer = displayer,
-                lister = lister
+                miniAppLister = miniAppLister
             )
         }
     }
