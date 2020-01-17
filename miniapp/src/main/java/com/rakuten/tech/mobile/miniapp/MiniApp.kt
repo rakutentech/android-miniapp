@@ -12,13 +12,11 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 abstract class MiniApp internal constructor() {
 
     /**
-     * Provides a [List] of type [MiniAppInfo] when obtained successfully, and an
-     * [error] when fetching fails from the backend server for any reason.
+     * Provides a [List] of type [MiniAppInfo] when obtained successfully, and a
+     * [MiniAppHttpException] when fetching fails from the backend server for any reason.
      */
-    abstract suspend fun listMiniApp(
-        success: (List<MiniAppInfo>) -> Unit,
-        error: (MiniAppHttpException) -> Unit
-    )
+    @Throws(MiniAppHttpException::class)
+    abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
      * Creates a mini app for the given [appId]. The mini app is downloaded and saved.

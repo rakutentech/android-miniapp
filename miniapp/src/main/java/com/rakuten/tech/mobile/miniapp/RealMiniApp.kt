@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
 @Suppress("TodoComment", "NotImplementedDeclaration")
@@ -10,11 +9,8 @@ internal class RealMiniApp(
     val miniAppLister: MiniAppLister
 ) : MiniApp() {
 
-    override suspend fun listMiniApp(
-        success: (List<MiniAppInfo>) -> Unit,
-        error: (MiniAppHttpException) -> Unit
-    ) {
-        lister.fetchMiniAppList()
+    override suspend fun listMiniApp(): List<MiniAppInfo> {
+        return miniAppLister.fetchMiniAppList()
     }
 
     override suspend fun create(

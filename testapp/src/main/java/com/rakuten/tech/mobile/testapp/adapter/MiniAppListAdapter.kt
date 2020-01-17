@@ -36,7 +36,7 @@ class MiniAppListAdapter(var miniapps: List<MiniAppInfo>) :
 private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
 
     override fun areItemsTheSame(oldItem: MiniAppInfo, newItem: MiniAppInfo): Boolean {
-        return oldItem.appId == newItem.appId
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: MiniAppInfo, newItem: MiniAppInfo): Boolean {
@@ -49,7 +49,7 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
 
     fun bindTo(binding: ItemListMiniappBinding, miniapp: MiniAppInfo) {
         binding.miniapp = miniapp
-        setIcon(binding.root.context, miniapp.icon, binding.ivAppIcon)
+        setIcon(binding.root.context, Uri.parse(miniapp.icon), binding.ivAppIcon)
     }
 
 }

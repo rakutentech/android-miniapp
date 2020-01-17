@@ -25,11 +25,12 @@ class MiniAppListViewModel constructor(
 
     //for brevity
     suspend fun getMiniAppList() {
-        miniapp.listMiniApp({
-            _miniAppListData.postValue(it)
-        }, {
-            _errorData.postValue(it)
-        })
+        try {
+            val miniAppsList = miniapp.listMiniApp()
+            _miniAppListData.postValue(miniAppsList)
+        } catch (error: MiniAppHttpException) {
+            _errorData.postValue(error)
+        }
     }
 
 }
