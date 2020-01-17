@@ -47,7 +47,7 @@ dependencies {
 
     implementation "com.jakewharton.timber:timber:$timber"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    api "com.squareup.retrofit2:retrofit:$retrofit"
 
     kapt "com.google.dagger:dagger-compiler:$dagger"
     implementation "com.google.dagger:dagger:$dagger"
