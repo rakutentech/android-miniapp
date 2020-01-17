@@ -13,17 +13,17 @@ data class MiniAppInfo(
     val id: String,
 
     /**
-     * [name] of the mini app.
+     * Name of the mini app.
      */
     val name: String,
 
     /**
-     * [description] of the mini app.
+     * Description associated with the mini app.
      */
     val description: String,
 
     /**
-     * [icon] of the mini app, obtainable from the provided data for this resource.
+     * Icon of the mini app, obtainable from the provided data for this resource.
      */
     val icon: String,
 
