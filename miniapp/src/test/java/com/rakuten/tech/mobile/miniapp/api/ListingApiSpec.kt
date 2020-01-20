@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
@@ -86,7 +87,7 @@ class ListingApiRequestSpec : ListingApiSpec() {
 
 class ListingApiResponseSpec : ListingApiSpec() {
 
-    private lateinit var listing: ListingEntity
+    private lateinit var miniAppInfo: MiniAppInfo
 
     @Before
     fun setup() {
@@ -99,39 +100,39 @@ class ListingApiResponseSpec : ListingApiSpec() {
             files = listOf("https://www.example.com/1", "https://www.example.com/2")
         ))
 
-        listing = retrofit.create(ListingApi::class.java)
+        miniAppInfo = retrofit.create(ListingApi::class.java)
             .list(hostAppVersion = "test_version")
             .execute().body()!![0]
     }
 
     @Test
     fun `should parse the 'id' from response`() {
-        listing.id shouldEqual "test_id"
+        miniAppInfo.id shouldEqual "test_id"
     }
 
     @Test
     fun `should parse the 'version' from response`() {
-        listing.versionId shouldEqual "test_version"
+        miniAppInfo.versionId shouldEqual "test_version"
     }
 
     @Test
     fun `should parse the 'name' from response`() {
-        listing.name shouldEqual "test_name"
+        miniAppInfo.name shouldEqual "test_name"
     }
 
     @Test
     fun `should parse the 'description' from response`() {
-        listing.description shouldEqual "test_description"
+        miniAppInfo.description shouldEqual "test_description"
     }
 
     @Test
     fun `should parse the 'icon' from response`() {
-        listing.icon shouldEqual "test_icon"
+        miniAppInfo.icon shouldEqual "test_icon"
     }
 
     @Test
     fun `should parse the 'files' from response`() {
-        listing.files shouldContain "https://www.example.com/1"
-        listing.files shouldContain "https://www.example.com/2"
+        miniAppInfo.files shouldContain "https://www.example.com/1"
+        miniAppInfo.files shouldContain "https://www.example.com/2"
     }
 }

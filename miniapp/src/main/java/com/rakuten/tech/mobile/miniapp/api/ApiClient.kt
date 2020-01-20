@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
@@ -28,7 +29,7 @@ internal class ApiClient @VisibleForTesting constructor(
         hostAppVersion = hostAppVersion
     )
 
-    suspend fun list(): List<ListingEntity> {
+    suspend fun list(): List< MiniAppInfo> {
         val request = listingApi.list(hostAppVersion = hostAppVersion)
         return requestExecutor.executeRequest(request)
     }

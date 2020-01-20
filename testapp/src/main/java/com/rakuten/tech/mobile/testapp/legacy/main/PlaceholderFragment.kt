@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.main
+package com.rakuten.tech.mobile.testapp.legacy.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,11 +51,12 @@ class PlaceholderFragment : Fragment() {
          */
         @JvmStatic
         fun newInstance(sectionNumber: Int): PlaceholderFragment {
-            return PlaceholderFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_SECTION_NUMBER, sectionNumber)
+            return PlaceholderFragment()
+                .apply {
+                    arguments = Bundle().apply {
+                        putInt(ARG_SECTION_NUMBER, sectionNumber)
+                    }
                 }
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp
+package com.rakuten.tech.mobile.testapp.legacy
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.legacy.platform.MiniAppPlatformImpl
-import com.rakuten.tech.mobile.testapp.main.SectionsPagerAdapter
+import com.rakuten.tech.mobile.testapp.legacy.main.SectionsPagerAdapter
 import timber.log.Timber
 
 /**
@@ -23,7 +23,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val sectionsPagerAdapter =
-            SectionsPagerAdapter(this, supportFragmentManager)
+            SectionsPagerAdapter(
+                this,
+                supportFragmentManager
+            )
         val viewPager: ViewPager = findViewById(R.id.view_pager)
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = findViewById(R.id.tabs)

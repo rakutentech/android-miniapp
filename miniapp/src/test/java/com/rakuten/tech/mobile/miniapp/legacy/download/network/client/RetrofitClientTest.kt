@@ -23,6 +23,6 @@ class RetrofitClientTest : DownloadBaseTest() {
 
     @Test
     fun shouldSetBaseURLInRetrofit() {
-        assertThat(retrofitClient.retrofit.baseUrl().toUrl().toString()).isEqualTo(BASE_URL)
+        assertThat(retrofitClient.retrofit.baseUrl().toString()).isEqualTo(BASE_URL)
     }
 }

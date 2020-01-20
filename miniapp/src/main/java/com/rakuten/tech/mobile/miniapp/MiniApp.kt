@@ -1,8 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.miniapp.Downloader
-import com.rakuten.tech.mobile.miniapp.miniapp.Lister
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -13,13 +12,12 @@ import com.rakuten.tech.mobile.miniapp.miniapp.Lister
 abstract class MiniApp internal constructor() {
 
     /**
-     * Provides a [List] of type [MiniAppInfo] when obtained successfully, and an
-     * [error] when fetching fails from the backend server for any reason.
+     * Fetches and lists out the mini applications available in the MiniApp Ecosystem.
+     * @return [List] of type [MiniAppInfo] when obtained successfully
+     * @throws [MiniAppHttpException] when fetching fails from the BE server for any reason.
      */
-    abstract suspend fun listMiniApp(
-        success: (List<MiniAppInfo>) -> Unit,
-        error: (Exception) -> Unit
-    )
+    @Throws(MiniAppHttpException::class)
+    abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
      * Creates a mini app for the given [appId]. The mini app is downloaded and saved.
@@ -44,14 +42,14 @@ abstract class MiniApp internal constructor() {
         fun instance(): MiniApp = instance
 
         internal fun init(
-            downloader: Downloader,
+            miniAppDownloader: MiniAppDownloader,
             displayer: Displayer,
-            lister: Lister
+            miniAppLister: MiniAppLister
         ) {
             instance = RealMiniApp(
-                downloader = downloader,
+                miniAppDownloader = miniAppDownloader,
                 displayer = displayer,
-                lister = lister
+                miniAppLister = miniAppLister
             )
         }
     }

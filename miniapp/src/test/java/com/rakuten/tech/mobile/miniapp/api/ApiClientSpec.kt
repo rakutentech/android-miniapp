@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.mockwebserver.MockResponse
@@ -29,7 +30,7 @@ open class ApiClientSpec {
 
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
-        val listingEntity = ListingEntity(
+        val miniAppInfo = MiniAppInfo(
             id = "test_id",
             versionId = "test_version",
             name = "test_name",
@@ -37,13 +38,13 @@ open class ApiClientSpec {
             icon = "test_icon",
             files = listOf("https://www.example.com")
         )
-        val mockCall: Call<List<ListingEntity>> = mock()
+        val mockCall: Call<List<MiniAppInfo>> = mock()
         When calling mockListingApi.list(any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(listingEntity)
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
         val apiClient = createApiClient(listingApi = mockListingApi)
 
-        apiClient.list()[0] shouldEqual listingEntity
+        apiClient.list()[0] shouldEqual miniAppInfo
     }
 
     @Test

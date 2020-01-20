@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.main
+package com.rakuten.tech.mobile.testapp.legacy.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

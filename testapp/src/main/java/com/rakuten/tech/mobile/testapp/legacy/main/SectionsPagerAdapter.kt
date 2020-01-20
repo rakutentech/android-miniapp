@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.main
+package com.rakuten.tech.mobile.testapp.legacy.main
 
 import android.content.Context
 import androidx.fragment.app.Fragment

@@ -8,8 +8,6 @@ import com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig
 import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.miniapp.Downloader
-import com.rakuten.tech.mobile.miniapp.miniapp.Lister
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -61,9 +59,14 @@ class MiniappSdkInitializer : ContentProvider() {
         )
 
         MiniApp.init(
-            downloader = Downloader(storage, apiClient),
+            miniAppDownloader = MiniAppDownloader(
+                storage,
+                apiClient
+            ),
             displayer = Displayer(),
-            lister = Lister(apiClient)
+            miniAppLister = MiniAppLister(
+                apiClient
+            )
         )
 
         return true

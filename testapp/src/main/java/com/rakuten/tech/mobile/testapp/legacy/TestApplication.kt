@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp
+package com.rakuten.tech.mobile.testapp.legacy
 
 import android.app.Application
 import com.rakuten.tech.mobile.miniapp.legacy.platform.MiniAppPlatformImpl
