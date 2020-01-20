@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.mockwebserver.MockResponse
@@ -126,13 +127,21 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
 open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
-    @Test(expected = MiniAppHttpException::class)
+    @Test(expected = MiniAppSdkException::class)
     fun `should throw when server returns error response`() = runBlockingTest {
         mockServer.enqueue(createErrorResponse())
 
         createRequestExecutor()
             .executeRequest(createApi().fetch())
     }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when the response returned by server is not of type T`() =
+        runBlockingTest {
+            mockServer.enqueue(createInvalidTestApiResponse())
+            createRequestExecutor()
+                .executeRequest(createApi().fetch())
+        }
 
     @Test
     fun `should throw exception with the error message returned by server`() = runBlockingTest {
@@ -143,8 +152,8 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
                 .executeRequest(createApi().fetch())
 
             TestCase.fail("Should have thrown ErrorResponseException.")
-        } catch (exception: MiniAppHttpException) {
-            exception.errorMessage shouldEqual "error_message"
+        } catch (exception: MiniAppSdkException) {
+            exception.message.toString() shouldContain "error_message"
         }
     }
 
@@ -157,28 +166,29 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
                 .executeRequest(createApi().fetch())
 
             TestCase.fail("Should have thrown ErrorResponseException.")
-        } catch (exception: MiniAppHttpException) {
-            exception.message() shouldContain "error_message"
+        } catch (exception: MiniAppSdkException) {
+            exception.message.toString() shouldContain "error_message"
         }
     }
 
     @Test
-    fun `should append default message when server doesn't return error message`() = runBlockingTest {
-        mockServer.enqueue(
-            MockResponse()
-                .setResponseCode(400)
-                .setBody("{}")
-        )
+    fun `should append default message when server doesn't return error message`() =
+        runBlockingTest {
+            mockServer.enqueue(
+                MockResponse()
+                    .setResponseCode(400)
+                    .setBody("{}")
+            )
 
-        try {
-            createRequestExecutor()
-                .executeRequest(createApi().fetch())
+            try {
+                createRequestExecutor()
+                    .executeRequest(createApi().fetch())
 
-            TestCase.fail("Should have thrown ErrorResponseException.")
-        } catch (exception: MiniAppHttpException) {
-            exception.message() shouldContain "No error message"
+                TestCase.fail("Should have thrown ErrorResponseException.")
+            } catch (exception: MiniAppSdkException) {
+                exception.message.toString() shouldContain "No error message"
+            }
         }
-    }
 
     private fun createErrorResponse(
         code: Int = 400,

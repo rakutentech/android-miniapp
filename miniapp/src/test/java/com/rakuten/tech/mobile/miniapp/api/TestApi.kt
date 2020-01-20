@@ -20,3 +20,11 @@ fun createTestApiResponse(
             "testKey": "$testValue"
         }
     """.trimIndent())
+
+fun createInvalidTestApiResponse(
+    testValue: String = "test_value"
+) = MockResponse().setBody("""
+        {
+            "testKey": {"$testValue"},
+        }
+    """.trimIndent())

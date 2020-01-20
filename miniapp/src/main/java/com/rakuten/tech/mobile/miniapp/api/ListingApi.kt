@@ -11,4 +11,3 @@ internal interface ListingApi {
         @Path("hostAppVersion") hostAppVersion: String
     ): Call<List<MiniAppInfo>>
 }
-
