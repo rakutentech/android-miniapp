@@ -113,7 +113,6 @@ jobs:
             --release-notes $CIRCLE_BUILD_URL
             --token $APP_CENTER_TOKEN
             --quiet
-            --debug
 
 workflows:
   version: 2
