@@ -9,8 +9,8 @@ android {
     }
 
     defaultConfig {
-        versionCode versionCode
-        versionName versionName
+        versionCode 1
+        versionName project.version
 
         manifestPlaceholders = [
                 baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
