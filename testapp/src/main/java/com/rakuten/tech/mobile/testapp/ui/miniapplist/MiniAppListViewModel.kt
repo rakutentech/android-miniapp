@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 
 class MiniAppListViewModel constructor(
     private val miniapp: MiniApp
@@ -15,12 +15,12 @@ class MiniAppListViewModel constructor(
 
     private val _miniAppListData =
         MutableLiveData<List<MiniAppInfo>>().apply { value = emptyList() }
-    private val _errorData = MutableLiveData<MiniAppHttpException>()
+    private val _errorData = MutableLiveData<String>()
 
     val miniAppListData: LiveData<List<MiniAppInfo>>
         get() = _miniAppListData
 
-    val errorData: LiveData<MiniAppHttpException>
+    val errorData: LiveData<String>
         get() = _errorData
 
     //for brevity
@@ -28,8 +28,8 @@ class MiniAppListViewModel constructor(
         try {
             val miniAppsList = miniapp.listMiniApp()
             _miniAppListData.postValue(miniAppsList)
-        } catch (error: MiniAppHttpException) {
-            _errorData.postValue(error)
+        } catch (error: MiniAppSdkException) {
+            _errorData.postValue((error.message))
         }
     }
 

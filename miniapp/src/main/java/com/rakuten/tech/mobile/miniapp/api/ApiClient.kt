@@ -2,6 +2,8 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
@@ -29,7 +31,7 @@ internal class ApiClient @VisibleForTesting constructor(
         hostAppVersion = hostAppVersion
     )
 
-    suspend fun list(): List< MiniAppInfo> {
+    suspend fun list(): List<MiniAppInfo> {
         val request = listingApi.list(hostAppVersion = hostAppVersion)
         return requestExecutor.executeRequest(request)
     }
@@ -50,18 +52,31 @@ internal class RetrofitRequestExecutor(
     )
 
     suspend fun <T> executeRequest(call: Call<T>): T {
-        val response = call.execute()
+        try {
+            val response = call.execute()
+            if (response.isSuccessful) {
+                return response.body()!! // Body can't be null if request was successful
+            } else {
+                val error =
+                    response.errorBody()!! // Error body can't be null if request wasn't successful
+                throw sdkExceptionFromHttpException(response, error)
+            }
+        } catch (error: Exception) { // hotfix to catch the case when response is not Type T
+            throw MiniAppSdkException("Found some problem, ${error.localizedMessage}")
+        }
+    }
 
-        if (response.isSuccessful) {
-            return response.body()!! // Body can't be null if request was successful
-        } else {
-            val error = response.errorBody()!! // Error body can't be null if request wasn't successful
-            throw MiniAppHttpException(
+    private fun sdkExceptionFromHttpException(
+        response: Response<in Nothing>,
+        error: ResponseBody
+    ): MiniAppSdkException {
+        return MiniAppSdkException(
+            MiniAppHttpException(
                 response = response,
                 errorMessage = errorConvertor.convert(error)?.message
                     ?: "No error message provided by server."
-            )
-        }
+            ).errorMessage
+        )
     }
 }
 
@@ -75,7 +90,7 @@ internal data class ErrorResponse(
  * @param response Response from the server
  * @param errorMessage Error message returned by the server
  */
-class MiniAppHttpException(
+internal class MiniAppHttpException(
     response: Response<in Nothing>,
     val errorMessage: String
 ) : HttpException(response) {

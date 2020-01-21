@@ -9,9 +9,7 @@ internal class RealMiniApp(
     val miniAppLister: MiniAppLister
 ) : MiniApp() {
 
-    override suspend fun listMiniApp(): List<MiniAppInfo> {
-        return miniAppLister.fetchMiniAppList()
-    }
+    override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppLister.fetchMiniAppList()
 
     override suspend fun create(
         appId: String,

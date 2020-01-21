@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.rakuten.tech.mobile.miniapp.api.MiniAppHttpException
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
 /**
@@ -14,9 +13,9 @@ abstract class MiniApp internal constructor() {
     /**
      * Fetches and lists out the mini applications available in the MiniApp Ecosystem.
      * @return [List] of type [MiniAppInfo] when obtained successfully
-     * @throws [MiniAppHttpException] when fetching fails from the BE server for any reason.
+     * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
      */
-    @Throws(MiniAppHttpException::class)
+    @Throws(MiniAppSdkException::class)
     abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
