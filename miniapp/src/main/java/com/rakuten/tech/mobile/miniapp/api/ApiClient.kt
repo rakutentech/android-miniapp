@@ -8,13 +8,15 @@ import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.http.Url
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val hostAppVersion: String,
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
     private val listingApi: ListingApi = retrofit.create(ListingApi::class.java),
-    private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java)
+    private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
+    private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java)
 ) {
 
     constructor(
@@ -38,6 +40,11 @@ internal class ApiClient @VisibleForTesting constructor(
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId)
+        return requestExecutor.executeRequest(request)
+    }
+
+    suspend fun downloadFile(@Url url: String): ResponseBody {
+        val request = downloadApi.downloadFile(url)
         return requestExecutor.executeRequest(request)
     }
 }

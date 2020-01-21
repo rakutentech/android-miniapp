@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runBlockingTest
+import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.When
@@ -21,6 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 internal const val TEST_ID_MINIAPP = "5f0ed952-36ab-43e2-a285-b237c11e23cb"
 internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812a5"
+internal const val TEST_URL = "file.storage/test/file.abc"
 
 open class ApiClientSpec {
 
@@ -28,6 +30,7 @@ open class ApiClientSpec {
     private val mockRequestExecutor: RetrofitRequestExecutor = mock()
     private val mockListingApi: ListingApi = mock()
     private val mockManifestApi: ManifestApi = mock()
+    private val mockDownloadApi: DownloadApi = mock()
 
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
@@ -69,18 +72,37 @@ open class ApiClientSpec {
             ) shouldEqual manifestEntity
     }
 
+    @Test
+    fun `should download a file from the given url`() = runBlockingTest {
+        val mockCall: Call<ResponseBody> = mock()
+        val mockResponseBody = ResponseBody.create(null, "lorem ipsum")
+        When calling
+                mockDownloadApi
+                    .downloadFile(TEST_URL) itReturns mockCall
+        When calling
+                mockRequestExecutor
+                    .executeRequest(mockCall) itReturns mockResponseBody
+
+        val apiClient = createApiClient(downloadApi = mockDownloadApi)
+        val response = apiClient
+            .downloadFile(TEST_URL) shouldEqual mockResponseBody
+        response.contentLength() shouldEqual mockResponseBody.contentLength()
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostAppVersion: String = "test_version",
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         listingApi: ListingApi = mockListingApi,
-        manifestApi: ManifestApi = mockManifestApi
+        manifestApi: ManifestApi = mockManifestApi,
+        downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
         hostAppVersion = hostAppVersion,
         requestExecutor = requestExecutor,
         listingApi = listingApi,
-        manifestApi = manifestApi
+        manifestApi = manifestApi,
+        downloadApi = downloadApi
     )
 }
 
