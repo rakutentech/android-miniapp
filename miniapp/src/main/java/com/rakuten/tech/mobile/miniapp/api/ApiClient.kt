@@ -58,6 +58,7 @@ internal class RetrofitRequestExecutor(
         arrayOfNulls<Annotation>(0)
     )
 
+    @Suppress("TooGenericExceptionCaught")
     suspend fun <T> executeRequest(call: Call<T>): T {
         try {
             val response = call.execute()
@@ -69,7 +70,7 @@ internal class RetrofitRequestExecutor(
                 throw sdkExceptionFromHttpException(response, error)
             }
         } catch (error: Exception) { // hotfix to catch the case when response is not Type T
-            throw MiniAppSdkException("Found some problem, ${error.localizedMessage}")
+            throw MiniAppSdkException(error)
         }
     }
 

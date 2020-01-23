@@ -48,9 +48,9 @@ class MiniappSdkInitializer : ContentProvider() {
 
     override fun onCreate(): Boolean {
         val context = context ?: return false
-
         val manifestConfig = AppManifestConfig(context)
-        val storage = MiniAppStorage(FileWriter())
+        val storage = MiniAppStorage(FileWriter(), context.filesDir)
+
         val apiClient = ApiClient(
             baseUrl = manifestConfig.baseUrl(),
             rasAppId = manifestConfig.rasAppId(),
@@ -59,14 +59,9 @@ class MiniappSdkInitializer : ContentProvider() {
         )
 
         MiniApp.init(
-            miniAppDownloader = MiniAppDownloader(
-                storage,
-                apiClient
-            ),
+            miniAppDownloader = MiniAppDownloader(storage, apiClient),
             displayer = Displayer(),
-            miniAppLister = MiniAppLister(
-                apiClient
-            )
+            miniAppLister = MiniAppLister(apiClient)
         )
 
         return true

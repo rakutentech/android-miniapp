@@ -19,12 +19,13 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
-     * Creates a mini app for the given [appId]. The mini app is downloaded and saved.
-     * Provides [MiniAppView] when successful and an [error] when there is some issue
-     * during fetching, downloading or creating a view.
+     * Creates a mini app from the metadata [MiniAppInfo] object.
+     * The mini app is downloaded, saved and provides a [MiniAppView] when successful
+     * @throws MiniAppSdkException when there is some issue during fetching,
+     * downloading or creating the view.
      */
     abstract suspend fun create(
-        appId: String,
+        miniAppInfo: MiniAppInfo,
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
     )

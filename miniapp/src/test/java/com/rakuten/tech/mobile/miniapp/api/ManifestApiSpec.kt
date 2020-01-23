@@ -64,7 +64,8 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
                 versionId = TEST_ID_MINIAPP_VERSION
             ).execute()
 
-        mockServer.takeRequest().path!! shouldContain "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
+        mockServer.takeRequest().path!! shouldContain
+                "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
     }
 }
 
