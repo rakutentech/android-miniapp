@@ -3,9 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import java.lang.Exception
 
-@SuppressWarnings("UseDataClass")
 internal class MiniAppDownloader(
     val storage: MiniAppStorage,
     val apiClient: ApiClient
@@ -14,8 +12,8 @@ internal class MiniAppDownloader(
     suspend fun startDownload(appId: String, versionId: String) {
         try {
             val manifest = fetchManifest(appId, versionId)
-            downloadMiniApp(appId, versionId, manifest)
-        } catch (error : Exception) {
+            val downloadedPath = downloadMiniApp(appId, versionId, manifest)
+        } catch (error: Exception) {
             throw MiniAppSdkException(error)
         }
     }
@@ -29,13 +27,14 @@ internal class MiniAppDownloader(
         appId: String,
         versionId: String,
         manifest: ManifestEntity
-    ) {
+    ): String {
         val baseSavePath = storage.getSavePathForApp(appId, versionId)
         for (file in manifest.files) {
             val response = apiClient.downloadFile(file)
             val filePath = storage.getFilePathFromUrl(file)
             val fileName = storage.getFileName(file)
-            storage.saveFile(response, baseSavePath, filePath, fileName)
+            storage.saveFile(response.byteStream(), baseSavePath, filePath, fileName)
         }
+        return baseSavePath
     }
 }

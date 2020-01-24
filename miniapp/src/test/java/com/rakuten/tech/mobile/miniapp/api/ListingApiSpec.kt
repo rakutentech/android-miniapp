@@ -1,10 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.*
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldEndWith
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldStartWith
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -29,12 +32,12 @@ open class ListingApiSpec private constructor(
     }
 
     internal fun createResponse(
-        id: String = "test_id",
-        version: String = "test_version",
-        name: String = "test_name",
-        description: String = "test_description",
-        icon: String = "test_icon",
-        files: List<String> = listOf("https://www.example.com/1", "https://www.example.com/2")
+        id: String = TEST_MA_ID,
+        version: String = TEST_MA_VERSION,
+        name: String = TEST_MA_NAME,
+        description: String = TEST_MA_DESCRIPTION,
+        icon: String = TEST_MA_ICON,
+        files: List<String> = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
     ): MockResponse {
         val appInfo = hashMapOf(
             "id" to id,
@@ -56,7 +59,7 @@ class ListingApiRequestSpec : ListingApiSpec() {
         mockServer.enqueue(createResponse())
 
         retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = "test_version")
+            .list(hostAppVersion = TEST_MA_VERSION)
             .execute()
 
         mockServer.takeRequest().requestUrl!!.encodedPath shouldEndWith "miniapps"
@@ -67,7 +70,7 @@ class ListingApiRequestSpec : ListingApiSpec() {
         mockServer.enqueue(createResponse())
 
         retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = "test_version")
+            .list(hostAppVersion = TEST_MA_VERSION)
             .execute()
 
         mockServer.takeRequest().path!! shouldStartWith "/oneapp/android/"
@@ -78,7 +81,7 @@ class ListingApiRequestSpec : ListingApiSpec() {
         mockServer.enqueue(createResponse())
 
         retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = "test_version")
+            .list(hostAppVersion = TEST_MA_VERSION)
             .execute()
 
         mockServer.takeRequest().path!! shouldContain "android/test_version/"
@@ -91,48 +94,41 @@ class ListingApiResponseSpec : ListingApiSpec() {
 
     @Before
     fun setup() {
-        mockServer.enqueue(createResponse(
-            id = "test_id",
-            version = "test_version",
-            name = "test_name",
-            description = "test_description",
-            icon = "test_icon",
-            files = listOf("https://www.example.com/1", "https://www.example.com/2")
-        ))
+        mockServer.enqueue(createResponse())
 
         miniAppInfo = retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = "test_version")
+            .list(hostAppVersion = TEST_MA_VERSION)
             .execute().body()!![0]
     }
 
     @Test
     fun `should parse the 'id' from response`() {
-        miniAppInfo.id shouldEqual "test_id"
+        miniAppInfo.id shouldEqual TEST_MA_ID
     }
 
     @Test
     fun `should parse the 'version' from response`() {
-        miniAppInfo.versionId shouldEqual "test_version"
+        miniAppInfo.versionId shouldEqual TEST_MA_VERSION
     }
 
     @Test
     fun `should parse the 'name' from response`() {
-        miniAppInfo.name shouldEqual "test_name"
+        miniAppInfo.name shouldEqual TEST_MA_NAME
     }
 
     @Test
     fun `should parse the 'description' from response`() {
-        miniAppInfo.description shouldEqual "test_description"
+        miniAppInfo.description shouldEqual TEST_MA_DESCRIPTION
     }
 
     @Test
     fun `should parse the 'icon' from response`() {
-        miniAppInfo.icon shouldEqual "test_icon"
+        miniAppInfo.icon shouldEqual TEST_MA_ICON
     }
 
     @Test
     fun `should parse the 'files' from response`() {
-        miniAppInfo.files shouldContain "https://www.example.com/1"
-        miniAppInfo.files shouldContain "https://www.example.com/2"
+        miniAppInfo.files shouldContain TEST_URL_HTTPS_1
+        miniAppInfo.files shouldContain TEST_URL_HTTPS_2
     }
 }

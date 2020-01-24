@@ -1,8 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
-import okhttp3.ResponseBody
 import java.io.File
+import java.io.InputStream
 
 private const val SUB_DIR_MINIAPP = "miniapp"
 
@@ -14,11 +14,11 @@ internal class MiniAppStorage(
 ) {
 
     suspend fun saveFile(
-        response: ResponseBody,
+        inputStream: InputStream,
         basePath: String,
         filePath: String,
         fileName: String
-    ) = fileWriter.write(response, getAbsoluteWritePath(basePath, filePath, fileName))
+    ) = fileWriter.write(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
 
     fun getAbsoluteWritePath(
         basePath: String,

@@ -2,8 +2,7 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
 import junit.framework.TestCase
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
@@ -20,10 +19,6 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-internal const val TEST_ID_MINIAPP = "5f0ed952-36ab-43e2-a285-b237c11e23cb"
-internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812a5"
-internal const val TEST_URL = "file.storage/test/file.abc"
-
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()
@@ -35,12 +30,12 @@ open class ApiClientSpec {
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
         val miniAppInfo = MiniAppInfo(
-            id = "test_id",
-            versionId = "test_version",
-            name = "test_name",
-            description = "test_description",
-            icon = "test_icon",
-            files = listOf("https://www.example.com")
+            id = TEST_MA_ID,
+            versionId = TEST_MA_VERSION,
+            name = TEST_MA_NAME,
+            description = TEST_MA_DESCRIPTION,
+            icon = TEST_MA_ICON,
+            files = listOf(TEST_URL_HTTPS_1)
         )
         val mockCall: Call<List<MiniAppInfo>> = mock()
         When calling mockListingApi.list(any()) itReturns mockCall
@@ -53,7 +48,7 @@ open class ApiClientSpec {
 
     @Test
     fun `should fetch the file list of a mini app`() = runBlockingTest {
-        val fileList = listOf("https://www.example.com", "https://www.example1.com")
+        val fileList = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
         val manifestEntity = ManifestEntity(fileList)
         val mockCall: Call<ManifestEntity> = mock()
         When calling
@@ -75,23 +70,23 @@ open class ApiClientSpec {
     @Test
     fun `should download a file from the given url`() = runBlockingTest {
         val mockCall: Call<ResponseBody> = mock()
-        val mockResponseBody = ResponseBody.create(null, "lorem ipsum")
+        val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
         When calling
                 mockDownloadApi
-                    .downloadFile(TEST_URL) itReturns mockCall
+                    .downloadFile(TEST_URL_FILE) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns mockResponseBody
 
         val apiClient = createApiClient(downloadApi = mockDownloadApi)
         val response = apiClient
-            .downloadFile(TEST_URL) shouldEqual mockResponseBody
+            .downloadFile(TEST_URL_FILE) shouldEqual mockResponseBody
         response.contentLength() shouldEqual mockResponseBody.contentLength()
     }
 
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostAppVersion: String = "test_version",
+        hostAppVersion: String = TEST_MA_VERSION,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         listingApi: ListingApi = mockListingApi,
         manifestApi: ManifestApi = mockManifestApi,
@@ -138,12 +133,12 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
     @Test
     fun `should return the body`() = runBlockingTest {
-        mockServer.enqueue(createTestApiResponse(testValue = "test_value"))
+        mockServer.enqueue(createTestApiResponse(testValue = TEST_VALUE))
 
         val response = createRequestExecutor()
             .executeRequest(createApi().fetch())
 
-        response.testKey shouldEqual "test_value"
+        response.testKey shouldEqual TEST_VALUE
     }
 }
 
@@ -167,7 +162,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
     @Test
     fun `should throw exception with the error message returned by server`() = runBlockingTest {
-        mockServer.enqueue(createErrorResponse(message = "error_message"))
+        mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
             createRequestExecutor()
@@ -175,13 +170,13 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
-            exception.message.toString() shouldContain "error_message"
+            exception.message.toString() shouldContain TEST_ERROR_MSG
         }
     }
 
     @Test
     fun `should append error message to base exception message`() = runBlockingTest {
-        mockServer.enqueue(createErrorResponse(message = "error_message"))
+        mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
             createRequestExecutor()
@@ -189,7 +184,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
-            exception.message.toString() shouldContain "error_message"
+            exception.message.toString() shouldContain TEST_ERROR_MSG
         }
     }
 
@@ -214,7 +209,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
     private fun createErrorResponse(
         code: Int = 400,
-        message: String = "error_message"
+        message: String = TEST_ERROR_MSG
     ): MockResponse {
         val error = """
             {
