@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.TEST_BODY_CONTENT
+import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldContain
@@ -29,7 +31,7 @@ open class DownloadApiSpec private constructor(
     }
 
     internal fun createResponse(
-        fileData: ByteArray = "lorem ipsum".toByteArray(Charset.defaultCharset())
+        fileData: ByteArray = TEST_BODY_CONTENT.toByteArray(Charset.defaultCharset())
     ) = MockResponse().setBody(Gson().toJson(fileData))
 }
 
@@ -40,9 +42,9 @@ class DownloadApiRequestSpec : DownloadApiSpec() {
         mockServer.enqueue(createResponse())
 
         retrofit.create(DownloadApi::class.java)
-            .downloadFile(TEST_URL)
+            .downloadFile(TEST_URL_FILE)
             .execute()
 
-        mockServer.takeRequest().path.toString() shouldContain TEST_URL
+        mockServer.takeRequest().path.toString() shouldContain TEST_URL_FILE
     }
 }

@@ -1,9 +1,9 @@
-package com.rakuten.tech.mobile.miniapp.api
+package com.rakuten.tech.mobile.miniapp
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.MiniAppLister
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 

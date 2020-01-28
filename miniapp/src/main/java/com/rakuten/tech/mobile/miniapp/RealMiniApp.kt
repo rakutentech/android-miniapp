@@ -12,10 +12,13 @@ internal class RealMiniApp(
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppLister.fetchMiniAppList()
 
     override suspend fun create(
-        appId: String,
+        miniAppInfo: MiniAppInfo,
         success: (MiniAppView) -> Unit,
         error: (Exception) -> Unit
     ) {
-        TODO("not implemented")
+        miniAppDownloader.startDownload(
+            appId = miniAppInfo.id,
+            versionId = miniAppInfo.versionId
+        )
     }
 }

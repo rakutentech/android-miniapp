@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import com.rakuten.tech.mobile.miniapp.TEST_VALUE
 import okhttp3.mockwebserver.MockResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -14,17 +15,21 @@ data class TestResponse(
 )
 
 fun createTestApiResponse(
-    testValue: String = "test_value"
-) = MockResponse().setBody("""
+    testValue: String = TEST_VALUE
+) = MockResponse().setBody(
+    """
         {
             "testKey": "$testValue"
         }
-    """.trimIndent())
+    """.trimIndent()
+)
 
 fun createInvalidTestApiResponse(
-    testValue: String = "test_value"
-) = MockResponse().setBody("""
+    testValue: String = TEST_VALUE
+) = MockResponse().setBody(
+    """
         {
             "testKey": {"$testValue"},
         }
-    """.trimIndent())
+    """.trimIndent()
+)
