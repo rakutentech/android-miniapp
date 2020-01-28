@@ -31,9 +31,7 @@ internal class MiniAppDownloader(
         val baseSavePath = storage.getSavePathForApp(appId, versionId)
         for (file in manifest.files) {
             val response = apiClient.downloadFile(file)
-            val filePath = storage.getFilePathFromUrl(file)
-            val fileName = storage.getFileName(file)
-            storage.saveFile(response.byteStream(), baseSavePath, filePath, fileName)
+            storage.saveFile(file, baseSavePath, response.byteStream())
         }
         return baseSavePath
     }

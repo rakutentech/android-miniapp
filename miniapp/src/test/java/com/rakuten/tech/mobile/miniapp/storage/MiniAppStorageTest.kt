@@ -35,7 +35,7 @@ class MiniAppStorageTest {
     fun `for a given url file path is retured via LocalUrlParser`() {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
-        miniAppStorage.getFilePathFromUrl(TEST_URL_FILE)
+        miniAppStorage.getFilePath(TEST_URL_FILE)
         verify(localUrlParser, times(1)).getFilePath(TEST_URL_FILE)
     }
 

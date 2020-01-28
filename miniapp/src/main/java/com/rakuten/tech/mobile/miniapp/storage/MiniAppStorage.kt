@@ -14,11 +14,14 @@ internal class MiniAppStorage(
 ) {
 
     suspend fun saveFile(
-        inputStream: InputStream,
+        source: String,
         basePath: String,
-        filePath: String,
-        fileName: String
-    ) = fileWriter.write(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
+        inputStream: InputStream
+    ) {
+        val filePath = getFilePath(source)
+        val fileName = getFileName(source)
+        fileWriter.write(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
+    }
 
     fun getAbsoluteWritePath(
         basePath: String,
@@ -26,7 +29,7 @@ internal class MiniAppStorage(
         fileName: String
     ) = "$basePath$filePath$fileName"
 
-    fun getFilePathFromUrl(file: String) = localUrlParser.getFilePath(file)
+    fun getFilePath(file: String) = localUrlParser.getFilePath(file)
 
     fun getFileName(file: String) = localUrlParser.getFileName(file)
 
