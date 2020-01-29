@@ -55,11 +55,11 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MiniAppListViewModel::class.java)
         launch { viewModel.getMiniAppList() }
-        viewModel.miniAppListData.observe(this, Observer {
+        viewModel.miniAppListData.observe(viewLifecycleOwner, Observer {
             miniAppListAdapter.miniapps = it
             miniAppListAdapter.notifyDataSetChanged()
         })
-        viewModel.errorData.observe(this, Observer {
+        viewModel.errorData.observe(viewLifecycleOwner, Observer {
             Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
         })
     }

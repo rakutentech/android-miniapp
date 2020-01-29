@@ -6,7 +6,6 @@ import java.io.InputStream
 
 private const val SUB_DIR_MINIAPP = "miniapp"
 
-@SuppressWarnings("UseDataClass")
 internal class MiniAppStorage(
     val fileWriter: FileWriter,
     val basePath: File,

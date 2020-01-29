@@ -15,7 +15,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * This initializes the SDK module automatically as the Content Providers are initialized
  * at first before other initializations happen in the application's ecosystem.
  */
-@Suppress("TodoComment", "UndocumentedPublicClass")
+@Suppress("UndocumentedPublicClass")
 class MiniappSdkInitializer : ContentProvider() {
 
     @ManifestConfig

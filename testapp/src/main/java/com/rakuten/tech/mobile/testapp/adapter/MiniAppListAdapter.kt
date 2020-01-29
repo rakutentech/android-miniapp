@@ -26,7 +26,7 @@ class MiniAppListAdapter(var miniapps: List<MiniAppInfo>) :
 
     override fun onBindViewHolder(holder: MiniAppsListViewHolder, position: Int) {
         holder.itemView.tag = holder
-        holder.bindTo(holder.binding, miniapps.get(position))
+        holder.bindTo(holder.binding, miniapps[position])
     }
 
     override fun getItemCount() = miniapps.size
