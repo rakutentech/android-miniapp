@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
-@Suppress("TodoComment", "NotImplementedDeclaration")
 internal class RealMiniApp(
     val miniAppDownloader: MiniAppDownloader,
     val displayer: Displayer,
