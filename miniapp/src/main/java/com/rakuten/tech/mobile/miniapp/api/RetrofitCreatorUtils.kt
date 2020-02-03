@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
+import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
 import com.rakuten.tech.mobile.sdkutils.okhttp.addHeaderInterceptor
@@ -32,7 +33,11 @@ internal fun createRetrofitClient(
         .addHeaderInterceptor(*headers.asArray())
         .build()
     return Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(
+            GsonBuilder()
+                .setLenient()
+                .create()
+        ))
         .baseUrl(baseUrl)
         .client(httpClient)
         .build()

@@ -11,13 +11,12 @@ internal class RealMiniApp(
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppLister.fetchMiniAppList()
 
     override suspend fun create(
-        miniAppInfo: MiniAppInfo,
-        success: (MiniAppView) -> Unit,
-        error: (Exception) -> Unit
-    ) {
-        miniAppDownloader.startDownload(
+        miniAppInfo: MiniAppInfo
+    ): MiniAppView {
+        val basePath = miniAppDownloader.startDownload(
             appId = miniAppInfo.id,
             versionId = miniAppInfo.versionId
         )
+        return displayer.getViewForMiniApp(basePath)
     }
 }
