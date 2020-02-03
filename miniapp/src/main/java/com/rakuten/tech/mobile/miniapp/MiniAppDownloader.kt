@@ -9,13 +9,9 @@ internal class MiniAppDownloader(
     val apiClient: ApiClient
 ) {
 
-    suspend fun startDownload(appId: String, versionId: String) {
-        try {
-            val manifest = fetchManifest(appId, versionId)
-            val downloadedPath = downloadMiniApp(appId, versionId, manifest)
-        } catch (error: Exception) {
-            throw MiniAppSdkException(error)
-        }
+    suspend fun startDownload(appId: String, versionId: String): String {
+        val manifest = fetchManifest(appId, versionId)
+        return downloadMiniApp(appId, versionId, manifest)
     }
 
     suspend fun fetchManifest(
