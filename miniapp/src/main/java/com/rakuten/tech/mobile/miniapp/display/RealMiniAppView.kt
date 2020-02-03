@@ -23,7 +23,11 @@ internal class RealMiniAppView(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
-            settings.javaScriptEnabled = true
+//            settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+//            settings.allowFileAccessFromFileURLs = false
+//            settings.allowUniversalAccessFromFileURLs = true
+//            settings.allowContentAccess = true
             setWebViewClient(object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                     view.loadUrl(url)
@@ -31,6 +35,7 @@ internal class RealMiniAppView(
                 }
             })
 
+//            Runtime.getRuntime().exec("chmod 777 ${basePath}/index.html" )
             loadUrl("file://${basePath}index.html")
         }
     }

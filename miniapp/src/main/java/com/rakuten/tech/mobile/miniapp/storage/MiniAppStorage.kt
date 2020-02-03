@@ -19,13 +19,14 @@ internal class MiniAppStorage(
     ) {
         val filePath = getFilePath(source)
         val fileName = getFileName(source)
-        fileWriter.write(inputStream, getParentPath(basePath, filePath), fileName)
+        fileWriter.write(inputStream, "$basePath$filePath", fileName)
     }
 
-    fun getParentPath(
+    fun getAbsoluteWritePath(
         basePath: String,
-        filePath: String
-    ) = "$basePath$filePath"
+        filePath: String,
+        fileName: String
+    ) = "$basePath$filePath$fileName"
 
     fun getFilePath(file: String) = localUrlParser.getFilePath(file)
 

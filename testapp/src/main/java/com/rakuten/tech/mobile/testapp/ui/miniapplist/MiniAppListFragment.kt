@@ -14,11 +14,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class MiniAppListFragment : Fragment(), CoroutineScope {
@@ -59,16 +55,13 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
                     miniAppListAdapter.miniapps = it
                     miniAppListAdapter.notifyDataSetChanged()
-                    launch {
-                        viewModel
-                            .obtainMiniAppView(miniAppListAdapter.miniapps.first(), context!!)
-                    }
+//                    launch {miniAppListAdapter
+//                        viewModel
+//                            .obtainMiniAppView(miniAppListAdapter.miniapps.first(), context!!)
+//                    }
                 })
                 errorData.observe(viewLifecycleOwner, Observer {
                     Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-                })
-                miniAppView.observe(viewLifecycleOwner, Observer {
-                    //do something
                 })
             }
         launch { viewModel.getMiniAppList() }
