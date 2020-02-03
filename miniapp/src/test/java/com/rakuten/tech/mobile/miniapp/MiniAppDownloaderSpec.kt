@@ -34,14 +34,4 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             )
         }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `when fetching manifest fails then downloader should throw exception`() =
-        runBlockingTest {
-            val downloader = MiniAppDownloader(mock(), mock())
-            downloader.startDownload(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            )
-        }
 }

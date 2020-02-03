@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -31,7 +32,7 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private var miniapps = listOf<MiniAppInfo>()
 
-    private val job: Job = Job()
+    private val job: Job = SupervisorJob()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
@@ -53,15 +54,24 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MiniAppListViewModel::class.java)
+        viewModel = ViewModelProviders.of(this)
+            .get(MiniAppListViewModel::class.java).apply {
+                miniAppListData.observe(viewLifecycleOwner, Observer {
+                    miniAppListAdapter.miniapps = it
+                    miniAppListAdapter.notifyDataSetChanged()
+                    launch {
+                        viewModel
+                            .obtainMiniAppView(miniAppListAdapter.miniapps.first(), context!!)
+                    }
+                })
+                errorData.observe(viewLifecycleOwner, Observer {
+                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                })
+                miniAppView.observe(viewLifecycleOwner, Observer {
+                    //do something
+                })
+            }
         launch { viewModel.getMiniAppList() }
-        viewModel.miniAppListData.observe(viewLifecycleOwner, Observer {
-            miniAppListAdapter.miniapps = it
-            miniAppListAdapter.notifyDataSetChanged()
-        })
-        viewModel.errorData.observe(viewLifecycleOwner, Observer {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-        })
     }
 
     override fun onDestroy() {

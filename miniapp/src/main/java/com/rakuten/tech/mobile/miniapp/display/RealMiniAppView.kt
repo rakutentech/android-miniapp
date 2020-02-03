@@ -39,5 +39,4 @@ internal class RealMiniAppView(
             destroy()
         }
     }
-
 }
