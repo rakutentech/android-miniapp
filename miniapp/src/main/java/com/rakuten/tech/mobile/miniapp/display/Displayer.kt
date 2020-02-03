@@ -1,4 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-@SuppressWarnings("UseDataClass")
-internal class Displayer
+import com.rakuten.tech.mobile.miniapp.MiniAppView
+
+internal class Displayer {
+
+    suspend fun getViewForMiniApp(basePath: String): MiniAppView = RealMiniAppView(basePath)
+}
