@@ -7,13 +7,15 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import com.rakuten.tech.mobile.miniapp.MiniAppView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal class RealMiniAppView(
     val basePath: String
 ) : MiniAppView {
 
     @SuppressLint("SetJavaScriptEnabled")
-    override suspend fun obtainView(context: Context): WebView =
+    override suspend fun obtainView(context: Context): WebView = withContext(Dispatchers.Main) {
         WebView(context).apply {
             setLayoutParams(
                 FrameLayout.LayoutParams(
@@ -28,8 +30,10 @@ internal class RealMiniAppView(
                     return true
                 }
             })
-            loadUrl("$basePath/index.html")
+
+            loadUrl("file://${basePath}index.html")
         }
+    }
 
     override fun destroyView(webView: WebView) {
         webView.apply {
