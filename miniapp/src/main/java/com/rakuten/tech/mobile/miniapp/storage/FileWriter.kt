@@ -12,9 +12,6 @@ internal class FileWriter {
             val file = File(path)
             file.parentFile?.mkdirs()
             inputStream.use { it.copyTo(file.outputStream()) }
-            // hotfix for the save issue
-            // file.outputStream().flush()
-            // file.outputStream().close()
         }
     }
 }
