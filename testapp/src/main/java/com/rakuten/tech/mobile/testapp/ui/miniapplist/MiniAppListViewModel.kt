@@ -41,9 +41,4 @@ class MiniAppListViewModel constructor(
         }
     }
 
-    suspend fun obtainMiniAppView(miniAppInfo: MiniAppInfo, context: Context) {
-        val miniAppView: MiniAppView = miniapp.create(miniAppInfo)
-        _miniAppView.postValue(miniAppView.obtainView(context))
-    }
-
 }
