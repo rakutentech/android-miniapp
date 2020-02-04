@@ -24,7 +24,7 @@ class MiniAppDisplayActivity: BaseActivity() {
 
         val miniAppInfo = MiniAppInfo(
             id = "c028be14-4ded-4734-acc6-2d35d9a67630",
-            versionId = "1ad5f15d-3fec-4872-8507-7c0f3fd54acb",
+            versionId = "38d270c2-2ca7-4486-b5a6-c6c7701f3740",
             description = "",
             icon = "",
             files = emptyList(),
