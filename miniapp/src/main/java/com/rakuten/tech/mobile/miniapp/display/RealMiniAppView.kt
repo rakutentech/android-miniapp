@@ -25,7 +25,7 @@ internal class RealMiniAppView(
             )
             settings.javaScriptEnabled = true
             settings.allowFileAccess = true
-            settings.allowFileAccessFromFileURLs = false
+            settings.allowFileAccessFromFileURLs = true
             settings.allowUniversalAccessFromFileURLs = true
             settings.allowContentAccess = true
             setWebViewClient(object : WebViewClient() {
