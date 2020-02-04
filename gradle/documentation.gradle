@@ -7,6 +7,7 @@ dokka {
     outputDirectory = "$docsBuildDirectory"
     configuration {
         includeNonPublic = false
+        skipEmptyPackages = true
     }
 }
 
