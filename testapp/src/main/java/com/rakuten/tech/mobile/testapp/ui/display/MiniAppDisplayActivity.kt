@@ -24,15 +24,10 @@ class MiniAppDisplayActivity: BaseActivity() {
                 })
             }
 
-        val miniAppInfo = MiniAppInfo(
-            id = "c028be14-4ded-4734-acc6-2d35d9a67630",
-            versionId = "451222a7-a8f7-41c2-8394-c790788ad9d4",
-            description = "",
-            icon = "",
-            files = emptyList(),
-            name = "")
+        val appId = "c028be14-4ded-4734-acc6-2d35d9a67630"
+        val versionId = "451222a7-a8f7-41c2-8394-c790788ad9d4"
         launch {
-            viewModel.obtainMiniAppView(miniAppInfo, this@MiniAppDisplayActivity)
+            viewModel.obtainMiniAppView(appId, versionId, this@MiniAppDisplayActivity)
         }
     }
 }

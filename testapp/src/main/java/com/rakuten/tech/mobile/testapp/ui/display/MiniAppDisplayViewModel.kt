@@ -20,8 +20,8 @@ class MiniAppDwnlViewModel constructor(
     val miniAppView: LiveData<WebView>
         get() = _miniAppView
 
-    suspend fun obtainMiniAppView(miniAppInfo: MiniAppInfo, context: Context) {
-        val miniAppView: MiniAppView = miniapp.create(miniAppInfo)
+    suspend fun obtainMiniAppView(appId: String, versionId: String, context: Context) {
+        val miniAppView: MiniAppView = miniapp.create(appId, versionId)
         _miniAppView.postValue(miniAppView.obtainView(context))
     }
 }
