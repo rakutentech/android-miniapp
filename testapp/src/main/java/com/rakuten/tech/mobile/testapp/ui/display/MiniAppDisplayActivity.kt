@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.coroutines.launch
 
@@ -13,6 +14,7 @@ class MiniAppDisplayActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.mini_app_display_activity)
 
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppDwnlViewModel::class.java).apply {
@@ -24,11 +26,13 @@ class MiniAppDisplayActivity: BaseActivity() {
 
         val miniAppInfo = MiniAppInfo(
             id = "c028be14-4ded-4734-acc6-2d35d9a67630",
-            versionId = "38d270c2-2ca7-4486-b5a6-c6c7701f3740",
+            versionId = "451222a7-a8f7-41c2-8394-c790788ad9d4",
             description = "",
             icon = "",
             files = emptyList(),
             name = "")
-        launch { viewModel.obtainMiniAppView(miniAppInfo, this@MiniAppDisplayActivity) }
+        launch {
+            viewModel.obtainMiniAppView(miniAppInfo, this@MiniAppDisplayActivity)
+        }
     }
 }
