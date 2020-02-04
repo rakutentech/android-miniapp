@@ -87,6 +87,13 @@ jacoco {
 }
 
 apply from: '../gradle/documentation.gradle'
+dokka {
+    configuration {
+        sourceRoot {
+            path = "miniapp/src/main"
+        }
+    }
+}
 
 apply from: '../config/publish/android.gradle'
 publishing {
