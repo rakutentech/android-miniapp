@@ -87,6 +87,18 @@ jacoco {
 }
 
 apply from: '../gradle/documentation.gradle'
+dokka {
+    configuration {
+        sourceRoot {
+            path = "miniapp/src/main"
+        }
+
+        perPackageOption {
+            prefix = "com.rakuten.tech.mobile.miniapp.legacy"
+            suppress = true
+        }
+    }
+}
 
 apply from: '../config/publish/android.gradle'
 publishing {
