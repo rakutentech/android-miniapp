@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.webkit.WebView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -19,6 +21,8 @@ class MiniAppDisplayActivity: BaseActivity() {
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppDwnlViewModel::class.java).apply {
                 miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+                    if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+                        WebView.setWebContentsDebuggingEnabled(true)
                     //action: display webview
                     setContentView(it)
                 })
