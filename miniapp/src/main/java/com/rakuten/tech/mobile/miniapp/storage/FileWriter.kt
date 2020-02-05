@@ -7,16 +7,11 @@ import java.io.InputStream
 
 internal class FileWriter {
 
-    suspend fun write(
-        inputStream: InputStream,
-        parentPath: String,
-        fileName: String
-    ) {
+    suspend fun write(inputStream: InputStream, path: String) {
         withContext(Dispatchers.IO) {
-            File(parentPath).mkdirs()
-            val file = File(parentPath, fileName)
+            val file = File(path)
+            file.parentFile?.mkdirs()
             inputStream.use { it.copyTo(file.outputStream()) }
-            file.outputStream().close()
         }
     }
 }

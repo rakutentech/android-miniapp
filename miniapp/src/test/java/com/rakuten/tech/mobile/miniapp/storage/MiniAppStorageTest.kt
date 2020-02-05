@@ -27,8 +27,8 @@ class MiniAppStorageTest {
     @Test
     fun `for a given set of base path & file path, formed parent path is retured`() {
         val miniAppStorage = getMockedMiniAppStorage()
-        assertThat(miniAppStorage.getParentPath("a", "b"))
-            .isEqualTo("ab")
+        assertThat(miniAppStorage.getAbsoluteWritePath("a", "b", "c"))
+            .isEqualTo("abc")
     }
 
     @Test
