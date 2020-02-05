@@ -92,6 +92,11 @@ dokka {
         sourceRoot {
             path = "miniapp/src/main"
         }
+
+        perPackageOption {
+            prefix = "com.rakuten.tech.mobile.miniapp.legacy"
+            suppress = true
+        }
     }
 }
 
