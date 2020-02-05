@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -28,25 +29,28 @@ class MiniAppDisplayActivity: BaseActivity() {
         }
     }
 
-    private lateinit var viewModel: MiniAppDwnlViewModel
+    private lateinit var viewModel: MiniAppDisplayViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (intent.hasExtra(appIdTag) && intent.hasExtra(appVersionTag)) {
-            //default is Lookbook app for testing
             appId = intent.getStringExtra(appIdTag) ?: ""
             versionId = intent.getStringExtra(appVersionTag) ?: ""
 
             setContentView(R.layout.mini_app_display_activity)
 
             viewModel = ViewModelProviders.of(this)
-                .get(MiniAppDwnlViewModel::class.java).apply {
+                .get(MiniAppDisplayViewModel::class.java).apply {
 
                     miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
                         //action: display webview
                         setContentView(it)
+                    })
+
+                    errorData.observe(this@MiniAppDisplayActivity, Observer {
+                        Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
                     })
                 }
 
