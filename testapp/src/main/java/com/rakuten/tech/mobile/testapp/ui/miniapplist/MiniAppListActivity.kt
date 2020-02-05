@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp
+package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

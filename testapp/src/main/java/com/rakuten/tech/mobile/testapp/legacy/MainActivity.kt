@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val APP_ID = "b9247b09-c534-48c5-bcc5-0644907d22f8"
-        const val VERSION_ID = "9761a1dc-a1cb-4730-92ac-e9aa09a87531"
+        const val APP_ID = "d005410f-4055-4d95-a0c9-899a60c5936a"
+        const val VERSION_ID = "a4e9e618-bda6-4d46-bd62-503ff5e32864"
     }
 }

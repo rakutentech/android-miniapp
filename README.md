@@ -4,7 +4,7 @@
 # MiniApp SDK for Android
 
 Provides a set of tools and capabilities to show mini app in Android Applications. The SDK offers features like fetching, caching and displaying of mini app. 
-For instructions on implementing in an android application, the User Guide will be made available soon.
+For instructions on implementing in an android application, see the [User Guide](miniapp/USERGUIDE.md).
 
 ## How to build
 
