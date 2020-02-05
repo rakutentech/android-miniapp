@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,7 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class MiniAppListFragment : Fragment(), CoroutineScope {
+class MiniAppListFragment : BaseFragment() {
 
     companion object {
         fun newInstance() = MiniAppListFragment()
@@ -31,10 +32,6 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private var miniapps = listOf<MiniAppInfo>()
-
-    private val job: Job = SupervisorJob()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,10 +65,5 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
                 })
             }
         launch { viewModel.getMiniAppList() }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
     }
 }

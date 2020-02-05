@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.webkit.WebView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.coroutines.launch
@@ -35,8 +34,8 @@ class MiniAppDisplayActivity: BaseActivity() {
         super.onCreate(savedInstanceState)
         if (intent.hasExtra(appIdTag) && intent.hasExtra(appVersionTag)) {
             //default is Lookbook app for testing
-            appId = intent.getStringExtra(appIdTag) ?: "c028be14-4ded-4734-acc6-2d35d9a67630"
-            versionId = intent.getStringExtra(appVersionTag) ?: "451222a7-a8f7-41c2-8394-c790788ad9d4"
+            appId = intent.getStringExtra(appIdTag) ?: ""
+            versionId = intent.getStringExtra(appVersionTag) ?: ""
 
             setContentView(R.layout.mini_app_display_activity)
 
