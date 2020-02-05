@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,16 +12,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
+import com.rakuten.tech.mobile.testapp.adapter.IMiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-class MiniAppListFragment : BaseFragment() {
+class MiniAppListFragment : BaseFragment(), IMiniAppList {
 
     companion object {
         fun newInstance() = MiniAppListFragment()
@@ -44,7 +40,7 @@ class MiniAppListFragment : BaseFragment() {
             false
         )
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
-        miniAppListAdapter = MiniAppListAdapter(miniapps)
+        miniAppListAdapter = MiniAppListAdapter(miniapps, this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
         return binding.root
     }
@@ -65,5 +61,9 @@ class MiniAppListFragment : BaseFragment() {
                 })
             }
         launch { viewModel.getMiniAppList() }
+    }
+
+    override fun onMiniAppItemClick(appId: String, versionId: String) {
+        MiniAppDisplayActivity.start(context!!, appId, versionId)
     }
 }

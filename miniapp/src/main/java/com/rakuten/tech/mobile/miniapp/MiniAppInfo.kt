@@ -25,6 +25,6 @@ data class MiniAppInfo(
      */
     val icon: String,
 
-    internal val versionId: String,
+    val versionId: String,
     internal val files: List<String>
 )

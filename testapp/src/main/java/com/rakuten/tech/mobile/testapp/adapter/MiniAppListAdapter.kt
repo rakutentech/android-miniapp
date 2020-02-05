@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 
 
-class MiniAppListAdapter(var miniapps: List<MiniAppInfo>) :
+class MiniAppListAdapter(var miniapps: List<MiniAppInfo>, val iMiniAppList: IMiniAppList) :
     ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MiniAppsListViewHolder {
@@ -26,7 +26,7 @@ class MiniAppListAdapter(var miniapps: List<MiniAppInfo>) :
 
     override fun onBindViewHolder(holder: MiniAppsListViewHolder, position: Int) {
         holder.itemView.tag = holder
-        holder.bindTo(holder.binding, miniapps[position])
+        holder.bindTo(holder.binding, miniapps[position], iMiniAppList)
     }
 
     override fun getItemCount() = miniapps.size
@@ -44,12 +44,20 @@ private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
     }
 }
 
+interface IMiniAppList {
+    fun onMiniAppItemClick(appId: String, versionId: String)
+}
+
 class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bindTo(binding: ItemListMiniappBinding, miniapp: MiniAppInfo) {
+    fun bindTo(binding: ItemListMiniappBinding, miniapp: MiniAppInfo, iMiniAppList: IMiniAppList) {
         binding.miniapp = miniapp
         setIcon(binding.root.context, Uri.parse(miniapp.icon), binding.ivAppIcon)
+
+        binding.itemRoot.setOnClickListener {
+            iMiniAppList.onMiniAppItemClick(miniapp.id, miniapp.versionId)
+        }
     }
 
 }

@@ -15,7 +15,7 @@ class MiniAppListViewModel constructor(
     constructor() : this(MiniApp.instance())
 
     private val _miniAppListData =
-        MutableLiveData<List<MiniAppInfo>>().apply { value = emptyList() }
+        MutableLiveData<List<MiniAppInfo>>()
     private val _errorData = MutableLiveData<String>()
 
     private val _miniAppView = MutableLiveData<WebView>()
