@@ -21,7 +21,7 @@ class MiniAppStorageTest {
                 TEST_ID_MINIAPP_VERSION
             )
         )
-            .isEqualTo("null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION/")
+            .isEqualTo("null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION")
     }
 
     @Test
