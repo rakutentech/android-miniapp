@@ -25,7 +25,8 @@ abstract class MiniApp internal constructor() {
      * downloading or creating the view.
      */
     abstract suspend fun create(
-        miniAppInfo: MiniAppInfo
+        appId: String,
+        versionId: String
     ): MiniAppView
 
     companion object {
