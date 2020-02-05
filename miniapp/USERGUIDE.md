@@ -77,7 +77,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
         val context = this
         launch {
             val miniApp = withContext(Dispatchers.Default) {
-                MiniApp.instance().create("mini_app_id")
+                MiniApp.instance().create("mini_app_id", "mini_app_version_id")
             }
             val miniAppView = miniApp.obtainView(context)
 

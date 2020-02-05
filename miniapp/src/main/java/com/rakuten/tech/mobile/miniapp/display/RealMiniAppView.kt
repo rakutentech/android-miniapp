@@ -31,9 +31,11 @@ internal class RealMiniAppView(
                 }
             })
 
-            loadUrl("file://${basePath}index.html")
+            loadUrl(getLoadUrl())
         }
     }
+
+    private fun getLoadUrl() = "file://$basePath/index.html"
 
     override fun destroyView(webView: WebView) {
         webView.apply {
