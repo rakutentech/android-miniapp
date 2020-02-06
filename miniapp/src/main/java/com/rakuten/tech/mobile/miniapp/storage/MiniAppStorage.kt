@@ -26,12 +26,12 @@ internal class MiniAppStorage(
         basePath: String,
         filePath: String,
         fileName: String
-    ) = "${basePath.removeSuffix("/")}$filePath$fileName"
+    ) = "$basePath$filePath$fileName"
 
     fun getFilePath(file: String) = localUrlParser.getFilePath(file)
 
     fun getFileName(file: String) = localUrlParser.getFileName(file)
 
     fun getSavePathForApp(appId: String, versionId: String) =
-        "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId/"
+        "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId"
 }

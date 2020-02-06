@@ -13,7 +13,7 @@ interface MiniAppView {
      * The caller must provide a valid [Context] object (used to access application assets).
      * @return [WebView] as mini app's view.
      */
-    suspend fun obtainView(activityContext: Context): WebView
+    suspend fun obtainView(context: Context): WebView
 
     /**
      * Destroys the WebView associated to the mini app.
