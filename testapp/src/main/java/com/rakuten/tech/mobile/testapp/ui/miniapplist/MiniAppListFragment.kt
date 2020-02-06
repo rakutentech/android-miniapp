@@ -12,13 +12,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.adapter.IMiniAppList
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import kotlinx.coroutines.launch
 
-class MiniAppListFragment : BaseFragment(), IMiniAppList {
+class MiniAppListFragment : BaseFragment(), MiniAppList {
 
     companion object {
         fun newInstance() = MiniAppListFragment()
