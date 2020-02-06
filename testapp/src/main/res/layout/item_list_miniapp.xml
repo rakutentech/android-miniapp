@@ -35,8 +35,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginStart="@dimen/small_8"
-            android:clickable="true"
-            android:focusable="true"
             android:paddingStart="@dimen/small_8"
             android:paddingTop="@dimen/small_8"
             android:paddingEnd="@dimen/small_8"

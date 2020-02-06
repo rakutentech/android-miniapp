@@ -24,6 +24,10 @@ internal class RealMiniAppView(
                 )
             )
             settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.allowFileAccessFromFileURLs = true
+            settings.allowUniversalAccessFromFileURLs = true
+            settings.allowContentAccess = true
             setWebViewClient(object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                     view.loadUrl(url)
