@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,15 +12,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
+import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-class MiniAppListFragment : Fragment(), CoroutineScope {
+class MiniAppListFragment : BaseFragment(), MiniAppList {
 
     companion object {
         fun newInstance() = MiniAppListFragment()
@@ -31,10 +28,6 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private var miniapps = listOf<MiniAppInfo>()
-
-    private val job: Job = SupervisorJob()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +40,7 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
             false
         )
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
-        miniAppListAdapter = MiniAppListAdapter(miniapps)
+        miniAppListAdapter = MiniAppListAdapter(miniapps, this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
         return binding.root
     }
@@ -70,8 +63,7 @@ class MiniAppListFragment : Fragment(), CoroutineScope {
         launch { viewModel.getMiniAppList() }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
+    override fun onMiniAppItemClick(appId: String, versionId: String) {
+        MiniAppDisplayActivity.start(context!!, appId, versionId)
     }
 }
