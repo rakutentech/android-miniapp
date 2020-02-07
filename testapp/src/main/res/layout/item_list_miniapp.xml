@@ -54,7 +54,7 @@
                 tools:text="Name of the Mini App" />
 
             <TextView
-                android:id="@+id/tv_description"
+                android:id="@+id/tv_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_8"
