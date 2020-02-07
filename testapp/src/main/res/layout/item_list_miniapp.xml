@@ -13,8 +13,8 @@
         android:id="@+id/item_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:paddingTop="@dimen/small_8"
+        android:paddingBottom="@dimen/small_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent">
@@ -23,9 +23,9 @@
             android:id="@+id/iv_app_icon"
             android:layout_width="@dimen/miniapp_icon_size"
             android:layout_height="@dimen/miniapp_icon_size"
+            android:layout_marginTop="@dimen/small_8"
             android:layout_marginStart="@dimen/small_8"
             android:src="@drawable/ic_default"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,6 @@
             android:paddingTop="@dimen/small_8"
             android:paddingEnd="@dimen/small_8"
             android:paddingBottom="@dimen/small_8"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_app_icon"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -69,6 +68,21 @@
                 tools:text="Description of the Mini App" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_version_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:alpha="0.6"
+            android:gravity="start"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_medium_14"
+            android:text="@{miniapp.versionId}"
+            app:layout_constraintStart_toStartOf="@id/iv_app_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_root"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Version ID: version id of mini app" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

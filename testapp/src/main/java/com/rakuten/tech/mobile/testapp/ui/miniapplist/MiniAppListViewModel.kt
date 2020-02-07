@@ -15,7 +15,7 @@ class MiniAppListViewModel constructor(
     constructor() : this(MiniApp.instance())
 
     private val _miniAppListData =
-        MutableLiveData<List<MiniAppInfo>>().apply { value = emptyList() }
+        MutableLiveData<List<MiniAppInfo>>().apply { value = getDummyMiniAppList() }
 
     private val _errorData = MutableLiveData<String>()
 
@@ -39,5 +39,32 @@ class MiniAppListViewModel constructor(
             _errorData.postValue((error.message))
         }
     }
+
+    fun getDummyMiniAppList() = listOf(
+        MiniAppInfo(
+            id = "c67f32b6-987d-405d-978f-6d8118b336ea",
+            name = "Lookbook",
+            description = "Description goes here",
+            icon = "",
+            versionId = "4b567725-7f3a-4374-b633-af764c7a1d2b",
+            files = mutableListOf()
+        ),
+        MiniAppInfo(
+            id = "287832fe-e802-43c8-a641-933670024953",
+            name = "Panda Park",
+            description = "Description goes here",
+            icon = "",
+            versionId = "51c70666-bbdc-4ce2-9924-aac3c48b0987",
+            files = mutableListOf()
+        ),
+        MiniAppInfo(
+            id = "0d207c56-6cbf-44ba-b550-64266869b83f",
+            name = "Mixed Juice",
+            description = "Description goes here",
+            icon = "",
+            versionId = "0d207c56-6cbf-44ba-b550-64266869b83f",
+            files = mutableListOf()
+        )
+    )
 
 }
