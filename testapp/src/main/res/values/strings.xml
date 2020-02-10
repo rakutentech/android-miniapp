@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Mini App Sample</string>
     <string name="lb_version_id">Version ID</string>
+    <string name="lb_description">Description</string>
 </resources>
