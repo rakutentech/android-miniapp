@@ -15,8 +15,11 @@
         android:id="@+id/item_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
+        android:paddingStart="@dimen/small_8"
+        android:paddingEnd="@dimen/small_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent">
@@ -33,7 +36,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/text_root"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginStart="@dimen/small_8"
@@ -43,22 +46,24 @@
             android:paddingBottom="@dimen/small_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_app_icon"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tv_app_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
                 android:text="@{miniapp.name}"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Name of the Mini App" />
 
             <TextView
                 android:id="@+id/tv_description"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_8"
                 android:alpha="0.6"
@@ -68,21 +73,23 @@
                 android:visibility="@{TextUtils.isEmpty(miniapp.description) ? View.GONE : View.VISIBLE}"
                 android:text="@{miniapp.description}"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_app_name"
                 tools:text="Description of the Mini App" />
 
             <TextView
                 android:id="@+id/tv_version"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_8"
                 android:alpha="0.6"
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:text="@{`Version: ` + miniapp.versionId}"
+                android:text="@{`Version ID: ` + miniapp.versionId}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_description"
+                app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Version ID" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
