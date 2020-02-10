@@ -2,6 +2,8 @@
 <layout>
 
     <data>
+        <import type="android.view.View"/>
+        <import type="android.text.TextUtils"/>
         <variable
             name="miniapp"
             type="com.rakuten.tech.mobile.miniapp.MiniAppInfo" />
@@ -55,6 +57,21 @@
                 tools:text="Name of the Mini App" />
 
             <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_8"
+                android:alpha="0.6"
+                android:gravity="start"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_medium_14"
+                android:visibility="@{TextUtils.isEmpty(miniapp.description) ? View.GONE : View.VISIBLE}"
+                android:text="@{miniapp.description}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_app_name"
+                tools:text="Description of the Mini App" />
+
+            <TextView
                 android:id="@+id/tv_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,10 +80,10 @@
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:text="@{miniapp.versionId}"
+                android:text="@{`Version: ` + miniapp.versionId}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_app_name"
-                tools:text="Description of the Mini App" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_description"
+                tools:text="Version ID" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
