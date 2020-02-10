@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 
 
@@ -55,6 +56,8 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
         binding.miniapp = miniapp
         setIcon(binding.root.context, Uri.parse(miniapp.icon), binding.ivAppIcon)
 
+        binding.tvVersion.isSelected = true
+
         binding.itemRoot.setOnClickListener {
             miniAppList.onMiniAppItemClick(miniapp.id, miniapp.versionId)
         }
@@ -65,5 +68,6 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
 fun setIcon(context: Context, uri: Uri, view: ImageView) {
     Glide.with(context)
         .load(uri).apply(RequestOptions().circleCrop())
+        .error(R.drawable.ic_default)
         .into(view)
 }
