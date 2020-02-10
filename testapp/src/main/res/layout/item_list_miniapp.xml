@@ -2,7 +2,6 @@
 <layout>
 
     <data>
-        <import type="android.view.View"/>
         <import type="android.text.TextUtils"/>
         <variable
             name="miniapp"
@@ -56,6 +55,8 @@
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
                 android:text="@{miniapp.name}"
+                android:singleLine="true"
+                android:ellipsize="end"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -70,15 +71,16 @@
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:visibility="@{TextUtils.isEmpty(miniapp.description) ? View.GONE : View.VISIBLE}"
-                android:text="@{miniapp.description}"
+                android:text="@{`Description: ` + (TextUtils.isEmpty(miniapp.description) ? `--` : miniapp.description)}"
+                android:singleLine="true"
+                android:ellipsize="end"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_app_name"
                 tools:text="Description of the Mini App" />
 
             <TextView
-                android:id="@+id/tv_version"
+                android:id="@+id/tv_lb_version"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_8"
@@ -86,11 +88,27 @@
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:text="@{`Version ID: ` + miniapp.versionId}"
+                android:text="@{@string/lb_version_id + `: `}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_description"
+                tools:text="Version ID: " />
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_8"
+                android:alpha="0.6"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_medium_14"
+                android:text="@{miniapp.versionId}"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                app:layout_constraintStart_toEndOf="@id/tv_lb_version"
+                app:layout_constraintTop_toBottomOf="@+id/tv_description"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Version ID" />
+                tools:text="value goes here" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

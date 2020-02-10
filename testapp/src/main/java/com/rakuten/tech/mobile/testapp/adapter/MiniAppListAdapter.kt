@@ -56,6 +56,8 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
         binding.miniapp = miniapp
         setIcon(binding.root.context, Uri.parse(miniapp.icon), binding.ivAppIcon)
 
+        binding.tvVersion.isSelected = true
+
         binding.itemRoot.setOnClickListener {
             miniAppList.onMiniAppItemClick(miniapp.id, miniapp.versionId)
         }
