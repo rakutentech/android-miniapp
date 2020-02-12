@@ -22,6 +22,14 @@
 
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.base.BaseActivity"/>
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"/>
+        <activity android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
+            android:label="Input MiniApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
