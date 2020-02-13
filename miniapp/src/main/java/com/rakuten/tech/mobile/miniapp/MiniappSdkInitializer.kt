@@ -61,7 +61,7 @@ class MiniappSdkInitializer : ContentProvider() {
         )
 
         MiniApp.init(
-            miniAppDownloader = MiniAppDownloader(storage, apiClient),
+            miniAppDownloader = MiniAppDownloader(context, storage, apiClient),
             displayer = Displayer(),
             miniAppLister = MiniAppLister(apiClient)
         )
