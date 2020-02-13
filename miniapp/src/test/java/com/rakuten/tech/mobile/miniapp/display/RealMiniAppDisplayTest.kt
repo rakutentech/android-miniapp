@@ -28,7 +28,6 @@ class RealMiniAppDisplayTest {
         runBlockingTest {
             val display = Displayer(context).createMiniAppDisplay(basePath = TEST_BASE_PATH)
             val miniAppView = display.getMiniAppView()
-            miniAppView shouldNotHaveTheSameClassAs WebView(context)
             if (miniAppView is WebView) {
                 miniAppView.url shouldContain TEST_BASE_PATH
             }
