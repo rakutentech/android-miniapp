@@ -13,14 +13,14 @@ internal class RealMiniApp(
     override suspend fun create(
         appId: String,
         versionId: String
-    ): MiniAppView = when {
+    ): MiniAppDisplay = when {
         appId.isBlank() || versionId.isBlank() -> throw MiniAppSdkException("Invalid arguments")
         else -> {
             val basePath = miniAppDownloader.startDownload(
                 appId = appId,
                 versionId = versionId
             )
-            displayer.getViewForMiniApp(basePath)
+            displayer.createMiniAppDisplay(basePath)
         }
     }
 }
