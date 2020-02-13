@@ -8,6 +8,7 @@
     <application>
         <provider
             android:name="com.rakuten.tech.mobile.miniapp.MiniappSdkInitializer"
+            android:usesCleartextTraffic="false"
             android:authorities="${applicationId}.MiniappSdkInitializer"
             android:exported="false"
             android:initOrder="99" />
