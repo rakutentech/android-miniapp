@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import kotlinx.android.synthetic.main.mini_app_display_activity.*
 import kotlinx.coroutines.launch
 
 class MiniAppDisplayActivity: BaseActivity() {
@@ -52,10 +54,23 @@ class MiniAppDisplayActivity: BaseActivity() {
                     errorData.observe(this@MiniAppDisplayActivity, Observer {
                         Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
                     })
+
+                    isLoading.observe(this@MiniAppDisplayActivity, Observer {
+                        toggleProgressLoading(it)
+                    })
                 }
 
             launch {
                 viewModel.obtainMiniAppView(appId, versionId, this@MiniAppDisplayActivity)
+            }
+        }
+    }
+
+    private fun toggleProgressLoading(isOn: Boolean) {
+        if (findViewById<View>(R.id.pb) != null) {
+            when (isOn) {
+                true -> pb.visibility = View.VISIBLE
+                false -> pb.visibility = View.GONE
             }
         }
     }
