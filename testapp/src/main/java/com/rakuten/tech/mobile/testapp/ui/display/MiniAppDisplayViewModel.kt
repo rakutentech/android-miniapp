@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
-import android.content.Context
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +24,7 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppView(appId: String, versionId: String, context: Context) {
+    suspend fun obtainMiniAppView(appId: String, versionId: String) {
         try {
             _isLoading.postValue(true)
             val miniAppDisplay= miniapp.create(appId, versionId)

@@ -61,7 +61,7 @@ class MiniAppDisplayActivity: BaseActivity() {
                 }
 
             launch {
-                viewModel.obtainMiniAppView(appId, versionId, this@MiniAppDisplayActivity)
+                viewModel.obtainMiniAppView(appId, versionId)
             }
         }
     }
