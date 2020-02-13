@@ -15,12 +15,10 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
     WebView(context) {
 
     init {
-        setLayoutParams(
-            FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
+        layoutParams = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
+
         settings.javaScriptEnabled = true
         settings.allowUniversalAccessFromFileURLs = true
         webViewClient = MiniAppWebViewClient()
@@ -37,6 +35,7 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
     override fun getMiniAppView(): View = this
 }
 
+@VisibleForTesting
 internal class MiniAppWebViewClient : WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
         view.loadUrl(url)

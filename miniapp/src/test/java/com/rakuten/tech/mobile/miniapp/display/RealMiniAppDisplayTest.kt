@@ -24,34 +24,30 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `for a given basePath, obtainView returns corresponding view to the caller`() =
+    fun `for a given basePath RealMiniAppDisplay creates corresponding view for the caller`() =
         runBlockingTest {
-            val display = Displayer(context).createMiniAppDisplay(basePath = TEST_BASE_PATH)
-            val miniAppView = display.getMiniAppView()
-            if (miniAppView is WebView) {
-                miniAppView.url shouldContain TEST_BASE_PATH
-            }
+            val realDisplay = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+            realDisplay.url shouldContain TEST_BASE_PATH
         }
 
     @Test
-    fun `for a given basePath, obtainView should not return WebView to the caller`() =
+    fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
         runBlockingTest {
-            val display = Displayer(context).createMiniAppDisplay(basePath = TEST_BASE_PATH)
-            val miniAppView = display.getMiniAppView()
-            miniAppView shouldNotHaveTheSameClassAs WebView::class
+            val realDisplay = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+            realDisplay.getMiniAppView() shouldNotHaveTheSameClassAs WebView::class
         }
 
     @Test
     fun `when getLoadUrl is called then a formed path is returned from basePath for loading`() {
-        val miniAppWindow = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
-        miniAppWindow.getLoadUrl() shouldBeEqualTo "file://dummy/index.html"
+        val realDisplay = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+        realDisplay.getLoadUrl() shouldBeEqualTo "file://dummy/index.html"
     }
 
     @Test
     fun `when MiniAppDisplay is created then LayoutParams use MATCH_PARENT for dimensions`() {
-        val miniAppWindow = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
-        miniAppWindow.layoutParams.width shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
-        miniAppWindow.layoutParams.height shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
+        val realDisplay = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+        realDisplay.layoutParams.width shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
+        realDisplay.layoutParams.height shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
     }
 
     @Test
@@ -62,8 +58,8 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `when MiniAppDisplay is created then then WebViewClient is set to MiniAppWebViewClient`() {
-        val miniAppWindow = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
-        (miniAppWindow as WebView).webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
+    fun `when MiniAppDisplay is created then WebViewClient is set to MiniAppWebViewClient`() {
+        val realDisplay = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+        (realDisplay as WebView).webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
     }
 }
