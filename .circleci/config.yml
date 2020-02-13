@@ -25,9 +25,6 @@ jobs:
       - restore_cache:
           ## Robolectric uses maven to download sources, so we must use a different cache for maven
           key: *maven_cache_key
-      - run:
-          name: Run Tests
-          command: ./gradlew check
       - save_cache:
           paths:
             - ~/.m2

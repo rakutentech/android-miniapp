@@ -19,7 +19,7 @@ class MiniAppDownloaderSpec {
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val storage: MiniAppStorage = mock()
-            val downloader = MiniAppDownloader(storage, apiClient)
+            val downloader = MiniAppDownloader(mock(), storage, apiClient)
             When calling downloader.fetchManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
