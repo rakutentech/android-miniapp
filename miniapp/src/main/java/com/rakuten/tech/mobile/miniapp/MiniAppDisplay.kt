@@ -11,9 +11,8 @@ interface MiniAppDisplay { // This contract keeps the display of a mini app impl
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
-     * The caller needs to provide a valid [Context] object (used to access application assets).
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
      */
-    suspend fun obtainView(context: Context): View
+    fun getMiniAppView(): View
 }
