@@ -30,7 +30,7 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
     }
 
     @VisibleForTesting
-    fun getLoadUrl() = "file://$basePath/index.html"
+    internal fun getLoadUrl() = "file://$basePath/index.html"
 
     override fun getMiniAppView(): View = this
 }

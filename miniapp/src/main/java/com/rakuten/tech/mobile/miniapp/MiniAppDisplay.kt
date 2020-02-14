@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.content.Context
 import android.view.View
 
 /**

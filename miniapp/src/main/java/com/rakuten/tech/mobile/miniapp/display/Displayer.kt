@@ -9,6 +9,8 @@ internal class Displayer(val context: Context) {
 
     suspend fun createMiniAppDisplay(basePath: String): MiniAppDisplay =
         withContext(Dispatchers.Main) {
-            RealMiniAppDisplay(context, basePath)
+            context?.let {
+                RealMiniAppDisplay(context, basePath)
+            }
         }
 }
