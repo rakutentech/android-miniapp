@@ -5,17 +5,23 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
 internal class MiniAppDownloader(
     val storage: MiniAppStorage,
     val apiClient: ApiClient
 ) {
 
-    suspend fun getMiniApp(appId: String, versionId: String): String =
-        if (MiniAppSharedPreferences.isAppExisted(appId, versionId))
-            storage.getSavePathForApp(appId, versionId)
-        else
-            startDownload(appId, versionId)
+    suspend fun getMiniApp(appId: String, versionId: String): String {
+        if (MiniAppSharedPreferences.isAppExisted(appId, versionId)) {
+            val baseSavePath = storage.getSavePathForApp(appId, versionId)
+            if (File(baseSavePath).exists())
+                return baseSavePath
+        }
+        return startDownload(appId, versionId)
+    }
 
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {
@@ -42,11 +48,15 @@ internal class MiniAppDownloader(
                     val response = apiClient.downloadFile(file)
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
-                MiniAppSharedPreferences.setAppExisted(appId, versionId, true)
+                registerStorage(appId, versionId)
                 return baseSavePath
             }
             else -> throw MiniAppSdkException("Internal Server Error")
         }
+    }
+
+    private suspend fun registerStorage(appId: String, versionId: String) = withContext(Dispatchers.IO) {
+        MiniAppSharedPreferences.setAppExisted(appId, versionId, true)
     }
 
     @Suppress("SENSELESS_COMPARISON")

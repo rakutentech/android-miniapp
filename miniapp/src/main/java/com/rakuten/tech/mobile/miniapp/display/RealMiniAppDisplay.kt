@@ -37,7 +37,6 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
     override fun destroyView() {
         stopLoading()
         webViewClient = null
-        clearHistory()
         destroy()
     }
 }
