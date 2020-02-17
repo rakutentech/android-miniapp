@@ -41,6 +41,6 @@ internal class MiniAppDownloader(
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
-    fun isManifestValid(manifest: ManifestEntity) =
+    internal fun isManifestValid(manifest: ManifestEntity) =
         manifest != null && manifest.files != null && !manifest.files.isEmpty()
 }
