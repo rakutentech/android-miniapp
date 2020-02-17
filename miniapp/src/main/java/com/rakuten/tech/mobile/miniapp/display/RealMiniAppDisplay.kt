@@ -33,6 +33,13 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
     internal fun getLoadUrl() = "file://$basePath/index.html"
 
     override fun getMiniAppView(): View = this
+
+    override fun destroyView() {
+        stopLoading()
+        webViewClient = null
+        clearHistory()
+        destroy()
+    }
 }
 
 @VisibleForTesting
