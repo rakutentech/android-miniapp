@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 /**
@@ -52,6 +53,7 @@ class MiniappSdkInitializer : ContentProvider() {
         val context = context ?: return false
         val manifestConfig = AppManifestConfig(context)
         val storage = MiniAppStorage(FileWriter(), context.filesDir)
+        MiniAppSharedPreferences.init(context)
 
         val apiClient = ApiClient(
             baseUrl = manifestConfig.baseUrl(),
