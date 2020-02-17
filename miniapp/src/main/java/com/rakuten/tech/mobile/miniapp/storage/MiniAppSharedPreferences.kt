@@ -17,7 +17,4 @@ object MiniAppSharedPreferences {
 
     fun isAppExisted(appId: String, versionId: String, default: Boolean = false):Boolean =
         prefs.getBoolean(appId+versionId, default)
-
-    fun removeAppExisted(appId: String, versionId: String) =
-        prefs.edit().remove(appId+versionId).apply()
 }
