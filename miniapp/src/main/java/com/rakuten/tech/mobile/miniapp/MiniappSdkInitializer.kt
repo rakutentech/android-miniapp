@@ -53,7 +53,7 @@ class MiniappSdkInitializer : ContentProvider() {
         val context = context ?: return false
         val manifestConfig = AppManifestConfig(context)
         val storage = MiniAppStorage(FileWriter(), context.filesDir)
-        MiniAppSharedPreferences.init(context)
+        val prefs = MiniAppSharedPreferences(context)
 
         val apiClient = ApiClient(
             baseUrl = manifestConfig.baseUrl(),
@@ -63,7 +63,7 @@ class MiniappSdkInitializer : ContentProvider() {
         )
 
         MiniApp.init(
-            miniAppDownloader = MiniAppDownloader(storage, apiClient),
+            miniAppDownloader = MiniAppDownloader(storage, apiClient, prefs),
             displayer = Displayer(context),
             miniAppLister = MiniAppLister(apiClient)
         )

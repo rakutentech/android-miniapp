@@ -11,11 +11,12 @@ import java.io.File
 
 internal class MiniAppDownloader(
     val storage: MiniAppStorage,
-    val apiClient: ApiClient
+    val apiClient: ApiClient,
+    val prefs: MiniAppSharedPreferences
 ) {
 
     suspend fun getMiniApp(appId: String, versionId: String): String {
-        if (MiniAppSharedPreferences.isAppExisted(appId, versionId)) {
+        if (prefs.isAppExisted(appId, versionId)) {
             val baseSavePath = storage.getSavePathForApp(appId, versionId)
             if (File(baseSavePath).exists())
                 return baseSavePath
@@ -48,15 +49,11 @@ internal class MiniAppDownloader(
                     val response = apiClient.downloadFile(file)
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
-                registerStorage(appId, versionId)
+                prefs.setAppExisted(appId, versionId, true)
                 return baseSavePath
             }
             else -> throw MiniAppSdkException("Internal Server Error")
         }
-    }
-
-    private suspend fun registerStorage(appId: String, versionId: String) = withContext(Dispatchers.IO) {
-        MiniAppSharedPreferences.setAppExisted(appId, versionId, true)
     }
 
     @Suppress("SENSELESS_COMPARISON")
