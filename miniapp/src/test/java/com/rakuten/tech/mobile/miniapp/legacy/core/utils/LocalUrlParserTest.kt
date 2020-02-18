@@ -18,29 +18,29 @@ class LocalUrlParserTest : BaseTest() {
 
     @Test
     fun shouldGetAppIdFromValidUrl() {
-        assertThat(urlParser.getAppId(VALID_MANIFEST_ENDPOINT))
+        assertThat(urlParser.getAppIdForLegacy(VALID_MANIFEST_ENDPOINT))
             .isEqualTo("78d85043-d04f-486a-8212-bf2601cb63a2")
     }
 
     @Test
     fun shouldGetEmptyAppIdFromInvalidUrl() {
-        assertThat(invalideUrlParser.getAppId(INVALID_MANIFEST_ENDPOINT)).isEqualTo("")
+        assertThat(invalideUrlParser.getAppIdForLegacy(INVALID_MANIFEST_ENDPOINT)).isEqualTo("")
     }
 
     @Test
     fun shouldGetVersionIdFromUrl() {
-        assertThat(urlParser.getVersionId(VALID_MANIFEST_ENDPOINT))
+        assertThat(urlParser.getVersionIdForLegacy(VALID_MANIFEST_ENDPOINT))
             .isEqualTo("17bccee1-17f0-44fa-8cb8-2da89eb49905")
     }
 
     @Test
     fun shouldGetEmptyVersionIdFromInvalidUrl() {
-        assertThat(invalideUrlParser.getVersionId(INVALID_MANIFEST_ENDPOINT)).isEqualTo("")
+        assertThat(invalideUrlParser.getVersionIdForLegacy(INVALID_MANIFEST_ENDPOINT)).isEqualTo("")
     }
 
     @Test
     fun shouldGetFilePathWithValidUrl() {
-        assertThat(urlParser.getFilePath(VALID_FILE_URL_PATH)).isEqualTo("/js/")
+        assertThat(urlParser.getFilePath(VALID_FILE_URL_PATH)).isEqualTo("/a/b/")
     }
 
     @Test

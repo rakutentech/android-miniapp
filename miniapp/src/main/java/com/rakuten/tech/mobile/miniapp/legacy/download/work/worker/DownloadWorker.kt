@@ -61,7 +61,7 @@ class DownloadWorker(context: Context, workerParams: WorkerParameters) :
                 retrofitClient.retrofit.create(MiniAppServiceApi::class.java).getFile(fixedUrl)
             fileDownloadRequest.enqueue(
                 FileDownloadListener(
-                    LocalUrlParser().getAppId(
+                    LocalUrlParser().getAppIdForLegacy(
                         manifestUrl
                     ),
                     fixedUrl
