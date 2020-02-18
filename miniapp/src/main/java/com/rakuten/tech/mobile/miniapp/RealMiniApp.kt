@@ -16,7 +16,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() || versionId.isBlank() -> throw MiniAppSdkException("Invalid arguments")
         else -> {
-            val basePath = miniAppDownloader.startDownload(
+            val basePath = miniAppDownloader.getMiniApp(
                 appId = appId,
                 versionId = versionId
             )

@@ -66,6 +66,11 @@ class MiniAppDisplayActivity: BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        viewModel.destroyMiniAppView()
+        super.onDestroy()
+    }
+
     private fun toggleProgressLoading(isOn: Boolean) {
         if (findViewById<View>(R.id.pb) != null) {
             when (isOn) {
