@@ -9,8 +9,8 @@ internal class MiniAppSharedPreferences(context: Context) {
     )
 
     fun setAppExisted(appId: String, versionId: String, value: Boolean) =
-        prefs.edit().putBoolean(appId+versionId, value).apply()
+        prefs.edit().putBoolean(appId + versionId, value).apply()
 
-    fun isAppExisted(appId: String, versionId: String, default: Boolean = false):Boolean =
-        prefs.getBoolean(appId+versionId, default)
+    fun isAppExisted(appId: String, versionId: String, default: Boolean = false): Boolean =
+        prefs.getBoolean(appId + versionId, default)
 }

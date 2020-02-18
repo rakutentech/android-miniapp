@@ -5,9 +5,6 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
 
 internal class MiniAppDownloader(
     val storage: MiniAppStorage,
@@ -18,7 +15,7 @@ internal class MiniAppDownloader(
     suspend fun getMiniApp(appId: String, versionId: String): String {
         if (prefs.isAppExisted(appId, versionId)) {
             val baseSavePath = storage.getSavePathForApp(appId, versionId)
-            if (File(baseSavePath).exists())
+            if (storage.filePathExisted(baseSavePath))
                 return baseSavePath
         }
         return startDownload(appId, versionId)
