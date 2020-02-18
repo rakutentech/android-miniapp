@@ -14,4 +14,9 @@ interface MiniAppDisplay { // This contract keeps the display of a mini app impl
      * the parent's dimensions.
      */
     fun getMiniAppView(): View
+
+    /**
+     * Destroy necessary view state and any services registered with.
+     */
+    fun destroyView()
 }

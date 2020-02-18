@@ -3,18 +3,31 @@ package com.rakuten.tech.mobile.miniapp
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 internal class MiniAppDownloader(
     val storage: MiniAppStorage,
-    val apiClient: ApiClient
+    val apiClient: ApiClient,
+    val prefs: MiniAppSharedPreferences
 ) {
 
+    suspend fun getMiniApp(appId: String, versionId: String): String {
+        if (prefs.isAppExisted(appId, versionId)) {
+            val baseSavePath = storage.getSavePathForApp(appId, versionId)
+            if (storage.filePathExisted(baseSavePath))
+                return baseSavePath
+        }
+        return startDownload(appId, versionId)
+    }
+
+    @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {
         val manifest = fetchManifest(appId, versionId)
         return downloadMiniApp(appId, versionId, manifest)
     }
 
+    @VisibleForTesting
     suspend fun fetchManifest(
         appId: String,
         versionId: String
@@ -33,6 +46,7 @@ internal class MiniAppDownloader(
                     val response = apiClient.downloadFile(file)
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
+                prefs.setAppExisted(appId, versionId, true)
                 return baseSavePath
             }
             else -> throw MiniAppSdkException("Internal Server Error")

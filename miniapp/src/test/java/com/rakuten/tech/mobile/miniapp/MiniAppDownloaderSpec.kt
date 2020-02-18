@@ -6,12 +6,14 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldBe
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -23,15 +25,9 @@ class MiniAppDownloaderSpec {
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val storage: MiniAppStorage = mock()
-            val downloader = MiniAppDownloader(storage, apiClient)
+            val downloader = MiniAppDownloader(storage, apiClient, mock())
 
-            When calling downloader.fetchManifest(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
-
-            val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
-            When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
+            setupValidManifestResponse(downloader, apiClient)
             downloader.startDownload(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
             verify(apiClient, times(1)).fetchFileList(
@@ -78,10 +74,71 @@ class MiniAppDownloaderSpec {
         assertFalse { getMockedDownloader().isManifestValid(manifestEntity) }
     }
 
+    @Test
+    fun `when no existing app in local storage, run download execution`() {
+        runBlockingTest {
+            val apiClient: ApiClient = mock()
+            val storage: MiniAppStorage = mock()
+            val prefs: MiniAppSharedPreferences = mock()
+            val downloader = MiniAppDownloader(storage, apiClient, prefs)
+
+            When calling prefs.isAppExisted(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns false
+
+            setupValidManifestResponse(downloader, apiClient)
+
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+            verify(apiClient, times(1)).fetchFileList(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            )
+        }
+    }
+
+    @Test
+    fun `when there is existing app in local storage, load the local storage path`() {
+        runBlockingTest {
+            val apiClient: ApiClient = mock()
+            val storage: MiniAppStorage = mock()
+            val prefs: MiniAppSharedPreferences = mock()
+            val downloader = MiniAppDownloader(storage, apiClient, prefs)
+
+            When calling prefs.isAppExisted(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns true
+
+            When calling storage.getSavePathForApp(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns TEST_BASE_PATH
+
+            When calling storage.filePathExisted(TEST_BASE_PATH) itReturns true
+
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
+        }
+    }
+
     private fun getMockedDownloader(): MiniAppDownloader {
         val apiClient: ApiClient = mock()
         val storage: MiniAppStorage = mock()
-        val downloader = MiniAppDownloader(storage, apiClient)
-        return downloader
+        val prefs: MiniAppSharedPreferences = mock()
+        return MiniAppDownloader(storage, apiClient, prefs)
+    }
+
+    private suspend fun setupValidManifestResponse(
+        downloader: MiniAppDownloader,
+        apiClient: ApiClient
+    ) {
+        When calling downloader.fetchManifest(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION
+        ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
+
+        val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
+        When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
     }
 }

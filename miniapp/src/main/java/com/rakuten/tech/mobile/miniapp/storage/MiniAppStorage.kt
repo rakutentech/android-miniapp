@@ -42,4 +42,6 @@ internal class MiniAppStorage(
 
     fun getSavePathForApp(appId: String, versionId: String) =
         "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId"
+
+    fun filePathExisted(baseSavePath: String): Boolean = File(baseSavePath).exists()
 }
