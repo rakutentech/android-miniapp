@@ -4,10 +4,12 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 internal interface ListingApi {
-    @GET("oneapp/android/{hostAppVersion}/miniapps")
+    @GET("host/{hostappId}/miniapps")
     fun list(
-        @Path("hostAppVersion") hostAppVersion: String
+        @Path("hostappId") hostAppId: String,
+        @Query("hostVersion") hostAppVersionId: String
     ): Call<List<MiniAppInfo>>
 }

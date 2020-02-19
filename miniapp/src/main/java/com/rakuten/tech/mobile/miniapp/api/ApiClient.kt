@@ -12,7 +12,8 @@ import retrofit2.http.Url
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val hostAppVersion: String,
+    private val hostAppVersionId: String,
+    private val hostAppId: String,
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
     private val listingApi: ListingApi = retrofit.create(ListingApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
@@ -23,23 +24,24 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasAppId: String,
         subscriptionKey: String,
-        hostAppVersion: String
+        hostAppVersionId: String
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
             rasAppId = rasAppId,
             subscriptionKey = subscriptionKey
         ),
-        hostAppVersion = hostAppVersion
+        hostAppVersionId = hostAppVersionId,
+        hostAppId = rasAppId
     )
 
     suspend fun list(): List<MiniAppInfo> {
-        val request = listingApi.list(hostAppVersion = hostAppVersion)
+        val request = listingApi.list(hostAppId, hostAppVersionId)
         return requestExecutor.executeRequest(request)
     }
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
-        val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId)
+        val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId, hostAppVersionId)
         return requestExecutor.executeRequest(request)
     }
 

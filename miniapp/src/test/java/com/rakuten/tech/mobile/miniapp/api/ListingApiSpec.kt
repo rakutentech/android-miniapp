@@ -7,7 +7,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEndWith
 import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldStartWith
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -33,58 +32,42 @@ open class ListingApiSpec private constructor(
 
     internal fun createResponse(
         id: String = TEST_MA_ID,
-        version: String = TEST_MA_VERSION,
-        name: String = TEST_MA_NAME,
-        description: String = TEST_MA_DESCRIPTION,
+        displayName: String = TEST_MA_DISPLAY_NAME,
         icon: String = TEST_MA_ICON,
-        files: List<String> = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
-    ): MockResponse {
-        val appInfo = hashMapOf(
-            "id" to id,
-            "versionId" to version,
-            "name" to name,
-            "description" to description,
-            "icon" to icon,
-            "files" to files
-        )
-
-        return MockResponse().setBody("[${Gson().toJson(appInfo)}]")
-    }
+        version: Version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+    ): MockResponse = MockResponse().setBody(
+        "[${Gson().toJson(
+            hashMapOf(
+                "id" to id,
+                "displayName" to displayName,
+                "icon" to icon,
+                "version" to version
+            )
+        )}]"
+    )
 }
 
 class ListingApiRequestSpec : ListingApiSpec() {
 
     @Test
     fun `should fetch mini apps using the 'miniapps' endpoint`() {
-        mockServer.enqueue(createResponse())
-
-        retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = TEST_MA_VERSION)
-            .execute()
-
-        mockServer.takeRequest().requestUrl!!.encodedPath shouldEndWith "miniapps"
-    }
-
-    @Test
-    fun `should fetch mini apps for the 'android' platform`() {
-        mockServer.enqueue(createResponse())
-
-        retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = TEST_MA_VERSION)
-            .execute()
-
-        mockServer.takeRequest().path!! shouldStartWith "/oneapp/android/"
+        executeListingCallByRetrofit()
+        val requestUrl = mockServer.takeRequest().requestUrl!!
+        requestUrl.encodedPath shouldEndWith "miniapps"
+        requestUrl.encodedQuery.toString() shouldContain "hostVersion=$TEST_HA_ID_VERSION"
     }
 
     @Test
     fun `should fetch mini apps for the provided host app version`() {
+        executeListingCallByRetrofit()
+        mockServer.takeRequest().path!! shouldContain "test_version"
+    }
+
+    private fun executeListingCallByRetrofit() {
         mockServer.enqueue(createResponse())
-
         retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = TEST_MA_VERSION)
+            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
             .execute()
-
-        mockServer.takeRequest().path!! shouldContain "android/test_version/"
     }
 }
 
@@ -97,7 +80,7 @@ class ListingApiResponseSpec : ListingApiSpec() {
         mockServer.enqueue(createResponse())
 
         miniAppInfo = retrofit.create(ListingApi::class.java)
-            .list(hostAppVersion = TEST_MA_VERSION)
+            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
             .execute().body()!![0]
     }
 
@@ -107,18 +90,8 @@ class ListingApiResponseSpec : ListingApiSpec() {
     }
 
     @Test
-    fun `should parse the 'version' from response`() {
-        miniAppInfo.versionId shouldEqual TEST_MA_VERSION
-    }
-
-    @Test
-    fun `should parse the 'name' from response`() {
-        miniAppInfo.name shouldEqual TEST_MA_NAME
-    }
-
-    @Test
-    fun `should parse the 'description' from response`() {
-        miniAppInfo.description shouldEqual TEST_MA_DESCRIPTION
+    fun `should parse the 'displayName' from response`() {
+        miniAppInfo.displayName shouldEqual TEST_MA_DISPLAY_NAME
     }
 
     @Test
@@ -127,8 +100,12 @@ class ListingApiResponseSpec : ListingApiSpec() {
     }
 
     @Test
-    fun `should parse the 'files' from response`() {
-        miniAppInfo.files shouldContain TEST_URL_HTTPS_1
-        miniAppInfo.files shouldContain TEST_URL_HTTPS_2
+    fun `should parse the 'versionTag' from response`() {
+        miniAppInfo.version.versionTag shouldContain TEST_MA_VERSION_TAG
+    }
+
+    @Test
+    fun `should parse the 'versionId' from response`() {
+        miniAppInfo.version.versionId shouldContain TEST_MA_VERSION_ID
     }
 }

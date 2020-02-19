@@ -11,20 +11,32 @@ data class MiniAppInfo(
     val id: String,
 
     /**
-     * Name of the mini app.
+     * Display name of the mini app.
      */
-    val name: String,
-
-    /**
-     * Description associated with the mini app.
-     */
-    val description: String,
+    val displayName: String,
 
     /**
      * Icon of the mini app, obtainable from the provided data for this resource.
      */
     val icon: String,
 
-    val versionId: String,
-    internal val files: List<String>
+    /**
+     * Version information of the mini app.
+     */
+    val version: Version
+)
+
+/**
+ * This represents a version entity of a Mini App.
+ */
+data class Version(
+    /**
+     * Version information of the mini app.
+     */
+    val versionTag: String,
+
+    /**
+     * Version identifier of the mini app.
+     */
+    val versionId: String
 )
