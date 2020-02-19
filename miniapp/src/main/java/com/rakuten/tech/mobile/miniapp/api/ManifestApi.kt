@@ -8,6 +8,7 @@ import retrofit2.http.Query
 internal interface ManifestApi {
     @GET("host/{hostappId}/miniapp/{miniappId}/version/{versionId}/manifest")
     fun fetchFileListFromManifest(
+        @Path("hostappId") hostAppId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
         @Query("hostVersion") hostAppVersionId: String

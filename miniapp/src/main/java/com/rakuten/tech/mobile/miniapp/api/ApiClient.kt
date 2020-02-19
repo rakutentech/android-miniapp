@@ -41,7 +41,12 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
-        val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId, hostAppVersionId)
+        val request = manifestApi.fetchFileListFromManifest(
+            hostAppId = hostAppId,
+            miniAppId = miniAppId,
+            versionId = versionId,
+            hostAppVersionId = hostAppVersionId
+        )
         return requestExecutor.executeRequest(request)
     }
 

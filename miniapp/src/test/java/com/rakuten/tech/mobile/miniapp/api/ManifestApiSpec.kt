@@ -61,6 +61,7 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
+                hostAppId = TEST_HA_ID_APP,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
                 hostAppVersionId = TEST_HA_ID_VERSION
@@ -77,6 +78,7 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         manifestEntity = retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
+                TEST_HA_ID_APP,
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
                 TEST_HA_ID_VERSION

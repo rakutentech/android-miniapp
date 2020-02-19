@@ -52,7 +52,7 @@ open class ApiClientSpec {
         val mockCall: Call<ManifestEntity> = mock()
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns ManifestEntity(fileList)
