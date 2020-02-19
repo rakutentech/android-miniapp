@@ -38,7 +38,7 @@ class MiniAppFileWriter {
     fun writeResponseBodyToDisk(response: ResponseBody, appId: String, fileUrl: String) {
 
         // Parse appID, versionId, and appropriate directories.
-        val versionId = localUrlParser.getVersionId(fileUrl)
+        val versionId = localUrlParser.getVersionIdForLegacy(fileUrl)
         val path = localUrlParser.getFilePath(fileUrl)
         val fileName = localUrlParser.getFileName(fileUrl)
 
