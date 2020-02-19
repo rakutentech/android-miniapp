@@ -17,6 +17,8 @@ interface MiniAppDisplay { // This contract keeps the display of a mini app impl
 
     /**
      * Destroy necessary view state and any services registered with.
+     * When the consumer has finished consuming, it is advisable to release the resources.
+     * Usual scenarios are when the app components are amidst their destroy cycle.
      */
     fun destroyView()
 }

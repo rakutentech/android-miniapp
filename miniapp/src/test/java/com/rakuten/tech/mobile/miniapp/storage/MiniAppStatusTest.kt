@@ -19,12 +19,12 @@ class MiniAppStatusTest {
     }
 
     @Test
-    fun `isAppExisted should be false if no app has been saved`() {
+    fun `isVersionDownloaded should be false if no app has been saved`() {
         miniAppStatus.isVersionDownloaded(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe false
     }
 
     @Test
-    fun `setAppExsited and isAppExisted should correspond with each other`() {
+    fun `setVersionDownloaded and isVersionDownloaded should correspond with each other`() {
         miniAppStatus.setVersionDownloaded(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, true)
         miniAppStatus.isVersionDownloaded(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe true
     }
