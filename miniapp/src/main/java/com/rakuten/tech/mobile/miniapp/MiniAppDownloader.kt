@@ -12,14 +12,11 @@ internal class MiniAppDownloader(
     val miniAppStatus: MiniAppStatus
 ) {
 
-    suspend fun getMiniApp(appId: String, versionId: String): String {
-        if (miniAppStatus.isVersionDownloaded(appId, versionId)) {
-            val baseSavePath = storage.getSavePathForApp(appId, versionId)
-            if (storage.filePathExists(baseSavePath))
-                return baseSavePath
-        }
-        return startDownload(appId, versionId)
-    }
+    suspend fun getMiniApp(appId: String, versionId: String): String =
+        if (miniAppStatus.isVersionDownloaded(appId, versionId))
+            storage.getSavePathForApp(appId, versionId)
+        else
+            startDownload(appId, versionId)
 
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {

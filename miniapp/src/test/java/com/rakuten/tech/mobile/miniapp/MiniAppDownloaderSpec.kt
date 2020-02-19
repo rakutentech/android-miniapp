@@ -112,8 +112,6 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
 
-            When calling storage.filePathExists(TEST_BASE_PATH) itReturns true
-
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
         }
     }
