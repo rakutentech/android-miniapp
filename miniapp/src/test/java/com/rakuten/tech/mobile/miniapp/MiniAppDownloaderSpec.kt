@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppSharedPreferences
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
@@ -79,10 +79,10 @@ class MiniAppDownloaderSpec {
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val storage: MiniAppStorage = mock()
-            val prefs: MiniAppSharedPreferences = mock()
+            val prefs: MiniAppStatus = mock()
             val downloader = MiniAppDownloader(storage, apiClient, prefs)
 
-            When calling prefs.isAppExisted(
+            When calling prefs.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns false
@@ -103,10 +103,10 @@ class MiniAppDownloaderSpec {
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val storage: MiniAppStorage = mock()
-            val prefs: MiniAppSharedPreferences = mock()
-            val downloader = MiniAppDownloader(storage, apiClient, prefs)
+            val miniAppStatus: MiniAppStatus = mock()
+            val downloader = MiniAppDownloader(storage, apiClient, miniAppStatus)
 
-            When calling prefs.isAppExisted(
+            When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns true
@@ -116,7 +116,7 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
 
-            When calling storage.filePathExisted(TEST_BASE_PATH) itReturns true
+            When calling storage.filePathExists(TEST_BASE_PATH) itReturns true
 
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
         }
@@ -125,7 +125,7 @@ class MiniAppDownloaderSpec {
     private fun getMockedDownloader(): MiniAppDownloader {
         val apiClient: ApiClient = mock()
         val storage: MiniAppStorage = mock()
-        val prefs: MiniAppSharedPreferences = mock()
+        val prefs: MiniAppStatus = mock()
         return MiniAppDownloader(storage, apiClient, prefs)
     }
 
