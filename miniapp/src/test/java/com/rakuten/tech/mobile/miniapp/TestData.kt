@@ -13,7 +13,10 @@ internal const val TEST_URL_HTTPS_1 = "https://www.example.com/1"
 internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2"
 
 internal const val TEST_MA_ID = "test_id"
-internal const val TEST_MA_VERSION = "test_version"
-internal const val TEST_MA_NAME = "test_name"
-internal const val TEST_MA_DESCRIPTION = "test_description"
+internal const val TEST_MA_DISPLAY_NAME = "test_name"
 internal const val TEST_MA_ICON = "test_icon"
+internal const val TEST_MA_VERSION_TAG = "test_vtag"
+internal const val TEST_MA_VERSION_ID = "test_vid"
+
+internal const val TEST_HA_ID_VERSION = "test_version"
+internal const val TEST_HA_ID_APP = "test_hostapp_id"

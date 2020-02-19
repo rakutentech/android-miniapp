@@ -3,12 +3,15 @@ package com.rakuten.tech.mobile.miniapp.api
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 internal interface ManifestApi {
-    @GET("miniapp/{miniappId}/version/{versionId}/manifest")
+    @GET("host/{hostappId}/miniapp/{miniappId}/version/{versionId}/manifest")
     fun fetchFileListFromManifest(
+        @Path("hostappId") hostAppId: String,
         @Path("miniappId") miniAppId: String,
-        @Path("versionId") versionId: String
+        @Path("versionId") versionId: String,
+        @Query("hostVersion") hostAppVersionId: String
     ): Call<ManifestEntity>
 }
 

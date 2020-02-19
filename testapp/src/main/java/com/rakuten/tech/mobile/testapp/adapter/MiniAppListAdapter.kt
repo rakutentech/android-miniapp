@@ -59,7 +59,7 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
         binding.tvVersion.isSelected = true
 
         binding.itemRoot.setOnClickListener {
-            miniAppList.onMiniAppItemClick(miniapp.id, miniapp.versionId)
+            miniAppList.onMiniAppItemClick(miniapp.id, miniapp.version.versionId)
         }
     }
 

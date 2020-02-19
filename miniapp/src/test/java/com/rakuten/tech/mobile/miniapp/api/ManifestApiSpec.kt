@@ -1,10 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
-import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
+import com.rakuten.tech.mobile.miniapp.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldContain
@@ -34,42 +31,41 @@ open class ManifestApiSpec private constructor(
 
     internal fun createResponse(
         files: List<String> = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
-    ): MockResponse {
-        val manifestInfo = hashMapOf(
-            "files" to files
+    ): MockResponse = MockResponse().setBody(
+        Gson().toJson(
+            hashMapOf(
+                "files" to files
+            )
         )
-
-        return MockResponse().setBody(Gson().toJson(manifestInfo))
-    }
+    )
 }
 
 class ManifestApiRequestSpec : ManifestApiSpec() {
 
     @Test
     fun `should fetch files information of a mini app using the 'manifest' endpoint`() {
-        mockServer.enqueue(createResponse())
-
-        retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(
-                miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
-            ).execute()
-
-        mockServer.takeRequest().requestUrl!!.encodedPath shouldEndWith "manifest"
+        executeManifestCallByRetrofit()
+        val requestUrl = mockServer.takeRequest().requestUrl!!
+        requestUrl.encodedPath shouldEndWith "manifest"
+        requestUrl.encodedQuery.toString() shouldContain "hostVersion=$TEST_HA_ID_VERSION"
     }
 
     @Test
     fun `should fetch files information of a specific mini app version`() {
-        mockServer.enqueue(createResponse())
-
-        retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(
-                miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
-            ).execute()
-
+        executeManifestCallByRetrofit()
         mockServer.takeRequest().path!! shouldContain
                 "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
+    }
+
+    private fun executeManifestCallByRetrofit() {
+        mockServer.enqueue(createResponse())
+        retrofit.create(ManifestApi::class.java)
+            .fetchFileListFromManifest(
+                hostAppId = TEST_HA_ID_APP,
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION,
+                hostAppVersionId = TEST_HA_ID_VERSION
+            ).execute()
     }
 }
 
@@ -80,11 +76,12 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
     @Before
     fun setup() {
         mockServer.enqueue(createResponse())
-
         manifestEntity = retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
+                TEST_HA_ID_APP,
                 TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
+                TEST_ID_MINIAPP_VERSION,
+                TEST_HA_ID_VERSION
             )
             .execute().body()!!
     }
