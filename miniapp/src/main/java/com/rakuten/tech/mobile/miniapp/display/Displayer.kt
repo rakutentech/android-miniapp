@@ -7,10 +7,10 @@ import kotlinx.coroutines.withContext
 
 internal class Displayer(val context: Context) {
 
-    suspend fun createMiniAppDisplay(basePath: String): MiniAppDisplay =
+    suspend fun createMiniAppDisplay(basePath: String, appId: String): MiniAppDisplay =
         withContext(Dispatchers.Main) {
             context?.let {
-                RealMiniAppDisplay(context, basePath)
+                RealMiniAppDisplay(context, basePath, appId)
             }
         }
 }

@@ -5,9 +5,12 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
-import org.amshove.kluent.*
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldEqualTo
+import org.amshove.kluent.shouldNotBeEqualTo
+import org.amshove.kluent.shouldNotHaveTheSameClassAs
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,17 +20,19 @@ import kotlin.test.assertTrue
 class RealMiniAppDisplayTest {
 
     lateinit var context: Context
+    lateinit var baseTextPath: String
 
     @Before
     fun setup() {
         context = getApplicationContext()
+        baseTextPath = context.filesDir.absolutePath
     }
 
     @Test
     fun `for a given basePath RealMiniAppDisplay creates corresponding view for the caller`() =
         runBlockingTest {
             val realDisplay = getRealMiniAppDisplay()
-            realDisplay.url shouldContain TEST_BASE_PATH
+            realDisplay.url shouldContain TEST_MA_ID
         }
 
     @Test
@@ -38,9 +43,9 @@ class RealMiniAppDisplayTest {
         }
 
     @Test
-    fun `when getLoadUrl is called then a formed path is returned from basePath for loading`() {
+    fun `when getLoadUrl is called then a formed path contains app id`() {
         val realDisplay = getRealMiniAppDisplay()
-        realDisplay.getLoadUrl() shouldBeEqualTo "file://dummy/index.html"
+        realDisplay.getLoadUrl() shouldContain TEST_MA_ID
     }
 
     @Test
@@ -63,10 +68,12 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `when MiniAppDisplay is created then WebViewClient is set to MiniAppWebViewClient`() {
-        val realDisplay = getRealMiniAppDisplay()
-        (realDisplay as WebView).webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
+    fun `each mini app should have different domain`() {
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, baseTextPath, "app-id-1")
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, baseTextPath, "app-id-2")
+        realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 
-    private fun getRealMiniAppDisplay() = RealMiniAppDisplay(context, basePath = TEST_BASE_PATH)
+    private fun getRealMiniAppDisplay() = RealMiniAppDisplay(
+        context, basePath = baseTextPath, appId = TEST_MA_ID)
 }

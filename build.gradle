@@ -30,6 +30,7 @@ buildscript {
     ext.robolectric = '4.3'
     ext.timber = '4.7.1'
     ext.truth = '1.0'
+    ext.webkit = '1.1.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'

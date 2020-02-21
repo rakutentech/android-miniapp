@@ -4,15 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import java.io.File
+
+private const val ASSET_DOMAIN_SUFFIX = "miniapps.androidplatform.net"
+private const val SUB_DOMAIN_PATH = "miniapp"
 
 @SuppressLint("SetJavaScriptEnabled")
-internal class RealMiniAppDisplay(context: Context, val basePath: String) : MiniAppDisplay,
-    WebView(context) {
+internal class RealMiniAppDisplay(context: Context, val basePath: String, val appId: String) :
+    MiniAppDisplay, WebView(context) {
+
+    private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -21,16 +30,13 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
 
         settings.javaScriptEnabled = true
         settings.allowUniversalAccessFromFileURLs = true
-        webViewClient = MiniAppWebViewClient()
+        webViewClient = MiniAppWebViewClient(getWebViewAssetLoader())
         loadUrl(getLoadUrl())
     }
 
     override fun setWebViewClient(client: WebViewClient?) {
-        super.setWebViewClient(client ?: MiniAppWebViewClient())
+        super.setWebViewClient(client ?: MiniAppWebViewClient(getWebViewAssetLoader()))
     }
-
-    @VisibleForTesting
-    internal fun getLoadUrl() = "file://$basePath/index.html"
 
     override fun getMiniAppView(): View = this
 
@@ -39,12 +45,26 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String) : Mini
         webViewClient = null
         destroy()
     }
+
+    private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
+        .setDomain(miniAppDomain)
+        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+        .addPathHandler("/res/", WebViewAssetLoader.ResourcesPathHandler(context))
+        .addPathHandler("/$SUB_DOMAIN_PATH/", WebViewAssetLoader.InternalStoragePathHandler(
+            context,
+            File(basePath)
+        ))
+        .build()
+
+    @VisibleForTesting
+    internal fun getLoadUrl() = "https://$miniAppDomain/$SUB_DOMAIN_PATH/index.html"
 }
 
 @VisibleForTesting
-internal class MiniAppWebViewClient : WebViewClient() {
-    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        view.loadUrl(url)
-        return true
-    }
+internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : WebViewClient() {
+
+    override fun shouldInterceptRequest(
+        view: WebView,
+        request: WebResourceRequest
+    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
 }

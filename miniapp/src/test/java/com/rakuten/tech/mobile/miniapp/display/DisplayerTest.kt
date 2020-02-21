@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Before
@@ -23,7 +23,10 @@ class DisplayerTest {
     @Test
     fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
         runBlockingTest {
-            val obtainedDisplay = Displayer(context).createMiniAppDisplay(basePath = TEST_BASE_PATH)
+            val obtainedDisplay = Displayer(context).createMiniAppDisplay(
+                basePath = context.filesDir.absolutePath,
+                appId = TEST_MA_ID
+            )
             obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
         }
 }
