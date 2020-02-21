@@ -18,8 +18,11 @@ private const val ASSET_DOMAIN_SUFFIX = "miniapps.androidplatform.net"
 private const val SUB_DOMAIN_PATH = "miniapp"
 
 @SuppressLint("SetJavaScriptEnabled")
-internal class RealMiniAppDisplay(context: Context, val basePath: String, val appId: String) :
-    MiniAppDisplay, WebView(context) {
+internal class RealMiniAppDisplay(
+    context: Context,
+    val basePath: String,
+    val appId: String
+) : MiniAppDisplay, WebView(context) {
 
     private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
 
@@ -48,8 +51,6 @@ internal class RealMiniAppDisplay(context: Context, val basePath: String, val ap
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
         .setDomain(miniAppDomain)
-        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
-        .addPathHandler("/res/", WebViewAssetLoader.ResourcesPathHandler(context))
         .addPathHandler("/$SUB_DOMAIN_PATH/", WebViewAssetLoader.InternalStoragePathHandler(
             context,
             File(basePath)

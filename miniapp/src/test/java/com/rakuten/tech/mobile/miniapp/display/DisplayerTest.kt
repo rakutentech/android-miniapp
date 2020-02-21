@@ -24,7 +24,7 @@ class DisplayerTest {
     fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
         runBlockingTest {
             val obtainedDisplay = Displayer(context).createMiniAppDisplay(
-                basePath = context.filesDir.absolutePath,
+                basePath = context.filesDir.path,
                 appId = TEST_MA_ID
             )
             obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
