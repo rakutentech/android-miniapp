@@ -31,6 +31,13 @@ abstract class MiniApp internal constructor() {
         versionId: String
     ): MiniAppDisplay
 
+    /**
+     * Fetches meta data information of a mini app.
+     * @return [MiniAppInfo] for the provided appId of a mini app
+     * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
+     */
+    abstract suspend fun fetchInfo(appId: String): MiniAppInfo
+
     companion object {
         private lateinit var instance: MiniApp
 
@@ -45,12 +52,12 @@ abstract class MiniApp internal constructor() {
         internal fun init(
             miniAppDownloader: MiniAppDownloader,
             displayer: Displayer,
-            miniAppLister: MiniAppLister
+            miniAppInfoFetcher: MiniAppInfoFetcher
         ) {
             instance = RealMiniApp(
                 miniAppDownloader = miniAppDownloader,
                 displayer = displayer,
-                miniAppLister = miniAppLister
+                miniAppInfoFetcher = miniAppInfoFetcher
             )
         }
     }

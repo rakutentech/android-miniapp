@@ -14,10 +14,10 @@ internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val hostAppVersionId: String,
     private val hostAppId: String,
-    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
-    private val listingApi: ListingApi = retrofit.create(ListingApi::class.java),
+    private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
+    private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
-    private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java)
+    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
     constructor(
@@ -36,8 +36,13 @@ internal class ApiClient @VisibleForTesting constructor(
     )
 
     suspend fun list(): List<MiniAppInfo> {
-        val request = listingApi.list(hostAppId, hostAppVersionId)
+        val request = appInfoApi.list(hostAppId, hostAppVersionId)
         return requestExecutor.executeRequest(request)
+    }
+
+    suspend fun fetchInfo(appId: String): MiniAppInfo {
+        val request = appInfoApi.fetchInfo(hostAppId, hostAppVersionId, appId)
+        return requestExecutor.executeRequest(request).first()
     }
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {

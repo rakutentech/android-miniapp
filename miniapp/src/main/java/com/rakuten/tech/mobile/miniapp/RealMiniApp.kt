@@ -5,10 +5,12 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 internal class RealMiniApp(
     val miniAppDownloader: MiniAppDownloader,
     val displayer: Displayer,
-    val miniAppLister: MiniAppLister
+    val miniAppInfoFetcher: MiniAppInfoFetcher
 ) : MiniApp() {
 
-    override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppLister.fetchMiniAppList()
+    override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
+
+    override suspend fun fetchInfo(appId: String) = miniAppInfoFetcher.getInfo(appId)
 
     override suspend fun create(
         appId: String,
