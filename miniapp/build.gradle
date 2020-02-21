@@ -41,6 +41,7 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
+    implementation "androidx.webkit:webkit:$webkit"
     implementation "androidx.work:work-runtime-ktx:$androidx_work"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

@@ -20,7 +20,7 @@ internal class RealMiniApp(
                 appId = appId,
                 versionId = versionId
             )
-            displayer.createMiniAppDisplay(basePath)
+            displayer.createMiniAppDisplay(basePath, appId)
         }
     }
 }
