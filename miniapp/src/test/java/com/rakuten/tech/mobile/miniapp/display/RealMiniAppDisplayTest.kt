@@ -29,7 +29,6 @@ class RealMiniAppDisplayTest {
         runBlockingTest {
             val realDisplay = getRealMiniAppDisplay()
             realDisplay.url shouldContain TEST_MA_ID
-            realDisplay.url shouldEndWith "index.html"
         }
 
     @Test
