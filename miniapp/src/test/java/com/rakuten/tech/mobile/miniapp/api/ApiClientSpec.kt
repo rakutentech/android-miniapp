@@ -25,23 +25,25 @@ open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()
     private val mockRequestExecutor: RetrofitRequestExecutor = mock()
-    private val mockListingApi: ListingApi = mock()
+    private val mockAppInfoApi: AppInfoApi = mock()
     private val mockManifestApi: ManifestApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
 
+    private val miniAppInfo = MiniAppInfo(
+        id = TEST_MA_ID,
+        displayName = TEST_MA_DISPLAY_NAME,
+        icon = TEST_MA_ICON,
+        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+    )
+
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
-        val miniAppInfo = MiniAppInfo(
-            id = TEST_MA_ID,
-            displayName = TEST_MA_DISPLAY_NAME,
-            icon = TEST_MA_ICON,
-            version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
-        )
         val mockCall: Call<List<MiniAppInfo>> = mock()
-        When calling mockListingApi.list(any(), any()) itReturns mockCall
+
+        When calling mockAppInfoApi.list(any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
-        val apiClient = createApiClient(listingApi = mockListingApi)
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.list()[0] shouldEqual miniAppInfo
     }
 
@@ -82,12 +84,23 @@ open class ApiClientSpec {
         response.contentLength() shouldEqual mockResponseBody.contentLength()
     }
 
+    @Test
+    fun `should fetch meta data for a mini app for a given appId`() = runBlockingTest {
+        val mockCall: Call<List<MiniAppInfo>> = mock()
+
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfo(TEST_MA_ID) shouldEqual miniAppInfo
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostAppId: String = TEST_HA_ID_APP,
         hostAppVersionId: String = TEST_HA_ID_VERSION,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
-        listingApi: ListingApi = mockListingApi,
+        appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
@@ -95,7 +108,7 @@ open class ApiClientSpec {
         hostAppId = hostAppId,
         hostAppVersionId = hostAppVersionId,
         requestExecutor = requestExecutor,
-        listingApi = listingApi,
+        appInfoApi = appInfoApi,
         manifestApi = manifestApi,
         downloadApi = downloadApi
     )

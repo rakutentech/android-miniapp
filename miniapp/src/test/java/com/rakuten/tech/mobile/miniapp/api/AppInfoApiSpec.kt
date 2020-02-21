@@ -12,7 +12,7 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-open class ListingApiSpec private constructor(
+open class AppInfoApiSpec private constructor(
     internal val mockServer: MockWebServer
 ) : MockWebServerBaseTest(mockServer) {
 
@@ -47,7 +47,7 @@ open class ListingApiSpec private constructor(
     )
 }
 
-class ListingApiRequestSpec : ListingApiSpec() {
+class AppInfoApiRequestSpec : AppInfoApiSpec() {
 
     @Test
     fun `should fetch mini apps using the 'miniapps' endpoint`() {
@@ -65,13 +65,13 @@ class ListingApiRequestSpec : ListingApiSpec() {
 
     private fun executeListingCallByRetrofit() {
         mockServer.enqueue(createResponse())
-        retrofit.create(ListingApi::class.java)
+        retrofit.create(AppInfoApi::class.java)
             .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
             .execute()
     }
 }
 
-class ListingApiResponseSpec : ListingApiSpec() {
+class AppInfoApiResponseSpec : AppInfoApiSpec() {
 
     private lateinit var miniAppInfo: MiniAppInfo
 
@@ -79,7 +79,7 @@ class ListingApiResponseSpec : ListingApiSpec() {
     fun setup() {
         mockServer.enqueue(createResponse())
 
-        miniAppInfo = retrofit.create(ListingApi::class.java)
+        miniAppInfo = retrofit.create(AppInfoApi::class.java)
             .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
             .execute().body()!![0]
     }
