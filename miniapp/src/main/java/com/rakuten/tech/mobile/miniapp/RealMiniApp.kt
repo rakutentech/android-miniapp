@@ -10,7 +10,7 @@ internal class RealMiniApp(
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
-    override suspend fun fetchMiniAppInfo(appId: String) = miniAppInfoFetcher.getInfo(appId)
+    override suspend fun fetchInfo(appId: String) = miniAppInfoFetcher.getInfo(appId)
 
     override suspend fun create(
         appId: String,

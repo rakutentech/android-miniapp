@@ -36,7 +36,7 @@ abstract class MiniApp internal constructor() {
      * @return [MiniAppInfo] for the provided appId of a mini app
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
      */
-    abstract suspend fun fetchMiniAppInfo(appId: String): MiniAppInfo
+    abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     companion object {
         private lateinit var instance: MiniApp

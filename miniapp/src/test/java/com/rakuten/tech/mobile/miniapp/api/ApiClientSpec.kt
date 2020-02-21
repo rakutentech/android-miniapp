@@ -9,11 +9,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
-import org.amshove.kluent.shouldContain
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Call
@@ -93,6 +89,19 @@ open class ApiClientSpec {
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.fetchInfo(TEST_MA_ID) shouldEqual miniAppInfo
+    }
+
+    @Test
+    fun `fetchInfo should return only the first item`() = runBlockingTest {
+        val mockCall: Call<List<MiniAppInfo>> = mock()
+        val secondItem = miniAppInfo.copy()
+        val resultList = listOf(miniAppInfo, secondItem)
+
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns resultList
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
     }
 
     private fun createApiClient(
