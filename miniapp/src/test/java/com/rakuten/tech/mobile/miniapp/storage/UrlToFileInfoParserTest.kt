@@ -1,10 +1,10 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import com.google.common.truth.Truth.assertThat
 import com.rakuten.tech.mobile.miniapp.INVALID_FILE_URL_PATH
 import com.rakuten.tech.mobile.miniapp.VALID_FILE_URL_PATH
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class UrlToFileInfoParserTest {
 
@@ -17,21 +17,21 @@ class UrlToFileInfoParserTest {
 
     @Test
     fun shouldGetFilePathWithValidUrl() {
-        assertThat(urlParser.getFilePath(VALID_FILE_URL_PATH)).isEqualTo("/a/b/")
+        assertTrue { urlParser.getFilePath(VALID_FILE_URL_PATH) == "/a/b/" }
     }
 
     @Test
     fun shouldGetEmptyFilePathWithInvalidUrl() {
-        assertThat(urlParser.getFilePath(INVALID_FILE_URL_PATH)).isEqualTo("")
+        assertTrue { urlParser.getFilePath(INVALID_FILE_URL_PATH) == "" }
     }
 
     @Test
     fun shouldGetFileNameWithValidUrl() {
-        assertThat(urlParser.getFileName(VALID_FILE_URL_PATH)).isEqualTo("index.html")
+        assertTrue { urlParser.getFileName(VALID_FILE_URL_PATH) == "index.html" }
     }
 
     @Test
     fun shouldGetFileNameWithInvalidUrl() {
-        assertThat(urlParser.getFileName(INVALID_FILE_URL_PATH)).isEqualTo("")
+        assertTrue { urlParser.getFileName(INVALID_FILE_URL_PATH) == "" }
     }
 }

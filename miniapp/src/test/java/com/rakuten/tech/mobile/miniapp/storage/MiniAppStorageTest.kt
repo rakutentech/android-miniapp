@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -8,26 +7,25 @@ import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class MiniAppStorageTest {
 
     @Test
     fun `for a given set of app & version id formed base path is retured`() {
         val miniAppStorage = getMockedMiniAppStorage()
-        assertThat(
+        assertTrue {
             miniAppStorage.getSavePathForApp(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
-            )
-        )
-            .isEqualTo("null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION")
+            ) == "null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION"
+        }
     }
 
     @Test
     fun `for a given set of base path & file path, formed parent path is retured`() {
         val miniAppStorage = getMockedMiniAppStorage()
-        assertThat(miniAppStorage.getAbsoluteWritePath("a", "b", "c"))
-            .isEqualTo("abc")
+        assertTrue { miniAppStorage.getAbsoluteWritePath("a", "b", "c") == "abc" }
     }
 
     @Test
