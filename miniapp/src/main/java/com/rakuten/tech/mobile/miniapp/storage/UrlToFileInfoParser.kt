@@ -2,30 +2,12 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import java.io.File
 
+private const val KEY_MAP_PUB = "map-published"
+
 /**
  * URL parser. Manifest URL contains information such as MiniApp ID, Version ID.
  */
 class UrlToFileInfoParser {
-    // TODO: Add URL validator for each method.
-
-    /**
-     * Returns the appId from the legacy manifest URL. AppId is the string after "miniapp" in the URL.
-     * Returns empty String when not found.
-     */
-    fun getAppIdForLegacy(manifestUrl: String): String {
-        val splitStrings: List<String> = manifestUrl.split(File.separator)
-        return splitStrings[splitStrings.indexOf(MINI_APP_ID_KEY).plus(1)]
-    }
-
-    /**
-     * Returns the versionId from the legacy file URL.
-     * VersionId is the string after "version" in the URL.
-     * Returns empty String when not found.
-     */
-    fun getVersionIdForLegacy(fileUrl: String): String {
-        val splitStrings: List<String> = fileUrl.split(File.separator)
-        return splitStrings[splitStrings.indexOf(VERSION_KEY).plus(1)]
-    }
 
     /**
      * Returns the path between versionId to file name.
@@ -67,11 +49,5 @@ class UrlToFileInfoParser {
         } else {
             return ""
         }
-    }
-
-    companion object {
-        private const val MINI_APP_ID_KEY = "miniapp"
-        private const val VERSION_KEY = "version"
-        private const val KEY_MAP_PUB = "map-published"
     }
 }
