@@ -33,6 +33,8 @@ internal class RealMiniAppDisplay(
 
         settings.javaScriptEnabled = true
         settings.allowUniversalAccessFromFileURLs = true
+        settings.domStorageEnabled = true
+        settings.databaseEnabled = true
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader())
         loadUrl(getLoadUrl())
     }
