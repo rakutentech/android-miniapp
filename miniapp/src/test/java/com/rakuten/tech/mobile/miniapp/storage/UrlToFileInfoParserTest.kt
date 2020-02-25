@@ -1,11 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import com.google.common.truth.Truth.assertThat
-import com.rakuten.tech.mobile.miniapp.legacy.core.BaseTest
+import com.rakuten.tech.mobile.miniapp.INVALID_FILE_URL_PATH
+import com.rakuten.tech.mobile.miniapp.INVALID_MANIFEST_ENDPOINT
+import com.rakuten.tech.mobile.miniapp.VALID_FILE_URL_PATH
+import com.rakuten.tech.mobile.miniapp.VALID_MANIFEST_ENDPOINT
 import org.junit.Before
 import org.junit.Test
 
-class UrlToFileInfoParserTest : BaseTest() {
+class UrlToFileInfoParserTest {
 
     lateinit var urlParser: UrlToFileInfoParser
     lateinit var invalideUrlParser: UrlToFileInfoParser
