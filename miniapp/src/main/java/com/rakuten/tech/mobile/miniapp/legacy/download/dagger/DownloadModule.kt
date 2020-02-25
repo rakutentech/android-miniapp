@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.legacy.download.dagger
 
 import com.rakuten.tech.mobile.miniapp.legacy.core.dagger.scopes.AppScope
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
+import com.rakuten.tech.mobile.miniapp.storage.UrlToFileInfoParser
 import com.rakuten.tech.mobile.miniapp.legacy.download.DownloadMiniAppImpl
 import com.rakuten.tech.mobile.miniapp.legacy.download.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.legacy.download.network.client.RetrofitClient
@@ -45,8 +45,8 @@ class DownloadModule {
      */
     @Provides
     @AppScope
-    fun provideUrlParser(): LocalUrlParser =
-        LocalUrlParser()
+    fun provideUrlParser(): UrlToFileInfoParser =
+        UrlToFileInfoParser()
 
     /**
      * Provides RetrofitClient to dagger.

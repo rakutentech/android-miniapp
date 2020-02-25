@@ -1,19 +1,19 @@
-package com.rakuten.tech.mobile.miniapp.legacy.core.utils
+package com.rakuten.tech.mobile.miniapp.storage
 
 import com.google.common.truth.Truth.assertThat
 import com.rakuten.tech.mobile.miniapp.legacy.core.BaseTest
 import org.junit.Before
 import org.junit.Test
 
-class LocalUrlParserTest : BaseTest() {
+class UrlToFileInfoParserTest : BaseTest() {
 
-    lateinit var urlParser: LocalUrlParser
-    lateinit var invalideUrlParser: LocalUrlParser
+    lateinit var urlParser: UrlToFileInfoParser
+    lateinit var invalideUrlParser: UrlToFileInfoParser
 
     @Before
     fun setUp() {
-        urlParser = LocalUrlParser()
-        invalideUrlParser = LocalUrlParser()
+        urlParser = UrlToFileInfoParser()
+        invalideUrlParser = UrlToFileInfoParser()
     }
 
     @Test

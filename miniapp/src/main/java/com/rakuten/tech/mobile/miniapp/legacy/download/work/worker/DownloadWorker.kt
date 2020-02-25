@@ -5,7 +5,7 @@ import androidx.work.ListenableWorker.Result.failure
 import androidx.work.ListenableWorker.Result.success
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
+import com.rakuten.tech.mobile.miniapp.storage.UrlToFileInfoParser
 import com.rakuten.tech.mobile.miniapp.legacy.download.DownloadMiniAppImpl
 import com.rakuten.tech.mobile.miniapp.legacy.download.listener.FileDownloadListener
 import com.rakuten.tech.mobile.miniapp.legacy.download.network.api.MiniAppServiceApi
@@ -61,7 +61,7 @@ class DownloadWorker(context: Context, workerParams: WorkerParameters) :
                 retrofitClient.retrofit.create(MiniAppServiceApi::class.java).getFile(fixedUrl)
             fileDownloadRequest.enqueue(
                 FileDownloadListener(
-                    LocalUrlParser().getAppIdForLegacy(
+                    UrlToFileInfoParser().getAppIdForLegacy(
                         manifestUrl
                     ),
                     fixedUrl

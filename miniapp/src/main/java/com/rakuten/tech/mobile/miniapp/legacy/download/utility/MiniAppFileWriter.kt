@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.legacy.download.utility
 
 import android.content.Context
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
+import com.rakuten.tech.mobile.miniapp.storage.UrlToFileInfoParser
 import com.rakuten.tech.mobile.miniapp.legacy.download.DownloadMiniAppImpl
 import okhttp3.ResponseBody
 import timber.log.Timber
@@ -21,7 +21,7 @@ class MiniAppFileWriter {
      * Dagger injected variable.
      */
     @Inject
-    lateinit var localUrlParser: LocalUrlParser
+    lateinit var urlToFileInfoParser: UrlToFileInfoParser
     /**
      * Dagger injected variable.
      */
@@ -38,9 +38,9 @@ class MiniAppFileWriter {
     fun writeResponseBodyToDisk(response: ResponseBody, appId: String, fileUrl: String) {
 
         // Parse appID, versionId, and appropriate directories.
-        val versionId = localUrlParser.getVersionIdForLegacy(fileUrl)
-        val path = localUrlParser.getFilePath(fileUrl)
-        val fileName = localUrlParser.getFileName(fileUrl)
+        val versionId = urlToFileInfoParser.getVersionIdForLegacy(fileUrl)
+        val path = urlToFileInfoParser.getFilePath(fileUrl)
+        val fileName = urlToFileInfoParser.getFileName(fileUrl)
 
         try {
             val dir = "${context.filesDir?.path}/$MINI_APP_PATH/$appId/$versionId/$path"

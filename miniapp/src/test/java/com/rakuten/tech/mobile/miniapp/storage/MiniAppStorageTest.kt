@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
 import org.junit.Test
 
 class MiniAppStorageTest {
@@ -49,5 +48,5 @@ class MiniAppStorageTest {
 
     private fun getMockedMiniAppStorage() = MiniAppStorage(mock(), mock(), mock())
 
-    private fun getMockedLocalUrlParser() = mock<LocalUrlParser>()
+    private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()
 }

@@ -1,11 +1,11 @@
-package com.rakuten.tech.mobile.miniapp.legacy.core.utils
+package com.rakuten.tech.mobile.miniapp.storage
 
 import java.io.File
 
 /**
  * URL parser. Manifest URL contains information such as MiniApp ID, Version ID.
  */
-class LocalUrlParser {
+class UrlToFileInfoParser {
     // TODO: Add URL validator for each method.
 
     /**

@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
 import java.io.File
 import java.io.InputStream
 
@@ -10,7 +9,7 @@ private const val SUB_DIR_MINIAPP = "miniapp"
 internal class MiniAppStorage(
     val fileWriter: FileWriter,
     val basePath: File,
-    val localUrlParser: LocalUrlParser = LocalUrlParser()
+    val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
 ) {
 
     @Suppress("TooGenericExceptionCaught")
@@ -36,9 +35,9 @@ internal class MiniAppStorage(
         fileName: String
     ) = "$basePath$filePath$fileName"
 
-    fun getFilePath(file: String) = localUrlParser.getFilePath(file)
+    fun getFilePath(file: String) = urlToFileInfoParser.getFilePath(file)
 
-    fun getFileName(file: String) = localUrlParser.getFileName(file)
+    fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
     fun getSavePathForApp(appId: String, versionId: String) =
         "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId"

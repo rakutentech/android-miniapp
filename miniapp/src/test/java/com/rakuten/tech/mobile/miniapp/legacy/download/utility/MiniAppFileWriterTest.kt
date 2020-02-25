@@ -31,7 +31,7 @@ class MiniAppFileWriterTest : DownloadBaseTest() {
 
     @Test
     fun shouldInjectUrlParser() {
-        assertThat(miniWriter.localUrlParser).isNotNull()
+        assertThat(miniWriter.urlToFileInfoParser).isNotNull()
     }
 
     @Test
