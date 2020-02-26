@@ -10,7 +10,7 @@ import org.junit.Test
 class MiniAppInfoFetcherSpec {
 
     @Test
-    fun `MiniAppInfoFetcher should use correct method of api client method for fetching app list`() =
+    fun `When fetching app list then correct method of ApiClient is used`() =
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val miniAppLister = MiniAppInfoFetcher(apiClient)
@@ -19,7 +19,7 @@ class MiniAppInfoFetcherSpec {
         }
 
     @Test
-    fun `MiniAppInfoFetcher should use correct method of api client for fetching metadata`() =
+    fun `When fetching metadata then correct method of ApiClient is used`() =
         runBlockingTest {
             val apiClient: ApiClient = mock()
             val miniAppLister = MiniAppInfoFetcher(apiClient)

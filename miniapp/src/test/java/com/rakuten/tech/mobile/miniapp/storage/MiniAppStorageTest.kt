@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 class MiniAppStorageTest {
 
     @Test
-    fun `for a given set of app & version id formed base path is retured`() {
+    fun `for a given set of app & version id formed base path is returned`() {
         val miniAppStorage = getMockedMiniAppStorage()
         assertTrue {
             miniAppStorage.getSavePathForApp(
@@ -23,13 +23,13 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `for a given set of base path & file path, formed parent path is retured`() {
+    fun `for a given set of base path & file path, formed parent path is returned`() {
         val miniAppStorage = getMockedMiniAppStorage()
         assertTrue { miniAppStorage.getAbsoluteWritePath("a", "b", "c") == "abc" }
     }
 
     @Test
-    fun `for a given url file path is retured via LocalUrlParser`() {
+    fun `for a given url file path is returned via LocalUrlParser`() {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFilePath(TEST_URL_FILE)
@@ -37,7 +37,7 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `for a given url file name is retured via LocalUrlParser`() {
+    fun `for a given url file name is returned via LocalUrlParser`() {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFileName(TEST_URL_FILE)
