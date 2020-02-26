@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import java.io.File
 import java.io.InputStream
@@ -7,9 +8,9 @@ import java.io.InputStream
 private const val SUB_DIR_MINIAPP = "miniapp"
 
 internal class MiniAppStorage(
-    val fileWriter: FileWriter,
-    val basePath: File,
-    val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
+    private val fileWriter: FileWriter,
+    private val basePath: File,
+    private val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
 ) {
 
     @Suppress("TooGenericExceptionCaught")
@@ -29,14 +30,17 @@ internal class MiniAppStorage(
         }
     }
 
+    @VisibleForTesting
     fun getAbsoluteWritePath(
         basePath: String,
         filePath: String,
         fileName: String
     ) = "$basePath$filePath$fileName"
 
+    @VisibleForTesting
     fun getFilePath(file: String) = urlToFileInfoParser.getFilePath(file)
 
+    @VisibleForTesting
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
     fun getSavePathForApp(appId: String, versionId: String) =

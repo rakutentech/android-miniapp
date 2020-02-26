@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 
 class UrlToFileInfoParserTest {
 
-    lateinit var urlParser: UrlToFileInfoParser
+    private lateinit var urlParser: UrlToFileInfoParser
 
     @Before
     fun setUp() {

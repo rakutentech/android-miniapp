@@ -6,8 +6,8 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 internal class MiniAppDownloader(
-    val storage: MiniAppStorage,
-    val apiClient: ApiClient
+    private val storage: MiniAppStorage,
+    private val apiClient: ApiClient
 ) {
 
     suspend fun startDownload(appId: String, versionId: String): String {
@@ -15,6 +15,7 @@ internal class MiniAppDownloader(
         return downloadMiniApp(appId, versionId, manifest)
     }
 
+    @VisibleForTesting
     suspend fun fetchManifest(
         appId: String,
         versionId: String

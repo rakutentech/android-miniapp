@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 
 @SuppressLint("SetJavaScriptEnabled")
-internal class RealMiniAppDisplay(context: Context, val basePath: String) : MiniAppDisplay,
+internal class RealMiniAppDisplay(context: Context, private val basePath: String) : MiniAppDisplay,
     WebView(context) {
 
     init {

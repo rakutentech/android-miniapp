@@ -3,9 +3,9 @@ package com.rakuten.tech.mobile.miniapp
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
 internal class RealMiniApp(
-    val miniAppDownloader: MiniAppDownloader,
-    val displayer: Displayer,
-    val miniAppInfoFetcher: MiniAppInfoFetcher
+    private val miniAppDownloader: MiniAppDownloader,
+    private val displayer: Displayer,
+    private val miniAppInfoFetcher: MiniAppInfoFetcher
 ) : MiniApp() {
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
