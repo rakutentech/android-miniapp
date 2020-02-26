@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.HttpException
@@ -74,14 +75,18 @@ internal class RetrofitRequestExecutor(
     suspend fun <T> executeRequest(call: Call<T>): T {
         try {
             val response = call.execute()
-            if (response.isSuccessful) {
-                return response.body()!! // Body can't be null if request was successful
-            } else {
-                val error =
-                    response.errorBody()!! // Error body can't be null if request wasn't successful
-                throw sdkExceptionFromHttpException(response, error)
+            when {
+                response.isSuccessful -> {
+                    // Body shouldn't be null if request was successful
+                    return response.body() ?: throw sdkExceptionForInternalServerError()
+                }
+                else -> {
+                    // Error body shouldn't be null if request wasn't successful
+                    val error = response.errorBody() ?: throw sdkExceptionForInternalServerError()
+                    throw sdkExceptionFromHttpException(response, error)
+                }
             }
-        } catch (error: Exception) { // hotfix to catch the case when response is not Type T
+        } catch (error: Exception) { // when response is not Type T or malformed JSON is received
             throw MiniAppSdkException(error)
         }
     }

@@ -13,7 +13,7 @@ internal class MiniAppInfoFetcher(private val apiClient: ApiClient) {
             apiClient.fetchInfo(appId)
         } catch (error: Exception) {
             // If backend functions correctly, this should never happen
-            throw MiniAppSdkException(error)
+            throw sdkExceptionForInternalServerError()
         }
     }
 }

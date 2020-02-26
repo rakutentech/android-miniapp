@@ -28,7 +28,6 @@ internal class MiniAppDownloader(
     ): String {
         val baseSavePath = storage.getSavePathForApp(appId, versionId)
         when {
-            // If backend functions correctly, this should never happen
             isManifestValid(manifest) -> {
                 for (file in manifest.files) {
                     val response = apiClient.downloadFile(file)
@@ -36,7 +35,8 @@ internal class MiniAppDownloader(
                 }
                 return baseSavePath
             }
-            else -> throw MiniAppSdkException("Internal Server Error")
+            // If backend functions correctly, this should never happen
+            else -> throw sdkExceptionForInternalServerError()
         }
     }
 
