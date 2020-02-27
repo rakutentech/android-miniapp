@@ -21,7 +21,7 @@ internal class UrlToFileInfoParser {
             versionIndex < 0 -> ""
             else -> {
                 var path = "/"
-                // The third string after "version" is the beginning of path.
+                // The third string after "map-published" is the beginning of path.
                 subList(versionIndex + 3, lastIndex).forEach { path += "$it/" }
                 path
             }
