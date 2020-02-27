@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 import java.io.File
 
 private const val KEY_MAP_PUB = "map-published"
+private const val INDEX_PATH = 3
 
 internal class UrlToFileInfoParser {
 
@@ -13,7 +14,6 @@ internal class UrlToFileInfoParser {
      * "/foo/bar/" will be returned.
      * Returns empty String when not found.
      */
-    @Suppress("MagicNumber")
     fun getFilePath(fileUrl: String): String = fileUrl.split(File.separator).run {
         val versionIndex = indexOf(KEY_MAP_PUB)
         return when {
@@ -22,7 +22,7 @@ internal class UrlToFileInfoParser {
             else -> {
                 var path = "/"
                 // The third string after "map-published" is the beginning of path.
-                subList(versionIndex + 3, lastIndex).forEach { path += "$it/" }
+                subList(versionIndex + INDEX_PATH, lastIndex).forEach { path += "$it/" }
                 path
             }
         }
