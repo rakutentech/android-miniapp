@@ -6,7 +6,6 @@ apply plugin: 'kotlin-kapt'
 android {
 
     defaultConfig {
-        buildConfigField "String", "MINI_APP_BASE_URL", "\"https://www.example.com/\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
