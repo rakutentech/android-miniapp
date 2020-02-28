@@ -7,6 +7,7 @@ import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
@@ -66,7 +67,7 @@ open class ApiClientSpec {
     @Test
     fun `should download a file from the given url`() = runBlockingTest {
         val mockCall: Call<ResponseBody> = mock()
-        val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
+        val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling
                 mockDownloadApi
                     .downloadFile(TEST_URL_FILE) itReturns mockCall

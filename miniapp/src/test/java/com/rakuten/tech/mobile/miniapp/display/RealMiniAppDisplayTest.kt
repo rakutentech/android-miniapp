@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 class RealMiniAppDisplayTest {
 
-    lateinit var context: Context
+    private lateinit var context: Context
 
     @Before
     fun setup() {

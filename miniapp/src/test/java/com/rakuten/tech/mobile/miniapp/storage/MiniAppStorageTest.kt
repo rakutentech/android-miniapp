@@ -1,38 +1,35 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
-import com.rakuten.tech.mobile.miniapp.legacy.core.utils.LocalUrlParser
 import org.junit.Test
+import kotlin.test.assertTrue
 
 class MiniAppStorageTest {
 
     @Test
-    fun `for a given set of app & version id formed base path is retured`() {
+    fun `for a given set of app & version id formed base path is returned`() {
         val miniAppStorage = getMockedMiniAppStorage()
-        assertThat(
+        assertTrue {
             miniAppStorage.getSavePathForApp(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
-            )
-        )
-            .isEqualTo("null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION")
+            ) == "null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION"
+        }
     }
 
     @Test
-    fun `for a given set of base path & file path, formed parent path is retured`() {
+    fun `for a given set of base path & file path, formed parent path is returned`() {
         val miniAppStorage = getMockedMiniAppStorage()
-        assertThat(miniAppStorage.getAbsoluteWritePath("a", "b", "c"))
-            .isEqualTo("abc")
+        assertTrue { miniAppStorage.getAbsoluteWritePath("a", "b", "c") == "abc" }
     }
 
     @Test
-    fun `for a given url file path is retured via LocalUrlParser`() {
+    fun `for a given url file path is returned via LocalUrlParser`() {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFilePath(TEST_URL_FILE)
@@ -40,7 +37,7 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `for a given url file name is retured via LocalUrlParser`() {
+    fun `for a given url file name is returned via LocalUrlParser`() {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFileName(TEST_URL_FILE)
@@ -49,5 +46,5 @@ class MiniAppStorageTest {
 
     private fun getMockedMiniAppStorage() = MiniAppStorage(mock(), mock(), mock())
 
-    private fun getMockedLocalUrlParser() = mock<LocalUrlParser>()
+    private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()
 }

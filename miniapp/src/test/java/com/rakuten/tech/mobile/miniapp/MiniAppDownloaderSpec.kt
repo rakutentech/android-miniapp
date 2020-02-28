@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.test.runBlockingTest
-import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
@@ -30,7 +30,7 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
 
-            val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
+            val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
             When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
             downloader.startDownload(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
