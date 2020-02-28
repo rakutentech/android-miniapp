@@ -2,36 +2,30 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import com.rakuten.tech.mobile.miniapp.INVALID_FILE_URL_PATH
 import com.rakuten.tech.mobile.miniapp.VALID_FILE_URL_PATH
-import org.junit.Before
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
-import kotlin.test.assertTrue
 
 class UrlToFileInfoParserTest {
 
-    private lateinit var urlParser: UrlToFileInfoParser
-
-    @Before
-    fun setUp() {
-        urlParser = UrlToFileInfoParser()
-    }
+    private var urlParser = UrlToFileInfoParser()
 
     @Test
     fun shouldGetFilePathWithValidUrl() {
-        assertTrue { urlParser.getFilePath(VALID_FILE_URL_PATH) == "/a/b/" }
+        urlParser.getFilePath(VALID_FILE_URL_PATH) shouldEqual "/a/b/"
     }
 
     @Test
     fun shouldGetEmptyFilePathWithInvalidUrl() {
-        assertTrue { urlParser.getFilePath(INVALID_FILE_URL_PATH) == "" }
+        urlParser.getFilePath(INVALID_FILE_URL_PATH) shouldEqual ""
     }
 
     @Test
     fun shouldGetFileNameWithValidUrl() {
-        assertTrue { urlParser.getFileName(VALID_FILE_URL_PATH) == "index.html" }
+        urlParser.getFileName(VALID_FILE_URL_PATH) shouldEqual "index.html"
     }
 
     @Test
     fun shouldGetFileNameWithInvalidUrl() {
-        assertTrue { urlParser.getFileName(INVALID_FILE_URL_PATH) == "" }
+        urlParser.getFileName(INVALID_FILE_URL_PATH) shouldEqual ""
     }
 }
