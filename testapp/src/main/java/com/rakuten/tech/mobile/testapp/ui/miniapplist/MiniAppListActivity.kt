@@ -1,11 +1,20 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListFragment
 
 class MiniAppListActivity : AppCompatActivity() {
+
+    companion object {
+        fun start(context: Context) {
+            context.startActivity(Intent(context, MiniAppListActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
