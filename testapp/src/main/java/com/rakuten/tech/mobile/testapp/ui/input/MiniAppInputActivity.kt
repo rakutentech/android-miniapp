@@ -3,15 +3,14 @@ package com.rakuten.tech.mobile.testapp.ui.input
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
 
-class MiniAppInputActivity : AppCompatActivity() {
+class MiniAppInputActivity : BaseActivity() {
 
     companion object {
         fun start(context: Context) {
@@ -25,11 +24,11 @@ class MiniAppInputActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_input_activity)
 
-        btnDisplay.setOnClickListener(onDisplayClick)
-        btnDisplayList.setOnClickListener { MiniAppListActivity.start(this) }
+        btnDisplay.setOnClickListener{ singleExecution.run { display() } }
+        btnDisplayList.setOnClickListener { singleExecution.run { MiniAppListActivity.start(this) } }
     }
 
-    private val onDisplayClick = View.OnClickListener {
+    private fun display() {
         val isAppIdValid = isValidInput(edtAppId)
         val isVersionIdValid = isValidInput(edtVersionId)
 

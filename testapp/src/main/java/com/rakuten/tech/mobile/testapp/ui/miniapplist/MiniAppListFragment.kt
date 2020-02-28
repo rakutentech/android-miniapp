@@ -49,7 +49,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        binding.btnInput.setOnClickListener { MiniAppInputActivity.start(context!!) }
+        binding.btnInput.setOnClickListener {
+            singleExecution.run { MiniAppInputActivity.start(context!!) }
+        }
 
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppListViewModel::class.java).apply {
@@ -68,6 +70,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     override fun onMiniAppItemClick(appId: String, versionId: String) {
-        MiniAppDisplayActivity.start(context!!, appId, versionId)
+        singleExecution.run {MiniAppDisplayActivity.start(context!!, appId, versionId)}
     }
 }
