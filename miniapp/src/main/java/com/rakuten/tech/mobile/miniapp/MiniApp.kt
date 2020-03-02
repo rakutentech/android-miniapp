@@ -1,6 +1,12 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
+import android.util.ArrayMap
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -40,25 +46,84 @@ abstract class MiniApp internal constructor() {
 
     companion object {
         private lateinit var instance: MiniApp
+        private val instances: MutableMap<String, MiniApp> = ArrayMap()
+        private lateinit var context: Context
 
         /**
          * Instance of [MiniApp].
+         * Uses default values for [MiniAppSdkConfig] obtained from AndroidManifest.xml.
          *
          * @return [MiniApp] instance
          */
         @JvmStatic
         fun instance(): MiniApp = instance
 
+        /**
+         * Instance of [MiniApp] with custom [MiniAppSdkConfig].
+         * This function should only be used if you wish to use the SDK with custom settings
+         * which are changed at runtime for QA purposes, etc.
+         * Note that the default [instance] uses the config settings from AndroidManifest.xml.
+         *
+         * @return [MiniApp] instance
+         */
+        @JvmStatic
+        fun instance(settings: MiniAppSdkConfig): MiniApp {
+            val instance = instances[settings.key] ?: createRealMiniApp(context, settings)
+            instances[settings.key] = instance
+
+            return instance
+        }
+
         internal fun init(
-            miniAppDownloader: MiniAppDownloader,
-            displayer: Displayer,
-            miniAppInfoFetcher: MiniAppInfoFetcher
+            context: Context,
+            baseUrl: String,
+            rasAppId: String,
+            subscriptionKey: String,
+            hostAppVersionId: String
         ) {
-            instance = RealMiniApp(
-                miniAppDownloader = miniAppDownloader,
-                displayer = displayer,
-                miniAppInfoFetcher = miniAppInfoFetcher
+            this.context = context
+            val settings = MiniAppSdkConfig(
+                baseUrl = baseUrl,
+                rasAppId = rasAppId,
+                subscriptionKey = subscriptionKey,
+                hostAppVersionId = hostAppVersionId
+            )
+
+            instance = createRealMiniApp(context, settings)
+            instances[settings.key] = instance
+        }
+
+        private fun createRealMiniApp(
+            context: Context,
+            settings: MiniAppSdkConfig
+        ): RealMiniApp {
+            val miniAppStatus = MiniAppStatus(context)
+            val storage = MiniAppStorage(FileWriter(), context.filesDir)
+            val apiClient = ApiClient(
+                baseUrl = settings.baseUrl,
+                rasAppId = settings.rasAppId,
+                subscriptionKey = settings.subscriptionKey,
+                hostAppVersionId = settings.hostAppVersionId
+            )
+
+            return RealMiniApp(
+                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
+                displayer = Displayer(context),
+                miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )
         }
     }
+}
+
+/**
+ * Config for the Mini App SDK.
+ * Contains settings which are used when sending requests to the Mini App API.
+ */
+data class MiniAppSdkConfig(
+    var baseUrl: String,
+    var rasAppId: String,
+    var subscriptionKey: String,
+    var hostAppVersionId: String
+) {
+    internal val key = "$baseUrl-$rasAppId-$subscriptionKey-$hostAppVersionId"
 }
