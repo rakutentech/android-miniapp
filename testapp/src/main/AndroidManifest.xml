@@ -13,7 +13,8 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
+            android:label="@string/action_display_list">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +25,7 @@
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"/>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
-            android:label="Input MiniApp"/>
+            android:label="@string/action_go_input"/>
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"

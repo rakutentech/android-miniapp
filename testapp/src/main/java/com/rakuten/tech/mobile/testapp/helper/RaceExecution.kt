@@ -5,7 +5,7 @@ import android.os.SystemClock
 /**
  * The simple controller which ensures only one method executed at a time.
  */
-class SingleExecution {
+class RaceExecution {
     private var interval:Int = 800
     private var lastTimeClicked:Long = 0
 

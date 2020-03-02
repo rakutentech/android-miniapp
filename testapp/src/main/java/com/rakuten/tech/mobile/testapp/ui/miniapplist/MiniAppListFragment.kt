@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
@@ -40,6 +41,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
             container,
             false
         )
+        binding.fragment = this
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
         miniAppListAdapter = MiniAppListAdapter(miniapps, this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
@@ -48,10 +50,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        binding.btnInput.setOnClickListener {
-            singleExecution.run { MiniAppInputActivity.start(context!!) }
-        }
 
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppListViewModel::class.java).apply {
@@ -70,6 +68,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     override fun onMiniAppItemClick(appId: String, versionId: String) {
-        singleExecution.run {MiniAppDisplayActivity.start(context!!, appId, versionId)}
+        raceExecution.run { MiniAppDisplayActivity.start(context!!, appId, versionId) }
+    }
+
+    fun switchToInput() {
+        raceExecution.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 }
