@@ -3,9 +3,9 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.os.SystemClock
 
 /**
- * The simple controller which ensures only one method executed at a time.
+ * A simple controller that ensures only one method is executed at a time where there is a race between two.
  */
-class RaceExecution {
+class RaceExecutor {
     private var interval:Int = 800
     private var lastTimeClicked:Long = 0
 

@@ -68,10 +68,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     override fun onMiniAppItemClick(appId: String, versionId: String) {
-        raceExecution.run { MiniAppDisplayActivity.start(context!!, appId, versionId) }
+        raceExecutor.run { MiniAppDisplayActivity.start(context!!, appId, versionId) }
     }
 
     fun switchToInput() {
-        raceExecution.run { activity?.launchActivity<MiniAppInputActivity>() }
+        raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 }

@@ -15,8 +15,8 @@ class MiniAppInputActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_input_activity)
 
-        btnDisplay.setOnClickListener{ raceExecution.run { display() } }
-        btnDisplayList.setOnClickListener { raceExecution.run { launchActivity<MiniAppListActivity>() } }
+        btnDisplay.setOnClickListener{ raceExecutor.run { display() } }
+        btnDisplayList.setOnClickListener { raceExecutor.run { launchActivity<MiniAppListActivity>() } }
     }
 
     private fun display() {
