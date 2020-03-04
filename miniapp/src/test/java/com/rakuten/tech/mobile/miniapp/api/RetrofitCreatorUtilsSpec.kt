@@ -18,7 +18,7 @@ class RetrofitCreatorUtilsSpec private constructor(
     constructor() : this(MockWebServer())
 
     private val mockRasSdkHeaders: RasSdkHeaders = mock()
-    lateinit var baseUrl: String
+    private lateinit var baseUrl: String
 
     @Before
     fun setup() {

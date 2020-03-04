@@ -4,45 +4,43 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import junit.framework.TestCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
-import org.amshove.kluent.shouldContain
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@ExperimentalCoroutinesApi
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()
     private val mockRequestExecutor: RetrofitRequestExecutor = mock()
-    private val mockListingApi: ListingApi = mock()
+    private val mockAppInfoApi: AppInfoApi = mock()
     private val mockManifestApi: ManifestApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
 
+    private val miniAppInfo = MiniAppInfo(
+        id = TEST_MA_ID,
+        displayName = TEST_MA_DISPLAY_NAME,
+        icon = TEST_MA_ICON,
+        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+    )
+
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
-        val miniAppInfo = MiniAppInfo(
-            id = TEST_MA_ID,
-            versionId = TEST_MA_VERSION,
-            name = TEST_MA_NAME,
-            description = TEST_MA_DESCRIPTION,
-            icon = TEST_MA_ICON,
-            files = listOf(TEST_URL_HTTPS_1)
-        )
         val mockCall: Call<List<MiniAppInfo>> = mock()
-        When calling mockListingApi.list(any()) itReturns mockCall
+
+        When calling mockAppInfoApi.list(any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
-        val apiClient = createApiClient(listingApi = mockListingApi)
-
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.list()[0] shouldEqual miniAppInfo
     }
 
@@ -53,24 +51,23 @@ open class ApiClientSpec {
         val mockCall: Call<ManifestEntity> = mock()
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns ManifestEntity(fileList)
 
-        val apiClient = createApiClient(manifestApi = mockManifestApi)
-
-        apiClient
-            .fetchFileList(
+        createApiClient(manifestApi = mockManifestApi).apply {
+            fetchFileList(
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
             ) shouldEqual manifestEntity
+        }
     }
 
     @Test
     fun `should download a file from the given url`() = runBlockingTest {
         val mockCall: Call<ResponseBody> = mock()
-        val mockResponseBody = ResponseBody.create(null, TEST_BODY_CONTENT)
+        val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling
                 mockDownloadApi
                     .downloadFile(TEST_URL_FILE) itReturns mockCall
@@ -84,18 +81,44 @@ open class ApiClientSpec {
         response.contentLength() shouldEqual mockResponseBody.contentLength()
     }
 
+    @Test
+    fun `should fetch meta data for a mini app for a given appId`() = runBlockingTest {
+        val mockCall: Call<List<MiniAppInfo>> = mock()
+
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfo(TEST_MA_ID) shouldEqual miniAppInfo
+    }
+
+    @Test
+    fun `fetchInfo should return only the first item`() = runBlockingTest {
+        val mockCall: Call<List<MiniAppInfo>> = mock()
+        val secondItem = miniAppInfo.copy()
+        val resultList = listOf(miniAppInfo, secondItem)
+
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns resultList
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostAppVersion: String = TEST_MA_VERSION,
+        hostAppId: String = TEST_HA_ID_APP,
+        hostAppVersionId: String = TEST_HA_ID_VERSION,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
-        listingApi: ListingApi = mockListingApi,
+        appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
-        hostAppVersion = hostAppVersion,
+        hostAppId = hostAppId,
+        hostAppVersionId = hostAppVersionId,
         requestExecutor = requestExecutor,
-        listingApi = listingApi,
+        appInfoApi = appInfoApi,
         manifestApi = manifestApi,
         downloadApi = downloadApi
     )
@@ -129,6 +152,7 @@ open class RetrofitRequestExecutorSpec private constructor(
     )
 }
 
+@ExperimentalCoroutinesApi
 open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
     @Test
@@ -142,6 +166,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
     }
 }
 
+@ExperimentalCoroutinesApi
 open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
     @Test(expected = MiniAppSdkException::class)

@@ -5,7 +5,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class Displayer(val context: Context) {
+internal class Displayer(private val context: Context) {
 
     suspend fun createMiniAppDisplay(basePath: String, appId: String): MiniAppDisplay =
         withContext(Dispatchers.Main) {

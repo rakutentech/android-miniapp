@@ -8,3 +8,7 @@ class MiniAppSdkException(message: String) : Exception(message) {
 
     constructor(e: Exception) : this("Found some problem, $e.message")
 }
+
+internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Internal server error")
+
+internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid arguments")

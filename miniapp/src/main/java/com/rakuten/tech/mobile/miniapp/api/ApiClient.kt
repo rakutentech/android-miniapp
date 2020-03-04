@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.HttpException
@@ -12,34 +13,46 @@ import retrofit2.http.Url
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val hostAppVersion: String,
-    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit),
-    private val listingApi: ListingApi = retrofit.create(ListingApi::class.java),
+    private val hostAppVersionId: String,
+    private val hostAppId: String,
+    private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
+    private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
-    private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java)
+    private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
     constructor(
         baseUrl: String,
         rasAppId: String,
         subscriptionKey: String,
-        hostAppVersion: String
+        hostAppVersionId: String
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
             rasAppId = rasAppId,
             subscriptionKey = subscriptionKey
         ),
-        hostAppVersion = hostAppVersion
+        hostAppVersionId = hostAppVersionId,
+        hostAppId = rasAppId
     )
 
     suspend fun list(): List<MiniAppInfo> {
-        val request = listingApi.list(hostAppVersion = hostAppVersion)
+        val request = appInfoApi.list(hostAppId, hostAppVersionId)
         return requestExecutor.executeRequest(request)
     }
 
+    suspend fun fetchInfo(appId: String): MiniAppInfo {
+        val request = appInfoApi.fetchInfo(hostAppId, hostAppVersionId, appId)
+        return requestExecutor.executeRequest(request).first()
+    }
+
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
-        val request = manifestApi.fetchFileListFromManifest(miniAppId, versionId)
+        val request = manifestApi.fetchFileListFromManifest(
+            hostAppId = hostAppId,
+            miniAppId = miniAppId,
+            versionId = versionId,
+            hostAppVersionId = hostAppVersionId
+        )
         return requestExecutor.executeRequest(request)
     }
 
@@ -62,14 +75,18 @@ internal class RetrofitRequestExecutor(
     suspend fun <T> executeRequest(call: Call<T>): T {
         try {
             val response = call.execute()
-            if (response.isSuccessful) {
-                return response.body()!! // Body can't be null if request was successful
-            } else {
-                val error =
-                    response.errorBody()!! // Error body can't be null if request wasn't successful
-                throw sdkExceptionFromHttpException(response, error)
+            when {
+                response.isSuccessful -> {
+                    // Body shouldn't be null if request was successful
+                    return response.body() ?: throw sdkExceptionForInternalServerError()
+                }
+                else -> {
+                    // Error body shouldn't be null if request wasn't successful
+                    val error = response.errorBody() ?: throw sdkExceptionForInternalServerError()
+                    throw sdkExceptionFromHttpException(response, error)
+                }
             }
-        } catch (error: Exception) { // hotfix to catch the case when response is not Type T
+        } catch (error: Exception) { // when response is not Type T or malformed JSON is received
             throw MiniAppSdkException(error)
         }
     }

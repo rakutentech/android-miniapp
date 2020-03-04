@@ -7,9 +7,9 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 internal class MiniAppDownloader(
-    val storage: MiniAppStorage,
-    val apiClient: ApiClient,
-    val miniAppStatus: MiniAppStatus
+    private val storage: MiniAppStorage,
+    private val apiClient: ApiClient,
+    private val miniAppStatus: MiniAppStatus
 ) {
 
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
@@ -36,7 +36,6 @@ internal class MiniAppDownloader(
     ): String {
         val baseSavePath = storage.getSavePathForApp(appId, versionId)
         when {
-            // If backend functions correctly, this should never happen
             isManifestValid(manifest) -> {
                 for (file in manifest.files) {
                     val response = apiClient.downloadFile(file)
@@ -45,12 +44,13 @@ internal class MiniAppDownloader(
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
                 return baseSavePath
             }
-            else -> throw MiniAppSdkException("Internal Server Error")
+            // If backend functions correctly, this should never happen
+            else -> throw sdkExceptionForInternalServerError()
         }
     }
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
     internal fun isManifestValid(manifest: ManifestEntity) =
-        manifest != null && manifest.files != null && !manifest.files.isEmpty()
+        manifest != null && manifest.files != null && manifest.files.isNotEmpty()
 }

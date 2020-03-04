@@ -51,17 +51,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation "com.google.android.material:material:$material"
-    implementation "com.google.dagger:dagger-android:$dagger"
-    implementation "com.google.dagger:dagger:$dagger"
-    kapt "com.google.dagger:dagger-compiler:$dagger"
-
-    implementation "com.jakewharton.timber:timber:$timber"
-
     implementation "com.github.bumptech.glide:glide:$glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
+    implementation "com.google.android.material:material:$material"
 
     testImplementation "junit:junit:$junit"
-    androidTestImplementation "androidx.test:runner:$runner"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espressoCore"
 }

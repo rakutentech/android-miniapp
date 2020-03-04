@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class DisplayerTest {
 
-    lateinit var context: Context
+    private lateinit var context: Context
 
     @Before
     fun setup() {
