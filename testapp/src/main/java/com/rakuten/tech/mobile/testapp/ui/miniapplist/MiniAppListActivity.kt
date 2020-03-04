@@ -1,9 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListFragment
 
 class MiniAppListActivity : AppCompatActivity() {
 

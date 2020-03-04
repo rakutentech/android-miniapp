@@ -61,6 +61,8 @@ In your `AndroidManifest.xml`:
 </manifest>
 ```
 
+**Note:**  All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
+
 ### #3 Create and display a Mini App
 
 Calling `MiniApp.create` will download the Mini App if it has not yet been downloaded, or it will download the latest version of the Mini App if an old version is already downloaded. A view will then be returned which will display the Mini App.

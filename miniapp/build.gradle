@@ -39,6 +39,7 @@ dependencies {
     compileOnly "javax.annotation:jsr250-api:$jsr250"
 
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
+    implementation "androidx.webkit:webkit:$webkit"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
