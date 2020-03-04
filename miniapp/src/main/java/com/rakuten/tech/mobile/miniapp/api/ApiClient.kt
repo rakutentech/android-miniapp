@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Converter
 import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -63,52 +64,79 @@ internal class ApiClient @VisibleForTesting constructor(
 }
 
 internal class RetrofitRequestExecutor(
-    retrofit: Retrofit
+    private val retrofit: Retrofit
 ) {
 
-    private val errorConvertor = retrofit.responseBodyConverter<ErrorResponse>(
-        ErrorResponse::class.java,
-        arrayOfNulls<Annotation>(0)
-    )
+    private inline fun <reified T : ErrorResponse> createErrorConvertor(retrofit: Retrofit) =
+        retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
-    @Suppress("TooGenericExceptionCaught")
-    suspend fun <T> executeRequest(call: Call<T>): T {
-        try {
-            val response = call.execute()
-            when {
-                response.isSuccessful -> {
-                    // Body shouldn't be null if request was successful
-                    return response.body() ?: throw sdkExceptionForInternalServerError()
-                }
-                else -> {
-                    // Error body shouldn't be null if request wasn't successful
-                    val error = response.errorBody() ?: throw sdkExceptionForInternalServerError()
-                    throw sdkExceptionFromHttpException(response, error)
-                }
+    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
+    suspend fun <T> executeRequest(call: Call<T>): T = try {
+        val response = call.execute()
+        when {
+            response.isSuccessful -> {
+                // Body shouldn't be null if request was successful
+                response.body() ?: throw sdkExceptionForInternalServerError()
             }
-        } catch (error: Exception) { // when response is not Type T or malformed JSON is received
-            throw MiniAppSdkException(error)
+            else -> throw exceptionForHttpError<T>(response)
+        }
+    } catch (error: Exception) { // when response is not Type T or malformed JSON is received
+        throw MiniAppSdkException(error)
+    }
+
+    @Throws(MiniAppSdkException::class)
+    @Suppress("MagicNumber", "ThrowsCount")
+    private fun <T> exceptionForHttpError(response: Response<T>): MiniAppSdkException {
+        // Error body shouldn't be null if request wasn't successful
+        val errorData = response.errorBody() ?: throw sdkExceptionForInternalServerError()
+        when (response.code()) {
+            401, 403 -> throw MiniAppSdkException(
+                convertAuthErrorToMsg(
+                    response, errorData, createErrorConvertor(retrofit)
+                )
+            )
+            else -> throw MiniAppSdkException(
+                convertStandardHttpErrorToMsg(
+                    response, errorData, createErrorConvertor(retrofit)
+                )
+            )
         }
     }
 
-    private fun sdkExceptionFromHttpException(
+    private fun convertAuthErrorToMsg(
         response: Response<in Nothing>,
-        error: ResponseBody
-    ): MiniAppSdkException {
-        return MiniAppSdkException(
-            MiniAppHttpException(
-                response = response,
-                errorMessage = errorConvertor.convert(error)?.message
-                    ?: "No error message provided by server."
-            ).errorMessage
-        )
-    }
+        error: ResponseBody,
+        converter: Converter<ResponseBody, AuthErrorResponse>
+    ) = errorMsgFromHttpException(response, converter.convert(error)?.message)
+
+    private fun convertStandardHttpErrorToMsg(
+        response: Response<in Nothing>,
+        error: ResponseBody,
+        converter: Converter<ResponseBody, HttpErrorResponse>
+    ) = errorMsgFromHttpException(response, converter.convert(error)?.message)
+
+    private fun errorMsgFromHttpException(
+        response: Response<in Nothing>,
+        error: String?
+    ) = MiniAppHttpException(
+        response = response,
+        errorMessage = error ?: "No error message provided by server."
+    ).message()
 }
 
-internal data class ErrorResponse(
+internal data class HttpErrorResponse(
     val code: Int,
+    override val message: String
+) : ErrorResponse
+
+internal data class AuthErrorResponse(
+    val code: String,
+    override val message: String
+) : ErrorResponse
+
+internal interface ErrorResponse {
     val message: String
-)
+}
 
 /**
  * Exception thrown when the Mini App API returns an error response.
