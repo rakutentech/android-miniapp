@@ -13,6 +13,7 @@ internal class MiniAppDownloader(
 ) {
 
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
+        apiClient.fetchInfo(appId).version.versionId != versionId -> throw sdkExceptionForInvalidVersion()
         miniAppStatus.isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
         else -> startDownload(appId, versionId)
     }

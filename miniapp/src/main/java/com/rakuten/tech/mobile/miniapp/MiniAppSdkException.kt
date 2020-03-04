@@ -12,3 +12,5 @@ class MiniAppSdkException(message: String) : Exception(message) {
 internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Internal server error")
 
 internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid arguments")
+
+internal fun sdkExceptionForInvalidVersion() = MiniAppSdkException("Invalid Miniapp version")
