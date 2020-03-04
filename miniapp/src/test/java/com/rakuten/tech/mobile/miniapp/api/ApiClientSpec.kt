@@ -254,7 +254,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         """.trimIndent()
     }
 
-    private val errorBodyForApiCatalog = { code: String, message: String ->
+    private val apiCatalogErrorBody = { code: String, message: String ->
         """
             {
                 "code": "$code",
@@ -275,5 +275,5 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         message: String = TEST_ERROR_MSG
     ) = MockResponse()
         .setResponseCode(code)
-        .setBody(errorBodyForApiCatalog(code.toString(), message))
+        .setBody(apiCatalogErrorBody(code.toString(), message))
 }

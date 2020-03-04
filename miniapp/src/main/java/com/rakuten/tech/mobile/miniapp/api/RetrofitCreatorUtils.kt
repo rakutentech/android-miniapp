@@ -33,11 +33,11 @@ internal fun createRetrofitClient(
         .addHeaderInterceptor(*headers.asArray())
         .build()
     return Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create(
-            GsonBuilder()
-                .setLenient()
-                .create()
-        ))
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder().setLenient().create()
+            )
+        )
         .baseUrl(baseUrl)
         .client(httpClient)
         .build()

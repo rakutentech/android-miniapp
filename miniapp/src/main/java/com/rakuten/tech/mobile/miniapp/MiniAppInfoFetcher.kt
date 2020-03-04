@@ -7,7 +7,7 @@ internal class MiniAppInfoFetcher(private val apiClient: ApiClient) {
 
     suspend fun fetchMiniAppList() = apiClient.list()
 
-    @Suppress("TooGenericExceptionCaught")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     suspend fun getInfo(appId: String) = run {
         try {
             apiClient.fetchInfo(appId)
