@@ -215,7 +215,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should throw exception with the error message returned by server for 401 & 403`() =
         runBlockingTest {
-            mockServer.enqueue(createApiCatalogErrorResponse(message = TEST_ERROR_MSG))
+            mockServer.enqueue(createAuthErrorResponse(message = TEST_ERROR_MSG))
             try {
                 createRequestExecutor()
                     .executeRequest(createApi().fetch())
@@ -254,7 +254,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         """.trimIndent()
     }
 
-    private val apiCatalogErrorBody = { code: String, message: String ->
+    private val authErrorBody = { code: String, message: String ->
         """
             {
                 "code": "$code",
@@ -270,10 +270,10 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         .setResponseCode(code)
         .setBody(standardErrorBody(code, message))
 
-    private fun createApiCatalogErrorResponse(
+    private fun createAuthErrorResponse(
         code: Int = 401,
         message: String = TEST_ERROR_MSG
     ) = MockResponse()
         .setResponseCode(code)
-        .setBody(apiCatalogErrorBody(code.toString(), message))
+        .setBody(authErrorBody(code.toString(), message))
 }

@@ -91,7 +91,7 @@ internal class RetrofitRequestExecutor(
         val errorData = response.errorBody() ?: throw sdkExceptionForInternalServerError()
         when (response.code()) {
             401, 403 -> throw MiniAppSdkException(
-                convertApiCatalogErrorToMsg(
+                convertAuthErrorToMsg(
                     response, errorData, createErrorConvertor(retrofit)
                 )
             )
@@ -103,10 +103,10 @@ internal class RetrofitRequestExecutor(
         }
     }
 
-    private fun convertApiCatalogErrorToMsg(
+    private fun convertAuthErrorToMsg(
         response: Response<in Nothing>,
         error: ResponseBody,
-        converter: Converter<ResponseBody, ApiCatalogErrorResponse>
+        converter: Converter<ResponseBody, AuthErrorResponse>
     ) = errorMsgFromHttpException(response, converter.convert(error)?.message)
 
     private fun convertStandardHttpErrorToMsg(
@@ -129,7 +129,7 @@ internal data class HttpErrorResponse(
     override val message: String
 ) : ErrorResponse
 
-internal data class ApiCatalogErrorResponse(
+internal data class AuthErrorResponse(
     val code: String,
     override val message: String
 ) : ErrorResponse
