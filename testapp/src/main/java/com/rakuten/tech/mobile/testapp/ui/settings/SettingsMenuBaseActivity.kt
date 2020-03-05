@@ -1,0 +1,61 @@
+package com.rakuten.tech.mobile.testapp.ui.settings
+
+import android.os.Bundle
+import android.view.*
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+
+abstract class SettingsMenuBaseActivity: BaseActivity() {
+
+    private lateinit var settings: AppSettings
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        settings = AppSettings.instance
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.set_app_id_and_key -> showAppSettings()
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showAppSettings(): Boolean {
+        val settingsDialog = LayoutInflater.from(this)
+            .inflate(R.layout.app_settings_dialog, null, false)
+
+        val appId = settingsDialog.findViewById(R.id.app_id) as EditText
+        val subscriptionKey = settingsDialog.findViewById(R.id.subscription_key) as EditText
+        appId.setText(settings.appId)
+        subscriptionKey.setText(settings.subscriptionKey)
+
+        AlertDialog.Builder(this)
+            .setTitle("App Settings")
+            .setView(settingsDialog)
+            .setPositiveButton("Save") { dialog, _ ->
+                dialog.dismiss()
+                updateSettings(appId.text.toString(), subscriptionKey.text.toString())
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .show()
+
+        return true
+    }
+
+    private fun updateSettings(appId: String, subscriptionKey: String) {
+        settings.appId = appId
+        settings.subscriptionKey = subscriptionKey
+
+        recreate()
+    }
+}
