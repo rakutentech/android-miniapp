@@ -89,6 +89,7 @@ class MiniAppDownloaderSpec {
             ) itReturns false
 
             setupValidManifestResponse(downloader, apiClient)
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
@@ -112,9 +113,18 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
 
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
         }
     }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when the version of miniapp is not published`() =
+        runBlockingTest {
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
+        }
 
     private suspend fun setupValidManifestResponse(
         downloader: MiniAppDownloader,
@@ -127,5 +137,11 @@ class MiniAppDownloaderSpec {
 
         val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
+    }
+
+    private suspend fun setupLatestMiniAppInfoResponse(apiClient: ApiClient, appId: String, versionId: String) {
+        When calling apiClient.fetchInfo(appId) itReturns
+                MiniAppInfo(id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
+                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId))
     }
 }
