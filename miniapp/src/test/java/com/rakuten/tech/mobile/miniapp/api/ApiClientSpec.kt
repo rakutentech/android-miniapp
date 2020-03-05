@@ -172,7 +172,6 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test(expected = MiniAppSdkException::class)
     fun `should throw when server returns error response`() = runBlockingTest {
         mockServer.enqueue(createErrorResponse())
-
         createRequestExecutor()
             .executeRequest(createApi().fetch())
     }
@@ -214,6 +213,20 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     }
 
     @Test
+    fun `should throw exception with the error message returned by server for 401 & 403`() =
+        runBlockingTest {
+            mockServer.enqueue(createAuthErrorResponse(message = TEST_ERROR_MSG))
+            try {
+                createRequestExecutor()
+                    .executeRequest(createApi().fetch())
+
+                TestCase.fail("Should have thrown ErrorResponseException.")
+            } catch (exception: MiniAppSdkException) {
+                exception.message.toString() shouldContain TEST_ERROR_MSG
+            }
+        }
+
+    @Test
     fun `should append default message when server doesn't return error message`() =
         runBlockingTest {
             mockServer.enqueue(
@@ -232,19 +245,35 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
             }
         }
 
-    private fun createErrorResponse(
-        code: Int = 400,
-        message: String = TEST_ERROR_MSG
-    ): MockResponse {
-        val error = """
+    private val standardErrorBody = { code: Int, message: String ->
+        """
             {
                 "code": $code,
                 "message": "$message"
             }
         """.trimIndent()
-
-        return MockResponse()
-            .setResponseCode(code)
-            .setBody(error)
     }
+
+    private val authErrorBody = { code: String, message: String ->
+        """
+            {
+                "code": "$code",
+                "message": "$message"
+            }
+        """.trimIndent()
+    }
+
+    private fun createErrorResponse(
+        code: Int = 400,
+        message: String = TEST_ERROR_MSG
+    ): MockResponse = MockResponse()
+        .setResponseCode(code)
+        .setBody(standardErrorBody(code, message))
+
+    private fun createAuthErrorResponse(
+        code: Int = 401,
+        message: String = TEST_ERROR_MSG
+    ) = MockResponse()
+        .setResponseCode(code)
+        .setBody(authErrorBody(code.toString(), message))
 }
