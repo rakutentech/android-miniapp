@@ -16,9 +16,21 @@ internal class MiniAppDownloader(
         this.apiClient = apiClient
     }
 
+    // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
+        isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
         miniAppStatus.isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
         else -> startDownload(appId, versionId)
+    }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    private suspend fun isLatestVersion(appId: String, versionId: String): Boolean {
+        try {
+            return apiClient.fetchInfo(appId).version.versionId != versionId
+        } catch (e: Exception) {
+            // If backend functions correctly, this should never happen
+            throw sdkExceptionForInternalServerError()
+        }
     }
 
     @VisibleForTesting

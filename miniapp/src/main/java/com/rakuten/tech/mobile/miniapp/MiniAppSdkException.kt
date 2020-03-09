@@ -14,3 +14,5 @@ internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Interna
 
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid arguments")
+
+internal fun sdkExceptionForInvalidVersion() = MiniAppSdkException("Invalid or unpublished MiniApp version")
