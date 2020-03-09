@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
 internal class RealMiniApp(
@@ -27,5 +28,16 @@ internal class RealMiniApp(
             )
             displayer.createMiniAppDisplay(basePath, appId)
         }
+    }
+
+    override fun updateConfiguration(settings: MiniAppSdkConfig) {
+        miniAppDownloader.setApiClient(
+            ApiClient(
+                baseUrl = settings.baseUrl,
+                rasAppId = settings.rasAppId,
+                subscriptionKey = settings.subscriptionKey,
+                hostAppVersionId = settings.hostAppVersionId
+            )
+        )
     }
 }

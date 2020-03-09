@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 class AppSettings private constructor(context: Context) {
 
     private val manifestConfig = AppManifestConfig(context)
-    private val cache = SettingsCache(context)
+    private val cache = Settings(context)
 
     var appId: String
         get() = cache.appId ?: manifestConfig.rasAppId()
@@ -38,7 +38,7 @@ class AppSettings private constructor(context: Context) {
     }
 }
 
-private class SettingsCache(context: Context) {
+private class Settings(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.settings",

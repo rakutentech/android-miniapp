@@ -8,9 +8,13 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
-    private val apiClient: ApiClient,
+    private var apiClient: ApiClient,
     private val miniAppStatus: MiniAppStatus
 ) {
+
+    fun setApiClient(apiClient: ApiClient) {
+        this.apiClient = apiClient
+    }
 
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         miniAppStatus.isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
