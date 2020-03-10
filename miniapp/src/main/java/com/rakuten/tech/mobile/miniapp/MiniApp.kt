@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiRepos
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter

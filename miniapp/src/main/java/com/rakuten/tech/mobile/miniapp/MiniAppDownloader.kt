@@ -11,7 +11,7 @@ internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
     private val miniAppStatus: MiniAppStatus
-):MiniAppApiImpl {
+) : MiniAppApiImpl {
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()

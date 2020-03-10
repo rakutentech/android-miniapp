@@ -5,8 +5,8 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 
 internal class ApiRepos(private val defaultConfig: MiniAppSdkConfig) {
     private val apiClients: MutableMap<String, ApiClient> = ArrayMap()
-    
-    fun get(fromConfig: MiniAppSdkConfig?): ApiClient {
+
+    fun get(fromConfig: MiniAppSdkConfig? = null): ApiClient {
         val config = fromConfig ?: defaultConfig
 
         var apiClient = apiClients[config.key]
