@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.view.View
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,10 +15,12 @@ class MiniAppDisplayViewModel constructor(
 
     constructor() : this(MiniApp.instance())
 
+    private lateinit var miniAppDisplay: MiniAppDisplay
+    private lateinit var hostLifeCycle: Lifecycle
+
     private val _miniAppView = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
     private val _isLoading = MutableLiveData<Boolean>()
-    private lateinit var miniAppDisplay: MiniAppDisplay
 
     val miniAppView: LiveData<View>
         get() = _miniAppView
@@ -30,6 +33,7 @@ class MiniAppDisplayViewModel constructor(
         try {
             _isLoading.postValue(true)
             miniAppDisplay = miniapp.create(appId, versionId)
+            hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -39,8 +43,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    fun destroyMiniAppView() {
-        if (::miniAppDisplay.isInitialized)
-            miniAppDisplay.destroyView()
+    fun setHostLifeCycle(lifecycle: Lifecycle) {
+        this.hostLifeCycle = lifecycle
     }
 }

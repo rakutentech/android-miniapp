@@ -10,6 +10,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import java.io.File
@@ -45,7 +47,10 @@ internal class RealMiniAppDisplay(
 
     override fun getMiniAppView(): View = this
 
-    override fun destroyView() {
+    override fun destroyView() = clearUp()
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun clearUp() {
         stopLoading()
         webViewClient = null
         destroy()
@@ -53,10 +58,12 @@ internal class RealMiniAppDisplay(
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
         .setDomain(miniAppDomain)
-        .addPathHandler("/$SUB_DOMAIN_PATH/", WebViewAssetLoader.InternalStoragePathHandler(
-            context,
-            File(basePath)
-        ))
+        .addPathHandler(
+            "/$SUB_DOMAIN_PATH/", WebViewAssetLoader.InternalStoragePathHandler(
+                context,
+                File(basePath)
+            )
+        )
         .build()
 
     @VisibleForTesting
