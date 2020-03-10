@@ -1,9 +1,10 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ApiRepos
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 
 internal class RealMiniApp(
+    private val apiRepos: ApiRepos,
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher
@@ -30,14 +31,10 @@ internal class RealMiniApp(
         }
     }
 
-    override fun updateConfiguration(settings: MiniAppSdkConfig) {
-        miniAppDownloader.setApiClient(
-            ApiClient(
-                baseUrl = settings.baseUrl,
-                rasAppId = settings.rasAppId,
-                subscriptionKey = settings.subscriptionKey,
-                hostAppVersionId = settings.hostAppVersionId
-            )
-        )
+    override fun updateConfiguration(config: MiniAppSdkConfig?) {
+        apiRepos.get(config).also {
+            miniAppDownloader.updateApiClient(it)
+            miniAppInfoFetcher.updateApiClient(it)
+        }
     }
 }

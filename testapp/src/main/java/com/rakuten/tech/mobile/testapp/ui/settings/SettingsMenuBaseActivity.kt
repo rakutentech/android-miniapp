@@ -40,13 +40,13 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
         subscriptionKey.setText(settings.subscriptionKey)
 
         AlertDialog.Builder(this)
-            .setTitle("App Settings")
+            .setTitle(R.string.lb_app_settings)
             .setView(settingsDialog)
-            .setPositiveButton("Save") { dialog, _ ->
+            .setPositiveButton(R.string.action_save) { dialog, _ ->
                 dialog.dismiss()
                 updateSettings(appId.text.toString(), subscriptionKey.text.toString())
             }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
             .show()
 
         return true

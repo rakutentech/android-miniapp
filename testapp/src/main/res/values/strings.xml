@@ -7,4 +7,6 @@
     <string name="error_empty">Required</string>
     <string name="action_go_input">Display Miniapp From ID</string>
     <string name="action_display_list">Display Miniapp From List</string>
+    <string name="lb_app_settings">App Settings</string>
+    <string name="action_save">Save</string>
 </resources>

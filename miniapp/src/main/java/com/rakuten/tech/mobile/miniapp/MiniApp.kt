@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ApiRepos
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
@@ -36,7 +37,10 @@ abstract class MiniApp internal constructor() {
         versionId: String
     ): MiniAppDisplay
 
-    protected abstract fun updateConfiguration(settings: MiniAppSdkConfig)
+    /**
+     * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
+      */
+    internal abstract fun updateConfiguration(config: MiniAppSdkConfig?)
 
     /**
      * Fetches meta data information of a mini app.
@@ -47,19 +51,18 @@ abstract class MiniApp internal constructor() {
 
     companion object {
         private lateinit var instance: MiniApp
-        private lateinit var defaultSettings: MiniAppSdkConfig
 
         /**
-         * Instance of [MiniApp] with custom [MiniAppSdkConfig].
-         * This function should only be used if you wish to use the SDK with custom settings
-         * which are changed at runtime for QA purposes, etc.
-         * Note that the default [instance] without [settings] uses the config settings from AndroidManifest.xml.
+         * Instance of [MiniApp] which uses the default config settings as defined in AndroidManifest.xml.
+         * For usual scenarios the default config suffices.
+         * However, should it be required to change the config at runtime for QA purpose or similar,
+         * another [MiniAppSdkConfig] can be provided for customization.
          *
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(settings: MiniAppSdkConfig = defaultSettings): MiniApp =
-            instance.apply { updateConfiguration(settings) }
+        fun instance(config: MiniAppSdkConfig? = null): MiniApp =
+            instance.apply { updateConfiguration(config) }
 
         @Suppress("LongMethod")
         internal fun init(
@@ -71,20 +74,18 @@ abstract class MiniApp internal constructor() {
         ) {
             val miniAppStatus = MiniAppStatus(context)
             val storage = MiniAppStorage(FileWriter(), context.filesDir)
-            val apiClient = ApiClient(
+
+            val defaultConfig = MiniAppSdkConfig(
                 baseUrl = baseUrl,
                 rasAppId = rasAppId,
                 subscriptionKey = subscriptionKey,
                 hostAppVersionId = hostAppVersionId
             )
-            defaultSettings = MiniAppSdkConfig(
-                baseUrl = baseUrl,
-                rasAppId = rasAppId,
-                subscriptionKey = subscriptionKey,
-                hostAppVersionId = hostAppVersionId
-            )
+            val apiRepos = ApiRepos(defaultConfig)
+            val apiClient = apiRepos.get(defaultConfig)
 
             instance = RealMiniApp(
+                apiRepos = apiRepos,
                 displayer = Displayer(context),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
@@ -92,14 +93,3 @@ abstract class MiniApp internal constructor() {
         }
     }
 }
-
-/**
- * Config for the Mini App SDK.
- * Contains settings which are used when sending requests to the Mini App API.
- */
-data class MiniAppSdkConfig(
-    var baseUrl: String,
-    var rasAppId: String,
-    var subscriptionKey: String,
-    var hostAppVersionId: String
-)
