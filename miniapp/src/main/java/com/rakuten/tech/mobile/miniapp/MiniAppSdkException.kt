@@ -16,9 +16,7 @@ internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Interna
 internal fun sdkExceptionForInvalidArguments(message: String = "") =
     MiniAppSdkException(
         "Invalid arguments${when {
-            message.isNotBlank() -> {
-                ": $message"
-            }
+            message.isNotBlank() -> ": $message"
             else -> ""
         }}"
     )
