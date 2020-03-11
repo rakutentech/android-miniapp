@@ -47,10 +47,8 @@ internal class RealMiniAppDisplay(
 
     override fun getMiniAppView(): View = this
 
-    override fun destroyView() = clearUp()
-
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun clearUp() {
+    override fun destroyView() {
         stopLoading()
         webViewClient = null
         destroy()

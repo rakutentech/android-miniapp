@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 import kotlinx.coroutines.launch
 
-class MiniAppDisplayActivity: BaseActivity() {
+class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
     private lateinit var versionId: String
