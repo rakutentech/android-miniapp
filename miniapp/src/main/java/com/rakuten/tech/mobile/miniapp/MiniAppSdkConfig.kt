@@ -1,14 +1,11 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.webkit.URLUtil
-
 /**
- * Config for the Mini App SDK.
- * Contains settings which are used when sending requests to the Mini App API.
- * @property baseUrl Base API url.
- * @property rasAppId Rakuten App Studio project id.
- * @property subscriptionKey Subscription key which can be retrieved as Primary or Secondary key.
- * @property hostAppVersionId Specific application id on Rakuten App Studio project.
+ * This represents the configuration settings for the Mini App SDK.
+ * @property baseUrl Base URL used for retrieving a Mini App.
+ * @property rasAppId App ID for the Platform API.
+ * @property subscriptionKey Subscription Key for the Platform API.
+ * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  */
 data class MiniAppSdkConfig(
     var baseUrl: String,
@@ -20,14 +17,17 @@ data class MiniAppSdkConfig(
 
     init {
         when {
-            !URLUtil.isHttpsUrl(baseUrl) ->
-                throw MiniAppSdkException("MiniAppSdkConfig with invalid baseUrl: $baseUrl")
+            !isBaseUrlValid() ->
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid baseUrl")
             rasAppId.isBlank() ->
-                throw MiniAppSdkException("MiniAppSdkConfig with invalid rasAppId: $rasAppId")
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasAppId")
             subscriptionKey.isBlank() ->
-                throw MiniAppSdkException("MiniAppSdkConfig with invalid subscriptionKey: $subscriptionKey")
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
             hostAppVersionId.isBlank() ->
-                throw MiniAppSdkException("MiniAppSdkConfig with invalid hostAppVersionId: $hostAppVersionId")
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
         }
     }
+
+    private fun isBaseUrlValid() = baseUrl.length > 7 &&
+            baseUrl.substring(0, 8).equals("https://", ignoreCase = true)
 }

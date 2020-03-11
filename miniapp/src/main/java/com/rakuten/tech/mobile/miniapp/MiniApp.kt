@@ -1,7 +1,8 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
-import com.rakuten.tech.mobile.miniapp.api.ApiRepos
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
@@ -39,7 +40,7 @@ abstract class MiniApp internal constructor() {
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
       */
-    internal abstract fun updateConfiguration(config: MiniAppSdkConfig?)
+    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
 
     /**
      * Fetches meta data information of a mini app.
@@ -50,6 +51,7 @@ abstract class MiniApp internal constructor() {
 
     companion object {
         private lateinit var instance: MiniApp
+        private lateinit var defaultConfig: MiniAppSdkConfig
 
         /**
          * Instance of [MiniApp] which uses the default config settings as defined in AndroidManifest.xml.
@@ -60,8 +62,8 @@ abstract class MiniApp internal constructor() {
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(config: MiniAppSdkConfig? = null): MiniApp =
-            instance.apply { updateConfiguration(config) }
+        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
+            instance.apply { updateConfiguration(settings) }
 
         @Suppress("LongMethod")
         internal fun init(
@@ -74,17 +76,24 @@ abstract class MiniApp internal constructor() {
             val miniAppStatus = MiniAppStatus(context)
             val storage = MiniAppStorage(FileWriter(), context.filesDir)
 
-            val defaultConfig = MiniAppSdkConfig(
+            defaultConfig = MiniAppSdkConfig(
                 baseUrl = baseUrl,
                 rasAppId = rasAppId,
                 subscriptionKey = subscriptionKey,
                 hostAppVersionId = hostAppVersionId
             )
-            val apiRepos = ApiRepos(defaultConfig)
-            val apiClient = apiRepos.get(defaultConfig)
+            val apiClient = ApiClient(
+                baseUrl = baseUrl,
+                rasAppId = rasAppId,
+                subscriptionKey = subscriptionKey,
+                hostAppVersionId = hostAppVersionId
+            )
+            val apiClientRepository = ApiClientRepository().apply {
+                registerApiClient(defaultConfig.key, apiClient)
+            }
 
             instance = RealMiniApp(
-                apiRepos = apiRepos,
+                apiClientRepository = apiClientRepository,
                 displayer = Displayer(context),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)

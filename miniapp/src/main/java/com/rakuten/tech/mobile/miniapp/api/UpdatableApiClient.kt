@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 /**
  * The interface for MiniApp components which require api interaction.
  */
-internal interface MiniAppApiImpl {
+internal interface UpdatableApiClient {
     /** Is executed when there is a change of SDK configuration at runtime. **/
     fun updateApiClient(apiClient: ApiClient)
 }

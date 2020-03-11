@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
-import com.rakuten.tech.mobile.miniapp.api.MiniAppApiImpl
+import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -11,7 +11,7 @@ internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
     private val miniAppStatus: MiniAppStatus
-) : MiniAppApiImpl {
+) : UpdatableApiClient {
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()

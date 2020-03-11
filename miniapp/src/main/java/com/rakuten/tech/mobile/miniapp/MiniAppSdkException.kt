@@ -16,3 +16,5 @@ internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Interna
 internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid arguments")
 
 internal fun sdkExceptionForInvalidVersion() = MiniAppSdkException("Invalid or unpublished MiniApp version")
+
+internal fun sdkExceptionForInvalidArguments(message: String = "") = MiniAppSdkException("Invalid arguments: $message")

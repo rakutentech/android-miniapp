@@ -14,9 +14,9 @@ android {
 
         manifestPlaceholders = [
                 baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
-                hostAppVersion : property("HOST_APP_VERSION") ?: "a6a57b4a-17eb-48ed-b307-95f9ae1e1e26",
-                appId          : property("HOST_APP_ID") ?: "e03b8516-b230-4d0a-a1bd-8a61b0ad46a2",
-                subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "0fd1d40c72d143918cddc902b1c031dd"
+                hostAppVersion : property("HOST_APP_VERSION") ?: "test-host-app-version",
+                appId          : property("HOST_APP_ID") ?: "test-host-app-id",
+                subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
         ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
