@@ -6,14 +6,12 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
-import org.amshove.kluent.shouldBe
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -125,6 +123,11 @@ class MiniAppDownloaderSpec {
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
         }
+
+    @Test
+    fun `MiniAppDownloader should implement UpdatableApiClient`() {
+        downloader shouldBeInstanceOf UpdatableApiClient::class.java
+    }
 
     private suspend fun setupValidManifestResponse(
         downloader: MiniAppDownloader,
