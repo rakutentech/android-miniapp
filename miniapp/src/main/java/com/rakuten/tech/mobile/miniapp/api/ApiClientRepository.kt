@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import android.util.ArrayMap
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 
 internal class ApiClientRepository {
     private val apiClients: MutableMap<String, ApiClient> = ArrayMap()

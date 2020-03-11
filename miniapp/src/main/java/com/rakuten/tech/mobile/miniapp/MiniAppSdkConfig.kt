@@ -17,7 +17,7 @@ data class MiniAppSdkConfig(
 
     init {
         when {
-            !isBaseUrlValid() ->
+            !isBaseUrlValid(baseUrl) ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid baseUrl")
             rasAppId.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasAppId")
@@ -27,7 +27,6 @@ data class MiniAppSdkConfig(
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
         }
     }
-
-    private fun isBaseUrlValid() = baseUrl.length > 7 &&
-            baseUrl.substring(0, 8).equals("https://", ignoreCase = true)
 }
+
+private fun isBaseUrlValid(url: String) = url.startsWith("https://")

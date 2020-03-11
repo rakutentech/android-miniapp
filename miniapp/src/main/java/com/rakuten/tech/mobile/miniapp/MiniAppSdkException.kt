@@ -17,4 +17,5 @@ internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid ar
 
 internal fun sdkExceptionForInvalidVersion() = MiniAppSdkException("Invalid or unpublished MiniApp version")
 
+@Suppress("FunctionMaxLength")
 internal fun sdkExceptionForInvalidArguments(message: String = "") = MiniAppSdkException("Invalid arguments: $message")
