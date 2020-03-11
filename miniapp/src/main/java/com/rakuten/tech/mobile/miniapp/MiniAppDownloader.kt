@@ -12,10 +12,12 @@ internal class MiniAppDownloader(
     private var apiClient: ApiClient,
     private val miniAppStatus: MiniAppStatus
 ) : UpdatableApiClient {
+
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-        miniAppStatus.isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
+        miniAppStatus
+            .isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
         else -> startDownload(appId, versionId)
     }
 

@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
-import java.lang.Exception
 
 internal class MiniAppInfoFetcher(private var apiClient: ApiClient) : UpdatableApiClient {
 

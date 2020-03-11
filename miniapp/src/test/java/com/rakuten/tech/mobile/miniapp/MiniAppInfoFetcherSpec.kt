@@ -10,6 +10,7 @@ import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Test
 
 class MiniAppInfoFetcherSpec {
+
     private val apiClient: ApiClient = mock()
     private val miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
 
