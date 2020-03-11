@@ -78,15 +78,41 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
         val context = this
         launch {
-            val miniApp = withContext(Dispatchers.Default) {
+            val miniAppDisplay = withContext(Dispatchers.Default) {
                 MiniApp.instance().create("mini_app_id", "mini_app_version_id")
             }
-            val miniAppView = miniApp.obtainView(context)
+            val miniAppView = miniAppDisplay.getMiniAppView()
 
             setContentView(miniAppView)
         }
     }
 }
 ```
+
+## Advanced
+
+### Clearing up mini app display
+
+For a mini app, it is required to destroy necessary view state and any services registered with, either automatically or manually. `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
+
+```kotlin
+class MiniAppActivity : Activity(), CoroutineScope {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+    //...
+        launch {
+            val miniAppDisplay = withContext(Dispatchers.Default) {
+                MiniApp.instance().create("mini_app_id", "mini_app_version_id")
+            }
+            lifeCycle.addObserver(miniAppDisplay)
+    //...
+        }
+    }
+}
+```
+
+To read more about `Lifecycle` please see [link](https://developer.android.com/topic/libraries/architecture/lifecycle#lc). 
+
+On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
 ## Changelog
