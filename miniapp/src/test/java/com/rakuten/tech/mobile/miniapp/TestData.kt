@@ -20,7 +20,7 @@ internal const val TEST_MA_VERSION_ID = "test_vid"
 
 internal const val TEST_HA_ID_VERSION = "test_version"
 internal const val TEST_HA_ID_APP = "test_hostapp_id"
-internal const val TEST_HA_SUBS_KEY = "test_subs-key"
+internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subs_key"
 
 internal const val VALID_FILE_URL_PATH =
     "https://www.example.com/"

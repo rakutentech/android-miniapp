@@ -11,24 +11,24 @@ import org.junit.Test
 
 class MiniAppInfoFetcherSpec {
     private val apiClient: ApiClient = mock()
-    private val miniAppLister = MiniAppInfoFetcher(apiClient)
+    private val miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
 
     @Test
     fun `When fetching app list then correct method of ApiClient is used`() =
         runBlockingTest {
-            miniAppLister.fetchMiniAppList()
+            miniAppInfoFetcher.fetchMiniAppList()
             verify(apiClient, times(1)).list()
         }
 
     @Test
     fun `When fetching metadata then correct method of ApiClient is used`() =
         runBlockingTest {
-            miniAppLister.getInfo(TEST_MA_ID)
+            miniAppInfoFetcher.getInfo(TEST_MA_ID)
             verify(apiClient, times(1)).fetchInfo(TEST_MA_ID)
         }
 
     @Test
     fun `MiniAppInfoFetcher should implement UpdatableApiClient`() {
-        miniAppLister shouldBeInstanceOf UpdatableApiClient::class.java
+        miniAppInfoFetcher shouldBeInstanceOf UpdatableApiClient::class.java
     }
 }

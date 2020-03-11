@@ -9,7 +9,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_1,
             rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBS_KEY,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
     }
@@ -19,7 +19,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = "http://www.example.com/1",
             rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBS_KEY,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
     }
@@ -29,7 +29,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = " ",
             rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBS_KEY,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
     }
@@ -39,7 +39,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_1,
             rasAppId = " ",
-            subscriptionKey = TEST_HA_SUBS_KEY,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
     }
@@ -59,7 +59,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_1,
             rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBS_KEY,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = " "
         )
     }
