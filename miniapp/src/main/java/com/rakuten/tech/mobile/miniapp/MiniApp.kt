@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -52,7 +53,8 @@ abstract class MiniApp internal constructor() {
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
 
     companion object {
-        private lateinit var instance: MiniApp
+        @VisibleForTesting
+        internal lateinit var instance: MiniApp
         private lateinit var defaultConfig: MiniAppSdkConfig
 
         /**

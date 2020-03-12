@@ -1,26 +1,22 @@
 package com.rakuten.tech.mobile.miniapp
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Test
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class MiniAppSpec {
 
     @Test
     fun `should update configuration when get instance of MiniApp`() {
-        val miniAppSdkConfig: MiniAppSdkConfig = mock()
-        val miniAppCompanion: MiniApp.Companion = MiniApp.Companion
         val miniApp: MiniApp = mock()
+        val miniAppSdkConfig: MiniAppSdkConfig = mock()
+        val miniAppCompanion = MiniApp.Companion
 
-        val instance = MiniApp.Companion::class.memberProperties.first { it.name == "instance" }
-        instance.isAccessible = true
-        if (instance is KMutableProperty<*>)
-            instance.setter.call(MiniApp.Companion, miniApp)
-
+        miniAppCompanion.instance = miniApp
         miniAppCompanion.instance(miniAppSdkConfig)
 
         verify(miniApp, times(1)).updateConfiguration(miniAppSdkConfig)
