@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 import kotlinx.coroutines.launch
 
-class MiniAppDisplayActivity: BaseActivity() {
+class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
     private lateinit var versionId: String
@@ -44,6 +44,7 @@ class MiniAppDisplayActivity: BaseActivity() {
             viewModel = ViewModelProviders.of(this)
                 .get(MiniAppDisplayViewModel::class.java).apply {
 
+                    setHostLifeCycle(lifecycle)
                     miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
@@ -64,11 +65,6 @@ class MiniAppDisplayActivity: BaseActivity() {
                 viewModel.obtainMiniAppView(appId, versionId)
             }
         }
-    }
-
-    override fun onDestroy() {
-        viewModel.destroyMiniAppView()
-        super.onDestroy()
     }
 
     private fun toggleProgressLoading(isOn: Boolean) {

@@ -1,8 +1,10 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
+import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
@@ -23,10 +25,20 @@ class DisplayerTest {
     @Test
     fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
         runBlockingTest {
-            val obtainedDisplay = Displayer(context).createMiniAppDisplay(
-                basePath = context.filesDir.path,
-                appId = TEST_MA_ID
-            )
+            val obtainedDisplay = getMiniAppDisplay()
             obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
         }
+
+    @Test
+    fun `for a given base path createMiniAppDisplay returns an implementer of LifecycleObserver`() =
+        runBlockingTest {
+            val obtainedDisplay = getMiniAppDisplay()
+            obtainedDisplay shouldBeInstanceOf LifecycleObserver::class
+        }
+
+    private suspend fun getMiniAppDisplay(): MiniAppDisplay =
+        Displayer(context).createMiniAppDisplay(
+            basePath = context.filesDir.path,
+            appId = TEST_MA_ID
+        )
 }
