@@ -1,9 +1,9 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import java.lang.Exception
+import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 
-internal class MiniAppInfoFetcher(private val apiClient: ApiClient) {
+internal class MiniAppInfoFetcher(private var apiClient: ApiClient) : UpdatableApiClient {
 
     suspend fun fetchMiniAppList() = apiClient.list()
 
@@ -15,5 +15,9 @@ internal class MiniAppInfoFetcher(private val apiClient: ApiClient) {
             // If backend functions correctly, this should never happen
             throw sdkExceptionForInternalServerError()
         }
+    }
+
+    override fun updateApiClient(apiClient: ApiClient) {
+        this.apiClient = apiClient
     }
 }

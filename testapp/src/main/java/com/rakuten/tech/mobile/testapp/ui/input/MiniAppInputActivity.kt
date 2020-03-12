@@ -4,12 +4,12 @@ import android.os.Bundle
 import com.google.android.material.textfield.TextInputEditText
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.launchActivity
-import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
 
-class MiniAppInputActivity : BaseActivity() {
+class MiniAppInputActivity : SettingsMenuBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

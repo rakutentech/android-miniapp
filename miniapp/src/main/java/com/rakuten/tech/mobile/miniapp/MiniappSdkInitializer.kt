@@ -6,11 +6,6 @@ import android.database.Cursor
 import android.net.Uri
 import com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig
 import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.storage.FileWriter
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 /**
  * This initializes the SDK module automatically as the Content Providers are initialized
@@ -52,20 +47,13 @@ class MiniappSdkInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
         val context = context ?: return false
         val manifestConfig = AppManifestConfig(context)
-        val storage = MiniAppStorage(FileWriter(), context.filesDir)
-        val prefs = MiniAppStatus(context)
 
-        val apiClient = ApiClient(
+        MiniApp.init(
+            context = context,
             baseUrl = manifestConfig.baseUrl(),
             rasAppId = manifestConfig.rasAppId(),
             subscriptionKey = manifestConfig.subscriptionKey(),
             hostAppVersionId = manifestConfig.hostAppVersion()
-        )
-
-        MiniApp.init(
-            miniAppDownloader = MiniAppDownloader(storage, apiClient, prefs),
-            displayer = Displayer(context),
-            miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
         )
 
         return true

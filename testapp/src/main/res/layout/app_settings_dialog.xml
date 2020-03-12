@@ -1,0 +1,37 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <EditText
+        android:id="@+id/app_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="App Id"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:layout_marginBottom="5dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <EditText
+        android:id="@+id/subscription_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Subscription Key"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+  </LinearLayout>
+</FrameLayout>

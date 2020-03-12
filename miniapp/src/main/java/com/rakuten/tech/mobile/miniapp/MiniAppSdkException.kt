@@ -13,6 +13,13 @@ class MiniAppSdkException(message: String) : Exception(message) {
 internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Internal server error")
 
 @Suppress("FunctionMaxLength")
-internal fun sdkExceptionForInvalidArguments() = MiniAppSdkException("Invalid arguments")
+internal fun sdkExceptionForInvalidArguments(message: String = "") =
+    MiniAppSdkException(
+        "Invalid arguments${when {
+            message.isNotBlank() -> ": $message"
+            else -> ""
+        }}"
+    )
 
-internal fun sdkExceptionForInvalidVersion() = MiniAppSdkException("Invalid or unpublished MiniApp version")
+internal fun sdkExceptionForInvalidVersion() =
+    MiniAppSdkException("Invalid or unpublished MiniApp version")
