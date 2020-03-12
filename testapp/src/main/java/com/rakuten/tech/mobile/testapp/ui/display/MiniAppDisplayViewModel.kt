@@ -8,12 +8,13 @@ import androidx.lifecycle.ViewModel
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
 ) : ViewModel() {
 
-    constructor() : this(MiniApp.instance())
+    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var miniAppDisplay: MiniAppDisplay
     private lateinit var hostLifeCycle: Lifecycle
