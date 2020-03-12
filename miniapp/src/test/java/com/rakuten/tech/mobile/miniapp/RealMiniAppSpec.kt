@@ -14,7 +14,6 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 
-
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
     private val apiClientRepository: ApiClientRepository = mock()
@@ -63,11 +62,11 @@ class RealMiniAppSpec {
         verify(miniAppInfoFetcher, times(1))
             .getInfo(TEST_MA_ID)
     }
-    
+
     @Test
     fun `should update ApiClient when configuration updated`() {
         realMiniApp.updateConfiguration(miniAppSdkConfig)
-        
+
         verify(miniAppDownloader, times(1)).updateApiClient(apiClient)
         verify(miniAppInfoFetcher, times(1)).updateApiClient(apiClient)
     }
