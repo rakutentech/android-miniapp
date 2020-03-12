@@ -32,33 +32,34 @@ abstract class MiniApp internal constructor() {
      * @throws MiniAppSdkException when there is some issue during fetching,
      * downloading or creating the view.
      */
+    @Throws(MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
         versionId: String
     ): MiniAppDisplay
 
     /**
-     * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
-     */
-    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
-
-    /**
      * Fetches meta data information of a mini app.
      * @return [MiniAppInfo] for the provided appId of a mini app
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
      */
+    @Throws(MiniAppSdkException::class)
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
+
+    /**
+     * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
+     */
+    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
 
     companion object {
         private lateinit var instance: MiniApp
         private lateinit var defaultConfig: MiniAppSdkConfig
 
         /**
-         * Instance of [MiniApp] which uses the default config settings as defined in AndroidManifest.xml.
-         * For usual scenarios the default config suffices.
+         * Instance of [MiniApp] which uses the default config settings,
+         * as defined in AndroidManifest.xml. For usual scenarios the default config suffices.
          * However, should it be required to change the config at runtime for QA purpose or similar,
          * another [MiniAppSdkConfig] can be provided for customization.
-         *
          * @return [MiniApp] instance
          */
         @JvmStatic
@@ -73,9 +74,6 @@ abstract class MiniApp internal constructor() {
             subscriptionKey: String,
             hostAppVersionId: String
         ) {
-            val miniAppStatus = MiniAppStatus(context)
-            val storage = MiniAppStorage(FileWriter(), context.filesDir)
-
             defaultConfig = MiniAppSdkConfig(
                 baseUrl = baseUrl,
                 rasAppId = rasAppId,
@@ -91,6 +89,9 @@ abstract class MiniApp internal constructor() {
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
+
+            val miniAppStatus = MiniAppStatus(context)
+            val storage = MiniAppStorage(FileWriter(), context.filesDir)
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,

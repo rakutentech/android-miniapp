@@ -13,13 +13,11 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         settings = AppSettings.instance
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-
         return true
     }
 
@@ -39,6 +37,15 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
         appId.setText(settings.appId)
         subscriptionKey.setText(settings.subscriptionKey)
 
+        renderAppSettingsDialog(settingsDialog, appId, subscriptionKey)
+        return true
+    }
+
+    private fun renderAppSettingsDialog(
+        settingsDialog: View?,
+        appId: EditText,
+        subscriptionKey: EditText
+    ) {
         AlertDialog.Builder(this)
             .setTitle(R.string.lb_app_settings)
             .setView(settingsDialog)
@@ -48,8 +55,6 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
             }
             .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
             .show()
-
-        return true
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String) {
