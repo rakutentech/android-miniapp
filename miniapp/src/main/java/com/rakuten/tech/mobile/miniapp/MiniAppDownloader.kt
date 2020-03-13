@@ -6,8 +6,6 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -58,7 +56,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
-                cleanUpOldData(appId, versionId)
+                storage.removeOutdatedVersionApp(appId, versionId)
                 return baseSavePath
             }
             // If backend functions correctly, this should never happen
@@ -73,9 +71,5 @@ internal class MiniAppDownloader(
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
-    }
-
-    private suspend fun cleanUpOldData(appId: String, versionId: String) = withContext(Dispatchers.IO) {
-        storage.removeOutdatedVersionApp(appId, versionId)
     }
 }
