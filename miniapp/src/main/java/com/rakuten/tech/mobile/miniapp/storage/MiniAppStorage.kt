@@ -51,8 +51,9 @@ internal class MiniAppStorage(
 
     fun getSavePathForApp(appId: String, versionId: String) = "${getParentPathApp(appId)}$versionId"
 
-    suspend fun removeOutdatedVersionApp(appId: String, versionId: String) = withContext(Dispatchers.IO) {
-        val parentFile = File(getParentPathApp(appId))
+    suspend fun removeOutdatedVersionApp(appId: String, versionId: String, appPath: String? = null) =
+            withContext(Dispatchers.IO) {
+        val parentFile = File(appPath ?: getParentPathApp(appId))
         if (parentFile.isDirectory && parentFile.listFiles() != null) {
             flow {
                 parentFile.listFiles()?.forEach { file ->
