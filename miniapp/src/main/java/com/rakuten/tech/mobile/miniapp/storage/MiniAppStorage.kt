@@ -2,6 +2,8 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.InputStream
 
@@ -43,6 +45,19 @@ internal class MiniAppStorage(
     @VisibleForTesting
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
-    fun getSavePathForApp(appId: String, versionId: String) =
-        "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId"
+    private fun getParentPathApp(appId: String) = "${basePath.path}/$SUB_DIR_MINIAPP/$appId/"
+
+    fun getSavePathForApp(appId: String, versionId: String) = "${getParentPathApp(appId)}$versionId"
+
+    suspend fun removeOutdatedVersionApp(appId: String, versionId: String) {
+        val parentFile = File(getParentPathApp(appId))
+        if (parentFile.isDirectory && parentFile.listFiles() != null) {
+            flow {
+                parentFile.listFiles()?.forEach {file ->
+                    if (!file.absolutePath.endsWith(versionId))
+                        emit(file)
+                }
+            }.collect { file -> file.deleteRecursively() }
+        }
+    }
 }

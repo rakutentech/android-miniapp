@@ -6,6 +6,8 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -15,7 +17,7 @@ internal class MiniAppDownloader(
 
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
-        isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
+        !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
         miniAppStatus
             .isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
         else -> startDownload(appId, versionId)
@@ -24,7 +26,7 @@ internal class MiniAppDownloader(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private suspend fun isLatestVersion(appId: String, versionId: String): Boolean {
         try {
-            return apiClient.fetchInfo(appId).version.versionId != versionId
+            return apiClient.fetchInfo(appId).version.versionId == versionId
         } catch (e: Exception) {
             // If backend functions correctly, this should never happen
             throw sdkExceptionForInternalServerError()
@@ -56,6 +58,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
+                cleanUpOldData(appId, versionId)
                 return baseSavePath
             }
             // If backend functions correctly, this should never happen
@@ -70,5 +73,9 @@ internal class MiniAppDownloader(
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
+    }
+
+    private suspend fun cleanUpOldData(appId: String, versionId: String) = withContext(Dispatchers.IO) {
+        storage.removeOutdatedVersionApp(appId, versionId)
     }
 }
