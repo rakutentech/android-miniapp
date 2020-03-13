@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleObserver
  * This contract complies to Android's [LifecycleObserver] contract, and when made to observe
  * the lifecycle, it automatically clears up the view state and any services registered with.
  */
-interface MiniAppDisplay: LifecycleObserver {
+interface MiniAppDisplay : LifecycleObserver {
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
