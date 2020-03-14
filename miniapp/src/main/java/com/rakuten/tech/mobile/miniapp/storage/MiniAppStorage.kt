@@ -55,7 +55,7 @@ internal class MiniAppStorage(
     suspend fun removeOutdatedVersionApp(
         appId: String,
         versionId: String,
-        appPath: String? = getParentPathApp(appId)
+        appPath: String = getParentPathApp(appId)
     ) =
             withContext(Dispatchers.IO) {
         val parentFile = File(appPath)
