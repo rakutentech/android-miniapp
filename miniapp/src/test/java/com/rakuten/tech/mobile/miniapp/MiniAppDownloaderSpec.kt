@@ -86,6 +86,7 @@ class MiniAppDownloaderSpec {
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
         ) itReturns false
+        When calling storage.getParentPathApp(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
         setupValidManifestResponse(downloader, apiClient)
         setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
@@ -121,6 +122,7 @@ class MiniAppDownloaderSpec {
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
         ) itReturns false
+        When calling storage.getParentPathApp(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
         setupValidManifestResponse(downloader, apiClient)
         setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)

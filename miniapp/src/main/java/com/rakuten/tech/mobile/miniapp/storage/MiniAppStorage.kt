@@ -47,13 +47,18 @@ internal class MiniAppStorage(
     @VisibleForTesting
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
-    private fun getParentPathApp(appId: String) = "${basePath.path}/$SUB_DIR_MINIAPP/$appId/"
+    @VisibleForTesting
+    internal fun getParentPathApp(appId: String) = "${basePath.path}/$SUB_DIR_MINIAPP/$appId/"
 
     fun getSavePathForApp(appId: String, versionId: String) = "${getParentPathApp(appId)}$versionId"
 
-    suspend fun removeOutdatedVersionApp(appId: String, versionId: String, appPath: String? = null) =
+    suspend fun removeOutdatedVersionApp(
+        appId: String,
+        versionId: String,
+        appPath: String? = getParentPathApp(appId)
+    ) =
             withContext(Dispatchers.IO) {
-        val parentFile = File(appPath ?: getParentPathApp(appId))
+        val parentFile = File(appPath)
         if (parentFile.isDirectory && parentFile.listFiles() != null) {
             flow {
                 parentFile.listFiles()?.forEach { file ->

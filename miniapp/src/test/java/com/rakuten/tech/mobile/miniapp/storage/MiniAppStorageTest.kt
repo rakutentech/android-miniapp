@@ -3,14 +3,17 @@ package com.rakuten.tech.mobile.miniapp.storage
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldStartWith
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.File
 import kotlin.test.assertTrue
 
 class MiniAppStorageTest {
@@ -48,6 +51,13 @@ class MiniAppStorageTest {
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFileName(TEST_URL_FILE)
         verify(localUrlParser, times(1)).getFileName(TEST_URL_FILE)
+    }
+
+    @Test
+    fun `should get consistent parent path when get saving path`() {
+        val storage = MiniAppStorage(FileWriter(), File(TEST_BASE_PATH))
+        storage.getSavePathForApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldStartWith
+                storage.getParentPathApp(TEST_ID_MINIAPP)
     }
 
     @Test
