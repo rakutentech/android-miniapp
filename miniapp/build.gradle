@@ -72,7 +72,7 @@ dependencies {
 
 apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.5"
 }
 
 apply from: '../gradle/documentation.gradle'
