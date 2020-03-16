@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldStartWith
@@ -71,6 +72,8 @@ class MiniAppStorageTest {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
                 tempFolder.root.path)
+            //Deletion run in parallel so it requires time to be completed.
+            delay(1000)
         }
 
         oldFile1.exists() shouldBe false

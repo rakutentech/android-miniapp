@@ -3,8 +3,10 @@ package com.rakuten.tech.mobile.miniapp.storage
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
@@ -58,14 +60,16 @@ internal class MiniAppStorage(
         appPath: String = getParentPathApp(appId)
     ) =
             withContext(Dispatchers.IO) {
-        val parentFile = File(appPath)
-        if (parentFile.isDirectory && parentFile.listFiles() != null) {
-            flow {
-                parentFile.listFiles()?.forEach { file ->
-                    if (!file.absolutePath.endsWith(versionId))
-                        emit(file)
-                }
-            }.collect { file -> file.deleteRecursively() }
-        }
+                 launch(Job()) {
+                    val parentFile = File(appPath)
+                    if (parentFile.isDirectory && parentFile.listFiles() != null) {
+                        flow {
+                            parentFile.listFiles()?.forEach { file ->
+                                if (!file.absolutePath.endsWith(versionId))
+                                    emit(file)
+                            }
+                        }.collect { file -> file.deleteRecursively() }
+                    }
+            }
     }
 }
