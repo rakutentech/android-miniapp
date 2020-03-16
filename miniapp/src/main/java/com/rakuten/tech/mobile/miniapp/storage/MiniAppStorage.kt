@@ -62,20 +62,20 @@ internal class MiniAppStorage(
 
     suspend fun removeOutdatedVersionApp(
         appId: String,
-        versionId: String,
+        latestVersionId: String,
         appPath: String = getPathMiniApp(appId)
     ) =
             withContext(Dispatchers.IO) {
-                 launch(Job()) {
+                launch(Job()) {
                     val parentFile = File(appPath)
                     if (parentFile.isDirectory && parentFile.listFiles() != null) {
                         flow {
                             parentFile.listFiles()?.forEach { file ->
-                                if (!file.absolutePath.endsWith(versionId))
+                                if (!file.absolutePath.endsWith(latestVersionId))
                                     emit(file)
                             }
                         }.collect { file -> file.deleteRecursively() }
                     }
-            }
+                }
     }
 }

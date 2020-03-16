@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldEndWith
 import org.amshove.kluent.shouldStartWith
 import org.junit.Rule
 import org.junit.Test
@@ -22,16 +23,6 @@ class MiniAppStorageTest {
 
     @Rule @JvmField
     val tempFolder = TemporaryFolder()
-
-    @Test
-    fun `for a given set of app & version id formed base path is returned`() {
-        assertTrue {
-            miniAppStorage.getPathMiniAppVersion(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            ) == "null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION"
-        }
-    }
 
     @Test
     fun `for a given set of base path & file path, formed parent path is returned`() {
@@ -55,13 +46,15 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `should get consistent parent path when get saving path`() {
+    fun `should get consistent path when get path for mini app version`() {
         val storage = MiniAppStorage(FileWriter(), File(TEST_BASE_PATH))
 
         storage.getPathMiniApp(TEST_ID_MINIAPP) shouldStartWith storage.getRootPathMiniApp()
         storage.getRootPathMiniApp() shouldStartWith storage.getBasePathHostApp()
         storage.getPathMiniAppVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldStartWith
                 storage.getPathMiniApp(TEST_ID_MINIAPP)
+        storage.getPathMiniAppVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldEndWith
+                TEST_ID_MINIAPP_VERSION
     }
 
     @Test
@@ -75,7 +68,7 @@ class MiniAppStorageTest {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
                 tempFolder.root.path)
-            //Deletion run in parallel so it requires time to be completed.
+            // Deletion run in parallel so it requires time to be completed.
             delay(1000)
         }
 
