@@ -50,14 +50,20 @@ internal class MiniAppStorage(
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
     @VisibleForTesting
-    internal fun getParentPathApp(appId: String) = "${basePath.path}/$SUB_DIR_MINIAPP/$appId/"
+    internal fun getBasePathHostApp() = basePath.path
 
-    fun getSavePathForApp(appId: String, versionId: String) = "${getParentPathApp(appId)}$versionId"
+    @VisibleForTesting
+    internal fun getRootPathMiniApp() = "${getBasePathHostApp()}/$SUB_DIR_MINIAPP/"
+
+    @VisibleForTesting
+    internal fun getPathMiniApp(appId: String) = "${getRootPathMiniApp()}/$appId/"
+
+    fun getPathMiniAppVersion(appId: String, versionId: String) = "${getPathMiniApp(appId)}$versionId"
 
     suspend fun removeOutdatedVersionApp(
         appId: String,
         versionId: String,
-        appPath: String = getParentPathApp(appId)
+        appPath: String = getPathMiniApp(appId)
     ) =
             withContext(Dispatchers.IO) {
                  launch(Job()) {

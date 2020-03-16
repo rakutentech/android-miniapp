@@ -26,7 +26,7 @@ class MiniAppStorageTest {
     @Test
     fun `for a given set of app & version id formed base path is returned`() {
         assertTrue {
-            miniAppStorage.getSavePathForApp(
+            miniAppStorage.getPathMiniAppVersion(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) == "null/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION"
@@ -57,8 +57,11 @@ class MiniAppStorageTest {
     @Test
     fun `should get consistent parent path when get saving path`() {
         val storage = MiniAppStorage(FileWriter(), File(TEST_BASE_PATH))
-        storage.getSavePathForApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldStartWith
-                storage.getParentPathApp(TEST_ID_MINIAPP)
+
+        storage.getPathMiniApp(TEST_ID_MINIAPP) shouldStartWith storage.getRootPathMiniApp()
+        storage.getRootPathMiniApp() shouldStartWith storage.getBasePathHostApp()
+        storage.getPathMiniAppVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldStartWith
+                storage.getPathMiniApp(TEST_ID_MINIAPP)
     }
 
     @Test

@@ -17,7 +17,7 @@ internal class MiniAppDownloader(
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
         miniAppStatus
-            .isVersionDownloaded(appId, versionId) -> storage.getSavePathForApp(appId, versionId)
+            .isVersionDownloaded(appId, versionId) -> storage.getPathMiniAppVersion(appId, versionId)
         else -> startDownload(appId, versionId)
     }
 
@@ -48,7 +48,7 @@ internal class MiniAppDownloader(
         versionId: String,
         manifest: ManifestEntity
     ): String {
-        val baseSavePath = storage.getSavePathForApp(appId, versionId)
+        val baseSavePath = storage.getPathMiniAppVersion(appId, versionId)
         when {
             isManifestValid(manifest) -> {
                 for (file in manifest.files) {
