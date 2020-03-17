@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -14,7 +15,8 @@ import kotlinx.coroutines.withContext
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus
+    private val miniAppStatus: MiniAppStatus,
+    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
     // Only run the latest version of specified MiniApp.
@@ -61,7 +63,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
-                withContext(Dispatchers.IO) {
+                withContext(coroutineDispatcher) {
                     launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
                 }
                 return baseSavePath
