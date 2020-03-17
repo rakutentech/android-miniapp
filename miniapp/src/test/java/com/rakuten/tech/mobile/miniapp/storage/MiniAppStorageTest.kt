@@ -7,18 +7,17 @@ import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldEndWith
-import org.amshove.kluent.shouldStartWith
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 class MiniAppStorageTest {
     private val miniAppStorage: MiniAppStorage = MiniAppStorage(mock(), mock(), mock())
 
@@ -55,19 +54,15 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `should delete all file data excluding the latest version package`() {
+    fun `should delete all file data excluding the latest version package`() = runBlockingTest {
         val oldFile1 = tempFolder.newFolder("old_package_id_1")
         val oldFile2 = tempFolder.newFile()
         val latestPackage = tempFolder.newFolder(TEST_ID_MINIAPP_VERSION)
 
-        runBlocking {
-            miniAppStorage.removeOutdatedVersionApp(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION,
-                tempFolder.root.path)
-            // Deletion run in parallel so it requires time to be completed.
-            delay(1000)
-        }
+        miniAppStorage.removeOutdatedVersionApp(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION,
+            tempFolder.root.path)
 
         oldFile1.exists() shouldBe false
         oldFile2.exists() shouldBe false

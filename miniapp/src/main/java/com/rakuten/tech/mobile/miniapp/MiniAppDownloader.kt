@@ -6,6 +6,10 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -43,6 +47,7 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
+    @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
         appId: String,
         versionId: String,
@@ -56,7 +61,9 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
-                storage.removeOutdatedVersionApp(appId, versionId)
+                withContext(Dispatchers.IO) {
+                    launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
+                }
                 return baseSavePath
             }
             // If backend functions correctly, this should never happen

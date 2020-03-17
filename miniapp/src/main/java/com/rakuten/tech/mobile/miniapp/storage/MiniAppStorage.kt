@@ -2,12 +2,8 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 
@@ -58,20 +54,25 @@ internal class MiniAppStorage(
 
     fun getMiniAppVersionPath(appId: String, versionId: String) = "${getMiniAppPath(appId)}$versionId"
 
+    @Suppress("TooGenericExceptionCaught", "LongMethod")
     suspend fun removeOutdatedVersionApp(
         appId: String,
         latestVersionId: String,
         appPath: String = getMiniAppPath(appId)
-    ) = withContext(Dispatchers.IO) {
-        launch(Job()) {
-            val parentFile = File(appPath)
-            if (parentFile.isDirectory && parentFile.listFiles() != null) {
-                flow {
-                    parentFile.listFiles()?.forEach { file ->
-                        if (!file.absolutePath.endsWith(latestVersionId))
-                            emit(file)
-                    }
-                }.collect { file -> file.deleteRecursively() }
+    ) {
+        val parentFile = File(appPath)
+        if (parentFile.isDirectory && parentFile.listFiles() != null) {
+            flow {
+                parentFile.listFiles()?.forEach { file ->
+                    if (!file.absolutePath.endsWith(latestVersionId))
+                        emit(file)
+                }
+            }.collect { file ->
+                try {
+                    file.deleteRecursively()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.amshove.kluent.*
@@ -32,8 +33,8 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `when downloading a mini app then downloader should fetch manifest at first`() =
-        runBlockingTest {
+    fun `when downloading a mini app then downloader should fetch manifest at first`() {
+        runBlocking {
             setupValidManifestResponse(downloader, apiClient)
             downloader.startDownload(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
@@ -42,6 +43,7 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             )
         }
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `when downloading a mini app, MiniAppSdkException is thrown in case of invalid manifest`() =
@@ -81,22 +83,24 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `when no existing app in local storage, run download execution`() = runBlockingTest {
+    fun `when no existing app in local storage, run download execution`() {
         When calling miniAppStatus.isVersionDownloaded(
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
         ) itReturns false
         When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
-        setupValidManifestResponse(downloader, apiClient)
-        setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        runBlocking {
+            setupValidManifestResponse(downloader, apiClient)
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-        downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-        verify(apiClient, times(1)).fetchFileList(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        )
+            verify(apiClient, times(1)).fetchFileList(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            )
+        }
     }
 
     @Test
@@ -117,22 +121,24 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `should execute old file deletion after downloading new version`() = runBlockingTest {
-        When calling miniAppStatus.isVersionDownloaded(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        ) itReturns false
-        When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
+    fun `should execute old file deletion after downloading new version`() {
+        runBlocking {
+            When calling miniAppStatus.isVersionDownloaded(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns false
+            When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
-        setupValidManifestResponse(downloader, apiClient)
-        setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            setupValidManifestResponse(downloader, apiClient)
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-        downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-        verify(storage, times(1)).removeOutdatedVersionApp(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        )
+            verify(storage, times(1)).removeOutdatedVersionApp(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            )
+        }
     }
 
     @Test(expected = MiniAppSdkException::class)
