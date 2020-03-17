@@ -18,6 +18,10 @@ internal class MiniAppStorage(
     private val basePath: File,
     private val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
 ) {
+    private val hostAppBasePath = basePath.path
+
+    private val miniAppBasePath
+        get() = "$hostAppBasePath/$SUB_DIR_MINIAPP/"
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun saveFile(
@@ -50,32 +54,25 @@ internal class MiniAppStorage(
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
     @VisibleForTesting
-    internal fun getBasePathHostApp() = basePath.path
+    internal fun getMiniAppPath(appId: String) = "${miniAppBasePath}$appId/"
 
-    @VisibleForTesting
-    internal fun getRootPathMiniApp() = "${getBasePathHostApp()}/$SUB_DIR_MINIAPP/"
-
-    @VisibleForTesting
-    internal fun getPathMiniApp(appId: String) = "${getRootPathMiniApp()}/$appId/"
-
-    fun getPathMiniAppVersion(appId: String, versionId: String) = "${getPathMiniApp(appId)}$versionId"
+    fun getMiniAppVersionPath(appId: String, versionId: String) = "${getMiniAppPath(appId)}$versionId"
 
     suspend fun removeOutdatedVersionApp(
         appId: String,
         latestVersionId: String,
-        appPath: String = getPathMiniApp(appId)
-    ) =
-            withContext(Dispatchers.IO) {
-                launch(Job()) {
-                    val parentFile = File(appPath)
-                    if (parentFile.isDirectory && parentFile.listFiles() != null) {
-                        flow {
-                            parentFile.listFiles()?.forEach { file ->
-                                if (!file.absolutePath.endsWith(latestVersionId))
-                                    emit(file)
-                            }
-                        }.collect { file -> file.deleteRecursively() }
+        appPath: String = getMiniAppPath(appId)
+    ) = withContext(Dispatchers.IO) {
+        launch(Job()) {
+            val parentFile = File(appPath)
+            if (parentFile.isDirectory && parentFile.listFiles() != null) {
+                flow {
+                    parentFile.listFiles()?.forEach { file ->
+                        if (!file.absolutePath.endsWith(latestVersionId))
+                            emit(file)
                     }
-                }
+                }.collect { file -> file.deleteRecursively() }
+            }
+        }
     }
 }

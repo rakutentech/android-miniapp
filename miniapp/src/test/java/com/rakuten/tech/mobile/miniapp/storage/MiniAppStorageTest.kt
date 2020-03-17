@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldEndWith
 import org.amshove.kluent.shouldStartWith
 import org.junit.Rule
@@ -49,12 +50,8 @@ class MiniAppStorageTest {
     fun `should get consistent path when get path for mini app version`() {
         val storage = MiniAppStorage(FileWriter(), File(TEST_BASE_PATH))
 
-        storage.getPathMiniApp(TEST_ID_MINIAPP) shouldStartWith storage.getRootPathMiniApp()
-        storage.getRootPathMiniApp() shouldStartWith storage.getBasePathHostApp()
-        storage.getPathMiniAppVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldStartWith
-                storage.getPathMiniApp(TEST_ID_MINIAPP)
-        storage.getPathMiniAppVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldEndWith
-                TEST_ID_MINIAPP_VERSION
+        storage.getMiniAppVersionPath(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBeEqualTo
+                "$TEST_BASE_PATH/miniapp/$TEST_ID_MINIAPP/$TEST_ID_MINIAPP_VERSION"
     }
 
     @Test
