@@ -34,7 +34,7 @@ open class ManifestApiSpec private constructor(
     ): MockResponse = MockResponse().setBody(
         Gson().toJson(
             hashMapOf(
-                "files" to files
+                "manifest" to files
             )
         )
     )
