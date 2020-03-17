@@ -2,6 +2,8 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.InputStream
 
@@ -12,6 +14,10 @@ internal class MiniAppStorage(
     private val basePath: File,
     private val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
 ) {
+    private val hostAppBasePath = basePath.path
+
+    private val miniAppBasePath
+        get() = "$hostAppBasePath/$SUB_DIR_MINIAPP/"
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun saveFile(
@@ -43,6 +49,31 @@ internal class MiniAppStorage(
     @VisibleForTesting
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)
 
-    fun getSavePathForApp(appId: String, versionId: String) =
-        "${basePath.path}/$SUB_DIR_MINIAPP/$appId/$versionId"
+    @VisibleForTesting
+    internal fun getMiniAppPath(appId: String) = "${miniAppBasePath}$appId/"
+
+    fun getMiniAppVersionPath(appId: String, versionId: String) = "${getMiniAppPath(appId)}$versionId"
+
+    @Suppress("TooGenericExceptionCaught", "LongMethod")
+    suspend fun removeOutdatedVersionApp(
+        appId: String,
+        latestVersionId: String,
+        appPath: String = getMiniAppPath(appId)
+    ) {
+        val parentFile = File(appPath)
+        if (parentFile.isDirectory && parentFile.listFiles() != null) {
+            flow {
+                parentFile.listFiles()?.forEach { file ->
+                    if (!file.absolutePath.endsWith(latestVersionId))
+                        emit(file)
+                }
+            }.collect { file ->
+                try {
+                    file.deleteRecursively()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
 }
