@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,5 +17,5 @@ internal interface ManifestApi {
 }
 
 internal data class ManifestEntity(
-    val files: List<String>
+    @SerializedName("manifest") val files: List<String>
 )
