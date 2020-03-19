@@ -1,5 +1,8 @@
 [![CircleCI](https://circleci.com/gh/rakutentech/android-miniapp.svg?style=svg)](https://circleci.com/gh/rakutentech/android-miniapp)
 [![codecov](https://codecov.io/gh/rakutentech/android-miniapp/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-miniapp)
+<a href="https://opensource.org/licenses/MIT">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+</a>
 
 # MiniApp SDK for Android
 
