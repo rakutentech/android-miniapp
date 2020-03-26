@@ -88,4 +88,9 @@ class RealMiniAppDisplayTest {
         val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", masInf)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
+
+    @Test
+    fun `MiniAppMessageInterface should be injected to RealMiniAppDisplay`() {
+        realDisplay.miniAppMessageInterface shouldBe masInf
+    }
 }

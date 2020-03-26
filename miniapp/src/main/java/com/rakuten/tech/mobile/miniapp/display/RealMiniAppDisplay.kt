@@ -19,13 +19,14 @@ import java.io.File
 
 private const val ASSET_DOMAIN_SUFFIX = "miniapps.androidplatform.net"
 private const val SUB_DOMAIN_PATH = "miniapp"
+private const val MINI_APP_INTERFACE = "MiniApp"
 
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
     context: Context,
-    private val basePath: String,
-    private val appId: String,
-    private val miniAppMessageInterface: MiniAppMessageInterface
+    val basePath: String,
+    val appId: String,
+    val miniAppMessageInterface: MiniAppMessageInterface
 ) : MiniAppDisplay, WebView(context) {
 
     private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
@@ -35,7 +36,7 @@ internal class RealMiniAppDisplay(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
 
-        addJavascriptInterface(miniAppMessageInterface, "MiniApp")
+        addJavascriptInterface(miniAppMessageInterface, MINI_APP_INTERFACE)
         settings.javaScriptEnabled = true
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
