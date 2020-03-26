@@ -20,7 +20,8 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        versionId: String
+        versionId: String,
+        miniAppMessageInterface: MiniAppMessageInterface
     ): MiniAppDisplay = when {
         appId.isBlank() || versionId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -28,7 +29,7 @@ internal class RealMiniApp(
                 appId = appId,
                 versionId = versionId
             )
-            displayer.createMiniAppDisplay(basePath, appId)
+            displayer.createMiniAppDisplay(basePath, appId, miniAppMessageInterface)
         }
     }
 

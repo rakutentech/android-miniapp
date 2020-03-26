@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith
 class DisplayerTest {
 
     private lateinit var context: Context
+    private val masInf: MiniAppMessageInterface = mock()
 
     @Before
     fun setup() {
@@ -39,6 +42,7 @@ class DisplayerTest {
     private suspend fun getMiniAppDisplay(): MiniAppDisplay =
         Displayer(context).createMiniAppDisplay(
             basePath = context.filesDir.path,
-            appId = TEST_MA_ID
+            appId = TEST_MA_ID,
+            miniAppMessageInterface = masInf
         )
 }

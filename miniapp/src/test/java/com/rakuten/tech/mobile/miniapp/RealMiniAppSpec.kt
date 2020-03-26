@@ -23,6 +23,7 @@ class RealMiniAppSpec {
     private val realMiniApp = RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private var apiClient: ApiClient = mock()
+    private val masInf: MiniAppMessageInterface = mock()
 
     @Before
     fun setup() {
@@ -43,16 +44,16 @@ class RealMiniAppSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when version id is invalid`() = runBlockingTest {
-        realMiniApp.create(TEST_MA_ID, "")
+        realMiniApp.create(TEST_MA_ID, "", masInf)
     }
 
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() = runBlockingTest {
-        realMiniApp.create(TEST_MA_ID, TEST_MA_VERSION_ID)
+        realMiniApp.create(TEST_MA_ID, TEST_MA_VERSION_ID, masInf)
 
         val basePath: String = verify(miniAppDownloader, times(1))
             .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
-        verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID)
+        verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, masInf)
     }
 
     @Test

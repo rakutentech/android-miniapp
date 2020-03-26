@@ -5,10 +5,12 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.view.View
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
@@ -62,7 +64,14 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
             launch {
-                viewModel.obtainMiniAppView(appId, versionId)
+                viewModel.obtainMiniAppView(
+                    appId,
+                    versionId,
+                    object: MiniAppMessageInterface {
+                        @JavascriptInterface
+                        override fun getUniqueId(): String = appId
+                    }
+                )
             }
         }
     }

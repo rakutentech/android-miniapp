@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
@@ -18,6 +19,7 @@ class RealMiniAppDisplayTest {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
+    private val masInf: MiniAppMessageInterface = com.nhaarman.mockitokotlin2.mock()
 
     @Before
     fun setup() {
@@ -26,7 +28,8 @@ class RealMiniAppDisplayTest {
         realDisplay = RealMiniAppDisplay(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID
+            appId = TEST_MA_ID,
+            miniAppMessageInterface = masInf
         )
     }
 
@@ -81,8 +84,8 @@ class RealMiniAppDisplayTest {
 
     @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1")
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2")
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", masInf)
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", masInf)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 }

@@ -36,7 +36,8 @@ abstract class MiniApp internal constructor() {
     @Throws(MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
-        versionId: String
+        versionId: String,
+        miniAppMessageInterface: MiniAppMessageInterface
     ): MiniAppDisplay
 
     /**
