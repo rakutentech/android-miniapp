@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 class DisplayerTest {
 
     private lateinit var context: Context
-    private val masInf: MiniAppMessageInterface = mock()
+    private val miniAppMessageInterface: MiniAppMessageInterface = mock()
 
     @Before
     fun setup() {
@@ -43,6 +43,6 @@ class DisplayerTest {
         Displayer(context).createMiniAppDisplay(
             basePath = context.filesDir.path,
             appId = TEST_MA_ID,
-            miniAppMessageInterface = masInf
+            miniAppMessageInterface = miniAppMessageInterface
         )
 }
