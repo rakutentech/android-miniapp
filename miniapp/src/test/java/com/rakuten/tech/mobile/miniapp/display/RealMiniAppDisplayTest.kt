@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
@@ -19,7 +20,7 @@ class RealMiniAppDisplayTest {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
-    private val masInf: MiniAppMessageInterface = com.nhaarman.mockitokotlin2.mock()
+    private val miniAppMessageInterface: MiniAppMessageInterface = mock()
 
     @Before
     fun setup() {
@@ -29,7 +30,7 @@ class RealMiniAppDisplayTest {
             context,
             basePath = basePath,
             appId = TEST_MA_ID,
-            miniAppMessageInterface = masInf
+            miniAppMessageInterface = miniAppMessageInterface
         )
     }
 
@@ -84,13 +85,13 @@ class RealMiniAppDisplayTest {
 
     @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", masInf)
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", masInf)
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", miniAppMessageInterface)
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", miniAppMessageInterface)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 
     @Test
     fun `MiniAppMessageInterface should be injected to RealMiniAppDisplay`() {
-        realDisplay.miniAppMessageInterface shouldBe masInf
+        realDisplay.miniAppMessageInterface shouldBe miniAppMessageInterface
     }
 }
