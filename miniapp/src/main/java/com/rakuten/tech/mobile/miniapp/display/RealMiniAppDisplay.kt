@@ -80,4 +80,9 @@ internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : We
         view: WebView,
         request: WebResourceRequest
     ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+
+    override fun onPageFinished(webView: WebView, url: String) {
+        webView.loadUrl("javascript:function showUniqueId(){" +
+                "document.getElementById(\"version\").innerHTML = \"Injected.\";}")
+    }
 }
