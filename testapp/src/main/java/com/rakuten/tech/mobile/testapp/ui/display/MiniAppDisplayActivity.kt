@@ -17,16 +17,13 @@ import kotlinx.coroutines.launch
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
-    private lateinit var versionId: String
 
     companion object {
         private val appIdTag = "app_id_tag"
-        private val appVersionTag = "app_version"
 
-        fun start(context: Context, appId: String, versionId: String) {
+        fun start(context: Context, appId: String) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
-                putExtra(appVersionTag, versionId)
             })
         }
     }
@@ -35,9 +32,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent.hasExtra(appIdTag) && intent.hasExtra(appVersionTag)) {
+        if (intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
-            versionId = intent.getStringExtra(appVersionTag) ?: ""
 
             setContentView(R.layout.mini_app_display_activity)
 
@@ -62,7 +58,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
             launch {
-                viewModel.obtainMiniAppView(appId, versionId)
+                viewModel.obtainMiniAppView(appId)
             }
         }
     }

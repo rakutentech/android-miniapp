@@ -4,9 +4,9 @@ import android.os.Bundle
 import com.google.android.material.textfield.TextInputEditText
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.launchActivity
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
 
 class MiniAppInputActivity : SettingsMenuBaseActivity() {
@@ -15,17 +15,21 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_input_activity)
 
-        btnDisplay.setOnClickListener{ raceExecutor.run { display() } }
-        btnDisplayList.setOnClickListener { raceExecutor.run { launchActivity<MiniAppListActivity>() } }
+        btnDisplay.setOnClickListener {
+            raceExecutor.run { display() }
+        }
+        btnDisplayList.setOnClickListener {
+            raceExecutor.run { launchActivity<MiniAppListActivity>() }
+        }
     }
 
     private fun display() {
-        val isAppIdValid = isValidInput(edtAppId)
-        val isVersionIdValid = isValidInput(edtVersionId)
-
-        if (isAppIdValid && isVersionIdValid)
-            MiniAppDisplayActivity.start(this,
-                edtAppId.text.toString().trim(), edtVersionId.text.toString().trim())
+        if (isValidInput(edtAppId)) {
+            MiniAppDisplayActivity.start(
+                this,
+                edtAppId.text.toString().trim()
+            )
+        }
     }
 
     private fun isValidInput(edt: TextInputEditText): Boolean =

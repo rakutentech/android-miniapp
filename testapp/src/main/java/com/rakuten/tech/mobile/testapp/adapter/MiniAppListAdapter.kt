@@ -46,7 +46,7 @@ private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
 }
 
 interface MiniAppList {
-    fun onMiniAppItemClick(appId: String, versionId: String)
+    fun onMiniAppItemClick(appId: String)
 }
 
 class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
@@ -59,7 +59,7 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
         binding.tvVersion.isSelected = true
 
         binding.itemRoot.setOnClickListener {
-            miniAppList.onMiniAppItemClick(miniapp.id, miniapp.version.versionId)
+            miniAppList.onMiniAppItemClick(miniapp.id)
         }
     }
 

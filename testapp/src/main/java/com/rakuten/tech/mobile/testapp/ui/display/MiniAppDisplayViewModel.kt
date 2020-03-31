@@ -30,10 +30,10 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppView(appId: String, versionId: String) {
+    suspend fun obtainMiniAppView(appId: String) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(appId, versionId)
+            miniAppDisplay = miniapp.create(miniapp.fetchInfo(appId))
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
         } catch (e: MiniAppSdkException) {

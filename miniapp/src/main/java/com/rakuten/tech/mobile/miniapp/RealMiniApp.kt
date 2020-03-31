@@ -19,16 +19,16 @@ internal class RealMiniApp(
     }
 
     override suspend fun create(
-        appId: String,
-        versionId: String
+        info: MiniAppInfo
     ): MiniAppDisplay = when {
-        appId.isBlank() || versionId.isBlank() -> throw sdkExceptionForInvalidArguments()
+        info.id.isBlank() || info.version.versionId.isBlank() ->
+            throw sdkExceptionForInvalidArguments()
         else -> {
             val basePath = miniAppDownloader.getMiniApp(
-                appId = appId,
-                versionId = versionId
+                appId = info.id,
+                versionId = info.version.versionId
             )
-            displayer.createMiniAppDisplay(basePath, appId)
+            displayer.createMiniAppDisplay(basePath, info.id)
         }
     }
 
