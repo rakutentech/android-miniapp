@@ -9,12 +9,10 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.amshove.kluent.*
 import org.junit.Before
@@ -108,21 +106,22 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `when there is latest existing app in local storage, load the local storage path`() = runBlockingTest {
-        When calling miniAppStatus.isVersionDownloaded(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        ) itReturns true
+    fun `when there is latest existing app in local storage, load the local storage path`() =
+        runBlockingTest {
+            When calling miniAppStatus.isVersionDownloaded(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns true
 
-        When calling storage.getMiniAppVersionPath(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        ) itReturns TEST_BASE_PATH
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns TEST_BASE_PATH
 
-        setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-        downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
-    }
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
+        }
 
     @Test
     fun `should execute old file deletion after downloading new version`() {
@@ -170,9 +169,15 @@ class MiniAppDownloaderSpec {
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
     }
 
-    private suspend fun setupLatestMiniAppInfoResponse(apiClient: ApiClient, appId: String, versionId: String) {
+    private suspend fun setupLatestMiniAppInfoResponse(
+        apiClient: ApiClient,
+        appId: String,
+        versionId: String
+    ) {
         When calling apiClient.fetchInfo(appId) itReturns
-                MiniAppInfo(id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
-                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId))
+                MiniAppInfo(
+                    id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
+                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId)
+                )
     }
 }

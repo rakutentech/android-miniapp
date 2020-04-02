@@ -67,8 +67,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         launch { viewModel.getMiniAppList() }
     }
 
-    override fun onMiniAppItemClick(appId: String, versionId: String) {
-        raceExecutor.run { MiniAppDisplayActivity.start(context!!, appId, versionId) }
+    override fun onMiniAppItemClick(appId: String) {
+        raceExecutor.run { MiniAppDisplayActivity.start(context!!, appId) }
     }
 
     fun switchToInput() {

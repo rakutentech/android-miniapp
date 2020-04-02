@@ -16,13 +16,16 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
-    private val apiClientRepository: ApiClientRepository = mock()
-    private val miniAppDownloader: MiniAppDownloader = mock()
-    private val displayer: Displayer = mock()
-    private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
-    private val realMiniApp = RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
-    private val miniAppSdkConfig: MiniAppSdkConfig = mock()
+
     private var apiClient: ApiClient = mock()
+    private val apiClientRepository: ApiClientRepository = mock()
+    private val displayer: Displayer = mock()
+    private val miniAppDownloader: MiniAppDownloader = mock()
+    private val miniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", TEST_MA_VERSION_ID))
+    private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
+    private val miniAppSdkConfig: MiniAppSdkConfig = mock()
+    private val realMiniApp =
+        RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
 
     @Before
     fun setup() {
@@ -43,17 +46,19 @@ class RealMiniAppSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when version id is invalid`() = runBlockingTest {
-        realMiniApp.create(TEST_MA_ID, "")
+        val invalidMiniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", ""))
+        realMiniApp.create(invalidMiniAppInfo)
     }
 
     @Test
-    fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() = runBlockingTest {
-        realMiniApp.create(TEST_MA_ID, TEST_MA_VERSION_ID)
+    fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
+        runBlockingTest {
+            realMiniApp.create(miniAppInfo)
 
-        val basePath: String = verify(miniAppDownloader, times(1))
-            .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
-        verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID)
-    }
+            val basePath: String = verify(miniAppDownloader, times(1))
+                .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID)
+        }
 
     @Test
     fun `should invoke from MiniAppInfoFetcher when calling get miniapp info`() = runBlockingTest {
