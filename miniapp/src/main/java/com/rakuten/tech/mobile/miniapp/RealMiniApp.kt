@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,

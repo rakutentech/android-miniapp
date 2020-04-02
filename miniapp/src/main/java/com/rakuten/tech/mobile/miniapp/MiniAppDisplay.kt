@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 
 /**
  * This represents the contract by which the host app can interact with the
@@ -29,4 +30,8 @@ interface MiniAppDisplay : LifecycleObserver {
      * within the same state of parent's lifecycle.
      */
     fun destroyView()
+
+    fun injectJSInterface(miniAppMessageInterface: MiniAppMessageInterface)
+
+    fun runJsAsyncCallback(messageId: String, value: String)
 }

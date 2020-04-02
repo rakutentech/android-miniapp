@@ -6,7 +6,7 @@ import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
-import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*

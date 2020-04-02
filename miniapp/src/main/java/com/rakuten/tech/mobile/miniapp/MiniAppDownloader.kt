@@ -20,12 +20,14 @@ internal class MiniAppDownloader(
 ) : UpdatableApiClient {
 
     // Only run the latest version of specified MiniApp.
-    suspend fun getMiniApp(appId: String, versionId: String): String = when {
-        !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-        miniAppStatus
-            .isVersionDownloaded(appId, versionId) -> storage.getMiniAppVersionPath(appId, versionId)
-        else -> startDownload(appId, versionId)
-    }
+//    suspend fun getMiniApp(appId: String, versionId: String): String = when {
+//        !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
+//        miniAppStatus
+//            .isVersionDownloaded(appId, versionId) -> storage.getMiniAppVersionPath(appId, versionId)
+//        else -> startDownload(appId, versionId)
+//    }
+
+    suspend fun getMiniApp(appId: String, versionId: String): String = storage.getMiniAppVersionPath(appId, versionId)
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private suspend fun isLatestVersion(appId: String, versionId: String): Boolean {

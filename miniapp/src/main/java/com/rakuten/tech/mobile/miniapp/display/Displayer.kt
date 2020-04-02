@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppMessageInterface
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.When
