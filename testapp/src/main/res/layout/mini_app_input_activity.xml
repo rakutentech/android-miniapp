@@ -30,7 +30,7 @@
             android:id="@+id/btnDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="start"
             android:layout_marginTop="@dimen/large_24"
             android:text="@string/action_display" />
     </LinearLayout>
