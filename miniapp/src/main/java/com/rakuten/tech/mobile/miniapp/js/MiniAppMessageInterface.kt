@@ -10,6 +10,6 @@ interface MiniAppMessageInterface {
     fun getUniqueId(jsonStr: String)
 
     companion object {
-        fun getUniqueIDFromJson(jsonStr: String): UniqueID = Gson().fromJson(jsonStr, UniqueID::class.java)
+        fun getCallbackObjFromJson(jsonStr: String): CallbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
     }
 }

@@ -55,7 +55,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                             MiniAppMessageInterface {
                                 @JavascriptInterface
                                 override fun getUniqueId(jsonStr: String){
-                                    val uniqueID = MiniAppMessageInterface.getUniqueIDFromJson(jsonStr)
+                                    val uniqueID = MiniAppMessageInterface.getCallbackObjFromJson(jsonStr)
                                     it.runJsAsyncCallback(uniqueID.id, "example_unique_id")
                                 }
                             })

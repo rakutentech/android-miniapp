@@ -31,7 +31,6 @@ internal class RealMiniAppDisplay(
 ) : MiniAppDisplay, WebView(context) {
 
     private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
-    private var injectedJs = ""
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -49,8 +48,7 @@ internal class RealMiniAppDisplay(
         } catch (e: Exception) {
             null
         }?.let {
-            injectedJs = it
-            webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), injectedJs)
+            webViewClient = MiniAppWebViewClient(getWebViewAssetLoader())
         }
 
         loadUrl(getLoadUrl())
@@ -61,7 +59,7 @@ internal class RealMiniAppDisplay(
     }
 
     override fun setWebViewClient(client: WebViewClient?) {
-        super.setWebViewClient(client ?: MiniAppWebViewClient(getWebViewAssetLoader(), injectedJs))
+        super.setWebViewClient(client ?: MiniAppWebViewClient(getWebViewAssetLoader()))
     }
 
     override fun getMiniAppView(): View = this
@@ -75,8 +73,7 @@ internal class RealMiniAppDisplay(
 
     override fun runJsAsyncCallback(messageId: String, value: String) {
         post {
-            evaluateJavascript("javascript:(function (){$injectedJs\n" +
-                "MiniAppBridge.execCallback(\"$messageId\", \"$value\")})()") {}
+            evaluateJavascript("javascript:(function (){MiniAppBridge.execCallback(\"$messageId\", \"$value\")})()") {}
         }
     }
 
@@ -95,16 +92,10 @@ internal class RealMiniAppDisplay(
 }
 
 @VisibleForTesting
-internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader,
-                                    private val injectedJs: String) : WebViewClient() {
+internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : WebViewClient() {
 
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest
     ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
-
-    override fun onPageFinished(view: WebView, url: String?) {
-        super.onPageFinished(view, url)
-        view.evaluateJavascript("javascript:(function (){$injectedJs})()"){}
-    }
 }
