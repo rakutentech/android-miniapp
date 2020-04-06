@@ -55,11 +55,11 @@ class MiniAppDisplayActivity : BaseActivity() {
                         (it as MiniAppDisplay).injectJSInterface(object:
                             MiniAppMessageInterface {
                                 @JavascriptInterface
-                                override fun getUniqueId(jsonStr: String){
-                                    val uniqueID = MiniAppMessageInterface.getCallbackObjFromJson(jsonStr)
-                                    it.runJsAsyncCallback(uniqueID.id, "example_unique_id")
+                                override fun getUniqueId(jsonStr: String) {
+                                    postUniqueId(jsonStr, "example_unique_id", it)
                                 }
                             })
+
                         //action: display webview
                         setContentView(it)
                     })

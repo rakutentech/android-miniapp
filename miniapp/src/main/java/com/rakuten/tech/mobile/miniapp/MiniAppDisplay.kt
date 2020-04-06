@@ -31,7 +31,13 @@ interface MiniAppDisplay : LifecycleObserver {
      */
     fun destroyView()
 
+    /**
+     * Provided the interface implementation for javascript interaction.
+     */
     fun injectJSInterface(miniAppMessageInterface: MiniAppMessageInterface)
 
-    fun runJsAsyncCallback(messageId: String, value: String)
+    /**
+     * Post a value to mini app with callback.
+     */
+    fun runJsAsyncCallback(callbackId: String, value: String)
 }

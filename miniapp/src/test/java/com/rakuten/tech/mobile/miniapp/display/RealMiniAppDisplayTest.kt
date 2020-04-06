@@ -6,6 +6,7 @@ import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
@@ -84,13 +85,8 @@ class RealMiniAppDisplayTest {
 
     @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", miniAppMessageInterface)
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", miniAppMessageInterface)
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1")
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2")
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
-    }
-
-    @Test
-    fun `MiniAppMessageInterface should be injected to RealMiniAppDisplay`() {
-        realDisplay.miniAppMessageInterface shouldBe miniAppMessageInterface
     }
 }

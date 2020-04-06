@@ -42,7 +42,6 @@ class DisplayerTest {
     private suspend fun getMiniAppDisplay(): MiniAppDisplay =
         Displayer(context).createMiniAppDisplay(
             basePath = context.filesDir.path,
-            appId = TEST_MA_ID,
-            miniAppMessageInterface = miniAppMessageInterface
+            appId = TEST_MA_ID
         )
 }

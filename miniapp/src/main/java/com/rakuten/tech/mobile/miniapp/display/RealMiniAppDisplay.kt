@@ -40,6 +40,7 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
+        webViewClient = MiniAppWebViewClient(getWebViewAssetLoader())
 
         loadUrl(getLoadUrl())
     }
@@ -61,9 +62,9 @@ internal class RealMiniAppDisplay(
         destroy()
     }
 
-    override fun runJsAsyncCallback(messageId: String, value: String) {
+    override fun runJsAsyncCallback(callbackId: String, value: String) {
         post {
-            evaluateJavascript("javascript:(function (){MiniAppBridge.execCallback(\"$messageId\", \"$value\")})()") {}
+            evaluateJavascript("javascript:(function (){MiniAppBridge.execCallback(\"$callbackId\", \"$value\")})()") {}
         }
     }
 
@@ -89,15 +90,16 @@ internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : We
         request: WebResourceRequest
     ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun onPageFinished(webView: WebView, url: String?) {
         super.onPageFinished(webView, url)
-//        try {
-//            val inputStream = webView.context.assets.open("inject.js")
-//            inputStream.bufferedReader().use(BufferedReader::readText)
-//        } catch (e: Exception) {
-//            null
-//        }?.let {
-//            webView.evaluateJavascript("javascript:(function (){$it})()"){}
-//        }
+        try {
+            val inputStream = webView.context.assets.open("inject.js")
+            inputStream.bufferedReader().use(BufferedReader::readText)
+        } catch (e: Exception) {
+            null
+        }?.let {
+            webView.evaluateJavascript("javascript:(function (){$it})()") {}
+        }
     }
 }
