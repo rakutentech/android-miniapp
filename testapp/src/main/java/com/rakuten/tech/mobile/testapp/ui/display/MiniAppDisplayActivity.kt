@@ -56,7 +56,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                             MiniAppMessageInterface {
                                 @JavascriptInterface
                                 override fun getUniqueId(jsonStr: String) {
-                                    postUniqueId(jsonStr, "example_unique_id", it)
+                                    postValue(jsonStr, it, "example_unique_id")
                                 }
                             })
 
