@@ -5,9 +5,6 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
@@ -21,7 +18,6 @@ class RealMiniAppDisplayTest {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
-    private val miniAppMessageInterface: MiniAppMessageInterface = mock()
 
     @Before
     fun setup() {
