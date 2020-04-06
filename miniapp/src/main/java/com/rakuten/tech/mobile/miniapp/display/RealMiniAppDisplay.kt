@@ -26,8 +26,7 @@ private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 internal class RealMiniAppDisplay(
     context: Context,
     val basePath: String,
-    val appId: String,
-    miniAppMessageInterface: MiniAppMessageInterface
+    val appId: String
 ) : MiniAppDisplay, WebView(context) {
 
     private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
@@ -41,15 +40,6 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-
-        try {
-            val inputStream = context.assets.open("inject.js")
-            inputStream.bufferedReader().use(BufferedReader::readText)
-        } catch (e: Exception) {
-            null
-        }?.let {
-            webViewClient = MiniAppWebViewClient(getWebViewAssetLoader())
-        }
 
         loadUrl(getLoadUrl())
     }
@@ -98,4 +88,16 @@ internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : We
         view: WebView,
         request: WebResourceRequest
     ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+
+    override fun onPageFinished(webView: WebView, url: String?) {
+        super.onPageFinished(webView, url)
+//        try {
+//            val inputStream = webView.context.assets.open("inject.js")
+//            inputStream.bufferedReader().use(BufferedReader::readText)
+//        } catch (e: Exception) {
+//            null
+//        }?.let {
+//            webView.evaluateJavascript("javascript:(function (){$it})()"){}
+//        }
+    }
 }

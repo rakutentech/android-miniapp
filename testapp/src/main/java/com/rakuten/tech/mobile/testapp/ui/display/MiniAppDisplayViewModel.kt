@@ -33,12 +33,11 @@ class MiniAppDisplayViewModel constructor(
 
     suspend fun obtainMiniAppView(
         appId: String,
-        versionId: String,
-        miniAppMessageInterface: MiniAppMessageInterface
+        versionId: String
     ) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(appId, versionId, miniAppMessageInterface)
+            miniAppDisplay = miniapp.create(appId, versionId)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
         } catch (e: MiniAppSdkException) {

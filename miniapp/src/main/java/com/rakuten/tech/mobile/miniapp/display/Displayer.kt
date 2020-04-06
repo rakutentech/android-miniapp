@@ -10,12 +10,11 @@ internal class Displayer(private val context: Context) {
 
     suspend fun createMiniAppDisplay(
         basePath: String,
-        appId: String,
-        miniAppMessageInterface: MiniAppMessageInterface
+        appId: String
     ): MiniAppDisplay =
         withContext(Dispatchers.Main) {
             context?.let {
-                RealMiniAppDisplay(context, basePath, appId, miniAppMessageInterface)
+                RealMiniAppDisplay(context, basePath, appId)
             }
         }
 }

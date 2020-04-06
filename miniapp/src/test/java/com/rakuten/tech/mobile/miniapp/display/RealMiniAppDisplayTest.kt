@@ -29,8 +29,7 @@ class RealMiniAppDisplayTest {
         realDisplay = RealMiniAppDisplay(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID,
-            miniAppMessageInterface = miniAppMessageInterface
+            appId = TEST_MA_ID
         )
     }
 

@@ -51,6 +51,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
+
                         (it as MiniAppDisplay).injectJSInterface(object:
                             MiniAppMessageInterface {
                                 @JavascriptInterface
@@ -72,17 +73,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            launch {
-                viewModel.obtainMiniAppView(
-                    appId,
-                    versionId,
-                    object:
-                        MiniAppMessageInterface {
-                        @JavascriptInterface
-                        override fun getUniqueId(jsonStr: String){}
-                    }
-                )
-            }
+            launch { viewModel.obtainMiniAppView(appId, versionId) }
         }
     }
 
