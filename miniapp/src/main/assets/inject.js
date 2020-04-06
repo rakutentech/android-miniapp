@@ -7,7 +7,7 @@ function printUniqueId() {
     window.MiniApp.getUniqueId()
 }
 
-let MiniAppBridge = {}
+window.MiniAppBridge = {}
 var queue = []
 
 MiniAppBridge.exec = function(action, onSuccess, onError) {
@@ -16,14 +16,11 @@ MiniAppBridge.exec = function(action, onSuccess, onError) {
     callback.onError = onError;
     callback.id = Math.random();
     queue.unshift(callback)
-    localStorage.setItem(callback.id, callback)
     window.MiniAppAndroid.getUniqueId(JSON.stringify({action: action, id: callback.id}))
 }
 
 MiniAppBridge.execCallback = function(messageId, value) {
-//    var queueObj = queue.find(callback => callback.id = messageId)
-    var queueObj = localStorage.getItem(messageId)
-    console.log(queueObj)
+    var queueObj = queue.find(callback => callback.id = messageId)
     queueObj.onSuccess(value);
     queue.shift(queueObj)
 }
@@ -40,5 +37,3 @@ window.MiniApp = {
   }
 
 }
-
-init()
