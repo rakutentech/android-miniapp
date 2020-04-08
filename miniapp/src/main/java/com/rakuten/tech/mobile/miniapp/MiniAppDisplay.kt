@@ -33,11 +33,15 @@ interface MiniAppDisplay : LifecycleObserver {
 
     /**
      * Provided the interface implementation for javascript interaction.
+     * @property miniAppMessageInterface The interface implementation which transmits data
+     * between native and miniapp.
      */
     fun injectJSInterface(miniAppMessageInterface: MiniAppMessageInterface)
 
     /**
      * Post a value to mini app with callback.
+     * @property callbackId The id of callback execution storing in miniapp.
+     * @property value The value which is transmitted to miniapp.
      */
     fun runJsAsyncCallback(callbackId: String, value: String)
 }

@@ -11,7 +11,7 @@ interface MiniAppMessageInterface {
     fun getUniqueId(jsonStr: String)
 
     /** Return a value to mini app. **/
-    fun postValue(jsonStr: String, view: MiniAppDisplay, value: String) {
+    fun postValue(view: MiniAppDisplay, jsonStr: String, value: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
         view.runJsAsyncCallback(callbackObj.id, value)
     }
