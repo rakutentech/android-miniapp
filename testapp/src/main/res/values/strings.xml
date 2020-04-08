@@ -5,6 +5,7 @@
     <string name="lb_app_id">App ID</string>
     <string name="action_display">Display</string>
     <string name="error_empty">Required</string>
+    <string name="error_invalid_input">Invalid Input</string>
     <string name="action_go_input">Display Miniapp From ID</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="lb_app_settings">App Settings</string>
