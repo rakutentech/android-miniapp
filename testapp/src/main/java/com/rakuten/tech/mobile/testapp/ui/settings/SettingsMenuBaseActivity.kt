@@ -3,9 +3,13 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import kotlinx.coroutines.launch
 
 abstract class SettingsMenuBaseActivity: BaseActivity() {
 
@@ -46,21 +50,46 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
         appId: EditText,
         subscriptionKey: EditText
     ) {
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.lb_app_settings)
             .setView(settingsDialog)
-            .setPositiveButton(R.string.action_save) { dialog, _ ->
-                dialog.dismiss()
+            .setPositiveButton(R.string.action_save, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener { _dialog ->
+            (_dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener{
                 updateSettings(appId.text.toString(), subscriptionKey.text.toString())
             }
-            .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
-            .show()
+
+            _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener{
+                _dialog.dismiss()
+            }
+        }
+
+        dialog.show()
     }
 
+
     private fun updateSettings(appId: String, subscriptionKey: String) {
+        val appIdHolder = settings.appId
+        val subscriptionKeyHolder = settings.subscriptionKey
         settings.appId = appId
         settings.subscriptionKey = subscriptionKey
 
-        recreate()
+        launch {
+            try {
+                MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                runOnUiThread { recreate() }
+            } catch (error: MiniAppSdkException) {
+                settings.appId = appIdHolder
+                settings.subscriptionKey = subscriptionKeyHolder
+                runOnUiThread {
+                    Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
+                        .show()
+                }
+
+            }
+        }
     }
 }
