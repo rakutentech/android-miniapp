@@ -2,7 +2,10 @@ package com.rakuten.tech.mobile.testapp.ui.base
 
 import androidx.appcompat.app.AppCompatActivity
 import com.rakuten.tech.mobile.testapp.helper.RaceExecutor
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseActivity: AppCompatActivity(), CoroutineScope {

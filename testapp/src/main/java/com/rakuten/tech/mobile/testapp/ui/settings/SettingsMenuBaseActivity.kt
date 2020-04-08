@@ -1,7 +1,10 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -11,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.coroutines.launch
 
-abstract class SettingsMenuBaseActivity: BaseActivity() {
+abstract class SettingsMenuBaseActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
 
@@ -46,7 +49,7 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
     }
 
     private fun renderAppSettingsDialog(
-        settingsDialog: View?,
+        settingsDialog: View,
         appId: EditText,
         subscriptionKey: EditText
     ) {
@@ -58,11 +61,13 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
             .create()
 
         dialog.setOnShowListener { _dialog ->
-            (_dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener{
-                updateSettings(appId.text.toString(), subscriptionKey.text.toString())
+            (_dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val pb = settingsDialog.findViewById<View>(R.id.pb)
+                pb.visibility = View.VISIBLE
+                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), pb)
             }
 
-            _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener{
+            _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
                 _dialog.dismiss()
             }
         }
@@ -71,7 +76,7 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
     }
 
 
-    private fun updateSettings(appId: String, subscriptionKey: String) {
+    private fun updateSettings(appId: String, subscriptionKey: String, pb: View) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
         settings.appId = appId
@@ -80,15 +85,18 @@ abstract class SettingsMenuBaseActivity: BaseActivity() {
         launch {
             try {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
-                runOnUiThread { recreate() }
+                runOnUiThread {
+                    pb.visibility = View.GONE
+                    recreate()
+                }
             } catch (error: MiniAppSdkException) {
                 settings.appId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
                 runOnUiThread {
+                    pb.visibility = View.GONE
                     Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
                         .show()
                 }
-
             }
         }
     }
