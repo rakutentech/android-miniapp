@@ -27,16 +27,14 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Creates a mini app.
-     * @param appId application ID of the mini app
-     * @param versionId a version ID associated with the mini app
+     * @param info metadata of a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
      * @throws MiniAppSdkException when there is some issue during fetching,
      * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun create(
-        appId: String,
-        versionId: String
+        info: MiniAppInfo
     ): MiniAppDisplay
 
     /**
