@@ -1,6 +1,5 @@
-window.MiniAppBridge = {}
-
-var queue = []
+var messageQueue = []
+window.MiniAppBridge = {};
 var isPlatform = {
     Android: function() {
         return navigator.userAgent.match(/Android/i);
@@ -15,31 +14,29 @@ MiniAppBridge.exec = function(action, onSuccess, onError) {
     callback.onSuccess = onSuccess;
     callback.onError = onError;
     callback.id = Math.random();
-    queue.unshift(callback)
+    messageQueue.unshift(callback)
     if(isPlatform.iOS()){
-        webkit.messageHandlers.MiniApp.postMessage(JSON.stringify({action: action, id: callback.id}));
+        webkit.messageHandlers.MiniAppiOS.postMessage(JSON.stringify({action: action, id: callback.id}));
     } else {
         window.MiniAppAndroid.getUniqueId(JSON.stringify({action: action, id: callback.id}))
     }
 }
 
 MiniAppBridge.execCallback = function(messageId, value) {
-    var queueObj = queue.find(callback => callback.id = messageId)
+    var queueObj = messageQueue.find(callback => callback.id = messageId)
     queueObj.onSuccess(value);
-    var messageObjIndex = queue.indexOf(queueObj)
+    var messageObjIndex = messageQueue.indexOf(queueObj)
     if(messageObjIndex != -1) {
-        queue.splice(messageObjIndex, 1);
+        messageQueue.splice(messageObjIndex, 1);
     }
 }
 
-window.MiniApp = {
-  getUniqueId: () => {
-      return new Promise((resolve, reject) => {
-          return MiniAppBridge.exec(
-              "getUniqueId",
-              id => resolve(id),
-              error => reject(error)
-          );
-      })
-  }
+MiniAppBridge.getUniqueId = function(messageId, value) {
+    return new Promise((resolve, reject) => {
+        return MiniAppBridge.exec(
+            "getUniqueId",
+            id => resolve(id),
+            error => reject(error)
+        );
+    })
 }

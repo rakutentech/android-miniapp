@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.Version
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppListViewModel constructor(
