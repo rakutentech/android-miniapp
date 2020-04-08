@@ -5,17 +5,11 @@ import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 
 internal class MiniAppInfoFetcher(private var apiClient: ApiClient) : UpdatableApiClient {
 
+    @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppList() = apiClient.list()
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    suspend fun getInfo(appId: String) = run {
-        try {
-            apiClient.fetchInfo(appId)
-        } catch (error: Exception) {
-            // If backend functions correctly, this should never happen
-            throw sdkExceptionForInternalServerError()
-        }
-    }
+    @Throws(MiniAppSdkException::class)
+    suspend fun getInfo(appId: String) = apiClient.fetchInfo(appId)
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient

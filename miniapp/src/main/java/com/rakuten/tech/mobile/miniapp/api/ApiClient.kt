@@ -37,11 +37,13 @@ internal class ApiClient @VisibleForTesting constructor(
         hostAppId = rasAppId
     )
 
+    @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(hostAppId, hostAppVersionId)
         return requestExecutor.executeRequest(request)
     }
 
+    @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(hostAppId, hostAppVersionId, appId)
         return requestExecutor.executeRequest(request).first()
