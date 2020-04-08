@@ -17,6 +17,7 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_input_activity)
 
+        edtAppId.requestFocus()
         btnDisplay.setOnClickListener {
             raceExecutor.run { display() }
         }
