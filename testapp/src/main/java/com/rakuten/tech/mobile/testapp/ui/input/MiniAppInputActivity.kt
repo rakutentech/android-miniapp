@@ -8,6 +8,8 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
+import java.lang.Exception
+import java.util.UUID
 
 class MiniAppInputActivity : SettingsMenuBaseActivity() {
 
@@ -15,6 +17,7 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_input_activity)
 
+        edtAppId.requestFocus()
         btnDisplay.setOnClickListener {
             raceExecutor.run { display() }
         }
@@ -33,12 +36,19 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
     }
 
     private fun isValidInput(edt: TextInputEditText): Boolean =
-        if (edt.text.toString().trim().isEmpty()) {
-            edt.error = getString(R.string.error_empty)
+        if (isInvalidUuid(edt.text.toString())) {
+            edt.error = getString(R.string.error_invalid_input)
             false
         } else {
             edt.error = null
             true
         }
+
+    private fun isInvalidUuid(input: String): Boolean = try {
+        UUID.fromString(input)
+        false
+    } catch (e: Exception) {
+        true
+    }
 }
 
