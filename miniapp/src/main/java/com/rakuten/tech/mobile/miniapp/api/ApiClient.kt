@@ -46,7 +46,13 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(hostAppId, hostAppVersionId, appId)
-        return requestExecutor.executeRequest(request).first()
+        val info = requestExecutor.executeRequest(request)
+
+        if (info.isNotEmpty()) {
+            return info.first()
+        } else {
+            throw MiniAppSdkException("Server returned no info for the Mini App Id: $appId")
+        }
     }
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
