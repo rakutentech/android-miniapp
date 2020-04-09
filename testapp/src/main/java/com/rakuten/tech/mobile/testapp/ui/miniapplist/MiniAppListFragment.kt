@@ -51,8 +51,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
 
     override fun onStart() {
         super.onStart()
-        srl.post {
-            srl.isRefreshing = true
+        swipeRefreshLayout.post {
+            swipeRefreshLayout.isRefreshing = true
             executeLoadingList()
         }
     }
@@ -63,7 +63,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
-                    srl.isRefreshing = false
+                    swipeRefreshLayout.isRefreshing = false
                     miniAppListAdapter.miniapps = it
                     miniAppListAdapter.notifyDataSetChanged()
                 })
@@ -75,7 +75,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
                 })
             }
 
-        srl.setOnRefreshListener { executeLoadingList() }
+        swipeRefreshLayout.setOnRefreshListener { executeLoadingList() }
     }
 
     private fun executeLoadingList() {

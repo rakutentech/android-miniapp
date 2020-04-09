@@ -24,6 +24,7 @@ buildscript {
     ext.retrofit = '2.6.3'
     ext.robolectric = '4.3'
     ext.webkit = '1.1.0'
+    ext.swipe_refresh_layout = '1.0.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'
