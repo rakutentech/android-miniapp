@@ -1,10 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -94,8 +91,9 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 settings.subscriptionKey = subscriptionKeyHolder
                 runOnUiThread {
                     pb.visibility = View.GONE
-                    Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
-                        .show()
+                    val toast = Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
+                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.show()
                 }
             }
         }
