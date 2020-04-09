@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import kotlinx.android.synthetic.main.mini_app_list_fragment.*
 import kotlinx.coroutines.launch
 
 class MiniAppListFragment : BaseFragment(), MiniAppList {
@@ -48,12 +49,21 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        srl.post {
+            srl.isRefreshing = true
+            executeLoadingList()
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         viewModel = ViewModelProviders.of(this)
             .get(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
+                    srl.isRefreshing = false
                     miniAppListAdapter.miniapps = it
                     miniAppListAdapter.notifyDataSetChanged()
                 })
@@ -64,6 +74,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
                     //do something
                 })
             }
+
+        srl.setOnRefreshListener { executeLoadingList() }
+    }
+
+    private fun executeLoadingList() {
         launch { viewModel.getMiniAppList() }
     }
 
