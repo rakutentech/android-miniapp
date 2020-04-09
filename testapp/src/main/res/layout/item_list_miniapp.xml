@@ -88,11 +88,10 @@
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:visibility="gone"
-                android:text="@{@string/lb_version_id + `: `}"
+                android:text="@{@string/lb_version + `: `}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_description"
-                tools:text="Version ID: " />
+                tools:text="Version: " />
 
             <TextView
                 android:id="@+id/tv_version"
@@ -102,9 +101,8 @@
                 android:alpha="0.6"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:text="@string/lb_version_id"
+                android:text="@{miniapp.version.versionTag}"
                 android:singleLine="true"
-                android:visibility="gone"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 app:layout_constraintStart_toEndOf="@id/tv_lb_version"
