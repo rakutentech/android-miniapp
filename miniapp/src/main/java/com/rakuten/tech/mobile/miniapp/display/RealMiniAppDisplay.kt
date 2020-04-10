@@ -96,28 +96,16 @@ internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : We
         return interceptedWebRequest
     }
 
-    override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
-        super.onPageStarted(webView, url, favicon)
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    override fun onPageFinished(webView: WebView, url: String?) {
+        super.onPageFinished(webView, url)
         try {
             val inputStream = webView.context.assets.open("inject.js")
             inputStream.bufferedReader().use(BufferedReader::readText)
         } catch (e: Exception) {
             null
         }?.let {
-            webView.evaluateJavascript("javascript:$it") {}
+            webView.evaluateJavascript("javascript:(function (){$it})()") {}
         }
     }
-
-//    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-//    override fun onPageFinished(webView: WebView, url: String?) {
-//        super.onPageFinished(webView, url)
-//        try {
-//            val inputStream = webView.context.assets.open("inject.js")
-//            inputStream.bufferedReader().use(BufferedReader::readText)
-//        } catch (e: Exception) {
-//            null
-//        }?.let {
-//            webView.evaluateJavascript("javascript:(function (){$it})()") {}
-//        }
-//    }
 }
