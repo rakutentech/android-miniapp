@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -95,16 +96,28 @@ internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : We
         return interceptedWebRequest
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    override fun onPageFinished(webView: WebView, url: String?) {
-        super.onPageFinished(webView, url)
+    override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(webView, url, favicon)
         try {
             val inputStream = webView.context.assets.open("inject.js")
             inputStream.bufferedReader().use(BufferedReader::readText)
         } catch (e: Exception) {
             null
         }?.let {
-            webView.evaluateJavascript("javascript:(function (){$it})()") {}
+            webView.evaluateJavascript("javascript:$it") {}
         }
     }
+
+//    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+//    override fun onPageFinished(webView: WebView, url: String?) {
+//        super.onPageFinished(webView, url)
+//        try {
+//            val inputStream = webView.context.assets.open("inject.js")
+//            inputStream.bufferedReader().use(BufferedReader::readText)
+//        } catch (e: Exception) {
+//            null
+//        }?.let {
+//            webView.evaluateJavascript("javascript:(function (){$it})()") {}
+//        }
+//    }
 }
