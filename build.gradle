@@ -23,7 +23,7 @@ buildscript {
     ext.sdk_utils = '0.1.1'
     ext.retrofit = '2.6.3'
     ext.robolectric = '4.3'
-    ext.webkit = '1.2.0'
+    ext.webkit = '1.1.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'
