@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppDisplayViewModel constructor(
@@ -28,10 +29,10 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppView(appId: String) {
+    suspend fun obtainMiniAppView(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(miniapp.fetchInfo(appId))
+            miniAppDisplay = miniapp.create(miniapp.fetchInfo(appId), miniAppMessageBridge)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
         } catch (e: MiniAppSdkException) {

@@ -46,12 +46,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                     miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
-
-                        (it as MiniAppDisplay).injectJSInterface(object:
-                            MiniAppMessageBridge(it) {
-                                override fun getUniqueId(): String = "example_unique_id"
-                            })
-
                         //action: display webview
                         setContentView(it)
                     })
@@ -66,7 +60,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
             launch {
-                viewModel.obtainMiniAppView(appId)
+                viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
+                    override fun getUniqueId(): String = "example_unique_id"
+                })
             }
         }
     }

@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
 /**
  * This represents the contract by which the host app can interact with the
@@ -30,18 +29,4 @@ interface MiniAppDisplay : LifecycleObserver {
      * within the same state of parent's lifecycle.
      */
     fun destroyView()
-
-    /**
-     * Provided the interface implementation for javascript interaction.
-     * @property miniAppMessageBridge The interface implementation which transmits data
-     * between native and miniapp.
-     */
-    fun injectJSInterface(miniAppMessageBridge: MiniAppMessageBridge)
-
-    /**
-     * Post a value to mini app with callback.
-     * @property callbackId The id of callback execution storing in miniapp.
-     * @property value The value which is transmitted to miniapp.
-     */
-    fun runJsAsyncCallback(callbackId: String, value: String)
 }

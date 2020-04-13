@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -19,7 +20,8 @@ internal class RealMiniApp(
     }
 
     override suspend fun create(
-        info: MiniAppInfo
+        info: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = when {
         info.id.isBlank() || info.version.versionId.isBlank() ->
             throw sdkExceptionForInvalidArguments()
@@ -28,7 +30,7 @@ internal class RealMiniApp(
                 appId = info.id,
                 versionId = info.version.versionId
             )
-            displayer.createMiniAppDisplay(basePath, info.id)
+            displayer.createMiniAppDisplay(basePath, info.id, miniAppMessageBridge)
         }
     }
 
