@@ -18,7 +18,7 @@ MiniAppBridge.exec = function(action, onSuccess, onError) {
     if(isPlatform.iOS()){
         webkit.messageHandlers.MiniAppiOS.postMessage(JSON.stringify({action: action, id: callback.id}));
     } else {
-        window.MiniAppAndroid.getUniqueId(JSON.stringify({action: action, id: callback.id}))
+        window.MiniAppAndroid.postMessage(JSON.stringify({action: action, id: callback.id}))
     }
 }
 

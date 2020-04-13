@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.BufferedReader
 import java.io.File
 
@@ -46,8 +46,8 @@ internal class RealMiniAppDisplay(
         loadUrl(getLoadUrl())
     }
 
-    override fun injectJSInterface(miniAppMessageInterface: MiniAppMessageInterface) {
-        addJavascriptInterface(miniAppMessageInterface, MINI_APP_INTERFACE)
+    override fun injectJSInterface(miniAppMessageBridge: MiniAppMessageBridge) {
+        addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
     }
 
     override fun setWebViewClient(client: WebViewClient?) {
@@ -86,15 +86,21 @@ internal class RealMiniAppDisplay(
 @VisibleForTesting
 internal class MiniAppWebViewClient(private val loader: WebViewAssetLoader) : WebViewClient() {
 
-    override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-        val interceptedWebRequest = loader.shouldInterceptRequest(request.url)
-        interceptedWebRequest?.let {
-            if (request.url.toString().endsWith("js", true)) {
-                it.mimeType = "text/javascript"
-            }
-        }
-        return interceptedWebRequest
-    }
+    override fun shouldInterceptRequest(
+        view: WebView,
+        request: WebResourceRequest
+    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+
+//    override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
+//        try {
+//            val inputStream = webView.context.assets.open("inject.js")
+//            inputStream.bufferedReader().use(BufferedReader::readText)
+//        } catch (e: Exception) {
+//            null
+//        }?.let {
+//            webView.evaluateJavascript(it) {}
+//        }
+//    }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun onPageFinished(webView: WebView, url: String?) {

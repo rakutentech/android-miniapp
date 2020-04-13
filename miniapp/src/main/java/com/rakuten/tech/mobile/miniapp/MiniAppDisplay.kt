@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
 /**
  * This represents the contract by which the host app can interact with the
@@ -33,10 +33,10 @@ interface MiniAppDisplay : LifecycleObserver {
 
     /**
      * Provided the interface implementation for javascript interaction.
-     * @property miniAppMessageInterface The interface implementation which transmits data
+     * @property miniAppMessageBridge The interface implementation which transmits data
      * between native and miniapp.
      */
-    fun injectJSInterface(miniAppMessageInterface: MiniAppMessageInterface)
+    fun injectJSInterface(miniAppMessageBridge: MiniAppMessageBridge)
 
     /**
      * Post a value to mini app with callback.

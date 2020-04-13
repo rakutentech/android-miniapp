@@ -5,13 +5,12 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.view.View
-import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageInterface
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
@@ -49,11 +48,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                             WebView.setWebContentsDebuggingEnabled(true)
 
                         (it as MiniAppDisplay).injectJSInterface(object:
-                            MiniAppMessageInterface {
-                                @JavascriptInterface
-                                override fun getUniqueId(jsonStr: String) {
-                                    postValue(it, jsonStr, "example_unique_id")
-                                }
+                            MiniAppMessageBridge(it) {
+                                override fun getUniqueId(): String = "example_unique_id"
                             })
 
                         //action: display webview
