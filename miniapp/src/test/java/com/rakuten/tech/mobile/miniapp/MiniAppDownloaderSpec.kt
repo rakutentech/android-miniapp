@@ -86,6 +86,8 @@ class MiniAppDownloaderSpec {
 
     @Test
     fun `when no existing app in local storage, run download execution`() {
+        When calling storage.getMiniAppVersionPath(
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
         When calling miniAppStatus.isVersionDownloaded(
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
@@ -112,12 +114,12 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns true
-
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
 
+            setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
@@ -126,6 +128,8 @@ class MiniAppDownloaderSpec {
     @Test
     fun `should execute old file deletion after downloading new version`() {
         runBlockingTest {
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION

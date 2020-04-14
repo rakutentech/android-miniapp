@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -22,11 +23,9 @@ internal class MiniAppDownloader(
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-        miniAppStatus
-            .isVersionDownloaded(appId, versionId) -> storage.getMiniAppVersionPath(
-            appId,
-            versionId
-        )
+        File(storage.getMiniAppVersionPath(appId, versionId)).exists()
+                && miniAppStatus.isVersionDownloaded(appId, versionId)
+        -> storage.getMiniAppVersionPath(appId, versionId)
         else -> startDownload(appId, versionId)
     }
 
