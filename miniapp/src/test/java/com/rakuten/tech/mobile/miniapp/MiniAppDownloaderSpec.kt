@@ -87,8 +87,8 @@ class MiniAppDownloaderSpec {
 
     @Test
     fun `when no existing app in local storage, run download execution`() {
-        When calling storage.isMiniAppVersionExisted(
-            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns false
+        When calling storage.getMiniAppVersionPath(
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
         When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
         runBlocking {
@@ -107,11 +107,12 @@ class MiniAppDownloaderSpec {
     @Test
     fun `when there is latest existing app in local storage, load the local storage path`() =
         runBlockingTest {
-            When calling storage.isMiniAppVersionExisted(
-                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns true
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
+                TEST_ID_MINIAPP_VERSION,
+                TEST_BASE_PATH
             ) itReturns true
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP,
@@ -131,7 +132,8 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
+                TEST_ID_MINIAPP_VERSION,
+                TEST_BASE_PATH
             ) itReturns false
 
             setupValidManifestResponse(downloader, apiClient)
@@ -149,8 +151,10 @@ class MiniAppDownloaderSpec {
     @Test
     fun `should download old version when it is no longer in storage and being published`() {
         runBlockingTest {
-            When calling storage.isMiniAppVersionExisted(
-                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns false
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
+            When calling miniAppStatus.isVersionDownloaded(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_BASE_PATH) itReturns false
 
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)

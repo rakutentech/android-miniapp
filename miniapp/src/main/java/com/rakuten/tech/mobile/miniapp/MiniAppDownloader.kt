@@ -6,11 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -22,8 +18,7 @@ internal class MiniAppDownloader(
     // Only run the latest version of specified MiniApp.
     suspend fun getMiniApp(appId: String, versionId: String): String = when {
         !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-        storage.isMiniAppVersionExisted(appId, versionId)
-                && miniAppStatus.isVersionDownloaded(appId, versionId)
+        miniAppStatus.isVersionDownloaded(appId, versionId, storage.getMiniAppVersionPath(appId, versionId))
         -> storage.getMiniAppVersionPath(appId, versionId)
         else -> startDownload(appId, versionId)
     }
