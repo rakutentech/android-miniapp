@@ -20,6 +20,7 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 class MiniAppDownloaderSpec {
 
@@ -86,12 +87,8 @@ class MiniAppDownloaderSpec {
 
     @Test
     fun `when no existing app in local storage, run download execution`() {
-        When calling storage.getMiniAppVersionPath(
-            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
-        When calling miniAppStatus.isVersionDownloaded(
-            TEST_ID_MINIAPP,
-            TEST_ID_MINIAPP_VERSION
-        ) itReturns false
+        When calling storage.isMiniAppVersionExisted(
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns false
         When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
 
         runBlocking {
@@ -110,6 +107,8 @@ class MiniAppDownloaderSpec {
     @Test
     fun `when there is latest existing app in local storage, load the local storage path`() =
         runBlockingTest {
+            When calling storage.isMiniAppVersionExisted(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns true
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
@@ -134,7 +133,24 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns false
-            When calling storage.getMiniAppPath(TEST_ID_MINIAPP) itReturns TEST_BASE_PATH
+
+            setupValidManifestResponse(downloader, apiClient)
+            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+            verify(storage, times(1)).removeOutdatedVersionApp(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            )
+        }
+    }
+
+    @Test
+    fun `should download old version when it is no longer in storage and being published`() {
+        runBlockingTest {
+            When calling storage.isMiniAppVersionExisted(
+                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns false
 
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)

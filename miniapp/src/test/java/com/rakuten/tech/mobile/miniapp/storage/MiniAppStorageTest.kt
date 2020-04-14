@@ -14,6 +14,7 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.mockito.Mockito
 import java.io.File
 import kotlin.test.assertTrue
 
@@ -67,6 +68,15 @@ class MiniAppStorageTest {
         oldFile1.exists() shouldBe false
         oldFile2.exists() shouldBe false
         latestPackage.exists() shouldBe true
+    }
+
+    @Test
+    fun `should check version existence based on version path`() {
+        val miniAppStorage: MiniAppStorage = Mockito.spy(MiniAppStorage(mock(), mock(), mock()))
+        miniAppStorage.isMiniAppVersionExisted(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+        verify(miniAppStorage, times(1))
+            .getMiniAppVersionPath(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
     private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()

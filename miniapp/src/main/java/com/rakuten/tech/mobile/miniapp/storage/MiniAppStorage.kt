@@ -76,4 +76,7 @@ internal class MiniAppStorage(
             }
         }
     }
+
+    fun isMiniAppVersionExisted(appId: String, versionId: String): Boolean =
+        File(getMiniAppVersionPath(appId, versionId)).exists()
 }
