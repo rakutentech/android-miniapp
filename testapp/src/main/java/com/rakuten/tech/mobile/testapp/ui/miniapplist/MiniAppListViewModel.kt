@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
-import android.webkit.WebView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,16 +19,11 @@ class MiniAppListViewModel constructor(
 
     private val _errorData = MutableLiveData<String>()
 
-    private val _miniAppView = MutableLiveData<WebView>()
-
     val miniAppListData: LiveData<List<MiniAppInfo>>
         get() = _miniAppListData
 
     val errorData: LiveData<String>
         get() = _errorData
-
-    val miniAppView: LiveData<WebView>
-        get() = _miniAppView
 
     //for brevity
     suspend fun getMiniAppList() {

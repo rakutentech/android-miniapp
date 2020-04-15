@@ -8,6 +8,7 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -37,8 +38,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             setContentView(R.layout.mini_app_display_activity)
 
-            viewModel = ViewModelProviders.of(this)
-                .get(MiniAppDisplayViewModel::class.java).apply {
+            viewModel = ViewModelProvider.NewInstanceFactory()
+                .create(MiniAppDisplayViewModel::class.java).apply {
 
                     setHostLifeCycle(lifecycle)
                     miniAppView.observe(this@MiniAppDisplayActivity, Observer {
