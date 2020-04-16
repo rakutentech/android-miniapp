@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -18,6 +19,7 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import kotlinx.android.synthetic.main.mini_app_list_fragment.*
 import kotlinx.coroutines.launch
 
 class MiniAppListFragment : BaseFragment(), MiniAppList {
@@ -48,22 +50,33 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        swipeRefreshLayout.post {
+            swipeRefreshLayout.isRefreshing = true
+            executeLoadingList()
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this)
-            .get(MiniAppListViewModel::class.java).apply {
-                miniAppListData.observe(viewLifecycleOwner, Observer {
-                    miniAppListAdapter.miniapps = it
-                    miniAppListAdapter.notifyDataSetChanged()
-                })
-                errorData.observe(viewLifecycleOwner, Observer {
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                })
-                miniAppView.observe(viewLifecycleOwner, Observer {
-                    //do something
-                })
-            }
+        viewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+            miniAppListData.observe(viewLifecycleOwner, Observer {
+                swipeRefreshLayout.isRefreshing = false
+                miniAppListAdapter.miniapps = it
+                miniAppListAdapter.notifyDataSetChanged()
+            })
+            errorData.observe(viewLifecycleOwner, Observer {
+                swipeRefreshLayout.isRefreshing = false
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            })
+        }
+
+        swipeRefreshLayout.setOnRefreshListener { executeLoadingList() }
+    }
+
+    private fun executeLoadingList() {
         launch { viewModel.getMiniAppList() }
     }
 

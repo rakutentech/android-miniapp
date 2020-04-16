@@ -14,7 +14,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 
-
 class MiniAppListAdapter(var miniapps: List<MiniAppInfo>, val miniAppList: MiniAppList) :
     ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
 

@@ -11,7 +11,7 @@ data class MiniAppInfo(
     val id: String,
     val displayName: String,
     val icon: String,
-    internal val version: Version
+    val version: Version
 )
 
 /**
@@ -20,6 +20,6 @@ data class MiniAppInfo(
  * @property versionId Version identifier of the mini app.
  */
 data class Version(
-    internal val versionTag: String,
+    val versionTag: String,
     internal val versionId: String
 )
