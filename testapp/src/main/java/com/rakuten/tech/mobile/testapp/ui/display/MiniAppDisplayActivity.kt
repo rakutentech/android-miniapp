@@ -61,7 +61,9 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             launch {
                 viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
-                    override fun getUniqueId(): String = "example_unique_id"
+                    override fun getUniqueId(callbackId: String) {
+                        postValue(callbackId, "example_unique_id")
+                    }
                 })
             }
         }

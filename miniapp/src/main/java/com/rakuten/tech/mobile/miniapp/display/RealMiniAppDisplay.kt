@@ -63,10 +63,18 @@ internal class RealMiniAppDisplay(
         destroy()
     }
 
-    override fun runJsAsyncCallback(callbackId: String, value: String) {
+    override fun runSuccessCallback(callbackId: String, value: String) {
         post {
             evaluateJavascript(
-                "javascript:(function (){MiniAppBridge.execCallback(\"$callbackId\", \"$value\")})()"
+                "MiniAppBridge.execSuccessCallback(\"$callbackId\", \"$value\")"
+            ) {}
+        }
+    }
+
+    override fun runErrorCallback(callbackId: String, errorMessage: String) {
+        post {
+            evaluateJavascript(
+                "MiniAppBridge.execErrorCallback(\"$callbackId\", \"$errorMessage\")"
             ) {}
         }
     }
@@ -92,7 +100,7 @@ internal class MiniAppWebViewClient(
 ) : WebViewClient() {
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private val bridgeJs = try {
-        val inputStream = context.assets.open("inject.js")
+        val inputStream = context.assets.open("bridge.js")
         inputStream.bufferedReader().use(BufferedReader::readText)
     } catch (e: Exception) {
         null
@@ -109,10 +117,6 @@ internal class MiniAppWebViewClient(
 }
 
 internal interface WebViewListener {
-    /**
-     * Post a value to mini app with callback.
-     * @property callbackId The id of callback execution storing in miniapp.
-     * @property value The value which is transmitted to miniapp.
-     */
-    fun runJsAsyncCallback(callbackId: String, value: String)
+    fun runSuccessCallback(callbackId: String, value: String)
+    fun runErrorCallback(callbackId: String, errorMessage: String)
 }
