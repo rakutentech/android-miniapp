@@ -11,17 +11,24 @@
         android:layout_height="match_parent"
         tools:context=".ui.miniapplist.MiniAppListFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_mini_app_list"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/btnInput"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_list_miniapp" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_mini_app_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_list_miniapp" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <Button
             android:id="@+id/btnInput"

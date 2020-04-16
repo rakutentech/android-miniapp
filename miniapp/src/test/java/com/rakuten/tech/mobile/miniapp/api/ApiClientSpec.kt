@@ -105,6 +105,18 @@ open class ApiClientSpec {
         apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
     }
 
+    @Test(expected = MiniAppSdkException::class)
+    fun `fetchInfo should throw MiniAppSdkException when the API returns zero items`() = runBlockingTest {
+        val mockCall: Call<List<MiniAppInfo>> = mock()
+
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns emptyList<MiniAppInfo>()
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+
+        apiClient.fetchInfo("test-app-id")
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostAppId: String = TEST_HA_ID_APP,
