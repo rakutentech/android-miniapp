@@ -9,24 +9,29 @@ abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
 
     /** Get provided id of mini app for any purpose. **/
-    abstract fun getUniqueId(callbackId: String)
+    abstract fun getUniqueId(): String
 
     /** Handle the message from external. **/
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
         when (callbackObj.action) {
-            "getUniqueId" -> getUniqueId(callbackObj.id)
+            "getUniqueId" -> try {
+                postValue(callbackObj.id, getUniqueId())
+            } catch (e: Exception) {
+                postError(callbackObj.id, "Cannot get unique id: ${e.message}")
+            }
         }
     }
 
     /** Return a value to mini app. **/
-    fun postValue(callbackId: String, value: String) {
+    internal fun postValue(callbackId: String, value: String) {
         webViewListener.runSuccessCallback(callbackId, value)
     }
 
     /** Emit an error to mini app. **/
-    fun postError(callbackId: String, errorMessage: String) {
+    internal fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
     }
 

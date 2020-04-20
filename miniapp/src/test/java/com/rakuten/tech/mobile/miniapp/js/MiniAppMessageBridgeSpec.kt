@@ -15,7 +15,7 @@ const val GET_UNIQUE_ID = "getUniqueId"
 
 class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(object : MiniAppMessageBridge() {
-        override fun getUniqueId(callbackId: String) { postValue(callbackId, TEST_CALLBACK_VALUE) }
+        override fun getUniqueId() = TEST_CALLBACK_VALUE
     })
     private val callbackObj = CallbackObj(GET_UNIQUE_ID, TEST_CALLBACK_ID)
     private val jsonStr = Gson().toJson(callbackObj)
@@ -29,14 +29,8 @@ class MiniAppMessageBridgeSpec {
     fun `getUniqueId should be called when there is a getting unique id request from external`() {
         miniAppBridge.postMessage(jsonStr)
 
-        verify(miniAppBridge, times(1)).getUniqueId(TEST_CALLBACK_ID)
-    }
-
-    @Test
-    fun `postError should not be called when calling postValue`() {
-        miniAppBridge.postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
-
-        verify(miniAppBridge, times(0)).postError(TEST_CALLBACK_ID, TEST_ERROR_MSG)
+        verify(miniAppBridge, times(1)).getUniqueId()
+        verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
     @Test

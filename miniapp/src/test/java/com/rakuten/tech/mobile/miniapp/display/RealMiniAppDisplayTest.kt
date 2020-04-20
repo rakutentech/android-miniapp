@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
@@ -83,6 +84,12 @@ class RealMiniAppDisplayTest {
     @Test
     fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
         realDisplay.webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
+    }
+
+    @Test
+    fun `js should be injected`() {
+        realDisplay.webViewClient.onLoadResource(realDisplay, TEST_URL_FILE)
+        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected shouldBe true
     }
 
     @Test

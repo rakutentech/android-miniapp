@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -98,6 +97,8 @@ internal class MiniAppWebViewClient(
     context: Context,
     private val loader: WebViewAssetLoader
 ) : WebViewClient() {
+    @VisibleForTesting
+    internal var isJsInjected = false
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private val bridgeJs = try {
         val inputStream = context.assets.open("bridge.js")
@@ -111,8 +112,12 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest
     ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
 
-    override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
-        webView.evaluateJavascript(bridgeJs) {}
+    override fun onLoadResource(webView: WebView, url: String?) {
+        super.onLoadResource(webView, url)
+        if (!isJsInjected) {
+            webView.evaluateJavascript(bridgeJs) {}
+            isJsInjected = true
+        }
     }
 }
 
