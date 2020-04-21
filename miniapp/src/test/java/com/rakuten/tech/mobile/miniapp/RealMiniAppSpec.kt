@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.When
@@ -26,6 +27,7 @@ class RealMiniAppSpec {
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val realMiniApp =
         RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
+    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
     fun setup() {
@@ -47,17 +49,17 @@ class RealMiniAppSpec {
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when version id is invalid`() = runBlockingTest {
         val invalidMiniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", ""))
-        realMiniApp.create(invalidMiniAppInfo)
+        realMiniApp.create(invalidMiniAppInfo, miniAppMessageBridge)
     }
 
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
-            realMiniApp.create(miniAppInfo)
+            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
 
             val basePath: String = verify(miniAppDownloader, times(1))
                 .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID)
+            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
         }
 
     @Test

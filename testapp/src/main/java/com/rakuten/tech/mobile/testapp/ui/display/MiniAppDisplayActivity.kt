@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
@@ -59,7 +61,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
             launch {
-                viewModel.obtainMiniAppView(appId)
+                viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
+                    override fun getUniqueId() = "example_unique_id"
+                })
             }
         }
     }

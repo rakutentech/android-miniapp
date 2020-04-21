@@ -5,7 +5,12 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
@@ -18,6 +23,7 @@ class RealMiniAppDisplayTest {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
+    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
     fun setup() {
@@ -26,7 +32,8 @@ class RealMiniAppDisplayTest {
         realDisplay = RealMiniAppDisplay(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID
+            appId = TEST_MA_ID,
+            miniAppMessageBridge = miniAppMessageBridge
         )
     }
 
@@ -80,9 +87,20 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
+    fun `js should be injected`() {
+        realDisplay.webViewClient.onLoadResource(realDisplay, TEST_URL_FILE)
+        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected shouldBe true
+    }
+
+    @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1")
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2")
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", miniAppMessageBridge)
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", miniAppMessageBridge)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
+    }
+
+    @Test
+    fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
+        verify(miniAppMessageBridge, atLeastOnce()).setWebViewListener(realDisplay)
     }
 }
