@@ -8,4 +8,5 @@ Add links to github/jira issues, design documents and other relevant resources (
 # Checklist
 - [ ] I have read the [contributing guidelines](../CONTRIBUTING.md).
 - [ ] I wrote/updated tests for new/changed code
+- [ ] I removed all sensitive data before every commit, including API endpoints and keys
 - [ ] I ran `./gradlew check` without errors
