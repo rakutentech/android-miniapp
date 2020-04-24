@@ -3,8 +3,8 @@ package com.rakuten.tech.mobile.testapp.ui.display
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
@@ -62,7 +62,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             launch {
                 viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
-                    override fun getUniqueId() = UUID.nameUUIDFromBytes(Build.DEVICE.toByteArray()).toString()
+                    override fun getUniqueId() =
+                        UUID.nameUUIDFromBytes(Settings.Secure.ANDROID_ID.toByteArray()).toString()
                 })
             }
         }
