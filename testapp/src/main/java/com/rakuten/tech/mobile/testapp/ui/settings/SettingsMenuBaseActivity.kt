@@ -32,7 +32,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         }
     }
 
-    private fun showAppSettings(): Boolean {
+    protected fun showAppSettings(): Boolean {
         val settingsDialog = LayoutInflater.from(this)
             .inflate(R.layout.app_settings_dialog, null, false)
 
