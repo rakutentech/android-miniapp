@@ -4,18 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -62,7 +62,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             launch {
                 viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
-                    override fun getUniqueId() = "example_unique_id"
+                    override fun getUniqueId() =
+                        UUID.nameUUIDFromBytes(Settings.Secure.ANDROID_ID.toByteArray()).toString()
                 })
             }
         }
