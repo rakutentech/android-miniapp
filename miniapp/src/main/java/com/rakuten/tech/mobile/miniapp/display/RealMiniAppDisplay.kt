@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
@@ -31,6 +32,8 @@ internal class RealMiniAppDisplay(
 ) : MiniAppDisplay, WebView(context), WebViewListener {
 
     private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
+    private val customDomain = "https://$miniAppDomain/$SUB_DOMAIN_PATH/"
+    private val customScheme = "$SUB_DOMAIN_PATH.$appId://"
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -44,13 +47,14 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader())
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
 
         loadUrl(getLoadUrl())
     }
 
     override fun setWebViewClient(client: WebViewClient?) {
-        super.setWebViewClient(client ?: MiniAppWebViewClient(context, getWebViewAssetLoader()))
+        super.setWebViewClient(client ?: MiniAppWebViewClient(
+            context, getWebViewAssetLoader(), customDomain, customScheme))
     }
 
     override fun getMiniAppView(): View = this
@@ -89,13 +93,16 @@ internal class RealMiniAppDisplay(
         .build()
 
     @VisibleForTesting
-    internal fun getLoadUrl() = "https://$miniAppDomain/$SUB_DOMAIN_PATH/index.html"
+    internal fun getLoadUrl() = "${customScheme}index.html"
+//    internal fun getLoadUrl() = "https://$miniAppDomain/$SUB_DOMAIN_PATH/index.html"
 }
 
 @VisibleForTesting
 internal class MiniAppWebViewClient(
     context: Context,
-    private val loader: WebViewAssetLoader
+    private val loader: WebViewAssetLoader,
+    private val customDomain: String,
+    private val customScheme: String
 ) : WebViewClient() {
     @VisibleForTesting
     internal var isJsInjected = false
@@ -110,7 +117,13 @@ internal class MiniAppWebViewClient(
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest
-    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+    ): WebResourceResponse? {
+        if (request.url != null && request.url.toString().startsWith(customScheme)) {
+            val interceptUri = request.url.toString().replace(customScheme, customDomain).toUri()
+            return loader.shouldInterceptRequest(interceptUri)
+        }
+        return loader.shouldInterceptRequest(request.url)
+    }
 
     override fun onLoadResource(webView: WebView, url: String?) {
         super.onLoadResource(webView, url)
