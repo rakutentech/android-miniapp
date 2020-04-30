@@ -29,6 +29,8 @@ class AppSettings private constructor(context: Context) {
         hostAppVersionId = hostAppVersionId
     )
 
+    fun isSettingSaved() = cache.appId != null
+
     companion object {
         lateinit var instance: AppSettings
 

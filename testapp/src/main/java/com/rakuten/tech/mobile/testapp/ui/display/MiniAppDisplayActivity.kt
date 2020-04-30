@@ -1,8 +1,10 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -62,8 +64,10 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             launch {
                 viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
+                    @SuppressLint("HardwareIds")
                     override fun getUniqueId() =
-                        UUID.nameUUIDFromBytes(Settings.Secure.ANDROID_ID.toByteArray()).toString()
+                        UUID.nameUUIDFromBytes(Settings.Secure.getString(contentResolver,
+                            Settings.Secure.ANDROID_ID).toByteArray()).toString()
                 })
             }
         }

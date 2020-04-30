@@ -32,7 +32,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         }
     }
 
-    private fun showAppSettings(): Boolean {
+    protected fun showAppSettings(): Boolean {
         val settingsDialog = LayoutInflater.from(this)
             .inflate(R.layout.app_settings_dialog, null, false)
 
@@ -61,7 +61,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
             (_dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val pb = settingsDialog.findViewById<View>(R.id.pb)
                 pb.visibility = View.VISIBLE
-                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), pb)
+                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), pb, _dialog)
             }
 
             _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
@@ -73,7 +73,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
     }
 
 
-    private fun updateSettings(appId: String, subscriptionKey: String, pb: View) {
+    private fun updateSettings(appId: String, subscriptionKey: String, pb: View, dialog: AlertDialog) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
         settings.appId = appId
@@ -84,6 +84,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
                 runOnUiThread {
                     pb.visibility = View.GONE
+                    dialog.dismiss()
                     recreate()
                 }
             } catch (error: MiniAppSdkException) {
