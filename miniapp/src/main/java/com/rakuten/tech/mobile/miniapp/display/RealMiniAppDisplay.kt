@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.BufferedReader
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
@@ -49,11 +50,6 @@ internal class RealMiniAppDisplay(
         webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
 
         loadUrl(getLoadUrl())
-    }
-
-    override fun setWebViewClient(client: WebViewClient?) {
-        super.setWebViewClient(client ?: MiniAppWebViewClient(
-            context, getWebViewAssetLoader(), customDomain, customScheme))
     }
 
     override fun getMiniAppView(): View = this
@@ -98,14 +94,16 @@ internal class RealMiniAppDisplay(
 @VisibleForTesting
 internal class MiniAppWebViewClient(
     context: Context,
-    private val loader: WebViewAssetLoader,
+    @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val customDomain: String,
     private val customScheme: String
 ) : WebViewClient() {
     @VisibleForTesting
-    internal var isJsInjected = false
+    internal var isJsInjected: AtomicBoolean = AtomicBoolean(false)
+
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private val bridgeJs = try {
+    @VisibleForTesting
+    internal val bridgeJs = try {
         val inputStream = context.assets.open("bridge.js")
         inputStream.bufferedReader().use(BufferedReader::readText)
     } catch (e: Exception) {
@@ -128,9 +126,9 @@ internal class MiniAppWebViewClient(
 
     @VisibleForTesting
     internal fun doInjection(webView: WebView, urlRequest: String) {
-        if (!isJsInjected && !urlRequest.endsWith("index.html")) {
+        if (!isJsInjected.get() && !urlRequest.endsWith("index.html")) {
             webView.post { webView.evaluateJavascript(bridgeJs) {} }
-            isJsInjected = true
+            isJsInjected.set(true)
         }
     }
 }
