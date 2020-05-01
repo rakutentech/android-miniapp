@@ -1,15 +1,15 @@
 package com.rakuten.tech.mobile.testapp.ui.input
 
 import android.os.Bundle
-import com.google.android.material.textfield.TextInputEditText
+import android.text.Editable
+import android.text.TextWatcher
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
-import java.lang.Exception
-import java.util.UUID
 
 class MiniAppInputActivity : SettingsMenuBaseActivity() {
 
@@ -18,6 +18,17 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         setContentView(R.layout.mini_app_input_activity)
 
         edtAppId.requestFocus()
+        isAppIdValid(edtAppId.text.toString())
+        edtAppId.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                isAppIdValid(s.toString())
+            }
+        })
+
         btnDisplay.setOnClickListener {
             raceExecutor.run { display() }
         }
@@ -26,29 +37,25 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         }
     }
 
-    private fun display() {
-        if (isValidInput(edtAppId)) {
-            MiniAppDisplayActivity.start(
-                this,
-                edtAppId.text.toString().trim()
-            )
+    private fun isAppIdValid(appId: String) {
+        if (appId.isBlank())
+            btnDisplay.isEnabled = false
+        else {
+            if (appId.isInvalidUuid()) {
+                edtAppId.error = getString(R.string.error_invalid_input)
+                btnDisplay.isEnabled = false
+            } else {
+                edtAppId.error = null
+                btnDisplay.isEnabled = true
+            }
         }
     }
 
-    private fun isValidInput(edt: TextInputEditText): Boolean =
-        if (isInvalidUuid(edt.text.toString())) {
-            edt.error = getString(R.string.error_invalid_input)
-            false
-        } else {
-            edt.error = null
-            true
-        }
-
-    private fun isInvalidUuid(input: String): Boolean = try {
-        UUID.fromString(input)
-        false
-    } catch (e: Exception) {
-        true
+    private fun display() {
+        MiniAppDisplayActivity.start(
+            this,
+            edtAppId.text.toString().trim()
+        )
     }
 }
 
