@@ -19,7 +19,6 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.BufferedReader
 import java.io.File
 
-private const val ASSET_DOMAIN_SUFFIX = "miniapps.androidplatform.net"
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
@@ -31,9 +30,9 @@ internal class RealMiniAppDisplay(
     miniAppMessageBridge: MiniAppMessageBridge
 ) : MiniAppDisplay, WebView(context), WebViewListener {
 
-    private val miniAppDomain = "$appId.$ASSET_DOMAIN_SUFFIX"
-    private val customDomain = "https://$miniAppDomain/$SUB_DOMAIN_PATH/"
-    private val customScheme = "$SUB_DOMAIN_PATH.$appId://"
+    private val miniAppDomain = "mscheme.$appId"
+    private val customScheme = "$miniAppDomain://"
+    private val customDomain = "https://$miniAppDomain/"
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -93,8 +92,7 @@ internal class RealMiniAppDisplay(
         .build()
 
     @VisibleForTesting
-    internal fun getLoadUrl() = "${customScheme}index.html"
-//    internal fun getLoadUrl() = "https://$miniAppDomain/$SUB_DOMAIN_PATH/index.html"
+    internal fun getLoadUrl() = "$customScheme$SUB_DOMAIN_PATH/index.html"
 }
 
 @VisibleForTesting
@@ -119,16 +117,19 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest
     ): WebResourceResponse? {
         if (request.url != null && request.url.toString().startsWith(customScheme)) {
+            //Do js injection when index is loaded and at least one resource is requested to trigger this.
+            doInjection(view, request.url.toString())
+
             val interceptUri = request.url.toString().replace(customScheme, customDomain).toUri()
             return loader.shouldInterceptRequest(interceptUri)
         }
         return loader.shouldInterceptRequest(request.url)
     }
 
-    override fun onLoadResource(webView: WebView, url: String?) {
-        super.onLoadResource(webView, url)
-        if (!isJsInjected) {
-            webView.evaluateJavascript(bridgeJs) {}
+    @VisibleForTesting
+    internal fun doInjection(webView: WebView, urlRequest: String) {
+        if (!isJsInjected && !urlRequest.endsWith("index.html")) {
+            webView.post { webView.evaluateJavascript(bridgeJs) {} }
             isJsInjected = true
         }
     }
