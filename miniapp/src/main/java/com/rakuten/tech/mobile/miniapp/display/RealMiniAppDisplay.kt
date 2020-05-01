@@ -115,7 +115,7 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest
     ): WebResourceResponse? {
         if (request.url != null && request.url.toString().startsWith(customScheme)) {
-            //Do js injection when index is loaded and at least one resource is requested to trigger this.
+            // Do js injection when index is loaded and at least one resource is requested to trigger this.
             doInjection(view, request.url.toString())
 
             val interceptUri = request.url.toString().replace(customScheme, customDomain).toUri()
