@@ -7,12 +7,18 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
+import org.junit.Before
 import org.junit.Test
 
 class MiniAppInfoFetcherSpec {
 
     private val apiClient: ApiClient = mock()
-    private val miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
+    private val miniAppInfoFetcher = MiniAppInfoFetcher(mock())
+
+    @Before
+    fun setup() {
+        miniAppInfoFetcher.updateApiClient(apiClient)
+    }
 
     @Test
     fun `When fetching app list then correct method of ApiClient is used`() =

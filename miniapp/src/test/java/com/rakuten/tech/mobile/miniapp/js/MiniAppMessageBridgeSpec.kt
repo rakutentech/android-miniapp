@@ -7,6 +7,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
+import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -38,5 +40,23 @@ class MiniAppMessageBridgeSpec {
         miniAppBridge.postError(TEST_CALLBACK_ID, TEST_ERROR_MSG)
 
         verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when error occurs in postValue`() {
+        val errMsg = "Cannot get unique id: null"
+        miniAppBridge.setWebViewListener(object : WebViewListener {
+            override fun runSuccessCallback(callbackId: String, value: String) {
+                @Suppress("TooGenericExceptionThrown")
+                throw Exception()
+            }
+
+            override fun runErrorCallback(callbackId: String, errorMessage: String) {
+                Assert.assertEquals(errorMessage, errMsg)
+            }
+        })
+        miniAppBridge.postMessage(jsonStr)
+
+        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 }

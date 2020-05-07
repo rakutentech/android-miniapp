@@ -117,6 +117,13 @@ open class ApiClientSpec {
         apiClient.fetchInfo("test-app-id")
     }
 
+    @Test
+    fun `custom error response should extend the same error class`() {
+        val errorClass = ErrorResponse::class.java
+        HttpErrorResponse(0, "") shouldBeInstanceOf errorClass
+        AuthErrorResponse("", "") shouldBeInstanceOf errorClass
+    }
+
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostAppId: String = TEST_HA_ID_APP,
