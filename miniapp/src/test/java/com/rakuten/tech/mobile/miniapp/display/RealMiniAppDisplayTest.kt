@@ -1,21 +1,26 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
+import android.net.Uri
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.atLeastOnce
+import androidx.webkit.WebViewAssetLoader
+import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -23,6 +28,7 @@ class RealMiniAppDisplayTest {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
+    private lateinit var webResourceRequest: WebResourceRequest
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
@@ -35,12 +41,13 @@ class RealMiniAppDisplayTest {
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge
         )
+        webResourceRequest = getWebResReq(realDisplay.getLoadUrl().toUri())
     }
 
     @Test
     fun `for a given app id, RealMiniAppDisplay creates corresponding view for the caller`() =
         runBlockingTest {
-            realDisplay.url shouldContain TEST_MA_ID
+            realDisplay.url shouldContain realDisplay.appId
         }
 
     @Test
@@ -51,8 +58,7 @@ class RealMiniAppDisplayTest {
 
     @Test
     fun `when getLoadUrl is called then a formed path contains app id`() {
-        realDisplay.getLoadUrl() shouldEqual
-                "https://$TEST_MA_ID.miniapps.androidplatform.net/miniapp/index.html"
+        realDisplay.getLoadUrl() shouldEqual "mscheme.${realDisplay.appId}://miniapp/index.html"
     }
 
     @Test
@@ -82,25 +88,90 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
+    fun `when destroyView called then the realDisplay should be disposed`() {
+        val displayer: RealMiniAppDisplay = Mockito.spy(realDisplay)
+        displayer.destroyView()
+
+        verify(displayer, times(1)).stopLoading()
+        displayer.webViewClient shouldBe null
+        verify(displayer, times(1)).destroy()
+    }
+
+    @Test
     fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
         realDisplay.webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
     }
 
     @Test
     fun `js should be injected`() {
-        realDisplay.webViewClient.onLoadResource(realDisplay, TEST_URL_FILE)
-        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected shouldBe true
+        (realDisplay.webViewClient as MiniAppWebViewClient).doInjection(realDisplay, TEST_URL_FILE)
+
+        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected.get() shouldBe true
+    }
+
+    @Test
+    fun `js should not be injected when index file is not ready`() {
+        (realDisplay.webViewClient as MiniAppWebViewClient).doInjection(realDisplay, "index.html")
+        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected.get()shouldBe false
+    }
+
+    @Test
+    fun `bridge js should be null when js asset is inaccessible`() {
+        val webClient = MiniAppWebViewClient(mock(), mock(), "custom_domain", "custom_scheme")
+        webClient.bridgeJs shouldBe null
     }
 
     @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, basePath, "app-id-1", miniAppMessageBridge)
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, basePath, "app-id-2", miniAppMessageBridge)
+        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-1", miniAppMessageBridge)
+        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-2", miniAppMessageBridge)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 
     @Test
     fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
         verify(miniAppMessageBridge, atLeastOnce()).setWebViewListener(realDisplay)
+    }
+
+    @Test
+    fun `should intercept request with WebViewAssetLoader`() {
+        val webAssetLoader: WebViewAssetLoader = Mockito.spy((realDisplay.webViewClient as MiniAppWebViewClient).loader)
+        val webViewClient = MiniAppWebViewClient(getApplicationContext(), webAssetLoader,
+            "custom_domain", "custom_scheme")
+        val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
+
+        webViewClient.shouldInterceptRequest(realDisplay, webResourceRequest)
+
+        verify(webAssetLoader, times(1))
+            .shouldInterceptRequest(webResourceRequest.url)
+    }
+
+    @Test
+    fun `should redirect to custom domain when loading with custom scheme`() {
+        val webAssetLoader: WebViewAssetLoader = Mockito.spy((realDisplay.webViewClient as MiniAppWebViewClient).loader)
+        val customDomain = "https://mscheme.${realDisplay.appId}/"
+        val webViewClient = MiniAppWebViewClient(getApplicationContext(), webAssetLoader,
+            customDomain, "mscheme.${realDisplay.appId}://")
+
+        webViewClient.shouldInterceptRequest(realDisplay, webResourceRequest)
+
+        verify(webAssetLoader, times(1))
+            .shouldInterceptRequest("${customDomain}miniapp/index.html".toUri())
+    }
+
+    private fun getWebResReq(uriReq: Uri): WebResourceRequest {
+        return object : WebResourceRequest {
+            override fun getUrl(): Uri = uriReq
+
+            override fun isRedirect(): Boolean = false
+
+            override fun getMethod(): String = "GET"
+
+            override fun getRequestHeaders(): MutableMap<String, String> = HashMap()
+
+            override fun hasGesture(): Boolean = false
+
+            override fun isForMainFrame(): Boolean = false
+        }
     }
 }
