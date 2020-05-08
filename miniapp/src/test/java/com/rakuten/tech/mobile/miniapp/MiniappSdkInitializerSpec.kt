@@ -13,7 +13,7 @@ class MiniappSdkInitializerSpec {
         miniappSdkInitializer.onCreate()
         val uri: Uri = mock()
         miniappSdkInitializer.query(
-            uri,null, null, null, null) shouldBe null
+            uri, null, null, null, null) shouldBe null
         miniappSdkInitializer.update(
             uri, null, null, null) shouldBe 0
         miniappSdkInitializer.insert(uri, null) shouldBe null
