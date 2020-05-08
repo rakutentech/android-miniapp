@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
@@ -15,9 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 import kotlinx.coroutines.launch
-import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -65,9 +63,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             launch {
                 viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
                     @SuppressLint("HardwareIds")
-                    override fun getUniqueId() =
-                        UUID.nameUUIDFromBytes(Settings.Secure.getString(contentResolver,
-                            Settings.Secure.ANDROID_ID).toByteArray()).toString()
+                    override fun getUniqueId() = AppSettings.instance.uniqueId
                 })
             }
         }

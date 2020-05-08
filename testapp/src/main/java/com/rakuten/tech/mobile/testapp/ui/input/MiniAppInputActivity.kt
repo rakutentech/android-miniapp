@@ -18,14 +18,14 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         setContentView(R.layout.mini_app_input_activity)
 
         edtAppId.requestFocus()
-        isAppIdValid(edtAppId.text.toString())
+        validateAppId(edtAppId.text.toString())
         edtAppId.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                isAppIdValid(s.toString())
+                validateAppId(s.toString())
             }
         })
 
@@ -37,7 +37,7 @@ class MiniAppInputActivity : SettingsMenuBaseActivity() {
         }
     }
 
-    private fun isAppIdValid(appId: String) {
+    private fun validateAppId(appId: String) {
         if (appId.isBlank())
             btnDisplay.isEnabled = false
         else {

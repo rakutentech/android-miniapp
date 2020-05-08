@@ -27,7 +27,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            isSettingValid()
+            validateSetting()
         }
     }
 
@@ -58,7 +58,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         edtSubscriptionKey.setText(settings.subscriptionKey)
         edtAppId.addTextChangedListener(settingTextWatcher)
         edtSubscriptionKey.addTextChangedListener(settingTextWatcher)
-        isSettingValid()
+        validateSetting()
 
         renderAppSettingsDialog(settingsDialog, edtAppId, edtSubscriptionKey)
         return true
@@ -92,7 +92,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         dialog.show()
     }
 
-    private fun isSettingValid() {
+    private fun validateSetting() {
         if (::btnSave.isInitialized && ::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
             btnSave.isEnabled =
                 !(edtAppId.text.toString().isInvalidUuid() || edtSubscriptionKey.text.isEmpty())
