@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import java.util.*
 
 class AppSettings private constructor(context: Context) {
 
@@ -18,6 +19,14 @@ class AppSettings private constructor(context: Context) {
         get() = cache.subscriptionKey ?: manifestConfig.subscriptionKey()
         set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
 
+    var uniqueId: String
+        get() {
+            val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
+            cache.uniqueId = uniqueId
+            return uniqueId
+        }
+        set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
+
     val baseUrl = manifestConfig.baseUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
@@ -28,6 +37,8 @@ class AppSettings private constructor(context: Context) {
         subscriptionKey = subscriptionKey,
         hostAppVersionId = hostAppVersionId
     )
+
+    fun isSettingSaved() = cache.appId != null
 
     companion object {
         lateinit var instance: AppSettings
@@ -51,10 +62,15 @@ private class Settings(context: Context) {
 
     var subscriptionKey: String?
         get() = prefs.getString(SUBSCRIPTION_KEY, null)
-        set(appId) = prefs.edit().putString(SUBSCRIPTION_KEY, appId).apply()
+        set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
+
+    var uniqueId: String?
+        get() = prefs.getString(UNIQUE_ID, null)
+        set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
 
     companion object {
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
+        private const val UNIQUE_ID = "unique_id"
     }
 }
