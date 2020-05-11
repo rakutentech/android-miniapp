@@ -3,9 +3,14 @@ package com.rakuten.tech.mobile.miniapp.api
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_MA_DISPLAY_NAME
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ICON
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.sdkutils.AppInfo
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import okhttp3.Request
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
@@ -13,11 +18,15 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @ExperimentalCoroutinesApi
+@Suppress("EmptyFunctionBlock")
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()
@@ -75,7 +84,7 @@ open class ApiClientSpec {
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns mockResponseBody
 
-        val apiClient = createApiClient(downloadApi = mockDownloadApi)
+        val apiClient = createApiClient()
         val response = apiClient
             .downloadFile(TEST_URL_FILE) shouldEqual mockResponseBody
         response.contentLength() shouldEqual mockResponseBody.contentLength()
@@ -122,6 +131,89 @@ open class ApiClientSpec {
         val errorClass = ErrorResponse::class.java
         HttpErrorResponse(0, "") shouldBeInstanceOf errorClass
         AuthErrorResponse("", "") shouldBeInstanceOf errorClass
+    }
+
+    @Test
+    fun `should call a request without error when the response is success`() = runBlockingTest {
+        val executor = Mockito.spy(mockRequestExecutor)
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.success("")
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when there is authentication errors`() = runBlockingTest {
+        val executor = Mockito.spy(mockRequestExecutor)
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.error(401, mock())
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when there is standard errors`() = runBlockingTest {
+        val executor = Mockito.spy(mockRequestExecutor)
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.error(404, mock())
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when call a request failed`() = runBlockingTest {
+        When calling mockRetrofitClient.create(AppInfoApi::class.java) itReturns mockAppInfoApi
+        When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
+        When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
+
+        ApiClient(mockRetrofitClient, TEST_HA_ID_APP, TEST_HA_ID_VERSION).downloadFile(TEST_URL_FILE)
+    }
+
+    @Test
+    fun `should create ApiClient without error`() {
+        AppInfo.instance = mock()
+        ApiClient(
+            baseUrl = TEST_URL_HTTPS_2,
+            rasAppId = TEST_HA_ID_APP,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+            hostAppVersionId = TEST_HA_ID_VERSION
+        )
     }
 
     private fun createApiClient(

@@ -10,7 +10,7 @@ internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812
 internal const val TEST_BASE_PATH = "dummy"
 internal const val TEST_URL_FILE = "file.storage/test/file.abc"
 internal const val TEST_URL_HTTPS_1 = "https://www.example.com/1"
-internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2"
+internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
 
 internal const val TEST_MA_ID = "test_id"
 internal const val TEST_MA_DISPLAY_NAME = "test_name"
