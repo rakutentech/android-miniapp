@@ -9,10 +9,11 @@ import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
-import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.test.runBlockingTest
@@ -103,21 +104,21 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `js should be injected`() {
-        (realDisplay.webViewClient as MiniAppWebViewClient).doInjection(realDisplay, TEST_URL_FILE)
-
-        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected.get() shouldBe true
+    fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {
+        realDisplay.webChromeClient shouldBeInstanceOf MiniAppWebChromeClient::class
     }
 
     @Test
-    fun `js should not be injected when index file is not ready`() {
-        (realDisplay.webViewClient as MiniAppWebViewClient).doInjection(realDisplay, "index.html")
-        (realDisplay.webViewClient as MiniAppWebViewClient).isJsInjected.get()shouldBe false
+    fun `should do js injection when there is a change in the document title`() {
+        val webChromeClient = Mockito.spy(realDisplay.webChromeClient as MiniAppWebChromeClient)
+        webChromeClient.onReceivedTitle(realDisplay, "web_title")
+
+        verify(webChromeClient, times(1)).doInjection(realDisplay)
     }
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebViewClient(mock(), mock(), "custom_domain", "custom_scheme")
+        val webClient = MiniAppWebChromeClient(mock())
         webClient.bridgeJs shouldBe null
     }
 
@@ -136,7 +137,7 @@ class RealMiniAppDisplayTest {
     @Test
     fun `should intercept request with WebViewAssetLoader`() {
         val webAssetLoader: WebViewAssetLoader = Mockito.spy((realDisplay.webViewClient as MiniAppWebViewClient).loader)
-        val webViewClient = MiniAppWebViewClient(getApplicationContext(), webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(webAssetLoader,
             "custom_domain", "custom_scheme")
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
@@ -150,7 +151,7 @@ class RealMiniAppDisplayTest {
     fun `should redirect to custom domain when loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = Mockito.spy((realDisplay.webViewClient as MiniAppWebViewClient).loader)
         val customDomain = "https://mscheme.${realDisplay.appId}/"
-        val webViewClient = MiniAppWebViewClient(getApplicationContext(), webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(webAssetLoader,
             customDomain, "mscheme.${realDisplay.appId}://")
 
         webViewClient.shouldInterceptRequest(realDisplay, webResourceRequest)
