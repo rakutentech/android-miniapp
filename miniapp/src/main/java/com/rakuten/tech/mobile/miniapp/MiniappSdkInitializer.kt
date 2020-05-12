@@ -2,8 +2,10 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.ContentProvider
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig
 import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
 
@@ -46,7 +48,7 @@ class MiniappSdkInitializer : ContentProvider() {
 
     override fun onCreate(): Boolean {
         val context = context ?: return false
-        val manifestConfig = AppManifestConfig(context)
+        val manifestConfig = createAppManifestConfig(context)
 
         MiniApp.init(
             context = context,
@@ -58,6 +60,9 @@ class MiniappSdkInitializer : ContentProvider() {
 
         return true
     }
+
+    @VisibleForTesting
+    internal fun createAppManifestConfig(context: Context) = AppManifestConfig(context)
 
     override fun query(
         uri: Uri,
