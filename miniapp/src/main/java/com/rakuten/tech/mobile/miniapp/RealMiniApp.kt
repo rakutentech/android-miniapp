@@ -49,7 +49,7 @@ internal class RealMiniApp(
     }
 
     @VisibleForTesting
-    internal fun createApiClient(newConfig: MiniAppSdkConfig): ApiClient =
+    internal fun createApiClient(newConfig: MiniAppSdkConfig) =
         ApiClient(
             baseUrl = newConfig.baseUrl,
             rasAppId = newConfig.rasAppId,
