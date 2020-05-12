@@ -1,12 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.nhaarman.mockitokotlin2.mock
-import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_APP
-import com.rakuten.tech.mobile.miniapp.TEST_HA_SUBSCRIPTION_KEY
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.TEST_VALUE
-import com.rakuten.tech.mobile.sdkutils.AppInfo
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.When
@@ -32,16 +27,6 @@ class RetrofitCreatorUtilsSpec private constructor(
         mockServer.enqueue(createTestApiResponse())
 
         When calling mockRasSdkHeaders.asArray() itReturns emptyArray()
-    }
-
-    @Test
-    fun `should create retrofit without errors`() {
-        AppInfo.instance = mock()
-        createRetrofitClient(
-            baseUrl = TEST_URL_HTTPS_2,
-            rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
-        )
     }
 
     @Test
