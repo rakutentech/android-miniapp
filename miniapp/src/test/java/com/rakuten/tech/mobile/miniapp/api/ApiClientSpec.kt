@@ -4,23 +4,18 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.sdkutils.AppInfo
-import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.Request
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @ExperimentalCoroutinesApi
 @Suppress("EmptyFunctionBlock")
