@@ -18,7 +18,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 
 @ExperimentalCoroutinesApi
-@Suppress("EmptyFunctionBlock")
+@Suppress("EmptyFunctionBlock", "LargeClass")
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()

@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Test
 
-@Suppress("LargeClass ")
 class ApiClientRepositorySpec {
     private val apiClientRepository = ApiClientRepository()
 
