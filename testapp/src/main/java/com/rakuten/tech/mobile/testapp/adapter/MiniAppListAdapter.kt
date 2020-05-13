@@ -67,6 +67,6 @@ class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
 fun setIcon(context: Context, uri: Uri, view: ImageView) {
     Glide.with(context)
         .load(uri).apply(RequestOptions().circleCrop())
-        .error(R.drawable.ic_default)
+        .placeholder(R.drawable.ic_default)
         .into(view)
 }
