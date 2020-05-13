@@ -19,7 +19,7 @@ var isPlatform = {
  * @param  {[Function]} onError Error callback function
  */
 MiniAppBridge.exec = function(action, onSuccess, onError) {
-  const callback = {};
+  var callback = {};
   callback.onSuccess = onSuccess;
   callback.onError = onError;
   callback.id = String(++uniqueId);
@@ -43,9 +43,9 @@ MiniAppBridge.exec = function(action, onSuccess, onError) {
  * @param  {[String]} value Response value sent from the native on invoking the action command
  */
 MiniAppBridge.execSuccessCallback = function(messageId, value) {
-  var queueObj = MiniAppBridge.messageQueue.find(
-    (callback) => (callback.id = messageId)
-  );
+  var queueObj = MiniAppBridge.messageQueue.filter(
+    function(callback) { return callback.id == messageId }
+  )[0];
   if (value) {
     queueObj.onSuccess(value);
   } else {
@@ -62,9 +62,9 @@ MiniAppBridge.execSuccessCallback = function(messageId, value) {
  * @param  {[String]} errorMessage Error message sent from the native on invoking the action command
  */
 MiniAppBridge.execErrorCallback = function(messageId, errorMessage) {
-  var queueObj = MiniAppBridge.messageQueue.find(
-    (callback) => (callback.id = messageId)
-  );
+  var queueObj = MiniAppBridge.messageQueue.filter(
+    function(callback) { return callback.id == messageId }
+  )[0];
   if (!errorMessage) {
     errorMessage = "Unknown Error";
   }
@@ -88,13 +88,17 @@ function removeFromMessageQueue(queueObj) {
  * Associating getUniqueId function to MiniAppBridge object
  */
 MiniAppBridge.getUniqueId = function() {
-  return new Promise((resolve, reject) => {
+  return new Promise(function(resolve, reject) {
     return MiniAppBridge.exec(
       "getUniqueId",
-      (id) => resolve(id),
-      (error) => reject(error)
+      function(id) { return resolve(id) },
+      function (error) { return reject(error) }
     );
   });
 };
 window.MiniAppBridge = MiniAppBridge;
-module.exports = MiniAppBridge;
+
+// Exported for unit testing
+if (typeof exports==="object" && typeof module!=="undefined") {
+  module.exports = MiniAppBridge;
+}
