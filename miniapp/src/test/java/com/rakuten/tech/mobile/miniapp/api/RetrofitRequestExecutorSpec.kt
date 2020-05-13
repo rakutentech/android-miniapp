@@ -1,17 +1,27 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.nhaarman.mockitokotlin2.mock
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
+import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_APP
+import com.rakuten.tech.mobile.miniapp.TEST_HA_SUBSCRIPTION_KEY
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.TEST_VALUE
+import com.rakuten.tech.mobile.sdkutils.AppInfo
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -23,6 +33,7 @@ open class RetrofitRequestExecutorSpec private constructor(
 
     private lateinit var retrofit: Retrofit
     private lateinit var baseUrl: String
+    internal val mockRequestExecutor: RetrofitRequestExecutor = mock()
 
     @Before
     fun baseSetup() {
@@ -41,9 +52,20 @@ open class RetrofitRequestExecutorSpec private constructor(
     ) = RetrofitRequestExecutor(
         retrofit = retrofit
     )
+
+    internal fun spyRetrofitExecutor(): RetrofitRequestExecutor {
+        AppInfo.instance = mock()
+        val retrofit = createRetrofitClient(
+            baseUrl = TEST_URL_HTTPS_2,
+            rasAppId = TEST_HA_ID_APP,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
+        )
+        return Mockito.spy(RetrofitRequestExecutor(retrofit))
+    }
 }
 
 @ExperimentalCoroutinesApi
+@Suppress("EmptyFunctionBlock")
 open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
     @Test
@@ -55,9 +77,31 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
         response.testKey shouldEqual TEST_VALUE
     }
+
+    @Test
+    fun `should call a request without error when the response is success`() = runBlockingTest {
+        val executor = Mockito.spy(mockRequestExecutor)
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.success("")
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
 }
 
 @ExperimentalCoroutinesApi
+@Suppress("EmptyFunctionBlock")
 open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
     @Test(expected = MiniAppSdkException::class)
@@ -114,6 +158,48 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
                 exception.message.toString() shouldContain "No error message"
             }
         }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when there is authentication errors`() = runBlockingTest {
+        val executor = spyRetrofitExecutor()
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.error(401, mock())
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when there is standard errors`() = runBlockingTest {
+        val executor = spyRetrofitExecutor()
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = Response.error(404, mock())
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
 
     private val standardErrorBody = { code: Int, message: String ->
         """
