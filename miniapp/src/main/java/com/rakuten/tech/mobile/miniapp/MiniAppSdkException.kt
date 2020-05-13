@@ -20,6 +20,3 @@ internal fun sdkExceptionForInvalidArguments(message: String = "") =
             else -> ""
         }}"
     )
-
-internal fun sdkExceptionForInvalidVersion() =
-    MiniAppSdkException("Invalid or unpublished MiniApp version")

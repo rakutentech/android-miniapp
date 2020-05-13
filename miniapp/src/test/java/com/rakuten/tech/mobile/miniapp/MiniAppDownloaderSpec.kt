@@ -37,10 +37,10 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `when downloading a mini app then downloader should fetch manifest at first`() {
+    fun `when getting a mini app then downloader should fetch manifest at first`() {
         runBlocking {
             setupValidManifestResponse(downloader, apiClient)
-            downloader.startDownload(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
             verify(apiClient, times(1)).fetchFileList(
                 TEST_ID_MINIAPP,
@@ -50,13 +50,13 @@ class MiniAppDownloaderSpec {
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `when downloading a mini app, MiniAppSdkException is thrown in case of invalid manifest`() =
+    fun `when getting a mini app, MiniAppSdkException is thrown in case of invalid manifest`() =
         runBlockingTest {
             When calling downloader.fetchManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns ManifestEntity(emptyList())
-            downloader.startDownload(
+            downloader.getMiniApp(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -98,10 +98,7 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            verify(apiClient, times(1)).fetchFileList(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            )
+            verify(apiClient, times(1)).downloadFile(TEST_URL_HTTPS_1)
         }
     }
 
@@ -148,33 +145,6 @@ class MiniAppDownloaderSpec {
             )
         }
     }
-
-    @Test
-    fun `should download old version when it is no longer in storage and being published`() {
-        runBlockingTest {
-            When calling storage.getMiniAppVersionPath(
-                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
-            When calling miniAppStatus.isVersionDownloaded(
-                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_BASE_PATH) itReturns false
-
-            setupValidManifestResponse(downloader, apiClient)
-            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-
-            verify(storage, times(1)).removeOutdatedVersionApp(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            )
-        }
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when the version of miniapp is not published`() =
-        runBlockingTest {
-            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-        }
 
     @Test
     fun `MiniAppDownloader should implement UpdatableApiClient`() {
