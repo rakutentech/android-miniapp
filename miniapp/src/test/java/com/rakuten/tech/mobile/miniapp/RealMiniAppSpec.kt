@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.When
@@ -14,6 +15,7 @@ import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
@@ -79,10 +81,26 @@ class RealMiniAppSpec {
     }
 
     @Test
-    fun `should not cache ApiClient for existing configuration`() {
+    fun `should not create ApiClient for existing configuration`() {
+        val miniApp = Mockito.spy(realMiniApp)
+
         realMiniApp.updateConfiguration(miniAppSdkConfig)
 
-        verify(apiClientRepository, times(0))
-            .registerApiClient(miniAppSdkConfig.key, apiClient)
+        verify(miniApp, times(0)).createApiClient(miniAppSdkConfig)
+    }
+
+    @Test
+    fun `should create a new ApiClient when there is no cache`() {
+        AppInfo.instance = mock()
+        val miniApp = Mockito.spy(realMiniApp)
+        val miniAppSdkConfig = MiniAppSdkConfig(
+            baseUrl = TEST_URL_HTTPS_2,
+            rasAppId = TEST_HA_ID_APP,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+            hostAppVersionId = TEST_HA_ID_VERSION)
+
+        miniApp.updateConfiguration(miniAppSdkConfig)
+
+        verify(miniApp, times(1)).createApiClient(miniAppSdkConfig)
     }
 }

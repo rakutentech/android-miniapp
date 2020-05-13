@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import org.amshove.kluent.shouldEqual
 import org.junit.Test
 
 class MiniAppSdkConfigSpec {
@@ -12,6 +13,18 @@ class MiniAppSdkConfigSpec {
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
+    }
+
+    @Test
+    fun `the key pattern should match the defined scheme`() {
+        val config = MiniAppSdkConfig(
+            baseUrl = TEST_URL_HTTPS_1,
+            rasAppId = TEST_HA_ID_APP,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+            hostAppVersionId = TEST_HA_ID_VERSION
+        )
+        config.key shouldEqual
+                "${config.baseUrl}-${config.rasAppId}-${config.subscriptionKey}-${config.hostAppVersionId}"
     }
 
     @Test(expected = MiniAppSdkException::class)

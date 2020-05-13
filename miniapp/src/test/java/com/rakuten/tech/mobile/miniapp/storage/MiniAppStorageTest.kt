@@ -3,23 +3,25 @@ package com.rakuten.tech.mobile.miniapp.storage
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.io.InputStream
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class MiniAppStorageTest {
-    private val miniAppStorage: MiniAppStorage = MiniAppStorage(mock(), mock(), mock())
+    private val fileWriter: FileWriter = mock()
+    private val miniAppStorage: MiniAppStorage = MiniAppStorage(fileWriter, mock(), mock())
 
     @Rule @JvmField
     val tempFolder = TemporaryFolder()
@@ -67,6 +69,25 @@ class MiniAppStorageTest {
         oldFile1.exists() shouldBe false
         oldFile2.exists() shouldBe false
         latestPackage.exists() shouldBe true
+    }
+
+    @Test
+    fun `should write file with FileWriter`() = runBlockingTest {
+        val file = tempFolder.newFile()
+        When calling miniAppStorage.getFilePath(file.path) itReturns file.path
+        When calling miniAppStorage.getFileName(file.path) itReturns file.name
+        val inputStream: InputStream = mock()
+        miniAppStorage.saveFile(file.path, file.path, inputStream)
+
+        verify(fileWriter, times(1))
+            .write(inputStream, miniAppStorage.getAbsoluteWritePath(
+                file.path, miniAppStorage.getFilePath(file.path), miniAppStorage.getFileName(file.path)))
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when file path is invalid`() = runBlockingTest {
+        val file = File("")
+        miniAppStorage.saveFile(file.path, file.path, mock())
     }
 
     private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()

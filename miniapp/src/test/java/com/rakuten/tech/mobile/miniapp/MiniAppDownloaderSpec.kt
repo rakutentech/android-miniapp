@@ -32,7 +32,8 @@ class MiniAppDownloaderSpec {
 
     @Before
     fun setup() {
-        downloader = MiniAppDownloader(storage, apiClient, miniAppStatus, dispatcher)
+        downloader = MiniAppDownloader(storage, mock(), miniAppStatus, dispatcher)
+        downloader.updateApiClient(apiClient)
     }
 
     @Test
