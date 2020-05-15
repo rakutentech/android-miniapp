@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
+import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -140,13 +141,13 @@ internal class RetrofitRequestExecutor(
 }
 
 internal data class HttpErrorResponse(
-    val code: Int,
-    override val message: String
+    @SerializedName("code") val code: Int,
+    @SerializedName("message") override val message: String
 ) : ErrorResponse
 
 internal data class AuthErrorResponse(
-    val code: String,
-    override val message: String
+    @SerializedName("code") val code: String,
+    @SerializedName("message") override val message: String
 ) : ErrorResponse
 
 internal interface ErrorResponse {
