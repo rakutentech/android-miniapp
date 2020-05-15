@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * This represents a Mini App entity.
  * @property id Mini App identifier unique to a mini app.
@@ -8,10 +10,11 @@ package com.rakuten.tech.mobile.miniapp
  * @property version Version information of the mini app.
  */
 data class MiniAppInfo(
-    val id: String,
-    val displayName: String,
-    val icon: String,
-    val version: Version
+    // Must use @SerializedName on all properties for compatibility with Proguard obfuscation
+    @SerializedName("id") val id: String,
+    @SerializedName("displayName") val displayName: String,
+    @SerializedName("icon") val icon: String,
+    @SerializedName("version") val version: Version
 )
 
 /**
@@ -20,6 +23,6 @@ data class MiniAppInfo(
  * @property versionId Version identifier of the mini app.
  */
 data class Version(
-    val versionTag: String,
-    internal val versionId: String
+    @SerializedName("versionTag") val versionTag: String,
+    @SerializedName("versionId") internal val versionId: String
 )
