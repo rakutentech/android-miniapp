@@ -22,15 +22,33 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'miniapp'
+            keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
+
+            storeFile file('release-keystore-test.jks')
+            storePassword "$System.env.MINIAPP_KEYSTORE_PASSWORD"
+        }
+    }
+
     buildTypes {
         debug {
             debuggable true
             minifyEnabled false
         }
         release {
-            minifyEnabled true
+            signingConfig signingConfigs.release
             debuggable true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            manifestPlaceholders = [
+                    baseUrl        : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+                    hostAppVersion : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
+                    appId          : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
+                    subscriptionKey: property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            ]
         }
     }
 
