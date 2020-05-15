@@ -27,7 +27,7 @@ android {
             keyAlias 'miniapp'
             keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
 
-            storeFile file('release-keystore-test.jks')
+            storeFile file('release-keystore.jks')
             storePassword "$System.env.MINIAPP_KEYSTORE_PASSWORD"
         }
     }
