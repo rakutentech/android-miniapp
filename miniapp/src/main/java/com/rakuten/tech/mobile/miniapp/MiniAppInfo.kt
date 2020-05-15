@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -12,10 +13,11 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 data class MiniAppInfo(
-    val id: String,
-    val displayName: String,
-    val icon: String,
-    val version: Version
+    // Must use @SerializedName on all properties for compatibility with Proguard obfuscation
+    @SerializedName("id") val id: String,
+    @SerializedName("displayName") val displayName: String,
+    @SerializedName("icon") val icon: String,
+    @SerializedName("version") val version: Version
 ) : Parcelable
 
 /**
@@ -25,6 +27,6 @@ data class MiniAppInfo(
  */
 @Parcelize
 data class Version(
-    val versionTag: String,
-    internal val versionId: String
+@SerializedName("versionTag") val versionTag: String,
+@SerializedName("versionId") internal val versionId: String
 ) : Parcelable
