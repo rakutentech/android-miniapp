@@ -22,13 +22,21 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        release {
-            keyAlias 'miniapp'
-            keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
+    // Set signing config only if the keystore file exists
+    def keystoreFile = file('release-keystore.jks')
+    if (keystoreFile.exists()) {
+        signingConfigs {
+            release {
+                keyAlias 'miniapp'
+                keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
 
-            storeFile file('release-keystore.jks')
-            storePassword "$System.env.MINIAPP_KEYSTORE_PASSWORD"
+                storeFile keystoreFile
+                storePassword "$System.env.MINIAPP_KEYSTORE_PASSWORD"
+            }
+        }
+
+        buildTypes.release {
+            signingConfig signingConfigs.release
         }
     }
 
@@ -38,7 +46,6 @@ android {
             minifyEnabled false
         }
         release {
-            signingConfig signingConfigs.release
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

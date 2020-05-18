@@ -14,7 +14,10 @@ jobs:
       - checkout
       - run: git submodule update --init
         # Retrieve Base64 Keystore from Env variable and save to testapp project
-      - run: base64 -d <<< $RELEASE_KEYSTORE_BASE64 > ./testapp/release-keystore.jks
+      - run: |
+          if [[ $RELEASE_KEYSTORE_BASE64 != "" ]]; then
+            base64 -d <<< $RELEASE_KEYSTORE_BASE64 > ./testapp/release-keystore.jks
+          fi
       - restore_cache:
           key: *gradle_cache_key
       - run:
