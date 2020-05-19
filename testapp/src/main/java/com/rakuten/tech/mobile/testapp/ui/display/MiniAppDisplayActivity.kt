@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -23,10 +24,17 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     companion object {
         private val appIdTag = "app_id_tag"
+        private val miniAppTag = "mini_app_tag"
 
         fun start(context: Context, appId: String) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
+            })
+        }
+
+        fun start(context: Context, miniAppInfo: MiniAppInfo) {
+            context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
+                putExtra(miniAppTag, miniAppInfo)
             })
         }
     }
@@ -35,7 +43,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent.hasExtra(appIdTag)) {
+        if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
 
             setContentView(R.layout.mini_app_display_activity)
@@ -60,11 +68,17 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
+            val miniAppMessageBridge = object: MiniAppMessageBridge() {
+                @SuppressLint("HardwareIds")
+                override fun getUniqueId() = AppSettings.instance.uniqueId
+            }
+
             launch {
-                viewModel.obtainMiniAppView(appId, object: MiniAppMessageBridge() {
-                    @SuppressLint("HardwareIds")
-                    override fun getUniqueId() = AppSettings.instance.uniqueId
-                })
+                if (appId.isEmpty())
+                    viewModel.obtainMiniAppView(
+                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!, miniAppMessageBridge)
+                else
+                    viewModel.obtainMiniAppView(appId, miniAppMessageBridge)
             }
         }
     }
