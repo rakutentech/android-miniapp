@@ -16,7 +16,7 @@ data class MiniAppInfo(
     val displayName: String,
     val icon: String,
     val version: Version
-): Parcelable
+) : Parcelable
 
 /**
  * This represents a version entity of a Mini App.
@@ -27,4 +27,4 @@ data class MiniAppInfo(
 data class Version(
     val versionTag: String,
     internal val versionId: String
-): Parcelable
+) : Parcelable

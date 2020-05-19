@@ -45,8 +45,7 @@ class MiniAppDisplayViewModel constructor(
 
     suspend fun obtainMiniAppView(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
         try {
-            val miniAppInfo = miniapp.fetchInfo(appId)
-            obtainMiniAppView(miniAppInfo, miniAppMessageBridge)
+            obtainMiniAppView(miniapp.fetchInfo(appId), miniAppMessageBridge)
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)
