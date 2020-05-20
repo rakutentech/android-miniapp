@@ -19,24 +19,19 @@ internal class MiniAppDownloader(
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
-    // Only run the latest version of specified MiniApp.
     @Suppress("SwallowedException", "LongMethod")
     suspend fun getMiniApp(appId: String, versionId: String): String {
+        val versionPath = storage.getMiniAppVersionPath(appId, versionId)
         try {
             return when {
                 !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-                miniAppStatus.isVersionDownloaded(
-                    appId,
-                    versionId,
-                    storage.getMiniAppVersionPath(appId, versionId)
-                ) -> storage.getMiniAppVersionPath(appId, versionId)
+                miniAppStatus.isVersionDownloaded(appId, versionId, versionPath) -> versionPath
                 else -> startDownload(appId, versionId)
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            if (miniAppStatus.isVersionDownloaded(appId, versionId,
-                    storage.getMiniAppVersionPath(appId, versionId)))
-                return storage.getMiniAppVersionPath(appId, versionId)
+            if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
+                return versionPath
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
