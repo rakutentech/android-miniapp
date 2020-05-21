@@ -26,6 +26,10 @@ android {
     buildToolsVersion = androidBuildTool
 }
 
+androidExtensions {
+    experimental = true
+}
+
 // Prevents test code compiled into binary.
 afterEvaluate {
     android.sourceSets.all { sourceSet ->

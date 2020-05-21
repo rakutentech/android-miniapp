@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
@@ -11,6 +12,8 @@ import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.Url
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
@@ -88,6 +91,10 @@ internal class RetrofitRequestExecutor(
             }
             else -> throw exceptionForHttpError<T>(response)
         }
+    } catch (error: UnknownHostException) {
+        throw MiniAppNetException(error)
+    } catch (error: SocketTimeoutException) {
+        throw MiniAppNetException(error)
     } catch (error: Exception) { // when response is not Type T or malformed JSON is received
         throw MiniAppSdkException(error)
     }

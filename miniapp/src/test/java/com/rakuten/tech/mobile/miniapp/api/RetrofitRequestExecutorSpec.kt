@@ -2,11 +2,6 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_APP
-import com.rakuten.tech.mobile.miniapp.TEST_HA_SUBSCRIPTION_KEY
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
-import com.rakuten.tech.mobile.miniapp.TEST_VALUE
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +19,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 open class RetrofitRequestExecutorSpec private constructor(
     internal val mockServer: MockWebServer
@@ -195,6 +192,48 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
             override fun cancel() {}
 
             override fun execute(): Response<String> = Response.error(404, mock())
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppNetException::class)
+    fun `should throw exception when there is network error`() = runBlockingTest {
+        val executor = spyRetrofitExecutor()
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = throw UnknownHostException()
+
+            override fun request(): Request = Request.Builder().build()
+        }
+        executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppNetException::class)
+    fun `should throw exception when there is timeout error`() = runBlockingTest {
+        val executor = spyRetrofitExecutor()
+        val request: Call<String> = object : Call<String> {
+            override fun enqueue(callback: Callback<String>) {}
+
+            override fun isExecuted(): Boolean = true
+
+            override fun clone(): Call<String> = mock()
+
+            override fun isCanceled(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun execute(): Response<String> = throw SocketTimeoutException()
 
             override fun request(): Request = Request.Builder().build()
         }
