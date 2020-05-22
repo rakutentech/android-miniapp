@@ -14,8 +14,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
-            android:label="@string/action_display_list">
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
