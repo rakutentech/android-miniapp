@@ -113,7 +113,7 @@ jobs:
           command: >
             npx appcenter distribute release
             --group Testers
-            --file apk/debug/testapp-debug.apk
+            --file apk/staging/testapp-staging.apk
             --app $APP_CENTER_APP_NAME
             --release-notes $CIRCLE_BUILD_URL
             --token $APP_CENTER_TOKEN
