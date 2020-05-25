@@ -29,12 +29,23 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppView(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
+    suspend fun obtainMiniAppView(miniAppInfo: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(miniapp.fetchInfo(appId), miniAppMessageBridge)
+            miniAppDisplay = miniapp.create(miniAppInfo, miniAppMessageBridge)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
+        } catch (e: MiniAppSdkException) {
+            e.printStackTrace()
+            _errorData.postValue(e.message)
+        } finally {
+            _isLoading.postValue(false)
+        }
+    }
+
+    suspend fun obtainMiniAppView(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
+        try {
+            obtainMiniAppView(miniapp.fetchInfo(appId), miniAppMessageBridge)
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)

@@ -19,23 +19,26 @@ internal class MiniAppDownloader(
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
-    // Only run the latest version of specified MiniApp.
-    suspend fun getMiniApp(appId: String, versionId: String): String = when {
-        !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-        miniAppStatus.isVersionDownloaded(appId, versionId, storage.getMiniAppVersionPath(appId, versionId))
-        -> storage.getMiniAppVersionPath(appId, versionId)
-        else -> startDownload(appId, versionId)
+    @Suppress("SwallowedException", "LongMethod")
+    suspend fun getMiniApp(appId: String, versionId: String): String {
+        val versionPath = storage.getMiniAppVersionPath(appId, versionId)
+        try {
+            return when {
+                !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
+                miniAppStatus.isVersionDownloaded(appId, versionId, versionPath) -> versionPath
+                else -> startDownload(appId, versionId)
+            }
+        } catch (netError: MiniAppNetException) {
+            // load local if possible when offline
+            if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
+                return versionPath
+        }
+        // cannot load miniapp from server
+        throw sdkExceptionForInternalServerError()
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private suspend fun isLatestVersion(appId: String, versionId: String): Boolean {
-        try {
-            return apiClient.fetchInfo(appId).version.versionId == versionId
-        } catch (e: Exception) {
-            // If backend functions correctly, this should never happen
-            throw sdkExceptionForInternalServerError()
-        }
-    }
+    private suspend fun isLatestVersion(appId: String, versionId: String): Boolean =
+        apiClient.fetchInfo(appId).version.versionId == versionId
 
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {

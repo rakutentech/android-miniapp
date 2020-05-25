@@ -13,6 +13,11 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init
+        # Retrieve Base64 Keystore from Env variable and save to testapp project
+      - run: |
+          if [[ $RELEASE_KEYSTORE_BASE64 != "" ]]; then
+            base64 -d <<< $RELEASE_KEYSTORE_BASE64 > ./testapp/release-keystore.jks
+          fi
       - restore_cache:
           key: *gradle_cache_key
       - run:
@@ -50,9 +55,9 @@ jobs:
           path: miniapp/build/outputs/aar
           destination: aar/
       - persist_to_workspace:
-          root: testapp/build/outputs/apk/debug
+          root: testapp/build/outputs
           paths:
-            - testapp-debug.apk
+            - apk/
       - persist_to_workspace:
           root: ~/code
           paths:
@@ -93,7 +98,7 @@ jobs:
               echo "Documentation not published for snapshot version"
             fi
 
-  deploy-test-app:
+  deploy-test-app-stg:
     docker:
       - image: circleci/node
     working_directory: ~/code
@@ -108,9 +113,30 @@ jobs:
           command: >
             npx appcenter distribute release
             --group Testers
-            --file testapp-debug.apk
+            --file apk/staging/testapp-staging.apk
             --app $APP_CENTER_APP_NAME
             --release-notes $CIRCLE_BUILD_URL
+            --token $APP_CENTER_TOKEN
+            --quiet
+
+  deploy-test-app-prod:
+    docker:
+      - image: circleci/node
+    working_directory: ~/code
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Install App Center CLI
+          command: npm init --yes && npm install appcenter-cli
+      - run:
+          name: Upload APK to App Center
+          command: >
+            npx appcenter distribute release
+            --group Production
+            --file apk/release/testapp-release.apk
+            --app $APP_CENTER_APP_NAME
+            --release-notes "Production build for Android SDK $CIRCLE_TAG"
             --token $APP_CENTER_TOKEN
             --quiet
 
@@ -124,6 +150,12 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
+      - deploy-test-app-stg:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
       - release-verification:
           type: approval
           requires:
@@ -141,9 +173,11 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy-test-app:
+      - deploy-test-app-prod:
           requires:
-            - build
+            - publish-sdk
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/

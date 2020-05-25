@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.google.gson.Gson
+import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -108,8 +109,6 @@ class MiniAppDownloaderSpec {
     @Test
     fun `when there is latest existing app in local storage, load the local storage path`() =
         runBlockingTest {
-            When calling storage.getMiniAppVersionPath(
-                TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
@@ -180,6 +179,40 @@ class MiniAppDownloaderSpec {
     fun `MiniAppDownloader should implement UpdatableApiClient`() {
         downloader shouldBeInstanceOf UpdatableApiClient::class.java
     }
+
+    @Test
+    fun `when there is network issue, load the local storage path if existed`() =
+        runBlockingTest {
+            When calling miniAppStatus.isVersionDownloaded(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION,
+                TEST_BASE_PATH
+            ) itReturns true
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns TEST_BASE_PATH
+            When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
+
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
+        }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when cannot get miniapp`() =
+        runBlockingTest {
+            When calling miniAppStatus.isVersionDownloaded(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION,
+                TEST_BASE_PATH
+            ) itReturns false
+            When calling storage.getMiniAppVersionPath(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns TEST_BASE_PATH
+            When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
+
+            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        }
 
     private suspend fun setupValidManifestResponse(
         downloader: MiniAppDownloader,
