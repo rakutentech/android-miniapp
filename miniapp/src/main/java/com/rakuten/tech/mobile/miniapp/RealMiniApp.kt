@@ -23,7 +23,16 @@ internal class RealMiniApp(
     override suspend fun create(
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = when {
+    ): MiniAppDisplay = executingCreate(info, miniAppMessageBridge)
+
+    override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
+        executingCreate(info, object : MiniAppMessageBridge() {
+            override fun getUniqueId(): String = throw Exception()
+        })
+
+    private suspend fun executingCreate(
+        info: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge): MiniAppDisplay = when {
         info.id.isBlank() || info.version.versionId.isBlank() ->
             throw sdkExceptionForInvalidArguments()
         else -> {
