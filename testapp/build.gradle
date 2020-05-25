@@ -11,26 +11,66 @@ android {
     defaultConfig {
         versionCode 1
         versionName project.version
-
-        manifestPlaceholders = [
-                baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
-                hostAppVersion : property("HOST_APP_VERSION") ?: "test-host-app-version",
-                appId          : property("HOST_APP_ID") ?: "test-host-app-id",
-                subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
-        ]
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Set signing config only if the keystore file exists
+    def keystoreFile = file('release-keystore.jks')
+    if (keystoreFile.exists()) {
+        signingConfigs {
+            release {
+                keyAlias 'miniapp'
+                keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
+
+                storeFile keystoreFile
+                storePassword "$System.env.MINIAPP_KEYSTORE_PASSWORD"
+            }
+        }
+
+        buildTypes.release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    def appName = "Mini App Sample"
+    def stagingManifestPlaceholders = [
+            baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+            hostAppVersion : property("HOST_APP_VERSION") ?: "test-host-app-version",
+            appId          : property("HOST_APP_ID") ?: "test-host-app-id",
+            subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
+    ]
+    def prodManifestPlaceholders = [
+            baseUrl        : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+            hostAppVersion : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
+            appId          : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
+            subscriptionKey: property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
+    ]
     buildTypes {
         debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+            resValue "string", "app_name", "$appName DEBUG"
             debuggable true
             minifyEnabled false
+
+            manifestPlaceholders = stagingManifestPlaceholders
         }
         release {
-            minifyEnabled true
+            resValue "string", "app_name", appName
             debuggable true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            manifestPlaceholders = prodManifestPlaceholders
+        }
+        staging {
+            initWith release
+            applicationIdSuffix '.staging'
+            versionNameSuffix '-STG'
+            resValue "string", "app_name", "$appName STG"
+            matchingFallbacks = ['release', 'debug']
+
+            manifestPlaceholders = stagingManifestPlaceholders
         }
     }
 
