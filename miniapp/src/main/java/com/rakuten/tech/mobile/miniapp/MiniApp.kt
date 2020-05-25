@@ -41,7 +41,7 @@ abstract class MiniApp internal constructor() {
     ): MiniAppDisplay
 
     /**
-     * @deprecated use {@link #create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)} instead.
+     * @deprecated use {@link #create(MiniAppInfo, MiniAppMessageBridge)} instead.
      * Creates a mini app.
      * @param info metadata of a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
