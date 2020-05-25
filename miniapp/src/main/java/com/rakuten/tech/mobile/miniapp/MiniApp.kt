@@ -49,7 +49,7 @@ abstract class MiniApp internal constructor() {
      * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
-    @Deprecated(message = "Please replace with create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)")
+    @Deprecated(message = "Please replace with create(MiniAppInfo, MiniAppMessageBridge)")
     abstract suspend fun create(info: MiniAppInfo): MiniAppDisplay
 
     /**
