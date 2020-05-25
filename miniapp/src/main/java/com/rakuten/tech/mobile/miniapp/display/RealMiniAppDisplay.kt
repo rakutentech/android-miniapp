@@ -56,6 +56,18 @@ internal class RealMiniAppDisplay(
         destroy()
     }
 
+    override fun navigateBackward(): Boolean = if (canGoBack()) {
+        goBack()
+        true
+    } else
+        false
+
+    override fun navigateForward(): Boolean = if (canGoForward()) {
+        goForward()
+        true
+    } else
+        false
+
     override fun runSuccessCallback(callbackId: String, value: String) {
         post {
             evaluateJavascript(

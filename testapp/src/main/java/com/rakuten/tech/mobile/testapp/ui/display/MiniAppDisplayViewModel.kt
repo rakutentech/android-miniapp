@@ -57,4 +57,8 @@ class MiniAppDisplayViewModel constructor(
     fun setHostLifeCycle(lifecycle: Lifecycle) {
         this.hostLifeCycle = lifecycle
     }
+
+    fun canGoBackwards() : Boolean{
+       return miniAppDisplay.navigateBackward()
+    }
 }

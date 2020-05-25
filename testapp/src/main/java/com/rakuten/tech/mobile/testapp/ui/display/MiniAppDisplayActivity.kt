@@ -91,4 +91,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
     }
+
+    override fun onBackPressed() {
+        if(!viewModel.canGoBackwards()) {
+            super.onBackPressed()
+        }
+    }
 }
