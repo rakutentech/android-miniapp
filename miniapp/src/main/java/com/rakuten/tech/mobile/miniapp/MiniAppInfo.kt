@@ -9,8 +9,8 @@ package com.rakuten.tech.mobile.miniapp
  */
 data class MiniAppInfo(
     val id: String,
-    val displayName: String,
-    val icon: String,
+    var displayName: String?,
+    val icon: String?,
     val version: Version
 )
 
