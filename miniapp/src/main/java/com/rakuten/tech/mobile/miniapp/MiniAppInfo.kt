@@ -15,8 +15,8 @@ import kotlinx.android.parcel.Parcelize
 data class MiniAppInfo(
     // Must use @SerializedName on all properties for compatibility with Proguard obfuscation
     @SerializedName("id") val id: String,
-    @SerializedName("displayName") val displayName: String,
-    @SerializedName("icon") val icon: String,
+    @SerializedName("displayName") val displayName: String?,
+    @SerializedName("icon") val icon: String?,
     @SerializedName("version") val version: Version
 ) : Parcelable
 
@@ -27,6 +27,6 @@ data class MiniAppInfo(
  */
 @Parcelize
 data class Version(
-@SerializedName("versionTag") val versionTag: String,
-@SerializedName("versionId") internal val versionId: String
+    @SerializedName("versionTag") val versionTag: String,
+    @SerializedName("versionId") internal val versionId: String
 ) : Parcelable
