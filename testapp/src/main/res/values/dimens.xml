@@ -10,11 +10,13 @@
     <dimen name="small_12">12dp</dimen>
     <dimen name="medium_16">16dp</dimen>
     <dimen name="large_24">24dp</dimen>
+    <dimen name="large_32">32dp</dimen>
 
     <dimen name="text_large_18">18sp</dimen>
     <dimen name="text_large_16">16sp</dimen>
     <dimen name="text_medium_14">14sp</dimen>
 
     <dimen name="miniapp_icon_size">48dp</dimen>
+    <dimen name="miniapp_logo_size">86dp</dimen>
 
 </resources>

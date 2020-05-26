@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -69,7 +68,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
             val miniAppMessageBridge = object: MiniAppMessageBridge() {
-                @SuppressLint("HardwareIds")
                 override fun getUniqueId() = AppSettings.instance.uniqueId
             }
 

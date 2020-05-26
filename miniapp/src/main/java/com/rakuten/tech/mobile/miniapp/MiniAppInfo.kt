@@ -27,6 +27,6 @@ data class MiniAppInfo(
  */
 @Parcelize
 data class Version(
-@SerializedName("versionTag") val versionTag: String,
-@SerializedName("versionId") internal val versionId: String
+    @SerializedName("versionTag") val versionTag: String,
+    @SerializedName("versionId") internal val versionId: String
 ) : Parcelable

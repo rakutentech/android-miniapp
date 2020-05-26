@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
@@ -63,16 +64,25 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         viewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
             miniAppListData.observe(viewLifecycleOwner, Observer {
                 swipeRefreshLayout.isRefreshing = false
-                miniAppListAdapter.miniapps = it
-                miniAppListAdapter.notifyDataSetChanged()
+                displayMiniAppList(it)
+                MiniAppListStore.instance.saveMiniAppList(it)
             })
             errorData.observe(viewLifecycleOwner, Observer {
+                val list = MiniAppListStore.instance.getMiniAppList()
+                if (list.isEmpty())
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                else
+                    displayMiniAppList(list)
                 swipeRefreshLayout.isRefreshing = false
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
             })
         }
 
         swipeRefreshLayout.setOnRefreshListener { executeLoadingList() }
+    }
+
+    private fun displayMiniAppList(list: List<MiniAppInfo>) {
+        miniAppListAdapter.miniapps = list
+        miniAppListAdapter.notifyDataSetChanged()
     }
 
     private fun executeLoadingList() {
