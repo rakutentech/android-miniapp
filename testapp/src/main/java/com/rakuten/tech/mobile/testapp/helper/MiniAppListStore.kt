@@ -7,13 +7,13 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import java.lang.IllegalStateException
 
-class MiniAppListStorage(context: Context) {
+class MiniAppListStore(context: Context) {
 
     companion object {
-        lateinit var instance: MiniAppListStorage
+        lateinit var instance: MiniAppListStore
 
         fun init(context: Context) {
-            instance = MiniAppListStorage(context)
+            instance = MiniAppListStore(context)
         }
     }
 
