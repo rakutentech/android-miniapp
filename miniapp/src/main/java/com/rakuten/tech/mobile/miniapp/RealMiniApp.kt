@@ -23,6 +23,17 @@ internal class RealMiniApp(
     override suspend fun create(
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay = executingCreate(info, miniAppMessageBridge)
+
+    @Suppress("TooGenericExceptionThrown")
+    override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
+        executingCreate(info, object : MiniAppMessageBridge() {
+            override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
+        })
+
+    private suspend fun executingCreate(
+        info: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = when {
         info.id.isBlank() || info.version.versionId.isBlank() ->
             throw sdkExceptionForInvalidArguments()
