@@ -7,7 +7,6 @@ import android.text.Spanned
 import android.view.View
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.MiniAppListHelper
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_list_activity.*
@@ -16,7 +15,6 @@ class MiniAppListActivity : SettingsMenuBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MiniAppListHelper.instance.getMiniAppListFromStorage()
         setContentView(R.layout.mini_app_list_activity)
         if (AppSettings.instance.isSettingSaved()) {
             layoutTut.visibility = View.GONE

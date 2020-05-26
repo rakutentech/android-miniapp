@@ -7,13 +7,13 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import java.lang.IllegalStateException
 
-class MiniAppListHelper(context: Context) {
+class MiniAppListStorage(context: Context) {
 
     companion object {
-        lateinit var instance: MiniAppListHelper
+        lateinit var instance: MiniAppListStorage
 
         fun init(context: Context) {
-            instance = MiniAppListHelper(context)
+            instance = MiniAppListStorage(context)
         }
     }
 
@@ -24,7 +24,7 @@ class MiniAppListHelper(context: Context) {
     private val gson = Gson()
     private val MINI_APP_LIST = "mini_app_list"
 
-    fun saveMiniAppListToStorage(list: List<MiniAppInfo>): Boolean = when {
+    fun saveMiniAppList(list: List<MiniAppInfo>): Boolean = when {
         list.isEmpty() -> false
         else -> {
             prefs.edit().putString(MINI_APP_LIST, gson.toJson(list)).apply()
@@ -32,7 +32,7 @@ class MiniAppListHelper(context: Context) {
         }
     }
 
-    fun getMiniAppListFromStorage(): List<MiniAppInfo> = try {
+    fun getMiniAppList(): List<MiniAppInfo> = try {
         gson.fromJson<List<MiniAppInfo>>(
             prefs.getString(MINI_APP_LIST, ""),
             object : TypeToken<List<MiniAppInfo>>() {}.type
