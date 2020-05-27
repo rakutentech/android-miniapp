@@ -11,16 +11,6 @@ internal class MiniAppWebViewClient(
     private val customScheme: String
 ) : WebViewClient() {
 
-//    override fun shouldInterceptRequest(
-//        view: WebView,
-//        request: WebResourceRequest
-//    ): WebResourceResponse? {
-//        if (request.url != null && request.url.toString().startsWith(customScheme)) {
-//            val interceptUri = request.url.toString().replace(customScheme, customDomain).toUri()
-//            return loader.shouldInterceptRequest(interceptUri)
-//        }
-//        return loader.shouldInterceptRequest(request.url)
-//    }
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest

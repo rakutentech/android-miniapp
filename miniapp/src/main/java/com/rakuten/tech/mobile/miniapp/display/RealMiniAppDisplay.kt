@@ -80,6 +80,12 @@ internal class RealMiniAppDisplay(
                 File(basePath)
             )
         )
+        .addPathHandler(
+            "/", WebViewAssetLoader.InternalStoragePathHandler(
+                context,
+                File(basePath)
+            )
+        )
         .build()
 
     @VisibleForTesting
