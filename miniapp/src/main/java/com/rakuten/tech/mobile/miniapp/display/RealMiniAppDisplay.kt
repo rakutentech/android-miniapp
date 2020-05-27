@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
+private const val ASSET_DOMAIN_SUFFIX = "miniapps.androidplatform.net"
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
@@ -27,7 +28,7 @@ internal class RealMiniAppDisplay(
 
     private val miniAppDomain = "mscheme.$appId"
     private val customScheme = "$miniAppDomain://"
-    private val customDomain = "https://$miniAppDomain/"
+    private val customDomain = "https://$miniAppDomain.$ASSET_DOMAIN_SUFFIX/"
 
     init {
         layoutParams = FrameLayout.LayoutParams(
