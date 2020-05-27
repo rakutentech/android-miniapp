@@ -41,8 +41,8 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
-        webChromeClient = MiniAppWebChromeClient(context)
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
+//        webChromeClient = MiniAppWebChromeClient(context)
 
         loadUrl(getLoadUrl())
     }
