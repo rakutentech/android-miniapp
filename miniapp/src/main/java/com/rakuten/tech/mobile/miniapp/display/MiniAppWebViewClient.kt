@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
 import java.io.BufferedReader
 
-internal class MiniAppWebViewClient(
+internal class MiniAppWebViewClientt(
     context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val customDomain: String,

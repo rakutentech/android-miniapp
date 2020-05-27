@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
@@ -12,6 +15,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import java.io.BufferedReader
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -41,7 +45,7 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader())
 //        webChromeClient = MiniAppWebChromeClient(context)
 
         loadUrl(getLoadUrl())
@@ -90,6 +94,35 @@ internal class RealMiniAppDisplay(
 
     @VisibleForTesting
     internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
+}
+
+@VisibleForTesting
+internal class MiniAppWebViewClient(
+    context: Context,
+    private val loader: WebViewAssetLoader
+) : WebViewClient() {
+    @VisibleForTesting
+    internal var isJsInjected = false
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    private val bridgeJs = try {
+        val inputStream = context.assets.open("bridge.js")
+        inputStream.bufferedReader().use(BufferedReader::readText)
+    } catch (e: Exception) {
+        null
+    }
+
+    override fun shouldInterceptRequest(
+        view: WebView,
+        request: WebResourceRequest
+    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+
+    override fun onLoadResource(webView: WebView, url: String?) {
+        super.onLoadResource(webView, url)
+        if (!isJsInjected) {
+            webView.evaluateJavascript(bridgeJs) {}
+            isJsInjected = true
+        }
+    }
 }
 
 internal interface WebViewListener {
