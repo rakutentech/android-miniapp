@@ -141,7 +141,7 @@ class RealMiniAppDisplayTest {
         webViewClient.onReceivedError(displayer,
             getWebResReq("mscheme.${realDisplay.appId}://".toUri()), mock())
 
-        verify(displayer, times(1)).loadUrl("$customDomain")
+        verify(displayer, times(1)).loadUrl(customDomain)
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
