@@ -58,8 +58,8 @@ class RealMiniAppDisplayTest {
         }
 
     @Test
-    fun `when getLoadUrl is called then a formed path contains app id`() {
-        realDisplay.getLoadUrl() shouldEqual "mscheme.${realDisplay.appId}://miniapp/index.html"
+    fun `should have corrected load url format`() {
+        realDisplay.getLoadUrl() shouldEqual "https://mscheme.${realDisplay.appId}/miniapp/index.html"
     }
 
     @Test
@@ -104,25 +104,6 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {
-        realDisplay.webChromeClient shouldBeInstanceOf MiniAppWebChromeClient::class
-    }
-
-    @Test
-    fun `should do js injection when there is a change in the document title`() {
-        val webChromeClient = Mockito.spy(realDisplay.webChromeClient as MiniAppWebChromeClient)
-        webChromeClient.onReceivedTitle(realDisplay, "web_title")
-
-        verify(webChromeClient, times(1)).doInjection(realDisplay)
-    }
-
-    @Test
-    fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock())
-        webClient.bridgeJs shouldBe null
-    }
-
-    @Test
     fun `each mini app should have different domain`() {
         val realDisplayForMiniapp1 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-1", miniAppMessageBridge)
         val realDisplayForMiniapp2 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-2", miniAppMessageBridge)
@@ -137,7 +118,7 @@ class RealMiniAppDisplayTest {
     @Test
     fun `should intercept request with WebViewAssetLoader`() {
         val webAssetLoader: WebViewAssetLoader = Mockito.spy((realDisplay.webViewClient as MiniAppWebViewClient).loader)
-        val webViewClient = MiniAppWebViewClient(webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(context, webAssetLoader,
             "custom_domain", "custom_scheme")
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
@@ -151,19 +132,19 @@ class RealMiniAppDisplayTest {
     fun `should redirect to custom domain when only loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = (realDisplay.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${realDisplay.appId}/"
-        val webViewClient = MiniAppWebViewClient(webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(context, webAssetLoader,
             customDomain, "mscheme.${realDisplay.appId}://")
 
         val displayer = Mockito.spy(realDisplay)
 
         webViewClient.onReceivedError(displayer, webResourceRequest, mock())
-        webViewClient.onReceivedError(displayer, getWebResReq(), mock())
+        webViewClient.onReceivedError(displayer,
+            getWebResReq("mscheme.${realDisplay.appId}://".toUri()), mock())
 
-        verify(displayer, times(1))
-            .loadUrl("${customDomain}miniapp/index.html")
+        verify(displayer, times(1)).loadUrl("$customDomain")
     }
 
-    private fun getWebResReq(uriReq: Uri = TEST_URL_HTTPS_1.toUri()): WebResourceRequest {
+    private fun getWebResReq(uriReq: Uri): WebResourceRequest {
         return object : WebResourceRequest {
             override fun getUrl(): Uri = uriReq
 
