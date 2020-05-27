@@ -1,8 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.webkit.*
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
-import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 
 internal class MiniAppWebViewClient(
