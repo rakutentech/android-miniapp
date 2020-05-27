@@ -30,11 +30,7 @@ internal class MiniAppWebViewClient(
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest
-    ): WebResourceResponse? {
-        if (request.url.toString().contains("ico"))
-            onLoadResource(view, request.url.toString())
-        return loader.shouldInterceptRequest(request.url)
-    }
+    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
 
     override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(webView, url, favicon)
