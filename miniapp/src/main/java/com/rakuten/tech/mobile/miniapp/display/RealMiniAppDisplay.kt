@@ -89,7 +89,7 @@ internal class RealMiniAppDisplay(
         .build()
 
     @VisibleForTesting
-    internal fun getLoadUrl() = "$customScheme$SUB_DOMAIN_PATH/index.html"
+    internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
 }
 
 internal interface WebViewListener {
