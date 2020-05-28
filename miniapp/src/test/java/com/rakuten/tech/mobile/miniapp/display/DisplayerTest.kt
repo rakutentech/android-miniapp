@@ -28,7 +28,7 @@ class DisplayerTest {
     fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
         runBlockingTest {
             val obtainedDisplay = getMiniAppDisplay()
-            obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
+            obtainedDisplay shouldBeInstanceOf MiniAppDisplay::class
         }
 
     @Test
@@ -38,8 +38,8 @@ class DisplayerTest {
             obtainedDisplay shouldBeInstanceOf LifecycleObserver::class
         }
 
-    private suspend fun getMiniAppDisplay(): MiniAppDisplay =
-        Displayer(context).createMiniAppDisplay(
+    private fun getMiniAppDisplay(): MiniAppDisplay =
+        Displayer().createMiniAppDisplay(
             basePath = context.filesDir.path,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge

@@ -16,6 +16,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
@@ -24,24 +25,26 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 import kotlin.test.assertTrue
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class RealMiniAppDisplayTest {
     private lateinit var context: Context
-    private lateinit var basePath: String
+    private lateinit var mBasePath: String
+    private lateinit var miniAppDisplay: MiniAppDisplay
     private lateinit var realDisplay: RealMiniAppDisplay
     private lateinit var webResourceRequest: WebResourceRequest
-    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private val mMiniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
-    fun setup() {
+    fun setup() = runBlockingTest {
         context = getApplicationContext()
-        basePath = context.filesDir.path
-        realDisplay = RealMiniAppDisplay(
-            context,
-            basePath = basePath,
-            appId = TEST_MA_ID,
-            miniAppMessageBridge = miniAppMessageBridge
-        )
+        mBasePath = context.filesDir.path
+        miniAppDisplay = object : MiniAppDisplay {
+            override val basePath = mBasePath
+            override val appId = TEST_MA_ID
+            override val miniAppMessageBridge = mMiniAppMessageBridge
+        }
+        realDisplay = miniAppDisplay.getMiniAppView(context) as RealMiniAppDisplay
         webResourceRequest = getWebResReq(realDisplay.getLoadUrl().toUri())
     }
 
@@ -54,7 +57,7 @@ class RealMiniAppDisplayTest {
     @Test
     fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
         runBlockingTest {
-            realDisplay.getMiniAppView() shouldNotHaveTheSameClassAs WebView::class
+            miniAppDisplay.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
         }
 
     @Test
@@ -105,14 +108,16 @@ class RealMiniAppDisplayTest {
 
     @Test
     fun `each mini app should have different domain`() {
-        val realDisplayForMiniapp1 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-1", miniAppMessageBridge)
-        val realDisplayForMiniapp2 = RealMiniAppDisplay(context, realDisplay.basePath, "app-id-2", miniAppMessageBridge)
+        val realDisplayForMiniapp1 =
+            RealMiniAppDisplay(context, realDisplay.basePath, "app-id-1", mMiniAppMessageBridge)
+        val realDisplayForMiniapp2 =
+            RealMiniAppDisplay(context, realDisplay.basePath, "app-id-2", mMiniAppMessageBridge)
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 
     @Test
     fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
-        verify(miniAppMessageBridge, atLeastOnce()).setWebViewListener(realDisplay)
+        verify(mMiniAppMessageBridge, atLeastOnce()).setWebViewListener(realDisplay)
     }
 
     @Test

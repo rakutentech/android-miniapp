@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * This contract complies to Android's [LifecycleObserver] contract, and when made to observe
  * the lifecycle, it automatically clears up the view state and any services registered with.
  */
-interface MiniAppDisplay: LifecycleObserver {
+interface MiniAppDisplay : LifecycleObserver {
     val basePath: String
     val appId: String
     val miniAppMessageBridge: MiniAppMessageBridge

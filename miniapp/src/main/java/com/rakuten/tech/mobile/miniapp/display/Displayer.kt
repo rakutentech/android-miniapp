@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
-internal class Displayer() {
+internal class Displayer {
 
     fun createMiniAppDisplay(
         basePath: String,
