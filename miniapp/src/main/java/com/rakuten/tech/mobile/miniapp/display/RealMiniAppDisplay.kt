@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
@@ -10,7 +9,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
@@ -20,9 +18,9 @@ private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
     context: Context,
-    val basePath: String,
-    val appId: String,
-    miniAppMessageBridge: MiniAppMessageBridge
+    override val basePath: String,
+    override val appId: String,
+    override val miniAppMessageBridge: MiniAppMessageBridge
 ) : MiniAppDisplay, WebView(context), WebViewListener {
 
     private val miniAppDomain = "mscheme.$appId"
@@ -45,8 +43,6 @@ internal class RealMiniAppDisplay(
 
         loadUrl(getLoadUrl())
     }
-
-    override fun getMiniAppView(): View = this
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {

@@ -1,7 +1,12 @@
-package com.rakuten.tech.mobile.miniapp
+package com.rakuten.tech.mobile.miniapp.display
 
+import android.content.Context
 import android.view.View
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * This represents the contract by which the host app can interact with the
@@ -9,14 +14,23 @@ import androidx.lifecycle.LifecycleObserver
  * This contract complies to Android's [LifecycleObserver] contract, and when made to observe
  * the lifecycle, it automatically clears up the view state and any services registered with.
  */
-interface MiniAppDisplay : LifecycleObserver {
+interface MiniAppDisplay: LifecycleObserver {
+    val basePath: String
+    val appId: String
+    val miniAppMessageBridge: MiniAppMessageBridge
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
+     * Register the lifecycle as optional
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
      */
-    fun getMiniAppView(): View
+    suspend fun getMiniAppView(context: Context, hostLifecycle: Lifecycle? = null): View =
+        withContext(Dispatchers.Main) {
+            val view = RealMiniAppDisplay(context, basePath, appId, miniAppMessageBridge)
+            hostLifecycle?.addObserver(view)
+            view
+        }
 
     /**
      * Upon invocation, destroys necessary view state and any services registered with.
@@ -28,5 +42,5 @@ interface MiniAppDisplay : LifecycleObserver {
      * on the lifecycle of views e.g. removal of the view from the view system, yet
      * within the same state of parent's lifecycle.
      */
-    fun destroyView()
+    fun destroyView() = Unit
 }

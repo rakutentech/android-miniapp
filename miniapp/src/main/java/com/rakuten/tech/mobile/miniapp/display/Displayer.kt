@@ -1,21 +1,16 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.content.Context
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
-internal class Displayer(private val context: Context) {
+internal class Displayer() {
 
-    suspend fun createMiniAppDisplay(
+    fun createMiniAppDisplay(
         basePath: String,
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay =
-        withContext(Dispatchers.Main) {
-            context?.let {
-                RealMiniAppDisplay(context, basePath, appId, miniAppMessageBridge)
-            }
-        }
+    ): MiniAppDisplay = object : MiniAppDisplay {
+        override val basePath = basePath
+        override val appId = appId
+        override val miniAppMessageBridge = miniAppMessageBridge
+    }
 }
