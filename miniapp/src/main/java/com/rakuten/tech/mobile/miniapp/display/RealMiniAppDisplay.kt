@@ -41,8 +41,7 @@ internal class RealMiniAppDisplay(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
-        webChromeClient = MiniAppWebChromeClient(context)
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
 
         loadUrl(getLoadUrl())
     }
@@ -80,10 +79,16 @@ internal class RealMiniAppDisplay(
                 File(basePath)
             )
         )
+        .addPathHandler(
+            "/", WebViewAssetLoader.InternalStoragePathHandler(
+                context,
+                File(basePath)
+            )
+        )
         .build()
 
     @VisibleForTesting
-    internal fun getLoadUrl() = "$customScheme$SUB_DOMAIN_PATH/index.html"
+    internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
 }
 
 internal interface WebViewListener {
