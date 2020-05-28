@@ -7,6 +7,7 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -21,7 +22,7 @@ internal class RealMiniAppDisplay(
     override val basePath: String,
     override val appId: String,
     override val miniAppMessageBridge: MiniAppMessageBridge
-) : MiniAppDisplay, WebView(context), WebViewListener {
+) : MiniAppDisplay, WebView(context), WebViewListener, LifecycleObserver {
 
     private val miniAppDomain = "mscheme.$appId"
     private val customScheme = "$miniAppDomain://"

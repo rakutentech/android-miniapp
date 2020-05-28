@@ -107,11 +107,11 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `each mini app should have different domain`() {
+    fun `each mini app should have different domain`() = runBlockingTest {
         val realDisplayForMiniapp1 =
             RealMiniAppDisplay(context, realDisplay.basePath, "app-id-1", mMiniAppMessageBridge)
         val realDisplayForMiniapp2 =
-            RealMiniAppDisplay(context, realDisplay.basePath, "app-id-2", mMiniAppMessageBridge)
+            miniAppDisplay.getMiniAppView(context) as RealMiniAppDisplay
         realDisplayForMiniapp1.url shouldNotBeEqualTo realDisplayForMiniapp2.url
     }
 

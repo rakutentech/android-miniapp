@@ -11,17 +11,16 @@ import kotlinx.coroutines.withContext
 /**
  * This represents the contract by which the host app can interact with the
  * display unit of the mini app.
- * This contract complies to Android's [LifecycleObserver] contract, and when made to observe
- * the lifecycle, it automatically clears up the view state and any services registered with.
  */
-interface MiniAppDisplay : LifecycleObserver {
+interface MiniAppDisplay {
     val basePath: String
     val appId: String
     val miniAppMessageBridge: MiniAppMessageBridge
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
-     * Register the lifecycle as optional
+     * [LifecycleObserver] as optional. When made to observe the lifecycle,
+     * it automatically clears up the view state and any services registered with.
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
      */
