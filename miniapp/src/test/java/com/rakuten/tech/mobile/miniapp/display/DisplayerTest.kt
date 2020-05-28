@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
-import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
@@ -25,17 +24,10 @@ class DisplayerTest {
     }
 
     @Test
-    fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
+    fun `for a given base path returns an implementer of MiniAppDisplay`() =
         runBlockingTest {
             val obtainedDisplay = getMiniAppDisplay()
             obtainedDisplay shouldBeInstanceOf MiniAppDisplay::class
-        }
-
-    @Test
-    fun `for a given base path createMiniAppDisplay returns an implementer of LifecycleObserver`() =
-        runBlockingTest {
-            val obtainedDisplay = getMiniAppDisplay()
-            obtainedDisplay shouldBeInstanceOf LifecycleObserver::class
         }
 
     private fun getMiniAppDisplay(): MiniAppDisplay =

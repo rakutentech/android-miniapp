@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
@@ -147,6 +148,11 @@ class RealMiniAppDisplayTest {
             getWebResReq("mscheme.${realDisplay.appId}://".toUri()), mock())
 
         verify(displayer, times(1)).loadUrl(customDomain)
+    }
+
+    @Test
+    fun `for a given base path returns an implementer of LifecycleObserver`() {
+        realDisplay shouldBeInstanceOf LifecycleObserver::class
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
