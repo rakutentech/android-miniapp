@@ -30,7 +30,7 @@ abstract class MiniApp internal constructor() {
      * Creates a mini app.
      * @param info metadata of a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
-     * @param miniAppMessageBridge the inferface for exchanging data between mobile hostapp & miniapp
+     * @param miniAppMessageBridge the interface for communicating between host app & mini app
      * @throws MiniAppSdkException when there is some issue during fetching,
      * downloading or creating the view.
      */
@@ -110,7 +110,7 @@ abstract class MiniApp internal constructor() {
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(context),
+                displayer = Displayer(),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )

@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
 
@@ -13,10 +14,12 @@ interface MiniAppDisplay : LifecycleObserver {
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
+     * @param activityContext is used by the view for initializing the internal services.
+     * The initialization could fail if an application context is forced, and null is returned.
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
      */
-    fun getMiniAppView(): View
+    fun getMiniAppView(activityContext: Context): View?
 
     /**
      * Upon invocation, destroys necessary view state and any services registered with.
