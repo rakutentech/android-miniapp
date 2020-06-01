@@ -35,17 +35,21 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
-    private suspend fun provideMiniAppWebView(activityContext: Context) =
-        withContext(Dispatchers.Main) {
-            if (isContextValid(activityContext)) {
-                (miniAppWebView ?: MiniAppWebView(
-                    context = activityContext,
-                    basePath = basePath,
-                    appId = appId,
-                    miniAppMessageBridge = miniAppMessageBridge
-                ))
-            } else null
-        }
+    private suspend fun provideMiniAppWebView(activityContext: Context): View? =
+        if (isContextValid(activityContext)) {
+            if (miniAppWebView != null)
+                miniAppWebView
+            else {
+                withContext(Dispatchers.Main) {
+                    MiniAppWebView(
+                        context = activityContext,
+                        basePath = basePath,
+                        appId = appId,
+                        miniAppMessageBridge = miniAppMessageBridge
+                    )
+                }
+            }
+        } else null
 
     @VisibleForTesting
     internal fun isContextValid(activityContext: Context) =

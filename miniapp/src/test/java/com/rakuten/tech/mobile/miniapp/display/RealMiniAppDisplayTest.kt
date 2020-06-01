@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.app.Activity
 import android.content.Context
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -58,10 +59,17 @@ class RealMiniAppDisplayTest {
     }
 
     @Test
-    fun `getMiniAppView() should be null when the context provider is not activity context`() =
+    fun `should return null when the context provider is not activity context`() =
         runBlockingTest {
             realDisplay.getMiniAppView() shouldBe null
         }
+
+    @Test
+    fun `should create MiniAppWebView when provide activity context`() = runBlockingTest {
+        val miniAppWebView: MiniAppWebView = mock()
+        realDisplay.miniAppWebView = miniAppWebView
+        realDisplay.getMiniAppView(Activity()) shouldBe miniAppWebView
+    }
 
     @Test
     fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
