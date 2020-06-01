@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -21,17 +22,19 @@ internal class RealMiniApp(
     }
 
     override suspend fun create(
+        context: Context,
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = executingCreate(info, miniAppMessageBridge)
+    ): MiniAppDisplay = executingCreate(context, info, miniAppMessageBridge)
 
     @Suppress("TooGenericExceptionThrown")
     override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
-        executingCreate(info, object : MiniAppMessageBridge() {
+        executingCreate(null, info, object : MiniAppMessageBridge() {
             override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
         })
 
     private suspend fun executingCreate(
+        context: Context?,
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = when {
@@ -42,7 +45,7 @@ internal class RealMiniApp(
                 appId = info.id,
                 versionId = info.version.versionId
             )
-            displayer.createMiniAppDisplay(basePath, info.id, miniAppMessageBridge)
+            displayer.createMiniAppDisplay(context, basePath, info.id, miniAppMessageBridge)
         }
     }
 

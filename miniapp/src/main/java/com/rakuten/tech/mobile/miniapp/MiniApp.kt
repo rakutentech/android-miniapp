@@ -30,12 +30,13 @@ abstract class MiniApp internal constructor() {
      * Creates a mini app.
      * @param info metadata of a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
-     * @param miniAppMessageBridge the inferface for exchanging data between mobile hostapp & miniapp
+     * @param miniAppMessageBridge the interface for communicating between host app & mini app
      * @throws MiniAppSdkException when there is some issue during fetching,
      * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun create(
+        context: Context,
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay

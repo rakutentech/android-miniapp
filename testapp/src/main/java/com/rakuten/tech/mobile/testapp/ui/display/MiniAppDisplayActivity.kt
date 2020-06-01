@@ -74,9 +74,14 @@ class MiniAppDisplayActivity : BaseActivity() {
             launch {
                 if (appId.isEmpty())
                     viewModel.obtainMiniAppView(
-                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!, miniAppMessageBridge)
+                        this@MiniAppDisplayActivity,
+                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
+                        miniAppMessageBridge)
                 else
-                    viewModel.obtainMiniAppView(appId, miniAppMessageBridge)
+                    viewModel.obtainMiniAppView(
+                        this@MiniAppDisplayActivity,
+                        appId,
+                        miniAppMessageBridge)
             }
         }
     }

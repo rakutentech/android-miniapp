@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.content.Context
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
@@ -29,10 +30,13 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppView(miniAppInfo: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge) {
+    suspend fun obtainMiniAppView(
+        context: Context,
+        miniAppInfo: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(miniAppInfo, miniAppMessageBridge)
+            miniAppDisplay = miniapp.create(context, miniAppInfo, miniAppMessageBridge)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView())
         } catch (e: MiniAppSdkException) {
@@ -43,9 +47,12 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    suspend fun obtainMiniAppView(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
+    suspend fun obtainMiniAppView(
+        context: Context,
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge) {
         try {
-            obtainMiniAppView(miniapp.fetchInfo(appId), miniAppMessageBridge)
+            obtainMiniAppView(context, miniapp.fetchInfo(appId), miniAppMessageBridge)
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)

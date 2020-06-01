@@ -1,5 +1,8 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -15,11 +18,14 @@ import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 
+@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
 
+    private lateinit var context: Context
     private var apiClient: ApiClient = mock()
     private val apiClientRepository: ApiClientRepository = mock()
     private val displayer: Displayer = mock()
@@ -33,6 +39,7 @@ class RealMiniAppSpec {
 
     @Before
     fun setup() {
+        context = ApplicationProvider.getApplicationContext()
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
     }
 
@@ -51,17 +58,18 @@ class RealMiniAppSpec {
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when version id is invalid`() = runBlockingTest {
         val invalidMiniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", ""))
-        realMiniApp.create(invalidMiniAppInfo, miniAppMessageBridge)
+        realMiniApp.create(context, invalidMiniAppInfo, miniAppMessageBridge)
     }
 
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+            realMiniApp.create(context, miniAppInfo, miniAppMessageBridge)
 
             val basePath: String = verify(miniAppDownloader, times(1))
                 .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
+            verify(displayer, times(1)).createMiniAppDisplay(
+                context, basePath, TEST_MA_ID, miniAppMessageBridge)
         }
 
     @Test
