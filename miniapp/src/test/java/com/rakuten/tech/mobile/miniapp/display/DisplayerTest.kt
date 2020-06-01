@@ -8,7 +8,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Before
 import org.junit.Test
@@ -26,20 +25,18 @@ class DisplayerTest {
     }
 
     @Test
-    fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() =
-        runBlockingTest {
-            val obtainedDisplay = getMiniAppDisplay()
-            obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
-        }
+    fun `for a given base path createMiniAppDisplay returns an implementer of MiniAppDisplay`() {
+        val obtainedDisplay = getMiniAppDisplay()
+        obtainedDisplay shouldBeInstanceOf RealMiniAppDisplay::class
+    }
 
     @Test
-    fun `for a given base path createMiniAppDisplay returns an implementer of LifecycleObserver`() =
-        runBlockingTest {
-            val obtainedDisplay = getMiniAppDisplay()
-            obtainedDisplay shouldBeInstanceOf LifecycleObserver::class
-        }
+    fun `for a given base path createMiniAppDisplay returns an implementer of LifecycleObserver`() {
+        val obtainedDisplay = getMiniAppDisplay()
+        obtainedDisplay shouldBeInstanceOf LifecycleObserver::class
+    }
 
-    private suspend fun getMiniAppDisplay(): MiniAppDisplay =
+    private fun getMiniAppDisplay(): MiniAppDisplay =
         Displayer(context).createMiniAppDisplay(
             basePath = context.filesDir.path,
             appId = TEST_MA_ID,

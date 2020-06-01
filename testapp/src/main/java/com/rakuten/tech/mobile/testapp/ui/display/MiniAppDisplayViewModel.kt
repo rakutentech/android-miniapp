@@ -1,10 +1,12 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.content.Context
+import android.view.View
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -16,11 +18,13 @@ class MiniAppDisplayViewModel constructor(
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
-    private val _miniAppDisplay = MutableLiveData<MiniAppDisplay>()
+    private var hostLifeCycle: Lifecycle? = null
+
+    private val _miniAppDisplay = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
     private val _isLoading = MutableLiveData<Boolean>()
 
-    val miniAppDisplay: LiveData<MiniAppDisplay>
+    val miniAppDisplay: LiveData<View>
         get() = _miniAppDisplay
     val errorData: LiveData<String>
         get() = _errorData
@@ -28,12 +32,15 @@ class MiniAppDisplayViewModel constructor(
         get() = _isLoading
 
     suspend fun obtainMiniAppDisplay(
+        context: Context,
         miniAppInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
     ) {
         try {
             _isLoading.postValue(true)
-            _miniAppDisplay.postValue(miniapp.create(miniAppInfo, miniAppMessageBridge))
+            val miniAppDisplay = miniapp.create(miniAppInfo, miniAppMessageBridge)
+            hostLifeCycle?.addObserver(miniAppDisplay)
+            _miniAppDisplay.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)
@@ -42,15 +49,21 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    suspend fun obtainMiniAppDisplay(appId: String, miniAppMessageBridge: MiniAppMessageBridge) {
-        try {
-            obtainMiniAppDisplay(miniapp.fetchInfo(appId), miniAppMessageBridge)
-        } catch (e: MiniAppSdkException) {
-            e.printStackTrace()
-            _errorData.postValue(e.message)
-        } finally {
-            _isLoading.postValue(false)
-        }
+    suspend fun obtainMiniAppDisplay(
+        context: Context,
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge) {
+            try {
+                obtainMiniAppDisplay(context, miniapp.fetchInfo(appId), miniAppMessageBridge)
+            } catch (e: MiniAppSdkException) {
+                e.printStackTrace()
+                _errorData.postValue(e.message)
+            } finally {
+                _isLoading.postValue(false)
+            }
     }
 
+    fun setHostLifeCycle(lifecycle: Lifecycle) {
+        this.hostLifeCycle = lifecycle
+    }
 }

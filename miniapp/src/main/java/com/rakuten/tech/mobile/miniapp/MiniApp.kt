@@ -110,7 +110,7 @@ abstract class MiniApp internal constructor() {
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(),
+                displayer = Displayer(context),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )

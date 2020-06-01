@@ -50,12 +50,12 @@ class MiniAppDisplayActivity : BaseActivity() {
             viewModel = ViewModelProvider.NewInstanceFactory()
                 .create(MiniAppDisplayViewModel::class.java).apply {
 
+                    setHostLifeCycle(lifecycle)
                     miniAppDisplay.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
                         //action: display webview
-                        lifecycle.addObserver(it)
-                        setContentView(it.getMiniAppView(this@MiniAppDisplayActivity))
+                        setContentView(it)
                     })
 
                     errorData.observe(this@MiniAppDisplayActivity, Observer {
@@ -74,9 +74,14 @@ class MiniAppDisplayActivity : BaseActivity() {
             launch {
                 if (appId.isEmpty())
                     viewModel.obtainMiniAppDisplay(
-                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!, miniAppMessageBridge)
+                        this@MiniAppDisplayActivity,
+                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
+                        miniAppMessageBridge)
                 else
-                    viewModel.obtainMiniAppDisplay(appId, miniAppMessageBridge)
+                    viewModel.obtainMiniAppDisplay(
+                        this@MiniAppDisplayActivity,
+                        appId,
+                        miniAppMessageBridge)
             }
         }
     }
