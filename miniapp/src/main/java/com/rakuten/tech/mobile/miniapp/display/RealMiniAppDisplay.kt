@@ -1,9 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import androidx.annotation.VisibleForTesting
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
@@ -22,10 +24,10 @@ internal class RealMiniAppDisplay(
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
 
-    override suspend fun getMiniAppView(): View = provideMiniAppWebView(context)
+    override suspend fun getMiniAppView(): View? = provideMiniAppWebView(context)
 
-    override suspend fun getMiniAppView(providedContext: Context): View? =
-        provideMiniAppWebView(providedContext)
+    override suspend fun getMiniAppView(activityContext: Context): View? =
+        provideMiniAppWebView(activityContext)
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
@@ -33,13 +35,19 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
-    private suspend fun provideMiniAppWebView(providedContext: Context) =
+    private suspend fun provideMiniAppWebView(activityContext: Context) =
         withContext(Dispatchers.Main) {
-            (miniAppWebView ?: MiniAppWebView(
-                context = providedContext,
-                basePath = basePath,
-                appId = appId,
-                miniAppMessageBridge = miniAppMessageBridge
-            ))
-    }
+            if (isContextValid(activityContext)) {
+                (miniAppWebView ?: MiniAppWebView(
+                    context = activityContext,
+                    basePath = basePath,
+                    appId = appId,
+                    miniAppMessageBridge = miniAppMessageBridge
+                ))
+            } else null
+        }
+
+    @VisibleForTesting
+    internal fun isContextValid(activityContext: Context) =
+        activityContext is Activity || activityContext is ActivityCompat
 }
