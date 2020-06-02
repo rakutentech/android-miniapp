@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
@@ -11,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
+import kotlin.system.measureTimeMillis
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
@@ -43,7 +45,9 @@ internal class MiniAppDownloader(
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {
         val manifest = fetchManifest(appId, versionId)
-        return downloadMiniApp(appId, versionId, manifest)
+        var path = ""
+        Log.d("MiniApp", "time execution:${measureTimeMillis { path = downloadMiniApp(appId, versionId, manifest) }}")
+        return path
     }
 
     @VisibleForTesting
