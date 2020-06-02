@@ -15,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
-import kotlinx.coroutines.launch
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -71,18 +70,16 @@ class MiniAppDisplayActivity : BaseActivity() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
             }
 
-            launch {
-                if (appId.isEmpty())
-                    viewModel.obtainMiniAppDisplay(
-                        this@MiniAppDisplayActivity,
-                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
-                        miniAppMessageBridge)
-                else
-                    viewModel.obtainMiniAppDisplay(
-                        this@MiniAppDisplayActivity,
-                        appId,
-                        miniAppMessageBridge)
-            }
+            if (appId.isEmpty())
+                viewModel.obtainMiniAppDisplay(
+                    this@MiniAppDisplayActivity,
+                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
+                    miniAppMessageBridge)
+            else
+                viewModel.obtainMiniAppDisplay(
+                    this@MiniAppDisplayActivity,
+                    appId,
+                    miniAppMessageBridge)
         }
     }
 

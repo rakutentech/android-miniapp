@@ -160,6 +160,15 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+## Troubleshooting
+
+### AppCompat Version
+
+`androidx.appcompat:appcompat`
+
+The stable version of AndroidX AppCompat library `1.1.0` had issues on old Android OS when creating `Webview` with `ActivityContext`.  
+We recommend using the updated versions of this library.
+
 ## Changelog
 
 ### 1.1.0 (2020-06-02)

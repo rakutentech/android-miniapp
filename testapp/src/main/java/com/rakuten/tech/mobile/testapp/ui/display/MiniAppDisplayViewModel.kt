@@ -2,15 +2,14 @@ package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.content.Context
 import android.view.View
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
@@ -31,11 +30,11 @@ class MiniAppDisplayViewModel constructor(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    suspend fun obtainMiniAppDisplay(
+    fun obtainMiniAppDisplay(
         context: Context,
         miniAppInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
-    ) {
+    ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             val miniAppDisplay = miniapp.create(miniAppInfo, miniAppMessageBridge)
@@ -49,18 +48,18 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    suspend fun obtainMiniAppDisplay(
+    fun obtainMiniAppDisplay(
         context: Context,
         appId: String,
-        miniAppMessageBridge: MiniAppMessageBridge) {
-            try {
-                obtainMiniAppDisplay(context, miniapp.fetchInfo(appId), miniAppMessageBridge)
-            } catch (e: MiniAppSdkException) {
-                e.printStackTrace()
-                _errorData.postValue(e.message)
-            } finally {
-                _isLoading.postValue(false)
-            }
+        miniAppMessageBridge: MiniAppMessageBridge) = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            obtainMiniAppDisplay(context, miniapp.fetchInfo(appId), miniAppMessageBridge)
+        } catch (e: MiniAppSdkException) {
+            e.printStackTrace()
+            _errorData.postValue(e.message)
+        } finally {
+            _isLoading.postValue(false)
+        }
     }
 
     fun setHostLifeCycle(lifecycle: Lifecycle) {
