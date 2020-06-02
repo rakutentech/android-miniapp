@@ -28,3 +28,6 @@ internal fun sdkExceptionForInvalidArguments(message: String = "") =
 
 internal fun sdkExceptionForInvalidVersion() =
     MiniAppSdkException("Invalid or unpublished MiniApp version")
+
+internal fun sdkExceptionForNoActivityContext() =
+    MiniAppSdkException("Only accept context from Activity or ActivityCompat")

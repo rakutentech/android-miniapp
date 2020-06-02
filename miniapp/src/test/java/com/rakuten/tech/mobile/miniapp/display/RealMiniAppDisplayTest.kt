@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,8 +59,8 @@ class RealMiniAppDisplayTest {
         miniAppWebView.context shouldBe testContext
     }
 
-    @Test
-    fun `should return null when the context provider is not activity context`() =
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when the context provider is not activity context`() =
         runBlockingTest {
             realDisplay.getMiniAppView() shouldBe null
         }
@@ -74,6 +75,8 @@ class RealMiniAppDisplayTest {
     @Test
     fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
         runBlockingTest {
-            realDisplay.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
+            val displayer = Mockito.spy(realDisplay)
+            When calling displayer.isContextValid(context) itReturns true
+            displayer.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
         }
 }
