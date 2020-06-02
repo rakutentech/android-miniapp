@@ -1,14 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.InputStream
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.zip.ZipInputStream
 
 private const val SUB_DIR_MINIAPP = "miniapp"
 
