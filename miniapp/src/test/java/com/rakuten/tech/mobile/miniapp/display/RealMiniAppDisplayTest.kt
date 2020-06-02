@@ -55,15 +55,15 @@ class RealMiniAppDisplayTest {
         val testContext = displayer.context
         When calling displayer.isContextValid(testContext) itReturns true
         val miniAppWebView = displayer.getMiniAppView(testContext) as MiniAppWebView
+        val miniAppWebView2 = displayer.getMiniAppView() as MiniAppWebView
 
         miniAppWebView.context shouldBe testContext
+        miniAppWebView2.context shouldBe context
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when the context provider is not activity context`() =
-        runBlockingTest {
-            realDisplay.getMiniAppView() shouldBe null
-        }
+        runBlockingTest { realDisplay.getMiniAppView(context) }
 
     @Test
     fun `should create MiniAppWebView when provide activity context`() = runBlockingTest {
