@@ -1,6 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.androidBuildTool = '29.0.2'
+    // AndroidX Appcompat 1.1.0 results in crash on Android 5
+    // https://issuetracker.google.com/issues/141132133
     ext.androidx_appcompat = '1.2.0-rc01'
     ext.androidx_constraintLayout = '1.1.3'
     ext.androidx_coreKtx = '1.2.0'

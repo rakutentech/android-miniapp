@@ -18,10 +18,10 @@ interface MiniAppDisplay : LifecycleObserver {
      * the parent's dimensions.
      *
      * This version of retrieval creates the mini app view which doesn't render some of the native
-     * elements of web tech. Using the updated API as recommended.
+     * elements of web tech. We recommend switching to the new API.
      */
     @Deprecated(message = "Please replace with getMiniAppView(Context)")
-    suspend fun getMiniAppView(): View?
+    suspend fun getMiniAppView(): View
 
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
@@ -29,6 +29,7 @@ interface MiniAppDisplay : LifecycleObserver {
      * Should be the context of activity to ensure that all standard html components work properly.
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
+     * @throws MiniAppSdkException when a non-matching context is supplied
      */
     suspend fun getMiniAppView(activityContext: Context): View?
 

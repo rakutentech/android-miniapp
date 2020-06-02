@@ -31,4 +31,4 @@ internal fun sdkExceptionForInvalidVersion() =
 
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForNoActivityContext() =
-    MiniAppSdkException("Only accept context from Activity or ActivityCompat")
+    MiniAppSdkException("Only accept context of type Activity or ActivityCompat")

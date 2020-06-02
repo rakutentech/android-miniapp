@@ -25,10 +25,16 @@ internal class RealMiniAppDisplay(
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
 
-    override suspend fun getMiniAppView(): View? = provideMiniAppWebView(context)
+    // Returns the view for any context type, in backward-compatibility manner
+    override suspend fun getMiniAppView(): View = provideMiniAppWebView(context)
 
+    // Returns the view only when context type is legit else throw back error
+    // Activity context needs to be used here, to prevent issues, where some native elements are
+    // not rendered successfully in the mini app e.g. select tags
     override suspend fun getMiniAppView(activityContext: Context): View? =
-        provideMiniAppWebView(activityContext)
+        if (isContextValid(activityContext)) {
+            provideMiniAppWebView(activityContext)
+        } else throw sdkExceptionForNoActivityContext()
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
@@ -36,21 +42,15 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
-    private suspend fun provideMiniAppWebView(activityContext: Context): View? =
-        if (isContextValid(activityContext)) {
-            if (miniAppWebView != null)
-                miniAppWebView
-            else {
-                withContext(Dispatchers.Main) {
-                    MiniAppWebView(
-                        context = activityContext,
-                        basePath = basePath,
-                        appId = appId,
-                        miniAppMessageBridge = miniAppMessageBridge
-                    )
-                }
-            }
-        } else throw sdkExceptionForNoActivityContext()
+    private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
+        miniAppWebView ?: withContext(Dispatchers.Main) {
+            MiniAppWebView(
+                context = context,
+                basePath = basePath,
+                appId = appId,
+                miniAppMessageBridge = miniAppMessageBridge
+            )
+        }
 
     @VisibleForTesting
     internal fun isContextValid(activityContext: Context) =
