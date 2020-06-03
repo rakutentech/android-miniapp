@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
 
@@ -15,8 +16,22 @@ interface MiniAppDisplay : LifecycleObserver {
      * Provides the view associated with the mini app to the caller for showing the mini app.
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
+     *
+     * This version of retrieval creates the mini app view which doesn't render some of the native
+     * elements of web tech. We recommend switching to the new API.
      */
-    fun getMiniAppView(): View
+    @Deprecated(message = "Please replace with getMiniAppView(Context)")
+    suspend fun getMiniAppView(): View
+
+    /**
+     * Provides the view associated with the mini app to the caller for showing the mini app.
+     * @param activityContext is used by the view for initializing the internal services.
+     * Should be the context of activity to ensure that all standard html components work properly.
+     * @return [View] as mini app's view with [LayoutParams] set to match
+     * the parent's dimensions.
+     * @throws MiniAppSdkException when a non-matching context is supplied
+     */
+    suspend fun getMiniAppView(activityContext: Context): View?
 
     /**
      * Upon invocation, destroys necessary view state and any services registered with.
