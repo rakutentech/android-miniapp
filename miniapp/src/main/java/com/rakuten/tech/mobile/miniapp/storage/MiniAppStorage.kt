@@ -30,7 +30,7 @@ internal class MiniAppStorage(
             val filePath = getFilePath(source)
             val fileName = getFileName(source)
 //            fileWriter.write(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
-            ZipInputStream(inputStream).decompress(basePath, getAbsoluteWritePath(basePath, filePath, fileName))
+            ZipInputStream(inputStream).decompress(getAbsoluteWritePath(basePath, filePath, fileName))
         } catch (error: Exception) {
             // This should not happen unless BE sends in a differently "constructed" URL
             // which differs in logic as that of LocalUrlParser
