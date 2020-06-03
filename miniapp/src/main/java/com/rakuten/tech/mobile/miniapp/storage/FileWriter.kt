@@ -14,6 +14,10 @@ internal class FileWriter {
     suspend fun write(inputStream: InputStream, path: String) = withContext(Dispatchers.IO) {
         inputStream.toFile(path)
     }
+
+    suspend fun unzip(inputStream: InputStream, zipPath: String) = withContext(Dispatchers.IO) {
+        ZipInputStream(inputStream).decompress(zipPath)
+    }
 }
 
 internal fun InputStream.toFile(path: String) {
@@ -25,25 +29,23 @@ internal fun InputStream.toFile(path: String) {
     }
 }
 
-internal suspend fun ZipInputStream.decompress(zipPath: String) = withContext(Dispatchers.IO) {
-    use { input ->
-        val outputFilePath = File(zipPath).apply { parentFile?.mkdirs() }
-        var entry: ZipEntry
+internal fun ZipInputStream.decompress(zipPath: String) = use { input ->
+    val outputFilePath = File(zipPath).apply { parentFile?.mkdirs() }
+    var entry: ZipEntry?
 
-        while (input.nextEntry.also { entry = it } != null) {
-            val newFile = File(outputFilePath.parentFile, entry.name)
-            if (entry.isDirectory)
-                newFile.mkdir()
-            else {
-                var size: Int
-                val buffer = ByteArray(2048)
-                FileOutputStream(newFile).use { fos ->
-                    BufferedOutputStream(fos, buffer.size).use { bos ->
-                        while (input.read(buffer, 0, buffer.size).also { size = it } != -1) {
-                            bos.write(buffer, 0, size)
-                        }
-                        bos.flush()
+    while (input.nextEntry.also { entry = it } != null) {
+        val newFile = File(outputFilePath.parentFile, entry!!.name)
+        if (entry!!.isDirectory)
+            newFile.mkdir()
+        else {
+            var size: Int
+            val buffer = ByteArray(2048)
+            FileOutputStream(newFile).use { fos ->
+                BufferedOutputStream(fos, buffer.size).use { bos ->
+                    while (input.read(buffer, 0, buffer.size).also { size = it } != -1) {
+                        bos.write(buffer, 0, size)
                     }
+                    bos.flush()
                 }
             }
         }

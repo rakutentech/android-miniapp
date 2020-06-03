@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.InputStream
-import java.util.zip.ZipInputStream
 
 private const val SUB_DIR_MINIAPP = "miniapp"
 
@@ -29,8 +28,7 @@ internal class MiniAppStorage(
         try {
             val filePath = getFilePath(source)
             val fileName = getFileName(source)
-//            fileWriter.write(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
-            ZipInputStream(inputStream).decompress(getAbsoluteWritePath(basePath, filePath, fileName))
+            fileWriter.unzip(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
         } catch (error: Exception) {
             // This should not happen unless BE sends in a differently "constructed" URL
             // which differs in logic as that of LocalUrlParser
