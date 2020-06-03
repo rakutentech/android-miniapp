@@ -86,7 +86,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     private fun executeLoadingList() {
-        launch { viewModel.getMiniAppList() }
+        viewModel.getMiniAppList()
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
