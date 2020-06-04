@@ -54,5 +54,4 @@ interface MiniAppDisplay : LifecycleObserver {
      * Navigates one level forward from current position, in the call hierarchy, if possible.
      */
     fun navigateForward(): Boolean
-
 }

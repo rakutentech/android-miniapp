@@ -50,7 +50,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 .create(MiniAppDisplayViewModel::class.java).apply {
 
                     setHostLifeCycle(lifecycle)
-                    miniAppDisplay.observe(this@MiniAppDisplayActivity, Observer {
+                    miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
                         //action: display webview
