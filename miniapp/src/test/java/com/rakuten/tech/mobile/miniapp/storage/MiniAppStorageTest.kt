@@ -72,7 +72,7 @@ class MiniAppStorageTest {
     }
 
     @Test
-    fun `should write file with FileWriter`() = runBlockingTest {
+    fun `should extract file with FileWriter`() = runBlockingTest {
         val file = tempFolder.newFile()
         When calling miniAppStorage.getFilePath(file.path) itReturns file.path
         When calling miniAppStorage.getFileName(file.path) itReturns file.name
@@ -80,7 +80,7 @@ class MiniAppStorageTest {
         miniAppStorage.saveFile(file.path, file.path, inputStream)
 
         verify(fileWriter, times(1))
-            .write(inputStream, miniAppStorage.getAbsoluteWritePath(
+            .unzip(inputStream, miniAppStorage.getAbsoluteWritePath(
                 file.path, miniAppStorage.getFilePath(file.path), miniAppStorage.getFileName(file.path)))
     }
 

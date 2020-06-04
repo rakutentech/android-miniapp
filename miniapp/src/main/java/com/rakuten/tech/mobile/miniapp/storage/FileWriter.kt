@@ -11,21 +11,8 @@ import java.util.zip.ZipInputStream
 
 internal class FileWriter {
 
-    suspend fun write(inputStream: InputStream, path: String) = withContext(Dispatchers.IO) {
-        inputStream.toFile(path)
-    }
-
     suspend fun unzip(inputStream: InputStream, zipPath: String) = withContext(Dispatchers.IO) {
         ZipInputStream(inputStream).decompress(zipPath)
-    }
-}
-
-internal fun InputStream.toFile(path: String) {
-    use { input ->
-        File(path).apply {
-            parentFile?.mkdirs()
-            outputStream().use { input.copyTo(it) }
-        }
     }
 }
 
@@ -37,17 +24,21 @@ internal fun ZipInputStream.decompress(zipPath: String) = use { input ->
         val newFile = File(outputFilePath.parentFile, entry!!.name)
         if (entry!!.isDirectory)
             newFile.mkdir()
-        else {
-            var size: Int
-            val buffer = ByteArray(2048)
-            FileOutputStream(newFile).use { fos ->
-                BufferedOutputStream(fos, buffer.size).use { bos ->
-                    while (input.read(buffer, 0, buffer.size).also { size = it } != -1) {
-                        bos.write(buffer, 0, size)
-                    }
-                    bos.flush()
-                }
+        else
+            writeFile(newFile, input)
+    }
+}
+
+@Suppress("MagicNumber")
+private fun writeFile(newFile: File, input: ZipInputStream) {
+    var size: Int
+    val buffer = ByteArray(2048)
+    FileOutputStream(newFile).use { fos ->
+        BufferedOutputStream(fos, buffer.size).use { bos ->
+            while (input.read(buffer, 0, buffer.size).also { size = it } != -1) {
+                bos.write(buffer, 0, size)
             }
+            bos.flush()
         }
     }
 }
