@@ -93,7 +93,17 @@ CoroutineScope(Dispatchers.Default).launch {
 
 **Note:** This SDK uses `suspend` functions, so you should use [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) when calling the functions. These examples use `Dispatchers.Default`, but you can use whichever `CoroutineContext` and `CouroutineScope` that is appropriate for your App.
 
-### #4 Create and display a Mini App
+### #4 Implement the MiniAppMessageBridge
+
+The `MiniAppMessageBridge` is used for passing messages between the Mini App (JavaScript) and the Host App (your native Android App) and vice versa. Your App must provide the implementation for these functions and pass this implementation to the `MiniApp#create` function.
+
+```kotlin
+val miniAppMessageBridge = object: MiniAppMessageBridge() {
+    override fun getUniqueId() = AppSettings.instance.uniqueId
+}
+```
+
+### #5 Create and display a Mini App
 
 Calling `MiniApp.create` with a `MiniAppInfo` object will download the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App. The `MiniAppInfo` object also contains information about the latest Mini App version, so make sure to fetch the latest `MiniAppInfo` first.
 
@@ -111,7 +121,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
             try {
                 val miniAppDisplay = withContext(Dispatchers.Default) {
                     val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID") // Or use `MiniApp.listMiniApp` if you want the whole list of Mini Apps
-                    MiniApp.instance().create(miniAppInfo)
+                    MiniApp.instance().create(miniAppInfo, miniAppMessageBridge)
                 }
                 val miniAppView = miniAppDisplay.getMiniAppView()
 
@@ -150,7 +160,23 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+## Troubleshooting
+
+### AppCompat Version
+
+`androidx.appcompat:appcompat`
+
+The stable version of AndroidX AppCompat library `1.1.0` had issues on old Android OS when creating `Webview` with `ActivityContext`.  
+We recommend using the updated versions of this library.
+
 ## Changelog
+
+### 1.1.0 (2020-06-02)
+
+- Added JavaScript bridge for passing data between Mini App and Host App. Your App now must implement `MiniAppMessageBridge` and provide the implementation when calling `MiniApp#create`.
+- Deprecated `MiniApp#create(info: MiniAppInfo)`. Your App should instead use `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)`.
+- Added `getUniqueId` function to `MiniAppMessageBridge`. This function should provide a unique identifier (unique to the user and device) to Mini Apps.
+- Added support for custom scheme URL redirect. The URL `mscheme.MINI_APP_ID://miniapp/index.html` can be used from within the Mini App view to redirect to the Mini App. This matches the URL used in the iOS Mini App SDK.
 
 ### 1.0.0 (2020-04-21)
 

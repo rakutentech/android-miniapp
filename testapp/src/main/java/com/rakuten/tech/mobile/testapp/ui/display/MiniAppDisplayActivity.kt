@@ -15,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
-import kotlinx.coroutines.launch
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -51,7 +50,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 .create(MiniAppDisplayViewModel::class.java).apply {
 
                     setHostLifeCycle(lifecycle)
-                    miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+                    miniAppDisplay.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
                         //action: display webview
@@ -71,13 +70,16 @@ class MiniAppDisplayActivity : BaseActivity() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
             }
 
-            launch {
-                if (appId.isEmpty())
-                    viewModel.obtainMiniAppView(
-                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!, miniAppMessageBridge)
-                else
-                    viewModel.obtainMiniAppView(appId, miniAppMessageBridge)
-            }
+            if (appId.isEmpty())
+                viewModel.obtainMiniAppDisplay(
+                    this@MiniAppDisplayActivity,
+                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
+                    miniAppMessageBridge)
+            else
+                viewModel.obtainMiniAppDisplay(
+                    this@MiniAppDisplayActivity,
+                    appId,
+                    miniAppMessageBridge)
         }
     }
 
