@@ -9,22 +9,31 @@ import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import java.io.InputStream
+import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class MiniAppStorageTest {
     private val fileWriter: FileWriter = mock()
     private val miniAppStorage: MiniAppStorage = MiniAppStorage(fileWriter, mock(), mock())
+    private val zipFile = "test.zip"
 
     @Rule @JvmField
     val tempFolder = TemporaryFolder()
+
+    @After
+    fun onFinish() {
+        tempFolder.delete()
+    }
 
     @Test
     fun `for a given set of base path & file path, formed parent path is returned`() {
@@ -84,6 +93,21 @@ class MiniAppStorageTest {
                 file.path, miniAppStorage.getFilePath(file.path), miniAppStorage.getFileName(file.path)))
     }
 
+    @Test
+    fun `should unzip file without exception`() = runBlockingTest {
+        val file = tempFolder.newFile()
+        val filePath = file.path
+        val folder = tempFolder.newFolder()
+        val folderPath = folder.path
+        val containerPath = file.parent
+
+        val fileWriter = FileWriter(TestCoroutineDispatcher())
+        zipFiles(containerPath, arrayOf(filePath, folderPath))
+        val inputStream = File("$containerPath/$zipFile").inputStream()
+
+        fileWriter.unzip(inputStream, containerPath)
+    }
+
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when file path is invalid`() = runBlockingTest {
         val file = File("")
@@ -91,4 +115,25 @@ class MiniAppStorageTest {
     }
 
     private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()
+
+    @Suppress("NestedBlockDepth", "LongMethod")
+    private fun zipFiles(outputPath: String, filePaths: Array<String>) {
+        ZipOutputStream(BufferedOutputStream(
+            FileOutputStream("$outputPath/$zipFile"))).use { out ->
+            for (filePath in filePaths) {
+                val file = File(filePath)
+                if (file.isDirectory) {
+                    out.putNextEntry(ZipEntry(file.name + "/"))
+                } else {
+                    FileInputStream(filePath).use { fi ->
+                        BufferedInputStream(fi).use { origin ->
+                            val entry = ZipEntry(filePath.substring(filePath.lastIndexOf("/")))
+                            out.putNextEntry(entry)
+                            origin.copyTo(out, 1024)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedOutputStream
@@ -9,9 +10,9 @@ import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-internal class FileWriter {
+internal class FileWriter(private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO) {
 
-    suspend fun unzip(inputStream: InputStream, zipPath: String) = withContext(Dispatchers.IO) {
+    suspend fun unzip(inputStream: InputStream, zipPath: String) = withContext(coroutineDispatcher) {
         ZipInputStream(inputStream).decompress(zipPath)
     }
 }
