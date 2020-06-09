@@ -21,24 +21,23 @@ internal class MiniAppDownloader(
 
     @Suppress("SwallowedException", "LongMethod")
     suspend fun getMiniApp(appId: String, versionId: String): String {
-        val versionPath = storage.getMiniAppVersionPath(appId, versionId)
         try {
+            val miniAppInfo = apiClient.fetchInfo(appId)
+            val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
             return when {
-                !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-                miniAppStatus.isVersionDownloaded(appId, versionId, versionPath) -> versionPath
-                else -> startDownload(appId, versionId)
+                miniAppStatus.isVersionDownloaded(
+                    miniAppInfo.id, miniAppInfo.version.versionId, versionPath) -> versionPath
+                else -> startDownload(miniAppInfo.id, miniAppInfo.version.versionId)
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
+            val versionPath = storage.getMiniAppVersionPath(appId, versionId)
             if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
                 return versionPath
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
     }
-
-    private suspend fun isLatestVersion(appId: String, versionId: String): Boolean =
-        apiClient.fetchInfo(appId).version.versionId == versionId
 
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {

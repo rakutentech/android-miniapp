@@ -168,13 +168,6 @@ class MiniAppDownloaderSpec {
         }
     }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when the version of miniapp is not published`() =
-        runBlockingTest {
-            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-        }
-
     @Test
     fun `MiniAppDownloader should implement UpdatableApiClient`() {
         downloader shouldBeInstanceOf UpdatableApiClient::class.java
