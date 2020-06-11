@@ -36,8 +36,7 @@ internal class MiniAppDownloader(
                 val versionPath = storage.getMiniAppVersionPath(appId, versionId)
                 if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
                     return versionPath
-            } else
-                throw netError
+            }
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
