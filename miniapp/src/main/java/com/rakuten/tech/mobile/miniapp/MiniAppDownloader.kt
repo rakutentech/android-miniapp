@@ -20,7 +20,7 @@ internal class MiniAppDownloader(
 ) : UpdatableApiClient {
 
     @Suppress("SwallowedException", "LongMethod")
-    suspend fun getMiniApp(appId: String, versionId: String): String {
+    suspend fun getMiniApp(appId: String): String {
         try {
             val miniAppInfo = apiClient.fetchInfo(appId)
             val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
@@ -31,9 +31,13 @@ internal class MiniAppDownloader(
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            val versionPath = storage.getMiniAppVersionPath(appId, versionId)
-            if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
-                return versionPath
+            val versionId = miniAppStatus.localVersion
+            if (versionId != null) {
+                val versionPath = storage.getMiniAppVersionPath(appId, versionId)
+                if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
+                    return versionPath
+            } else
+                throw netError
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
@@ -65,6 +69,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
+                miniAppStatus.localVersion = versionId
                 withContext(coroutineDispatcher) {
                     launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
                 }
