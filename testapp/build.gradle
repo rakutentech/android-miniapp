@@ -46,7 +46,7 @@ android {
             subscriptionKey: property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
 
-    def buildVersion = new Date().format('yyMMddHHmm')
+    def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
 
     buildTypes {
         debug {
