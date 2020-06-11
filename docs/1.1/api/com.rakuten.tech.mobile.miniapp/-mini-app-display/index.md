@@ -12,5 +12,5 @@ the lifecycle, it automatically clears up the view state and any services regist
 ### Functions
 
 | [destroyView](destroy-view.md) | Upon invocation, destroys necessary view state and any services registered with. When the consumer has finished consuming, it is advisable to release the resources. Usual scenarios are when the app components are amidst their destroy cycle.`abstract fun destroyView(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [getMiniAppView](get-mini-app-view.md) | Provides the view associated with the mini app to the caller for showing the mini app.`abstract fun getMiniAppView(): `[`View`](https://developer.android.com/reference/android/view/View.html) |
+| [getMiniAppView](get-mini-app-view.md) | Provides the view associated with the mini app to the caller for showing the mini app.`abstract suspend fun ~~getMiniAppView~~(): `[`View`](https://developer.android.com/reference/android/view/View.html)<br>`abstract suspend fun getMiniAppView(activityContext: `[`Context`](https://developer.android.com/reference/android/content/Context.html)`): `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
 

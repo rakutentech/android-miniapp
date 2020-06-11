@@ -123,7 +123,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
                     val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID") // Or use `MiniApp.listMiniApp` if you want the whole list of Mini Apps
                     MiniApp.instance().create(miniAppInfo, miniAppMessageBridge)
                 }
-                val miniAppView = miniAppDisplay.getMiniAppView()
+                val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
 
                 setContentView(miniAppView)
             } catch (e: MiniAppSdkException) {
@@ -160,7 +160,25 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+## Troubleshooting
+
+### AppCompat Version
+
+`androidx.appcompat:appcompat`
+
+The stable version of AndroidX AppCompat library `1.1.0` had issues on old Android OS when creating `Webview` with `ActivityContext`.  
+We recommend using the updated versions of this library.
+
 ## Changelog
+
+### 1.1.1 (2020-06-11)
+
+**SDK**
+- *Bugfix:* `select` and `date` input elements weren't working correctly.
+- Deprecated `MiniAppDisplay#getMiniAppView()` and added `MiniAppDisplay#getMiniAppView(activityContext: Context)`. You now must provide an Activity Context when retrieving the `View` for the Mini App. This is related to the bugfix for `select` and `date` inputs - if you use the deprecated method, then these elements will not work correctly.
+
+**Sample App**
+- Display first time setup instructions on first launch of App.
 
 ### 1.1.0 (2020-06-02)
 

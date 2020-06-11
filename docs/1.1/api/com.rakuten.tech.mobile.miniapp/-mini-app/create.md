@@ -11,7 +11,7 @@ Creates a mini app.
 `info` - metadata of a mini app.
 The mini app is downloaded, saved and provides a [MiniAppDisplay](../-mini-app-display/index.md) when successful
 
-`miniAppMessageBridge` - the inferface for exchanging data between mobile hostapp &amp; miniapp
+`miniAppMessageBridge` - the interface for communicating between host app &amp; mini app
 
 ### Exceptions
 
