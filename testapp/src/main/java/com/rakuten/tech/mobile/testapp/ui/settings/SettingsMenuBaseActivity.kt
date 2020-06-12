@@ -70,7 +70,8 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         subscriptionKey: EditText
     ) {
         val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.lb_app_settings)
+            .setTitle("${resources.getString(R.string.lb_app_settings)} - Build " +
+                    resources.getString(R.string.build_version))
             .setView(settingsDialog)
             .setPositiveButton(R.string.action_save, null)
             .setNegativeButton(android.R.string.cancel, null)

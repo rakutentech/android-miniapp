@@ -112,7 +112,7 @@ class MiniAppWebviewTest {
     fun `should intercept request with WebViewAssetLoader`() {
         val webAssetLoader: WebViewAssetLoader =
             Mockito.spy((miniAppWebView.webViewClient as MiniAppWebViewClient).loader)
-        val webViewClient = MiniAppWebViewClient(context, webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(webAssetLoader,
             "custom_domain", "custom_scheme")
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
@@ -126,8 +126,8 @@ class MiniAppWebviewTest {
     fun `should redirect to custom domain when only loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.appId}/"
-        val webViewClient = MiniAppWebViewClient(context, webAssetLoader,
-            customDomain, "mscheme.${miniAppWebView.appId}://")
+        val webViewClient = MiniAppWebViewClient(webAssetLoader, customDomain,
+            "mscheme.${miniAppWebView.appId}://")
 
         val displayer = Mockito.spy(miniAppWebView)
 
@@ -136,6 +136,25 @@ class MiniAppWebviewTest {
             getWebResReq("mscheme.${miniAppWebView.appId}://".toUri()), mock())
 
         verify(displayer, times(1)).loadUrl(customDomain)
+    }
+
+    @Test
+    fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {
+        miniAppWebView.webChromeClient shouldBeInstanceOf MiniAppWebChromeClient::class
+    }
+
+    @Test
+    fun `should do js injection when there is a change in the document title`() {
+        val webChromeClient = Mockito.spy(miniAppWebView.webChromeClient as MiniAppWebChromeClient)
+        webChromeClient.onReceivedTitle(miniAppWebView, "web_title")
+
+        verify(webChromeClient, times(1)).doInjection(miniAppWebView)
+    }
+
+    @Test
+    fun `bridge js should be null when js asset is inaccessible`() {
+        val webClient = MiniAppWebChromeClient(mock())
+        webClient.bridgeJs shouldBe null
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
