@@ -45,11 +45,15 @@ android {
             appId          : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
             subscriptionKey: property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
+
+    def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
+
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "$appName DEBUG"
+            resValue "string", "build_version", buildVersion
             debuggable true
             minifyEnabled false
 
@@ -57,6 +61,7 @@ android {
         }
         release {
             resValue "string", "app_name", appName
+            resValue "string", "build_version", buildVersion
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -66,7 +71,7 @@ android {
         staging {
             initWith release
             applicationIdSuffix '.staging'
-            versionNameSuffix '-STG'
+            versionNameSuffix "-STG-build-$buildVersion"
             resValue "string", "app_name", "$appName STG"
             matchingFallbacks = ['release', 'debug']
 

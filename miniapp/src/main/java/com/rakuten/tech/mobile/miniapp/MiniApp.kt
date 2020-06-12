@@ -35,8 +35,23 @@ abstract class MiniApp internal constructor() {
      * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
+    @Deprecated(message = "Please replace with create(MiniAppId, MiniAppMessageBridge)")
     abstract suspend fun create(
         info: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay
+
+    /**
+     * Creates a mini app.
+     * @param appId mini app id.
+     * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
+     * @param miniAppMessageBridge the interface for communicating between host app & mini app
+     * @throws MiniAppSdkException when there is some issue during fetching,
+     * downloading or creating the view.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun create(
+        appId: String,
         miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay
 
@@ -49,7 +64,7 @@ abstract class MiniApp internal constructor() {
      * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
-    @Deprecated(message = "Please replace with create(MiniAppInfo, MiniAppMessageBridge)")
+    @Deprecated(message = "Please replace with create(MiniAppId, MiniAppMessageBridge)")
     abstract suspend fun create(info: MiniAppInfo): MiniAppDisplay
 
     /**
