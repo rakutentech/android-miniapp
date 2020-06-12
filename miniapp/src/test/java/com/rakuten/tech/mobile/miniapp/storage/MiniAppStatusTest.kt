@@ -34,4 +34,11 @@ class MiniAppStatusTest {
         miniAppStatus.isVersionDownloaded(
             TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, context.filesDir.path) shouldBe true
     }
+
+    @Test
+    fun `localVersion should be saved in storage`() {
+        miniAppStatus.saveDownloadedVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        MiniAppStatus(ApplicationProvider.getApplicationContext()).getDownloadedVersion(
+            TEST_ID_MINIAPP) shouldBe TEST_ID_MINIAPP_VERSION
+    }
 }

@@ -48,19 +48,13 @@ class RealMiniAppSpec {
         realMiniApp.fetchInfo("")
     }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when version id is invalid`() = runBlockingTest {
-        val invalidMiniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", ""))
-        realMiniApp.create(invalidMiniAppInfo, miniAppMessageBridge)
-    }
-
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
             val basePath: String = verify(miniAppDownloader, times(1))
-                .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
+                .getMiniApp(TEST_MA_ID)
             verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
         }
 
@@ -68,8 +62,9 @@ class RealMiniAppSpec {
     fun `should still be able to download miniapp for deprecated method`() =
         runBlockingTest {
             realMiniApp.create(miniAppInfo)
+            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
 
-            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
         }
 
     @Test

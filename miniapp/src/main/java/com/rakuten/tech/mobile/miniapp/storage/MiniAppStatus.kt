@@ -10,6 +10,11 @@ internal class MiniAppStatus(context: Context) {
         "com.rakuten.tech.mobile.miniapp.storage", Context.MODE_PRIVATE
     )
 
+    fun saveDownloadedVersion(appId: String, versionId: String) =
+        prefs.edit().putString(appId, versionId).apply()
+
+    fun getDownloadedVersion(appId: String): String? = prefs.getString(appId, null)
+
     fun setVersionDownloaded(appId: String, versionId: String, value: Boolean) =
         prefs.edit().putBoolean(appId + versionId, value).apply()
 

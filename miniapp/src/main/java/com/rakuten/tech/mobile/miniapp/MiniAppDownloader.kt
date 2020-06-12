@@ -20,25 +20,27 @@ internal class MiniAppDownloader(
 ) : UpdatableApiClient {
 
     @Suppress("SwallowedException", "LongMethod")
-    suspend fun getMiniApp(appId: String, versionId: String): String {
-        val versionPath = storage.getMiniAppVersionPath(appId, versionId)
+    suspend fun getMiniApp(appId: String): String {
         try {
+            val miniAppInfo = apiClient.fetchInfo(appId)
+            val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
             return when {
-                !isLatestVersion(appId, versionId) -> throw sdkExceptionForInvalidVersion()
-                miniAppStatus.isVersionDownloaded(appId, versionId, versionPath) -> versionPath
-                else -> startDownload(appId, versionId)
+                miniAppStatus.isVersionDownloaded(
+                    miniAppInfo.id, miniAppInfo.version.versionId, versionPath) -> versionPath
+                else -> startDownload(miniAppInfo.id, miniAppInfo.version.versionId)
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
-                return versionPath
+            val versionId = miniAppStatus.getDownloadedVersion(appId)
+            if (versionId != null) {
+                val versionPath = storage.getMiniAppVersionPath(appId, versionId)
+                if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
+                    return versionPath
+            }
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
     }
-
-    private suspend fun isLatestVersion(appId: String, versionId: String): Boolean =
-        apiClient.fetchInfo(appId).version.versionId == versionId
 
     @VisibleForTesting
     suspend fun startDownload(appId: String, versionId: String): String {
@@ -66,6 +68,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
+                miniAppStatus.saveDownloadedVersion(appId, versionId)
                 withContext(coroutineDispatcher) {
                     launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
                 }
