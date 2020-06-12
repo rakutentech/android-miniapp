@@ -31,7 +31,6 @@ abstract class MiniAppMessageBridge {
         Log.i("MiniApp", "jsonStr: $jsonStr")
     }
 
-
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
         webViewListener.runSuccessCallback(callbackId, value)
