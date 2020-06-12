@@ -31,7 +31,7 @@ internal class MiniAppDownloader(
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            val versionId = miniAppStatus.localVersion
+            val versionId = miniAppStatus.getDownloadedVersion(appId)
             if (versionId != null) {
                 val versionPath = storage.getMiniAppVersionPath(appId, versionId)
                 if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
@@ -68,7 +68,7 @@ internal class MiniAppDownloader(
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 miniAppStatus.setVersionDownloaded(appId, versionId, true)
-                miniAppStatus.localVersion = versionId
+                miniAppStatus.saveDownloadedVersion(appId, versionId)
                 withContext(coroutineDispatcher) {
                     launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
                 }

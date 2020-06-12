@@ -181,7 +181,7 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION,
                 TEST_BASE_PATH
             ) itReturns true
-            When calling miniAppStatus.localVersion itReturns TEST_ID_MINIAPP_VERSION
+            When calling miniAppStatus.getDownloadedVersion(TEST_ID_MINIAPP) itReturns TEST_ID_MINIAPP_VERSION
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION

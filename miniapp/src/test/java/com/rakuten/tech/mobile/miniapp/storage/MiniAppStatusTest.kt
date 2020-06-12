@@ -37,7 +37,8 @@ class MiniAppStatusTest {
 
     @Test
     fun `localVersion should be saved in storage`() {
-        miniAppStatus.localVersion = TEST_ID_MINIAPP_VERSION
-        MiniAppStatus(ApplicationProvider.getApplicationContext()).localVersion shouldBe TEST_ID_MINIAPP_VERSION
+        miniAppStatus.saveDownloadedVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        MiniAppStatus(ApplicationProvider.getApplicationContext()).getDownloadedVersion(
+            TEST_ID_MINIAPP) shouldBe TEST_ID_MINIAPP_VERSION
     }
 }

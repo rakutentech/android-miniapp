@@ -5,16 +5,15 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import java.io.File
 
-private const val LOCAL_VERSION = "local_version"
-
 internal class MiniAppStatus(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.storage", Context.MODE_PRIVATE
     )
 
-    var localVersion: String?
-        get() = prefs.getString(LOCAL_VERSION, null)
-        set(downloadedVersion) = prefs.edit().putString(LOCAL_VERSION, downloadedVersion).apply()
+    fun saveDownloadedVersion(appId: String, versionId: String) =
+        prefs.edit().putString(appId, versionId).apply()
+
+    fun getDownloadedVersion(appId: String): String? = prefs.getString(appId, null)
 
     fun setVersionDownloaded(appId: String, versionId: String, value: Boolean) =
         prefs.edit().putBoolean(appId + versionId, value).apply()
