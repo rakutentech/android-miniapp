@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -12,7 +13,7 @@ import androidx.webkit.WebViewAssetLoader
 import java.io.BufferedReader
 
 internal class MiniAppWebViewClient(
-    context: Context,
+    val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val customDomain: String,
     private val customScheme: String
@@ -30,7 +31,19 @@ internal class MiniAppWebViewClient(
     override fun shouldInterceptRequest(
         view: WebView,
         request: WebResourceRequest
-    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+    ): WebResourceResponse? {
+        if (request.url.scheme == "oneapp") {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
+                type = "text/plain"
+            }
+            context.startActivity(sendIntent)
+            return null
+        }
+
+        return loader.shouldInterceptRequest(request.url)
+    }
 
     override fun onPageStarted(webView: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(webView, url, favicon)

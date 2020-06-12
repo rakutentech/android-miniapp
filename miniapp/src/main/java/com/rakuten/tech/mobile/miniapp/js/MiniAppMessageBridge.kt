@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -24,6 +25,12 @@ abstract class MiniAppMessageBridge {
             }
         }
     }
+
+    @JavascriptInterface
+    fun shareToOneApp(jsonStr: String) {
+        Log.i("MiniApp", "jsonStr: $jsonStr")
+    }
+
 
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
