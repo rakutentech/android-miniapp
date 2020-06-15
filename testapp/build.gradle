@@ -54,6 +54,7 @@ android {
             versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "$appName DEBUG"
             resValue "string", "build_version", buildVersion
+            resValue "string", "miniapp_sdk_version", project.version
             debuggable true
             minifyEnabled false
 
@@ -62,6 +63,7 @@ android {
         release {
             resValue "string", "app_name", appName
             resValue "string", "build_version", buildVersion
+            resValue "string", "miniapp_sdk_version", project.version
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
