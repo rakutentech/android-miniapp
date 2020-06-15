@@ -18,6 +18,9 @@ const val GET_UNIQUE_ID = "getUniqueId"
 class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(object : MiniAppMessageBridge() {
         override fun getUniqueId() = TEST_CALLBACK_VALUE
+        override fun executeShare(content: String) {
+            throw Exception("MiniAppMessageBridge has not been implemented")
+        }
     })
     private val callbackObj = CallbackObj(GET_UNIQUE_ID, TEST_CALLBACK_ID)
     private val jsonStr = Gson().toJson(callbackObj)

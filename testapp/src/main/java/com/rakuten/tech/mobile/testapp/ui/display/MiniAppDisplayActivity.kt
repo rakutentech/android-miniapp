@@ -66,8 +66,17 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            val miniAppMessageBridge = object: MiniAppMessageBridge(this@MiniAppDisplayActivity) {
+            val miniAppMessageBridge = object: MiniAppMessageBridge() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
+
+                override fun executeShare(content: String) {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, content)
+                        type = "text/plain"
+                    }
+                    startActivity(sendIntent)
+                }
             }
 
             if (appId.isEmpty())

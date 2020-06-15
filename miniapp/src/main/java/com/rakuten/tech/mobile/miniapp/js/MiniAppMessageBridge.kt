@@ -1,18 +1,18 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.content.Context
-import android.content.Intent
-import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge(val context: Context?) {
+@Suppress("UndocumentedPublicFunction")
+abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
+
+    abstract fun executeShare(content: String)
 
     /** Handle the message from external. **/
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -29,13 +29,8 @@ abstract class MiniAppMessageBridge(val context: Context?) {
     }
 
     @JavascriptInterface
-    fun shareTo(appId: String, content: String) {
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, content)
-            type = "text/plain"
-        }
-        context?.startActivity(sendIntent)
+    fun shareTo(content: String) {
+        executeShare(content)
     }
 
     /** Return a value to mini app. **/
