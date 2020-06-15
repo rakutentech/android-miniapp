@@ -25,7 +25,11 @@ internal class MiniAppWebViewClient(
         error: WebResourceError
     ) {
         if (request.url != null && request.url.toString().startsWith(customScheme)) {
-            view.loadUrl(request.url.toString().replace(customScheme, customDomain))
+            view.stopLoading()
+            view.postDelayed(
+                { view.loadUrl(request.url.toString().replace(customScheme, customDomain)) },
+                100
+            )
             return
         }
         super.onReceivedError(view, request, error)
