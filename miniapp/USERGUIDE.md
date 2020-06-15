@@ -23,7 +23,7 @@ repositories {
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:1.0.0'
+    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:${version}'
 }
 ```
 
