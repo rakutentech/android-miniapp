@@ -1,12 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge {
+abstract class MiniAppMessageBridge(val context: Context?) {
     private lateinit var webViewListener: WebViewListener
 
     /** Get provided id of mini app for any purpose. **/
@@ -27,8 +29,13 @@ abstract class MiniAppMessageBridge {
     }
 
     @JavascriptInterface
-    fun shareToOneApp(jsonStr: String) {
-        Log.i("MiniApp", "jsonStr: $jsonStr")
+    fun shareTo(appId: String, content: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, content)
+            type = "text/plain"
+        }
+        context?.startActivity(sendIntent)
     }
 
     /** Return a value to mini app. **/

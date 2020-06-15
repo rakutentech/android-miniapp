@@ -22,7 +22,7 @@ internal class RealMiniApp(
 
     @Suppress("TooGenericExceptionThrown")
     override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
-        executingCreate(info.id, object : MiniAppMessageBridge() {
+        executingCreate(info.id, object : MiniAppMessageBridge(null) {
             override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
         })
 
