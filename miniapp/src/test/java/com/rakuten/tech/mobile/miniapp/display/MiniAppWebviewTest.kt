@@ -126,8 +126,8 @@ class MiniAppWebviewTest {
     fun `should redirect to custom domain when only loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.appId}/"
-        val webViewClient = MiniAppWebViewClient(webAssetLoader, customDomain,
-            "mscheme.${miniAppWebView.appId}://")
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(webAssetLoader, customDomain,
+            "mscheme.${miniAppWebView.appId}://"))
 
         val displayer = Mockito.spy(miniAppWebView)
 
@@ -135,7 +135,7 @@ class MiniAppWebviewTest {
         webViewClient.onReceivedError(displayer,
             getWebResReq("mscheme.${miniAppWebView.appId}://".toUri()), mock())
 
-        verify(displayer, times(1)).loadUrl(customDomain)
+        verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
     }
 
     @Test
