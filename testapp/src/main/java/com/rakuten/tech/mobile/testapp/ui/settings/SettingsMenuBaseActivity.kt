@@ -71,6 +71,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
     ) {
         val dialog = AlertDialog.Builder(this)
             .setTitle("${resources.getString(R.string.lb_app_settings)} - Build " +
+                    resources.getString(R.string.miniapp_sdk_version) + " - " +
                     resources.getString(R.string.build_version))
             .setView(settingsDialog)
             .setPositiveButton(R.string.action_save, null)

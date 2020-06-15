@@ -25,9 +25,19 @@ internal class MiniAppWebViewClient(
         error: WebResourceError
     ) {
         if (request.url != null && request.url.toString().startsWith(customScheme)) {
-            view.loadUrl(request.url.toString().replace(customScheme, customDomain))
+            loadWithCustomDomain(view, request.url.toString().replace(customScheme, customDomain))
             return
         }
         super.onReceivedError(view, request, error)
+    }
+
+    @Suppress("MagicNumber")
+    @VisibleForTesting
+    internal fun loadWithCustomDomain(view: WebView, requestUrl: String) {
+        view.stopLoading()
+        view.postDelayed(
+            { view.loadUrl(requestUrl) },
+            100
+        )
     }
 }
