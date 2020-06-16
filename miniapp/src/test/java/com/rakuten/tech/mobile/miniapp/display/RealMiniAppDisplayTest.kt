@@ -79,4 +79,33 @@ class RealMiniAppDisplayTest {
             When calling displayer.isContextValid(context) itReturns true
             displayer.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
         }
+
+    @Test
+    fun `should not navigate when MiniAppWebView is null`() {
+        realDisplay.navigateBackward() shouldBe false
+        realDisplay.navigateForward() shouldBe false
+    }
+
+    @Test
+    fun `should not navigate when MiniAppWebView cannot do navigation`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        When calling displayer.isContextValid(context) itReturns true
+        displayer.getMiniAppView(context)
+
+        displayer.navigateBackward() shouldBe false
+        displayer.navigateForward() shouldBe false
+    }
+
+    @Test
+    fun `should be able to do navigation when possible`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        When calling displayer.isContextValid(context) itReturns true
+        val miniAppWebView: MiniAppWebView = mock()
+        When calling (miniAppWebView as WebView).canGoBack() itReturns true
+        When calling miniAppWebView.canGoForward() itReturns true
+        displayer.miniAppWebView = miniAppWebView
+
+        displayer.navigateBackward() shouldBe true
+        displayer.navigateForward() shouldBe true
+    }
 }
