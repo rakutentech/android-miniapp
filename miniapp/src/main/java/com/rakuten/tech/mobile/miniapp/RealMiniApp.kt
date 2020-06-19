@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -59,13 +57,4 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
     }
-
-    @VisibleForTesting
-    internal fun createApiClient(newConfig: MiniAppSdkConfig) =
-        ApiClient(
-            baseUrl = newConfig.baseUrl,
-            rasAppId = newConfig.rasAppId,
-            subscriptionKey = newConfig.subscriptionKey,
-            hostAppVersionId = newConfig.hostAppVersionId
-        )
 }

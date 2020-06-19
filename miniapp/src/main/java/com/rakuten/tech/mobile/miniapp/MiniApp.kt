@@ -100,22 +100,21 @@ abstract class MiniApp internal constructor() {
         internal fun init(
             context: Context,
             baseUrl: String,
+            testUrl: String,
+            isTestMode: Boolean,
             rasAppId: String,
             subscriptionKey: String,
             hostAppVersionId: String
         ) {
             defaultConfig = MiniAppSdkConfig(
                 baseUrl = baseUrl,
+                testUrl = testUrl,
+                isTestMode = isTestMode,
                 rasAppId = rasAppId,
                 subscriptionKey = subscriptionKey,
                 hostAppVersionId = hostAppVersionId
             )
-            val apiClient = ApiClient(
-                baseUrl = baseUrl,
-                rasAppId = rasAppId,
-                subscriptionKey = subscriptionKey,
-                hostAppVersionId = hostAppVersionId
-            )
+            val apiClient = createApiClient(defaultConfig)
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
@@ -130,5 +129,12 @@ abstract class MiniApp internal constructor() {
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )
         }
+
+        internal fun createApiClient(newConfig: MiniAppSdkConfig) = ApiClient(
+            baseUrl = newConfig.providedUrl,
+            rasAppId = newConfig.rasAppId,
+            subscriptionKey = newConfig.subscriptionKey,
+            hostAppVersionId = newConfig.hostAppVersionId
+        )
     }
 }

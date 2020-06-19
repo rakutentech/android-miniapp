@@ -11,6 +11,10 @@ class AppSettings private constructor(context: Context) {
     private val manifestConfig = AppManifestConfig(context)
     private val cache = Settings(context)
 
+    var isTestMode: Boolean
+        get() = cache.isTestMode ?: manifestConfig.isTestMode()
+        set(isTestMode) { cache.isTestMode = isTestMode }
+
     var appId: String
         get() = cache.appId ?: manifestConfig.rasAppId()
         set(appId) { cache.appId = appId }
@@ -28,11 +32,14 @@ class AppSettings private constructor(context: Context) {
         set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
 
     val baseUrl = manifestConfig.baseUrl()
+    val testUrl = manifestConfig.testUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
 
     val miniAppSettings: MiniAppSdkConfig get() = MiniAppSdkConfig(
         baseUrl = baseUrl,
+        testUrl = testUrl,
+        isTestMode = isTestMode,
         rasAppId = appId,
         subscriptionKey = subscriptionKey,
         hostAppVersionId = hostAppVersionId
@@ -56,6 +63,14 @@ private class Settings(context: Context) {
         Context.MODE_PRIVATE
     )
 
+    var isTestMode: Boolean?
+        get() =
+            if (prefs.contains(IS_TEST_MODE))
+                prefs.getBoolean(IS_TEST_MODE, false)
+            else
+                null
+        set(isTestMode) = prefs.edit().putBoolean(IS_TEST_MODE, isTestMode!!).apply()
+
     var appId: String?
         get() = prefs.getString(APP_ID, null)
         set(appId) = prefs.edit().putString(APP_ID, appId).apply()
@@ -69,6 +84,7 @@ private class Settings(context: Context) {
         set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
 
     companion object {
+        private const val IS_TEST_MODE = "is_test_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

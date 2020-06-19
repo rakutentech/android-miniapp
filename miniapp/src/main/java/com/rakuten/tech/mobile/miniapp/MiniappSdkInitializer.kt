@@ -22,10 +22,22 @@ class MiniappSdkInitializer : ContentProvider() {
     interface App {
 
         /**
-         * Base Url for the mini app backend.
+         * Url endpoint for the published mini apps.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.BaseUrl")
         fun baseUrl(): String
+
+        /**
+         * Url endpoint for the testing mini apps.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.TestUrl")
+        fun testUrl(): String
+
+        /**
+         * Whether the sdk is running in Testing mode.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsTestMode")
+        fun isTestMode(): Boolean
 
         /**
          * Host app version for the mini app backend.
@@ -53,6 +65,8 @@ class MiniappSdkInitializer : ContentProvider() {
         MiniApp.init(
             context = context,
             baseUrl = manifestConfig.baseUrl(),
+            testUrl = manifestConfig.testUrl(),
+            isTestMode = manifestConfig.isTestMode(),
             rasAppId = manifestConfig.rasAppId(),
             subscriptionKey = manifestConfig.subscriptionKey(),
             hostAppVersionId = manifestConfig.hostAppVersion()
