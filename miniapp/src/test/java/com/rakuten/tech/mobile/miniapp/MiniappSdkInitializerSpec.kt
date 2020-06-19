@@ -33,6 +33,7 @@ class MiniappSdkInitializerSpec {
 
         When calling sdkInitializer.context itReturns context
         When calling sdkInitializer.createAppManifestConfig(context) itReturns appManifestConfig
+        When calling appManifestConfig.isTestMode() itReturns false
         When calling appManifestConfig.baseUrl() itReturns TEST_URL_HTTPS_2
         When calling appManifestConfig.rasAppId() itReturns TEST_HA_ID_APP
         When calling appManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY

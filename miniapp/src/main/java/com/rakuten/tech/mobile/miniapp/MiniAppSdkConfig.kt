@@ -11,13 +11,13 @@ package com.rakuten.tech.mobile.miniapp
  */
 data class MiniAppSdkConfig(
     private var baseUrl: String,
-    private var testUrl: String,
+    private var testUrl: String?,
     var isTestMode: Boolean,
     var rasAppId: String,
     var subscriptionKey: String,
     var hostAppVersionId: String
 ) {
-    internal val providedUrl = if (isTestMode) testUrl else baseUrl
+    internal val providedUrl: String? = if (isTestMode) testUrl else baseUrl
     internal val key = "$providedUrl-$rasAppId-$subscriptionKey-$hostAppVersionId"
 
     init {
@@ -34,4 +34,4 @@ data class MiniAppSdkConfig(
     }
 }
 
-private fun isBaseUrlValid(url: String) = url.startsWith("https://")
+private fun isBaseUrlValid(url: String?) = url != null && url.startsWith("https://")
