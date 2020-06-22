@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:paddingTop="@dimen/small_8"
+        android:paddingBottom="@dimen/small_8"
         android:paddingStart="@dimen/small_8"
         android:paddingEnd="@dimen/small_8"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,44 +40,12 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="@dimen/small_8"
             android:paddingStart="@dimen/small_8"
-            android:paddingTop="@dimen/small_8"
             android:paddingEnd="@dimen/small_8"
             android:paddingBottom="@dimen/small_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_app_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_app_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/text_medium_14"
-                android:text="@{miniapp.displayName}"
-                android:singleLine="true"
-                android:ellipsize="end"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Name of the Mini App" />
-
-            <TextView
-                android:id="@+id/tv_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/small_8"
-                android:alpha="0.6"
-                android:gravity="start"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/text_medium_14"
-                android:visibility="gone"
-                android:singleLine="true"
-                android:ellipsize="end"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_app_name"
-                tools:text="Description of the Mini App" />
 
             <TextView
                 android:id="@+id/tv_lb_version"
@@ -90,7 +58,7 @@
                 android:textSize="@dimen/text_medium_14"
                 android:text="@{@string/lb_version + `: `}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_description"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Version: " />
 
             <TextView
@@ -106,8 +74,8 @@
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 app:layout_constraintStart_toEndOf="@id/tv_lb_version"
-                app:layout_constraintTop_toBottomOf="@+id/tv_description"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="9ab14a68-e8f9-4216-a6df-2c3b06f3c7f7" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
