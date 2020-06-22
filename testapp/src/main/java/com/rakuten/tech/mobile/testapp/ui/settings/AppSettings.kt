@@ -31,6 +31,10 @@ class AppSettings private constructor(context: Context) {
         }
         set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
 
+    var isSettingSaved: Boolean
+        get() = cache.isSettingSaved
+        set(isSettingSaved) { cache.isSettingSaved = isSettingSaved }
+
     val baseUrl = manifestConfig.baseUrl()
     val testUrl = manifestConfig.testUrl()
 
@@ -44,8 +48,6 @@ class AppSettings private constructor(context: Context) {
         subscriptionKey = subscriptionKey,
         hostAppVersionId = hostAppVersionId
     )
-
-    fun isSettingSaved() = cache.appId != null
 
     companion object {
         lateinit var instance: AppSettings
@@ -83,10 +85,15 @@ private class Settings(context: Context) {
         get() = prefs.getString(UNIQUE_ID, null)
         set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
 
+    var isSettingSaved: Boolean
+        get() = prefs.getBoolean(IS_SETTING_SAVED, false)
+        set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
+
     companion object {
         private const val IS_TEST_MODE = "is_test_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
+        private const val IS_SETTING_SAVED = "is_setting_saved"
     }
 }

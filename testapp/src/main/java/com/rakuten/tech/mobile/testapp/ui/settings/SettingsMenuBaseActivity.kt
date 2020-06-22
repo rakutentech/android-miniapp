@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 abstract class SettingsMenuBaseActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
-    
+
     private lateinit var btnSave: View
     private lateinit var edtAppId: EditText
     private lateinit var edtSubscriptionKey: EditText
@@ -48,26 +49,29 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         }
     }
 
-    protected fun showAppSettings(): Boolean {
+    private fun showAppSettings(): Boolean {
         val settingsDialog = LayoutInflater.from(this)
             .inflate(R.layout.app_settings_dialog, null, false)
 
         edtAppId = settingsDialog.findViewById(R.id.app_id) as EditText
         edtSubscriptionKey = settingsDialog.findViewById(R.id.subscription_key) as EditText
+        val switchTest = settingsDialog.findViewById<SwitchMaterial>(R.id.switchTest)
         edtAppId.setText(settings.appId)
         edtSubscriptionKey.setText(settings.subscriptionKey)
         edtAppId.addTextChangedListener(settingTextWatcher)
         edtSubscriptionKey.addTextChangedListener(settingTextWatcher)
+        switchTest.isChecked = settings.isTestMode
         validateSetting()
 
-        renderAppSettingsDialog(settingsDialog, edtAppId, edtSubscriptionKey)
+        renderAppSettingsDialog(settingsDialog, edtAppId, edtSubscriptionKey, switchTest)
         return true
     }
 
     private fun renderAppSettingsDialog(
         settingsDialog: View,
         appId: EditText,
-        subscriptionKey: EditText
+        subscriptionKey: EditText,
+        switchTest: SwitchMaterial
     ) {
         val dialog = AlertDialog.Builder(this)
             .setTitle("${resources.getString(R.string.lb_app_settings)} - Build " +
@@ -83,7 +87,8 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
             btnSave.setOnClickListener {
                 val pb = settingsDialog.findViewById<View>(R.id.pb)
                 pb.visibility = View.VISIBLE
-                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), pb, _dialog)
+                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), switchTest.isChecked,
+                    pb, _dialog)
             }
 
             _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
@@ -101,15 +106,19 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(appId: String, subscriptionKey: String, pb: View, dialog: AlertDialog) {
+    private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean,
+                               pb: View, dialog: AlertDialog) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
+        val isTestModeHolder = settings.isTestMode
         settings.appId = appId
         settings.subscriptionKey = subscriptionKey
+        settings.isTestMode = isTestMode
 
         launch {
             try {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                settings.isSettingSaved = true
                 runOnUiThread {
                     pb.visibility = View.GONE
                     dialog.dismiss()
@@ -118,6 +127,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
             } catch (error: MiniAppSdkException) {
                 settings.appId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
+                settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     pb.visibility = View.GONE
                     val toast = Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
