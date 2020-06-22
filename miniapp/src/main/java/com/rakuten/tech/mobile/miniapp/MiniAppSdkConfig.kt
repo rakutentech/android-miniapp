@@ -10,12 +10,12 @@ package com.rakuten.tech.mobile.miniapp
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  */
 data class MiniAppSdkConfig(
-    private var baseUrl: String,
-    private var testUrl: String?,
-    var isTestMode: Boolean,
-    var rasAppId: String,
-    var subscriptionKey: String,
-    var hostAppVersionId: String
+    private val baseUrl: String,
+    private val testUrl: String?,
+    val isTestMode: Boolean,
+    val rasAppId: String,
+    val subscriptionKey: String,
+    val hostAppVersionId: String
 ) {
     internal val providedUrl: String? = if (isTestMode) testUrl else baseUrl
     internal val key = "$providedUrl-$rasAppId-$subscriptionKey-$hostAppVersionId"
