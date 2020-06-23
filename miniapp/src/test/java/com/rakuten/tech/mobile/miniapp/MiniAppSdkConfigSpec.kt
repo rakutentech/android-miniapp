@@ -95,7 +95,7 @@ class MiniAppSdkConfigSpec {
     @Suppress("LongMethod")
     @Test
     fun `should providing correct url type`() {
-        val config = MiniAppSdkConfig(
+        val regularConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             testUrl = "$TEST_URL_HTTPS_2/test/",
             isTestMode = false,
@@ -103,16 +103,18 @@ class MiniAppSdkConfigSpec {
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
-        config.isTestMode shouldBe false
-        config.providedUrl shouldBe TEST_URL_HTTPS_2
+        regularConfig.isTestMode shouldBe false
+        regularConfig.providedUrl shouldBe TEST_URL_HTTPS_2
 
-        MiniAppSdkConfig(
+        val testConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             testUrl = "$TEST_URL_HTTPS_2/test/",
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
-        ).providedUrl shouldBe "$TEST_URL_HTTPS_2/test/"
+        )
+        testConfig.isTestMode shouldBe true
+        testConfig.providedUrl shouldBe "$TEST_URL_HTTPS_2/test/"
     }
 }
