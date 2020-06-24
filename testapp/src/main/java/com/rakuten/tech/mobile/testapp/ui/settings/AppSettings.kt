@@ -36,17 +36,15 @@ class AppSettings private constructor(context: Context) {
         set(isSettingSaved) { cache.isSettingSaved = isSettingSaved }
 
     val baseUrl = manifestConfig.baseUrl()
-    val testUrl = manifestConfig.testUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
 
     val miniAppSettings: MiniAppSdkConfig get() = MiniAppSdkConfig(
         baseUrl = baseUrl,
-        testUrl = testUrl,
-        isTestMode = isTestMode,
         rasAppId = appId,
         subscriptionKey = subscriptionKey,
-        hostAppVersionId = hostAppVersionId
+        hostAppVersionId = hostAppVersionId,
+        isTestMode = isTestMode
     )
 
     companion object {

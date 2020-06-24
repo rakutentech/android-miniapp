@@ -30,8 +30,7 @@ class MiniAppSpec {
         AppInfo.instance = mock()
         MiniApp.init(
             context = getApplicationContext(),
-            baseUrl = TEST_URL_HTTPS_1,
-            testUrl = TEST_URL_HTTPS_2,
+            baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,

@@ -18,6 +18,7 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
+    private val isTestMode: Boolean,
     private val hostAppVersionId: String,
     private val hostAppId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
@@ -30,26 +31,37 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasAppId: String,
         subscriptionKey: String,
-        hostAppVersionId: String
+        hostAppVersionId: String,
+        isTestMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
             rasAppId = rasAppId,
             subscriptionKey = subscriptionKey
         ),
+        isTestMode = isTestMode,
         hostAppVersionId = hostAppVersionId,
         hostAppId = rasAppId
     )
 
+    private val testPath = if (isTestMode) "test" else ""
+
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
-        val request = appInfoApi.list(hostAppId, hostAppVersionId)
+        val request = appInfoApi.list(
+            hostAppId = hostAppId,
+            hostAppVersionId = hostAppVersionId,
+            testPath = testPath)
         return requestExecutor.executeRequest(request)
     }
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
-        val request = appInfoApi.fetchInfo(hostAppId, hostAppVersionId, appId)
+        val request = appInfoApi.fetchInfo(
+            hostAppId = hostAppId,
+            hostAppVersionId = hostAppVersionId,
+            miniAppId = appId,
+            testPath = testPath)
         val info = requestExecutor.executeRequest(request)
 
         if (info.isNotEmpty()) {
@@ -64,7 +76,8 @@ internal class ApiClient @VisibleForTesting constructor(
             hostAppId = hostAppId,
             miniAppId = miniAppId,
             versionId = versionId,
-            hostAppVersionId = hostAppVersionId
+            hostAppVersionId = hostAppVersionId,
+            testPath = testPath
         )
         return requestExecutor.executeRequest(request)
     }
