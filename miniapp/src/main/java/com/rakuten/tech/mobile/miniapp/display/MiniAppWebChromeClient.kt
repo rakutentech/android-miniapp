@@ -35,6 +35,7 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
+        webChromeListener.onGeolocationPrompt(origin, callback)
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED)
             webChromeListener.onGeolocationPermissionResult(true)
