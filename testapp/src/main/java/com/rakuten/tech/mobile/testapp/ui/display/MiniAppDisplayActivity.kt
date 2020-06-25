@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.mini_app_display_activity.*
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
+    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -66,7 +67,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            val miniAppMessageBridge = object: MiniAppMessageBridge() {
+            miniAppMessageBridge = object: MiniAppMessageBridge() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
             }
 
@@ -83,7 +84,15 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
     }
 
-    private fun toggleProgressLoading(isOn: Boolean) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray) {
+        if (::miniAppMessageBridge.isInitialized)
+            miniAppMessageBridge.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+        private fun toggleProgressLoading(isOn: Boolean) {
         if (findViewById<View>(R.id.pb) != null) {
             when (isOn) {
                 true -> pb.visibility = View.VISIBLE

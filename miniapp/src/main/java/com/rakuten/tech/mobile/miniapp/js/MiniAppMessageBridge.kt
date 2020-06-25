@@ -25,6 +25,14 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    /** Inform the permission request result to MiniApp **/
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (permissions.size == grantResults.size) {
+            for (i in permissions.indices)
+                webViewListener.onRequestPermissionsResult(requestCode, permissions[i], grantResults[i])
+        }
+    }
+
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
         webViewListener.runSuccessCallback(callbackId, value)

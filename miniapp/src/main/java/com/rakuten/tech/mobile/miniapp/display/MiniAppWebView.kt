@@ -1,12 +1,16 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.view.ViewGroup
+import android.webkit.GeolocationPermissions
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCode
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
@@ -19,7 +23,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val appId: String,
     miniAppMessageBridge: MiniAppMessageBridge
-) : WebView(context), WebViewListener {
+) : WebView(context), WebViewListener, WebChromeListener {
 
     private val miniAppDomain = "mscheme.$appId"
     private val customScheme = "$miniAppDomain://"
@@ -38,7 +42,7 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
-        webChromeClient = MiniAppWebChromeClient(context)
+        webChromeClient = MiniAppWebChromeClient(context, this)
 
         loadUrl(getLoadUrl())
     }
@@ -46,6 +50,7 @@ internal class MiniAppWebView(
     fun destroyView() {
         stopLoading()
         webViewClient = null
+        destroyGeolocationPrompt()
         destroy()
     }
 
@@ -63,6 +68,33 @@ internal class MiniAppWebView(
                 "MiniAppBridge.execErrorCallback(\"$callbackId\", \"$errorMessage\")"
             ) {}
         }
+    }
+
+    // region geolocation
+    private var geoLocationRequestOrigin: String? = null
+    private var geoLocationCallback: GeolocationPermissions.Callback? = null
+
+    override fun onGeolocationPrompt(origin: String?, callback: GeolocationPermissions.Callback?) {
+        geoLocationRequestOrigin = origin
+        geoLocationCallback = callback
+    }
+
+    override fun onGeolocationPermissionResult(isGranted: Boolean) {
+        geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
+        destroyGeolocationPrompt()
+    }
+
+    @VisibleForTesting
+    internal fun destroyGeolocationPrompt() {
+        geoLocationRequestOrigin = null
+        geoLocationCallback = null
+    }
+    // end region
+
+    override fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int) {
+        if (requestCode == MiniAppCode.Permission.GEOLOCATION &&
+            permission == Manifest.permission.ACCESS_FINE_LOCATION)
+            onGeolocationPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
@@ -88,4 +120,5 @@ internal class MiniAppWebView(
 internal interface WebViewListener {
     fun runSuccessCallback(callbackId: String, value: String)
     fun runErrorCallback(callbackId: String, errorMessage: String)
+    fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int)
 }
