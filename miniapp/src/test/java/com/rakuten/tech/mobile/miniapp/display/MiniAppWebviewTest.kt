@@ -153,7 +153,7 @@ class MiniAppWebviewTest {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock())
+        val webClient = MiniAppWebChromeClient(mock(), mock())
         webClient.bridgeJs shouldBe null
     }
 

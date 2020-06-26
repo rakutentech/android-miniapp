@@ -54,6 +54,14 @@ class MiniAppMessageBridgeSpec {
             override fun runErrorCallback(callbackId: String, errorMessage: String) {
                 Assert.assertEquals(errorMessage, errMsg)
             }
+
+            override fun onRequestPermissionsResult(
+                requestCode: Int,
+                permission: String,
+                grantResult: Int
+            ) {
+
+            }
         })
         miniAppBridge.postMessage(jsonStr)
 
