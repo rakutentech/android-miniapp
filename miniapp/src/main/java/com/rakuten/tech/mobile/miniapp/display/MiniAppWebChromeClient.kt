@@ -1,22 +1,21 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.rakuten.tech.mobile.miniapp.js.MiniAppCode
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(
     val context: Context,
-    private val webChromeListener: WebChromeListener
-) : WebChromeClient() {
+    val miniAppMessageBridge: MiniAppMessageBridge
+) : WebChromeClient(), WebChromeListener {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @VisibleForTesting
@@ -32,21 +31,31 @@ internal class MiniAppWebChromeClient(
         super.onReceivedTitle(webView, title)
     }
 
+    // region geolocation
+    private var geoLocationRequestOrigin: String? = null
+    private var geoLocationCallback: GeolocationPermissions.Callback? = null
+
     @Suppress("FunctionMaxLength")
     override fun onGeolocationPermissionsShowPrompt(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        webChromeListener.onGeolocationPrompt(origin, callback)
+        geoLocationRequestOrigin = origin
+        geoLocationCallback = callback
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED)
-            webChromeListener.onGeolocationPermissionResult(true)
+            onGeolocationPermissionResult(true)
         else
-            ActivityCompat.requestPermissions(
-                context as Activity,
+            miniAppMessageBridge.requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                MiniAppCode.Permission.GEOLOCATION)
+                MiniAppCode.Permission.GEOLOCATION
+            )
     }
+
+    override fun onGeolocationPermissionResult(isGranted: Boolean) {
+        geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
+    }
+    // end region
 
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {
@@ -55,6 +64,5 @@ internal class MiniAppWebChromeClient(
 }
 
 internal interface WebChromeListener {
-    fun onGeolocationPrompt(origin: String?, callback: GeolocationPermissions.Callback?)
     fun onGeolocationPermissionResult(isGranted: Boolean)
 }

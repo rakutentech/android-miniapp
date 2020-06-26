@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.view.ViewGroup
-import android.webkit.GeolocationPermissions
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
@@ -23,11 +22,12 @@ internal class MiniAppWebView(
     val basePath: String,
     val appId: String,
     miniAppMessageBridge: MiniAppMessageBridge
-) : WebView(context), WebViewListener, WebChromeListener {
+) : WebView(context), WebViewListener {
 
     private val miniAppDomain = "mscheme.$appId"
     private val customScheme = "$miniAppDomain://"
     private val customDomain = "https://$miniAppDomain/"
+    private val miniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -43,7 +43,7 @@ internal class MiniAppWebView(
         settings.databaseEnabled = true
         settings.setGeolocationEnabled(true)
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
-        webChromeClient = MiniAppWebChromeClient(context, this)
+        webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
     }
@@ -51,7 +51,6 @@ internal class MiniAppWebView(
     fun destroyView() {
         stopLoading()
         webViewClient = null
-        destroyGeolocationPrompt()
         destroy()
     }
 
@@ -71,31 +70,11 @@ internal class MiniAppWebView(
         }
     }
 
-    // region geolocation
-    private var geoLocationRequestOrigin: String? = null
-    private var geoLocationCallback: GeolocationPermissions.Callback? = null
-
-    override fun onGeolocationPrompt(origin: String?, callback: GeolocationPermissions.Callback?) {
-        geoLocationRequestOrigin = origin
-        geoLocationCallback = callback
-    }
-
-    override fun onGeolocationPermissionResult(isGranted: Boolean) {
-        geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
-        destroyGeolocationPrompt()
-    }
-
-    @VisibleForTesting
-    internal fun destroyGeolocationPrompt() {
-        geoLocationRequestOrigin = null
-        geoLocationCallback = null
-    }
-    // end region
-
     override fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int) {
         if (requestCode == MiniAppCode.Permission.GEOLOCATION &&
             permission == Manifest.permission.ACCESS_FINE_LOCATION)
-            onGeolocationPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
+            miniAppWebChromeClient.onGeolocationPermissionResult(
+                grantResult == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()

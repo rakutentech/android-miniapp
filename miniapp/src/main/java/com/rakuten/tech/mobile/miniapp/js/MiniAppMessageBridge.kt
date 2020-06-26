@@ -1,11 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.app.Activity
+import android.content.Context
 import android.webkit.JavascriptInterface
+import androidx.core.app.ActivityCompat
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge {
+abstract class MiniAppMessageBridge(val context: Context) {
     private lateinit var webViewListener: WebViewListener
 
     /** Get provided id of mini app for any purpose. **/
@@ -24,6 +27,10 @@ abstract class MiniAppMessageBridge {
             }
         }
     }
+
+    @JavascriptInterface
+    fun requestPermissions(permissions: Array<String>, requestCode: Int) =
+        ActivityCompat.requestPermissions(context as Activity, permissions, requestCode)
 
     /** Inform the permission request result to MiniApp. **/
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

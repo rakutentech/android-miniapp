@@ -92,7 +92,6 @@ class MiniAppWebviewTest {
         verify(displayer, times(1)).stopLoading()
         displayer.webViewClient shouldBe null
         verify(displayer, times(1)).destroy()
-        verify(displayer, times(1)).destroyGeolocationPrompt()
     }
 
     @Test
