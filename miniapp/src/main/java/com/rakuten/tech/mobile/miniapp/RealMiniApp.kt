@@ -20,29 +20,30 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
-    override suspend fun create(
-        info: MiniAppInfo,
-        miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = executingCreate(info, miniAppMessageBridge)
-
     @Suppress("TooGenericExceptionThrown")
     override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
-        executingCreate(info, object : MiniAppMessageBridge() {
+        executingCreate(info.id, object : MiniAppMessageBridge() {
             override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
         })
 
-    private suspend fun executingCreate(
+    override suspend fun create(
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay = executingCreate(info.id, miniAppMessageBridge)
+
+    override suspend fun create(
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge)
+
+    private suspend fun executingCreate(
+        miniAppId: String,
+        miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = when {
-        info.id.isBlank() || info.version.versionId.isBlank() ->
-            throw sdkExceptionForInvalidArguments()
+        miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val basePath = miniAppDownloader.getMiniApp(
-                appId = info.id,
-                versionId = info.version.versionId
-            )
-            displayer.createMiniAppDisplay(basePath, info.id, miniAppMessageBridge)
+            val basePath = miniAppDownloader.getMiniApp(miniAppId)
+            displayer.createMiniAppDisplay(basePath, miniAppId, miniAppMessageBridge)
         }
     }
 

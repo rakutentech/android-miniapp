@@ -73,7 +73,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             if (appId.isEmpty())
                 viewModel.obtainMiniAppDisplay(
                     this@MiniAppDisplayActivity,
-                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!,
+                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id,
                     miniAppMessageBridge)
             else
                 viewModel.obtainMiniAppDisplay(
