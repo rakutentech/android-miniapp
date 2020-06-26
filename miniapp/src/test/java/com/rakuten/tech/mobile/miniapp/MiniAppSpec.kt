@@ -31,6 +31,7 @@ class MiniAppSpec {
         MiniApp.init(
             context = getApplicationContext(),
             baseUrl = TEST_URL_HTTPS_2,
+            isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION

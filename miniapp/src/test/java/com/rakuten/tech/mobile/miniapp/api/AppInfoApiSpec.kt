@@ -53,14 +53,21 @@ class AppInfoApiRequestSpec : AppInfoApiSpec() {
     fun `should fetch mini apps using the 'miniapps' endpoint`() {
         executeListingCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!
-        requestUrl.encodedPath shouldEndWith "miniapps"
+
+        requestUrl.encodedPath shouldEndWith "miniapps/"
         requestUrl.encodedQuery.toString() shouldContain "hostVersion=$TEST_HA_ID_VERSION"
     }
 
     @Test
-    fun `should fetch mini apps for the provided host app version`() {
-        executeListingCallByRetrofit()
-        mockServer.takeRequest().path!! shouldContain "test_version"
+    fun `should fetch mini apps for the provided host app version in test mode`() {
+        mockServer.enqueue(createResponse())
+        retrofit.create(AppInfoApi::class.java)
+            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION, testPath = "test")
+            .execute()
+        val request = mockServer.takeRequest()
+
+        request.requestUrl!!.encodedPath shouldEndWith "miniapps/test"
+        request.path!! shouldContain "test_version"
     }
 
     private fun executeListingCallByRetrofit() {

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,14 +14,23 @@ import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemSectionMiniappBinding
+import java.util.*
 
-class MiniAppListAdapter(var miniapps: List<MiniAppInfo>, val miniAppList: MiniAppList) :
+class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: MiniAppList) :
     ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
 
+    private val sectionPos = TreeSet<Int>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MiniAppsListViewHolder {
-        val binding = ItemListMiniappBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
+        val binding = when (viewType) {
+            R.layout.item_section_miniapp -> ItemSectionMiniappBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            else -> ItemListMiniappBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        }
         return MiniAppsListViewHolder(binding)
     }
 
@@ -31,6 +41,25 @@ class MiniAppListAdapter(var miniapps: List<MiniAppInfo>, val miniAppList: MiniA
 
     override fun getItemCount() = miniapps.size
 
+    override fun getItemViewType(position: Int): Int =
+        if (sectionPos.contains(position)) R.layout.item_section_miniapp
+        else R.layout.item_list_miniapp
+
+    fun addListWithSection(list: List<MiniAppInfo>) {
+        miniapps.clear()
+        sectionPos.clear()
+        val sectionMiniApp = TreeSet<String>()
+
+        for (item in list) {
+            if (!sectionMiniApp.contains(item.id)) {
+                miniapps.add(item)
+                sectionPos.add(miniapps.size - 1)
+            }
+            miniapps.add(item)
+        }
+
+        notifyDataSetChanged()
+    }
 }
 
 private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
@@ -45,23 +74,25 @@ private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
 }
 
 interface MiniAppList {
-    fun onMiniAppItemClick(miniapp: MiniAppInfo)
+    fun onMiniAppItemClick(miniAppInfo: MiniAppInfo)
 }
 
-class MiniAppsListViewHolder(val binding: ItemListMiniappBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bindTo(binding: ItemListMiniappBinding, miniapp: MiniAppInfo, miniAppList: MiniAppList) {
-        binding.miniapp = miniapp
-        setIcon(binding.root.context, Uri.parse(miniapp.icon), binding.ivAppIcon)
+    fun bindTo(binding: ViewDataBinding, miniAppInfo: MiniAppInfo, miniAppList: MiniAppList) {
+        if (binding is ItemSectionMiniappBinding)
+            binding.miniapp = miniAppInfo
+        else if (binding is ItemListMiniappBinding) {
+            binding.miniapp = miniAppInfo
+            setIcon(binding.root.context, Uri.parse(miniAppInfo.icon), binding.ivAppIcon)
 
-        binding.tvVersion.isSelected = true
+            binding.tvVersion.isSelected = true
 
-        binding.itemRoot.setOnClickListener {
-            miniAppList.onMiniAppItemClick(miniapp)
+            binding.itemRoot.setOnClickListener {
+                miniAppList.onMiniAppItemClick(miniAppInfo)
+            }
         }
     }
-
 }
 
 fun setIcon(context: Context, uri: Uri, view: ImageView) {

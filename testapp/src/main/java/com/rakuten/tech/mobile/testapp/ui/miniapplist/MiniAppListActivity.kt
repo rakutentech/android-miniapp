@@ -16,7 +16,7 @@ class MiniAppListActivity : SettingsMenuBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_list_activity)
-        if (AppSettings.instance.isSettingSaved()) {
+        if (AppSettings.instance.isSettingSaved) {
             layoutTut.visibility = View.GONE
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, MiniAppListFragment.newInstance())

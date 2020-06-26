@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -16,14 +17,15 @@ class MiniAppDisplayViewModel constructor(
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
+    private lateinit var miniAppDisplay: MiniAppDisplay
     private var hostLifeCycle: Lifecycle? = null
 
-    private val _miniAppDisplay = MutableLiveData<View>()
+    private val _miniAppView = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
     private val _isLoading = MutableLiveData<Boolean>()
 
-    val miniAppDisplay: LiveData<View>
-        get() = _miniAppDisplay
+    val miniAppView: LiveData<View>
+        get() = _miniAppView
     val errorData: LiveData<String>
         get() = _errorData
     val isLoading: LiveData<Boolean>
@@ -35,9 +37,9 @@ class MiniAppDisplayViewModel constructor(
         miniAppMessageBridge: MiniAppMessageBridge) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            val miniAppDisplay = miniapp.create(appId, miniAppMessageBridge)
+            miniAppDisplay = miniapp.create(appId, miniAppMessageBridge)
             hostLifeCycle?.addObserver(miniAppDisplay)
-            _miniAppDisplay.postValue(miniAppDisplay.getMiniAppView(context))
+            _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)
@@ -49,4 +51,10 @@ class MiniAppDisplayViewModel constructor(
     fun setHostLifeCycle(lifecycle: Lifecycle) {
         this.hostLifeCycle = lifecycle
     }
+
+    fun canGoBackwards() : Boolean =
+        if (::miniAppDisplay.isInitialized)
+            miniAppDisplay.navigateBackward()
+        else
+            false
 }

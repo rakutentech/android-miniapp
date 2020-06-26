@@ -51,7 +51,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 .create(MiniAppDisplayViewModel::class.java).apply {
 
                     setHostLifeCycle(lifecycle)
-                    miniAppDisplay.observe(this@MiniAppDisplayActivity, Observer {
+                    miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                         if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                             WebView.setWebContentsDebuggingEnabled(true)
                         //action: display webview
@@ -98,6 +98,12 @@ class MiniAppDisplayActivity : BaseActivity() {
                 true -> pb.visibility = View.VISIBLE
                 false -> pb.visibility = View.GONE
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(!viewModel.canGoBackwards()) {
+            super.onBackPressed()
         }
     }
 }

@@ -31,7 +31,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     private lateinit var viewModel: MiniAppListViewModel
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
-    private var miniapps = listOf<MiniAppInfo>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +44,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         )
         binding.fragment = this
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
-        miniAppListAdapter = MiniAppListAdapter(miniapps, this)
+        miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
         return binding.root
     }
@@ -81,8 +80,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     private fun displayMiniAppList(list: List<MiniAppInfo>) {
-        miniAppListAdapter.miniapps = list
-        miniAppListAdapter.notifyDataSetChanged()
+        miniAppListAdapter.addListWithSection(list)
     }
 
     private fun executeLoadingList() {

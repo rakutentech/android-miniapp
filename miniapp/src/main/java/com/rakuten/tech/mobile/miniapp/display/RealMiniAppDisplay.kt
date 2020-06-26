@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.View
+import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
@@ -42,14 +43,37 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
+    override fun navigateBackward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoBack() -> {
+                webView.goBack()
+                true
+            }
+            else -> false
+        }
+    } else false
+
+    override fun navigateForward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoForward() -> {
+                webView.goForward()
+                true
+            }
+            else -> false
+        }
+    } else false
+
     private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
         miniAppWebView ?: withContext(Dispatchers.Main) {
-            MiniAppWebView(
+            miniAppWebView = MiniAppWebView(
                 context = context,
                 basePath = basePath,
                 appId = appId,
                 miniAppMessageBridge = miniAppMessageBridge
             )
+            miniAppWebView!!
         }
 
     @VisibleForTesting

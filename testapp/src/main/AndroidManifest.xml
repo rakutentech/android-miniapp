@@ -30,6 +30,9 @@
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="${baseUrl}" />
         <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.IsTestMode"
+            android:value="${isTestMode}" />
+        <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
             android:value="${hostAppVersion}" />
         <meta-data
