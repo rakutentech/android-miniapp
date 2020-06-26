@@ -43,29 +43,27 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
-    override fun navigateBackward(): Boolean {
-        return if (miniAppWebView != null) {
-            val webView = (miniAppWebView as WebView)
-            if (webView.canGoBack()) {
+    override fun navigateBackward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoBack() -> {
                 webView.goBack()
                 true
-            } else
-                false
-        } else
-            false
-    }
+            }
+            else -> false
+        }
+    } else false
 
-    override fun navigateForward(): Boolean {
-        return if (miniAppWebView != null) {
-            val webView = (miniAppWebView as WebView)
-            if (webView.canGoForward()) {
+    override fun navigateForward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoForward() -> {
                 webView.goForward()
                 true
-            } else
-                false
-        } else
-            false
-    }
+            }
+            else -> false
+        }
+    } else false
 
     private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
         miniAppWebView ?: withContext(Dispatchers.Main) {
