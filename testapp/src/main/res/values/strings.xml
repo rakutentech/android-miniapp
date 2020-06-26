@@ -2,12 +2,16 @@
     <string name="lb_version">Version</string>
     <string name="lb_description">Description</string>
     <string name="lb_app_id">App ID</string>
+    <string name="lb_app_settings">App Settings</string>
+    <string name="lb_test_mode">Test Mode</string>
+
     <string name="action_display">Display</string>
-    <string name="error_empty">Required</string>
-    <string name="error_invalid_input">Invalid Input</string>
     <string name="action_go_input">Display Miniapp From ID</string>
     <string name="action_display_list">Display Miniapp From List</string>
-    <string name="lb_app_settings">App Settings</string>
     <string name="action_save">Save</string>
+
+    <string name="error_empty">Required</string>
+    <string name="error_invalid_input">Invalid Input</string>
+
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host App ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>

@@ -57,6 +57,20 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
                 "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
     }
 
+    @Test
+    fun `should have test endpoint when in test mode`() {
+        mockServer.enqueue(createResponse())
+        retrofit.create(ManifestApi::class.java)
+            .fetchFileListFromManifest(
+                hostAppId = TEST_HA_ID_APP,
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION,
+                hostAppVersionId = TEST_HA_ID_VERSION,
+                testPath = "test"
+            ).execute()
+        mockServer.takeRequest().path!! shouldContain "test"
+    }
+
     private fun executeManifestCallByRetrofit() {
         mockServer.enqueue(createResponse())
         retrofit.create(ManifestApi::class.java)
@@ -78,10 +92,10 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         manifestEntity = retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
-                TEST_HA_ID_APP,
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION,
-                TEST_HA_ID_VERSION
+                hostAppId = TEST_HA_ID_APP,
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION,
+                hostAppVersionId = TEST_HA_ID_VERSION
             )
             .execute().body()!!
     }
