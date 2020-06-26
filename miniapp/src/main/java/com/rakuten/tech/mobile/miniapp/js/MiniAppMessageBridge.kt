@@ -28,6 +28,7 @@ abstract class MiniAppMessageBridge(val context: Context) {
         }
     }
 
+    /** Post permission request from external. **/
     @JavascriptInterface
     fun requestPermissions(permissions: Array<String>, requestCode: Int) =
         ActivityCompat.requestPermissions(context as Activity, permissions, requestCode)

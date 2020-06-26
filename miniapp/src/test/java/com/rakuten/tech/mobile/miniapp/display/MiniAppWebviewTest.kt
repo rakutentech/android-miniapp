@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.ViewGroup
-import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -24,7 +23,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import java.lang.ClassCastException
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -34,16 +32,19 @@ class MiniAppWebviewTest {
     private lateinit var miniAppWebView: MiniAppWebView
     private lateinit var webResourceRequest: WebResourceRequest
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private lateinit var webChromeClient: MiniAppWebChromeClient
 
     @Before
     fun setup() {
         context = getApplicationContext()
         basePath = context.filesDir.path
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, miniAppMessageBridge))
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
             appId = TEST_MA_ID,
-            miniAppMessageBridge = miniAppMessageBridge
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppWebChromeClient = webChromeClient
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
     }
@@ -163,36 +164,25 @@ class MiniAppWebviewTest {
     }
 
     @Test
-    fun `should call handler of webview when there is an geolocation prompt from chrome client`() {
-        val webView: MiniAppWebView = mock()
-        val webChromeClient = MiniAppWebChromeClient(mock(), webView)
-        val origin: String = any()
-        val callback: GeolocationPermissions.Callback = any()
-
-        webChromeClient.onGeolocationPermissionsShowPrompt(origin, callback)
-
-        verify(webView, times(1)).onGeolocationPrompt(origin, callback)
-    }
-
-    @Test(expected = ClassCastException::class)
-    fun `should throw exception when context is not activity`() {
-        val webChromeClient = MiniAppWebChromeClient(miniAppWebView.context, miniAppWebView)
-
+    fun `should request location permission when it is not granted`() {
         webChromeClient.context shouldNotBe null
         webChromeClient.onGeolocationPermissionsShowPrompt("", mock())
+
+        verify(miniAppMessageBridge, times(1)).requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            MiniAppCode.Permission.GEOLOCATION
+        )
     }
 
     @Test
     fun `should execute geolocation result when there is a granted geolocation permission`() {
-        val webView = Mockito.spy(miniAppWebView)
-
-        webView.onRequestPermissionsResult(
+        miniAppWebView.onRequestPermissionsResult(
             MiniAppCode.Permission.GEOLOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             PackageManager.PERMISSION_GRANTED
         )
 
-        verify(webView, times(1)).onGeolocationPermissionResult(true)
+        verify(webChromeClient, times(1)).onGeolocationPermissionResult(true)
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {

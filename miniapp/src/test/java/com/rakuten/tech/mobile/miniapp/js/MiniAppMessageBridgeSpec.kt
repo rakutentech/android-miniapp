@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
@@ -12,14 +14,18 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 const val GET_UNIQUE_ID = "getUniqueId"
 
+@RunWith(AndroidJUnit4::class)
 class MiniAppMessageBridgeSpec {
-    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(object : MiniAppMessageBridge() {
-        override fun getUniqueId() = TEST_CALLBACK_VALUE
-    })
+    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
+        object : MiniAppMessageBridge(ApplicationProvider.getApplicationContext()) {
+            override fun getUniqueId() = TEST_CALLBACK_VALUE
+        }
+    )
     private val callbackObj = CallbackObj(GET_UNIQUE_ID, TEST_CALLBACK_ID)
     private val jsonStr = Gson().toJson(callbackObj)
 

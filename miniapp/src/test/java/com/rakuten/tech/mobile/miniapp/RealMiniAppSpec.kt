@@ -24,7 +24,6 @@ class RealMiniAppSpec {
     private val apiClientRepository: ApiClientRepository = mock()
     private val displayer: Displayer = mock()
     private val miniAppDownloader: MiniAppDownloader = mock()
-    private val miniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", TEST_MA_VERSION_ID))
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val realMiniApp =
@@ -56,15 +55,6 @@ class RealMiniAppSpec {
             val basePath: String = verify(miniAppDownloader, times(1))
                 .getMiniApp(TEST_MA_ID)
             verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
-        }
-
-    @Test
-    fun `should still be able to download miniapp for deprecated method`() =
-        runBlockingTest {
-            realMiniApp.create(miniAppInfo)
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
-
-            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
         }
 
     @Test

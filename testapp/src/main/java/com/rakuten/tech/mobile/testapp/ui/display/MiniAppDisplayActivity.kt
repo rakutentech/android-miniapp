@@ -67,7 +67,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            miniAppMessageBridge = object: MiniAppMessageBridge() {
+            miniAppMessageBridge = object: MiniAppMessageBridge(this) {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
             }
 

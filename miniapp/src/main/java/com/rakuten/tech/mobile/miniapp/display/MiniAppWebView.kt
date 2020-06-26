@@ -21,13 +21,14 @@ internal class MiniAppWebView(
     context: Context,
     val basePath: String,
     val appId: String,
-    miniAppMessageBridge: MiniAppMessageBridge
+    miniAppMessageBridge: MiniAppMessageBridge,
+    @VisibleForTesting
+    internal val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
 ) : WebView(context), WebViewListener {
 
     private val miniAppDomain = "mscheme.$appId"
     private val customScheme = "$miniAppDomain://"
     private val customDomain = "https://$miniAppDomain/"
-    private val miniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
 
     init {
         layoutParams = FrameLayout.LayoutParams(

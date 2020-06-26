@@ -54,6 +54,8 @@ internal class MiniAppWebChromeClient(
 
     override fun onGeolocationPermissionResult(isGranted: Boolean) {
         geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
+        geoLocationRequestOrigin = null
+        geoLocationCallback = null
     }
     // end region
 
