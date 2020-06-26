@@ -15,7 +15,8 @@ import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(
     val context: Context,
-    val webChromeListener: WebChromeListener) : WebChromeClient() {
+    private val webChromeListener: WebChromeListener
+) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @VisibleForTesting
@@ -31,6 +32,7 @@ internal class MiniAppWebChromeClient(
         super.onReceivedTitle(webView, title)
     }
 
+    @Suppress("FunctionMaxLength")
     override fun onGeolocationPermissionsShowPrompt(
         origin: String?,
         callback: GeolocationPermissions.Callback?

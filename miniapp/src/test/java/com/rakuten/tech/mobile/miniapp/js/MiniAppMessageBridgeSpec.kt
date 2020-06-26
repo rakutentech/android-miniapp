@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -42,12 +43,12 @@ class MiniAppMessageBridgeSpec {
         verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
+    @Suppress("TooGenericExceptionThrown")
     @Test
     fun `postError should be called when error occurs in postValue`() {
         val errMsg = "Cannot get unique id: null"
         miniAppBridge.setWebViewListener(object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
-                @Suppress("TooGenericExceptionThrown")
                 throw Exception()
             }
 
@@ -60,11 +61,25 @@ class MiniAppMessageBridgeSpec {
                 permission: String,
                 grantResult: Int
             ) {
-
+                throw Exception()
             }
         })
         miniAppBridge.postMessage(jsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `should pass permission result to webview`() {
+        val webViewListener: WebViewListener = spy()
+        miniAppBridge.setWebViewListener(webViewListener)
+        val requestCode = 0
+        val permissions = arrayOf("")
+        val grantResults = IntArray(1).also { it[0] = 0 }
+
+        miniAppBridge.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        verify(webViewListener, times(1)).onRequestPermissionsResult(
+            requestCode, permissions[0], grantResults[0])
     }
 }

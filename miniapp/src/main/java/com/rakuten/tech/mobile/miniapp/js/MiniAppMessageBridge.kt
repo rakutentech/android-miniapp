@@ -25,7 +25,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    /** Inform the permission request result to MiniApp **/
+    /** Inform the permission request result to MiniApp. **/
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (permissions.size == grantResults.size) {
             for (i in permissions.indices)

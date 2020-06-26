@@ -1,8 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-object MiniAppCode {
+internal object MiniAppCode {
 
-    object Permission {
+    internal object Permission {
         const val GEOLOCATION = 1001
     }
 }
