@@ -166,6 +166,7 @@ class MiniAppWebviewTest {
     @Test
     fun `should request location permission when it is not granted`() {
         webChromeClient.context shouldNotBe null
+        webChromeClient.miniAppMessageBridge shouldNotBe null
         webChromeClient.onGeolocationPermissionsShowPrompt("", mock())
 
         verify(miniAppMessageBridge, times(1)).requestPermission(
