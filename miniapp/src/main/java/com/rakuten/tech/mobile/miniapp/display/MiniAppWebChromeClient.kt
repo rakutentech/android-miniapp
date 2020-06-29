@@ -8,7 +8,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCode
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.BufferedReader
 
@@ -33,7 +33,8 @@ internal class MiniAppWebChromeClient(
 
     // region geolocation
     private var geoLocationRequestOrigin: String? = null
-    private var geoLocationCallback: GeolocationPermissions.Callback? = null
+    @VisibleForTesting
+    internal var geoLocationCallback: GeolocationPermissions.Callback? = null
 
     @Suppress("FunctionMaxLength")
     override fun onGeolocationPermissionsShowPrompt(
@@ -42,18 +43,18 @@ internal class MiniAppWebChromeClient(
     ) {
         geoLocationRequestOrigin = origin
         geoLocationCallback = callback
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             onGeolocationPermissionResult(true)
         else
             miniAppMessageBridge.requestPermission(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                MiniAppCode.Permission.GEOLOCATION
+                MiniAppPermission.GEOLOCATION
             )
     }
 
     override fun onGeolocationPermissionResult(isGranted: Boolean) {
-        geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
+        if (geoLocationCallback != null)
+            geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
         geoLocationRequestOrigin = null
         geoLocationCallback = null
     }

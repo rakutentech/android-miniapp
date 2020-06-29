@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.ViewGroup
+import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -16,7 +17,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCode
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -171,14 +172,16 @@ class MiniAppWebviewTest {
 
         verify(miniAppMessageBridge, times(1)).requestPermission(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            MiniAppCode.Permission.GEOLOCATION
+            MiniAppPermission.GEOLOCATION
         )
     }
 
     @Test
     fun `should execute geolocation result when there is a granted geolocation permission`() {
+        webChromeClient.geoLocationCallback =
+            GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain}
         miniAppWebView.onRequestPermissionsResult(
-            MiniAppCode.Permission.GEOLOCATION,
+            MiniAppPermission.GEOLOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             PackageManager.PERMISSION_GRANTED
         )

@@ -34,7 +34,7 @@ class MiniAppMessageBridgeSpec {
 
     private val permissionCallbackObj = CallbackObj(
         action = REQUEST_PERMISSION,
-        param = Manifest.permission.ACCESS_FINE_LOCATION,
+        param = MiniAppPermission.GEOLOCATION,
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
@@ -80,8 +80,9 @@ class MiniAppMessageBridgeSpec {
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(Activity()))
         miniAppBridge.postMessage(permissionJsonStr)
 
+        val permissionType = permissionCallbackObj.param as Int
         verify(miniAppBridge, times(1)).requestPermission(
-            arrayOf(permissionCallbackObj.param as String), MiniAppCode.Permission.ANY)
+            arrayOf(MiniAppPermission.getPermissionRequest(permissionType)), permissionType)
     }
 
     @Test

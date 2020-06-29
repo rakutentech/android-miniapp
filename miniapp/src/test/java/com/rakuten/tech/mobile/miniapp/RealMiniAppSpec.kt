@@ -47,6 +47,11 @@ class RealMiniAppSpec {
         realMiniApp.fetchInfo("")
     }
 
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when app id is blank`() = runBlockingTest {
+        realMiniApp.create(" ", miniAppMessageBridge)
+    }
+
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {

@@ -32,7 +32,10 @@ abstract class MiniAppMessageBridge(val context: Context) {
                 postError(callbackObj.id, "Cannot get unique id: ${e.message}")
             }
             REQUEST_PERMISSION -> try {
-                requestPermission(arrayOf(callbackObj.param as String), MiniAppCode.Permission.ANY)
+                val permissionType = callbackObj.param as Int
+                requestPermission(
+                    arrayOf(MiniAppPermission.getPermissionRequest(permissionType)),
+                    permissionType)
             } catch (e: Exception) {
                 postError(callbackObj.id, "Cannot request permission: ${e.message}")
             }

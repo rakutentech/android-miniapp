@@ -9,7 +9,7 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCode
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
@@ -72,10 +72,8 @@ internal class MiniAppWebView(
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int) {
-        if (requestCode == MiniAppCode.Permission.GEOLOCATION &&
-            permission == Manifest.permission.ACCESS_FINE_LOCATION)
-            miniAppWebChromeClient.onGeolocationPermissionResult(
-                grantResult == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == MiniAppPermission.GEOLOCATION && permission == Manifest.permission.ACCESS_FINE_LOCATION)
+            miniAppWebChromeClient.onGeolocationPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
