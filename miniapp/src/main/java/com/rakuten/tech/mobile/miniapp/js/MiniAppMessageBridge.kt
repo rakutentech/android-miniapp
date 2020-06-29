@@ -21,7 +21,7 @@ abstract class MiniAppMessageBridge(val context: Context) {
     abstract fun getUniqueId(): String
 
     /** Handle the message from external. **/
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
@@ -32,7 +32,7 @@ abstract class MiniAppMessageBridge(val context: Context) {
                 postError(callbackObj.id, "Cannot get unique id: ${e.message}")
             }
             REQUEST_PERMISSION -> try {
-                val permissionType = callbackObj.param as Int
+                val permissionType = (callbackObj.param as Number).toInt()
                 requestPermission(
                     arrayOf(MiniAppPermission.getPermissionRequest(permissionType)),
                     permissionType)

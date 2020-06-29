@@ -179,7 +179,7 @@ class MiniAppWebviewTest {
     @Test
     fun `should execute geolocation result when there is a granted geolocation permission`() {
         webChromeClient.geoLocationCallback =
-            GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain}
+            GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain }
         miniAppWebView.onRequestPermissionsResult(
             MiniAppPermission.GEOLOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,

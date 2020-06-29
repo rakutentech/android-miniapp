@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

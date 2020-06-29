@@ -4,7 +4,7 @@ import android.Manifest
 
 internal object MiniAppPermission {
 
-    internal const val GEOLOCATION = 1001
+    internal const val GEOLOCATION: Int = 1001
 
     internal fun getPermissionRequest(permissionType: Int) = when (permissionType) {
         GEOLOCATION -> Manifest.permission.ACCESS_FINE_LOCATION

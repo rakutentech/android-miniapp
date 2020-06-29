@@ -43,7 +43,8 @@ internal class MiniAppWebChromeClient(
     ) {
         geoLocationRequestOrigin = origin
         geoLocationCallback = callback
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED)
             onGeolocationPermissionResult(true)
         else
             miniAppMessageBridge.requestPermission(
