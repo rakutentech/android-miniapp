@@ -1,5 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
@@ -17,43 +20,31 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 
-const val GET_UNIQUE_ID = "getUniqueId"
-
+@Suppress("TooGenericExceptionThrown")
 @RunWith(AndroidJUnit4::class)
 class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
-        object : MiniAppMessageBridge(ApplicationProvider.getApplicationContext()) {
+        createMiniAppMessageBridge(ApplicationProvider.getApplicationContext())
+    )
+    private val uniqueIdCallbackObj = CallbackObj(
+        action = GET_UNIQUE_ID,
+        param = null,
+        id = TEST_CALLBACK_ID)
+    private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
+
+    private val permissionCallbackObj = CallbackObj(
+        action = REQUEST_PERMISSION,
+        param = Manifest.permission.ACCESS_FINE_LOCATION,
+        id = TEST_CALLBACK_ID)
+    private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
+
+    private fun createMiniAppMessageBridge(context: Context): MiniAppMessageBridge =
+        object : MiniAppMessageBridge(context) {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
         }
-    )
-    private val callbackObj = CallbackObj(GET_UNIQUE_ID, TEST_CALLBACK_ID)
-    private val jsonStr = Gson().toJson(callbackObj)
 
-    @Before
-    fun setup() {
-        miniAppBridge.setWebViewListener(mock())
-    }
-
-    @Test
-    fun `getUniqueId should be called when there is a getting unique id request from external`() {
-        miniAppBridge.postMessage(jsonStr)
-
-        verify(miniAppBridge, times(1)).getUniqueId()
-        verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
-    }
-
-    @Test
-    fun `postValue should not be called when calling postError`() {
-        miniAppBridge.postError(TEST_CALLBACK_ID, TEST_ERROR_MSG)
-
-        verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
-    }
-
-    @Suppress("TooGenericExceptionThrown")
-    @Test
-    fun `postError should be called when error occurs in postValue`() {
-        val errMsg = "Cannot get unique id: null"
-        miniAppBridge.setWebViewListener(object : WebViewListener {
+    private fun createErrorWebViewListener(errMsg: String): WebViewListener =
+        object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
                 throw Exception()
             }
@@ -69,8 +60,51 @@ class MiniAppMessageBridgeSpec {
             ) {
                 throw Exception()
             }
-        })
-        miniAppBridge.postMessage(jsonStr)
+        }
+
+    @Before
+    fun setup() {
+        miniAppBridge.setWebViewListener(mock())
+    }
+
+    @Test
+    fun `getUniqueId should be called when there is a getting unique id request from external`() {
+        miniAppBridge.postMessage(uniqueIdJsonStr)
+
+        verify(miniAppBridge, times(1)).getUniqueId()
+        verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `requestPermission should be called when there is a permission request from external`() {
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(Activity()))
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(miniAppBridge, times(1)).requestPermission(
+            arrayOf(permissionCallbackObj.param as String), MiniAppCode.Permission.ANY)
+    }
+
+    @Test
+    fun `postValue should not be called when calling postError`() {
+        miniAppBridge.postError(TEST_CALLBACK_ID, TEST_ERROR_MSG)
+
+        verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when cannot get unique id`() {
+        val errMsg = "Cannot get unique id: null"
+        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
+        miniAppBridge.postMessage(uniqueIdJsonStr)
+
+        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when cannot request permission`() {
+        val errMsg = "Cannot request permission: android.app.Application cannot be cast to android.app.Activity"
+        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
+        miniAppBridge.postMessage(permissionJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }

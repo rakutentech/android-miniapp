@@ -46,7 +46,7 @@ internal class MiniAppWebChromeClient(
                 PackageManager.PERMISSION_GRANTED)
             onGeolocationPermissionResult(true)
         else
-            miniAppMessageBridge.requestPermissions(
+            miniAppMessageBridge.requestPermission(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 MiniAppCode.Permission.GEOLOCATION
             )

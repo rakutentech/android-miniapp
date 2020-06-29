@@ -168,7 +168,7 @@ class MiniAppWebviewTest {
         webChromeClient.context shouldNotBe null
         webChromeClient.onGeolocationPermissionsShowPrompt("", mock())
 
-        verify(miniAppMessageBridge, times(1)).requestPermissions(
+        verify(miniAppMessageBridge, times(1)).requestPermission(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             MiniAppCode.Permission.GEOLOCATION
         )
