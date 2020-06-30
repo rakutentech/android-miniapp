@@ -22,8 +22,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val appId: String,
     miniAppMessageBridge: MiniAppMessageBridge,
-    @VisibleForTesting
-    internal val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
 ) : WebView(context), WebViewListener {
 
     private val miniAppDomain = "mscheme.$appId"
@@ -72,8 +71,10 @@ internal class MiniAppWebView(
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int) {
-        if (requestCode == MiniAppPermission.GEOLOCATION && permission == Manifest.permission.ACCESS_FINE_LOCATION)
-            miniAppWebChromeClient.onGeolocationPermissionResult(grantResult == PackageManager.PERMISSION_GRANTED)
+        if (requestCode == MiniAppPermission.Code.GEOLOCATION &&
+            permission == Manifest.permission.ACCESS_FINE_LOCATION)
+            miniAppWebChromeClient.onGeolocationPermissionResult(
+                grantResult == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()

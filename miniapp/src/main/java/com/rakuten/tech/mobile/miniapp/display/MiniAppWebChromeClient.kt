@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.webkit.GeolocationPermissions
@@ -43,19 +42,20 @@ internal class MiniAppWebChromeClient(
     ) {
         geoLocationRequestOrigin = origin
         geoLocationCallback = callback
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(
+                context,
+                "android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED)
             onGeolocationPermissionResult(true)
         else
             miniAppMessageBridge.requestPermission(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                MiniAppPermission.GEOLOCATION
+                MiniAppPermission.getPermissionRequest(MiniAppPermission.PermissionType.GEOLOCATION),
+                MiniAppPermission.Code.GEOLOCATION
             )
     }
 
     override fun onGeolocationPermissionResult(isGranted: Boolean) {
         if (geoLocationCallback != null)
-            geoLocationCallback?.invoke(geoLocationRequestOrigin, isGranted, isGranted)
+            geoLocationCallback!!.invoke(geoLocationRequestOrigin, isGranted, isGranted)
         geoLocationRequestOrigin = null
         geoLocationCallback = null
     }

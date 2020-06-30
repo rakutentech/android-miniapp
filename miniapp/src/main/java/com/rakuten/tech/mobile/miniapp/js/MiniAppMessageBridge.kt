@@ -25,6 +25,7 @@ abstract class MiniAppMessageBridge(val context: Context) {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
+
         when (callbackObj.action) {
             GET_UNIQUE_ID -> try {
                 postValue(callbackObj.id, getUniqueId())
@@ -32,10 +33,10 @@ abstract class MiniAppMessageBridge(val context: Context) {
                 postError(callbackObj.id, "Cannot get unique id: ${e.message}")
             }
             REQUEST_PERMISSION -> try {
-                val permissionType = (callbackObj.param as Number).toInt()
+                val permissionParam = Gson().fromJson(callbackObj.param, Permission::class.java)
                 requestPermission(
-                    arrayOf(MiniAppPermission.getPermissionRequest(permissionType)),
-                    permissionType)
+                    MiniAppPermission.getPermissionRequest(permissionParam.permission),
+                    MiniAppPermission.getRequestCode(permissionParam.permission))
             } catch (e: Exception) {
                 postError(callbackObj.id, "Cannot request permission: ${e.message}")
             }

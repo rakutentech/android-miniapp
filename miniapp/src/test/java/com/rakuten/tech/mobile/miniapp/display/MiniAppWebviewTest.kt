@@ -172,7 +172,7 @@ class MiniAppWebviewTest {
 
         verify(miniAppMessageBridge, times(1)).requestPermission(
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            MiniAppPermission.GEOLOCATION
+            MiniAppPermission.Code.GEOLOCATION
         )
     }
 
@@ -181,7 +181,7 @@ class MiniAppWebviewTest {
         webChromeClient.geoLocationCallback =
             GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain }
         miniAppWebView.onRequestPermissionsResult(
-            MiniAppPermission.GEOLOCATION,
+            MiniAppPermission.Code.GEOLOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             PackageManager.PERMISSION_GRANTED
         )
