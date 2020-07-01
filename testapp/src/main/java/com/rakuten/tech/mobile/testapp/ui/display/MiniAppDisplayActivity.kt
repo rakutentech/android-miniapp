@@ -3,23 +3,28 @@ package com.rakuten.tech.mobile.testapp.ui.display
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
+import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
+    private val callbackMap = TreeMap<Int, String>()
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -67,8 +72,21 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            miniAppMessageBridge = object: MiniAppMessageBridge(this) {
+            miniAppMessageBridge = object: MiniAppMessageBridge() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
+                override fun requestPermission(
+                    callbackId: String,
+                    miniAppPermissionType: String,
+                    permissions: Array<String>) {
+                    val reqCode = MiniAppPermission.getRequestCode(miniAppPermissionType)
+                    callbackMap[reqCode] = callbackId
+
+                    ActivityCompat.requestPermissions(
+                        this@MiniAppDisplayActivity,
+                        permissions,
+                        reqCode
+                    )
+                }
             }
 
             if (appId.isEmpty())
@@ -88,8 +106,20 @@ class MiniAppDisplayActivity : BaseActivity() {
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray) {
-        if (::miniAppMessageBridge.isInitialized)
-            miniAppMessageBridge.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (::miniAppMessageBridge.isInitialized) {
+            val grantResult = if (grantResults.contains(PackageManager.PERMISSION_DENIED))
+                PackageManager.PERMISSION_DENIED
+            else
+                PackageManager.PERMISSION_GRANTED
+
+            if (callbackMap[requestCode] != null) {
+                miniAppMessageBridge.onRequestPermissionsResult(
+                    callbackId = callbackMap[requestCode]!!,
+                    grantResult = grantResult
+                )
+                callbackMap.remove(requestCode)
+            }
+        }
     }
 
         private fun toggleProgressLoading(isOn: Boolean) {

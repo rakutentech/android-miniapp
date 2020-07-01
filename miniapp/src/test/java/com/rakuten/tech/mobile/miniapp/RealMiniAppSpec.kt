@@ -24,6 +24,7 @@ class RealMiniAppSpec {
     private val apiClientRepository: ApiClientRepository = mock()
     private val displayer: Displayer = mock()
     private val miniAppDownloader: MiniAppDownloader = mock()
+    private val miniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", TEST_MA_VERSION_ID))
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val realMiniApp =
@@ -34,6 +35,15 @@ class RealMiniAppSpec {
     fun setup() {
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
     }
+
+    @Test
+    fun `should still be able to download miniapp for deprecated method`() =
+        runBlockingTest {
+            realMiniApp.create(miniAppInfo)
+            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+
+            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
+        }
 
     @Test
     fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {

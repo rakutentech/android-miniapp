@@ -1,15 +1,12 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
-import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
@@ -22,7 +19,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val appId: String,
     miniAppMessageBridge: MiniAppMessageBridge,
-    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppMessageBridge)
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context)
 ) : WebView(context), WebViewListener {
 
     private val miniAppDomain = "mscheme.$appId"
@@ -41,7 +38,6 @@ internal class MiniAppWebView(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        settings.setGeolocationEnabled(true)
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
 
@@ -70,13 +66,6 @@ internal class MiniAppWebView(
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int) {
-        if (requestCode == MiniAppPermission.Code.GEOLOCATION &&
-            permission == Manifest.permission.ACCESS_FINE_LOCATION)
-            miniAppWebChromeClient.onGeolocationPermissionResult(
-                grantResult == PackageManager.PERMISSION_GRANTED)
-    }
-
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
         .setDomain(miniAppDomain)
         .addPathHandler(
@@ -100,5 +89,4 @@ internal class MiniAppWebView(
 internal interface WebViewListener {
     fun runSuccessCallback(callbackId: String, value: String)
     fun runErrorCallback(callbackId: String, errorMessage: String)
-    fun onRequestPermissionsResult(requestCode: Int, permission: String, grantResult: Int)
 }

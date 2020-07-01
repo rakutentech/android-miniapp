@@ -1,8 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
@@ -17,7 +15,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
-import com.rakuten.tech.mobile.miniapp.js.MiniAppPermission
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -39,7 +36,7 @@ class MiniAppWebviewTest {
     fun setup() {
         context = getApplicationContext()
         basePath = context.filesDir.path
-        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, miniAppMessageBridge))
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
@@ -160,33 +157,20 @@ class MiniAppWebviewTest {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock(), mock())
+        val webClient = MiniAppWebChromeClient(mock())
         webClient.bridgeJs shouldBe null
     }
 
     @Test
-    fun `should request location permission when it is not granted`() {
-        webChromeClient.context shouldNotBe null
-        webChromeClient.miniAppMessageBridge shouldNotBe null
-        webChromeClient.onGeolocationPermissionsShowPrompt("", mock())
-
-        verify(miniAppMessageBridge, times(1)).requestPermission(
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            MiniAppPermission.Code.GEOLOCATION
-        )
-    }
-
-    @Test
-    fun `should execute geolocation result when there is a granted geolocation permission`() {
-        webChromeClient.geoLocationCallback =
+    fun `should invoke callback from onRequestPermissionsResult when it is called`() {
+        val geoLocationCallback = Mockito.spy(
             GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain }
-        miniAppWebView.onRequestPermissionsResult(
-            MiniAppPermission.Code.GEOLOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            PackageManager.PERMISSION_GRANTED
         )
 
-        verify(webChromeClient, times(1)).onGeolocationPermissionResult(true)
+        webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
+        webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
+
+        verify(geoLocationCallback, times(1)).invoke("", false, false)
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {

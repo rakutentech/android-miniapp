@@ -1,12 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.app.Activity
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -23,24 +19,29 @@ import org.mockito.Mockito
 @RunWith(AndroidJUnit4::class)
 class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
-        createMiniAppMessageBridge(ApplicationProvider.getApplicationContext())
+        object : MiniAppMessageBridge() {
+            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun requestPermission(
+                callbackId: String,
+                miniAppPermissionType: String,
+                permissions: Array<String>
+            ) {
+                onRequestPermissionsResult(TEST_CALLBACK_ID, 0)
+            }
+        }
     )
     private val uniqueIdCallbackObj = CallbackObj(
-        action = GET_UNIQUE_ID,
+        action = ActionType.GET_UNIQUE_ID.action,
         param = null,
         id = TEST_CALLBACK_ID)
     private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
-        action = REQUEST_PERMISSION,
+        action = ActionType.REQUEST_PERMISSION.action,
         param = Gson().toJson(Permission(MiniAppPermission.PermissionType.GEOLOCATION)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
-
-    private fun createMiniAppMessageBridge(context: Context): MiniAppMessageBridge =
-        object : MiniAppMessageBridge(context) {
-            override fun getUniqueId() = TEST_CALLBACK_VALUE
-        }
 
     private fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
@@ -50,14 +51,6 @@ class MiniAppMessageBridgeSpec {
 
             override fun runErrorCallback(callbackId: String, errorMessage: String) {
                 Assert.assertEquals(errorMessage, errMsg)
-            }
-
-            override fun onRequestPermissionsResult(
-                requestCode: Int,
-                permission: String,
-                grantResult: Int
-            ) {
-                throw Exception()
             }
         }
 
@@ -76,13 +69,14 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `requestPermission should be called when there is a permission request from external`() {
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(Activity()))
+        val permissionParam = Gson().fromJson(permissionCallbackObj.param, Permission::class.java)
+
         miniAppBridge.postMessage(permissionJsonStr)
 
-        val permissionParam = Gson().fromJson(permissionCallbackObj.param, Permission::class.java)
         verify(miniAppBridge, times(1)).requestPermission(
-            MiniAppPermission.getPermissionRequest(permissionParam.permission),
-            MiniAppPermission.getRequestCode(permissionParam.permission))
+            callbackId = permissionCallbackObj.id,
+            miniAppPermissionType = permissionParam.permission,
+            permissions = MiniAppPermission.getPermissionRequest(permissionParam.permission))
     }
 
     @Test
@@ -103,24 +97,10 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postError should be called when cannot request permission`() {
-        val errMsg = "Cannot request permission: android.app.Application cannot be cast to android.app.Activity"
+        val errMsg = "Cannot request permission: null"
         miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
-    }
-
-    @Test
-    fun `should pass permission result to webview`() {
-        val webViewListener: WebViewListener = spy()
-        miniAppBridge.setWebViewListener(webViewListener)
-        val requestCode = 0
-        val permissions = arrayOf("")
-        val grantResults = IntArray(1).also { it[0] = 0 }
-
-        miniAppBridge.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        verify(webViewListener, times(1)).onRequestPermissionsResult(
-            requestCode, permissions[0], grantResults[0])
     }
 }
