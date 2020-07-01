@@ -69,7 +69,7 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `requestPermission should be called when there is a permission request from external`() {
-        val permissionParam = Gson().fromJson(permissionCallbackObj.param, Permission::class.java)
+        val permissionParam = Gson().fromJson(permissionCallbackObj.param as String, Permission::class.java)
 
         miniAppBridge.postMessage(permissionJsonStr)
 

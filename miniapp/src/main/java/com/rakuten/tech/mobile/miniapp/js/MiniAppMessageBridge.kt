@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -40,7 +41,10 @@ abstract class MiniAppMessageBridge {
 
     private fun onRequestPermission(callbackObj: CallbackObj) {
         try {
-            val permissionParam = Gson().fromJson(callbackObj.param, Permission::class.java)
+            val permissionParam = Gson().fromJson<Permission>(
+                callbackObj.param.toString(),
+                object : TypeToken<Permission>() {}.type
+            )
             requestPermission(
                 callbackId = callbackObj.id,
                 miniAppPermissionType = permissionParam.permission,

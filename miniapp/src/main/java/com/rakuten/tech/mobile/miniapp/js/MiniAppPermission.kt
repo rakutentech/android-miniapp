@@ -12,7 +12,7 @@ object MiniAppPermission {
     }
 
     internal object PermissionType {
-        const val GEOLOCATION = "miniapp.permission.geolocation"
+        const val GEOLOCATION = "location"
     }
 
     internal object PermissionResult {
