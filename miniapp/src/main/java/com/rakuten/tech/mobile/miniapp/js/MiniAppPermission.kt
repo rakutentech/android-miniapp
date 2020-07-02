@@ -1,38 +1,22 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.Manifest
-import android.content.pm.PackageManager
+/** Type of miniapp permission. **/
+enum class MiniAppPermissionType(val type: String) {
+    UNKNOWN("unknown"),
+    LOCATION("location");
 
-/** The resource of miniapp permission. **/
-object MiniAppPermission {
+    internal companion object {
 
-    /** Request code resource for permission request. **/
-    object ReqCode {
-        const val GEOLOCATION = 1001
+        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
     }
+}
 
-    internal object PermissionType {
-        const val GEOLOCATION = "location"
-    }
+internal enum class MiniAppPermissionResult(val type: String) {
+    ALLOWED("Allowed"),
+    DENIED("Denied");
 
-    internal object PermissionResult {
-        const val GRANTED = "Granted"
-        const val DENIED = "Denied"
-    }
+    internal companion object {
 
-    /** Get the correspond permission request code of permission type request from miniapp. **/
-    fun getRequestCode(permissionType: String) = when (permissionType) {
-        PermissionType.GEOLOCATION -> ReqCode.GEOLOCATION
-        else -> 0
-    }
-
-    internal fun getPermissionRequest(permissionType: String) = when (permissionType) {
-        PermissionType.GEOLOCATION -> arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        else -> emptyArray()
-    }
-
-    internal fun getPermissionResult(grantResult: Int) = when (grantResult) {
-        PackageManager.PERMISSION_GRANTED -> PermissionResult.GRANTED
-        else -> PermissionResult.DENIED
+        internal fun getValue(isGranted: Boolean) = if (isGranted) ALLOWED else DENIED
     }
 }

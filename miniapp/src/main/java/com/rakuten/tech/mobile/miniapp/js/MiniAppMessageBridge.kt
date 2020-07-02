@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.webkit.JavascriptInterface
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -15,9 +16,8 @@ abstract class MiniAppMessageBridge {
 
     /** Post permission request from external. **/
     abstract fun requestPermission(
-        callbackId: String,
-        miniAppPermissionType: String,
-        permissions: Array<String>
+        callback: (isGranted: Boolean) -> Unit,
+        miniAppPermissionType: MiniAppPermissionType
     )
 
     /** Handle the message from external. **/
@@ -45,18 +45,22 @@ abstract class MiniAppMessageBridge {
                 callbackObj.param.toString(),
                 object : TypeToken<Permission>() {}.type
             )
-            requestPermission(
-                callbackId = callbackObj.id,
-                miniAppPermissionType = permissionParam.permission,
-                permissions = MiniAppPermission.getPermissionRequest(permissionParam.permission))
+            requestPermission({
+                isGranted -> onRequestPermissionsResult(
+                    callbackId = callbackObj.id,
+                    isGranted = isGranted
+            ) },
+                MiniAppPermissionType.getValue(permissionParam.permission)
+            )
         } catch (e: Exception) {
             postError(callbackObj.id, "Cannot request permission: ${e.message}")
         }
     }
 
+    @VisibleForTesting
     /** Inform the permission request result to MiniApp. **/
-    fun onRequestPermissionsResult(callbackId: String, grantResult: Int) =
-        postValue(callbackId, MiniAppPermission.getPermissionResult(grantResult))
+    internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) =
+        postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
 
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {

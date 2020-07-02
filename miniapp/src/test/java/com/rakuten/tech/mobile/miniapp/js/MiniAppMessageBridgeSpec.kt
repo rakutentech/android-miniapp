@@ -23,11 +23,10 @@ class MiniAppMessageBridgeSpec {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
             override fun requestPermission(
-                callbackId: String,
-                miniAppPermissionType: String,
-                permissions: Array<String>
+                callback: (isGranted: Boolean) -> Unit,
+                miniAppPermissionType: MiniAppPermissionType
             ) {
-                onRequestPermissionsResult(TEST_CALLBACK_ID, 0)
+                onRequestPermissionsResult(TEST_CALLBACK_ID, false)
             }
         }
     )
@@ -39,7 +38,7 @@ class MiniAppMessageBridgeSpec {
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
-        param = Gson().toJson(Permission(MiniAppPermission.PermissionType.GEOLOCATION)),
+        param = Gson().toJson(Permission(MiniAppPermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
@@ -68,15 +67,11 @@ class MiniAppMessageBridgeSpec {
     }
 
     @Test
-    fun `requestPermission should be called when there is a permission request from external`() {
-        val permissionParam = Gson().fromJson(permissionCallbackObj.param as String, Permission::class.java)
-
+    fun `onRequestPermissionResult should be called when there is a permission request and response`() {
         miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(miniAppBridge, times(1)).requestPermission(
-            callbackId = permissionCallbackObj.id,
-            miniAppPermissionType = permissionParam.permission,
-            permissions = MiniAppPermission.getPermissionRequest(permissionParam.permission))
+        verify(miniAppBridge, times(1)).onRequestPermissionsResult(
+            permissionCallbackObj.id, false)
     }
 
     @Test

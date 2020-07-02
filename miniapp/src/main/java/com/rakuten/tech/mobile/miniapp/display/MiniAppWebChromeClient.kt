@@ -33,7 +33,7 @@ internal class MiniAppWebChromeClient(val context: Context) : WebChromeClient() 
     ) {
         val isGranted = (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED)
-        callback?.invoke(origin, isGranted, isGranted)
+        callback?.invoke(origin, isGranted, false)
     }
 
     @VisibleForTesting
