@@ -5,6 +5,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -25,10 +26,10 @@ internal class RealMiniApp(
         executingCreate(info.id, object : MiniAppMessageBridge() {
             override fun getUniqueId(): String =
                 throw Exception("MiniAppMessageBridge has not been implemented")
+
             override fun requestPermission(
-                callbackId: String,
-                miniAppPermissionType: String,
-                permissions: Array<String>
+                callback: (isGranted: Boolean) -> Unit,
+                miniAppPermissionType: MiniAppPermissionType
             ) = throw Exception("MiniAppMessageBridge has not been implemented")
         })
 

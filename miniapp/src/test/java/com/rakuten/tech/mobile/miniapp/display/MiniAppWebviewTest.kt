@@ -164,13 +164,16 @@ class MiniAppWebviewTest {
     @Test
     fun `should invoke callback from onRequestPermissionsResult when it is called`() {
         val geoLocationCallback = Mockito.spy(
-            GeolocationPermissions.Callback { origin, allow, retain -> allow shouldBe retain }
+            GeolocationPermissions.Callback { origin, allow, retain ->
+                allow shouldBe true
+                retain shouldBe false
+            }
         )
 
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
         webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
 
-        verify(geoLocationCallback, times(1)).invoke("", false, false)
+        verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {

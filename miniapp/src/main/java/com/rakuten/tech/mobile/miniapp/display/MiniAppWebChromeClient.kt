@@ -1,13 +1,10 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
 import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(val context: Context) : WebChromeClient() {
@@ -31,9 +28,7 @@ internal class MiniAppWebChromeClient(val context: Context) : WebChromeClient() 
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        val isGranted = (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED)
-        callback?.invoke(origin, isGranted, false)
+        callback?.invoke(origin, true, false)
     }
 
     @VisibleForTesting
