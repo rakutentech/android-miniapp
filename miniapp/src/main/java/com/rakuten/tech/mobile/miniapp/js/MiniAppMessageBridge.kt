@@ -59,8 +59,12 @@ abstract class MiniAppMessageBridge {
 
     @VisibleForTesting
     /** Inform the permission request result to MiniApp. **/
-    internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) =
-        postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+    internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
+        if (isGranted)
+            postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+        else
+            postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+    }
 
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
