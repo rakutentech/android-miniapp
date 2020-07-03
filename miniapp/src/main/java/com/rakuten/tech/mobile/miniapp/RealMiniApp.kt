@@ -28,8 +28,8 @@ internal class RealMiniApp(
                 throw Exception("MiniAppMessageBridge has not been implemented")
 
             override fun requestPermission(
-                callback: (isGranted: Boolean) -> Unit,
-                miniAppPermissionType: MiniAppPermissionType
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
             ) = throw Exception("MiniAppMessageBridge has not been implemented")
         })
 

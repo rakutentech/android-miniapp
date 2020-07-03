@@ -23,8 +23,8 @@ class MiniAppMessageBridgeSpec {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
             override fun requestPermission(
-                callback: (isGranted: Boolean) -> Unit,
-                miniAppPermissionType: MiniAppPermissionType
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, false)
             }

@@ -76,8 +76,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
 
                 override fun requestPermission(
-                    callback: (isGranted: Boolean) -> Unit,
-                    miniAppPermissionType: MiniAppPermissionType
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
                 ) {
                     miniappPermissionCallback = callback
                     ActivityCompat.requestPermissions(

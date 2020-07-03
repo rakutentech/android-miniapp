@@ -16,8 +16,8 @@ abstract class MiniAppMessageBridge {
 
     /** Post permission request from external. **/
     abstract fun requestPermission(
-        callback: (isGranted: Boolean) -> Unit,
-        miniAppPermissionType: MiniAppPermissionType
+        miniAppPermissionType: MiniAppPermissionType,
+        callback: (isGranted: Boolean) -> Unit
     )
 
     /** Handle the message from external. **/
@@ -45,13 +45,13 @@ abstract class MiniAppMessageBridge {
                 callbackObj.param.toString(),
                 object : TypeToken<Permission>() {}.type
             )
-            requestPermission({
-                isGranted -> onRequestPermissionsResult(
-                    callbackId = callbackObj.id,
-                    isGranted = isGranted
-            ) },
+
+            requestPermission(
                 MiniAppPermissionType.getValue(permissionParam.permission)
-            )
+            ) { isGranted -> onRequestPermissionsResult(
+                callbackId = callbackObj.id,
+                isGranted = isGranted
+            ) }
         } catch (e: Exception) {
             postError(callbackObj.id, "Cannot request permission: ${e.message}")
         }
