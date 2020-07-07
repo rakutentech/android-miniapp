@@ -37,6 +37,15 @@ class RealMiniAppSpec {
     }
 
     @Test
+    fun `should still be able to download miniapp for deprecated method`() =
+        runBlockingTest {
+            realMiniApp.create(miniAppInfo)
+            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+
+            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
+        }
+
+    @Test
     fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {
         realMiniApp.listMiniApp()
 
@@ -48,6 +57,11 @@ class RealMiniAppSpec {
         realMiniApp.fetchInfo("")
     }
 
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when app id is blank`() = runBlockingTest {
+        realMiniApp.create(" ", miniAppMessageBridge)
+    }
+
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
@@ -56,15 +70,6 @@ class RealMiniAppSpec {
             val basePath: String = verify(miniAppDownloader, times(1))
                 .getMiniApp(TEST_MA_ID)
             verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
-        }
-
-    @Test
-    fun `should still be able to download miniapp for deprecated method`() =
-        runBlockingTest {
-            realMiniApp.create(miniAppInfo)
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
-
-            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
         }
 
     @Test

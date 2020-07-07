@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
@@ -11,16 +12,50 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 
-const val GET_UNIQUE_ID = "getUniqueId"
-
+@Suppress("TooGenericExceptionThrown")
+@RunWith(AndroidJUnit4::class)
 class MiniAppMessageBridgeSpec {
-    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(object : MiniAppMessageBridge() {
-        override fun getUniqueId() = TEST_CALLBACK_VALUE
-    })
-    private val callbackObj = CallbackObj(GET_UNIQUE_ID, TEST_CALLBACK_ID)
-    private val jsonStr = Gson().toJson(callbackObj)
+    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
+        createMiniAppMessageBridge(false)
+    )
+
+    private fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
+        object : MiniAppMessageBridge() {
+            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun requestPermission(
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
+            }
+        }
+
+    private val uniqueIdCallbackObj = CallbackObj(
+        action = ActionType.GET_UNIQUE_ID.action,
+        param = null,
+        id = TEST_CALLBACK_ID)
+    private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
+
+    private val permissionCallbackObj = CallbackObj(
+        action = ActionType.REQUEST_PERMISSION.action,
+        param = Gson().toJson(Permission(MiniAppPermissionType.LOCATION.type)),
+        id = TEST_CALLBACK_ID)
+    private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
+
+    private fun createErrorWebViewListener(errMsg: String): WebViewListener =
+        object : WebViewListener {
+            override fun runSuccessCallback(callbackId: String, value: String) {
+                throw Exception()
+            }
+
+            override fun runErrorCallback(callbackId: String, errorMessage: String) {
+                Assert.assertEquals(errorMessage, errMsg)
+            }
+        }
 
     @Before
     fun setup() {
@@ -29,10 +64,31 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `getUniqueId should be called when there is a getting unique id request from external`() {
-        miniAppBridge.postMessage(jsonStr)
+        miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).getUniqueId()
         verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postValue should be called when permission is granted`() {
+        val isPermissionGranted = true
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
+        miniAppBridge.setWebViewListener(
+            createErrorWebViewListener("Cannot request permission: null"))
+
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(miniAppBridge, times(1))
+            .postValue(permissionCallbackObj.id, MiniAppPermissionResult.getValue(isPermissionGranted).type)
+    }
+
+    @Test
+    fun `postError should be called when permission is denied`() {
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(miniAppBridge, times(1))
+            .postError(permissionCallbackObj.id, MiniAppPermissionResult.getValue(false).type)
     }
 
     @Test
@@ -43,19 +99,10 @@ class MiniAppMessageBridgeSpec {
     }
 
     @Test
-    fun `postError should be called when error occurs in postValue`() {
+    fun `postError should be called when cannot get unique id`() {
         val errMsg = "Cannot get unique id: null"
-        miniAppBridge.setWebViewListener(object : WebViewListener {
-            override fun runSuccessCallback(callbackId: String, value: String) {
-                @Suppress("TooGenericExceptionThrown")
-                throw Exception()
-            }
-
-            override fun runErrorCallback(callbackId: String, errorMessage: String) {
-                Assert.assertEquals(errorMessage, errMsg)
-            }
-        })
-        miniAppBridge.postMessage(jsonStr)
+        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
+        miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }

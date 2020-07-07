@@ -5,6 +5,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -23,7 +24,12 @@ internal class RealMiniApp(
     @Suppress("TooGenericExceptionThrown")
     override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
         executingCreate(info.id, object : MiniAppMessageBridge() {
-            override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
+            override fun getUniqueId(): String = throw sdkExceptionForNoMiniAppMessageBridge()
+
+            override fun requestPermission(
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) = throw sdkExceptionForNoMiniAppMessageBridge()
         })
 
     override suspend fun create(

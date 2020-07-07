@@ -3,15 +3,19 @@ package com.rakuten.tech.mobile.testapp.ui.display
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
@@ -19,6 +23,8 @@ import kotlinx.android.synthetic.main.mini_app_display_activity.*
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
+    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
+    private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -66,8 +72,20 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            val miniAppMessageBridge = object: MiniAppMessageBridge() {
+            miniAppMessageBridge = object: MiniAppMessageBridge() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
+
+                override fun requestPermission(
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
+                ) {
+                    miniappPermissionCallback = callback
+                    ActivityCompat.requestPermissions(
+                        this@MiniAppDisplayActivity,
+                        AppPermission.getPermissionRequest(miniAppPermissionType),
+                        AppPermission.getRequestCode(miniAppPermissionType)
+                    )
+                }
             }
 
             if (appId.isEmpty())
@@ -83,7 +101,15 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
     }
 
-    private fun toggleProgressLoading(isOn: Boolean) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray) {
+        val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
+        miniappPermissionCallback.invoke(isGranted)
+    }
+
+        private fun toggleProgressLoading(isOn: Boolean) {
         if (findViewById<View>(R.id.pb) != null) {
             when (isOn) {
                 true -> pb.visibility = View.VISIBLE

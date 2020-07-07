@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup
+import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -29,16 +30,19 @@ class MiniAppWebviewTest {
     private lateinit var miniAppWebView: MiniAppWebView
     private lateinit var webResourceRequest: WebResourceRequest
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private lateinit var webChromeClient: MiniAppWebChromeClient
 
     @Before
     fun setup() {
         context = getApplicationContext()
         basePath = context.filesDir.path
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
             appId = TEST_MA_ID,
-            miniAppMessageBridge = miniAppMessageBridge
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppWebChromeClient = webChromeClient
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
     }
@@ -155,6 +159,21 @@ class MiniAppWebviewTest {
     fun `bridge js should be null when js asset is inaccessible`() {
         val webClient = MiniAppWebChromeClient(mock())
         webClient.bridgeJs shouldBe null
+    }
+
+    @Test
+    fun `should invoke callback from onRequestPermissionsResult when it is called`() {
+        val geoLocationCallback = Mockito.spy(
+            GeolocationPermissions.Callback { origin, allow, retain ->
+                allow shouldBe true
+                retain shouldBe false
+            }
+        )
+
+        webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
+        webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
+
+        verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
