@@ -1,10 +1,12 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -13,6 +15,7 @@ import androidx.appcompat.widget.SwitchCompat
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.coroutines.launch
@@ -24,6 +27,8 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
     private lateinit var btnSave: View
     private lateinit var edtAppId: EditText
     private lateinit var edtSubscriptionKey: EditText
+    private lateinit var settingsProgressDialog: SettingsProgressDialog
+
     private val settingTextWatcher = object: TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
 
@@ -84,16 +89,17 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         infoView.text = "Build " + resources.getString(R.string.miniapp_sdk_version) + " - " +
                 resources.getString(R.string.build_version)
 
+        settingsProgressDialog = SettingsProgressDialog(this)
+
         btnSave = settingsView.findViewById(R.id.buttonSave)
         btnSave.setOnClickListener {
-            val pb = settingsView.findViewById<View>(R.id.pb)
-            pb.visibility = View.VISIBLE
+            hideKeyboard(btnSave)
+            settingsProgressDialog.show()
 
             updateSettings(
                 appId.text.toString(),
                 subscriptionKey.text.toString(),
-                switchTest.isChecked,
-                pb
+                switchTest.isChecked
             )
         }
 
@@ -101,7 +107,6 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         btnCancel.setOnClickListener {
             launch {
                 runOnUiThread {
-                    settingsView.visibility = View.GONE
                     recreate()
                 }
             }
@@ -115,8 +120,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean,
-                               pb: View) {
+    private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
         val isTestModeHolder = settings.isTestMode
@@ -129,7 +133,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
                 settings.isSettingSaved = true
                 runOnUiThread {
-                    pb.visibility = View.GONE
+                    settingsProgressDialog.cancel()
                     recreate()
                 }
             } catch (error: MiniAppSdkException) {
@@ -137,12 +141,18 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 settings.subscriptionKey = subscriptionKeyHolder
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
-                    pb.visibility = View.GONE
+                    settingsProgressDialog.cancel()
                     val toast = Toast.makeText(this@SettingsMenuBaseActivity, error.message, Toast.LENGTH_LONG)
                     toast.setGravity(Gravity.TOP, 0, 0)
                     toast.show()
                 }
             }
         }
+    }
+
+    private fun hideKeyboard(view: View) {
+        val inputMethodManager: InputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
