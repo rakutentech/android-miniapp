@@ -1,0 +1,82 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/textInfo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_8">
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:text="Cancel" />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:text="Save" />
+    </RelativeLayout>
+
+    <include layout="@layout/line_settings_horizontal" />
+
+    <androidx.appcompat.widget.SwitchCompat
+      android:id="@+id/switchTest"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/lb_test_mode"
+      android:thumb="@drawable/bg_thumb_testmode"
+      app:track="@drawable/bg_track_testmode" />
+
+    <include layout="@layout/line_settings_horizontal" />
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <EditText
+        android:id="@+id/app_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Host App ID"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:layout_marginBottom="4dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <EditText
+        android:id="@+id/subscription_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Subscription Key"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+        android:id="@+id/pb"
+        style="?android:attr/progressBarStyle"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+  </LinearLayout>
+</FrameLayout>
