@@ -38,6 +38,10 @@ internal class MiniAppWebView(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
+
+        val userAgent = String.format("%s [%s/%s]", settings.userAgentString, "MiniApp Demo App", "1.2.0")
+        settings.userAgentString = userAgent
+
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
 
