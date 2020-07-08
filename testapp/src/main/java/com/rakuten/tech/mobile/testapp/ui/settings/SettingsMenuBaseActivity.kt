@@ -1,13 +1,15 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import com.google.android.material.switchmaterial.SwitchMaterial
+import androidx.appcompat.widget.SwitchCompat
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -50,12 +52,12 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
     }
 
     private fun showAppSettings(): Boolean {
-        val settingsDialog = LayoutInflater.from(this)
-            .inflate(R.layout.app_settings_dialog, null, false)
+        val settingsView = LayoutInflater.from(this)
+            .inflate(R.layout.settings_menu_base_activity, null, false)
 
-        edtAppId = settingsDialog.findViewById(R.id.app_id) as EditText
-        edtSubscriptionKey = settingsDialog.findViewById(R.id.subscription_key) as EditText
-        val switchTest = settingsDialog.findViewById<SwitchMaterial>(R.id.switchTest)
+        edtAppId = settingsView.findViewById(R.id.app_id) as EditText
+        edtSubscriptionKey = settingsView.findViewById(R.id.subscription_key) as EditText
+        val switchTest = settingsView.findViewById<SwitchCompat>(R.id.switchTest)
         edtAppId.setText(settings.appId)
         edtSubscriptionKey.setText(settings.subscriptionKey)
         edtAppId.addTextChangedListener(settingTextWatcher)
@@ -63,40 +65,47 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
         switchTest.isChecked = settings.isTestMode
         validateSetting()
 
-        renderAppSettingsDialog(settingsDialog, edtAppId, edtSubscriptionKey, switchTest)
+        renderAppSettingsScreen(settingsView, edtAppId, edtSubscriptionKey, switchTest)
         return true
     }
 
-    private fun renderAppSettingsDialog(
-        settingsDialog: View,
+    @SuppressLint("SetTextI18n")
+    private fun renderAppSettingsScreen(
+        settingsView: View,
         appId: EditText,
         subscriptionKey: EditText,
-        switchTest: SwitchMaterial
+        switchTest: SwitchCompat
     ) {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("${resources.getString(R.string.lb_app_settings)} - Build " +
-                    resources.getString(R.string.miniapp_sdk_version) + " - " +
-                    resources.getString(R.string.build_version))
-            .setView(settingsDialog)
-            .setPositiveButton(R.string.action_save, null)
-            .setNegativeButton(android.R.string.cancel, null)
-            .create()
+        title = resources.getString(R.string.lb_app_settings)
 
-        dialog.setOnShowListener { _dialog ->
-            btnSave = (_dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-            btnSave.setOnClickListener {
-                val pb = settingsDialog.findViewById<View>(R.id.pb)
-                pb.visibility = View.VISIBLE
-                updateSettings(appId.text.toString(), subscriptionKey.text.toString(), switchTest.isChecked,
-                    pb, _dialog)
-            }
+        setContentView(settingsView)
 
-            _dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
-                _dialog.dismiss()
-            }
+        val infoView = settingsView.findViewById<TextView>(R.id.textInfo)
+        infoView.text = "Build " + resources.getString(R.string.miniapp_sdk_version) + " - " +
+                resources.getString(R.string.build_version)
+
+        btnSave = settingsView.findViewById(R.id.buttonSave)
+        btnSave.setOnClickListener {
+            val pb = settingsView.findViewById<View>(R.id.pb)
+            pb.visibility = View.VISIBLE
+
+            updateSettings(
+                appId.text.toString(),
+                subscriptionKey.text.toString(),
+                switchTest.isChecked,
+                pb
+            )
         }
 
-        dialog.show()
+        val btnCancel = settingsView.findViewById<Button>(R.id.buttonCancel)
+        btnCancel.setOnClickListener {
+            launch {
+                runOnUiThread {
+                    settingsView.visibility = View.GONE
+                    recreate()
+                }
+            }
+        }
     }
 
     private fun validateSetting() {
@@ -107,7 +116,7 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean,
-                               pb: View, dialog: AlertDialog) {
+                               pb: View) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
         val isTestModeHolder = settings.isTestMode
@@ -121,7 +130,6 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 settings.isSettingSaved = true
                 runOnUiThread {
                     pb.visibility = View.GONE
-                    dialog.dismiss()
                     recreate()
                 }
             } catch (error: MiniAppSdkException) {
