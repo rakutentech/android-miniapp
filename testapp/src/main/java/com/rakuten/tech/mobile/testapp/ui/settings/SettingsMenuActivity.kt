@@ -17,17 +17,23 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
 
-    private lateinit var menuSave: MenuItem
     private lateinit var textInfo: TextView
     private lateinit var edtAppId: EditText
     private lateinit var edtSubscriptionKey: EditText
     private lateinit var switchTestMode: SwitchMaterial
     private lateinit var settingsProgressDialog: SettingsProgressDialog
+
+    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
+        if (new != old) {
+            invalidateOptionsMenu()
+        }
+    }
 
     private val settingTextWatcher = object: TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -50,10 +56,12 @@ class SettingsMenuActivity : BaseActivity() {
         renderAppSettingsScreen()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-        menuSave = menu.findItem(R.id.settings_menu_save)
-        return super.onPrepareOptionsMenu(menu)
+        menu?.findItem(R.id.settings_menu_save)?.let {
+            it.isEnabled = saveViewEnabled
+        }
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -117,8 +125,8 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun enableSaveView() {
-        if (::menuSave.isInitialized && ::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
-            menuSave.isEnabled =
+        if (::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
+            saveViewEnabled =
                 !(edtAppId.text.toString().isInvalidUuid() || edtSubscriptionKey.text.isEmpty())
         }
     }
