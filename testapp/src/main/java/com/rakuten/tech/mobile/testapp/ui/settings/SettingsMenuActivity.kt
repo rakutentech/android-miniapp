@@ -56,11 +56,9 @@ class SettingsMenuActivity : BaseActivity() {
         renderAppSettingsScreen()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-        menu?.findItem(R.id.settings_menu_save)?.let {
-            it.isEnabled = saveViewEnabled
-        }
+        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
