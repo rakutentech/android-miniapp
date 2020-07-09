@@ -1,12 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.TextWatcher
-import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -62,12 +58,7 @@ class SettingsMenuActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-        menu.findItem(R.id.settings_menu_save).run {
-            isEnabled = saveViewEnabled
-
-            if (isEnabled) setTitleColor(Color.WHITE)
-            else setTitleColor(Color.GRAY)
-        }
+        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
@@ -166,14 +157,5 @@ class SettingsMenuActivity : BaseActivity() {
                 }
             }
         }
-    }
-
-    private fun MenuItem.setTitleColor(color: Int) {
-        val spannableString = SpannableString(title)
-        spannableString.setSpan(
-            ForegroundColorSpan(color), 0, title.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        title = spannableString
     }
 }
