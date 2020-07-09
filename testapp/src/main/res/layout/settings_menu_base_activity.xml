@@ -49,10 +49,11 @@
     android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatEditText
-      android:id="@+id/subscription_key"
+      android:id="@+id/app_id"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:hint="@string/hint_subscription_key"
+      android:layout_marginBottom="@dimen/small_4"
+      android:hint="@string/hint_host_app_id"
       android:imeOptions="actionDone"
       android:inputType="text" />
   </com.google.android.material.textfield.TextInputLayout>
@@ -62,10 +63,9 @@
     android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatEditText
-      android:id="@+id/app_id"
+      android:id="@+id/subscription_key"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="@dimen/small_4"
       android:hint="@string/hint_subscription_key"
       android:imeOptions="actionDone"
       android:inputType="text" />
