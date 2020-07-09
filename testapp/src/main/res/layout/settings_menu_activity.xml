@@ -12,31 +12,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-    <RelativeLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/small_12"
-      android:background="@android:color/transparent">
-
-      <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lb_app_settings"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-      <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/buttonSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/bg_save_button"
-        android:text="@string/action_save"
-        tools:ignore="RelativeOverlap" />
-    </RelativeLayout>
-
-  </androidx.appcompat.widget.Toolbar>
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
   <LinearLayout
     android:layout_width="match_parent"

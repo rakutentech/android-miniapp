@@ -1,12 +1,11 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
+import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -23,8 +22,8 @@ class SettingsMenuActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
 
+    private lateinit var menuSave: MenuItem
     private lateinit var textInfo: TextView
-    private lateinit var btnSave: Button
     private lateinit var edtAppId: EditText
     private lateinit var edtSubscriptionKey: EditText
     private lateinit var switchTestMode: SwitchMaterial
@@ -36,7 +35,7 @@ class SettingsMenuActivity : BaseActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            enableSaveButton()
+            enableSaveView()
         }
     }
 
@@ -51,14 +50,35 @@ class SettingsMenuActivity : BaseActivity() {
         renderAppSettingsScreen()
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+        menuSave = menu.findItem(R.id.settings_menu_save)
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
                 return true
             }
+
+            R.id.settings_menu_save -> {
+                onSaveAction()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun onSaveAction() {
+        settingsProgressDialog.show()
+
+        updateSettings(
+            edtAppId.text.toString(),
+            edtSubscriptionKey.text.toString(),
+            switchTestMode.isChecked
+        )
     }
 
     private fun initializeActionBar() {
@@ -70,7 +90,6 @@ class SettingsMenuActivity : BaseActivity() {
 
     private fun initializeUIComponents() {
         textInfo = findViewById(R.id.textInfo)
-        btnSave = findViewById(R.id.buttonSave)
         edtAppId = findViewById(R.id.editAppId)
         edtSubscriptionKey = findViewById(R.id.editSubscriptionKey)
         switchTestMode = findViewById(R.id.switchTestMode)
@@ -89,17 +108,7 @@ class SettingsMenuActivity : BaseActivity() {
         edtAppId.addTextChangedListener(settingTextWatcher)
         edtSubscriptionKey.addTextChangedListener(settingTextWatcher)
 
-        enableSaveButton()
-
-        btnSave.setOnClickListener {
-            settingsProgressDialog.show()
-
-            updateSettings(
-                edtAppId.text.toString(),
-                edtSubscriptionKey.text.toString(),
-                switchTestMode.isChecked
-            )
-        }
+        enableSaveView()
     }
 
     private fun createSettingsInfo(): String {
@@ -107,16 +116,10 @@ class SettingsMenuActivity : BaseActivity() {
                 getString(R.string.build_version)
     }
 
-    private fun enableSaveButton() {
-        if (::btnSave.isInitialized && ::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
-            btnSave.isEnabled =
+    private fun enableSaveView() {
+        if (::menuSave.isInitialized && ::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
+            menuSave.isEnabled =
                 !(edtAppId.text.toString().isInvalidUuid() || edtSubscriptionKey.text.isEmpty())
-        }
-
-        if (btnSave.isEnabled) {
-            btnSave.setTextColor(Color.WHITE)
-        } else {
-            btnSave.setTextColor(Color.GRAY)
         }
     }
 
