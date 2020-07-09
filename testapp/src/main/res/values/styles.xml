@@ -8,19 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppThemeSettings" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeSettings" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SettingsToolBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:elevation">@dimen/small_4</item>
+    <style name="SettingsToolBarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Title</item>
         <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
