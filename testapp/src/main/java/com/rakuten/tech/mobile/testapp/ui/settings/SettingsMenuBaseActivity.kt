@@ -93,7 +93,6 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
 
         btnSave = settingsView.findViewById(R.id.buttonSave)
         btnSave.setOnClickListener {
-            hideKeyboard(btnSave)
             settingsProgressDialog.show()
 
             updateSettings(
@@ -148,11 +147,5 @@ abstract class SettingsMenuBaseActivity : BaseActivity() {
                 }
             }
         }
-    }
-
-    private fun hideKeyboard(view: View) {
-        val inputMethodManager: InputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
