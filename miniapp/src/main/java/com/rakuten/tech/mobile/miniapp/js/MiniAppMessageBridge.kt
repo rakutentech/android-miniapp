@@ -20,6 +20,11 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
+    /** This host app info can apply to analytics, app traffic, ads, etc.
+     *  It should be a meaningful keyword such as host app name to differentiate other host apps.
+     **/
+    abstract fun getHostAppInfo(): String
+
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {

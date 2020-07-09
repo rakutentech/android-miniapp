@@ -39,8 +39,8 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
-        val userAgent = String.format("%s [%s/%s]", settings.userAgentString, "MiniApp Demo App", "1.2.0")
-        settings.userAgentString = userAgent
+        settings.userAgentString =
+            String.format("%s %s", settings.userAgentString, miniAppMessageBridge.getHostAppInfo())
 
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient

@@ -13,6 +13,7 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -37,6 +38,9 @@ class MiniAppWebviewTest {
         context = getApplicationContext()
         basePath = context.filesDir.path
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
+
+        When calling miniAppMessageBridge.getHostAppInfo() itReturns TEST_HA_NAME
+
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
@@ -81,6 +85,11 @@ class MiniAppWebviewTest {
     @Test
     fun `when MiniAppWebView is created then databaseEnabled should be enabled`() {
         miniAppWebView.settings.allowUniversalAccessFromFileURLs shouldBe true
+    }
+
+    @Test
+    fun `when MiniAppWebView is created then user-agent contains host app info`() {
+        miniAppWebView.settings.userAgentString shouldEndWith TEST_HA_NAME
     }
 
     @Test

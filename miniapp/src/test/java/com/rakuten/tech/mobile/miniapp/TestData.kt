@@ -18,6 +18,7 @@ internal const val TEST_MA_ICON = "test_icon"
 internal const val TEST_MA_VERSION_TAG = "test_vtag"
 internal const val TEST_MA_VERSION_ID = "test_vid"
 
+internal const val TEST_HA_NAME = "test_hostapp_name"
 internal const val TEST_HA_ID_VERSION = "test_version"
 internal const val TEST_HA_ID_APP = "test_hostapp_id"
 internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subscription_key"
