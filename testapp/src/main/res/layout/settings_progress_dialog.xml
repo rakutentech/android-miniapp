@@ -3,7 +3,6 @@
   android:layout_height="fill_parent">
 
   <ProgressBar
-    android:id="@+id/pb"
     style="?android:attr/progressBarStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
