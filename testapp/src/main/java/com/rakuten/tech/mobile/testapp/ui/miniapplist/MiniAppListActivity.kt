@@ -8,10 +8,10 @@ import android.view.View
 import androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_list_activity.*
 
-class MiniAppListActivity : SettingsMenuBaseActivity() {
+class MiniAppListActivity : MenuBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

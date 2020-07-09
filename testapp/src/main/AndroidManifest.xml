@@ -28,6 +28,9 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
             android:label="@string/action_go_input"/>
+        <activity
+          android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
+          android:theme="@style/AppThemeSettings" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"

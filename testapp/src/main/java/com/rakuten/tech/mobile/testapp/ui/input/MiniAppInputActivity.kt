@@ -8,10 +8,10 @@ import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuBaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
 import kotlinx.android.synthetic.main.mini_app_input_activity.*
 
-class MiniAppInputActivity : SettingsMenuBaseActivity() {
+class MiniAppInputActivity : MenuBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

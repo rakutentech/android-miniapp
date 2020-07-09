@@ -1,0 +1,103 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_height="match_parent"
+  android:layout_width="match_parent">
+
+  <androidx.appcompat.widget.Toolbar
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:theme="@style/SettingsToolBarTheme"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+    <RelativeLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_12"
+      android:background="@android:color/transparent">
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lb_app_settings"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_save_button"
+        android:text="@string/action_save"
+        tools:ignore="RelativeOverlap" />
+    </RelativeLayout>
+
+  </androidx.appcompat.widget.Toolbar>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/medium_16"
+    android:orientation="vertical"
+    app:layout_constraintStart_toStartOf="@id/toolbar"
+    app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/textInfo"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/small_8"
+      android:background="#198C8C8C"
+      android:textColor="@android:color/black"
+      tools:text="Build Info" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+      android:id="@+id/switchTestMode"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_12"
+      android:text="@string/lb_test_mode"
+      android:thumb="@drawable/bg_thumb_testmode"
+      app:track="@drawable/bg_track_testmode" />
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:layout_marginTop="@dimen/small_12"
+      android:layout_marginBottom="@dimen/small_12"
+      android:background="@color/colorAccent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/editAppId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_4"
+        android:hint="@string/hint_host_app_id"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/editSubscriptionKey"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_subscription_key"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

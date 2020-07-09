@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp
+package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.app.Dialog
 import android.content.Context

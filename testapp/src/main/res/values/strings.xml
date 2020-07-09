@@ -5,11 +5,12 @@
     <string name="lb_app_settings">App Settings</string>
     <string name="lb_test_mode">Test Mode</string>
 
+    <string name="menu_action_change_settings">Change App Settings</string>
+
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From ID</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
-    <string name="action_cancel">Cancel</string>
 
     <string name="hint_host_app_id">Host App ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
