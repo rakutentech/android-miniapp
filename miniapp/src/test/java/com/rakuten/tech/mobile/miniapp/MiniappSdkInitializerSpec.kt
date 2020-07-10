@@ -38,6 +38,7 @@ class MiniappSdkInitializerSpec {
         When calling appManifestConfig.rasAppId() itReturns TEST_HA_ID_APP
         When calling appManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
         When calling appManifestConfig.hostAppVersion() itReturns TEST_HA_ID_VERSION
+        When calling appManifestConfig.hostAppInfo() itReturns TEST_HA_NAME
 
         sdkInitializer.onCreate() shouldBe true
     }
@@ -57,5 +58,13 @@ class MiniappSdkInitializerSpec {
             uri, null, null
         ) shouldBe 0
         miniappSdkInitializer.getType(uri) shouldBe null
+    }
+
+    @Test
+    fun `should get application info if there is no host app info in config`() {
+        val appManifestConfig: AppManifestConfig = mock()
+        When calling appManifestConfig.hostAppInfo() itReturns ""
+        miniappSdkInitializer.provideHostAppInfo(context, appManifestConfig) shouldBe
+                "com.rakuten.tech.mobile.miniapp.test"
     }
 }

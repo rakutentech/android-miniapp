@@ -39,13 +39,12 @@ class MiniAppWebviewTest {
         basePath = context.filesDir.path
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
 
-        When calling miniAppMessageBridge.getHostAppInfo() itReturns TEST_HA_NAME
-
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge,
+            hostAppInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
@@ -110,9 +109,9 @@ class MiniAppWebviewTest {
     @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge)
+            context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge, TEST_HA_NAME)
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-2", miniAppMessageBridge)
+            context, miniAppWebView.basePath, "app-id-2", miniAppMessageBridge, TEST_HA_NAME)
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 

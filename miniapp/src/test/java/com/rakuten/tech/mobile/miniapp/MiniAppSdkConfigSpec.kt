@@ -12,7 +12,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
         )
         config.key shouldEqual "${config.baseUrl}-${config.isTestMode}" +
                 "-${config.rasAppId}-${config.subscriptionKey}-${config.hostAppVersionId}"
@@ -25,7 +26,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
         )
     }
 
@@ -36,7 +38,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
         )
     }
 
@@ -47,7 +50,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
         )
     }
 
@@ -58,7 +62,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = " ",
-            hostAppVersionId = TEST_HA_ID_VERSION
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
         )
     }
 
@@ -69,7 +74,8 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = " "
+            hostAppVersionId = " ",
+            hostAppInfo = TEST_HA_NAME
         )
     }
 }
