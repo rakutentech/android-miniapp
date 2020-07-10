@@ -1,11 +1,11 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
-import android.content.Intent
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 
-abstract class MenuBaseActivity : BaseActivity() {
+abstract class MenuBaseActivity : BaseActivity(), SettingsNavigator {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
@@ -14,13 +14,12 @@ abstract class MenuBaseActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.set_app_id_and_key -> navigateToSettings()
+            R.id.set_app_id_and_key -> navigateToScreen()
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun navigateToSettings(): Boolean {
-        startActivity(Intent(this, SettingsMenuActivity::class.java))
-        return true
+    companion object {
+        const val MENU_SCREEN_NAME = "menu_screen_name"
     }
 }

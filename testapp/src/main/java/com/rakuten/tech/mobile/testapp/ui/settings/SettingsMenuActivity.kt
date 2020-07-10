@@ -11,10 +11,14 @@ import androidx.appcompat.widget.Toolbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
+import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
 import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -30,7 +34,7 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private val settingsTextWatcher = object: TextWatcher {
+    private val settingsTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -123,7 +127,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isSettingSaved = true
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    raceExecutor.run { launchActivity<MiniAppListActivity>() }
+                    navigateToPreviousScreen()
                 }
             } catch (error: MiniAppSdkException) {
                 settings.appId = appIdHolder
@@ -131,11 +135,24 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    val toast = Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
+                    val toast =
+                        Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
                     toast.setGravity(Gravity.TOP, 0, 0)
                     toast.show()
                 }
             }
+        }
+    }
+
+    private fun navigateToPreviousScreen() {
+        when (intent.extras?.getString(MENU_SCREEN_NAME)) {
+            MINI_APP_LIST_ACTIVITY -> {
+                raceExecutor.run { launchActivity<MiniAppListActivity>() }
+            }
+            MINI_APP_INPUT_ACTIVITY -> {
+                raceExecutor.run { launchActivity<MiniAppInputActivity>() }
+            }
+            else -> finish()
         }
     }
 }
