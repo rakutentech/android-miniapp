@@ -33,8 +33,6 @@ class MiniAppMessageBridgeSpec {
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
             }
-
-            override fun getHostAppInfo(): String = TEST_HA_NAME
         }
 
     private val uniqueIdCallbackObj = CallbackObj(

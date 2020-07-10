@@ -30,8 +30,6 @@ internal class RealMiniApp(
                 miniAppPermissionType: MiniAppPermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) = throw sdkExceptionForNoMiniAppMessageBridge()
-
-            override fun getHostAppInfo(): String = throw sdkExceptionForNoMiniAppMessageBridge()
         })
 
     override suspend fun create(

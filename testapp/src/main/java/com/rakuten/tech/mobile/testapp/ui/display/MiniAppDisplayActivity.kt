@@ -86,8 +86,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                         AppPermission.getRequestCode(miniAppPermissionType)
                     )
                 }
-
-                override fun getHostAppInfo(): String = "MiniApp Demo App"
             }
 
             if (appId.isEmpty())
