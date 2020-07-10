@@ -60,7 +60,7 @@ dependencies {
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
     testImplementation "org.mockito:mockito-core:$mockito"
-    testImplementation "org.mockito:mockito-inline:$mockito_inline"
+    testImplementation "org.mockito:mockito-inline:$mockito"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$nhrm_mockito_kotlin"
     testImplementation "org.amshove.kluent:kluent-android:$kluent_android"
 
@@ -72,7 +72,7 @@ dependencies {
 apply from: "../config/quality/checkstyle/android.gradle"
 apply from: '../config/quality/detekt/android.gradle'
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.9.1"
 }
 
 apply from: '../config/quality/jacoco/android.gradle'
