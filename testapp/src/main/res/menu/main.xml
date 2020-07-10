@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <item
     android:id="@+id/settings_menu"
+    android:icon="@drawable/ic_more_vert_white_24dp"
     android:title="Settings"
-    app:showAsAction="always"
-    android:icon="@drawable/ic_more_vert_white_24dp">
+    app:showAsAction="always">
     <menu>
       <item
         android:id="@+id/set_app_id_and_key"
-        android:title="Change App Settings" />
+        android:title="@string/menu_action_change_settings" />
     </menu>
   </item>
 
