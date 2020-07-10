@@ -2,7 +2,6 @@
 <layout>
 
     <data>
-
         <import type="android.text.TextUtils" />
 
         <variable
@@ -23,7 +22,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:padding="@dimen/small_5"
+            android:paddingTop="@dimen/small_4"
+            android:paddingBottom="@dimen/small_4"
+            android:paddingStart="@dimen/small_12"
+            android:paddingEnd="@dimen/small_12"
             android:singleLine="true"
             android:text="@{miniapp.displayName}"
             android:textColor="@android:color/black"
