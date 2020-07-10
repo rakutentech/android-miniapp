@@ -12,7 +12,9 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
+import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -121,7 +123,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isSettingSaved = true
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    finish()
+                    raceExecutor.run { launchActivity<MiniAppListActivity>() }
                 }
             } catch (error: MiniAppSdkException) {
                 settings.appId = appIdHolder
