@@ -6,27 +6,20 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
-
-    private lateinit var textInfo: TextView
-    private lateinit var edtAppId: EditText
-    private lateinit var edtSubscriptionKey: EditText
-    private lateinit var switchTestMode: SwitchMaterial
     private lateinit var settingsProgressDialog: SettingsProgressDialog
 
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
@@ -35,7 +28,7 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private val settingTextWatcher = object: TextWatcher {
+    private val settingsTextWatcher = object: TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -51,8 +44,7 @@ class SettingsMenuActivity : BaseActivity() {
         setContentView(R.layout.settings_menu_activity)
 
         initializeActionBar()
-        initializeUIComponents()
-
+        settingsProgressDialog = SettingsProgressDialog(this)
         renderAppSettingsScreen()
     }
 
@@ -68,7 +60,6 @@ class SettingsMenuActivity : BaseActivity() {
                 finish()
                 return true
             }
-
             R.id.settings_menu_save -> {
                 onSaveAction()
                 return true
@@ -81,8 +72,8 @@ class SettingsMenuActivity : BaseActivity() {
         settingsProgressDialog.show()
 
         updateSettings(
-            edtAppId.text.toString(),
-            edtSubscriptionKey.text.toString(),
+            editAppId.text.toString(),
+            editSubscriptionKey.text.toString(),
             switchTestMode.isChecked
         )
     }
@@ -94,25 +85,14 @@ class SettingsMenuActivity : BaseActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
-    private fun initializeUIComponents() {
-        textInfo = findViewById(R.id.textInfo)
-        edtAppId = findViewById(R.id.editAppId)
-        edtSubscriptionKey = findViewById(R.id.editSubscriptionKey)
-        switchTestMode = findViewById(R.id.switchTestMode)
-        settingsProgressDialog =
-            SettingsProgressDialog(
-                this
-            )
-    }
-
     private fun renderAppSettingsScreen() {
         textInfo.text = createSettingsInfo()
-        edtAppId.setText(settings.appId)
-        edtSubscriptionKey.setText(settings.subscriptionKey)
+        editAppId.setText(settings.appId)
+        editSubscriptionKey.setText(settings.subscriptionKey)
         switchTestMode.isChecked = settings.isTestMode
 
-        edtAppId.addTextChangedListener(settingTextWatcher)
-        edtSubscriptionKey.addTextChangedListener(settingTextWatcher)
+        editAppId.addTextChangedListener(settingsTextWatcher)
+        editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
         enableSaveView()
     }
@@ -123,10 +103,8 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun enableSaveView() {
-        if (::edtAppId.isInitialized && ::edtSubscriptionKey.isInitialized) {
-            saveViewEnabled =
-                !(edtAppId.text.toString().isInvalidUuid() || edtSubscriptionKey.text.isEmpty())
-        }
+        saveViewEnabled =
+            !(editAppId.text.toString().isInvalidUuid() || editSubscriptionKey.text.isNullOrEmpty())
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
