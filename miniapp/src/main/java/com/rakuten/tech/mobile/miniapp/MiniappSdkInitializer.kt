@@ -70,23 +70,13 @@ class MiniappSdkInitializer : ContentProvider() {
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),
-                hostAppInfo = provideHostAppInfo(context, manifestConfig),
+                hostAppInfo = manifestConfig.hostAppInfo(),
                 isTestMode = manifestConfig.isTestMode()
             )
         )
 
         return true
     }
-
-    @VisibleForTesting
-    internal fun provideHostAppInfo(context: Context, manifestConfig: AppManifestConfig): String =
-        if (manifestConfig.hostAppInfo().isEmpty()) {
-            val packageManager = context.packageManager
-            packageManager.getApplicationLabel(
-                packageManager.getApplicationInfo(context.packageName, 0)).toString()
-        } else
-            manifestConfig.hostAppInfo()
-
     @VisibleForTesting
     internal fun createAppManifestConfig(context: Context) = AppManifestConfig(context)
 

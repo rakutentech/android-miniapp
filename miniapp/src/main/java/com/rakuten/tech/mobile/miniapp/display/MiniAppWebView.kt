@@ -40,8 +40,9 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
-        settings.userAgentString =
-            String.format("%s %s", settings.userAgentString, hostAppInfo)
+        if (hostAppInfo.isNotEmpty())
+            settings.userAgentString =
+                String.format("%s %s", settings.userAgentString, hostAppInfo)
 
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient

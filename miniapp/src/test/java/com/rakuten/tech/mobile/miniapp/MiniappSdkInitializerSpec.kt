@@ -59,12 +59,4 @@ class MiniappSdkInitializerSpec {
         ) shouldBe 0
         miniappSdkInitializer.getType(uri) shouldBe null
     }
-
-    @Test
-    fun `should get application info if there is no host app info in config`() {
-        val appManifestConfig: AppManifestConfig = mock()
-        When calling appManifestConfig.hostAppInfo() itReturns ""
-        miniappSdkInitializer.provideHostAppInfo(context, appManifestConfig) shouldBe
-                "com.rakuten.tech.mobile.miniapp.test"
-    }
 }
