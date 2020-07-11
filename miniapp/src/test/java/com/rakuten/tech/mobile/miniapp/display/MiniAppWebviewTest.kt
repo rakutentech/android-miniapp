@@ -88,7 +88,21 @@ class MiniAppWebviewTest {
 
     @Test
     fun `when MiniAppWebView is created then user-agent contains host app info`() {
+        miniAppWebView.hostAppInfo shouldBe TEST_HA_NAME
         miniAppWebView.settings.userAgentString shouldEndWith TEST_HA_NAME
+    }
+
+    @Test
+    fun `should keep user-agent unchanged when host app info is empty`() {
+        miniAppWebView = MiniAppWebView(
+            context,
+            basePath = basePath,
+            appId = TEST_MA_ID,
+            miniAppMessageBridge = miniAppMessageBridge,
+            hostAppInfo = "",
+            miniAppWebChromeClient = webChromeClient
+        )
+        miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
 
     @Test
