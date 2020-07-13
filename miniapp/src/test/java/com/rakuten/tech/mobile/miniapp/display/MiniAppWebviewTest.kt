@@ -13,6 +13,7 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -37,11 +38,13 @@ class MiniAppWebviewTest {
         context = getApplicationContext()
         basePath = context.filesDir.path
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
+
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge,
+            hostAppInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
@@ -84,6 +87,25 @@ class MiniAppWebviewTest {
     }
 
     @Test
+    fun `when MiniAppWebView is created then user-agent contains host app info`() {
+        miniAppWebView.hostAppInfo shouldBe TEST_HA_NAME
+        miniAppWebView.settings.userAgentString shouldEndWith TEST_HA_NAME
+    }
+
+    @Test
+    fun `should keep user-agent unchanged when host app info is empty`() {
+        miniAppWebView = MiniAppWebView(
+            context,
+            basePath = basePath,
+            appId = TEST_MA_ID,
+            miniAppMessageBridge = miniAppMessageBridge,
+            hostAppInfo = "",
+            miniAppWebChromeClient = webChromeClient
+        )
+        miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
+    }
+
+    @Test
     fun `when destroyView called then the MiniAppWebView should be disposed`() {
         val displayer = Mockito.spy(miniAppWebView)
         displayer.destroyView()
@@ -101,9 +123,9 @@ class MiniAppWebviewTest {
     @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge)
+            context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge, TEST_HA_NAME)
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-2", miniAppMessageBridge)
+            context, miniAppWebView.basePath, "app-id-2", miniAppMessageBridge, TEST_HA_NAME)
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 
