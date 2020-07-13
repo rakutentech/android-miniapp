@@ -96,28 +96,15 @@ abstract class MiniApp internal constructor() {
         fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
             instance.apply { updateConfiguration(settings) }
 
-        @Suppress("LongMethod", "LongParameterList")
-        internal fun init(
-            context: Context,
-            baseUrl: String,
-            isTestMode: Boolean,
-            rasAppId: String,
-            subscriptionKey: String,
-            hostAppVersionId: String
-        ) {
-            defaultConfig = MiniAppSdkConfig(
-                baseUrl = baseUrl,
-                rasAppId = rasAppId,
-                subscriptionKey = subscriptionKey,
-                hostAppVersionId = hostAppVersionId,
-                isTestMode = isTestMode
-            )
+        @Suppress("LongMethod")
+        internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
+            defaultConfig = miniAppSdkConfig
             val apiClient = ApiClient(
-                baseUrl = baseUrl,
-                rasAppId = rasAppId,
-                subscriptionKey = subscriptionKey,
-                hostAppVersionId = hostAppVersionId,
-                isTestMode = isTestMode
+                baseUrl = miniAppSdkConfig.baseUrl,
+                rasAppId = miniAppSdkConfig.rasAppId,
+                subscriptionKey = miniAppSdkConfig.subscriptionKey,
+                hostAppVersionId = miniAppSdkConfig.hostAppVersionId,
+                isTestMode = miniAppSdkConfig.isTestMode
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
@@ -128,7 +115,7 @@ abstract class MiniApp internal constructor() {
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(context),
+                displayer = Displayer(context, defaultConfig.hostAppInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )

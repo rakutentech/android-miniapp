@@ -40,6 +40,13 @@ class MiniappSdkInitializer : ContentProvider() {
         fun hostAppVersion(): String
 
         /**
+         * This info will be appended to user-agent of webview.
+         * It should be a meaningful keyword such as host app name to differentiate other host apps.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppInfo")
+        fun hostAppInfo(): String
+
+        /**
          * App Id assigned to host App.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
@@ -58,11 +65,14 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
-            baseUrl = manifestConfig.baseUrl(),
-            rasAppId = manifestConfig.rasAppId(),
-            subscriptionKey = manifestConfig.subscriptionKey(),
-            hostAppVersionId = manifestConfig.hostAppVersion(),
-            isTestMode = manifestConfig.isTestMode()
+            miniAppSdkConfig = MiniAppSdkConfig(
+                baseUrl = manifestConfig.baseUrl(),
+                rasAppId = manifestConfig.rasAppId(),
+                subscriptionKey = manifestConfig.subscriptionKey(),
+                hostAppVersionId = manifestConfig.hostAppVersion(),
+                hostAppInfo = manifestConfig.hostAppInfo(),
+                isTestMode = manifestConfig.isTestMode()
+            )
         )
 
         return true
