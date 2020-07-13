@@ -3,6 +3,14 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <item
+    android:id="@+id/action_search"
+    android:icon="@android:drawable/ic_menu_search"
+    android:title="Search"
+    android:visible="false"
+    app:actionViewClass="androidx.appcompat.widget.SearchView"
+    app:showAsAction="always" />
+
+  <item
     android:id="@+id/settings_menu"
     android:icon="@drawable/ic_more_vert_white_24dp"
     android:title="Settings"

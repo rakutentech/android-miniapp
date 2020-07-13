@@ -1,10 +1,11 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
+import android.app.Activity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,8 +21,10 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import kotlinx.android.synthetic.main.mini_app_list_fragment.*
+import java.util.*
+import kotlin.collections.ArrayList
 
-class MiniAppListFragment : BaseFragment(), MiniAppList {
+class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextListener {
 
     companion object {
         fun newInstance() = MiniAppListFragment()
@@ -30,11 +33,16 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     private lateinit var viewModel: MiniAppListViewModel
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
+    private lateinit var searchView: SearchView
+
+    private var downloadedList: List<MiniAppInfo> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
+
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.mini_app_list_fragment,
@@ -63,6 +71,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
             miniAppListData.observe(viewLifecycleOwner, Observer {
                 swipeRefreshLayout.isRefreshing = false
                 displayMiniAppList(it)
+                downloadedList = it
                 MiniAppListStore.instance.saveMiniAppList(it)
             })
             errorData.observe(viewLifecycleOwner, Observer {
@@ -71,15 +80,20 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
                     Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                 else
                     displayMiniAppList(list)
-                swipeRefreshLayout.isRefreshing = false
+                    downloadedList = list
+                    swipeRefreshLayout.isRefreshing = false
             })
         }
 
-        swipeRefreshLayout.setOnRefreshListener { executeLoadingList() }
+        swipeRefreshLayout.setOnRefreshListener {
+            executeLoadingList()
+            resetSearchBox()
+        }
     }
 
     private fun displayMiniAppList(list: List<MiniAppInfo>) {
         miniAppListAdapter.addListWithSection(list)
+        updateEmptyView(list)
     }
 
     private fun executeLoadingList() {
@@ -92,5 +106,57 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
 
     fun switchToInput() {
         raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.main, menu)
+        addSearchBox(menu)
+    }
+
+    private fun addSearchBox(menu: Menu) {
+        val itemSearch = menu.findItem(R.id.action_search)
+        searchView = itemSearch.actionView as SearchView
+        searchView.queryHint = getString(R.string.menu_hint_search_miniapps)
+        searchView.setOnQueryTextListener(this)
+
+        // show search box in mini app list screen
+        itemSearch.isVisible = true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        displayMiniAppList(produceSearchResult(newText))
+        return true
+    }
+
+    private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
+        return downloadedList.filter { info ->
+            info.displayName.toLowerCase(Locale.ROOT)
+                .contains(newText.toString().toLowerCase(Locale.ROOT))
+        }
+    }
+
+    private fun resetSearchBox() {
+        searchView.setQuery("", false)
+        searchView.isIconified = true
+        hideSoftKeyboard()
+    }
+
+    private fun updateEmptyView(collection: List<MiniAppInfo>) {
+        if (collection.isEmpty())
+            emptyView.visibility = View.VISIBLE
+        else
+            emptyView.visibility = View.GONE
+    }
+
+    private fun hideSoftKeyboard() {
+        val inputMethodManager: InputMethodManager =
+            activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 }
