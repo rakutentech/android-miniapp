@@ -176,6 +176,11 @@ class MiniAppWebviewTest {
         verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
 
+    @Test
+    fun `should define correct mime type for js`() {
+
+    }
+
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
         return object : WebResourceRequest {
             override fun getUrl(): Uri = uriReq

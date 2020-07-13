@@ -14,10 +14,16 @@ internal class MiniAppWebViewClient(
     private val customScheme: String
 ) : WebViewClient() {
 
-    override fun shouldInterceptRequest(
-        view: WebView,
-        request: WebResourceRequest
-    ): WebResourceResponse? = loader.shouldInterceptRequest(request.url)
+    override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+        val interceptedWebRequest = loader.shouldInterceptRequest(request.url)
+
+        interceptedWebRequest?.let {
+            if (request.url.toString().endsWith("js", true))
+                it.mimeType = "application/javascript"
+        }
+
+        return interceptedWebRequest
+    }
 
     override fun onReceivedError(
         view: WebView,
