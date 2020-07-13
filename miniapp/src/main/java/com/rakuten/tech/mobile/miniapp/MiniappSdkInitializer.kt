@@ -77,6 +77,7 @@ class MiniappSdkInitializer : ContentProvider() {
 
         return true
     }
+
     @VisibleForTesting
     internal fun createAppManifestConfig(context: Context) = AppManifestConfig(context)
 
