@@ -208,6 +208,7 @@ class SocketTimeOutCall : BaseCall() {
     override fun execute(): Response<String> = throw SocketTimeoutException()
 }
 
+@Suppress("EmptyFunctionBlock", "NotImplementedDeclaration")
 open class BaseCall : Call<String> {
 
     override fun enqueue(callback: Callback<String>) {}

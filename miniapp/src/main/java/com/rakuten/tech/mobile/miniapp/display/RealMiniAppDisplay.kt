@@ -20,7 +20,8 @@ internal class RealMiniAppDisplay(
     val context: Context,
     val basePath: String,
     val appId: String,
-    val miniAppMessageBridge: MiniAppMessageBridge
+    val miniAppMessageBridge: MiniAppMessageBridge,
+    val hostAppInfo: String
 ) : MiniAppDisplay {
 
     @VisibleForTesting
@@ -71,7 +72,8 @@ internal class RealMiniAppDisplay(
                 context = context,
                 basePath = basePath,
                 appId = appId,
-                miniAppMessageBridge = miniAppMessageBridge
+                miniAppMessageBridge = miniAppMessageBridge,
+                hostAppInfo = hostAppInfo
             )
             miniAppWebView!!
         }
