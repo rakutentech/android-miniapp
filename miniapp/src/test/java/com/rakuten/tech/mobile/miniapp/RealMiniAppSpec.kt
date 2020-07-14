@@ -106,7 +106,9 @@ class RealMiniAppSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION)
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppInfo = TEST_HA_NAME
+        )
 
         miniApp.updateConfiguration(miniAppSdkConfig)
 

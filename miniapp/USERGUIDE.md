@@ -27,9 +27,23 @@ dependency {
 }
 ```
 
-### #2 Set your App Id, Subscription Key, & Base URL
+### #2 Configure SDK settings in AndroidManifest.xml
 
-We don't currently host a public API, so you will need to provide your own Base URL for API requests.
+The SDK is configured via manifest meta-data, the configurable values are:
+
+| Field                        | Datatype| Manifest Key                                         | Optional   | Default   |
+|------------------------------|---------|------------------------------------------------------|------------|---------- |
+| Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`            | ❌         | 🚫        |
+| Testbox Config               | boolean | `com.rakuten.tech.mobile.miniapp.IsTestMode`         | ✅         | `false`   |
+| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`     | ❌         | 🚫        |
+| Host App Info                | String  | `com.rakuten.tech.mobile.miniapp.HostAppInfo`        | ✅         | 🚫        |
+| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                  | ❌         | 🚫        |
+| RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey` | ❌         | 🚫        |
+
+**Note:**  
+* We don't currently host a public API, so you will need to provide your own Base URL for API requests.
+* All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
+* The host app info is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
 In your `AndroidManifest.xml`:
 
@@ -60,8 +74,6 @@ In your `AndroidManifest.xml`:
     </application>
 </manifest>
 ```
-
-**Note:**  All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
 
 ### #3 Fetch Mini App Info
 

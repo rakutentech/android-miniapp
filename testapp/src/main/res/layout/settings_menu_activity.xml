@@ -36,9 +36,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/small_12"
-      android:text="@string/lb_test_mode"
-      android:thumb="@drawable/bg_thumb_testmode"
-      app:track="@drawable/bg_track_testmode" />
+      android:text="@string/lb_test_mode" />
 
     <View
       android:layout_width="match_parent"
