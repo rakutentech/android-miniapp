@@ -26,14 +26,13 @@ import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
-@RunWith(AndroidJUnit4::class)
-class MiniAppWebviewTest {
-    private lateinit var context: Context
-    private lateinit var basePath: String
-    private lateinit var miniAppWebView: MiniAppWebView
-    private lateinit var webResourceRequest: WebResourceRequest
-    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
-    private lateinit var webChromeClient: MiniAppWebChromeClient
+open class BaseWebViewTest {
+    lateinit var context: Context
+    lateinit var basePath: String
+    internal lateinit var miniAppWebView: MiniAppWebView
+    lateinit var webResourceRequest: WebResourceRequest
+    val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    internal lateinit var webChromeClient: MiniAppWebChromeClient
 
     @Before
     fun setup() {
@@ -51,6 +50,10 @@ class MiniAppWebviewTest {
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
     }
+}
+
+@RunWith(AndroidJUnit4::class)
+class MiniAppWebviewTest : BaseWebViewTest() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
@@ -118,11 +121,6 @@ class MiniAppWebviewTest {
     }
 
     @Test
-    fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
-        miniAppWebView.webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
-    }
-
-    @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
             context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge, TEST_HA_NAME)
@@ -134,6 +132,15 @@ class MiniAppWebviewTest {
     @Test
     fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
         verify(miniAppMessageBridge, atLeastOnce()).setWebViewListener(miniAppWebView)
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+class MiniAppWebClientTest : BaseWebViewTest() {
+
+    @Test
+    fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
+        miniAppWebView.webViewClient shouldBeInstanceOf MiniAppWebViewClient::class
     }
 
     @Test
@@ -165,6 +172,21 @@ class MiniAppWebviewTest {
 
         verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
     }
+
+    @Test
+    fun `should define correct mime type for js`() {
+        val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
+        val request = getWebResReq("test.js".toUri())
+        val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
+
+        webClient.interceptMimeType(webResourceResponse, request)
+
+        webResourceResponse.mimeType shouldBe "application/javascript"
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+class MiniAppWebChromeTest : BaseWebViewTest() {
 
     @Test
     fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {
@@ -199,31 +221,20 @@ class MiniAppWebviewTest {
 
         verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
+}
 
-    @Test
-    fun `should define correct mime type for js`() {
-        val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
-        val request = getWebResReq("test.js".toUri())
-        val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
+private fun getWebResReq(uriReq: Uri): WebResourceRequest {
+    return object : WebResourceRequest {
+        override fun getUrl(): Uri = uriReq
 
-        webClient.interceptMimeType(webResourceResponse, request)
+        override fun isRedirect(): Boolean = false
 
-        webResourceResponse.mimeType shouldBe "application/javascript"
-    }
+        override fun getMethod(): String = "GET"
 
-    private fun getWebResReq(uriReq: Uri): WebResourceRequest {
-        return object : WebResourceRequest {
-            override fun getUrl(): Uri = uriReq
+        override fun getRequestHeaders(): MutableMap<String, String> = HashMap()
 
-            override fun isRedirect(): Boolean = false
+        override fun hasGesture(): Boolean = false
 
-            override fun getMethod(): String = "GET"
-
-            override fun getRequestHeaders(): MutableMap<String, String> = HashMap()
-
-            override fun hasGesture(): Boolean = false
-
-            override fun isForMainFrame(): Boolean = false
-        }
+        override fun isForMainFrame(): Boolean = false
     }
 }
