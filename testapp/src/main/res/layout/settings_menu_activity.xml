@@ -31,13 +31,6 @@
       android:textColor="@android:color/black"
       tools:text="Build Info" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-      android:id="@+id/switchTestMode"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/small_12"
-      android:text="@string/lb_test_mode" />
-
     <View
       android:layout_width="match_parent"
       android:layout_height="1dp"
@@ -71,6 +64,14 @@
         android:imeOptions="actionDone"
         android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchTestMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_12"
+        android:text="@string/lb_test_mode"
+        android:visibility="invisible"/>
 
   </LinearLayout>
 
