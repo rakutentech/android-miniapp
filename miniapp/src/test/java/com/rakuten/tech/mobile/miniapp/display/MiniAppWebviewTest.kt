@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -21,6 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
@@ -178,7 +180,13 @@ class MiniAppWebviewTest {
 
     @Test
     fun `should define correct mime type for js`() {
+        val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
+        val request = getWebResReq("test.js".toUri())
+        val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
 
+        webClient.interceptMimeType(webResourceResponse, request)
+
+        webResourceResponse.mimeType shouldBe "application/javascript"
     }
 
     private fun getWebResReq(uriReq: Uri): WebResourceRequest {
