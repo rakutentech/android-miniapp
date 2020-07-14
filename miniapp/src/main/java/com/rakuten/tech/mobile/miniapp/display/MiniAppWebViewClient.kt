@@ -28,7 +28,7 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest
     ) {
         interceptedWebRequest?.let {
-            if (request.url.toString().endsWith("js"))
+            if (request.url.toString().endsWith("js", true))
                 it.mimeType = "application/javascript"
         }
     }

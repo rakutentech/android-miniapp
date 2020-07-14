@@ -176,10 +176,12 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     @Test
     fun `should define correct mime type for js`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
-        val request = getWebResReq("test.js".toUri())
+        val request = getWebResReq("mscheme.${miniAppWebView.appId}://".toUri())
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
-
         webClient.interceptMimeType(webResourceResponse, request)
+
+        val request2 = getWebResReq("test.js".toUri())
+        webClient.interceptMimeType(webResourceResponse, request2)
 
         webResourceResponse.mimeType shouldBe "application/javascript"
     }
