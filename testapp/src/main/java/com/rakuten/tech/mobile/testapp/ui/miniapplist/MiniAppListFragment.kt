@@ -101,7 +101,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
-        raceExecutor.run { MiniAppDisplayActivity.start(context!!, miniAppInfo) }
+        raceExecutor.run {
+            context?.let { MiniAppDisplayActivity.start(it, miniAppInfo) }
+            resetSearchBox()
+        }
     }
 
     fun switchToInput() {
