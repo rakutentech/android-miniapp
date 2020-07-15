@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
@@ -45,8 +46,18 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var viewModel: MiniAppDisplayViewModel
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            finish()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        showBackIcon()
+
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
 
