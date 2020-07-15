@@ -20,7 +20,6 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import kotlinx.android.synthetic.main.mini_app_list_fragment.*
-import kotlinx.coroutines.launch
 
 class MiniAppListFragment : BaseFragment(), MiniAppList {
 
