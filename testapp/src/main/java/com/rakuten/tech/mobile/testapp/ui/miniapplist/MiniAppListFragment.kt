@@ -101,9 +101,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
+        resetSearchBox()
         raceExecutor.run {
             context?.let { MiniAppDisplayActivity.start(it, miniAppInfo) }
-            resetSearchBox()
         }
     }
 
