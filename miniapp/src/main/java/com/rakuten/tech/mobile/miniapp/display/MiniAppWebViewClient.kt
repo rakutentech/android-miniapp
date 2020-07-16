@@ -15,19 +15,14 @@ internal class MiniAppWebViewClient(
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-        val interceptedWebRequest = loader.shouldInterceptRequest(request.url)
-
-        interceptMimeType(interceptedWebRequest, request)
-
-        return interceptedWebRequest
+        val response = loader.shouldInterceptRequest(request.url)
+        interceptMimeType(response, request)
+        return response
     }
 
     @VisibleForTesting
-    internal fun interceptMimeType(
-        interceptedWebRequest: WebResourceResponse?,
-        request: WebResourceRequest
-    ) {
-        interceptedWebRequest?.let {
+    internal fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
+        response?.let {
             if (request.url.toString().endsWith("js", true))
                 it.mimeType = "application/javascript"
         }
