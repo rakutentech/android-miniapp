@@ -111,10 +111,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
         raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
-        inflater.inflate(R.menu.main, menu)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
         addSearchBox(menu)
     }
 
