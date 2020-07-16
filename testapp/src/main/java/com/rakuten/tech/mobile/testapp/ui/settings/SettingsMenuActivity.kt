@@ -87,8 +87,7 @@ class SettingsMenuActivity : BaseActivity() {
     private fun initializeActionBar() {
         val toolBar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolBar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        showBackIcon()
     }
 
     private fun renderAppSettingsScreen() {
