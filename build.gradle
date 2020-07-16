@@ -56,6 +56,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 
     gradle.projectsEvaluated {
