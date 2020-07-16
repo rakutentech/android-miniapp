@@ -15,6 +15,13 @@ abstract class BaseActivity: AppCompatActivity(), CoroutineScope {
 
     val raceExecutor = RaceExecutor()
 
+    protected fun showBackIcon() {
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setDisplayShowHomeEnabled(true)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
