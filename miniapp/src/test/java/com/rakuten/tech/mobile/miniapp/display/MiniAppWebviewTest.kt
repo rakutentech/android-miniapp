@@ -177,14 +177,14 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should not intercept mime type for regular cases`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
-        val request2 = Mockito.spy(getWebResReq("test.js".toUri()))
         val request = getWebResReq("mscheme.${miniAppWebView.appId}://".toUri())
+        val secondRequest = Mockito.spy(getWebResReq("test.js".toUri()))
 
         webClient.interceptMimeType(webResourceResponse, request)
         webResourceResponse.mimeType shouldBe ""
 
-        When calling request2.url itReturns null
-        webClient.interceptMimeType(webResourceResponse, request2)
+        When calling secondRequest.url itReturns null
+        webClient.interceptMimeType(webResourceResponse, secondRequest)
         webResourceResponse.mimeType shouldBe ""
     }
 
@@ -193,8 +193,8 @@ class MiniAppWebClientTest : BaseWebViewTest() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
 
-        val request2 = getWebResReq("test.js".toUri())
-        webClient.interceptMimeType(webResourceResponse, request2)
+        val request = getWebResReq("test.js".toUri())
+        webClient.interceptMimeType(webResourceResponse, request)
 
         webResourceResponse.mimeType shouldBe "application/javascript"
     }
