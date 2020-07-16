@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -70,17 +69,15 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
         viewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
             miniAppListData.observe(viewLifecycleOwner, Observer {
                 swipeRefreshLayout.isRefreshing = false
-                displayMiniAppList(it)
-                downloadedList = it
+                addMiniAppList(it)
                 MiniAppListStore.instance.saveMiniAppList(it)
             })
             errorData.observe(viewLifecycleOwner, Observer {
                 val list = MiniAppListStore.instance.getMiniAppList()
                 if (list.isEmpty())
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    updateEmptyView(list)
                 else
-                    displayMiniAppList(list)
-                    downloadedList = list
+                    addMiniAppList(list)
                     swipeRefreshLayout.isRefreshing = false
             })
         }
@@ -91,7 +88,12 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
         }
     }
 
-    private fun displayMiniAppList(list: List<MiniAppInfo>) {
+    private fun addMiniAppList(list: List<MiniAppInfo>) {
+        downloadedList = list
+        updateMiniAppListState(list)
+    }
+
+    private fun updateMiniAppListState(list: List<MiniAppInfo>) {
         miniAppListAdapter.addListWithSection(list)
         updateEmptyView(list)
     }
@@ -131,7 +133,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        displayMiniAppList(produceSearchResult(newText))
+        updateMiniAppListState(produceSearchResult(newText))
         return true
     }
 
