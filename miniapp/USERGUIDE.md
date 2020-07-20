@@ -35,6 +35,7 @@ The SDK is configured via manifest meta-data, the configurable values are:
 
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
+| Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
 | Testbox Config               | boolean | `com.rakuten.tech.mobile.miniapp.IsTestMode`           | ✅         | `false`   |
 | Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
