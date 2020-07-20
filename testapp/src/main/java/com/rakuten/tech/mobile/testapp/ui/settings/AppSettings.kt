@@ -55,7 +55,7 @@ class AppSettings private constructor(context: Context) {
             rasAppId = appId,
             subscriptionKey = subscriptionKey,
             hostAppVersionId = hostAppVersionId,
-            // no update for hostAppUserAgentInfo because sdk does not allow to change it.
+            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isTestMode = isTestMode
         )
