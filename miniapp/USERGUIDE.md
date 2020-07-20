@@ -183,6 +183,21 @@ We recommend using the updated versions of this library.
 
 ## Changelog
 
+### 1.2.0 (2020-07-21)
+**SDK**
+- Upgraded build setup and some internal dependencies
+- Added support for customization of user agent information
+- Added feature to support backward & forward navigation support in a mini app
+- Added support for javascript of type module
+- Added feature to obtain geolocation data in a mini app
+- Hotfix for redirection over custom scheme and http
+
+**Sample App**
+- Updated styling of the mini app list
+- Updated App's setting screen with build information
+- Demo usage of customized user agent information
+- Add navigation into mini app
+
 ### 1.1.1 (2020-06-11)
 
 **SDK**
