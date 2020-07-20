@@ -38,7 +38,7 @@ class MiniappSdkInitializerSpec {
         When calling appManifestConfig.rasAppId() itReturns TEST_HA_ID_APP
         When calling appManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
         When calling appManifestConfig.hostAppVersion() itReturns TEST_HA_ID_VERSION
-        When calling appManifestConfig.hostAppInfo() itReturns TEST_HA_NAME
+        When calling appManifestConfig.hostAppUserAgentInfo() itReturns TEST_HA_NAME
 
         sdkInitializer.onCreate() shouldBe true
     }

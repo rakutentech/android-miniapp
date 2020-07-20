@@ -45,7 +45,7 @@ open class BaseWebViewTest {
             basePath = basePath,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge,
-            hostAppInfo = TEST_HA_NAME,
+            hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
@@ -93,7 +93,7 @@ class MiniAppWebviewTest : BaseWebViewTest() {
 
     @Test
     fun `when MiniAppWebView is created then user-agent contains host app info`() {
-        miniAppWebView.hostAppInfo shouldBe TEST_HA_NAME
+        miniAppWebView.hostAppUserAgentInfo shouldBe TEST_HA_NAME
         miniAppWebView.settings.userAgentString shouldEndWith TEST_HA_NAME
     }
 
@@ -104,7 +104,7 @@ class MiniAppWebviewTest : BaseWebViewTest() {
             basePath = basePath,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge,
-            hostAppInfo = "",
+            hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME

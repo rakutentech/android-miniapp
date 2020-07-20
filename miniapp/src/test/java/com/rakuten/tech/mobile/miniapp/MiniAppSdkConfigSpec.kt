@@ -13,7 +13,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
         config.key shouldEqual "${config.baseUrl}-${config.isTestMode}" +
                 "-${config.rasAppId}-${config.subscriptionKey}-${config.hostAppVersionId}"
@@ -27,7 +27,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 
@@ -39,7 +39,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 
@@ -51,7 +51,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 
@@ -63,7 +63,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = " ",
             hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 
@@ -75,7 +75,7 @@ class MiniAppSdkConfigSpec {
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = " ",
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 }

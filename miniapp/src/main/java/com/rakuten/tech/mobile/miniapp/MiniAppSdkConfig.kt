@@ -13,7 +13,7 @@ data class MiniAppSdkConfig(
     val rasAppId: String,
     val subscriptionKey: String,
     val hostAppVersionId: String,
-    val hostAppInfo: String,
+    val hostAppUserAgentInfo: String,
     val isTestMode: Boolean
 ) {
     internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey-$hostAppVersionId"
