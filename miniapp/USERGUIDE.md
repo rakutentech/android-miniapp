@@ -119,6 +119,14 @@ The `MiniAppMessageBridge` is used for passing messages between the Mini App (Ja
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() = AppSettings.instance.uniqueId
+
+    override fun requestPermission(
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
+                ) {
+                    // Implementation details to request device permission for location
+                    // .. .. ..
+                }
 }
 ```
 

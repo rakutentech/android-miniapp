@@ -1,3 +1,5 @@
+## CHANGELOG
+
 ### 1.2.0 (2020-07-21)
 **SDK**
 - Upgraded build setup and some internal dependencies
