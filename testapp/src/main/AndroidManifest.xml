@@ -43,8 +43,8 @@
             android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
             android:value="${hostAppVersion}" />
         <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppInfo"
-            android:value="${hostAppInfo}" />
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
+            android:value="${hostAppUserAgentInfo}" />
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.AppId"
             android:value="${appId}" />

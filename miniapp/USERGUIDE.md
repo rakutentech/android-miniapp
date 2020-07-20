@@ -5,6 +5,7 @@ layout: userguide
 # Mini App SDK for Android
 
 Provides functionality to show a Mini App in Android Applications. The SDK offers features like downloading, caching, updating, and displaying of a Mini App.
+Mini App SDK also facilitates communication between a mini app and the host app via a message bridge.
 
 ## Requirements
 
@@ -19,7 +20,8 @@ This SDK supports Android API level 21 (Lollipop) and above.
 ```groovy
 repositories {
     jcenter()
-    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' } // Needed only if you want to use snapshot releases
+    // Needed only if you want to use snapshot releases
+    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
 }
 
 dependency {
@@ -31,14 +33,14 @@ dependency {
 
 The SDK is configured via manifest meta-data, the configurable values are:
 
-| Field                        | Datatype| Manifest Key                                         | Optional   | Default   |
-|------------------------------|---------|------------------------------------------------------|------------|---------- |
-| Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`            | ❌         | 🚫        |
-| Testbox Config               | boolean | `com.rakuten.tech.mobile.miniapp.IsTestMode`         | ✅         | `false`   |
-| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`     | ❌         | 🚫        |
-| Host App Info                | String  | `com.rakuten.tech.mobile.miniapp.HostAppInfo`        | ✅         | 🚫        |
-| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                  | ❌         | 🚫        |
-| RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey` | ❌         | 🚫        |
+| Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
+|------------------------------|---------|--------------------------------------------------------|----------- |--------- |
+| Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
+| Testbox Config               | boolean | `com.rakuten.tech.mobile.miniapp.IsTestMode`           | ✅         | `false`   |
+| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
+| Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
+| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                    | ❌         | 🚫        |
+| RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
@@ -70,6 +72,11 @@ In your `AndroidManifest.xml`:
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="your_subscription_key" />
+
+        <!-- Optional User Agent Information relating to the host app -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
+            android:value="app_name/version_info" />
 
     </application>
 </manifest>

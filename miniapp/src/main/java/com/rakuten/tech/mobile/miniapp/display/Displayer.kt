@@ -4,7 +4,7 @@ import android.content.Context
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
-internal class Displayer(private val context: Context, private val hostAppInfo: String) {
+internal class Displayer(private val context: Context, private val hostAppUserAgentInfo: String) {
 
     fun createMiniAppDisplay(
         basePath: String,
@@ -15,6 +15,6 @@ internal class Displayer(private val context: Context, private val hostAppInfo: 
         basePath = basePath,
         appId = appId,
         miniAppMessageBridge = miniAppMessageBridge,
-        hostAppInfo = hostAppInfo
+        hostAppUserAgentInfo = hostAppUserAgentInfo
     )
 }

@@ -37,7 +37,7 @@ class RealMiniAppDisplayTest {
             basePath = basePath,
             appId = TEST_MA_ID,
             miniAppMessageBridge = miniAppMessageBridge,
-            hostAppInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 

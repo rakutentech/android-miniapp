@@ -34,20 +34,20 @@ android {
 
     def appName = "Mini App Sample"
     def stagingManifestPlaceholders = [
-            baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
-            isTestMode     : property("IS_TEST_MODE") ?: false,
-            hostAppInfo    : property("HOST_APP_INFO") ?: "MiniApp Demo App/$project.version",
-            hostAppVersion : property("HOST_APP_VERSION") ?: "test-host-app-version",
-            appId          : property("HOST_APP_ID") ?: "test-host-app-id",
-            subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+            isTestMode              : property("IS_TEST_MODE") ?: false,
+            hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
+            hostAppVersion          : property("HOST_APP_VERSION") ?: "test-host-app-version",
+            appId                   : property("HOST_APP_ID") ?: "test-host-app-id",
+            subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
     def prodManifestPlaceholders = [
-            baseUrl         : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
-            isTestMode      : property("PROD_IS_TEST_MODE") ?: false,
-            hostAppInfo     : property("HOST_APP_PROD_INFO") ?: "MiniApp Demo App/$project.version",
-            hostAppVersion  : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
-            appId           : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
-            subscriptionKey : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+            isTestMode              : property("PROD_IS_TEST_MODE") ?: false,
+            hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
+            hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
+            appId                   : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
+            subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')

@@ -40,11 +40,12 @@ class MiniappSdkInitializer : ContentProvider() {
         fun hostAppVersion(): String
 
         /**
-         * This info will be appended to user-agent of webview.
-         * It should be a meaningful keyword such as host app name to differentiate other host apps.
+         * This user agent specific info will be appended to the default user-agent.
+         * It should be meaningful e.g. host-app-name/version.
+         * @see [link][https://developer.chrome.com/multidevice/user-agent] for more information.
          **/
-        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppInfo")
-        fun hostAppInfo(): String
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo")
+        fun hostAppUserAgentInfo(): String
 
         /**
          * App Id assigned to host App.
@@ -70,7 +71,7 @@ class MiniappSdkInitializer : ContentProvider() {
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),
-                hostAppInfo = manifestConfig.hostAppInfo(),
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isTestMode = manifestConfig.isTestMode()
             )
         )
