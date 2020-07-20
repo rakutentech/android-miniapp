@@ -13,15 +13,21 @@ class AppSettings private constructor(context: Context) {
 
     var isTestMode: Boolean
         get() = cache.isTestMode ?: manifestConfig.isTestMode()
-        set(isTestMode) { cache.isTestMode = isTestMode }
+        set(isTestMode) {
+            cache.isTestMode = isTestMode
+        }
 
     var appId: String
         get() = cache.appId ?: manifestConfig.rasAppId()
-        set(appId) { cache.appId = appId }
+        set(appId) {
+            cache.appId = appId
+        }
 
     var subscriptionKey: String
         get() = cache.subscriptionKey ?: manifestConfig.subscriptionKey()
-        set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
+        set(subscriptionKey) {
+            cache.subscriptionKey = subscriptionKey
+        }
 
     var uniqueId: String
         get() {
@@ -29,25 +35,30 @@ class AppSettings private constructor(context: Context) {
             cache.uniqueId = uniqueId
             return uniqueId
         }
-        set(subscriptionKey) { cache.subscriptionKey = subscriptionKey }
+        set(subscriptionKey) {
+            cache.subscriptionKey = subscriptionKey
+        }
 
     var isSettingSaved: Boolean
         get() = cache.isSettingSaved
-        set(isSettingSaved) { cache.isSettingSaved = isSettingSaved }
+        set(isSettingSaved) {
+            cache.isSettingSaved = isSettingSaved
+        }
 
     val baseUrl = manifestConfig.baseUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
 
-    val miniAppSettings: MiniAppSdkConfig get() = MiniAppSdkConfig(
-        baseUrl = baseUrl,
-        rasAppId = appId,
-        subscriptionKey = subscriptionKey,
-        hostAppVersionId = hostAppVersionId,
-        // no update for hostAppInfo because sdk does not allow to change it.
-        hostAppInfo = manifestConfig.hostAppInfo(),
-        isTestMode = isTestMode
-    )
+    val miniAppSettings: MiniAppSdkConfig
+        get() = MiniAppSdkConfig(
+            baseUrl = baseUrl,
+            rasAppId = appId,
+            subscriptionKey = subscriptionKey,
+            hostAppVersionId = hostAppVersionId,
+            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+            hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+            isTestMode = isTestMode
+        )
 
     companion object {
         lateinit var instance: AppSettings

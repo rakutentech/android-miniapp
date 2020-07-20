@@ -19,7 +19,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val appId: String,
     miniAppMessageBridge: MiniAppMessageBridge,
-    val hostAppInfo: String,
+    val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context)
 ) : WebView(context), WebViewListener {
 
@@ -40,9 +40,9 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
-        if (hostAppInfo.isNotEmpty())
+        if (hostAppUserAgentInfo.isNotEmpty())
             settings.userAgentString =
-                String.format("%s %s", settings.userAgentString, hostAppInfo)
+                String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         webViewClient = MiniAppWebViewClient(getWebViewAssetLoader(), customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
