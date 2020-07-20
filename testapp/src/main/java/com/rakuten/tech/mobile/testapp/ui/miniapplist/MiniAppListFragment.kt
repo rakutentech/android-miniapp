@@ -29,7 +29,7 @@ import kotlin.collections.ArrayList
 class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextListener {
 
     companion object {
-        fun newInstance() = MiniAppListFragment()
+        fun newInstance(): MiniAppListFragment = MiniAppListFragment()
     }
 
     private lateinit var viewModel: MiniAppListViewModel
@@ -69,22 +69,23 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
-            miniAppListData.observe(viewLifecycleOwner, Observer {
-                swipeRefreshLayout.isRefreshing = false
-                addMiniAppList(it)
-                MiniAppListStore.instance.saveMiniAppList(it)
-            })
-            errorData.observe(viewLifecycleOwner, Observer {
-                val list = MiniAppListStore.instance.getMiniAppList()
-                if (list.isEmpty())
-                    updateEmptyView(list)
-                else {
-                    addMiniAppList(list)
+        viewModel =
+            ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+                miniAppListData.observe(viewLifecycleOwner, Observer {
                     swipeRefreshLayout.isRefreshing = false
-                }
-            })
-        }
+                    addMiniAppList(it)
+                    MiniAppListStore.instance.saveMiniAppList(it)
+                })
+                errorData.observe(viewLifecycleOwner, Observer {
+                    val list = MiniAppListStore.instance.getMiniAppList()
+                    if (list.isEmpty())
+                        updateEmptyView(list)
+                    else {
+                        addMiniAppList(list)
+                        swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            }
 
         swipeRefreshLayout.setOnRefreshListener {
             executeLoadingList()
