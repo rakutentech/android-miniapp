@@ -2,7 +2,10 @@ package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
 import android.app.Activity
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -20,7 +23,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import kotlinx.android.synthetic.main.mini_app_list_fragment.*
-import java.util.*
+import java.util.Locale
 import kotlin.collections.ArrayList
 
 class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextListener {
@@ -76,9 +79,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
                 val list = MiniAppListStore.instance.getMiniAppList()
                 if (list.isEmpty())
                     updateEmptyView(list)
-                else
+                else {
                     addMiniAppList(list)
                     swipeRefreshLayout.isRefreshing = false
+                }
             })
         }
 
