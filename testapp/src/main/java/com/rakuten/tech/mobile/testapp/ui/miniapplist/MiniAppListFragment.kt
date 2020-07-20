@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -22,7 +23,8 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
-import kotlinx.android.synthetic.main.mini_app_list_fragment.*
+import kotlinx.android.synthetic.main.mini_app_list_fragment.emptyView
+import kotlinx.android.synthetic.main.mini_app_list_fragment.swipeRefreshLayout
 import java.util.Locale
 import kotlin.collections.ArrayList
 
@@ -118,8 +120,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
         raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.main, menu)
         addSearchBox(menu)
     }
 
