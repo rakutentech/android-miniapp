@@ -7,12 +7,14 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
+import com.rakuten.tech.mobile.testapp.helper.includeHyphen
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -40,7 +42,7 @@ class SettingsMenuActivity : BaseActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            validateInputView()
+            validateInputIDs()
         }
     }
 
@@ -99,7 +101,7 @@ class SettingsMenuActivity : BaseActivity() {
         editAppId.addTextChangedListener(settingsTextWatcher)
         editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
-        validateInputView()
+        validateInputIDs()
     }
 
     private fun createSettingsInfo(): String {
@@ -107,19 +109,24 @@ class SettingsMenuActivity : BaseActivity() {
                 getString(R.string.build_version)
     }
 
-    private fun validateInputView() {
-        val isAppIdInvalid = editAppId.text.toString().isInvalidUuid() || editAppId.text.isNullOrEmpty()
-        val isSubKeyInvalid = editSubscriptionKey.text.toString().isInvalidUuid() || editSubscriptionKey.text.isNullOrEmpty()
+    internal fun validateInputIDs() {
+        val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
+        val isSubsKeyInvalid = editSubscriptionKey.text.toString().includeHyphen().isInvalidUuid()
 
-        saveViewEnabled = !(isAppIdInvalid || isSubKeyInvalid)
+        saveViewEnabled = !(isInputEmpty(editAppId) || isInputEmpty(editSubscriptionKey)
+                || isAppIdInvalid || isSubsKeyInvalid)
 
-        if (isAppIdInvalid) {
-            editAppId.error = "invalid input"
+        if (isInputEmpty(editAppId) || isAppIdInvalid) {
+            editAppId.error = getString(R.string.error_invalid_input)
         }
 
-        if (isSubKeyInvalid) {
-            editSubscriptionKey.error = "invalid input"
+        if (isInputEmpty(editSubscriptionKey) || isSubsKeyInvalid) {
+            editSubscriptionKey.error = getString(R.string.error_invalid_input)
         }
+    }
+
+    private fun isInputEmpty(input: AppCompatEditText): Boolean {
+        return input.text.toString().isEmpty() || input.text.toString().isBlank()
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
