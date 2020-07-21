@@ -161,6 +161,8 @@ class MiniAppActivity : Activity(), CoroutineScope {
 }
 ```
 
+`MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
+
 ## Advanced
 
 ### Clearing up mini app display
