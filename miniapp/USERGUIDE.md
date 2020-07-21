@@ -119,6 +119,14 @@ The `MiniAppMessageBridge` is used for passing messages between the Mini App (Ja
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() = AppSettings.instance.uniqueId
+
+    override fun requestPermission(
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
+                ) {
+                    // Implementation details to request device permission for location
+                    // .. .. ..
+                }
 }
 ```
 
@@ -153,6 +161,8 @@ class MiniAppActivity : Activity(), CoroutineScope {
 }
 ```
 
+`MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
+
 ## Advanced
 
 ### Clearing up mini app display
@@ -179,6 +189,18 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+### Navigating inside a mini app
+
+For a common usage pattern, the navigation inside a mini app can be attached to the Android back key navigation as shown:
+
+```kotlin
+override fun onBackPressed() {
+    if(!miniAppDisplay.navigateBackward()) {
+        super.onBackPressed()
+    }
+}
+```
+
 ## Troubleshooting
 
 ### AppCompat Version
@@ -190,22 +212,4 @@ We recommend using the updated versions of this library.
 
 ## Changelog
 
-### 1.1.1 (2020-06-11)
-
-**SDK**
-- *Bugfix:* `select` and `date` input elements weren't working correctly.
-- Deprecated `MiniAppDisplay#getMiniAppView()` and added `MiniAppDisplay#getMiniAppView(activityContext: Context)`. You now must provide an Activity Context when retrieving the `View` for the Mini App. This is related to the bugfix for `select` and `date` inputs - if you use the deprecated method, then these elements will not work correctly.
-
-**Sample App**
-- Display first time setup instructions on first launch of App.
-
-### 1.1.0 (2020-06-02)
-
-- Added JavaScript bridge for passing data between Mini App and Host App. Your App now must implement `MiniAppMessageBridge` and provide the implementation when calling `MiniApp#create`.
-- Deprecated `MiniApp#create(info: MiniAppInfo)`. Your App should instead use `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)`.
-- Added `getUniqueId` function to `MiniAppMessageBridge`. This function should provide a unique identifier (unique to the user and device) to Mini Apps.
-- Added support for custom scheme URL redirect. The URL `mscheme.MINI_APP_ID://miniapp/index.html` can be used from within the Mini App view to redirect to the Mini App. This matches the URL used in the iOS Mini App SDK.
-
-### 1.0.0 (2020-04-21)
-
-- Initial release
+See the full [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md).
