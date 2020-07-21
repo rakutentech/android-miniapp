@@ -189,6 +189,18 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+### Navigating inside a mini app
+
+For a common usage pattern, the navigation inside a mini app can be attached to the Android back key navigation as shown:
+
+```kotlin
+override fun onBackPressed() {
+    if(!miniAppDisplay.navigateBackward()) {
+        super.onBackPressed()
+    }
+}
+```
+
 ## Troubleshooting
 
 ### AppCompat Version
