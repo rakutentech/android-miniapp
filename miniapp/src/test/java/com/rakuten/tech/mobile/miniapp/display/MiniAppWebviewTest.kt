@@ -248,6 +248,8 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, mock()) shouldBe true
         webChromeClient.onJsPrompt(
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, TEST_VALUE, mock()) shouldBe true
+        webChromeClient.onJsPrompt(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, null, mock()) shouldBe true
     }
 }
 
