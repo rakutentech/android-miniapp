@@ -40,7 +40,7 @@ class SettingsMenuActivity : BaseActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            enableSaveView()
+            validateInputView()
         }
     }
 
@@ -99,7 +99,7 @@ class SettingsMenuActivity : BaseActivity() {
         editAppId.addTextChangedListener(settingsTextWatcher)
         editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
-        enableSaveView()
+        validateInputView()
     }
 
     private fun createSettingsInfo(): String {
@@ -107,9 +107,19 @@ class SettingsMenuActivity : BaseActivity() {
                 getString(R.string.build_version)
     }
 
-    private fun enableSaveView() {
-        saveViewEnabled =
-            !(editAppId.text.toString().isInvalidUuid() || editSubscriptionKey.text.isNullOrEmpty())
+    private fun validateInputView() {
+        val isAppIdInvalid = editAppId.text.toString().isInvalidUuid() || editAppId.text.isNullOrEmpty()
+        val isSubKeyInvalid = editSubscriptionKey.text.toString().isInvalidUuid() || editSubscriptionKey.text.isNullOrEmpty()
+
+        saveViewEnabled = !(isAppIdInvalid || isSubKeyInvalid)
+
+        if (isAppIdInvalid) {
+            editAppId.error = "invalid input"
+        }
+
+        if (isSubKeyInvalid) {
+            editSubscriptionKey.error = "invalid input"
+        }
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
