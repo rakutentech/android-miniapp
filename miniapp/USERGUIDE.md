@@ -200,4 +200,4 @@ We recommend using the updated versions of this library.
 
 ## Changelog
 
-See the full [CHANGELOG](../CHANGELOG.md).
+See the full [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md).
