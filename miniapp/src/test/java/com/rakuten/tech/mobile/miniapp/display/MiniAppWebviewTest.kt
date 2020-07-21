@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
+import android.webkit.JsResult
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
@@ -14,9 +15,12 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_BODY_CONTENT
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -235,6 +239,16 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
         webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
 
         verify(geoLocationCallback, times(1)).invoke("", true, false)
+    }
+
+    @Test
+    fun `should override js dialog event`() {
+        webChromeClient.onJsAlert(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, mock()) shouldBe true
+        webChromeClient.onJsConfirm(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, mock()) shouldBe true
+        webChromeClient.onJsPrompt(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, TEST_VALUE, mock()) shouldBe true
     }
 }
 
