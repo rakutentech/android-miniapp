@@ -1,7 +1,3 @@
----
-layout: userguide
----
-
 # Mini App SDK for Android
 
 Provides functionality to show a Mini App in Android Applications. The SDK offers features like downloading, caching, updating, and displaying of a Mini App.
