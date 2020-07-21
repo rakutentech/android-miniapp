@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
-import android.webkit.JsResult
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
