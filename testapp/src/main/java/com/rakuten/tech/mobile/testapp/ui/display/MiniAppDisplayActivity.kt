@@ -83,7 +83,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            miniAppMessageBridge = object: MiniAppMessageBridge() {
+            miniAppMessageBridge = object : MiniAppMessageBridge() {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
 
                 override fun requestPermission(
@@ -103,24 +103,27 @@ class MiniAppDisplayActivity : BaseActivity() {
                 viewModel.obtainMiniAppDisplay(
                     this@MiniAppDisplayActivity,
                     intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id,
-                    miniAppMessageBridge)
+                    miniAppMessageBridge
+                )
             else
                 viewModel.obtainMiniAppDisplay(
                     this@MiniAppDisplayActivity,
                     appId,
-                    miniAppMessageBridge)
+                    miniAppMessageBridge
+                )
         }
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray) {
+        grantResults: IntArray
+    ) {
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         miniappPermissionCallback.invoke(isGranted)
     }
 
-        private fun toggleProgressLoading(isOn: Boolean) {
+    private fun toggleProgressLoading(isOn: Boolean) {
         if (findViewById<View>(R.id.pb) != null) {
             when (isOn) {
                 true -> pb.visibility = View.VISIBLE
@@ -130,7 +133,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if(!viewModel.canGoBackwards()) {
+        if (!viewModel.canGoBackwards()) {
             super.onBackPressed()
         }
     }
