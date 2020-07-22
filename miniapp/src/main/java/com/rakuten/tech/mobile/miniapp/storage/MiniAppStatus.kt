@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import java.io.File
-import java.lang.IllegalStateException
 
 internal class MiniAppStatus(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
@@ -21,7 +21,7 @@ internal class MiniAppStatus(context: Context) {
     fun getDownloadedMiniApp(appId: String): MiniAppInfo? =
         try {
             gson.fromJson(prefs.getString(appId, ""), MiniAppInfo::class.java)
-        } catch (error: IllegalStateException) {
+        } catch (error: JsonSyntaxException) {
             null
         }
 
