@@ -1,10 +1,13 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
 import android.app.Activity
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -23,14 +26,17 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
-import kotlinx.android.synthetic.main.mini_app_list_fragment.emptyView
-import kotlinx.android.synthetic.main.mini_app_list_fragment.swipeRefreshLayout
+import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
+import kotlinx.android.synthetic.main.mini_app_list_fragment.*
 import java.util.Locale
+
 import kotlin.collections.ArrayList
 
-class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextListener {
+class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
+    SearchView.OnQueryTextListener {
 
     companion object {
+        val TAG = MiniAppListFragment::class.java.canonicalName
         fun newInstance(): MiniAppListFragment = MiniAppListFragment()
     }
 
@@ -110,7 +116,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
-        resetSearchBox()
         raceExecutor.run {
             context?.let { MiniAppDisplayActivity.start(it, miniAppInfo) }
         }
@@ -120,20 +125,30 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, SearchView.OnQueryTextL
         raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.main, menu)
-        addSearchBox(menu)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_search -> activity?.onSearchRequested() ?: false
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
-    private fun addSearchBox(menu: Menu) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear() // clearing the previous inflation of menus from MenuBaseActivity
+        inflater.inflate(R.menu.main, menu)
+
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val itemSearch = menu.findItem(R.id.action_search)
         searchView = itemSearch.actionView as SearchView
-        searchView.queryHint = getString(R.string.menu_hint_search_miniapps)
-        searchView.setOnQueryTextListener(this)
-
-        // show search box in mini app list screen
+        searchView.let {
+            it.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+            it.setOnQueryTextListener(this)
+        }
+        // by default, search menu is hidden, show search menu here
         itemSearch.isVisible = true
+    }
+
+    override fun startSearch(query: String?) {
+        updateMiniAppListState(produceSearchResult(query))
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
