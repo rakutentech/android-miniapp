@@ -3,10 +3,14 @@ package com.rakuten.tech.mobile.miniapp.storage
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
+import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,9 +40,9 @@ class MiniAppStatusTest {
     }
 
     @Test
-    fun `localVersion should be saved in storage`() {
-        miniAppStatus.saveDownloadedVersion(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-        MiniAppStatus(ApplicationProvider.getApplicationContext()).getDownloadedVersion(
-            TEST_ID_MINIAPP) shouldBe TEST_ID_MINIAPP_VERSION
+    fun `downloaded miniapp should be saved in storage`() {
+        miniAppStatus.saveDownloadedMiniApp(TEST_MA)
+        MiniAppStatus(ApplicationProvider.getApplicationContext()).getDownloadedMiniApp(
+            TEST_MA_ID)?.id shouldEqual TEST_MA_ID
     }
 }

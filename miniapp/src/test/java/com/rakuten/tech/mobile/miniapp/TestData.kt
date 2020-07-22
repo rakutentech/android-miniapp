@@ -31,3 +31,10 @@ internal const val VALID_FILE_URL_PATH =
         .plus("map-published/min-872f9172-804f-44e2-addd-ed612170dac9/")
         .plus("ver-6181004c-a6aa-4eda-b145-a5ff73fc4ad0/a/b/index.html")
 internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf2601cb63a2/js"
+
+internal val TEST_MA = MiniAppInfo(
+    id = TEST_MA_ID,
+    displayName = TEST_MA_DISPLAY_NAME,
+    icon = TEST_MA_ICON,
+    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
+)

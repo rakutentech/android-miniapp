@@ -67,9 +67,9 @@ class RealMiniAppSpec {
         runBlockingTest {
             realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
-            val basePath: String = verify(miniAppDownloader, times(1))
+            val (basePath, miniAppInfo) = verify(miniAppDownloader, times(1))
                 .getMiniApp(TEST_MA_ID)
-            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
+            verify(displayer, times(1)).createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge)
         }
 
     @Test
