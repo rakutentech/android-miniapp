@@ -123,7 +123,7 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP) shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
         }
 
     @Test
@@ -189,7 +189,7 @@ class MiniAppDownloaderSpec {
             ) itReturns TEST_BASE_PATH
             When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP) shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
         }
 
     @Test(expected = MiniAppSdkException::class)

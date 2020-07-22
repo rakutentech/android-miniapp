@@ -39,6 +39,7 @@ class RealMiniAppSpec {
     @Test
     fun `should still be able to download miniapp for deprecated method`() =
         runBlockingTest {
+            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns mock()
             realMiniApp.create(miniAppInfo)
             realMiniApp.create(miniAppInfo, miniAppMessageBridge)
 
@@ -65,11 +66,13 @@ class RealMiniAppSpec {
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
             realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
-            val (basePath, miniAppInfo) = verify(miniAppDownloader, times(1))
-                .getMiniApp(TEST_MA_ID)
-            verify(displayer, times(1)).createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge)
+            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
+            verify(displayer, times(1))
+                .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second, miniAppMessageBridge)
         }
 
     @Test

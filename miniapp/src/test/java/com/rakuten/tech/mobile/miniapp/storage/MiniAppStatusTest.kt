@@ -41,8 +41,8 @@ class MiniAppStatusTest {
 
     @Test
     fun `downloaded miniapp should be saved in storage`() {
+        MiniAppStatus(context).getDownloadedMiniApp(TEST_MA_ID) shouldBe null
         miniAppStatus.saveDownloadedMiniApp(TEST_MA)
-        MiniAppStatus(ApplicationProvider.getApplicationContext()).getDownloadedMiniApp(
-            TEST_MA_ID)?.id shouldEqual TEST_MA_ID
+        MiniAppStatus(context).getDownloadedMiniApp(TEST_MA_ID)?.id shouldEqual TEST_MA_ID
     }
 }
