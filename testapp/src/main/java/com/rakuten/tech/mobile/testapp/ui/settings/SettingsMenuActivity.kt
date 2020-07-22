@@ -113,8 +113,10 @@ class SettingsMenuActivity : BaseActivity() {
         val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
         val isSubsKeyInvalid = editSubscriptionKey.text.toString().includeHyphen().isInvalidUuid()
 
-        saveViewEnabled = !(isInputEmpty(editAppId) || isInputEmpty(editSubscriptionKey)
-                || isAppIdInvalid || isSubsKeyInvalid)
+        saveViewEnabled = !(isInputEmpty(editAppId)
+                || isInputEmpty(editSubscriptionKey)
+                || isAppIdInvalid
+                || isSubsKeyInvalid)
 
         if (isInputEmpty(editAppId) || isAppIdInvalid) {
             editAppId.error = getString(R.string.error_invalid_input)
