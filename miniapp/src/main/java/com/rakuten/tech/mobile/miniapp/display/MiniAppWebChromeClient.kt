@@ -38,7 +38,12 @@ internal class MiniAppWebChromeClient(
         callback?.invoke(origin, true, false)
     }
 
-    override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean =
+    override fun onJsAlert(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        result: JsResult?
+    ): Boolean =
         onShowDialog(
             context = context,
             message = message,
@@ -47,7 +52,12 @@ internal class MiniAppWebChromeClient(
             miniAppInfo = miniAppInfo
         )
 
-    override fun onJsConfirm(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean =
+    override fun onJsConfirm(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        result: JsResult?
+    ): Boolean =
         onShowDialog(
             context = context,
             message = message,
