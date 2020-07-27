@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -40,7 +41,7 @@ class SettingsMenuActivity : BaseActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            enableSaveView()
+            validateInputIDs()
         }
     }
 
@@ -99,7 +100,7 @@ class SettingsMenuActivity : BaseActivity() {
         editAppId.addTextChangedListener(settingsTextWatcher)
         editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
-        enableSaveView()
+        validateInputIDs()
     }
 
     private fun createSettingsInfo(): String {
@@ -107,9 +108,24 @@ class SettingsMenuActivity : BaseActivity() {
                 getString(R.string.build_version)
     }
 
-    private fun enableSaveView() {
-        saveViewEnabled =
-            !(editAppId.text.toString().isInvalidUuid() || editSubscriptionKey.text.isNullOrEmpty())
+    internal fun validateInputIDs() {
+        val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
+
+        saveViewEnabled = !(isInputEmpty(editAppId)
+                || isInputEmpty(editSubscriptionKey)
+                || isAppIdInvalid)
+
+        if (isInputEmpty(editAppId) || isAppIdInvalid) {
+            editAppId.error = getString(R.string.error_invalid_input)
+        }
+
+        if (isInputEmpty(editSubscriptionKey)) {
+            editSubscriptionKey.error = getString(R.string.error_invalid_input)
+        }
+    }
+
+    private fun isInputEmpty(input: AppCompatEditText): Boolean {
+        return input.text.toString().isEmpty() || input.text.toString().isBlank()
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
@@ -136,7 +152,7 @@ class SettingsMenuActivity : BaseActivity() {
                     settingsProgressDialog.cancel()
                     val toast =
                         Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.setGravity(Gravity.BOTTOM, 0, 100)
                     toast.show()
                 }
             }
