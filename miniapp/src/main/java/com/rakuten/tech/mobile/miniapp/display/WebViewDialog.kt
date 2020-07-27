@@ -20,7 +20,8 @@ internal fun onShowDialog(
     miniAppInfo: MiniAppInfo
 ): Boolean {
     val dialogBuilder = AlertDialog.Builder(context)
-    dialogBuilder.setTitle(miniAppInfo.displayName).setMessage(message)
+        .setTitle(miniAppInfo.displayName)
+        .setMessage(message)
 
     if (dialogType != DialogType.ALERT)
         onCancelBuild(dialogBuilder, result)
@@ -69,7 +70,7 @@ private fun onCancelBuild(dialogBuilder: AlertDialog.Builder, result: JsResult?)
     }
 }
 
-const val DEFAULT_MARGIN = 16
+private const val DEFAULT_MARGIN = 16
 
 internal val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
