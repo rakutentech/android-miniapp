@@ -26,6 +26,7 @@ internal class MiniAppDownloader(
             var versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
             if (!miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath))
                 versionPath = startDownload(miniAppInfo)
+
             storeDownloadedMiniApp(miniAppInfo)
 
             return Pair(versionPath, miniAppInfo)
