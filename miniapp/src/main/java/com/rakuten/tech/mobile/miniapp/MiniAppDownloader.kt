@@ -23,14 +23,8 @@ internal class MiniAppDownloader(
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> {
         try {
             val miniAppInfo = apiClient.fetchInfo(appId)
-            var versionPath =
-                storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
-            if (!miniAppStatus.isVersionDownloaded(
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId,
-                    versionPath
-                )
-            )
+            var versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+            if (!miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath))
                 versionPath = startDownload(miniAppInfo)
             storeDownloadedMiniApp(miniAppInfo)
 
@@ -39,14 +33,8 @@ internal class MiniAppDownloader(
             // load local if possible when offline
             val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
             if (miniAppInfo != null) {
-                val versionPath =
-                    storage.getMiniAppVersionPath(appId, miniAppInfo.version.versionId)
-                if (miniAppStatus.isVersionDownloaded(
-                        appId,
-                        miniAppInfo.version.versionId,
-                        versionPath
-                    )
-                )
+                val versionPath = storage.getMiniAppVersionPath(appId, miniAppInfo.version.versionId)
+                if (miniAppStatus.isVersionDownloaded(appId, miniAppInfo.version.versionId, versionPath))
                     return Pair(versionPath, miniAppInfo)
             }
         }
