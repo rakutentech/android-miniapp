@@ -14,7 +14,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
-import com.rakuten.tech.mobile.testapp.helper.includeHyphen
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -111,18 +110,16 @@ class SettingsMenuActivity : BaseActivity() {
 
     internal fun validateInputIDs() {
         val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
-        val isSubsKeyInvalid = editSubscriptionKey.text.toString().includeHyphen().isInvalidUuid()
 
         saveViewEnabled = !(isInputEmpty(editAppId)
                 || isInputEmpty(editSubscriptionKey)
-                || isAppIdInvalid
-                || isSubsKeyInvalid)
+                || isAppIdInvalid)
 
         if (isInputEmpty(editAppId) || isAppIdInvalid) {
             editAppId.error = getString(R.string.error_invalid_input)
         }
 
-        if (isInputEmpty(editSubscriptionKey) || isSubsKeyInvalid) {
+        if (isInputEmpty(editSubscriptionKey)) {
             editSubscriptionKey.error = getString(R.string.error_invalid_input)
         }
     }
@@ -155,7 +152,7 @@ class SettingsMenuActivity : BaseActivity() {
                     settingsProgressDialog.cancel()
                     val toast =
                         Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.BOTTOM, 0, 0)
+                    toast.setGravity(Gravity.BOTTOM, 0, 100)
                     toast.show()
                 }
             }

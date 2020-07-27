@@ -9,6 +9,3 @@ fun String.isInvalidUuid(): Boolean = try {
 } catch (e: IllegalArgumentException) {
     true
 }
-
-fun String.includeHyphen(): String =
-    replace("(.{8})(.{4})(.{4})(.{4})(.+)".toRegex(), "$1-$2-$3-$4-$5")
