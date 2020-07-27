@@ -155,7 +155,7 @@ class SettingsMenuActivity : BaseActivity() {
                     settingsProgressDialog.cancel()
                     val toast =
                         Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.setGravity(Gravity.BOTTOM, 0, 0)
                     toast.show()
                 }
             }
