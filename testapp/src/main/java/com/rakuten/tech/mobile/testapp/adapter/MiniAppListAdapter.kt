@@ -54,6 +54,7 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
             if (!sectionMiniApp.contains(item.id)) {
                 miniapps.add(item)
                 sectionPos.add(miniapps.size - 1)
+                sectionMiniApp.add(item.id)
             }
             miniapps.add(item)
         }
