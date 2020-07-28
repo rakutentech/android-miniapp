@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
-import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -117,9 +115,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         resetSearchBox()
-
         raceExecutor.run {
-            context?.let { MiniAppDisplayActivity.start(it, miniAppInfo) }
+            activity?.let {
+                MiniAppDisplayActivity.start(it, miniAppInfo)
+            }
         }
     }
 
@@ -170,9 +169,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     private fun resetSearchBox() {
-        searchView.setQuery("", false)
-        searchView.isIconified = true
-        hideSoftKeyboard()
+        if (searchView.query.isNotEmpty()) {
+            searchView.onActionViewCollapsed()
+        }
     }
 
     private fun updateEmptyView(collection: List<MiniAppInfo>) {
@@ -180,11 +179,5 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
             emptyView.visibility = View.VISIBLE
         else
             emptyView.visibility = View.GONE
-    }
-
-    private fun hideSoftKeyboard() {
-        val inputMethodManager: InputMethodManager =
-            activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 }
