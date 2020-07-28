@@ -1,198 +1,83 @@
-version: 2
+version: 2.1
 
-gradle_cache_key: &gradle_cache_key gradle-{{ checksum "build.gradle" }}-{{ checksum "miniapp/build.gradle" }}
-maven_cache_key: &maven_cache_key maven-{{ checksum "miniapp/src/test/AndroidManifest.xml" }}
+orbs:
+  android-sdk: rakutentech/android-sdk@0.1.0
+  app-center: rakutentech/app-center@0.1.0
 
-jobs:
-  build:
-    docker:
-      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
-    working_directory: ~/code
-    environment:
-      JVM_OPTS: "-Xmx3200m"
-    steps:
-      - checkout
-      # ToDo Find a solution to upgrade git version of Debian to use sparse-checkout.
-      - run:
-          name: Update submodule
-          command: |
-            set -e
-            git submodule update --init
-            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
-            rm -r miniapp/src/main/assets/js-miniapp
-            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
-            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
-        # Retrieve Base64 Keystore from Env variable and save to testapp project
-      - run: |
-          if [[ $RELEASE_KEYSTORE_BASE64 != "" ]]; then
-            base64 -d <<< $RELEASE_KEYSTORE_BASE64 > ./testapp/release-keystore.jks
-          fi
-      - restore_cache:
-          key: *gradle_cache_key
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: *gradle_cache_key
-      - restore_cache:
-          ## Robolectric uses maven to download sources, so we must use a different cache for maven
-          key: *maven_cache_key
-      - run:
-          name: Run Tests
-          command: ./gradlew check
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: *maven_cache_key
-      - run:
-          name: Assemble AAR
-          command: ./gradlew assemble
-      - run:
-          name: Current Version
-          command: ./gradlew currentVersion
-      - run:
-          name: Upload Code Coverage
-          command: bash <(curl -s https://codecov.io/bash)
-      - store_artifacts:
-          path: miniapp/build/reports
-          destination: reports/
-      - store_test_results:
-          path: miniapp/build/test-results
-      - store_artifacts:
-          path: miniapp/build/outputs/aar
-          destination: aar/
-      - persist_to_workspace:
-          root: testapp/build/outputs
-          paths:
-            - apk/
-      - persist_to_workspace:
-          root: ~/code
-          paths:
-            - miniapp/build/
-
-  publish-sdk:
-    docker:
-      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
-    working_directory: ~/code
-    environment:
-      JVM_OPTS: "-Xmx3200m"
-    steps:
-      - checkout
-      - run:
-          name: Update submodule
-          command: |
-            set -e
-            git submodule update --init
-            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
-            rm -r miniapp/src/main/assets/js-miniapp
-            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
-            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
-      - attach_workspace:
-          at: ./
-      - run:
-          name: Current Version
-          command: ./gradlew cV
-      - run:
-          name: Publish Artifacts
-          command: ./gradlew publish
-      - run:
-          name: Publish Documentation
-          command: |
-            set -e
-            ./gradlew generatePublishableDocs
-            if [[ ! $CIRCLE_TAG == *"-"* ]]; then
-              git checkout gh-pages
-              cp -R miniapp/build/publishableDocs/docs/. ./docs
-              cp -R miniapp/build/publishableDocs/_versions/. ./_versions
-              git add docs _versions
-              git config user.name "CI Publisher"
-              git config user.email "dev-opensource@mail.rakuten.com"
-              git commit -m "Publish documentation for $CIRCLE_TAG"
-              git push origin gh-pages
-            else
-              echo "Documentation not published for snapshot version"
-            fi
-
-  deploy-test-app-stg:
-    docker:
-      - image: circleci/node
-    working_directory: ~/code
-    steps:
-      - attach_workspace:
-          at: ./
-      - run:
-          name: Install App Center CLI
-          command: npm init --yes && npm install appcenter-cli
-      - run:
-          name: Upload APK to App Center
-          command: >
-            npx appcenter distribute release
-            --group Testers
-            --file apk/staging/testapp-staging.apk
-            --app $APP_CENTER_APP_NAME
-            --release-notes $CIRCLE_BUILD_URL
-            --token $APP_CENTER_TOKEN
-            --quiet
-
-  deploy-test-app-prod:
-    docker:
-      - image: circleci/node
-    working_directory: ~/code
-    steps:
-      - attach_workspace:
-          at: ./
-      - run:
-          name: Install App Center CLI
-          command: npm init --yes && npm install appcenter-cli
-      - run:
-          name: Upload APK to App Center
-          command: >
-            npx appcenter distribute release
-            --group Production
-            --file apk/release/testapp-release.apk
-            --app $APP_CENTER_APP_NAME
-            --release-notes "Production build for Android SDK $CIRCLE_TAG"
-            --token $APP_CENTER_TOKEN
-            --quiet
+commands:
+  updateSubmodule: set -e
+    git submodule update --init
+    cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+    rm -r miniapp/src/main/assets/js-miniapp
+    (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+    mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
 
 workflows:
-  version: 2
+  version: 2.1
   build-and-release:
     jobs:
-      - build:
+      - android-sdk/build:
+          gradle-cache-key: >-
+            gradle-
+            {{ checksum "build.gradle" }}
+            {{ checksum "miniapp/build.gradle" }}
+            {{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          maven-cache-key: maven-{{ checksum "miniapp/src/test/AndroidManifest.xml" }}
+          sdk-path: miniapp
+          sample-app-path: testapp
+          pre-steps:
+            # Retrieve Base64 Keystore from Env variable and save to testapp project
+            - run: |
+                if [[ "$RELEASE_KEYSTORE_BASE64" != "" ]]; then
+                  base64 -d \<<< "$RELEASE_KEYSTORE_BASE64" > ./testapp/release-keystore.jks
+                fi
+          after-prepare-steps:
+            - updateSubmodule
           filters:
             tags:
               only: /^v.*/
             branches:
               only: /.*/
-      - deploy-test-app-stg:
+      - app-center/publish:
+          name: deploy-test-app-stg
+          group: Testers
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BUILD_URL
           requires:
-            - build
+            - android-sdk/build
           filters:
             branches:
               only: master
       - release-verification:
           type: approval
           requires:
-            - build
+            - android-sdk/build
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - publish-sdk:
+      - android-sdk/publish:
           requires:
             - release-verification
+          after-prepare-steps:
+            - updateSubmodule
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy-test-app-prod:
+      - app-center/publish:
+          name: deploy-test-app-prod
+          group: Production
+          file: apk/release/testapp-release.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: Production build for Android SDK $CIRCLE_TAG
           requires:
-            - publish-sdk
+            - android-sdk/publish
           filters:
             tags:
               only: /^v.*/
