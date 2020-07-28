@@ -2,12 +2,19 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import android.webkit.GeolocationPermissions
+import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.JsPromptResult
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.js.DialogType
 import java.io.BufferedReader
 
-internal class MiniAppWebChromeClient(val context: Context) : WebChromeClient() {
+internal class MiniAppWebChromeClient(
+    val context: Context,
+    val miniAppInfo: MiniAppInfo
+) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @VisibleForTesting
@@ -30,6 +37,49 @@ internal class MiniAppWebChromeClient(val context: Context) : WebChromeClient() 
     ) {
         callback?.invoke(origin, true, false)
     }
+
+    override fun onJsAlert(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        result: JsResult?
+    ): Boolean =
+        onShowDialog(
+            context = context,
+            message = message,
+            result = result as JsResult,
+            dialogType = DialogType.ALERT,
+            miniAppInfo = miniAppInfo
+        )
+
+    override fun onJsConfirm(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        result: JsResult?
+    ): Boolean =
+        onShowDialog(
+            context = context,
+            message = message,
+            result = result as JsResult,
+            dialogType = DialogType.CONFIRM,
+            miniAppInfo = miniAppInfo
+        )
+
+    override fun onJsPrompt(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        defaultValue: String?,
+        result: JsPromptResult?
+    ): Boolean = onShowDialog(
+        context = context,
+        message = message,
+        defaultValue = defaultValue,
+        result = result,
+        dialogType = DialogType.PROMPT,
+        miniAppInfo = miniAppInfo
+    )
 
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {

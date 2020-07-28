@@ -19,33 +19,39 @@ internal class MiniAppDownloader(
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
-    @Suppress("SwallowedException", "LongMethod")
-    suspend fun getMiniApp(appId: String): String {
+    @Suppress("SwallowedException")
+    suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> {
         try {
             val miniAppInfo = apiClient.fetchInfo(appId)
-            val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
-            return when {
-                miniAppStatus.isVersionDownloaded(
-                    miniAppInfo.id, miniAppInfo.version.versionId, versionPath) -> versionPath
-                else -> startDownload(miniAppInfo.id, miniAppInfo.version.versionId)
-            }
+            var versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+            if (!miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath))
+                versionPath = startDownload(miniAppInfo)
+
+            storeDownloadedMiniApp(miniAppInfo)
+
+            return Pair(versionPath, miniAppInfo)
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            val versionId = miniAppStatus.getDownloadedVersion(appId)
-            if (versionId != null) {
-                val versionPath = storage.getMiniAppVersionPath(appId, versionId)
-                if (miniAppStatus.isVersionDownloaded(appId, versionId, versionPath))
-                    return versionPath
+            val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
+            if (miniAppInfo != null) {
+                val versionPath = storage.getMiniAppVersionPath(appId, miniAppInfo.version.versionId)
+                if (miniAppStatus.isVersionDownloaded(appId, miniAppInfo.version.versionId, versionPath))
+                    return Pair(versionPath, miniAppInfo)
             }
         }
         // cannot load miniapp from server
         throw sdkExceptionForInternalServerError()
     }
 
+    private fun storeDownloadedMiniApp(miniAppInfo: MiniAppInfo) {
+        miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, true)
+        miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
+    }
+
     @VisibleForTesting
-    suspend fun startDownload(appId: String, versionId: String): String {
-        val manifest = fetchManifest(appId, versionId)
-        return downloadMiniApp(appId, versionId, manifest)
+    suspend fun startDownload(miniAppInfo: MiniAppInfo): String {
+        val manifest = fetchManifest(miniAppInfo.id, miniAppInfo.version.versionId)
+        return downloadMiniApp(miniAppInfo, manifest)
     }
 
     @VisibleForTesting
@@ -55,11 +61,9 @@ internal class MiniAppDownloader(
     ) = apiClient.fetchFileList(appId, versionId)
 
     @SuppressWarnings("LongMethod")
-    private suspend fun downloadMiniApp(
-        appId: String,
-        versionId: String,
-        manifest: ManifestEntity
-    ): String {
+    private suspend fun downloadMiniApp(miniAppInfo: MiniAppInfo, manifest: ManifestEntity): String {
+        val appId = miniAppInfo.id
+        val versionId = miniAppInfo.version.versionId
         val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
         when {
             isManifestValid(manifest) -> {
@@ -67,8 +71,6 @@ internal class MiniAppDownloader(
                     val response = apiClient.downloadFile(file)
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
-                miniAppStatus.setVersionDownloaded(appId, versionId, true)
-                miniAppStatus.saveDownloadedVersion(appId, versionId)
                 withContext(coroutineDispatcher) {
                     launch(Job()) { storage.removeOutdatedVersionApp(appId, versionId) }
                 }

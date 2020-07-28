@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import kotlinx.coroutines.withContext
 internal class RealMiniAppDisplay(
     val context: Context,
     val basePath: String,
-    val appId: String,
+    val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val hostAppUserAgentInfo: String
 ) : MiniAppDisplay {
@@ -71,7 +72,7 @@ internal class RealMiniAppDisplay(
             miniAppWebView = MiniAppWebView(
                 context = context,
                 basePath = basePath,
-                appId = appId,
+                miniAppInfo = miniAppInfo,
                 miniAppMessageBridge = miniAppMessageBridge,
                 hostAppUserAgentInfo = hostAppUserAgentInfo
             )
