@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -35,7 +35,7 @@ class RealMiniAppDisplayTest {
         realDisplay = RealMiniAppDisplay(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID,
+            miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             hostAppUserAgentInfo = TEST_HA_NAME
         )

@@ -7,6 +7,7 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import java.io.File
 
@@ -17,13 +18,13 @@ private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 internal class MiniAppWebView(
     context: Context,
     val basePath: String,
-    val appId: String,
+    val miniAppInfo: MiniAppInfo,
     miniAppMessageBridge: MiniAppMessageBridge,
     val hostAppUserAgentInfo: String,
-    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context)
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo)
 ) : WebView(context), WebViewListener {
 
-    private val miniAppDomain = "mscheme.$appId"
+    private val miniAppDomain = "mscheme.${miniAppInfo.id}"
     private val customScheme = "$miniAppDomain://"
     private val customDomain = "https://$miniAppDomain/"
 

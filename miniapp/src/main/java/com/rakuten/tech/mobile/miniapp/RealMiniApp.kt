@@ -48,8 +48,8 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val basePath = miniAppDownloader.getMiniApp(miniAppId)
-            displayer.createMiniAppDisplay(basePath, miniAppId, miniAppMessageBridge)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId)
+            displayer.createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge)
         }
     }
 

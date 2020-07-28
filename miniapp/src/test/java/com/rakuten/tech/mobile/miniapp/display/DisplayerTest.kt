@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Before
@@ -40,7 +40,7 @@ class DisplayerTest {
     private fun getMiniAppDisplay(): MiniAppDisplay =
         Displayer(context, TEST_HA_NAME).createMiniAppDisplay(
             basePath = context.filesDir.path,
-            appId = TEST_MA_ID,
+            miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge
         )
 }

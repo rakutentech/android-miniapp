@@ -14,9 +14,11 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_BODY_CONTENT
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -38,12 +40,12 @@ open class BaseWebViewTest {
     fun setup() {
         context = getApplicationContext()
         basePath = context.filesDir.path
-        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context))
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
 
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID,
+            miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient
@@ -57,12 +59,12 @@ class MiniAppWebviewTest : BaseWebViewTest() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
-        miniAppWebView.url shouldContain miniAppWebView.appId
+        miniAppWebView.url shouldContain miniAppWebView.miniAppInfo.id
     }
 
     @Test
     fun `should have corrected load url format`() {
-        miniAppWebView.getLoadUrl() shouldEqual "https://mscheme.${miniAppWebView.appId}/miniapp/index.html"
+        miniAppWebView.getLoadUrl() shouldEqual "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"
     }
 
     @Test
@@ -102,7 +104,7 @@ class MiniAppWebviewTest : BaseWebViewTest() {
         miniAppWebView = MiniAppWebView(
             context,
             basePath = basePath,
-            appId = TEST_MA_ID,
+            miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient
@@ -123,9 +125,9 @@ class MiniAppWebviewTest : BaseWebViewTest() {
     @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-1", miniAppMessageBridge, TEST_HA_NAME)
+            context, miniAppWebView.basePath, TEST_MA, miniAppMessageBridge, TEST_HA_NAME)
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
-            context, miniAppWebView.basePath, "app-id-2", miniAppMessageBridge, TEST_HA_NAME)
+            context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge, TEST_HA_NAME)
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 
@@ -160,15 +162,15 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     @Test
     fun `should redirect to custom domain when only loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
-        val customDomain = "https://mscheme.${miniAppWebView.appId}/"
+        val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
         val webViewClient = Mockito.spy(MiniAppWebViewClient(webAssetLoader, customDomain,
-            "mscheme.${miniAppWebView.appId}://"))
+            "mscheme.${miniAppWebView.miniAppInfo.id}://"))
 
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.onReceivedError(displayer, webResourceRequest, mock())
         webViewClient.onReceivedError(displayer,
-            getWebResReq("mscheme.${miniAppWebView.appId}://".toUri()), mock())
+            getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri()), mock())
 
         verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
     }
@@ -177,7 +179,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should not intercept mime type for regular cases`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
-        val request = getWebResReq("mscheme.${miniAppWebView.appId}://".toUri())
+        val request = getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri())
         val secondRequest = Mockito.spy(getWebResReq("test.js".toUri()))
 
         webClient.interceptMimeType(webResourceResponse, request)
@@ -218,7 +220,7 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock())
+        val webClient = MiniAppWebChromeClient(mock(), mock())
         webClient.bridgeJs shouldBe null
     }
 
@@ -235,6 +237,18 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
         webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
 
         verify(geoLocationCallback, times(1)).invoke("", true, false)
+    }
+
+    @Test
+    fun `should override js dialog event`() {
+        webChromeClient.onJsAlert(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, mock()) shouldBe true
+        webChromeClient.onJsConfirm(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, mock()) shouldBe true
+        webChromeClient.onJsPrompt(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, TEST_VALUE, mock()) shouldBe true
+        webChromeClient.onJsPrompt(
+            miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, null, mock()) shouldBe true
     }
 }
 
