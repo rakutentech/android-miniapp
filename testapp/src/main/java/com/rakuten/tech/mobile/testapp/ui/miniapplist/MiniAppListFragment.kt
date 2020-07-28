@@ -116,6 +116,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
+        resetSearchBox()
+
         raceExecutor.run {
             context?.let { MiniAppDisplayActivity.start(it, miniAppInfo) }
         }
