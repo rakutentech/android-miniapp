@@ -82,7 +82,7 @@ Sample App
 ```
 
 ### Description
-A sentence which will describe the type of change with an information.
+A sentence describes the type of change with an information.
 
 ```
 <bold><change type></bold>: <subject>
