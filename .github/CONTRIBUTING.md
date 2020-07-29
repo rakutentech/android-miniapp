@@ -70,7 +70,7 @@ reference GitHub issues that this commit **Closes**.
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
 ## Changelog Guidelines
-All changes will be documented [in this file](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md) by ordering chronologically for each version with the following format.
+All changes will be documented using a [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md) by writing chronologically for each version with the following format:
 
 ```
 Release Version (YYYY-MM-DD)
@@ -82,10 +82,16 @@ Sample App
 ```
 
 ### Description
-A sentence which will describe the type of change with some information.
+A sentence which will describe the type of change with an information.
 
 ```
-<change type:><SPACE><information>
+<bold><change type></bold>: <subject>
 ```
 
 #### Change type
+* **Feature**: Added a new feature
+* **Fixed**: When there is a hotfix or bugfix. Something has been upgraded could be mentioned too
+* **Deprecated**: Still available something for using but will no longer be developed or supported. This is an indication for not using it
+* **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases
+* **Removed**: When a feature has been expired by the sunsetting deadline
+* Write "no changes" when there is no difference with previous release version
