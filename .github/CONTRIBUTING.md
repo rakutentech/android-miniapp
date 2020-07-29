@@ -89,9 +89,9 @@ A sentence describes the type of change with an information.
 ```
 
 #### Change type
-* **Feature**: Added a new feature
-* **Fixed**: When there is a hotfix or bugfix. Something has been upgraded could be mentioned too
-* **Deprecated**: Still available something for using but will no longer be developed or supported. This is an indication for not using it
-* **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases
-* **Removed**: When a feature has been expired by the sunsetting deadline
-* Write "no changes" when there is no difference with previous release version
+* **Feature**: Added a new feature.
+* **Fixed**: When there is a hotfix or bugfix. Something has been upgraded could be mentioned too.
+* **Deprecated**: Still available for use but will no longer be developed or supported. This is an indication it should not be used and will be removed in the next major version release.
+* **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases.
+* **Removed**: When a feature has been expired by the sunsetting deadline.
+* Write "no changes" when there is no difference with previous release version.
