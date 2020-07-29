@@ -30,6 +30,17 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/emptyView"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="@dimen/large_24"
+          android:gravity="top|center"
+          android:text="@string/message_empty_miniapps"
+          android:textSize="@dimen/text_large_18"
+          android:visibility="gone"
+          tools:visibility="visible" />
+
         <Button
             android:id="@+id/btnInput"
             android:layout_width="match_parent"

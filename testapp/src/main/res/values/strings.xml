@@ -5,7 +5,10 @@
     <string name="lb_app_settings">App Settings</string>
     <string name="lb_test_mode">Test Mode</string>
 
-    <string name="menu_action_change_settings">Change App Settings</string>
+    <string name="menu_title_search">Search</string>
+    <string name="menu_title_settings">Settings</string>
+    <string name="menu_title_change_settings">Change App Settings</string>
+    <string name="menu_hint_search_miniapps">Search for a Mini App</string>
 
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From ID</string>
@@ -17,6 +20,8 @@
 
     <string name="error_empty">Required</string>
     <string name="error_invalid_input">Invalid Input</string>
+
+    <string name="message_empty_miniapps">There is no Mini App found!</string>
 
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host App ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>
