@@ -68,3 +68,24 @@ The footer should contain any information about **Breaking Changes** and is also
 reference GitHub issues that this commit **Closes**.
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+
+## Changelog Guidelines
+All changes will be documented [in this file](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md) by ordering chronologically for each version with the following format.
+
+```
+Release Version (YYYY-MM-DD)
+SDK
+- <description>
+<BLANK LINE>
+Sample App
+- <description>
+```
+
+### Description
+A sentence which will describe the type of change with some information.
+
+```
+<change type:><SPACE><information>
+```
+
+#### Change type
