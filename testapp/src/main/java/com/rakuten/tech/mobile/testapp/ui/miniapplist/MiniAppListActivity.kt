@@ -39,6 +39,7 @@ class MiniAppListActivity : MenuBaseActivity() {
         val intent = Intent(this, SettingsMenuActivity::class.java)
         intent.putExtra(MENU_SCREEN_NAME, MINI_APP_LIST_ACTIVITY)
         startActivity(intent)
+        finish()
         return true
     }
 
