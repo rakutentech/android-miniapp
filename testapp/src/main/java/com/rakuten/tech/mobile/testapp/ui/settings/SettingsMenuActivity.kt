@@ -92,7 +92,7 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun renderAppSettingsScreen() {
-        textInfo.text = createSettingsInfo()
+        textInfo.text = createBuildInfo()
         editAppId.setText(settings.appId)
         editSubscriptionKey.setText(settings.subscriptionKey)
         switchTestMode.isChecked = settings.isTestMode
@@ -103,9 +103,10 @@ class SettingsMenuActivity : BaseActivity() {
         validateInputIDs()
     }
 
-    private fun createSettingsInfo(): String {
-        return "Build " + getString(R.string.miniapp_sdk_version) + " - " +
-                getString(R.string.build_version)
+    private fun createBuildInfo(): String {
+        val sdkVersion = getString(R.string.miniapp_sdk_version)
+        val buildVersion = getString(R.string.build_version)
+        return "Build $sdkVersion - $buildVersion"
     }
 
     internal fun validateInputIDs() {
