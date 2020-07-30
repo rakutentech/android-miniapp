@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -162,7 +164,12 @@ class SettingsMenuActivity : BaseActivity() {
     private fun navigateToPreviousScreen() {
         when (intent.extras?.getString(MENU_SCREEN_NAME)) {
             MINI_APP_LIST_ACTIVITY -> {
-                raceExecutor.run { launchActivity<MiniAppListActivity>() }
+                val intent = Intent(this, MiniAppListActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                setResult(Activity.RESULT_CANCELED, intent)
+                startActivity(intent)
+                finish()
             }
             MINI_APP_INPUT_ACTIVITY -> {
                 raceExecutor.run { launchActivity<MiniAppInputActivity>() }
