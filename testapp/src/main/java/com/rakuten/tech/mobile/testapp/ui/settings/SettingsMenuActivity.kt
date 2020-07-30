@@ -29,10 +29,6 @@ class SettingsMenuActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var settingsProgressDialog: SettingsProgressDialog
 
-    companion object {
-        private const val buildInfoTemplate = "Build %s - %s"
-    }
-
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
             invalidateOptionsMenu()
@@ -108,11 +104,9 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun createBuildInfo(): String {
-        return String.format(
-            buildInfoTemplate,
-            getString(R.string.miniapp_sdk_version),
-            getString(R.string.build_version)
-        )
+        val sdkVersion = getString(R.string.miniapp_sdk_version)
+        val buildVersion = getString(R.string.build_version)
+        return "Build $sdkVersion - $buildVersion"
     }
 
     internal fun validateInputIDs() {
