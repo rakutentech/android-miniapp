@@ -82,7 +82,7 @@ Sample App
 ```
 
 ### Description
-A sentence describes the type of change with an information.
+A sentence describing the type of change with necessary and relevant information.
 
 ```
 <bold><change type></bold>: <subject>
@@ -94,4 +94,4 @@ A sentence describes the type of change with an information.
 * **Deprecated**: Still available for use but will no longer be developed or supported. This is an indication it should not be used and will be removed in the next major version release.
 * **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases.
 * **Removed**: When a feature has been expired by the sunsetting deadline.
-* Write "no changes" when there is no difference with previous release version.
+* Write "No changes" when there is no difference with the previous release version.
