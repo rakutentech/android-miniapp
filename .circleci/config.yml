@@ -1,16 +1,19 @@
 version: 2.1
 
 orbs:
-  android-sdk: rakutentech/android-sdk@0.1.0
+  android-sdk: rakutentech/android-sdk@0.2.0
   app-center: rakutentech/app-center@0.1.0
 
 commands:
-  updateSubmodule: set -e
-    git submodule update --init
-    cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
-    rm -r miniapp/src/main/assets/js-miniapp
-    (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
-    mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
+  update-submodules:
+    steps:
+      - run: |
+          set -e
+          git submodule update --init
+          cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+          rm -r miniapp/src/main/assets/js-miniapp
+          (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+          mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
 
 workflows:
   version: 2.1
@@ -32,7 +35,7 @@ workflows:
                   base64 -d \<<< "$RELEASE_KEYSTORE_BASE64" > ./testapp/release-keystore.jks
                 fi
           after-prepare-steps:
-            - updateSubmodule
+            - update-submodules
           filters:
             tags:
               only: /^v.*/
@@ -63,7 +66,7 @@ workflows:
           requires:
             - release-verification
           after-prepare-steps:
-            - updateSubmodule
+            - update-submodules
           filters:
             tags:
               only: /^v.*/
