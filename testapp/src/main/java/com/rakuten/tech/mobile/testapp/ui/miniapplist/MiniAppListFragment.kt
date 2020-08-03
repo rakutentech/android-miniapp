@@ -157,6 +157,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        if (searchView.isIconified)
+            return true
+
         updateMiniAppListState(produceSearchResult(newText))
         return true
     }
