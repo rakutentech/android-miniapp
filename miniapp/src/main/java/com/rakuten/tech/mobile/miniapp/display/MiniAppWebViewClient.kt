@@ -25,7 +25,7 @@ internal class MiniAppWebViewClient(
     }
 
     @VisibleForTesting
-    internal fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
+    internal inline fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
         response?.let {
             if (request.url != null && request.url.toString().endsWith(".js", true))
                 it.mimeType = "application/javascript"
