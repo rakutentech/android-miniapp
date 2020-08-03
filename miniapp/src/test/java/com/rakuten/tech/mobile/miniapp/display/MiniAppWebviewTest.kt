@@ -160,23 +160,6 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     }
 
     @Test
-    fun `should redirect to custom domain when only loading with custom scheme`() {
-        val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
-        val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, customDomain,
-            "mscheme.${miniAppWebView.miniAppInfo.id}://"))
-        val displayer = Mockito.spy(miniAppWebView)
-
-        webViewClient.onReceivedError(displayer, webResourceRequest, mock())
-        webViewClient.onReceivedError(displayer,
-            getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri()), mock())
-
-        verify(webViewClient, times(1)).onErrorRedirect(displayer) {
-            webViewClient.loadWithCustomDomain(displayer, customDomain)
-        }
-    }
-
-    @Test
     fun `should not intercept mime type for regular cases`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
