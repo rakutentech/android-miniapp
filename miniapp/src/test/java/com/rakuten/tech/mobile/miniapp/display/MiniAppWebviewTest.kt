@@ -177,21 +177,6 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     }
 
     @Test
-    fun `should redirect to phone dialer when it is telephone scheme`() {
-        val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, "",
-            "mscheme.${miniAppWebView.miniAppInfo.id}://"))
-        val displayer = Mockito.spy(miniAppWebView)
-        val phoneUri = "tel:123456"
-
-        webViewClient.onReceivedError(displayer, getWebResReq(phoneUri.toUri()), mock())
-
-        verify(webViewClient, times(1)).onErrorRedirect(displayer) {
-            webViewClient.handleTelLink(phoneUri)
-        }
-    }
-
-    @Test
     fun `should not intercept mime type for regular cases`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
