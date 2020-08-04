@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import android.net.Uri
+import android.util.AndroidRuntimeException
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
@@ -165,26 +166,33 @@ class MiniAppWebClientTest : BaseWebViewTest() {
         val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, customDomain,
             "mscheme.${miniAppWebView.miniAppInfo.id}://"))
+
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.onReceivedError(displayer, webResourceRequest, mock())
         webViewClient.onReceivedError(displayer,
             getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri()), mock())
 
-        displayer.getLoadUrl() shouldStartWith customDomain
+        verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
     }
 
     @Test
-    fun `should not change the custom domain when do action with telephone scheme`() {
+    fun `should open phone dialer when there is telephone scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, "",
             "mscheme.${miniAppWebView.miniAppInfo.id}://"))
         val displayer = Mockito.spy(miniAppWebView)
         val phoneUri = "tel:123456"
 
-        webViewClient.onReceivedError(displayer, getWebResReq(phoneUri.toUri()), mock())
+        @Suppress("SwallowedException")
+        try {
+            webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
+            webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(phoneUri.toUri()))
+        } catch (e: AndroidRuntimeException) {
+            // context here is not activity
+        }
 
-        displayer.getLoadUrl() shouldStartWith "https://mscheme.${miniAppWebView.miniAppInfo.id}"
+        verify(webViewClient, times(1)).openPhoneDialer(phoneUri)
     }
 
     @Test

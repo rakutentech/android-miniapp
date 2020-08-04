@@ -24,12 +24,15 @@ internal class MiniAppWebViewClient(
         return response
     }
 
-    @VisibleForTesting
-    internal inline fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
-        response?.let {
-            if (request.url != null && request.url.toString().endsWith(".js", true))
-                it.mimeType = "application/javascript"
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        if (request?.url != null) {
+            val requestUrl = request.url.toString()
+            if (requestUrl.startsWith("tel:")) {
+                openPhoneDialer(requestUrl)
+                return true
+            }
         }
+        return super.shouldOverrideUrlLoading(view, request)
     }
 
     override fun onReceivedError(
@@ -37,30 +40,33 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest,
         error: WebResourceError
     ) {
-        if (request.url != null) {
-            val requestUrl = request.url.toString()
-            if (requestUrl.startsWith(customScheme))
-                return onErrorRedirect(view) {
-                    loadWithCustomDomain(view, requestUrl.replace(customScheme, customDomain))
-                }
-            else if (requestUrl.startsWith("tel:"))
-                return onErrorRedirect(view) { handleTelLink(requestUrl) }
+        if (request.url != null && request.url.toString().startsWith(customScheme)) {
+            loadWithCustomDomain(view, request.url.toString().replace(customScheme, customDomain))
+            return
         }
         super.onReceivedError(view, request, error)
     }
 
+    @VisibleForTesting
+    internal fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
+        response?.let {
+            if (request.url != null && request.url.toString().endsWith(".js", true))
+                it.mimeType = "application/javascript"
+        }
+    }
+
     @Suppress("MagicNumber")
     @VisibleForTesting
-    internal inline fun onErrorRedirect(view: WebView, crossinline execution: () -> Unit) {
+    internal fun loadWithCustomDomain(view: WebView, requestUrl: String) {
         view.stopLoading()
-        view.postDelayed({ execution.invoke() }, 100)
+        view.postDelayed(
+            { view.loadUrl(requestUrl) },
+            100
+        )
     }
 
     @VisibleForTesting
-    internal fun loadWithCustomDomain(view: WebView, requestUrl: String) = view.loadUrl(requestUrl)
-
-    @VisibleForTesting
-    internal fun handleTelLink(requestUrl: String) = Intent(Intent.ACTION_DIAL).let {
+    internal fun openPhoneDialer(requestUrl: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = requestUrl.toUri()
         context.startActivity(it)
     }
