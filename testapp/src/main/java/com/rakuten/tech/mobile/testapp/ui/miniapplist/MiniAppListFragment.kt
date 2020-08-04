@@ -99,6 +99,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity?.invalidateOptionsMenu()
+    }
+
     private fun addMiniAppList(list: List<MiniAppInfo>) {
         downloadedList = list
         updateMiniAppListState(list)
@@ -114,7 +119,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
-        resetSearchBox()
         raceExecutor.run {
             activity?.let {
                 MiniAppDisplayActivity.start(it, miniAppInfo)
@@ -148,6 +152,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
         itemSearch.isVisible = true
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        resetSearchBox()
+    }
+
     override fun startSearch(query: String?) {
         updateMiniAppListState(produceSearchResult(query))
     }
@@ -157,6 +166,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        if (searchView.isIconified)
+            return true
+
         updateMiniAppListState(produceSearchResult(newText))
         return true
     }
@@ -169,7 +181,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     private fun resetSearchBox() {
-        if (searchView.query.isNotEmpty()) {
+        if (searchView.query.isNotEmpty() || !searchView.isIconified) {
             searchView.onActionViewCollapsed()
         }
     }
