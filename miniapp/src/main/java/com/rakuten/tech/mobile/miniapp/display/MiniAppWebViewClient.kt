@@ -24,8 +24,8 @@ internal class MiniAppWebViewClient(
         return response
     }
 
-    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-        if (request?.url != null) {
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        if (request.url != null) {
             val requestUrl = request.url.toString()
             if (requestUrl.startsWith("tel:")) {
                 openPhoneDialer(requestUrl)
