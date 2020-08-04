@@ -1,3 +1,4 @@
+
 var MiniAppBridge = {};
 MiniAppBridge.messageQueue = [];
 var uniqueId = Math.random();
@@ -15,10 +16,12 @@ var isPlatform = {
  * Method to call the native interface methods for respective platforms
  * such as iOS & Android
  * @param  {[String]} action Action command/interface name that native side need to execute
+ * @param  {Object} param Object that contains request parameter values like permissions.
+ * For eg., {permission: 'location'}
  * @param  {[Function]} onSuccess Success callback function
  * @param  {[Function]} onError Error callback function
  */
-MiniAppBridge.exec = function(action, onSuccess, onError) {
+MiniAppBridge.exec = function(action, param, onSuccess, onError) {
   var callback = {};
   callback.onSuccess = onSuccess;
   callback.onError = onError;
@@ -26,11 +29,11 @@ MiniAppBridge.exec = function(action, onSuccess, onError) {
   MiniAppBridge.messageQueue.unshift(callback);
   if (isPlatform.iOS()) {
     webkit.messageHandlers.MiniAppiOS.postMessage(
-      JSON.stringify({ action: action, id: callback.id })
+      JSON.stringify({ action: action, param: param, id: callback.id })
     );
   } else {
     window.MiniAppAndroid.postMessage(
-      JSON.stringify({ action: action, id: callback.id })
+      JSON.stringify({ action: action, param: param, id: callback.id })
     );
   }
 };
@@ -91,7 +94,23 @@ MiniAppBridge.getUniqueId = function() {
   return new Promise(function(resolve, reject) {
     return MiniAppBridge.exec(
       "getUniqueId",
+      null,
       function(id) { return resolve(id) },
+      function (error) { return reject(error) }
+    );
+  });
+};
+
+/**
+ * Associating requestPermission function to MiniAppBridge object
+ * @param {String} permissionType Type of permission that is requested. For eg., location
+ */
+MiniAppBridge.requestPermission = function(permissionType) {
+  return new Promise(function(resolve, reject) {
+    return MiniAppBridge.exec(
+      "requestPermission",
+      {permission: permissionType},
+      function(success) { return resolve(success) },
       function (error) { return reject(error) }
     );
   });

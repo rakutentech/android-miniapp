@@ -30,6 +30,10 @@ class MiniAppDownloaderSpec {
     private val miniAppStatus: MiniAppStatus = mock()
     private lateinit var downloader: MiniAppDownloader
     private val dispatcher = TestCoroutineDispatcher()
+    private val testMiniApp = TEST_MA.copy(
+        id = TEST_ID_MINIAPP,
+        version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
+    )
 
     @Before
     fun setup() {
@@ -41,7 +45,7 @@ class MiniAppDownloaderSpec {
     fun `when downloading a mini app then downloader should fetch manifest at first`() {
         runBlocking {
             setupValidManifestResponse(downloader, apiClient)
-            downloader.startDownload(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.startDownload(testMiniApp)
 
             verify(apiClient, times(1)).fetchFileList(
                 TEST_ID_MINIAPP,
@@ -57,10 +61,7 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns ManifestEntity(emptyList())
-            downloader.startDownload(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            )
+            downloader.startDownload(testMiniApp)
         }
 
     @Test
@@ -97,7 +98,7 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP)
 
             verify(apiClient, times(1)).fetchFileList(
                 TEST_ID_MINIAPP,
@@ -122,7 +123,7 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
         }
 
     @Test
@@ -139,7 +140,7 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP)
 
             verify(storage, times(1)).removeOutdatedVersionApp(
                 TEST_ID_MINIAPP,
@@ -159,7 +160,7 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP)
 
             verify(storage, times(1)).removeOutdatedVersionApp(
                 TEST_ID_MINIAPP,
@@ -167,13 +168,6 @@ class MiniAppDownloaderSpec {
             )
         }
     }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when the version of miniapp is not published`() =
-        runBlockingTest {
-            setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-        }
 
     @Test
     fun `MiniAppDownloader should implement UpdatableApiClient`() {
@@ -188,13 +182,14 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION,
                 TEST_BASE_PATH
             ) itReturns true
+            When calling miniAppStatus.getDownloadedMiniApp(TEST_ID_MINIAPP) itReturns testMiniApp
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
             When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
         }
 
     @Test(expected = MiniAppSdkException::class)
@@ -211,7 +206,7 @@ class MiniAppDownloaderSpec {
             ) itReturns TEST_BASE_PATH
             When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            downloader.getMiniApp(TEST_ID_MINIAPP)
         }
 
     private suspend fun setupValidManifestResponse(

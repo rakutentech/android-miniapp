@@ -44,4 +44,14 @@ interface MiniAppDisplay : LifecycleObserver {
      * within the same state of parent's lifecycle.
      */
     fun destroyView()
+
+    /**
+     * Navigates one level back, in the call stack, if possible.
+     */
+    fun navigateBackward(): Boolean
+
+    /**
+     * Navigates one level forward from current position, in the call hierarchy, if possible.
+     */
+    fun navigateForward(): Boolean
 }

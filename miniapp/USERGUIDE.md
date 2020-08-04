@@ -5,6 +5,7 @@ layout: userguide
 # Mini App SDK for Android
 
 Provides functionality to show a Mini App in Android Applications. The SDK offers features like downloading, caching, updating, and displaying of a Mini App.
+Mini App SDK also facilitates communication between a mini app and the host app via a message bridge.
 
 ## Requirements
 
@@ -19,17 +20,31 @@ This SDK supports Android API level 21 (Lollipop) and above.
 ```groovy
 repositories {
     jcenter()
-    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' } // Needed only if you want to use snapshot releases
+    // Needed only if you want to use snapshot releases
+    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:1.0.0'
+    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:${version}'
 }
 ```
 
-### #2 Set your App Id, Subscription Key, & Base URL
+### #2 Configure SDK settings in AndroidManifest.xml
 
-We don't currently host a public API, so you will need to provide your own Base URL for API requests.
+The SDK is configured via manifest meta-data, the configurable values are:
+
+| Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
+|------------------------------|---------|--------------------------------------------------------|----------- |--------- |
+| Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
+| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
+| Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
+| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                    | ❌         | 🚫        |
+| RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
+
+**Note:**  
+* We don't currently host a public API, so you will need to provide your own Base URL for API requests.
+* All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
+* The host app info is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
 In your `AndroidManifest.xml`:
 
@@ -57,11 +72,14 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="your_subscription_key" />
 
+        <!-- Optional User Agent Information relating to the host app -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
+            android:value="app_name/version_info" />
+
     </application>
 </manifest>
 ```
-
-**Note:**  All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
 
 ### #3 Fetch Mini App Info
 
@@ -100,6 +118,14 @@ The `MiniAppMessageBridge` is used for passing messages between the Mini App (Ja
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() = AppSettings.instance.uniqueId
+
+    override fun requestPermission(
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
+                ) {
+                    // Implementation details to request device permission for location
+                    // .. .. ..
+                }
 }
 ```
 
@@ -123,7 +149,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
                     val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID") // Or use `MiniApp.listMiniApp` if you want the whole list of Mini Apps
                     MiniApp.instance().create(miniAppInfo, miniAppMessageBridge)
                 }
-                val miniAppView = miniAppDisplay.getMiniAppView()
+                val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
 
                 setContentView(miniAppView)
             } catch (e: MiniAppSdkException) {
@@ -133,6 +159,8 @@ class MiniAppActivity : Activity(), CoroutineScope {
     }
 }
 ```
+
+`MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
 
 ## Advanced
 
@@ -160,6 +188,18 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
+### Navigating inside a mini app
+
+For a common usage pattern, the navigation inside a mini app can be attached to the Android back key navigation as shown:
+
+```kotlin
+override fun onBackPressed() {
+    if(!miniAppDisplay.navigateBackward()) {
+        super.onBackPressed()
+    }
+}
+```
+
 ## Troubleshooting
 
 ### AppCompat Version
@@ -171,13 +211,4 @@ We recommend using the updated versions of this library.
 
 ## Changelog
 
-### 1.1.0 (2020-06-02)
-
-- Added JavaScript bridge for passing data between Mini App and Host App. Your App now must implement `MiniAppMessageBridge` and provide the implementation when calling `MiniApp#create`.
-- Deprecated `MiniApp#create(info: MiniAppInfo)`. Your App should instead use `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)`.
-- Added `getUniqueId` function to `MiniAppMessageBridge`. This function should provide a unique identifier (unique to the user and device) to Mini Apps.
-- Added support for custom scheme URL redirect. The URL `mscheme.MINI_APP_ID://miniapp/index.html` can be used from within the Mini App view to redirect to the Mini App. This matches the URL used in the iOS Mini App SDK.
-
-### 1.0.0 (2020-04-21)
-
-- Initial release
+See the full [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md).

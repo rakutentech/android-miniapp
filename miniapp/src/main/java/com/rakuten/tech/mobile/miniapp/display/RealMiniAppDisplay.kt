@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.View
+import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +20,9 @@ import kotlinx.coroutines.withContext
 internal class RealMiniAppDisplay(
     val context: Context,
     val basePath: String,
-    val appId: String,
-    val miniAppMessageBridge: MiniAppMessageBridge
+    val miniAppInfo: MiniAppInfo,
+    val miniAppMessageBridge: MiniAppMessageBridge,
+    val hostAppUserAgentInfo: String
 ) : MiniAppDisplay {
 
     @VisibleForTesting
@@ -42,14 +45,38 @@ internal class RealMiniAppDisplay(
         miniAppWebView = null
     }
 
+    override fun navigateBackward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoBack() -> {
+                webView.goBack()
+                true
+            }
+            else -> false
+        }
+    } else false
+
+    override fun navigateForward(): Boolean = if (miniAppWebView != null) {
+        val webView = (miniAppWebView as WebView)
+        when {
+            webView.canGoForward() -> {
+                webView.goForward()
+                true
+            }
+            else -> false
+        }
+    } else false
+
     private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
         miniAppWebView ?: withContext(Dispatchers.Main) {
-            MiniAppWebView(
+            miniAppWebView = MiniAppWebView(
                 context = context,
                 basePath = basePath,
-                appId = appId,
-                miniAppMessageBridge = miniAppMessageBridge
+                miniAppInfo = miniAppInfo,
+                miniAppMessageBridge = miniAppMessageBridge,
+                hostAppUserAgentInfo = hostAppUserAgentInfo
             )
+            miniAppWebView!!
         }
 
     @VisibleForTesting

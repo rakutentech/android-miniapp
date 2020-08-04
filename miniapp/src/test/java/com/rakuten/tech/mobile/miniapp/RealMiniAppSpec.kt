@@ -37,6 +37,16 @@ class RealMiniAppSpec {
     }
 
     @Test
+    fun `should still be able to download miniapp for deprecated method`() =
+        runBlockingTest {
+            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns mock()
+            realMiniApp.create(miniAppInfo)
+            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+
+            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
+        }
+
+    @Test
     fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {
         realMiniApp.listMiniApp()
 
@@ -49,27 +59,20 @@ class RealMiniAppSpec {
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when version id is invalid`() = runBlockingTest {
-        val invalidMiniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", ""))
-        realMiniApp.create(invalidMiniAppInfo, miniAppMessageBridge)
+    fun `should throw exception when app id is blank`() = runBlockingTest {
+        realMiniApp.create(" ", miniAppMessageBridge)
     }
 
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
-            val basePath: String = verify(miniAppDownloader, times(1))
-                .getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(displayer, times(1)).createMiniAppDisplay(basePath, TEST_MA_ID, miniAppMessageBridge)
-        }
-
-    @Test
-    fun `should still be able to download miniapp for deprecated method`() =
-        runBlockingTest {
-            realMiniApp.create(miniAppInfo)
-
-            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
+            verify(displayer, times(1))
+                .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second, miniAppMessageBridge)
         }
 
     @Test
@@ -103,9 +106,12 @@ class RealMiniAppSpec {
         val miniApp = Mockito.spy(realMiniApp)
         val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
+            isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION)
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppUserAgentInfo = TEST_HA_NAME
+        )
 
         miniApp.updateConfiguration(miniAppSdkConfig)
 

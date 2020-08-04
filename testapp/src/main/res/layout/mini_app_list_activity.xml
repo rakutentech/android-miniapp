@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -17,10 +18,10 @@
             android:layout_width="@dimen/large_32"
             android:layout_height="@dimen/large_32"
             android:src="@drawable/curved_arrow"
-            android:tint="@color/colorAccent"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            app:tint="@color/colorAccent" />
         <TextView
             android:id="@+id/tvTut"
             android:layout_width="match_parent"

@@ -1,10 +1,15 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapplist
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,24 +24,33 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import kotlinx.android.synthetic.main.mini_app_list_fragment.*
-import kotlinx.coroutines.launch
+import java.util.Locale
 
-class MiniAppListFragment : BaseFragment(), MiniAppList {
+import kotlin.collections.ArrayList
+
+class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
+    SearchView.OnQueryTextListener {
 
     companion object {
-        fun newInstance() = MiniAppListFragment()
+        val TAG = MiniAppListFragment::class.java.canonicalName
+        fun newInstance(): MiniAppListFragment = MiniAppListFragment()
     }
 
     private lateinit var viewModel: MiniAppListViewModel
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
-    private var miniapps = listOf<MiniAppInfo>()
+    private lateinit var searchView: SearchView
+
+    private var downloadedList: List<MiniAppInfo> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
+
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.mini_app_list_fragment,
@@ -45,7 +59,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
         )
         binding.fragment = this
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
-        miniAppListAdapter = MiniAppListAdapter(miniapps, this)
+        miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
         return binding.root
     }
@@ -61,28 +75,38 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
-            miniAppListData.observe(viewLifecycleOwner, Observer {
-                swipeRefreshLayout.isRefreshing = false
-                displayMiniAppList(it)
-                MiniAppListStore.instance.saveMiniAppList(it)
-            })
-            errorData.observe(viewLifecycleOwner, Observer {
-                val list = MiniAppListStore.instance.getMiniAppList()
-                if (list.isEmpty())
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                else
-                    displayMiniAppList(list)
-                swipeRefreshLayout.isRefreshing = false
-            })
-        }
+        viewModel =
+            ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+                miniAppListData.observe(viewLifecycleOwner, Observer {
+                    swipeRefreshLayout.isRefreshing = false
+                    addMiniAppList(it)
+                    MiniAppListStore.instance.saveMiniAppList(it)
+                })
+                errorData.observe(viewLifecycleOwner, Observer {
+                    val list = MiniAppListStore.instance.getMiniAppList()
+                    if (list.isEmpty())
+                        updateEmptyView(list)
+                    else {
+                        addMiniAppList(list)
+                        swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            }
 
-        swipeRefreshLayout.setOnRefreshListener { executeLoadingList() }
+        swipeRefreshLayout.setOnRefreshListener {
+            executeLoadingList()
+            resetSearchBox()
+        }
     }
 
-    private fun displayMiniAppList(list: List<MiniAppInfo>) {
-        miniAppListAdapter.miniapps = list
-        miniAppListAdapter.notifyDataSetChanged()
+    private fun addMiniAppList(list: List<MiniAppInfo>) {
+        downloadedList = list
+        updateMiniAppListState(list)
+    }
+
+    private fun updateMiniAppListState(list: List<MiniAppInfo>) {
+        miniAppListAdapter.addListWithSection(list)
+        updateEmptyView(list)
     }
 
     private fun executeLoadingList() {
@@ -90,10 +114,70 @@ class MiniAppListFragment : BaseFragment(), MiniAppList {
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
-        raceExecutor.run { MiniAppDisplayActivity.start(context!!, miniAppInfo) }
+        resetSearchBox()
+        raceExecutor.run {
+            activity?.let {
+                MiniAppDisplayActivity.start(it, miniAppInfo)
+            }
+        }
     }
 
     fun switchToInput() {
         raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_search -> activity?.onSearchRequested() ?: false
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear() // clearing the previous inflation of menus from MenuBaseActivity
+        inflater.inflate(R.menu.main, menu)
+
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val itemSearch = menu.findItem(R.id.action_search)
+        searchView = itemSearch.actionView as SearchView
+        searchView.let {
+            it.setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+            it.setOnQueryTextListener(this)
+        }
+        // by default, search menu is hidden, show search menu here
+        itemSearch.isVisible = true
+    }
+
+    override fun startSearch(query: String?) {
+        updateMiniAppListState(produceSearchResult(query))
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        updateMiniAppListState(produceSearchResult(newText))
+        return true
+    }
+
+    private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
+        return downloadedList.filter { info ->
+            info.displayName.toLowerCase(Locale.ROOT)
+                .contains(newText.toString().toLowerCase(Locale.ROOT))
+        }
+    }
+
+    private fun resetSearchBox() {
+        if (searchView.query.isNotEmpty()) {
+            searchView.onActionViewCollapsed()
+        }
+    }
+
+    private fun updateEmptyView(collection: List<MiniAppInfo>) {
+        if (collection.isEmpty())
+            emptyView.visibility = View.VISIBLE
+        else
+            emptyView.visibility = View.GONE
     }
 }

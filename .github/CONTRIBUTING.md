@@ -68,3 +68,30 @@ The footer should contain any information about **Breaking Changes** and is also
 reference GitHub issues that this commit **Closes**.
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+
+## Changelog Guidelines
+All changes will be documented using a [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md) by writing chronologically for each version with the following format:
+
+```
+Release Version (YYYY-MM-DD)
+SDK
+- <description>
+<BLANK LINE>
+Sample App
+- <description>
+```
+
+### Description
+A sentence describing the type of change with necessary and relevant information.
+
+```
+<bold><change type></bold>: <subject>
+```
+
+#### Change type
+* **Feature**: Added a new feature.
+* **Fixed**: When there is a hotfix or bugfix. Something has been upgraded could be mentioned too.
+* **Deprecated**: Still available for use but will no longer be developed or supported. This is an indication it should not be used and will be removed in the next major version release.
+* **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases.
+* **Removed**: When a feature has been expired by the sunsetting deadline.
+* Write "No changes" when there is no difference with the previous release version.

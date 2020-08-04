@@ -26,9 +26,10 @@ internal fun sdkExceptionForInvalidArguments(message: String = "") =
         }}"
     )
 
-internal fun sdkExceptionForInvalidVersion() =
-    MiniAppSdkException("Invalid or unpublished MiniApp version")
-
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForNoActivityContext() =
     MiniAppSdkException("Only accept context of type Activity or ActivityCompat")
+
+@Suppress("FunctionMaxLength")
+internal fun sdkExceptionForNoMiniAppMessageBridge() =
+    MiniAppSdkException("MiniAppMessageBridge has not been implemented")

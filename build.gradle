@@ -5,9 +5,9 @@ buildscript {
     // https://issuetracker.google.com/issues/141132133
     ext.androidx_appcompat = '1.2.0-rc01'
     ext.androidx_constraintLayout = '1.1.3'
-    ext.androidx_coreKtx = '1.2.0'
+    ext.androidx_coreKtx = '1.3.0'
     ext.androidx_lifecycle = '2.2.0'
-    ext.androidx_test_ext = '1.1.2-alpha02'
+    ext.androidx_test_ext = '1.1.2-rc01'
     ext.detekt = '1.1.1'
     ext.dokka_version = '0.10.0'
     ext.glide = '4.11.0'
@@ -17,16 +17,15 @@ buildscript {
     ext.kotlin_coroutines = '1.3.3'
     ext.kotlin_version = '1.3.50'
     ext.material = '1.1.0-rc02'
-    ext.mockito = '2.28.2'
-    ext.mockito_inline = '2.23.0'
-    ext.mockwebserver = '4.2.1'
+    ext.mockito = '3.3.3'
+    ext.mockwebserver = '4.7.2'
     ext.manifest_config = '0.1.0'
     ext.nhrm_mockito_kotlin = '2.2.0'
     ext.sdk_utils = '0.1.1'
-    ext.retrofit = '2.6.3'
-    ext.robolectric = '4.3'
+    ext.retrofit = '2.9.0'
+    ext.robolectric = '4.3.1'
     ext.webkit = '1.1.0'
-    ext.swipe_refresh_layout = '1.0.0'
+    ext.swipe_refresh_layout = '1.1.0'
     ext.gson = '2.8.6'
 
 //  Build Config.
@@ -34,7 +33,7 @@ buildscript {
     CONFIG.versions.android.sdk.min = 21
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath "digital.wup:android-maven-publish:3.6.3"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -57,6 +56,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 
     gradle.projectsEvaluated {

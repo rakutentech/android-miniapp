@@ -34,22 +34,31 @@ android {
 
     def appName = "Mini App Sample"
     def stagingManifestPlaceholders = [
-            baseUrl        : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
-            hostAppVersion : property("HOST_APP_VERSION") ?: "test-host-app-version",
-            appId          : property("HOST_APP_ID") ?: "test-host-app-id",
-            subscriptionKey: property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+            isTestMode              : property("IS_TEST_MODE") ?: false,
+            hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
+            hostAppVersion          : property("HOST_APP_VERSION") ?: "test-host-app-version",
+            appId                   : property("HOST_APP_ID") ?: "test-host-app-id",
+            subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
     def prodManifestPlaceholders = [
-            baseUrl        : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
-            hostAppVersion : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
-            appId          : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
-            subscriptionKey: property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+            isTestMode              : property("PROD_IS_TEST_MODE") ?: false,
+            hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
+            hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
+            appId                   : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
+            subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
     ]
+
+    def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
+
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "$appName DEBUG"
+            resValue "string", "build_version", buildVersion
+            resValue "string", "miniapp_sdk_version", project.version
             debuggable true
             minifyEnabled false
 
@@ -57,6 +66,8 @@ android {
         }
         release {
             resValue "string", "app_name", appName
+            resValue "string", "build_version", buildVersion
+            resValue "string", "miniapp_sdk_version", project.version
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -66,7 +77,7 @@ android {
         staging {
             initWith release
             applicationIdSuffix '.staging'
-            versionNameSuffix '-STG'
+            versionNameSuffix "-STG-build-$buildVersion"
             resValue "string", "app_name", "$appName STG"
             matchingFallbacks = ['release', 'debug']
 
@@ -76,6 +87,11 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

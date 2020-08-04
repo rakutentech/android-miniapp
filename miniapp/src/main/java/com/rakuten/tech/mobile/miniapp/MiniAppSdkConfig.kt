@@ -6,14 +6,18 @@ package com.rakuten.tech.mobile.miniapp
  * @property rasAppId App ID for the Platform API.
  * @property subscriptionKey Subscription Key for the Platform API.
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
+ * @property hostAppUserAgentInfo User Agent information from Host App.
+ * @property isTestMode Whether the sdk is making use of the Test API Endpoints for under "Testing" mini apps.
  */
 data class MiniAppSdkConfig(
-    var baseUrl: String,
-    var rasAppId: String,
-    var subscriptionKey: String,
-    var hostAppVersionId: String
+    val baseUrl: String,
+    val rasAppId: String,
+    val subscriptionKey: String,
+    val hostAppVersionId: String,
+    val hostAppUserAgentInfo: String,
+    val isTestMode: Boolean
 ) {
-    internal val key = "$baseUrl-$rasAppId-$subscriptionKey-$hostAppVersionId"
+    internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey-$hostAppVersionId"
 
     init {
         when {

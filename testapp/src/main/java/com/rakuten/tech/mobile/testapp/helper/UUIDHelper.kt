@@ -1,11 +1,11 @@
 package com.rakuten.tech.mobile.testapp.helper
 
-import java.lang.Exception
-import java.util.*
+import java.lang.IllegalArgumentException
+import java.util.UUID
 
 fun String.isInvalidUuid(): Boolean = try {
     UUID.fromString(this)
     false
-} catch (e: Exception) {
+} catch (e: IllegalArgumentException) {
     true
 }

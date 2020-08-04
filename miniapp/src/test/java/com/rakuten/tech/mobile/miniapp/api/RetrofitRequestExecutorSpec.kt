@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Timeout
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -78,21 +79,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should call a request without error when the response is success`() = runBlockingTest {
         val executor = Mockito.spy(mockRequestExecutor)
-        val request: Call<String> = object : Call<String> {
-            override fun enqueue(callback: Callback<String>) {}
-
-            override fun isExecuted(): Boolean = true
-
-            override fun clone(): Call<String> = mock()
-
-            override fun isCanceled(): Boolean = false
-
-            override fun cancel() {}
-
-            override fun execute(): Response<String> = Response.success("")
-
-            override fun request(): Request = Request.Builder().build()
-        }
+        val request: Call<String> = SuccessfulResponseCall()
         executor.executeRequest(request)
     }
 }
@@ -159,84 +146,28 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is authentication errors`() = runBlockingTest {
         val executor = spyRetrofitExecutor()
-        val request: Call<String> = object : Call<String> {
-            override fun enqueue(callback: Callback<String>) {}
-
-            override fun isExecuted(): Boolean = true
-
-            override fun clone(): Call<String> = mock()
-
-            override fun isCanceled(): Boolean = false
-
-            override fun cancel() {}
-
-            override fun execute(): Response<String> = Response.error(401, mock())
-
-            override fun request(): Request = Request.Builder().build()
-        }
+        val request: Call<String> = Unauthorized401Call()
         executor.executeRequest(request)
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is standard errors`() = runBlockingTest {
         val executor = spyRetrofitExecutor()
-        val request: Call<String> = object : Call<String> {
-            override fun enqueue(callback: Callback<String>) {}
-
-            override fun isExecuted(): Boolean = true
-
-            override fun clone(): Call<String> = mock()
-
-            override fun isCanceled(): Boolean = false
-
-            override fun cancel() {}
-
-            override fun execute(): Response<String> = Response.error(404, mock())
-
-            override fun request(): Request = Request.Builder().build()
-        }
+        val request: Call<String> = ResourceNotFoundCall()
         executor.executeRequest(request)
     }
 
     @Test(expected = MiniAppNetException::class)
     fun `should throw exception when there is network error`() = runBlockingTest {
         val executor = spyRetrofitExecutor()
-        val request: Call<String> = object : Call<String> {
-            override fun enqueue(callback: Callback<String>) {}
-
-            override fun isExecuted(): Boolean = true
-
-            override fun clone(): Call<String> = mock()
-
-            override fun isCanceled(): Boolean = false
-
-            override fun cancel() {}
-
-            override fun execute(): Response<String> = throw UnknownHostException()
-
-            override fun request(): Request = Request.Builder().build()
-        }
+        val request: Call<String> = UnknownHostCall()
         executor.executeRequest(request)
     }
 
     @Test(expected = MiniAppNetException::class)
     fun `should throw exception when there is timeout error`() = runBlockingTest {
         val executor = spyRetrofitExecutor()
-        val request: Call<String> = object : Call<String> {
-            override fun enqueue(callback: Callback<String>) {}
-
-            override fun isExecuted(): Boolean = true
-
-            override fun clone(): Call<String> = mock()
-
-            override fun isCanceled(): Boolean = false
-
-            override fun cancel() {}
-
-            override fun execute(): Response<String> = throw SocketTimeoutException()
-
-            override fun request(): Request = Request.Builder().build()
-        }
+        val request: Call<String> = SocketTimeOutCall()
         executor.executeRequest(request)
     }
 
@@ -255,4 +186,45 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     ): MockResponse = MockResponse()
         .setResponseCode(code)
         .setBody(standardErrorBody(code, message))
+}
+
+class SuccessfulResponseCall : BaseCall() {
+    override fun execute(): Response<String> = Response.success("")
+}
+
+class Unauthorized401Call : BaseCall() {
+    override fun execute(): Response<String> = Response.error(401, mock())
+}
+
+class ResourceNotFoundCall : BaseCall() {
+    override fun execute(): Response<String> = Response.error(404, mock())
+}
+
+class UnknownHostCall : BaseCall() {
+    override fun execute(): Response<String> = throw UnknownHostException()
+}
+
+class SocketTimeOutCall : BaseCall() {
+    override fun execute(): Response<String> = throw SocketTimeoutException()
+}
+
+@Suppress("EmptyFunctionBlock", "NotImplementedDeclaration")
+open class BaseCall : Call<String> {
+
+    override fun enqueue(callback: Callback<String>) {}
+
+    override fun isExecuted(): Boolean = true
+
+    override fun timeout(): Timeout = Timeout.NONE
+
+    override fun clone(): Call<String> = mock()
+
+    override fun isCanceled(): Boolean = false
+
+    override fun cancel() {}
+
+    @Suppress("TodoComment")
+    override fun execute(): Response<String> = TODO("Not yet implemented")
+
+    override fun request(): Request = Request.Builder().build()
 }

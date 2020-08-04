@@ -22,16 +22,30 @@ class MiniappSdkInitializer : ContentProvider() {
     interface App {
 
         /**
-         * Base Url for the mini app backend.
+         * Base URL used for retrieving a Mini App.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.BaseUrl")
         fun baseUrl(): String
+
+        /**
+         * Whether the sdk is running in Testing mode.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsTestMode")
+        fun isTestMode(): Boolean
 
         /**
          * Host app version for the mini app backend.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppVersion")
         fun hostAppVersion(): String
+
+        /**
+         * This user agent specific info will be appended to the default user-agent.
+         * It should be meaningful e.g. host-app-name/version.
+         * @see [link][https://developer.chrome.com/multidevice/user-agent] for more information.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo")
+        fun hostAppUserAgentInfo(): String
 
         /**
          * App Id assigned to host App.
@@ -52,10 +66,14 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
-            baseUrl = manifestConfig.baseUrl(),
-            rasAppId = manifestConfig.rasAppId(),
-            subscriptionKey = manifestConfig.subscriptionKey(),
-            hostAppVersionId = manifestConfig.hostAppVersion()
+            miniAppSdkConfig = MiniAppSdkConfig(
+                baseUrl = manifestConfig.baseUrl(),
+                rasAppId = manifestConfig.rasAppId(),
+                subscriptionKey = manifestConfig.subscriptionKey(),
+                hostAppVersionId = manifestConfig.hostAppVersion(),
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isTestMode = manifestConfig.isTestMode()
+            )
         )
 
         return true

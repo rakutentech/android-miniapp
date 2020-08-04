@@ -5,6 +5,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -20,29 +21,35 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
+    @Suppress("TooGenericExceptionThrown")
+    override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
+        executingCreate(info.id, object : MiniAppMessageBridge() {
+            override fun getUniqueId(): String = throw sdkExceptionForNoMiniAppMessageBridge()
+
+            override fun requestPermission(
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) = throw sdkExceptionForNoMiniAppMessageBridge()
+        })
+
     override suspend fun create(
         info: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = executingCreate(info, miniAppMessageBridge)
+    ): MiniAppDisplay = executingCreate(info.id, miniAppMessageBridge)
 
-    @Suppress("TooGenericExceptionThrown")
-    override suspend fun create(info: MiniAppInfo): MiniAppDisplay =
-        executingCreate(info, object : MiniAppMessageBridge() {
-            override fun getUniqueId(): String = throw Exception("MiniAppMessageBridge has not been implemented")
-        })
+    override suspend fun create(
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge)
 
     private suspend fun executingCreate(
-        info: MiniAppInfo,
+        miniAppId: String,
         miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = when {
-        info.id.isBlank() || info.version.versionId.isBlank() ->
-            throw sdkExceptionForInvalidArguments()
+        miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val basePath = miniAppDownloader.getMiniApp(
-                appId = info.id,
-                versionId = info.version.versionId
-            )
-            displayer.createMiniAppDisplay(basePath, info.id, miniAppMessageBridge)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId)
+            displayer.createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge)
         }
     }
 
@@ -60,11 +67,11 @@ internal class RealMiniApp(
     }
 
     @VisibleForTesting
-    internal fun createApiClient(newConfig: MiniAppSdkConfig) =
-        ApiClient(
-            baseUrl = newConfig.baseUrl,
-            rasAppId = newConfig.rasAppId,
-            subscriptionKey = newConfig.subscriptionKey,
-            hostAppVersionId = newConfig.hostAppVersionId
-        )
+    internal fun createApiClient(newConfig: MiniAppSdkConfig) = ApiClient(
+        baseUrl = newConfig.baseUrl,
+        rasAppId = newConfig.rasAppId,
+        subscriptionKey = newConfig.subscriptionKey,
+        hostAppVersionId = newConfig.hostAppVersionId,
+        isTestMode = newConfig.isTestMode
+    )
 }

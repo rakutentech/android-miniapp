@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.rakuten.tech.mobile.miniapp.testapp">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"
         android:allowBackup="true"
@@ -14,24 +17,40 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
+          android:launchMode="singleTop"
+          android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEARCH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+              android:name="android.app.searchable"
+              android:resource="@xml/searchable" />
         </activity>
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"/>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
             android:label="@string/action_go_input"/>
+        <activity
+          android:label="@string/lb_app_settings"
+          android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
+          android:theme="@style/AppThemeSettings" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="${baseUrl}" />
         <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.IsTestMode"
+            android:value="${isTestMode}" />
+        <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
             android:value="${hostAppVersion}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
+            android:value="${hostAppUserAgentInfo}" />
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.AppId"
             android:value="${appId}" />
