@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 2.0.0 (in progress)
+**SDK**
+- **Upgraded:** `minSdkVersion` has been bumped up to 23 (Android 6.0).
+
 ### 1.2.0 (2020-07-21)
 **SDK**
 - Upgraded build setup and some internal dependencies
