@@ -1,6 +1,13 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.SharedPreferences
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.Switch
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -93,5 +100,64 @@ abstract class MiniApp internal constructor() {
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
             )
         }
+
+        @JvmStatic
+        fun requestCustomPermission(
+            activity: Activity,
+            permission: String
+        ) {
+            // permission custom UI
+            // should be a list of switch while multiple permissions
+            val rootLayout = FrameLayout(activity)
+            val permissionSwitch = Switch(activity)
+            val layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            layoutParams.setMargins(72, 24, 24, 24)
+            permissionSwitch.layoutParams = layoutParams
+            permissionSwitch.text = permission
+            rootLayout.addView(permissionSwitch)
+
+            val permissionChecker = MiniAppPermissionChecker()
+
+            // permission alert dialog
+            val alertBuilder: AlertDialog.Builder = AlertDialog.Builder(activity).apply {
+                setView(rootLayout)
+                setMessage("Custom permission is requested.")
+                setPositiveButton(
+                    "Ok"
+                ) { _, _ ->
+                    permissionChecker.updatePermissionResult(
+                        activity,
+                        permission,
+                        permissionSwitch.isChecked
+                    )
+                    (activity as OnRequestCustomPermissionResultCallback).onRequestCustomPermissionResult(
+                        permission, permissionSwitch.isChecked
+                    )
+                }
+            }
+
+            // update switch UI based on cached value
+            permissionSwitch.isChecked = true
+
+            val alert: AlertDialog = alertBuilder.create()
+
+            if (!permissionChecker.selfCheckPermission(activity, permission)) {
+                alert.show()
+            } else {
+                (activity as OnRequestCustomPermissionResultCallback).onRequestCustomPermissionResult(
+                    permission, permissionSwitch.isChecked
+                )
+            }
+        }
+    }
+
+    interface OnRequestCustomPermissionResultCallback {
+        fun onRequestCustomPermissionResult(
+            permission: String,
+            grantResult: Boolean
+        )
     }
 }

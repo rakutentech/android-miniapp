@@ -18,4 +18,9 @@ object AppPermission {
         MiniAppPermissionType.LOCATION -> arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
         else -> emptyArray()
     }
+
+    fun getCustomPermissionRequest(permissionType: MiniAppPermissionType) = when (permissionType) {
+        MiniAppPermissionType.ACCEPT_USER -> "accept_user"
+        else -> ""
+    }
 }

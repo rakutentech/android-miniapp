@@ -3,7 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js
 /** Type of miniapp permission. **/
 enum class MiniAppPermissionType(val type: String) {
     UNKNOWN("unknown"),
-    LOCATION("location");
+    LOCATION("location"),
+    ACCEPT_USER("accept_user");
 
     internal companion object {
 
