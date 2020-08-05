@@ -4,7 +4,7 @@
 **SDK**
 - **Upgraded:** `minSdkVersion` has been bumped up to 23 (Android 6.0).
 - **Removed:** `MiniAppDisplay#getMiniAppView()`, `MiniApp#create(info: MiniAppInfo)` has been removed.
-- **Removed:** `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)` has been removed
+- **Removed:** `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)` has been removed.
 
 ### 1.2.0 (2020-07-21)
 **SDK**
