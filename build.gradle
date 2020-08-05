@@ -30,7 +30,7 @@ buildscript {
 
 //  Build Config.
     apply from: 'config/index.gradle'
-    CONFIG.versions.android.sdk.min = 21
+    CONFIG.versions.android.sdk.min = 23
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
