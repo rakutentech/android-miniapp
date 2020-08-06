@@ -1,10 +1,9 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.permission
 
 /** Type of miniapp permission. **/
-enum class MiniAppPermissionType(val type: String) {
-    UNKNOWN("unknown"),
-    LOCATION("location"),
-    ACCEPT_USER("accept_user");
+enum class MiniAppPermissionType(val type: String, val platform: String) {
+    UNKNOWN("unknown", ""),
+    LOCATION("location", MiniAppPermissionPlatform.Android.name);
 
     internal companion object {
 
@@ -20,4 +19,10 @@ internal enum class MiniAppPermissionResult(val type: String) {
 
         internal fun getValue(isGranted: Boolean) = if (isGranted) ALLOWED else DENIED
     }
+}
+
+/** Platform for requesting permission. **/
+enum class MiniAppPermissionPlatform {
+    Android,
+    MiniApp
 }

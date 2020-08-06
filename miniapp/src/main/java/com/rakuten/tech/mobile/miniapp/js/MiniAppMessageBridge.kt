@@ -5,6 +5,8 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
 /** Bridge interface for communicating with mini app. **/

@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.widget
+package com.rakuten.tech.mobile.miniapp.permission.widget
 
 import android.app.AlertDialog
 import android.content.Context
@@ -12,11 +12,7 @@ class PermissionDialog {
 
         fun build(context: Context?): Builder {
             B = AlertDialog.Builder(context)
-            return this
-        }
-
-        fun setInfo(miniAppName: String): Builder {
-            B?.setMessage("Allow $miniAppName to access permission?")
+            B?.setMessage("Allow MiniApp to access permission?")
             return this
         }
 
