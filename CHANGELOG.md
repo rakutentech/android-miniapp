@@ -1,10 +1,16 @@
 ## CHANGELOG
 
-### 2.0.0 (in progress)
+### 2.0.0 (2020-08-07)
 **SDK**
+- **Feature:** Mini App is now downloaded as a ZIP archive and extracted. This should improve the initial launch time on a Mini App with many files.
+- **Feature:** Added custom dialog for `window.alert`, `window.prompt`, and `window.confirm`. These look and behave the same as the default WebView dialogs with the exception that the dialog title is now set to the Mini App's name.
 - **Upgraded:** `minSdkVersion` has been bumped up to 23 (Android 6.0).
 - **Removed:** `MiniAppDisplay#getMiniAppView()`, `MiniApp#create(info: MiniAppInfo)` has been removed.
 - **Removed:** `MiniApp#create(info: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge)` has been removed.
+
+**Sample App**
+- **Feature:** Added search by Mini App name to listing view.
+- **Fix:** Display warning message when an invalid value is input for "Host App Id" or "Subscription Key".
 
 ### 1.2.0 (2020-07-21)
 **SDK**
