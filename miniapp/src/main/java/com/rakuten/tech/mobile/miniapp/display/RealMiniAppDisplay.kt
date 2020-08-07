@@ -28,9 +28,6 @@ internal class RealMiniAppDisplay(
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
 
-    // Returns the view for any context type, in backward-compatibility manner
-    override suspend fun getMiniAppView(): View = provideMiniAppWebView(context)
-
     // Returns the view only when context type is legit else throw back error
     // Activity context needs to be used here, to prevent issues, where some native elements are
     // not rendered successfully in the mini app e.g. select tags

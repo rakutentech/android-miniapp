@@ -37,16 +37,6 @@ class RealMiniAppSpec {
     }
 
     @Test
-    fun `should still be able to download miniapp for deprecated method`() =
-        runBlockingTest {
-            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns mock()
-            realMiniApp.create(miniAppInfo)
-            realMiniApp.create(miniAppInfo, miniAppMessageBridge)
-
-            verify(miniAppDownloader, times(2)).getMiniApp(TEST_MA_ID)
-        }
-
-    @Test
     fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {
         realMiniApp.listMiniApp()
 

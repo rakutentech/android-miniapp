@@ -57,10 +57,8 @@ class RealMiniAppDisplayTest {
         val testContext = displayer.context
         When calling displayer.isContextValid(testContext) itReturns true
         val miniAppWebView = displayer.getMiniAppView(testContext) as MiniAppWebView
-        val miniAppWebView2 = displayer.getMiniAppView() as MiniAppWebView
 
         miniAppWebView.context shouldBe testContext
-        miniAppWebView2.context shouldBe context
     }
 
     @Test(expected = MiniAppSdkException::class)
