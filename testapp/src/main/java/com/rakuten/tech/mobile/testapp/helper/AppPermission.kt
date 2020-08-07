@@ -20,7 +20,7 @@ object AppPermission {
     }
 
     fun getSinglePermissionRequest(permissionType: MiniAppPermissionType) = when (permissionType) {
-        MiniAppPermissionType.UNKNOWN -> "unknown"
+        MiniAppPermissionType.UNKNOWN -> ""
         else -> ""
     }
 }

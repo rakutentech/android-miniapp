@@ -2,50 +2,41 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.app.Activity
 import android.content.DialogInterface
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionDialog
-import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionToggle
+import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionLayout
 
-class MiniAppPermissionManager {
+/**
+ * A class to request single or multiple permissions with displaying PermissionDialog.
+ */
+internal class MiniAppPermissionManager(val activity: Activity) {
+    private val permissionChecker = MiniAppPermissionChecker(activity)
 
-    internal fun startRequestingSinglePermission(
-        activity: Activity,
-        permission: String
-    ) {
-        val permissionSwitch = PermissionToggle(activity)
-        permissionSwitch.textView.text = permission
-        val permissionChecker =
-            MiniAppPermissionChecker(
-                activity
-            )
+    fun startRequestingSinglePermission(permission: String) {
+        val permissionLayout = PermissionLayout(activity)
+        permissionLayout.textView.text = permission
 
         val listener = DialogInterface.OnClickListener { _, _ ->
             permissionChecker.setPermissionResult(
                 permission,
-                permissionSwitch.isChecked
+                permissionLayout.isChecked
             )
-            (activity as OnRequestPermissionResultCallback).onRequestPermissionResult(
-                permission, permissionSwitch.isChecked
+            (activity as MiniApp.OnRequestPermissionResultCallback).onRequestPermissionResult(
+                permission, permissionLayout.isChecked
             )
         }
 
         val permissionDialogBuilder = PermissionDialog.Builder().build(activity).apply {
-            setView(permissionSwitch)
+            setView(permissionLayout)
             setListener(listener)
         }
 
         if (!permissionChecker.checkPermission(permission)) {
             permissionDialogBuilder.show()
         } else {
-            (activity as OnRequestPermissionResultCallback).onRequestPermissionResult(
-                permission, permissionSwitch.isChecked
+            (activity as MiniApp.OnRequestPermissionResultCallback).onRequestPermissionResult(
+                permission, permissionLayout.isChecked
             )
         }
-    }
-
-    interface OnRequestPermissionResultCallback {
-        fun onRequestPermissionResult(
-            permission: String,
-            isGranted: Boolean
-        )
     }
 }

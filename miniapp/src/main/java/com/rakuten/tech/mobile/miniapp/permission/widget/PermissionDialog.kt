@@ -5,29 +5,45 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.ViewGroup
 
-class PermissionDialog {
+/**
+ * A class to contain a Builder class for creating AlertDialog which is used
+ * as a default dialog while requesting permission per MiniApp.
+ *
+ * <pre>
+ * PermissionDialog.Builder().build(context).apply {
+ *     setView(view)
+ *     setListener(listener)
+ * }
+ * </pre>
+ *
+ * The Builder class provides the benefits to create an AlertDialog that can
+ * display a ViewGroup as MiniApp permission layout. There are some other
+ * functions for setting up a positive button listener as well as
+ * showing the permission dialog.
+ */
+internal class PermissionDialog {
 
     class Builder {
-        private var B: AlertDialog.Builder? = null
+        private var alert: AlertDialog.Builder? = null
 
         fun build(context: Context?): Builder {
-            B = AlertDialog.Builder(context)
-            B?.setMessage("Allow MiniApp to access permission?")
+            alert = AlertDialog.Builder(context)
+            alert?.setMessage("Allow MiniApp to access permission?")
             return this
         }
 
         fun setView(view: ViewGroup): Builder {
-            B?.setView(view)
+            alert?.setView(view)
             return this
         }
 
         fun setListener(listener: DialogInterface.OnClickListener): Builder {
-            B?.setPositiveButton("DONE", listener)
+            alert?.setPositiveButton("DONE", listener)
             return this
         }
 
         fun show() {
-            B?.create()?.show()
+            alert?.create()?.show()
         }
     }
 }

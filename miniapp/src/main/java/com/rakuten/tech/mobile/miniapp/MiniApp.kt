@@ -96,13 +96,37 @@ abstract class MiniApp internal constructor() {
             )
         }
 
+        /**
+         * Request permission to access user data to be granted inside this SDK.
+         * If the Host application does not have the requested permission the user
+         * will be presented with UI for accepting them.
+         * <p>
+         * After the user has accepted o rejected the requested permissions you will
+         * receive a callback reporting whether the permissions were granted or not.
+         * @see OnRequestPermissionResultCallback.onRequestPermissionResult(String, Boolean).
+         * </p>
+         */
         @JvmStatic
         fun requestPermission(
             activity: Activity,
             permission: String
         ) {
-            MiniAppPermissionManager()
-                .startRequestingSinglePermission(activity, permission)
+            MiniAppPermissionManager(activity).startRequestingSinglePermission(permission)
         }
+    }
+
+    /**
+     * This interface is the contract for receiving the result for permission request.
+     */
+    interface OnRequestPermissionResultCallback {
+
+        /**
+         * Callback for the result of requesting permission to access user data
+         * inside this SDK. This method is invoked for every call on [requestPermission]
+         */
+        fun onRequestPermissionResult(
+            permission: String,
+            isGranted: Boolean
+        )
     }
 }

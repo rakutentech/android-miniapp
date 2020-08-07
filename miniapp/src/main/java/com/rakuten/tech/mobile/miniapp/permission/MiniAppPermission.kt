@@ -21,7 +21,7 @@ internal enum class MiniAppPermissionResult(val type: String) {
     }
 }
 
-/** Platform for requesting permission. **/
+/** Type of platform for requesting permission. **/
 enum class MiniAppPermissionPlatform {
     Android,
     MiniApp
