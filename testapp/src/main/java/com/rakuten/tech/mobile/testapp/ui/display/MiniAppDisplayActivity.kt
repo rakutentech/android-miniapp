@@ -14,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionManager
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionPlatform
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
@@ -25,7 +24,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
 class MiniAppDisplayActivity : BaseActivity(),
-    MiniAppPermissionManager.OnRequestPermissionResultCallback {
+    MiniApp.OnRequestPermissionResultCallback {
 
     private lateinit var appId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge

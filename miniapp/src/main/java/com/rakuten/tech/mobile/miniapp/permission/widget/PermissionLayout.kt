@@ -5,7 +5,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ToggleButton
 
-class PermissionToggle(context: Context) : LinearLayout(context) {
+/**
+ * A layout that combines child views to prepare a row of permission layout.
+ * PermissionLayout class includes a ToggleButton to show toggles with 'Allow' and 'Deny' texts,
+ * where the ToggleButton is checked as true by default; isChecked variable
+ * has been provided to set/get the value of ToggleButton.
+ */
+internal class PermissionLayout(context: Context) : LinearLayout(context) {
 
     lateinit var toggle: ToggleButton
     lateinit var textView: TextView
@@ -29,9 +35,9 @@ class PermissionToggle(context: Context) : LinearLayout(context) {
         addView(textView)
 
         toggle = ToggleButton(context)
-        toggle.textOff = "DENY"
-        toggle.textOn = "ALLOW"
+        toggle.textOff = "Deny"
+        toggle.textOn = "Allow"
         addView(toggle)
-        toggle.isChecked = true
+        isChecked = true
     }
 }
