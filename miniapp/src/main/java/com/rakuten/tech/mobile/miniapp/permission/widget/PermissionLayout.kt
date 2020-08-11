@@ -30,14 +30,14 @@ internal class PermissionLayout(context: Context) : LinearLayout(context) {
 
     init {
         orientation = HORIZONTAL
-        setPadding(72, 24, 24, 24)
+        setPadding(P_LEFT, P_DEFAULT, P_DEFAULT, P_DEFAULT)
         addChildComponents()
     }
 
     private fun addChildComponents() {
         textView = TextView(context)
-        textView.setPadding(0, 0, 24, 0)
-        textView.textSize = 18F
+        textView.setPadding(0, 0, P_DEFAULT, 0)
+        textView.textSize = TEXT_SIZE
         addView(textView)
 
         toggle = ToggleButton(context)
@@ -45,5 +45,11 @@ internal class PermissionLayout(context: Context) : LinearLayout(context) {
         toggle.textOn = "Allow"
         addView(toggle)
         isChecked = true
+    }
+
+    private companion object {
+        const val P_DEFAULT = 24
+        const val P_LEFT = 72
+        const val TEXT_SIZE = 18F
     }
 }

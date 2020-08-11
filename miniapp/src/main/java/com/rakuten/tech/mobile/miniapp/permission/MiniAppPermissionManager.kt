@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionLayout
 internal class MiniAppPermissionManager(val activity: Activity) {
     private val permissionChecker = MiniAppPermissionChecker(activity)
 
-    fun startRequestingSinglePermission(permission: String) {
+    fun startRequestingPermission(permission: String) {
         val permissionLayout = PermissionLayout(activity)
         permissionLayout.text = permission
 
