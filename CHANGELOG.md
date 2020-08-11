@@ -3,17 +3,18 @@
 ### 1.2.0 (2020-07-21)
 **SDK**
 - Upgraded build setup and some internal dependencies
-- Added support for customization of user agent information. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml)
+- Added support for customization of user agent information. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
 - Added feature to support backward & forward navigation support in a mini app.
 - Added support for javascript of type module e.g. `<script src="some_module.js" type="module"></script>` would render just fine now even though the mimetype is missed out by the web technologies for this scenario.
 - Added feature to obtain geolocation data in a mini app
 - Hotfix for redirection over custom scheme and http
+- Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 
 **Sample App**
 - Updated styling of the mini app list
 - Updated App's setting screen with build information
 - Demo usage of customized user agent information
-- Add navigation into mini app. See [this](miniapp/USERGUIDE.md#navigating-inside-a-mini-app)
+- Add navigation into mini app. See [this](miniapp/USERGUIDE.md#navigating-inside-a-mini-app).
 
 ### 1.1.1 (2020-06-11)
 
