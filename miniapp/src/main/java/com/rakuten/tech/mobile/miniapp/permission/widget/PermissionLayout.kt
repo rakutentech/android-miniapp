@@ -13,13 +13,19 @@ import android.widget.ToggleButton
  */
 internal class PermissionLayout(context: Context) : LinearLayout(context) {
 
-    lateinit var toggle: ToggleButton
-    lateinit var textView: TextView
+    private lateinit var toggle: ToggleButton
+    private lateinit var textView: TextView
 
     var isChecked: Boolean
         get() = toggle.isChecked
         set(value) {
             toggle.isChecked = value
+        }
+
+    var text: CharSequence
+        get() = textView.text
+        set(value) {
+            textView.text = value
         }
 
     init {

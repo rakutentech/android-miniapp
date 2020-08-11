@@ -14,10 +14,10 @@ internal class MiniAppPermissionManager(val activity: Activity) {
 
     fun startRequestingSinglePermission(permission: String) {
         val permissionLayout = PermissionLayout(activity)
-        permissionLayout.textView.text = permission
+        permissionLayout.text = permission
 
         val listener = DialogInterface.OnClickListener { _, _ ->
-            permissionChecker.setPermissionResult(
+            permissionChecker.storePermissionResult(
                 permission,
                 permissionLayout.isChecked
             )
