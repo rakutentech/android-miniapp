@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import android.net.Uri
+import android.util.AndroidRuntimeException
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
@@ -149,7 +150,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should intercept request with WebViewAssetLoader`() {
         val webAssetLoader: WebViewAssetLoader =
             Mockito.spy((miniAppWebView.webViewClient as MiniAppWebViewClient).loader)
-        val webViewClient = MiniAppWebViewClient(webAssetLoader,
+        val webViewClient = MiniAppWebViewClient(context, webAssetLoader,
             "custom_domain", "custom_scheme")
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
@@ -163,7 +164,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should redirect to custom domain when only loading with custom scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(webAssetLoader, customDomain,
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, customDomain,
             "mscheme.${miniAppWebView.miniAppInfo.id}://"))
 
         val displayer = Mockito.spy(miniAppWebView)
@@ -173,6 +174,25 @@ class MiniAppWebClientTest : BaseWebViewTest() {
             getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri()), mock())
 
         verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
+    }
+
+    @Test
+    fun `should open phone dialer when there is telephone scheme`() {
+        val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, "",
+            "mscheme.${miniAppWebView.miniAppInfo.id}://"))
+        val displayer = Mockito.spy(miniAppWebView)
+        val phoneUri = "tel:123456"
+
+        @Suppress("SwallowedException")
+        try {
+            webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
+            webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(phoneUri.toUri()))
+        } catch (e: AndroidRuntimeException) {
+            // context here is not activity
+        }
+
+        verify(webViewClient, times(1)).openPhoneDialer(phoneUri)
     }
 
     @Test

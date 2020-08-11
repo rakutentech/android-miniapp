@@ -1,14 +1,18 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.content.Context
+import android.content.Intent
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
+import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 
 internal class MiniAppWebViewClient(
+    private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val customDomain: String,
     private val customScheme: String
@@ -20,12 +24,15 @@ internal class MiniAppWebViewClient(
         return response
     }
 
-    @VisibleForTesting
-    internal fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
-        response?.let {
-            if (request.url != null && request.url.toString().endsWith(".js", true))
-                it.mimeType = "application/javascript"
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        if (request.url != null) {
+            val requestUrl = request.url.toString()
+            if (requestUrl.startsWith("tel:")) {
+                openPhoneDialer(requestUrl)
+                return true
+            }
         }
+        return super.shouldOverrideUrlLoading(view, request)
     }
 
     override fun onReceivedError(
@@ -40,6 +47,14 @@ internal class MiniAppWebViewClient(
         super.onReceivedError(view, request, error)
     }
 
+    @VisibleForTesting
+    internal fun interceptMimeType(response: WebResourceResponse?, request: WebResourceRequest) {
+        response?.let {
+            if (request.url != null && request.url.toString().endsWith(".js", true))
+                it.mimeType = "application/javascript"
+        }
+    }
+
     @Suppress("MagicNumber")
     @VisibleForTesting
     internal fun loadWithCustomDomain(view: WebView, requestUrl: String) {
@@ -48,5 +63,11 @@ internal class MiniAppWebViewClient(
             { view.loadUrl(requestUrl) },
             100
         )
+    }
+
+    @VisibleForTesting
+    internal fun openPhoneDialer(requestUrl: String) = Intent(Intent.ACTION_DIAL).let {
+        it.data = requestUrl.toUri()
+        context.startActivity(it)
     }
 }
