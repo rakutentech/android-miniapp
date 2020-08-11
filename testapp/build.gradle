@@ -19,7 +19,7 @@ android {
     if (keystoreFile.exists()) {
         signingConfigs {
             release {
-                keyAlias 'miniapp'
+                keyAlias "$System.env.MINIAPP_RELEASE_KEY_ALIAS"
                 keyPassword "$System.env.MINIAPP_RELEASE_KEY_PASSWORD"
 
                 storeFile keystoreFile
