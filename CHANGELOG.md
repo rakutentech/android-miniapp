@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 2.1.0 (in progress)
+**SDK**
+- Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+
 ### 2.0.0 (2020-08-07)
 **SDK**
 - **Feature:** Mini App is now downloaded as a ZIP archive and extracted. This should improve the initial launch time on a Mini App with many files.
@@ -20,7 +24,6 @@
 - Added support for javascript of type module e.g. `<script src="some_module.js" type="module"></script>` would render just fine now even though the mimetype is missed out by the web technologies for this scenario.
 - Added feature to obtain geolocation data in a mini app
 - Hotfix for redirection over custom scheme and http
-- Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 
 **Sample App**
 - Updated styling of the mini app list
