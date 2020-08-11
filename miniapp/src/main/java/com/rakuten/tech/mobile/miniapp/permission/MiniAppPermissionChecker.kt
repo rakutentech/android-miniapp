@@ -15,17 +15,17 @@ internal class MiniAppPermissionChecker(context: Context) {
     )
 
     /**
-     * Reads a Boolean from SharedPreferences
-     * @param [permission] the key provided to find the stored grant result
-     * @return [Boolean] the grant result of permission requested if found, if not returns false
+     * Reads a Boolean from SharedPreferences.
+     * @param [permission] the key provided to find the stored grant result.
+     * @return [Boolean] the grant result of permission requested if found, if not returns false.
      */
     fun checkPermission(permission: String): Boolean {
         return prefs.getBoolean(permission, false)
     }
 
     /**
-     * Caches the Boolean to SharedPreferences
-     * @param [permission] the key provided to store the [grantResult] as Boolean
+     * Caches the Boolean to SharedPreferences.
+     * @param [permission] the key provided to store the [grantResult] as Boolean.
      */
     fun storePermissionResult(
         permission: String,

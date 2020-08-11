@@ -111,7 +111,7 @@ abstract class MiniApp internal constructor() {
             activity: Activity,
             permission: String
         ) {
-            MiniAppPermissionManager(activity).startRequestingSinglePermission(permission)
+            MiniAppPermissionManager(activity).startRequestingPermission(permission)
         }
     }
 
