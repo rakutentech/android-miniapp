@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 
 /**
  * A class to contain a Builder class for creating AlertDialog which is used
@@ -24,7 +25,8 @@ import android.view.ViewGroup
 internal class PermissionDialog {
 
     class Builder {
-        private var alert: AlertDialog.Builder? = null
+        @VisibleForTesting
+        var alert: AlertDialog.Builder? = null
 
         fun build(context: Context?): Builder {
             alert = AlertDialog.Builder(context)
