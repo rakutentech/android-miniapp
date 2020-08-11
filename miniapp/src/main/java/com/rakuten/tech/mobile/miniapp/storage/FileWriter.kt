@@ -23,6 +23,7 @@ internal fun ZipInputStream.decompress(zipPath: String) = use { input ->
 
     while (input.nextEntry.also { entry = it } != null) {
         val newFile = File(outputFilePath.parentFile, entry!!.name)
+        newFile.parentFile?.mkdirs()
         if (entry!!.isDirectory)
             newFile.mkdir()
         else
