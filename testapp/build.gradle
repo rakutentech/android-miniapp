@@ -44,7 +44,7 @@ android {
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isTestMode              : property("PROD_IS_TEST_MODE") ?: false,
-            hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
+            hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
             appId                   : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
