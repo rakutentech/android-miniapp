@@ -19,10 +19,9 @@ import androidx.annotation.VisibleForTesting
 internal class PermissionDialog {
 
     /**
-     * The Builder class provides the benefits to create an AlertDialog that can
+     * The Builder class provides the functions to create an AlertDialog that can
      * display a ViewGroup as MiniApp permission layout. There are some other
-     * functions for setting up a positive button listener as well as
-     * showing the permission dialog.
+     * functions for setting up a listener as well as showing the permission dialog.
      */
     class Builder {
         @VisibleForTesting

@@ -98,10 +98,10 @@ abstract class MiniApp internal constructor() {
 
         /**
          * Request permission to access user data to be granted inside this SDK.
-         * If the Host application does not have the requested permission the user
+         * If the Host application does not have the requested permission, the user
          * will be presented with UI for accepting it.
          * <p>
-         * After the user has accepted o rejected the requested permission you will
+         * After the user has accepted or rejected the requested permission will
          * receive a callback reporting whether the permission was granted or not.
          * @see OnRequestPermissionResultCallback.onRequestPermissionResult(String, Boolean).
          * </p>
