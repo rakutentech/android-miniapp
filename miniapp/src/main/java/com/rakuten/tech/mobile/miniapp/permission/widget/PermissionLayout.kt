@@ -6,26 +6,30 @@ import android.widget.TextView
 import android.widget.ToggleButton
 
 /**
- * A layout that combines child views to prepare a row of permission layout.
+ * A layout that combines the child views to prepare a row of permission layout.
  * PermissionLayout class includes a ToggleButton to show toggles with 'Allow' and 'Deny' texts,
- * where the ToggleButton is checked as true by default; isChecked variable
- * has been provided to set/get the value of ToggleButton.
+ * where the ToggleButton is checked as true by default.
  */
 internal class PermissionLayout(context: Context) : LinearLayout(context) {
-
-    private lateinit var toggle: ToggleButton
     private lateinit var textView: TextView
+    private lateinit var toggle: ToggleButton
 
-    var isChecked: Boolean
-        get() = toggle.isChecked
-        set(value) {
-            toggle.isChecked = value
-        }
-
+    /**
+     * a variable has been provided to set/get the value of attached TextView.
+     */
     var text: CharSequence
         get() = textView.text
         set(value) {
             textView.text = value
+        }
+
+    /**
+     * a variable has been provided to set/get the value of ToggleButton.
+     */
+    var isChecked: Boolean
+        get() = toggle.isChecked
+        set(value) {
+            toggle.isChecked = value
         }
 
     init {

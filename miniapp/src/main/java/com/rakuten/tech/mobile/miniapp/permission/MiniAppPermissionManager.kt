@@ -7,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionDialog
 import com.rakuten.tech.mobile.miniapp.permission.widget.PermissionLayout
 
 /**
- * A class to request single or multiple permissions with displaying PermissionDialog.
+ * A class to request single or multiple permissions with displaying a dialog from this SDK.
  */
 internal class MiniAppPermissionManager(val activity: Activity) {
     private val permissionChecker = MiniAppPermissionChecker(activity)

@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 
 /**
- * A class to check if a requested permission has been granted or denied with caching
+ * A class to check if a requested permission has been granted or rejected with caching
  * the values of the grant result per permission.
  */
 internal class MiniAppPermissionChecker(context: Context) {
@@ -15,7 +15,7 @@ internal class MiniAppPermissionChecker(context: Context) {
     )
 
     /**
-     * Reads a Boolean from SharedPreferences.
+     * Reads grant result from SharedPreferences.
      * @param [permission] the key provided to find the stored grant result.
      * @return [Boolean] the grant result of permission requested if found, if not returns false.
      */
@@ -24,7 +24,7 @@ internal class MiniAppPermissionChecker(context: Context) {
     }
 
     /**
-     * Caches the Boolean to SharedPreferences.
+     * Stores grant result to SharedPreferences.
      * @param [permission] the key provided to store the [grantResult] as Boolean.
      */
     fun storePermissionResult(
