@@ -14,6 +14,7 @@ This repository uses submodules for some configuration, so they must be initiali
 ```bash
 $ git submodule init
 $ git submodule update
+$ (cd miniapp/src/main/assets/js-miniapp && git sparse-checkout set js-miniapp-bridge/export/android)
 $ ./gradlew assemble
 ```
 
