@@ -5,8 +5,6 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
 /** Bridge interface for communicating with mini app. **/
@@ -22,6 +20,12 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
+    /** Post custom permissions request from external. **/
+    abstract fun requestCustomPermissions(
+        permissions: List<String>,
+        callback: (grantResult: String) -> Unit
+    )
+
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -30,6 +34,7 @@ abstract class MiniAppMessageBridge {
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
+            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(callbackObj)
         }
     }
 
@@ -59,6 +64,24 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    private fun onRequestCustomPermissions(callbackObj: CallbackObj) {
+        try {
+            val customPermissionParam = Gson().fromJson<CustomPermission>(
+                callbackObj.param.toString(),
+                object : TypeToken<CustomPermission>() {}.type
+            )
+
+            requestCustomPermissions(
+                customPermissionParam.permissions
+            ) { grantResult -> onRequestCustomPermissionsResult(
+                callbackId = callbackObj.id,
+                grantResult = grantResult
+            ) }
+        } catch (e: Exception) {
+            postError(callbackObj.id, "Cannot request custom permissions: ${e.message}")
+        }
+    }
+
     @VisibleForTesting
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
@@ -66,6 +89,11 @@ abstract class MiniAppMessageBridge {
             postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
         else
             postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+    }
+
+    /** Inform the permission request result to MiniApp. **/
+    internal fun onRequestCustomPermissionsResult(callbackId: String, grantResult: String) {
+        postValue(callbackId, grantResult)
     }
 
     /** Return a value to mini app. **/

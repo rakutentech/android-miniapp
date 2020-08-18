@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.permission
+package com.rakuten.tech.mobile.miniapp.js
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,8 +9,8 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
 
-class MiniAppPermissionCheckerSpec {
-    private lateinit var miniAppPermissionChecker: MiniAppPermissionChecker
+class MiniAppCustomPermissionCacheSpec {
+    private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
     private val mockContext: Context = mock()
@@ -20,17 +20,23 @@ class MiniAppPermissionCheckerSpec {
         Mockito.`when`(mockSharedPrefs.edit()).thenReturn(mockEditor)
         Mockito.`when`(mockContext.getSharedPreferences(anyString(), anyInt()))
             .thenReturn(mockSharedPrefs)
-        miniAppPermissionChecker = MiniAppPermissionChecker(mockContext)
+        miniAppCustomPermissionCache =
+            MiniAppCustomPermissionCache(
+                mockContext
+            )
     }
 
     @Test
     fun `storePermissionResult should put boolean as grantResult in preferences`() {
-        Mockito.`when`(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor)
+        Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
 
-        val dummyPermission = "dummy_permission"
-        val grantResult = true
-        miniAppPermissionChecker.storePermissionResult(dummyPermission, grantResult)
+        val permissions = listOf("CUSTOM_PERMISSION_NAME")
+        val grantResults = listOf("DENIED")
+        miniAppCustomPermissionCache.storePermissionResults(permissions, grantResults)
 
-        verify(mockEditor).putBoolean(dummyPermission, grantResult)
+        val permissionCount = permissions.size
+        for (i in 0 until permissionCount) {
+            verify(mockEditor).putString(permissions[i], grantResults[i])
+        }
     }
 }

@@ -12,19 +12,16 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionPlatform
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
-class MiniAppDisplayActivity : BaseActivity(),
-    MiniApp.OnRequestPermissionResultCallback {
+class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
@@ -94,24 +91,17 @@ class MiniAppDisplayActivity : BaseActivity(),
                     callback: (isGranted: Boolean) -> Unit
                 ) {
                     miniappPermissionCallback = callback
+                    ActivityCompat.requestPermissions(
+                        this@MiniAppDisplayActivity,
+                        AppPermission.getPermissionRequest(miniAppPermissionType),
+                        AppPermission.getRequestCode(miniAppPermissionType)
+                    )
+                }
 
-                    when (miniAppPermissionType.platform) {
-                        MiniAppPermissionPlatform.Android.name -> {
-                            // requesting Android specific permission
-                            ActivityCompat.requestPermissions(
-                                this@MiniAppDisplayActivity,
-                                AppPermission.getPermissionRequest(miniAppPermissionType),
-                                AppPermission.getRequestCode(miniAppPermissionType)
-                            )
-                        }
-                        MiniAppPermissionPlatform.MiniApp.name -> {
-                            // requesting MiniApp SDK specific permission
-                            MiniApp.requestPermission(
-                                this@MiniAppDisplayActivity,
-                                AppPermission.getSinglePermissionRequest(miniAppPermissionType)
-                            )
-                        }
-                    }
+                override fun requestCustomPermissions(
+                    permissions: List<String>,
+                    callback: (grantResult: String) -> Unit
+                ) {
                 }
             }
 
@@ -136,13 +126,6 @@ class MiniAppDisplayActivity : BaseActivity(),
         grantResults: IntArray
     ) {
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
-        miniappPermissionCallback.invoke(isGranted)
-    }
-
-    override fun onRequestPermissionResult(
-        permission: String,
-        isGranted: Boolean
-    ) {
         miniappPermissionCallback.invoke(isGranted)
     }
 
