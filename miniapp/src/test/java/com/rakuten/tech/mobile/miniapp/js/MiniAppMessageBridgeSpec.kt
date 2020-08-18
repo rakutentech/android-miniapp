@@ -9,8 +9,6 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -33,6 +31,14 @@ class MiniAppMessageBridgeSpec {
                 callback: (isGranted: Boolean) -> Unit
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
+            }
+
+            override fun requestCustomPermissions(
+                permissions: List<String>,
+                callback: (grantResult: String) -> Unit
+            ) {
+                val grantResult = "{\"USER_NAME\":\"DENIED\"}"
+                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
         }
 

@@ -11,3 +11,6 @@ internal data class CallbackObj(
 
 @Keep
 internal data class Permission(val permission: String)
+
+@Keep
+internal data class CustomPermission(val permissions: List<String>)

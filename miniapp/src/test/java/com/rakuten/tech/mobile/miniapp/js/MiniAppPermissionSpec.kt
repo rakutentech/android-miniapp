@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import org.amshove.kluent.shouldBe
 import org.junit.Test
 

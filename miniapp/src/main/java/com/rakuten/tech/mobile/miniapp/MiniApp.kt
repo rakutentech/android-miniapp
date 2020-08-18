@@ -6,8 +6,8 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionManager
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -97,36 +97,85 @@ abstract class MiniApp internal constructor() {
         }
 
         /**
-         * Request permission to access user data to be granted inside this SDK.
-         * If the Host application does not have the requested permission, the user
-         * will be presented with UI for accepting it.
-         * <p>
-         * After the user has accepted or rejected the requested permission will
-         * receive a callback reporting whether the permission was granted or not.
-         * @see OnRequestPermissionResultCallback.onRequestPermissionResult(String, Boolean).
-         * </p>
+         * A self-check of custom permissions whether it's granted or rejected inside this SDK.
+         * @param [activity] the Activity as a context of SharedPreferences
+         * @return [Boolean] the grant results of custom permissions requested.
          */
         @JvmStatic
-        fun requestPermission(
+        fun selfReadCustomPermissions(
             activity: Activity,
-            permission: String
+            permissions: List<String>
+        ): List<String> = MiniAppCustomPermissionCache(activity).readPermissions(permissions)
+
+        /**
+         * Get custom permissions with grant result from this SDK.
+         * After the user has accepted or rejected the requested permissions will
+         * receive a callback reporting whether the permissions were granted or not.
+         * @see [OnRequestCustomPermissionResultCallback.onRequestCustomPermissionResult]
+         */
+        @JvmStatic
+        fun getCustomPermissions(
+            activity: Activity,
+            permissions: List<String>
         ) {
-            MiniAppPermissionManager(activity).startRequestingPermission(permission)
+            if (activity is OnRequestCustomPermissionResultCallback) {
+                val grantResults =
+                    MiniAppCustomPermissionCache(activity).readPermissions(permissions)
+
+                (activity as OnRequestCustomPermissionResultCallback)
+                    .onRequestCustomPermissionResult(
+                        permissions, grantResults
+                    )
+            }
         }
+
+        /**
+         * Store custom permissions with grant results inside this SDK.
+         * After data has stored, SDK will read custom permissions
+         * @see [getCustomPermissions]
+         */
+        @JvmStatic
+        fun setCustomPermissions(
+            activity: Activity,
+            permissions: List<String>,
+            grantResults: List<String>
+        ) {
+            if (activity is OnRequestCustomPermissionResultCallback) {
+                MiniAppCustomPermissionCache(activity).storePermissionResults(
+                    permissions,
+                    grantResults
+                )
+
+                (activity as OnRequestCustomPermissionResultCallback)
+                    .onRequestCustomPermissionResult(
+                        permissions, grantResults
+                    )
+            }
+        }
+
+        /**
+         * Custom permission check result: if the custom permission has not been granted.
+         */
+        const val CUSTOM_PERMISSION_DENIED = "DENIED"
+
+        /**
+         * Custom permission check result: if the custom permission has been granted.
+         */
+        const val CUSTOM_PERMISSION_ALLOWED = "ALLOWED"
     }
 
     /**
-     * This interface is the contract for receiving the result for permission request.
+     * This interface is the contract for receiving the result for custom permissions request.
      */
-    interface OnRequestPermissionResultCallback {
+    interface OnRequestCustomPermissionResultCallback {
 
         /**
-         * Callback for the result of requesting permission to access user data
-         * inside this SDK. This method is invoked for every call on [requestPermission]
+         * Callback for the result of requesting custom permissions to access user data
+         * inside this SDK. This method is invoked for every call on [getCustomPermissions]
          */
-        fun onRequestPermissionResult(
-            permission: String,
-            isGranted: Boolean
+        fun onRequestCustomPermissionResult(
+            permissions: List<String>,
+            grantResults: List<String>
         )
     }
 }
