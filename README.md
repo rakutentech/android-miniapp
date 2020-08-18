@@ -16,7 +16,7 @@ $ git submodule init
 $ git submodule update
 $ (cd miniapp/src/main/assets/js-miniapp && git sparse-checkout set js-miniapp-bridge/export/android)
 $ ./gradlew assemble
-Note: Optional for sparse-checkout. Required Git v2.25 or up.
+Note: sparse-checkout is optional. Required Git v2.25 or up.
 ```
 
 ## How to test the Sample app
