@@ -6,7 +6,7 @@ maven_cache_key: &maven_cache_key maven-{{ checksum "miniapp/src/test/AndroidMan
 jobs:
   build:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
     working_directory: ~/code
     environment:
       JVM_OPTS: "-Xmx3200m"
@@ -65,13 +65,18 @@ jobs:
 
   publish-sdk:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
     working_directory: ~/code
     environment:
       JVM_OPTS: "-Xmx3200m"
     steps:
       - checkout
-      - run: git submodule update --init
+      - run:
+          name: Update submodule
+          command: |
+            set -e
+            git submodule update --init
+            (cd miniapp/src/main/assets/js-miniapp && git sparse-checkout set js-miniapp-bridge/export/android)
       - attach_workspace:
           at: ./
       - run:
