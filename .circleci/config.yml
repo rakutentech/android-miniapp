@@ -6,13 +6,22 @@ maven_cache_key: &maven_cache_key maven-{{ checksum "miniapp/src/test/AndroidMan
 jobs:
   build:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
     working_directory: ~/code
     environment:
       JVM_OPTS: "-Xmx3200m"
     steps:
       - checkout
-      - run: git submodule update --init
+      # ToDo Find a solution to upgrade git version of Debian to use sparse-checkout.
+      - run:
+          name: Update submodule
+          command: |
+            set -e
+            git submodule update --init
+            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+            rm -r miniapp/src/main/assets/js-miniapp
+            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
         # Retrieve Base64 Keystore from Env variable and save to testapp project
       - run: |
           if [[ $RELEASE_KEYSTORE_BASE64 != "" ]]; then
@@ -65,13 +74,21 @@ jobs:
 
   publish-sdk:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android@sha256:45eb47efaf498cdbf01b16e6a294ef20a4979f6acd6aaf75913707190806bb4c
     working_directory: ~/code
     environment:
       JVM_OPTS: "-Xmx3200m"
     steps:
       - checkout
-      - run: git submodule update --init
+      - run:
+          name: Update submodule
+          command: |
+            set -e
+            git submodule update --init
+            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+            rm -r miniapp/src/main/assets/js-miniapp
+            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
       - attach_workspace:
           at: ./
       - run:

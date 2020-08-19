@@ -1,3 +1,6 @@
 [submodule "config"]
 	path = config
 	url = git@github.com:rakutentech/android-buildconfig.git
+[submodule "miniapp/src/main/assets/js-miniapp"]
+	path = miniapp/src/main/assets/js-miniapp
+	url = git@github.com:rakutentech/js-miniapp.git
