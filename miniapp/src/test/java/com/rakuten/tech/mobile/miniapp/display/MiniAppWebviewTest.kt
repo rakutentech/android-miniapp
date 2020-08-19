@@ -16,10 +16,6 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_BODY_CONTENT
-import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -269,6 +265,16 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, TEST_VALUE, mock()) shouldBe true
         webChromeClient.onJsPrompt(
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, null, mock()) shouldBe true
+    }
+
+    @Test
+    fun `should only close custom view when exit`() {
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
+        webChromeClient.onShowCustomView(mock(), mock())
+        webChromeClient.customView = mock()
+        webChromeClient.onShowCustomView(mock(), mock())
+
+        verify(webChromeClient).onHideCustomView()
     }
 }
 

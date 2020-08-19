@@ -89,7 +89,8 @@ internal class MiniAppWebChromeClient(
     }
 
     //region fullscreen video
-    private var customView: View? = null
+    @VisibleForTesting
+    internal var customView: View? = null
     private var customViewCallback: CustomViewCallback? = null
     private var originalOrientation = 0
     private var originalSystemUiVisibility = 0
@@ -100,29 +101,36 @@ internal class MiniAppWebChromeClient(
             return
         }
         customView = paramView
-        (context as Activity).apply {
-            originalSystemUiVisibility = window.decorView.systemUiVisibility
-            originalOrientation = requestedOrientation
-            customViewCallback = paramCustomViewCallback
-            (window.decorView as FrameLayout).addView(
-                customView,
-                FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            )
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-            customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
+        if (context is Activity) {
+            context.apply {
+                originalSystemUiVisibility = window.decorView.systemUiVisibility
+                originalOrientation = requestedOrientation
+                customViewCallback = paramCustomViewCallback
+                (window.decorView as FrameLayout).addView(
+                    customView,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                )
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
+            }
         }
     }
 
     override fun onHideCustomView() {
-        (context as Activity).apply {
-            (window.decorView as FrameLayout).removeView(customView)
-            customView = null
-            window.decorView.systemUiVisibility = originalSystemUiVisibility
-            requestedOrientation = originalOrientation
-            customViewCallback!!.onCustomViewHidden()
-            customViewCallback = null
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+        if (context is Activity) {
+            context.apply {
+                (window.decorView as FrameLayout).removeView(customView)
+                customView = null
+                window.decorView.systemUiVisibility = originalSystemUiVisibility
+                requestedOrientation = originalOrientation
+                customViewCallback!!.onCustomViewHidden()
+                customViewCallback = null
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+            }
         }
     }
 
@@ -136,7 +144,8 @@ internal class MiniAppWebChromeClient(
             width = ViewGroup.LayoutParams.MATCH_PARENT
         }
         customView?.layoutParams = params
-        (context as Activity).window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        if (context is Activity)
+            context.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
     //end region video fullscreen
 }
