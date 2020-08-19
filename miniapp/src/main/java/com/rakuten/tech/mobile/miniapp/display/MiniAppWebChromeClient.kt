@@ -3,10 +3,13 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.GeolocationPermissions
+import android.webkit.JsResult
+import android.webkit.JsPromptResult
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -106,13 +109,8 @@ internal class MiniAppWebChromeClient(
                 originalSystemUiVisibility = window.decorView.systemUiVisibility
                 originalOrientation = requestedOrientation
                 customViewCallback = paramCustomViewCallback
-                (window.decorView as FrameLayout).addView(
-                    customView,
-                    FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                )
+                (window.decorView as FrameLayout).addView(customView, FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                 window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
                 customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
@@ -147,5 +145,5 @@ internal class MiniAppWebChromeClient(
         if (context is Activity)
             context.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
-    //end region video fullscreen
+    // end region video fullscreen
 }
