@@ -17,7 +17,10 @@ jobs:
           command: |
             set -e
             git submodule update --init
-            (cd miniapp/src/main/assets/js-miniapp && git sparse-checkout set js-miniapp-bridge/export/android)
+            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+            rm -r miniapp/src/main/assets/js-miniapp
+            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
         # Retrieve Base64 Keystore from Env variable and save to testapp project
       - run: |
           if [[ $RELEASE_KEYSTORE_BASE64 != "" ]]; then
@@ -81,7 +84,10 @@ jobs:
           command: |
             set -e
             git submodule update --init
-            (cd miniapp/src/main/assets/js-miniapp && git sparse-checkout set js-miniapp-bridge/export/android)
+            cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
+            rm -r miniapp/src/main/assets/js-miniapp
+            (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
+            mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
       - attach_workspace:
           at: ./
       - run:
