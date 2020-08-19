@@ -93,24 +93,6 @@ internal class MiniAppWebChromeClient(
     private var customViewCallback: CustomViewCallback? = null
     private var originalOrientation = 0
     private var originalSystemUiVisibility = 0
-    private val fullScreenSettingFlag = View.SYSTEM_UI_FLAG_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_IMMERSIVE
-
-    override fun onHideCustomView() {
-        (context as Activity).apply {
-            (window.decorView as FrameLayout).removeView(customView)
-            customView = null
-            window.decorView.systemUiVisibility = originalSystemUiVisibility
-            requestedOrientation = originalOrientation
-            customViewCallback!!.onCustomViewHidden()
-            customViewCallback = null
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-        }
-    }
 
     override fun onShowCustomView(paramView: View?, paramCustomViewCallback: CustomViewCallback?) {
         if (customView != null) {
@@ -126,13 +108,23 @@ internal class MiniAppWebChromeClient(
                 customView,
                 FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             )
-            window.decorView.systemUiVisibility = fullScreenSettingFlag
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
             customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
         }
     }
 
-    override fun getDefaultVideoPoster(): Bitmap? = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
+    override fun onHideCustomView() {
+        (context as Activity).apply {
+            (window.decorView as FrameLayout).removeView(customView)
+            customView = null
+            window.decorView.systemUiVisibility = originalSystemUiVisibility
+            requestedOrientation = originalOrientation
+            customViewCallback!!.onCustomViewHidden()
+            customViewCallback = null
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+        }
+    }
 
     private fun updateControls() {
         val params = (customView?.layoutParams as FrameLayout.LayoutParams).apply {
@@ -144,7 +136,7 @@ internal class MiniAppWebChromeClient(
             width = ViewGroup.LayoutParams.MATCH_PARENT
         }
         customView?.layoutParams = params
-        (context as Activity).window.decorView.systemUiVisibility = fullScreenSettingFlag
+        (context as Activity).window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
     //end region video fullscreen
 }

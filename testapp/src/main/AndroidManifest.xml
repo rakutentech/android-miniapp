@@ -30,7 +30,9 @@
               android:name="android.app.searchable"
               android:resource="@xml/searchable" />
         </activity>
-        <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"/>
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
             android:label="@string/action_go_input"/>
