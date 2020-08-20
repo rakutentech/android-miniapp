@@ -95,8 +95,12 @@ internal class MiniAppWebChromeClient(
     @VisibleForTesting
     internal var customView: View? = null
     private var customViewCallback: CustomViewCallback? = null
-    private var originalOrientation = 0
-    private var originalSystemUiVisibility = 0
+    private var originalOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    private var originalSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+    private val fullScreenFlag = View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_IMMERSIVE
 
     override fun onShowCustomView(paramView: View?, paramCustomViewCallback: CustomViewCallback?) {
         if (customView != null) {
@@ -111,7 +115,7 @@ internal class MiniAppWebChromeClient(
                 customViewCallback = paramCustomViewCallback
                 (window.decorView as FrameLayout).addView(customView, FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+                window.decorView.systemUiVisibility = fullScreenFlag
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
                 customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
             }
@@ -143,7 +147,7 @@ internal class MiniAppWebChromeClient(
         }
         customView?.layoutParams = params
         if (context is Activity)
-            context.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            context.window.decorView.systemUiVisibility = fullScreenFlag
     }
     // end region video fullscreen
 }
