@@ -28,14 +28,13 @@ workflows:
           maven-cache-key: maven-{{ checksum "miniapp/src/test/AndroidManifest.xml" }}
           sdk-path: miniapp
           sample-app-path: testapp
-          pre-steps:
+          after-prepare-steps:
+            - update-submodules
             # Retrieve Base64 Keystore from Env variable and save to testapp project
             - run: |
                 if [[ "$RELEASE_KEYSTORE_BASE64" != "" ]]; then
                   base64 -d \<<< "$RELEASE_KEYSTORE_BASE64" > ./testapp/release-keystore.jks
                 fi
-          after-prepare-steps:
-            - update-submodules
           filters:
             tags:
               only: /^v.*/
