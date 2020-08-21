@@ -32,3 +32,8 @@ internal enum class MiniAppPermissionResult(val type: String) {
         internal fun getValue(isGranted: Boolean) = if (isGranted) ALLOWED else DENIED
     }
 }
+
+object MiniAppCustomPermissionResult {
+    const val CUSTOM_PERMISSION_DENIED = "DENIED"
+    const val CUSTOM_PERMISSION_ALLOWED = "ALLOWED"
+}

@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.MiniApp.Companion.CUSTOM_PERMISSION_DENIED
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionResult.CUSTOM_PERMISSION_DENIED
 
 /**
  * A class to check if a requested permission has been granted or rejected with storing

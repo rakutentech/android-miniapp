@@ -119,13 +119,9 @@ abstract class MiniApp internal constructor() {
             permissions: List<String>
         ) {
             if (activity is OnRequestCustomPermissionResultCallback) {
-                val grantResults =
-                    MiniAppCustomPermissionCache(activity).readPermissions(permissions)
-
-                (activity as OnRequestCustomPermissionResultCallback)
-                    .onRequestCustomPermissionResult(
-                        permissions, grantResults
-                    )
+                val grantResults = MiniAppCustomPermissionCache(activity)
+                    .readPermissions(permissions)
+                activity.onRequestCustomPermissionResult(permissions, grantResults)
             }
         }
 
@@ -141,27 +137,12 @@ abstract class MiniApp internal constructor() {
             grantResults: List<String>
         ) {
             if (activity is OnRequestCustomPermissionResultCallback) {
-                MiniAppCustomPermissionCache(activity).storePermissionResults(
-                    permissions,
-                    grantResults
-                )
+                MiniAppCustomPermissionCache(activity)
+                    .storePermissionResults(permissions, grantResults)
 
-                (activity as OnRequestCustomPermissionResultCallback)
-                    .onRequestCustomPermissionResult(
-                        permissions, grantResults
-                    )
+                activity.onRequestCustomPermissionResult(permissions, grantResults)
             }
         }
-
-        /**
-         * Custom permission check result: if the custom permission has not been granted.
-         */
-        const val CUSTOM_PERMISSION_DENIED = "DENIED"
-
-        /**
-         * Custom permission check result: if the custom permission has been granted.
-         */
-        const val CUSTOM_PERMISSION_ALLOWED = "ALLOWED"
     }
 
     /**
