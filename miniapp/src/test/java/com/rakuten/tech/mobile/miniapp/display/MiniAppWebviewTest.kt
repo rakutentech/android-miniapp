@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.util.AndroidRuntimeException
