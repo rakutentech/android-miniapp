@@ -136,18 +136,21 @@ internal class MiniAppWebChromeClient(
         }
     }
 
-    private fun updateControls() {
-        val params = (customView?.layoutParams as FrameLayout.LayoutParams).apply {
-            bottomMargin = 0
-            topMargin = 0
-            leftMargin = 0
-            rightMargin = 0
-            height = ViewGroup.LayoutParams.MATCH_PARENT
-            width = ViewGroup.LayoutParams.MATCH_PARENT
+    @VisibleForTesting
+    internal fun updateControls() {
+        customView?.let {
+            val params = (it.layoutParams as FrameLayout.LayoutParams).apply {
+                bottomMargin = 0
+                topMargin = 0
+                leftMargin = 0
+                rightMargin = 0
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            it.layoutParams = params
+            if (context is Activity)
+                context.window.decorView.systemUiVisibility = fullScreenFlag
         }
-        customView?.layoutParams = params
-        if (context is Activity)
-            context.window.decorView.systemUiVisibility = fullScreenFlag
     }
     // end region video fullscreen
 }

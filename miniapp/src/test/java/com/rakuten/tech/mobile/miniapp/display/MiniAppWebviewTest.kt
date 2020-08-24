@@ -1,20 +1,21 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.util.AndroidRuntimeException
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
-import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
@@ -275,6 +276,18 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
         webChromeClient.onShowCustomView(mock(), mock())
 
         verify(webChromeClient).onHideCustomView()
+    }
+
+    @Test
+    fun `should execute custom view flow without error`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val webChromeClient = Mockito.spy(MiniAppWebChromeClient(activity, TEST_MA))
+
+            webChromeClient.onShowCustomView(View(activity), mock())
+            webChromeClient.updateControls()
+            webChromeClient.onHideCustomView()
+            webChromeClient.updateControls()
+        }
     }
 }
 
