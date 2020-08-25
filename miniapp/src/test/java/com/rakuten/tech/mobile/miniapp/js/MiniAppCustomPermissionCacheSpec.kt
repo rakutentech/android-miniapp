@@ -7,7 +7,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
 class MiniAppCustomPermissionCacheSpec {
@@ -28,10 +29,10 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     @Test
-    fun `storePermissionResult should put boolean as grantResult in preferences`() {
+    fun `storePermissionResult should put string as grantResult in preferences`() {
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
 
-        val miniAppId = "dummyId"
+        val miniAppId = "dummyMiniAppId"
         val miniAppCustomPermission = MiniAppCustomPermission(
             miniAppId,
             listOf(

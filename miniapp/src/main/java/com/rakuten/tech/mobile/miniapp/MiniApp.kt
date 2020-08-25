@@ -51,14 +51,14 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**
-     * Get custom permissions with grant results per MiniApp from this SDK Cache.
+     * Get custom permissions with grant results per MiniApp from this SDK.
      */
     abstract fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission
 
     /**
-     * Store custom permissions with grant results per MiniApp inside this SDK Cache.
+     * Store custom permissions with grant results per MiniApp inside this SDK.
      */
     abstract fun setCustomPermissions(
         miniAppCustomPermission: MiniAppCustomPermission

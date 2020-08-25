@@ -37,9 +37,4 @@ internal enum class MiniAppPermissionResult(val type: String) {
 enum class MiniAppCustomPermissionResult(val type: String) {
     ALLOWED("Allowed"),
     DENIED("Denied");
-
-    internal companion object {
-
-        internal fun getValue(isGranted: Boolean) = if (isGranted) ALLOWED else DENIED
-    }
 }
