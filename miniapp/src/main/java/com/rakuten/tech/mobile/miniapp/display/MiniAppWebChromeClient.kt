@@ -101,6 +101,7 @@ internal class MiniAppWebChromeClient(
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
+    // When webview enters fullscreen.
     override fun onShowCustomView(paramView: View?, paramCustomViewCallback: CustomViewCallback?) {
         if (customView != null) {
             onHideCustomView()
@@ -121,6 +122,7 @@ internal class MiniAppWebChromeClient(
         }
     }
 
+    // When webview exits fullscreen.
     override fun onHideCustomView() {
         if (context is Activity) {
             context.apply {
