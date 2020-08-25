@@ -3,6 +3,7 @@
 ### 2.1.0 (in progress)
 **SDK**
 - Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+- Support webview video fullscreen.
 
 ### 2.0.0 (2020-08-07)
 **SDK**

@@ -3,23 +3,19 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.content.Context
 import android.net.Uri
 import android.util.AndroidRuntimeException
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
-import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_BODY_CONTENT
-import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.*
 import org.junit.Before
@@ -269,6 +265,28 @@ class MiniAppWebChromeTest : BaseWebViewTest() {
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, TEST_VALUE, mock()) shouldBe true
         webChromeClient.onJsPrompt(
             miniAppWebView, TEST_URL_HTTPS_2, TEST_BODY_CONTENT, null, mock()) shouldBe true
+    }
+
+    @Test
+    fun `should only close custom view when exit`() {
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
+        webChromeClient.onShowCustomView(mock(), mock())
+        webChromeClient.customView = mock()
+        webChromeClient.onShowCustomView(mock(), mock())
+
+        verify(webChromeClient).onHideCustomView()
+    }
+
+    @Test
+    fun `should execute custom view flow without error`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val webChromeClient = Mockito.spy(MiniAppWebChromeClient(activity, TEST_MA))
+
+            webChromeClient.onShowCustomView(View(activity), mock())
+            webChromeClient.updateControls()
+            webChromeClient.onHideCustomView()
+            webChromeClient.updateControls()
+        }
     }
 }
 

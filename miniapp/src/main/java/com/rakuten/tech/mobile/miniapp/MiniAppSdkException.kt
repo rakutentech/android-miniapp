@@ -29,7 +29,3 @@ internal fun sdkExceptionForInvalidArguments(message: String = "") =
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForNoActivityContext() =
     MiniAppSdkException("Only accept context of type Activity or ActivityCompat")
-
-@Suppress("FunctionMaxLength")
-internal fun sdkExceptionForNoMiniAppMessageBridge() =
-    MiniAppSdkException("MiniAppMessageBridge has not been implemented")
