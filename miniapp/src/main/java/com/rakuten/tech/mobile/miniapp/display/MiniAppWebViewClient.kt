@@ -10,10 +10,12 @@ import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
 internal class MiniAppWebViewClient(
     private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
+    private val miniAppMessageBridge: MiniAppMessageBridge,
     private val customDomain: String,
     private val customScheme: String
 ) : WebViewClient() {
@@ -29,6 +31,9 @@ internal class MiniAppWebViewClient(
             val requestUrl = request.url.toString()
             if (requestUrl.startsWith("tel:")) {
                 openPhoneDialer(requestUrl)
+                return true
+            } else if (!(requestUrl.startsWith(customDomain) || requestUrl.startsWith(customScheme))) {
+                miniAppMessageBridge.openExternalUrl(requestUrl)
                 return true
             }
         }

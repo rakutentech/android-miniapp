@@ -20,6 +20,8 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
+    abstract fun openExternalUrl(url: String)
+
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {

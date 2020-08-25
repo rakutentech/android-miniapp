@@ -97,6 +97,10 @@ class MiniAppDisplayActivity : BaseActivity() {
                         AppPermission.getRequestCode(miniAppPermissionType)
                     )
                 }
+
+                override fun openExternalUrl(url: String) {
+                    WebViewActivity.start(this@MiniAppDisplayActivity, url)
+                }
             }
 
             if (appId.isEmpty())

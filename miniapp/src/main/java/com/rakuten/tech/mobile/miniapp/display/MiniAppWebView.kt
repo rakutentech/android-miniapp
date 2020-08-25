@@ -45,7 +45,8 @@ internal class MiniAppWebView(
             settings.userAgentString =
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), customDomain, customScheme)
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppMessageBridge,
+            customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
