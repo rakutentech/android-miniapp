@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,8 +28,15 @@ class RealMiniAppSpec {
     private val miniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", TEST_MA_VERSION_ID))
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     private val realMiniApp =
-        RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
+        RealMiniApp(
+            apiClientRepository,
+            miniAppDownloader,
+            displayer,
+            miniAppInfoFetcher,
+            miniAppCustomPermissionCache
+        )
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before

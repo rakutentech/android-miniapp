@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -99,7 +100,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
                 override fun requestCustomPermissions(
-                    permissions: List<String>,
+                    permissions: List<MiniAppCustomPermissionType>,
                     callback: (grantResult: String) -> Unit
                 ) {
                 }

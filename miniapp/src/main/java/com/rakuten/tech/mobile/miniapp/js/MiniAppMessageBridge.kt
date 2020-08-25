@@ -22,7 +22,7 @@ abstract class MiniAppMessageBridge {
 
     /** Post custom permissions request from external. **/
     abstract fun requestCustomPermissions(
-        permissions: List<String>,
+        permissions: List<MiniAppCustomPermissionType>,
         callback: (grantResult: String) -> Unit
     )
 
@@ -71,12 +71,19 @@ abstract class MiniAppMessageBridge {
                 object : TypeToken<CustomPermission>() {}.type
             )
 
+            val permissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+            customPermissionParam.permissions.forEach { permission ->
+                MiniAppCustomPermissionType.getValue(permission)?.let { permissions.add(it) }
+            }
+
             requestCustomPermissions(
-                customPermissionParam.permissions
-            ) { grantResult -> onRequestCustomPermissionsResult(
-                callbackId = callbackObj.id,
-                grantResult = grantResult
-            ) }
+                permissions.toList()
+            ) { grantResult ->
+                onRequestCustomPermissionsResult(
+                    callbackId = callbackObj.id,
+                    grantResult = grantResult
+                )
+            }
         } catch (e: Exception) {
             postError(callbackObj.id, "Cannot request custom permissions: ${e.message}")
         }
