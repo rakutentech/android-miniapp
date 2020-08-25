@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Before
@@ -30,13 +31,20 @@ class MiniAppCustomPermissionCacheSpec {
     fun `storePermissionResult should put boolean as grantResult in preferences`() {
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
 
-        val permissions = listOf("CUSTOM_PERMISSION_NAME")
-        val grantResults = listOf("DENIED")
-        miniAppCustomPermissionCache.storePermissionResults(permissions, grantResults)
+        val miniAppId = "dummyId"
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            miniAppId,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
+        val json: String = Gson().toJson(miniAppCustomPermission)
 
-        val permissionCount = permissions.size
-        for (i in 0 until permissionCount) {
-            verify(mockEditor).putString(permissions[i], grantResults[i])
-        }
+        miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
+
+        verify(mockEditor).putString(miniAppId, json)
     }
 }

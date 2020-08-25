@@ -4,13 +4,16 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
-    private val miniAppInfoFetcher: MiniAppInfoFetcher
+    private val miniAppInfoFetcher: MiniAppInfoFetcher,
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : MiniApp() {
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
@@ -19,6 +22,12 @@ internal class RealMiniApp(
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppInfoFetcher.getInfo(appId)
     }
+
+    override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
+        miniAppCustomPermissionCache.readPermissions(miniAppId)
+
+    override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
+        miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
     override suspend fun create(
         appId: String,

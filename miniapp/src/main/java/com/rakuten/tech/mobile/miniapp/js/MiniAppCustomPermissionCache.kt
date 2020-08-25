@@ -3,7 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionResult.CUSTOM_PERMISSION_DENIED
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 /**
  * A class to check if a requested permission has been granted or rejected with storing
@@ -12,34 +13,47 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionResult.CUSTOM_P
 internal class MiniAppCustomPermissionCache(context: Context) {
     @VisibleForTesting
     val prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.permissions", Context.MODE_PRIVATE
+        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
     )
 
     /**
-     * Reads grant result from SharedPreferences.
-     * @param [permissions] the key-set provided to find the stored corresponding grant results.
-     * @return [List<String>] the grant results of permissions requested.
+     * Reads the grant results from SharedPreferences.
+     * @param [miniAppId] the key provided to find the stored results per MiniApp
+     * @return [MiniAppCustomPermission] an object to hold the results per MiniApp.
      */
-    fun readPermissions(permissions: List<String>): List<String> {
-        val grantResults = mutableListOf<String>()
-
-        permissions.forEach { key ->
-            prefs.getString(key, CUSTOM_PERMISSION_DENIED)?.let { grantResults.add(it) }
+    fun readPermissions(miniAppId: String): MiniAppCustomPermission {
+        if (prefs.contains(miniAppId)) {
+            return Gson().fromJson(
+                prefs.getString(miniAppId, ""),
+                object : TypeToken<MiniAppCustomPermission>() {}.type
+            )
         }
 
-        return grantResults
+        // if there is no data per miniAppId, then return default values
+        return MiniAppCustomPermission(
+            miniAppId,
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
     }
 
     /**
-     * Stores grant result to SharedPreferences.
-     * @param [permissions] as a key provided to store the [grantResults] as String.
+     * Stores the grant results to SharedPreferences.
+     * @param [miniAppCustomPermission] an object to hold the key and custom permission data
      */
-    fun storePermissionResults(
-        permissions: List<String>,
-        grantResults: List<String>
+    fun storePermissions(
+        miniAppCustomPermission: MiniAppCustomPermission
     ) {
-        permissions.forEachIndexed { index, key ->
-            prefs.edit().putString(key, grantResults[index]).apply()
-        }
+        val json: String = Gson().toJson(miniAppCustomPermission)
+        prefs.edit().putString(miniAppCustomPermission.miniAppId, json).apply()
     }
 }
