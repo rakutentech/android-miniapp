@@ -7,8 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 /**
- * A class to check if a requested permission has been granted or rejected with storing
- * the values of the grant result per permission.
+ * A class to read and store the grant results of custom permissions per MiniApp.
  */
 internal class MiniAppCustomPermissionCache(context: Context) {
     @VisibleForTesting
@@ -30,25 +29,12 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         }
 
         // if there is no data per miniAppId, then return default values
-        return MiniAppCustomPermission(
-            miniAppId,
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
-                Pair(
-                    MiniAppCustomPermissionType.CONTACT_LIST,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.PROFILE_PHOTO,
-                    MiniAppCustomPermissionResult.DENIED
-                )
-            )
-        )
+        return MiniAppCustomPermission(miniAppId, defaultDeniedList)
     }
 
     /**
      * Stores the grant results to SharedPreferences.
-     * @param [miniAppCustomPermission] an object to hold the key and custom permission data
+     * @param [miniAppCustomPermission] an object to hold the results per MiniApp.
      */
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
@@ -56,4 +42,19 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         val json: String = Gson().toJson(miniAppCustomPermission)
         prefs.edit().putString(miniAppCustomPermission.miniAppId, json).apply()
     }
+
+    private val defaultDeniedList = listOf(
+        Pair(
+            MiniAppCustomPermissionType.USER_NAME,
+            MiniAppCustomPermissionResult.DENIED
+        ),
+        Pair(
+            MiniAppCustomPermissionType.CONTACT_LIST,
+            MiniAppCustomPermissionResult.DENIED
+        ),
+        Pair(
+            MiniAppCustomPermissionType.PROFILE_PHOTO,
+            MiniAppCustomPermissionResult.DENIED
+        )
+    )
 }
