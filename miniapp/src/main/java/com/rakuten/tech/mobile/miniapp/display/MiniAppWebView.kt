@@ -108,7 +108,7 @@ internal class MiniAppWebView(
     @VisibleForTesting
     internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
 
-    fun String.isMiniAppUrl(): Boolean = this.startsWith(customDomain) || this.startsWith(customScheme)
+    private fun String.isMiniAppUrl(): Boolean = this.startsWith(customDomain) || this.startsWith(customScheme)
 }
 
 internal interface WebViewListener {
