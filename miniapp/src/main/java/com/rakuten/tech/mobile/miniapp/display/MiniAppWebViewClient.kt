@@ -10,12 +10,14 @@ import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
 internal class MiniAppWebViewClient(
     private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
-    private val miniAppMessageBridge: MiniAppMessageBridge,
+    private val miniAppNavigator: MiniAppNavigator?,
+    private val externalResultHandler: ExternalResultHandler,
     private val customDomain: String,
     private val customScheme: String
 ) : WebViewClient() {
@@ -33,8 +35,11 @@ internal class MiniAppWebViewClient(
                 openPhoneDialer(requestUrl)
                 return true
             } else if (!(requestUrl.startsWith(customDomain) || requestUrl.startsWith(customScheme))) {
-                miniAppMessageBridge.openExternalUrl(requestUrl)
-                return true
+                // check if there is navigator implementation on miniapp.
+                if (miniAppNavigator != null) {
+                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
+                    return true
+                }
             }
         }
         return super.shouldOverrideUrlLoading(view, request)

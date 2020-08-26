@@ -8,7 +8,9 @@ import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -20,6 +22,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     miniAppMessageBridge: MiniAppMessageBridge,
+    miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo)
 ) : WebView(context), WebViewListener {
@@ -27,6 +30,16 @@ internal class MiniAppWebView(
     private val miniAppDomain = "mscheme.${miniAppInfo.id}"
     private val customScheme = "$miniAppDomain://"
     private val customDomain = "https://$miniAppDomain/"
+
+    private val externalResultHandler = ExternalResultHandler().apply {
+        onResultChanged = { mapResult ->
+            val externalLoadingUrl = mapResult[ExternalResultHandler.URL]
+            externalLoadingUrl?.let {
+                if (it.isMiniAppUrl())
+                    loadUrl(it)
+            }
+        }
+    }
 
     init {
         layoutParams = FrameLayout.LayoutParams(
@@ -45,9 +58,11 @@ internal class MiniAppWebView(
             settings.userAgentString =
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppMessageBridge,
-            customDomain, customScheme)
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
+            externalResultHandler, customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
+
+        ExternalResultHandler.shouldClose = { it.isMiniAppUrl() }
 
         loadUrl(getLoadUrl())
     }
@@ -92,6 +107,8 @@ internal class MiniAppWebView(
 
     @VisibleForTesting
     internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
+
+    fun String.isMiniAppUrl(): Boolean = this.startsWith(customDomain) || this.startsWith(customScheme)
 }
 
 internal interface WebViewListener {
