@@ -6,6 +6,9 @@ package com.rakuten.tech.mobile.miniapp.js
 data class MiniAppCustomPermissionResponse(
     val permissions: ArrayList<CustomPermissionResponseObj>
 ) {
+    /**
+     * A data class to hold the json elements to be sent as inside the response.
+     */
     data class CustomPermissionResponseObj(
         val name: String,
         val isGranted: String

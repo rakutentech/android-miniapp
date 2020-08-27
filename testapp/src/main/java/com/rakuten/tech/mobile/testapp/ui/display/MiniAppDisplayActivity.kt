@@ -100,9 +100,10 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
                 override fun requestCustomPermissions(
-                    permissions: List<MiniAppCustomPermissionType>,
+                    permissions: List<Pair<MiniAppCustomPermissionType, String>>,
                     callback: (grantResult: String) -> Unit
                 ) {
+                    // Start sample implementation from here
                 }
             }
 
