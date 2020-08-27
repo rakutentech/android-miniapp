@@ -39,22 +39,41 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
     ) {
-        val json: String = Gson().toJson(miniAppCustomPermission)
+        val json: String = Gson().toJson(
+            MiniAppCustomPermission(
+                miniAppCustomPermission.miniAppId,
+                filterValuesToStore(miniAppCustomPermission)
+            )
+        )
         prefs.edit().putString(miniAppCustomPermission.miniAppId, json).apply()
     }
 
-    private val defaultDeniedList = listOf(
-        Pair(
-            MiniAppCustomPermissionType.USER_NAME,
-            MiniAppCustomPermissionResult.DENIED
-        ),
-        Pair(
-            MiniAppCustomPermissionType.CONTACT_LIST,
-            MiniAppCustomPermissionResult.DENIED
-        ),
-        Pair(
-            MiniAppCustomPermissionType.PROFILE_PHOTO,
-            MiniAppCustomPermissionResult.DENIED
+    private fun filterValuesToStore(
+        miniAppCustomPermission: MiniAppCustomPermission
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        val cached = readPermissions(miniAppCustomPermission.miniAppId).pairValues
+        val supplied = miniAppCustomPermission.pairValues
+        val combined = (cached + supplied).toMutableList()
+        combined.removeAll { (first) ->
+            first.type in supplied.groupBy { it.first.type }
+        }
+        return combined + supplied
+    }
+
+    private companion object {
+        val defaultDeniedList = listOf(
+            Pair(
+                MiniAppCustomPermissionType.USER_NAME,
+                MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+            ),
+            Pair(
+                MiniAppCustomPermissionType.CONTACT_LIST,
+                MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+            ),
+            Pair(
+                MiniAppCustomPermissionType.PROFILE_PHOTO,
+                MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+            )
         )
-    )
+    }
 }

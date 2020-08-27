@@ -36,5 +36,6 @@ internal enum class MiniAppPermissionResult(val type: String) {
 /** Type of miniapp custom permission result. **/
 enum class MiniAppCustomPermissionResult(val type: String) {
     ALLOWED("Allowed"),
-    DENIED("Denied");
+    DENIED("Denied"),
+    PERMISSION_NOT_AVAILABLE("Permission not available");
 }
