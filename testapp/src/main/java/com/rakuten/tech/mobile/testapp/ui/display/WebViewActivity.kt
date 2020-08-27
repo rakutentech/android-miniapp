@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.webkit.WebViewClient
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.component.SampleWebView
 import com.rakuten.tech.mobile.testapp.ui.component.SampleWebViewClient
@@ -14,7 +12,8 @@ class WebViewActivity: BaseActivity() {
     private lateinit var sampleWebView: SampleWebView
 
     companion object {
-        val urlTag = "url_tag"
+        val loadUrlTag = "load_url_tag"
+        val miniAppUrlSchemesTag = "miniapp_url_schemes_tag"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,13 +21,14 @@ class WebViewActivity: BaseActivity() {
         showBackIcon()
         title = "External WebView Sample"
         val finishCallBack: (url: String) -> Unit = {
-            val returnIntent = Intent().apply { putExtra(urlTag, it) }
+            val returnIntent = Intent().apply { putExtra(loadUrlTag, it) }
             setResult(Activity.RESULT_OK, returnIntent)
             finish()
         }
 
-        val webViewClient = SampleWebViewClient(finishCallBack)
-        sampleWebView = SampleWebView(this, intent.getStringExtra(urlTag) ?: "", webViewClient)
+        val webViewClient = SampleWebViewClient(finishCallBack,
+            intent.getStringArrayExtra(miniAppUrlSchemesTag) ?: emptyArray())
+        sampleWebView = SampleWebView(this, intent.getStringExtra(loadUrlTag) ?: "", webViewClient)
         setContentView(sampleWebView)
     }
 

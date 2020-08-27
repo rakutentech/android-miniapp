@@ -39,6 +39,9 @@ internal class MiniAppWebView(
                     loadUrl(it)
             }
         }
+
+        miniAppUrlSchemes.add(customScheme)
+        miniAppUrlSchemes.add(customDomain)
     }
 
     init {
@@ -61,8 +64,6 @@ internal class MiniAppWebView(
         webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
             externalResultHandler, customDomain, customScheme)
         webChromeClient = miniAppWebChromeClient
-
-        ExternalResultHandler.shouldClose = { it.isMiniAppUrl() }
 
         loadUrl(getLoadUrl())
     }

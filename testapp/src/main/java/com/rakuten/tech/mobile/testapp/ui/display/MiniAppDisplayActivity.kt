@@ -23,7 +23,6 @@ import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
-import java.io.Serializable
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -113,7 +112,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                     sampleWebViewResultHandler = resultHandler
 
                     val intent = Intent(this@MiniAppDisplayActivity, WebViewActivity::class.java).apply {
-                        putExtra(WebViewActivity.urlTag, url)
+                        putExtra(WebViewActivity.loadUrlTag, url)
+                        putExtra(WebViewActivity.miniAppUrlSchemesTag, sampleWebViewResultHandler.getMiniAppUrlSchemes())
                     }
                     startActivityForResult(intent, externalWebViewReqCode)
                 }
@@ -149,9 +149,9 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let {intent ->
-                if (intent.hasExtra(WebViewActivity.urlTag))
+                if (intent.hasExtra(WebViewActivity.loadUrlTag))
                     sampleWebViewResultHandler.emitResult(HashMap<String, String>().apply {
-                        put(ExternalResultHandler.URL, intent.getStringExtra(WebViewActivity.urlTag)!!)
+                        put(ExternalResultHandler.URL, intent.getStringExtra(WebViewActivity.loadUrlTag)!!)
                     })
             }
         }
