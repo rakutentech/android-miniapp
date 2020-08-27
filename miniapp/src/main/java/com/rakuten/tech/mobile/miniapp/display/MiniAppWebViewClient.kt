@@ -29,20 +29,21 @@ internal class MiniAppWebViewClient(
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        var shouldCancelLoading = super.shouldOverrideUrlLoading(view, request)
         if (request.url != null) {
             val requestUrl = request.url.toString()
             if (requestUrl.startsWith("tel:")) {
                 openPhoneDialer(requestUrl)
-                return true
+                shouldCancelLoading = true
             } else if (!(requestUrl.startsWith(customDomain) || requestUrl.startsWith(customScheme))) {
                 // check if there is navigator implementation on miniapp.
                 if (miniAppNavigator != null) {
                     miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
-                    return true
+                    shouldCancelLoading = true
                 }
             }
         }
-        return super.shouldOverrideUrlLoading(view, request)
+        return shouldCancelLoading
     }
 
     override fun onReceivedError(

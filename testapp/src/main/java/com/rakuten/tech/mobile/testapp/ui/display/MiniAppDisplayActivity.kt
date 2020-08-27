@@ -106,7 +106,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
             }
 
-            miniAppNavigator = object : MiniAppNavigator() {
+            miniAppNavigator = object : MiniAppNavigator {
 
                 override fun openExternalUrl(url: String, resultHandler: ExternalResultHandler) {
                     sampleWebViewResultHandler = resultHandler

@@ -41,6 +41,7 @@ class DisplayerTest {
         Displayer(context, TEST_HA_NAME).createMiniAppDisplay(
             basePath = context.filesDir.path,
             miniAppInfo = TEST_MA,
-            miniAppMessageBridge = miniAppMessageBridge
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = mock()
         )
 }

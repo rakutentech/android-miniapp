@@ -31,7 +31,8 @@ internal class MiniAppWebView(
     private val customScheme = "$miniAppDomain://"
     private val customDomain = "https://$miniAppDomain/"
 
-    private val externalResultHandler = ExternalResultHandler().apply {
+    @VisibleForTesting
+    internal val externalResultHandler = ExternalResultHandler().apply {
         onResultChanged = { mapResult ->
             val externalLoadingUrl = mapResult[ExternalResultHandler.URL]
             externalLoadingUrl?.let {

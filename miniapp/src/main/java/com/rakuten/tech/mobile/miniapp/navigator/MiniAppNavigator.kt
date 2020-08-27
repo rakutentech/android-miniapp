@@ -1,7 +1,12 @@
 package com.rakuten.tech.mobile.miniapp.navigator
 
 /** The navigation controller of sdk mini app view. **/
-abstract class MiniAppNavigator {
+interface MiniAppNavigator {
 
-    abstract fun openExternalUrl(url: String, resultHandler: ExternalResultHandler)
+    /**
+     * Open the external url by browser or webview.
+     * @param url The detected external url. This url is sent from mini app view.
+     * @param resultHandler Use this to send any result to mini app view.
+     */
+    fun openExternalUrl(url: String, resultHandler: ExternalResultHandler)
 }

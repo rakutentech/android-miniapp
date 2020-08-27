@@ -13,7 +13,7 @@ class ExternalResultHandler {
 
     // Result map key.
     companion object {
-        val URL = "external_url"
+        const val URL = "external_url"
     }
 
     internal val miniAppUrlSchemes = mutableListOf<String>()
@@ -23,10 +23,12 @@ class ExternalResultHandler {
     }
     internal var onResultChanged: ((Map<String, String>) -> Unit)? = null
 
-    // Get the value of miniAppUrlSchemes, not reference.
+    /** Get the value of miniAppUrlSchemes, not reference. */
     fun getMiniAppUrlSchemes(): Array<String> = miniAppUrlSchemes.toTypedArray()
 
-    // Notify the result to mini app view.
+    /**
+     * Notify the result to mini app view.
+     */
     fun emitResult(mapResult: Map<String, String>) {
         result = mapResult
     }
