@@ -26,9 +26,8 @@ internal class MiniAppStorage(
         inputStream: InputStream
     ) {
         try {
-            val filePath = getFilePath(source)
             val fileName = getFileName(source)
-            fileWriter.unzip(inputStream, getAbsoluteWritePath(basePath, filePath, fileName))
+            fileWriter.unzip(inputStream, getAbsoluteWritePath(basePath, fileName))
         } catch (error: Exception) {
             // This should not happen unless BE sends in a differently "constructed" URL
             // which differs in logic as that of LocalUrlParser
@@ -39,12 +38,8 @@ internal class MiniAppStorage(
     @VisibleForTesting
     fun getAbsoluteWritePath(
         basePath: String,
-        filePath: String,
         fileName: String
-    ) = "$basePath$filePath$fileName"
-
-    @VisibleForTesting
-    fun getFilePath(file: String) = urlToFileInfoParser.getFilePath(file)
+    ) = "$basePath/$fileName"
 
     @VisibleForTesting
     fun getFileName(file: String) = urlToFileInfoParser.getFileName(file)

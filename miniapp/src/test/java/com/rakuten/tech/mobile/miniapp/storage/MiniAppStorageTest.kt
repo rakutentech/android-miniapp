@@ -37,15 +37,7 @@ class MiniAppStorageTest {
 
     @Test
     fun `for a given set of base path & file path, formed parent path is returned`() {
-        assertTrue { miniAppStorage.getAbsoluteWritePath("a", "b", "c") == "abc" }
-    }
-
-    @Test
-    fun `for a given url file path is returned via LocalUrlParser`() {
-        val localUrlParser = getMockedLocalUrlParser()
-        val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
-        miniAppStorage.getFilePath(TEST_URL_FILE)
-        verify(localUrlParser, times(1)).getFilePath(TEST_URL_FILE)
+        assertTrue { miniAppStorage.getAbsoluteWritePath("a","c") == "a/c" }
     }
 
     @Test
@@ -78,19 +70,6 @@ class MiniAppStorageTest {
         oldFile1.exists() shouldBe false
         oldFile2.exists() shouldBe false
         latestPackage.exists() shouldBe true
-    }
-
-    @Test
-    fun `should extract file with FileWriter`() = runBlockingTest {
-        val file = tempFolder.newFile()
-        When calling miniAppStorage.getFilePath(file.path) itReturns file.path
-        When calling miniAppStorage.getFileName(file.path) itReturns file.name
-        val inputStream: InputStream = mock()
-        miniAppStorage.saveFile(file.path, file.path, inputStream)
-
-        verify(fileWriter, times(1))
-            .unzip(inputStream, miniAppStorage.getAbsoluteWritePath(
-                file.path, miniAppStorage.getFilePath(file.path), miniAppStorage.getFileName(file.path)))
     }
 
     @Test
