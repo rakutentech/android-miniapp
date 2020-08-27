@@ -38,7 +38,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      */
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
-    ) {
+    ): String {
         val json: String = Gson().toJson(
             MiniAppCustomPermission(
                 miniAppCustomPermission.miniAppId,
@@ -46,6 +46,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             )
         )
         prefs.edit().putString(miniAppCustomPermission.miniAppId, json).apply()
+        return toJsonResponse(filterValuesToStore(miniAppCustomPermission))
     }
 
     private fun filterValuesToStore(
@@ -58,6 +59,21 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             first.type in supplied.groupBy { it.first.type }
         }
         return combined + supplied
+    }
+
+    private fun toJsonResponse(
+        values: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+    ): String {
+        val responseObj = MiniAppCustomPermissionResponse(arrayListOf())
+        values.forEach {
+            responseObj.permissions.add(
+                MiniAppCustomPermissionResponse.CustomPermissionResponseObj(
+                    it.first.type,
+                    it.second.name
+                )
+            )
+        }
+        return Gson().toJson(responseObj).toString()
     }
 
     private companion object {

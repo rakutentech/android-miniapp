@@ -62,7 +62,7 @@ abstract class MiniApp internal constructor() {
      */
     abstract fun setCustomPermissions(
         miniAppCustomPermission: MiniAppCustomPermission
-    )
+    ): String
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
