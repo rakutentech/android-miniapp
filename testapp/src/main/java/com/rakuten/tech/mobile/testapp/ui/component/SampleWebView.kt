@@ -28,7 +28,7 @@ class SampleWebViewClient(
         return super.shouldOverrideUrlLoading(view, request)
     }
 
-    fun isMiniAppScheme(url: String): Boolean {
+    private fun isMiniAppScheme(url: String): Boolean {
         miniAppUrlSchemes.forEach { scheme ->
             if (url.startsWith(scheme))
                 return true

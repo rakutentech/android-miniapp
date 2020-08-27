@@ -42,13 +42,9 @@ abstract class MiniApp internal constructor() {
     ): MiniAppDisplay
 
     /**
-     * Creates a mini app.
-     * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
-     * @param appId mini app id.
-     * @param miniAppMessageBridge the interface for communicating between host app & mini app.
+     * Same as {@link #create(String, MiniAppMessageBridge)}.
+     * Use this to control external url loader.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @throws MiniAppSdkException when there is some issue during fetching,
-     * downloading or creating the view.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun create(
