@@ -13,4 +13,19 @@ internal data class CallbackObj(
 internal data class Permission(val permission: String)
 
 @Keep
-internal data class CustomPermission(val permissions: List<String>)
+internal data class CustomPermissionCallbackObj(
+    var action: String,
+    val param: CustomPermission?,
+    var id: String
+)
+
+@Keep
+internal data class CustomPermission(
+    val customPermissions: List<CustomPermissionObj>
+)
+
+@Keep
+internal data class CustomPermissionObj(
+    val name: String,
+    val description: String
+)

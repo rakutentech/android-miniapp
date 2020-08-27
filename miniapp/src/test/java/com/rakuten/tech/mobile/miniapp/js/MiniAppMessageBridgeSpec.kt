@@ -34,7 +34,7 @@ class MiniAppMessageBridgeSpec {
             }
 
             override fun requestCustomPermissions(
-                permissions: List<MiniAppCustomPermissionType>,
+                permissions: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (grantResult: String) -> Unit
             ) {
                 val grantResult = "{\"USER_NAME\":\"DENIED\"}"

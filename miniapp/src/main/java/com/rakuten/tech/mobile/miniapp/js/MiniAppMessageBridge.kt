@@ -22,7 +22,7 @@ abstract class MiniAppMessageBridge {
 
     /** Post custom permissions request from external. **/
     abstract fun requestCustomPermissions(
-        permissions: List<MiniAppCustomPermissionType>,
+        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (grantResult: String) -> Unit
     )
 
@@ -30,11 +30,13 @@ abstract class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
+        val customPermissionCallbackObj =
+            Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
 
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
-            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(callbackObj)
+            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(customPermissionCallbackObj)
         }
     }
 
@@ -64,20 +66,22 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onRequestCustomPermissions(callbackObj: CallbackObj) {
+    private fun onRequestCustomPermissions(callbackObj: CustomPermissionCallbackObj) {
         try {
-            val customPermissionParam = Gson().fromJson<CustomPermission>(
-                callbackObj.param.toString(),
-                object : TypeToken<CustomPermission>() {}.type
-            )
+            val permissionObjList = arrayListOf<CustomPermissionObj>()
+            callbackObj.param?.customPermissions?.forEach {
+                permissionObjList.add(CustomPermissionObj(it.name, it.description))
+            }
 
-            val permissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-            customPermissionParam.permissions.forEach { permission ->
-                MiniAppCustomPermissionType.getValue(permission)?.let { permissions.add(it) }
+            val permissionPairList = arrayListOf<Pair<MiniAppCustomPermissionType, String>>()
+            permissionObjList.forEach {
+                MiniAppCustomPermissionType.getValue(it.name)?.let { type ->
+                    permissionPairList.add(Pair(type, it.description))
+                }
             }
 
             requestCustomPermissions(
-                permissions.toList()
+                permissionPairList
             ) { grantResult ->
                 onRequestCustomPermissionsResult(
                     callbackId = callbackObj.id,
