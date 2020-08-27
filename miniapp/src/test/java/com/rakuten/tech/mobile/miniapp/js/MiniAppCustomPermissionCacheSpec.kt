@@ -37,8 +37,16 @@ class MiniAppCustomPermissionCacheSpec {
             miniAppId,
             listOf(
                 Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+                ),
+                Pair(
                     MiniAppCustomPermissionType.PROFILE_PHOTO,
-                    MiniAppCustomPermissionResult.DENIED
+                    MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
                 )
             )
         )
