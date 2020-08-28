@@ -73,6 +73,7 @@ abstract class MiniAppMessageBridge {
 
     private fun onRequestCustomPermissions(callbackObj: CustomPermissionCallbackObj) {
         try {
+
             val permissionObjList = arrayListOf<CustomPermissionObj>()
             callbackObj.param?.customPermissions?.forEach {
                 permissionObjList.add(CustomPermissionObj(it.name, it.description))
@@ -83,6 +84,13 @@ abstract class MiniAppMessageBridge {
                 MiniAppCustomPermissionType.getValue(it.name)?.let { type ->
                     permissionPairList.add(Pair(type, it.description))
                 }
+                if (MiniAppCustomPermissionType.getValue(it.name) == null)
+                    permissionPairList.add(
+                        Pair(
+                            MiniAppCustomPermissionType.UNKNOWN,
+                            it.description
+                        )
+                    )
             }
 
             requestCustomPermissions(

@@ -1,14 +1,10 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
