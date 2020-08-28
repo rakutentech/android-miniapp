@@ -73,6 +73,18 @@ class MiniAppStorageTest {
     }
 
     @Test
+    fun `should extract file with FileWriter`() = runBlockingTest {
+        val file = tempFolder.newFile()
+        When calling miniAppStorage.getFileName(file.path) itReturns file.name
+        val inputStream: InputStream = mock()
+        miniAppStorage.saveFile(file.path, file.path, inputStream)
+
+        verify(fileWriter, times(1))
+            .unzip(inputStream, miniAppStorage.getAbsoluteWritePath(
+                file.path, miniAppStorage.getFileName(file.path)))
+    }
+
+    @Test
     fun `should unzip file without exception`() = runBlockingTest {
         val file = tempFolder.newFile()
         val filePath = file.path
