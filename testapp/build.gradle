@@ -112,6 +112,7 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_refresh_layout"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
 
     testImplementation "junit:junit:$junit"
 }

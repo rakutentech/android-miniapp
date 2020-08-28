@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.permission
 
 /**
  * A data class to hold the custom permission with grant results using Pair per MiniApp.
