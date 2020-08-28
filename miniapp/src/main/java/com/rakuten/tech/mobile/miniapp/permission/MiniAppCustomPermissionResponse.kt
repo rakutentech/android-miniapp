@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.permission
 
 /**
  * A data class to prepare the json response of custom permissions to be sent from this SDK.

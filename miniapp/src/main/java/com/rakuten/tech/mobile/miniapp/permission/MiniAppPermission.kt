@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.permission
 
 /** Type of miniapp permission. **/
 enum class MiniAppPermissionType(val type: String) {
@@ -13,9 +13,9 @@ enum class MiniAppPermissionType(val type: String) {
 
 /** Type of miniapp custom permission. **/
 enum class MiniAppCustomPermissionType(val type: String) {
-    USER_NAME("rakuten.miniapp.USER_NAME"),
-    PROFILE_PHOTO("rakuten.miniapp.PROFILE_PHOTO"),
-    CONTACT_LIST("rakuten.miniapp.CONTACT_LIST");
+    USER_NAME("rakuten.miniapp.user.USER_NAME"),
+    PROFILE_PHOTO("rakuten.miniapp.user.PROFILE_PHOTO"),
+    CONTACT_LIST("rakuten.miniapp.user.CONTACT_LIST");
 
     internal companion object {
 

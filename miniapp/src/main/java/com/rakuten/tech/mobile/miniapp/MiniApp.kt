@@ -5,8 +5,8 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.js.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
@@ -51,14 +51,18 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**
-     * Get custom permissions with grant results per MiniApp from this SDK.
+     * Get custom permissions with grant results per MiniApp from this SDK
+     * @param miniAppId mini app id as the key to retrieve data from cache.
      */
     abstract fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission
 
     /**
-     * Store custom permissions with grant results per MiniApp inside this SDK.
+     * Store custom permissions with grant results per MiniApp inside this SDK
+     * @param miniAppCustomPermission the supplied custom permissions to be stored in cache
+     * @return [String] JSON string response provides custom permission names and
+     * the corresponding grant results to the HostApp.
      */
     abstract fun setCustomPermissions(
         miniAppCustomPermission: MiniAppCustomPermission
@@ -107,7 +111,9 @@ abstract class MiniApp internal constructor() {
                 displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(
+                    context
+                )
             )
         }
     }

@@ -5,6 +5,9 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
 /** Bridge interface for communicating with mini app. **/
@@ -20,7 +23,7 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
-    /** Post custom permissions request from external. **/
+    /** Post custom permissions request with names and descriptions from external. **/
     abstract fun requestCustomPermissions(
         permissions: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (grantResult: String) -> Unit
@@ -36,7 +39,9 @@ abstract class MiniAppMessageBridge {
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
-            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(customPermissionCallbackObj)
+            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(
+                customPermissionCallbackObj
+            )
         }
     }
 
