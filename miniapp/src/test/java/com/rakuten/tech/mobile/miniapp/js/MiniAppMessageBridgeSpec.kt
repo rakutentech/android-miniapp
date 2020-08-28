@@ -18,7 +18,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import java.lang.IllegalStateException
 
 @Suppress("TooGenericExceptionThrown")
 @RunWith(AndroidJUnit4::class)

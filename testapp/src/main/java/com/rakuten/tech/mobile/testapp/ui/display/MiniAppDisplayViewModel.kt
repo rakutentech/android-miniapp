@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.content.Context
 import android.content.DialogInterface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.lifecycle.*
@@ -92,26 +91,47 @@ class MiniAppDisplayViewModel constructor(
             descriptionForAdapter.add(it.second)
         }
 
-        val cachedList = miniapp.getCustomPermissions(miniAppInfo.id).pairValues
+        val cachedList = miniapp.getCustomPermissions(miniAppInfo.id)?.pairValues
+
         val filteredPair =
             mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+
         permissions.forEach { (first) ->
-            filteredPair.addAll(cachedList.filter {
-                first.type == it.first.type
-            })
+            if (cachedList != null) {
+                if (first == MiniAppCustomPermissionType.UNKNOWN)
+                    filteredPair.add(
+                        Pair(
+                            first,
+                            MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+                        )
+                    )
+                filteredPair.addAll(cachedList.filter {
+                    first.type == it.first.type
+                })
+            } else {
+                if (first == MiniAppCustomPermissionType.UNKNOWN)
+                    filteredPair.add(
+                        Pair(
+                            first,
+                            MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+                        )
+                    )
+                else
+                    filteredPair.add(Pair(first, MiniAppCustomPermissionResult.DENIED))
+            }
         }
+
         filteredPair.forEach {
             resultsForAdapter.add(it.second)
         }
-
         adapter.addPermissionList(namesForAdapter, resultsForAdapter, descriptionForAdapter)
         permissionLayout.listCustomPermission.adapter = adapter
 
-        val objToSend = MiniAppCustomPermission(miniAppInfo.id, adapter.permissionPairs)
+        val objToStore = MiniAppCustomPermission(miniAppInfo.id, adapter.permissionPairs)
 
         val listener = DialogInterface.OnClickListener { _, _ ->
             val response = miniapp.setCustomPermissions(
-                objToSend
+                objToStore
             )
             callback.invoke(response)
         }
