@@ -10,16 +10,6 @@ class UrlToFileInfoParserTest {
     private var urlParser = UrlToFileInfoParser()
 
     @Test
-    fun shouldGetFilePathWithValidUrl() {
-        urlParser.getFilePath(VALID_FILE_URL_PATH) shouldEqual "/a/b/"
-    }
-
-    @Test
-    fun shouldGetEmptyFilePathWithInvalidUrl() {
-        urlParser.getFilePath(INVALID_FILE_URL_PATH) shouldEqual ""
-    }
-
-    @Test
     fun shouldGetFileNameWithValidUrl() {
         urlParser.getFileName(VALID_FILE_URL_PATH) shouldEqual "index.html"
     }

@@ -37,7 +37,7 @@ class MiniAppStorageTest {
 
     @Test
     fun `for a given set of base path & file path, formed parent path is returned`() {
-        assertTrue { miniAppStorage.getAbsoluteWritePath("a","c") == "a/c" }
+        assertTrue { miniAppStorage.getAbsoluteWritePath("a", "c") == "a/c" }
     }
 
     @Test
