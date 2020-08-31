@@ -17,9 +17,7 @@ class SampleWebView(context: Context, url: String, sampleWebViewClient: WebViewC
     }
 }
 
-class SampleWebViewClient(
-    private val miniAppExternalUrlLoader: MiniAppExternalUrlLoader
-): WebViewClient() {
+class SampleWebViewClient(private val miniAppExternalUrlLoader: MiniAppExternalUrlLoader): WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         val url = request.url.toString()
