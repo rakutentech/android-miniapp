@@ -10,7 +10,7 @@ import java.lang.Exception
 /**
  * A class to read and store the grant results of custom permissions per MiniApp.
  */
-@Suppress("TooGenericExceptionCaught", "LongMethod")
+@Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class MiniAppCustomPermissionCache(context: Context) {
     @VisibleForTesting
     val prefs: SharedPreferences = context.getSharedPreferences(

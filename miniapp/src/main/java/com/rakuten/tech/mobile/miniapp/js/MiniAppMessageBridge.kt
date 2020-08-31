@@ -33,14 +33,12 @@ abstract class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
-        val customPermissionCallbackObj =
-            Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
 
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(
-                customPermissionCallbackObj
+                jsonStr
             )
         }
     }
@@ -71,8 +69,11 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onRequestCustomPermissions(callbackObj: CustomPermissionCallbackObj) {
+    private fun onRequestCustomPermissions(jsonStr: String) {
+        var callbackObj: CustomPermissionCallbackObj? = null
+
         try {
+            callbackObj = Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
 
             val permissionObjList = arrayListOf<CustomPermissionObj>()
             callbackObj.param?.customPermissions?.forEach {
@@ -102,7 +103,12 @@ abstract class MiniAppMessageBridge {
                 )
             }
         } catch (e: Exception) {
-            postError(callbackObj.id, "Cannot request custom permissions: ${e.message}")
+            callbackObj?.id?.let {
+                postError(
+                    it,
+                    "Cannot request custom permissions: ${e.message}"
+                )
+            }
         }
     }
 
