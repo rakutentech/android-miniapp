@@ -33,7 +33,8 @@ class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity
     }
 
     /**
-     * Use this to check should stop the external webview loader and send the current url to mini app view.
+     * In case you do not want to finish activity which contains webview automatically, use this to
+     * check should stop the external webview loader and send the current url to mini app view.
      */
     fun shouldClose(url: String): Boolean = miniAppScheme.isMiniAppUrl(url)
 

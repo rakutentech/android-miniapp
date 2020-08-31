@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 internal class MiniAppScheme(miniAppId: String) {
 
-    val miniAppDomain = "mscheme.${miniAppId}"
+    val miniAppDomain = "mscheme.$miniAppId"
     val miniAppCustomScheme = "$miniAppDomain://"
     val miniAppCustomDomain = "https://$miniAppDomain/"
 

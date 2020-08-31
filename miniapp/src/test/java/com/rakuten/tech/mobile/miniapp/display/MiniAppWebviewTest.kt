@@ -143,7 +143,8 @@ class MiniAppWebviewTest : BaseWebViewTest() {
     fun `should load url which is internal mini app scheme from external emission`() {
         miniAppWebView.externalResultHandler.emitResult(TEST_URL_HTTPS_1)
         miniAppWebView.externalResultHandler.emitResult("mscheme.${miniAppWebView.miniAppInfo.id}://index.html")
-        miniAppWebView.externalResultHandler.emitResult("https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
+        miniAppWebView.externalResultHandler.emitResult(
+            "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
 
         miniAppWebView.getLoadUrl() shouldBeEqualTo
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"
