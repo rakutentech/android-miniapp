@@ -6,14 +6,15 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:paddingStart="24dp"
-    android:paddingEnd="20dp"
+    android:paddingTop="@dimen/small_8"
+    android:paddingBottom="@dimen/small_8"
+    android:paddingStart="@dimen/medium_16"
+    android:paddingEnd="@dimen/medium_16"
     android:orientation="vertical">
 
     <TextView
       android:id="@+id/permissionText"
+      android:textStyle="bold"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:textColor="@android:color/black"
