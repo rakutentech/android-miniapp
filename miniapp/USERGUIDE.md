@@ -36,10 +36,10 @@ The SDK is configured via manifest meta-data, the configurable values are:
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
-| Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 | App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                    | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
+| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
+| Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
@@ -88,7 +88,7 @@ Information about Mini Apps can be fetched in two different ways: by using `Mini
 Use `MiniApp.listMiniApp` if you want a list of all Mini Apps:
 
 ```kotlin
-CoroutineScope(Dispatchers.Default).launch {
+CoroutineScope(Dispatchers.IO).launch {
     try {
         val miniAppList = MiniApp.instance().listMiniApp()
     } catch(e: MiniAppSdkException) {
@@ -100,7 +100,7 @@ CoroutineScope(Dispatchers.Default).launch {
 Or use `MiniApp.fetchInfo` if you want info for a single Mini App and already know the Mini App's ID:
 
 ```kotlin
-CoroutineScope(Dispatchers.Default).launch {
+CoroutineScope(Dispatchers.IO).launch {
     try {
         val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID")
     } catch(e: MiniAppSdkException) {
@@ -109,7 +109,7 @@ CoroutineScope(Dispatchers.Default).launch {
 }
 ```
 
-**Note:** This SDK uses `suspend` functions, so you should use [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) when calling the functions. These examples use `Dispatchers.Default`, but you can use whichever `CoroutineContext` and `CouroutineScope` that is appropriate for your App.
+**Note:** This SDK uses `suspend` functions, so you should use [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) when calling the functions. These examples use `Dispatchers.IO`, but you can use whichever `CoroutineContext` and `CouroutineScope` that is appropriate for your App. However, you MUST NOT use `Dispatchers.Main` because network requests cannot be performed on the main thread.
 
 ### #4 Implement the MiniAppMessageBridge
 
@@ -117,21 +117,29 @@ The `MiniAppMessageBridge` is used for passing messages between the Mini App (Ja
 
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
-    override fun getUniqueId() = AppSettings.instance.uniqueId
+    override fun getUniqueId() {
+        val id: String = ""
+        // Implementation details to generate a Unique ID
+        // .. .. ..
+
+        return id
+    }
 
     override fun requestPermission(
-                    miniAppPermissionType: MiniAppPermissionType,
-                    callback: (isGranted: Boolean) -> Unit
-                ) {
-                    // Implementation details to request device permission for location
-                    // .. .. ..
-                }
+        miniAppPermissionType: MiniAppPermissionType,
+        callback: (isGranted: Boolean) -> Unit
+    ) {
+        // Implementation details to request device permission for location
+        // .. .. ..
+
+        callback.invoke(true)
+    }
 }
 ```
 
 ### #5 Create and display a Mini App
 
-Calling `MiniApp.create` with a `MiniAppInfo` object will download the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App. The `MiniAppInfo` object also contains information about the latest Mini App version, so make sure to fetch the latest `MiniAppInfo` first.
+Calling `MiniApp.create` with a Mini App ID object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
 
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
@@ -145,9 +153,8 @@ class MiniAppActivity : Activity(), CoroutineScope {
         val context = this
         launch {
             try {
-                val miniAppDisplay = withContext(Dispatchers.Default) {
-                    val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID") // Or use `MiniApp.listMiniApp` if you want the whole list of Mini Apps
-                    MiniApp.instance().create(miniAppInfo, miniAppMessageBridge)
+                val miniAppDisplay = withContext(Dispatchers.IO) {
+                    MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge)
                 }
                 val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
 
@@ -174,8 +181,8 @@ class MiniAppActivity : Activity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
     //...
         launch {
-            val miniAppDisplay = withContext(Dispatchers.Default) {
-                MiniApp.instance().create("mini_app_id", "mini_app_version_id")
+            val miniAppDisplay = withContext(Dispatchers.IO) {
+                MiniApp.instance().create("mini_app_id", miniAppMessageBridge)
             }
             lifeCycle.addObserver(miniAppDisplay)
     //...
@@ -202,12 +209,21 @@ override fun onBackPressed() {
 
 ## Troubleshooting
 
-### AppCompat Version
+### Exception: "Network requests must not be performed on the main thread."
 
-`androidx.appcompat:appcompat`
+Some of the suspending functions in this SDK will perform network requests (`MiniApp.create`, `MiniApp.fetchInfo`, `MiniApp.listMiniApp`). Network requests should not be performed on the main thread, so the above exception will occur if your Coroutine is running in the `Dispatchers.Main` CoroutineContext. To avoid this exception, please use the `Dispatchers.IO` or `Dispatchers.Default` context instead. You can use [`withContext`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-context.html) to make sure your code is running in the appropriate CoroutineContext.
 
-The stable version of AndroidX AppCompat library `1.1.0` had issues on old Android OS when creating `Webview` with `ActivityContext`.  
-We recommend using the updated versions of this library.
+```
+CoroutineScope(Dispatchers.Main).launch {
+    withContext(Dispatchers.IO) {
+        // Call MiniApp suspending function i.e. `MiniApp.create`
+        // This runs in a background thread
+    }
+        
+    // Update your UI - i.e. `setContentView(miniAppView)`
+    // This runs on the main thread
+}
+```
 
 ## Changelog
 
