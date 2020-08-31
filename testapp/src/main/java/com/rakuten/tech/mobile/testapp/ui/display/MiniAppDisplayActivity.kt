@@ -19,13 +19,14 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
-    private lateinit var miniAppInfo: MiniAppInfo
+    private lateinit var miniAppId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
 
@@ -62,7 +63,11 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
-            miniAppInfo = intent.extras?.getParcelable(miniAppTag)!!
+
+            miniAppId = if (intent.hasExtra(miniAppTag))
+                intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
+            else
+                ""
 
             setContentView(R.layout.mini_app_display_activity)
 
@@ -105,9 +110,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                     permissions: List<Pair<MiniAppCustomPermissionType, String>>,
                     callback: (grantResult: String) -> Unit
                 ) {
-                    viewModel.promptCustomPermission(
+                    CustomPermissionPresenter().promptForCustomPermissions(
                         this@MiniAppDisplayActivity,
-                        miniAppInfo,
+                        miniAppId,
                         permissions,
                         callback
                     )
