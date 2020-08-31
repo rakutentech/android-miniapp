@@ -10,6 +10,7 @@ import java.lang.Exception
 /**
  * A class to read and store the grant results of custom permissions per MiniApp.
  */
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class MiniAppCustomPermissionCache(context: Context) {
     @VisibleForTesting
     val prefs: SharedPreferences = context.getSharedPreferences(
@@ -76,7 +77,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Combines all custom permissions per MiniApp by comparing the cached and supplied
      * custom permissions with replacing old grant results with new grant results.
      */
-    private fun combineAllPermissionsToStore(
+    @VisibleForTesting
+    internal fun combineAllPermissionsToStore(
         cached: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
@@ -122,7 +124,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * @param [permissions] list of custom permissions Pair.
      * @return [String].
      */
-    private fun toJsonResponse(
+    @VisibleForTesting
+    internal fun toJsonResponse(
         permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): String {
         val responseObj =
