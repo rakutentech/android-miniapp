@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -82,7 +81,7 @@ class MiniAppMessageBridgeSpec {
         verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
-    @Test(expected = JsonSyntaxException::class)
+    @Test
     fun `postValue should be called when permission is granted`() {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
@@ -95,7 +94,7 @@ class MiniAppMessageBridgeSpec {
             .postValue(permissionCallbackObj.id, MiniAppPermissionResult.getValue(isPermissionGranted).type)
     }
 
-    @Test(expected = JsonSyntaxException::class)
+    @Test
     fun `postError should be called when permission is denied`() {
         miniAppBridge.postMessage(permissionJsonStr)
 
