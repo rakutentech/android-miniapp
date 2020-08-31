@@ -17,7 +17,7 @@ import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalUrlHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import org.amshove.kluent.*
 import org.junit.Before
@@ -143,13 +143,13 @@ class MiniAppWebviewTest : BaseWebViewTest() {
     fun `should load url which is internal mini app scheme from external emission`() {
         miniAppWebView.externalResultHandler.emitResult(emptyMap())
         miniAppWebView.externalResultHandler.emitResult(HashMap<String, String>().apply {
-            put(ExternalResultHandler.URL, TEST_URL_HTTPS_1)
+            put(ExternalUrlHandler.URL, TEST_URL_HTTPS_1)
         })
         miniAppWebView.externalResultHandler.emitResult(HashMap<String, String>().apply {
-            put(ExternalResultHandler.URL, "mscheme.${miniAppWebView.miniAppInfo.id}://index.html")
+            put(ExternalUrlHandler.URL, "mscheme.${miniAppWebView.miniAppInfo.id}://index.html")
         })
         miniAppWebView.externalResultHandler.emitResult(HashMap<String, String>().apply {
-            put(ExternalResultHandler.URL, "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
+            put(ExternalUrlHandler.URL, "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
         })
 
         miniAppWebView.getLoadUrl() shouldBeEqualTo
@@ -160,7 +160,7 @@ class MiniAppWebviewTest : BaseWebViewTest() {
 @Suppress("SwallowedException")
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebClientTest : BaseWebViewTest() {
-    private val externalResultHandler: ExternalResultHandler = spy()
+    private val externalUrlHandler: ExternalUrlHandler = spy()
 
     @Test
     fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
@@ -172,7 +172,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
         val webAssetLoader: WebViewAssetLoader =
             Mockito.spy((miniAppWebView.webViewClient as MiniAppWebViewClient).loader)
         val webViewClient = MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, "custom_domain", "custom_scheme")
+            externalUrlHandler, "custom_domain", "custom_scheme")
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
         webViewClient.shouldInterceptRequest(miniAppWebView, webResourceRequest)
@@ -186,7 +186,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, customDomain, "mscheme.${miniAppWebView.miniAppInfo.id}://"))
+            externalUrlHandler, customDomain, "mscheme.${miniAppWebView.miniAppInfo.id}://"))
 
         val displayer = Mockito.spy(miniAppWebView)
 
@@ -201,7 +201,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should open phone dialer when there is telephone scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, "", "mscheme.${miniAppWebView.miniAppInfo.id}://"))
+            externalUrlHandler, "", "mscheme.${miniAppWebView.miniAppInfo.id}://"))
         val displayer = Mockito.spy(miniAppWebView)
         val phoneUri = "tel:123456"
 
@@ -219,7 +219,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
     fun `should not open external url loader when there is no config for navigation`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, null,
-            externalResultHandler, "https://mscheme.${miniAppWebView.miniAppInfo.id}/",
+            externalUrlHandler, "https://mscheme.${miniAppWebView.miniAppInfo.id}/",
             "mscheme.${miniAppWebView.miniAppInfo.id}://"))
         val displayer = Mockito.spy(miniAppWebView)
         val externalUri = TEST_URL_HTTPS_1.toUri()
@@ -230,14 +230,14 @@ class MiniAppWebClientTest : BaseWebViewTest() {
             // context here is not activity
         }
 
-        verify(miniAppNavigator, times(0)).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
+        verify(miniAppNavigator, times(0)).openExternalUrl(TEST_URL_HTTPS_1, externalUrlHandler)
     }
 
     @Test
     fun `should open external url loader when there is the config for navigation`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, "https://mscheme.${miniAppWebView.miniAppInfo.id}/",
+            externalUrlHandler, "https://mscheme.${miniAppWebView.miniAppInfo.id}/",
             "mscheme.${miniAppWebView.miniAppInfo.id}://"))
         val displayer = Mockito.spy(miniAppWebView)
         val externalUri = TEST_URL_HTTPS_1.toUri()
@@ -248,7 +248,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
             // context here is not activity
         }
 
-        verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
+        verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalUrlHandler)
     }
 
     @Test

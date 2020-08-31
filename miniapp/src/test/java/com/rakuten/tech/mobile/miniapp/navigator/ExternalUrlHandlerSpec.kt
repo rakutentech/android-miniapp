@@ -3,8 +3,8 @@ package com.rakuten.tech.mobile.miniapp.navigator
 import org.amshove.kluent.shouldNotBe
 import org.junit.Test
 
-class ExternalResultHandlerSpec {
-    private val externalResultHandler = ExternalResultHandler()
+class ExternalUrlHandlerSpec {
+    private val externalResultHandler = MiniAppExternalUrlLoader()
 
     @Test
     fun `should not get the reference of miniAppUrlSchemes`() {

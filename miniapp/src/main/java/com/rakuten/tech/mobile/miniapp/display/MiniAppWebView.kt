@@ -8,9 +8,10 @@ import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalUrlHandler
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -27,22 +28,14 @@ internal class MiniAppWebView(
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo)
 ) : WebView(context), WebViewListener {
 
-    private val miniAppDomain = "mscheme.${miniAppInfo.id}"
-    private val customScheme = "$miniAppDomain://"
-    private val customDomain = "https://$miniAppDomain/"
+    private val miniAppScheme = MiniAppScheme(miniAppInfo.id)
 
     @VisibleForTesting
-    internal val externalResultHandler = ExternalResultHandler().apply {
-        onResultChanged = { mapResult ->
-            val externalLoadingUrl = mapResult[ExternalResultHandler.URL]
-            externalLoadingUrl?.let {
-                if (it.isMiniAppUrl())
-                    loadUrl(it)
-            }
+    internal val externalResultHandler = ExternalUrlHandler().apply {
+        onResultChanged = { externalUrl ->
+            if (miniAppScheme.isMiniAppUrl(externalUrl))
+                loadUrl(externalUrl)
         }
-
-        miniAppUrlSchemes.add(customScheme)
-        miniAppUrlSchemes.add(customDomain)
     }
 
     init {
@@ -63,7 +56,7 @@ internal class MiniAppWebView(
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
-            externalResultHandler, customDomain, customScheme)
+            externalResultHandler, miniAppScheme.miniAppCustomDomain, miniAppScheme.miniAppCustomScheme)
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
@@ -92,7 +85,7 @@ internal class MiniAppWebView(
     }
 
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
-        .setDomain(miniAppDomain)
+        .setDomain(miniAppScheme.miniAppDomain)
         .addPathHandler(
             "/$SUB_DOMAIN_PATH/", WebViewAssetLoader.InternalStoragePathHandler(
                 context,
@@ -108,9 +101,7 @@ internal class MiniAppWebView(
         .build()
 
     @VisibleForTesting
-    internal fun getLoadUrl() = "$customDomain$SUB_DOMAIN_PATH/index.html"
-
-    private fun String.isMiniAppUrl(): Boolean = this.startsWith(customDomain) || this.startsWith(customScheme)
+    internal fun getLoadUrl() = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
 }
 
 internal interface WebViewListener {

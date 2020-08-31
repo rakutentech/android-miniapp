@@ -17,7 +17,8 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalUrlHandler
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -30,7 +31,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
-    private lateinit var sampleWebViewResultHandler: ExternalResultHandler
+    private lateinit var sampleWebViewExternalUrlHandler: ExternalUrlHandler
 
     private val externalWebViewReqCode = 100
 
@@ -108,12 +109,12 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             miniAppNavigator = object : MiniAppNavigator {
 
-                override fun openExternalUrl(url: String, resultHandler: ExternalResultHandler) {
-                    sampleWebViewResultHandler = resultHandler
+                override fun openExternalUrl(url: String, externalUrlHandler: ExternalUrlHandler) {
+                    sampleWebViewExternalUrlHandler = externalUrlHandler
 
                     val intent = Intent(this@MiniAppDisplayActivity, WebViewActivity::class.java).apply {
                         putExtra(WebViewActivity.loadUrlTag, url)
-                        putExtra(WebViewActivity.miniAppUrlSchemesTag, sampleWebViewResultHandler.getMiniAppUrlSchemes())
+                        putExtra(WebViewActivity.miniAppIdTag, intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id)
                     }
                     startActivityForResult(intent, externalWebViewReqCode)
                 }
@@ -148,11 +149,10 @@ class MiniAppDisplayActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let {intent ->
-                if (intent.hasExtra(WebViewActivity.loadUrlTag))
-                    sampleWebViewResultHandler.emitResult(HashMap<String, String>().apply {
-                        put(ExternalResultHandler.URL, intent.getStringExtra(WebViewActivity.loadUrlTag)!!)
-                    })
+            data?.let { intent ->
+                if (intent.hasExtra(MiniAppExternalUrlLoader.returnUrlTag))
+                    sampleWebViewExternalUrlHandler.emitResult(
+                        intent.getStringExtra(MiniAppExternalUrlLoader.returnUrlTag)!!)
             }
         }
     }
