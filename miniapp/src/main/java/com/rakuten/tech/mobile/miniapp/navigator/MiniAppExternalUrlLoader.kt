@@ -6,31 +6,42 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 
 /**
  * This support the scenario that external loader redirect to url which is only supported in mini app view,
- * close the external loader and emit that url to mini app view by [ExternalUrlHandler.emitResult].
+ * close the external loader and emit that url to mini app view by [ExternalResultHandler.emitResult].
+ * @param miniAppId The id of loading mini app.
+ * @param activity The Activity contains webview. Pass the activity if you want to auto finish
+ * the Activity with current external loading url as result data.
  **/
-class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity) {
+class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity? = null) {
 
     companion object {
         const val returnUrlTag = "return_url_tag"
     }
 
     private val miniAppScheme = MiniAppScheme(miniAppId)
-    private val finishCallBack: (url: String) -> Unit = {
-        val returnIntent = Intent().apply { putExtra(returnUrlTag, it) }
-        activity.setResult(Activity.RESULT_OK, returnIntent)
-        activity.finish()
-    }
 
     /**
      * Determine to close the external loader.
      * Use this in the return value of [WebViewClient.shouldOverrideUrlLoading(WebView, WebResourceRequest)].
      **/
     fun shouldOverrideUrlLoading(url: String): Boolean {
-        if (miniAppScheme.isMiniAppUrl(url)) {
-            finishCallBack.invoke(url)
+        if (shouldClose(url)) {
+            closeExternalView(url)
             return true
         }
 
         return false
+    }
+
+    /**
+     * Use this to check should stop the external webview loader and send the current url to mini app view.
+     */
+    fun shouldClose(url: String): Boolean = miniAppScheme.isMiniAppUrl(url)
+
+    private fun closeExternalView(url: String) {
+        if (activity != null) {
+            val returnIntent = Intent().apply { putExtra(returnUrlTag, url) }
+            activity.setResult(Activity.RESULT_OK, returnIntent)
+            activity.finish()
+        }
     }
 }

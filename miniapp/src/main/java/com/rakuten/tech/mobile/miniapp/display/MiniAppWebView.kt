@@ -11,7 +11,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalUrlHandler
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -31,7 +31,7 @@ internal class MiniAppWebView(
     private val miniAppScheme = MiniAppScheme(miniAppInfo.id)
 
     @VisibleForTesting
-    internal val externalResultHandler = ExternalUrlHandler().apply {
+    internal val externalResultHandler = ExternalResultHandler().apply {
         onResultChanged = { externalUrl ->
             if (miniAppScheme.isMiniAppUrl(externalUrl))
                 loadUrl(externalUrl)

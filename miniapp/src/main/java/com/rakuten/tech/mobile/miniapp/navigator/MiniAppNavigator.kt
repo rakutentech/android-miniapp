@@ -6,7 +6,7 @@ interface MiniAppNavigator {
     /**
      * Open the external url by browser or webview.
      * @param url The detected external url. This url is sent from mini app view.
-     * @param externalUrlHandler Use this to send any result to mini app view.
+     * @param externalResultHandler Use this to send any result such as url to mini app view.
      */
-    fun openExternalUrl(url: String, externalUrlHandler: ExternalUrlHandler)
+    fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler)
 }

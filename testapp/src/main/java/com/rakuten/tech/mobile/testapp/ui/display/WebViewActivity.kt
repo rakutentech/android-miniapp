@@ -22,8 +22,8 @@ class WebViewActivity: BaseActivity() {
 
         val miniAppExternalUrlLoader = MiniAppExternalUrlLoader(
             intent.getStringExtra(miniAppIdTag) ?: "", this)
-
         val webViewClient = SampleWebViewClient(miniAppExternalUrlLoader)
+
         sampleWebView = SampleWebView(this, intent.getStringExtra(loadUrlTag) ?: "", webViewClient)
         setContentView(sampleWebView)
     }

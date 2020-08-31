@@ -10,14 +10,14 @@ import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
-import com.rakuten.tech.mobile.miniapp.navigator.ExternalUrlHandler
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
 internal class MiniAppWebViewClient(
     private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val miniAppNavigator: MiniAppNavigator?,
-    private val externalUrlHandler: ExternalUrlHandler,
+    private val externalResultHandler: ExternalResultHandler,
     private val customDomain: String,
     private val customScheme: String
 ) : WebViewClient() {
@@ -38,7 +38,7 @@ internal class MiniAppWebViewClient(
             } else if (!(requestUrl.startsWith(customDomain) || requestUrl.startsWith(customScheme))) {
                 // check if there is navigator implementation on miniapp.
                 if (miniAppNavigator != null) {
-                    miniAppNavigator.openExternalUrl(requestUrl, externalUrlHandler)
+                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
                     shouldCancelLoading = true
                 }
             }

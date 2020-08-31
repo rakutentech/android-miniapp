@@ -5,7 +5,7 @@ import kotlin.properties.Delegates.observable
 /**
  * The url transmitter from external factors to mini app view.
  **/
-class ExternalUrlHandler {
+class ExternalResultHandler {
 
     private var result: String by observable(String()) { _, _, newValue ->
         onResultChanged?.invoke(newValue)
