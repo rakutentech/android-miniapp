@@ -15,9 +15,9 @@ class CustomPermissionDialog {
     class Builder {
         var alert: AlertDialog.Builder? = null
 
-        fun build(context: Context?, miniAppName: String): Builder {
+        fun build(context: Context?): Builder {
             alert = AlertDialog.Builder(context)
-            setTitle(context, miniAppName)
+            setTitle(context)
             return this
         }
 
@@ -38,7 +38,7 @@ class CustomPermissionDialog {
             }
         }
 
-        private fun setTitle(context: Context?, miniAppName: String) {
+        private fun setTitle(context: Context?) {
             val title = TextView(context)
             title.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -48,7 +48,7 @@ class CustomPermissionDialog {
             title.setBackgroundColor(Color.parseColor("#f2f3f4"))
             title.setTextColor(Color.BLACK)
             title.text =
-                "Are you sure you don't want to allow any of the permissions for $miniAppName?"
+                "Are you sure you don't want to allow any of the permissions for this MiniApp?"
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             title.gravity = Gravity.CENTER
             alert?.setCustomTitle(title)
