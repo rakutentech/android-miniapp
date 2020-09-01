@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -9,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -32,6 +34,10 @@ class MiniAppMessageBridgeSpec {
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
             }
+
+            override fun share(content: String) {
+                content shouldBeEqualTo "This is content"
+            }
         }
 
     private val uniqueIdCallbackObj = CallbackObj(
@@ -45,6 +51,12 @@ class MiniAppMessageBridgeSpec {
         param = Gson().toJson(Permission(MiniAppPermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
+
+    private val shareContentCallbackObj = CallbackObj(
+        action = ActionType.SHARE_CONTENT.action,
+        param = Gson().toJson(ShareInfo("This is content")),
+        id = TEST_CALLBACK_ID)
+    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
 
     private fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
@@ -105,5 +117,10 @@ class MiniAppMessageBridgeSpec {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `should share the exact content`() {
+        miniAppBridge.postMessage(shareContentJsonStr)
     }
 }

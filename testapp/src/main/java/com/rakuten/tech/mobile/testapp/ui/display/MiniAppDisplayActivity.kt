@@ -97,6 +97,15 @@ class MiniAppDisplayActivity : BaseActivity() {
                         AppPermission.getRequestCode(miniAppPermissionType)
                     )
                 }
+
+                override fun share(content: String) {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, content)
+                        type = "text/plain"
+                    }
+                    startActivity(sendIntent)
+                }
             }
 
             if (appId.isEmpty())

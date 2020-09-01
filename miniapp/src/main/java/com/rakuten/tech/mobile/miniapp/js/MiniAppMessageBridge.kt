@@ -20,6 +20,9 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
+    /** Share content info [ShareInfo]. This info is provided by mini app. **/
+    abstract fun share(content: String)
+
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -28,6 +31,7 @@ abstract class MiniAppMessageBridge {
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
+            ActionType.SHARE_CONTENT.action -> onShareContent(callbackObj.param.toString())
         }
     }
 
@@ -55,6 +59,11 @@ abstract class MiniAppMessageBridge {
         } catch (e: Exception) {
             postError(callbackObj.id, "Cannot request permission: ${e.message}")
         }
+    }
+
+    private fun onShareContent(jsonStr: String) {
+        val shareInfo = Gson().fromJson<ShareInfo>(jsonStr, object : TypeToken<ShareInfo>() {}.type)
+        share(shareInfo.content)
     }
 
     @VisibleForTesting
