@@ -21,7 +21,7 @@ internal data class CustomPermissionCallbackObj(
 
 @Keep
 internal data class CustomPermission(
-    val customPermissions: List<CustomPermissionObj>
+    val permissions: List<CustomPermissionObj>
 )
 
 @Keep

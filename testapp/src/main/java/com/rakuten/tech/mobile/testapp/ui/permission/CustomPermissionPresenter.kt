@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionManager
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
@@ -19,7 +20,7 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
     fun promptForCustomPermissions(
         context: Context,
         miniAppId: String,
-        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+        permissionWithDescriptions: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (grantResult: String) -> Unit
     ) {
         if (miniAppId.isEmpty())
@@ -39,48 +40,23 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         )
 
         // prepare adapter for showing items
+        val cachedList = miniapp.getCustomPermissions(miniAppId).pairValues
+        val filteredPair = permissionWithDescriptions.filter { (first) ->
+            cachedList.find {
+                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
+            } != null
+        }
+
         val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
         val descriptionForAdapter: ArrayList<String> = arrayListOf()
 
-        permissions.forEach {
+        filteredPair.forEach {
             namesForAdapter.add(it.first)
             descriptionForAdapter.add(it.second)
+            resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
         }
 
-        val cachedList = miniapp.getCustomPermissions(miniAppId)?.pairValues
-
-        val filteredPair =
-            mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        permissions.forEach { (first) ->
-            if (cachedList != null) {
-                if (first == MiniAppCustomPermissionType.UNKNOWN)
-                    filteredPair.add(
-                        Pair(
-                            first,
-                            MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
-                        )
-                    )
-                filteredPair.addAll(cachedList.filter {
-                    first.type == it.first.type
-                })
-            } else {
-                if (first == MiniAppCustomPermissionType.UNKNOWN)
-                    filteredPair.add(
-                        Pair(
-                            first,
-                            MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
-                        )
-                    )
-                else
-                    filteredPair.add(Pair(first, MiniAppCustomPermissionResult.DENIED))
-            }
-        }
-
-        filteredPair.forEach {
-            resultsForAdapter.add(it.second)
-        }
         adapter.addPermissionList(namesForAdapter, resultsForAdapter, descriptionForAdapter)
         permissionLayout.listCustomPermission.adapter = adapter
 
@@ -88,12 +64,10 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         val permissionsToStore = MiniAppCustomPermission(miniAppId, adapter.permissionPairs)
 
         val listener = DialogInterface.OnClickListener { _, _ ->
-            val response = miniapp.setCustomPermissions(
-                permissionsToStore
-            )
+            miniapp.setCustomPermissions(permissionsToStore)
 
             // send json response to miniapp
-            callback.invoke(response)
+            sendGrantResultCallback(miniAppId, permissionWithDescriptions, callback)
         }
 
         val permissionDialogBuilder =
@@ -102,7 +76,24 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
                 setListener(listener)
             }
 
-        // show dialog
-        permissionDialogBuilder.show()
+        // show dialog if there is any denied permission,
+        // otherwise just send the callback with grant results
+        if (filteredPair.isNotEmpty())
+            permissionDialogBuilder.show()
+        else
+            sendGrantResultCallback(miniAppId, permissionWithDescriptions, callback)
+    }
+
+    private fun sendGrantResultCallback(
+        miniAppId: String,
+        permissionWithDescriptions: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (grantResult: String) -> Unit
+    ) {
+        // send json response to miniapp
+        val result = MiniAppCustomPermissionManager(miniapp).createJsonResponse(
+            miniAppId,
+            permissionWithDescriptions
+        )
+        callback.invoke(result)
     }
 }

@@ -8,7 +8,8 @@ import com.google.gson.reflect.TypeToken
 import java.lang.Exception
 
 /**
- * A class to read and store the grant results of custom permissions per MiniApp.
+ * A caching class to read and store the grant results of custom permissions per MiniApp
+ * using [SharedPreferences]
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class MiniAppCustomPermissionCache(context: Context) {
@@ -21,9 +22,9 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Reads the grant results from SharedPreferences.
      * @param [miniAppId] the key provided to find the stored results per MiniApp
      * @return [MiniAppCustomPermission] an object to contain the results per MiniApp
-     * if data has been stored in cache, otherwise null.
+     * if data has been stored in cache, otherwise default value.
      */
-    fun readPermissions(miniAppId: String): MiniAppCustomPermission? {
+    fun readPermissions(miniAppId: String): MiniAppCustomPermission {
         if (prefs.contains(miniAppId)) {
             return try {
                 Gson().fromJson(
@@ -31,54 +32,46 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
             } catch (e: Exception) {
-                null
+                defaultDeniedList(miniAppId)
             }
         }
-        return null
+        return defaultDeniedList(miniAppId)
     }
 
     /**
      * Stores the grant results to SharedPreferences.
      * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
-     * @return [String] JSON string response provides custom permission names and
-     * the corresponding grant results to the HostApp.
      */
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
-    ): String {
-        val cached = readPermissions(miniAppCustomPermission.miniAppId)?.pairValues ?: emptyList()
+    ) {
+        val cached = readPermissions(miniAppCustomPermission.miniAppId).pairValues
         val supplied = miniAppCustomPermission.pairValues.toMutableList()
-        // HostApp can send unknown permission parameter, but no need to cache it
+
+        // Remove any unknown permission parameter from HostApp.
         supplied.removeAll { (first) ->
             first.type == MiniAppCustomPermissionType.UNKNOWN.type
         }
 
-        val result = combineAllPermissionsToStore(cached, supplied)
-        if (result.isNotEmpty()) {
-            return try {
-                val json: String = Gson().toJson(
-                    MiniAppCustomPermission(
-                        miniAppCustomPermission.miniAppId,
-                        result
-                    )
+        try {
+            val jsonToStore: String = Gson().toJson(
+                MiniAppCustomPermission(
+                    miniAppCustomPermission.miniAppId,
+                    prepareAllPermissionsToStore(cached, supplied)
                 )
-                prefs.edit().putString(miniAppCustomPermission.miniAppId, json).apply()
-
-                // return JSON string response after stored data
-                toJsonResponse(filterSuppliedPermissionsToSend(miniAppCustomPermission))
-            } catch (e: Exception) {
-                e.message.toString()
-            }
+            )
+            prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
+        } catch (e: Exception) {
+            e.message.toString()
         }
-        return ""
     }
 
     /**
-     * Combines all custom permissions per MiniApp by comparing the cached and supplied
+     * Prepares all custom permissions per MiniApp by comparing the cached and supplied
      * custom permissions with replacing old grant results with new grant results.
      */
     @VisibleForTesting
-    internal fun combineAllPermissionsToStore(
+    internal fun prepareAllPermissionsToStore(
         cached: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
@@ -89,57 +82,23 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return combined + supplied
     }
 
-    /**
-     * Filters supplied custom permissions from all cached custom permissions per MiniApp.
-     */
-    private fun filterSuppliedPermissionsToSend(
-        suppliedPermission: MiniAppCustomPermission
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val cached = readPermissions(suppliedPermission.miniAppId)?.pairValues ?: emptyList()
-        val supplied = suppliedPermission.pairValues
-        val filteredPair =
-            mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        supplied.forEach { (first) ->
-            if (cached.isNotEmpty()) {
-                filteredPair.addAll(cached.filter {
-                    first.type == it.first.type
-                })
-            }
-
-            if (first.type == MiniAppCustomPermissionType.UNKNOWN.type)
-                filteredPair.add(
-                    Pair(
-                        first,
-                        MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
-                    )
-                )
-        }
-
-        return filteredPair
-    }
-
-    /**
-     * Provides a JSON string by mapping with [MiniAppCustomPermissionResponse] class.
-     * @param [permissions] list of custom permissions Pair.
-     * @return [String].
-     */
-    @VisibleForTesting
-    internal fun toJsonResponse(
-        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
-    ): String {
-        val responseObj =
-            MiniAppCustomPermissionResponse(
-                arrayListOf()
-            )
-        permissions.forEach {
-            responseObj.permissions.add(
-                MiniAppCustomPermissionResponse.CustomPermissionResponseObj(
-                    it.first.type,
-                    it.second.name
+    private fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
+        return MiniAppCustomPermission(
+            miniAppId,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
                 )
             )
-        }
-        return Gson().toJson(responseObj).toString()
+        )
     }
 }

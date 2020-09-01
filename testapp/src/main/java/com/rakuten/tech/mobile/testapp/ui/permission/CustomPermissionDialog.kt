@@ -44,11 +44,11 @@ class CustomPermissionDialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            title.setPadding(4, 18, 4, 18)
+            title.setPadding(4, 36, 4, 36)
             title.setBackgroundColor(Color.parseColor("#f2f3f4"))
             title.setTextColor(Color.BLACK)
             title.text =
-                "Are you sure you don't want to allow any of the permissions for this MiniApp?"
+                "The miniapp wants to access the below permissions. You can also manage these permissions later in the Mini App settings."
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             title.gravity = Gravity.CENTER
             alert?.setCustomTitle(title)

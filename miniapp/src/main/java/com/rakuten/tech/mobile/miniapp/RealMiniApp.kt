@@ -23,7 +23,7 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
-    override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission? =
+    override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
         miniAppCustomPermissionCache.readPermissions(miniAppId)
 
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
