@@ -86,7 +86,7 @@ class CustomPermissionAdapter : RecyclerView.Adapter<CustomPermissionAdapter.Vie
     }
 
     private fun permissionResultToChecked(result: MiniAppCustomPermissionResult): Boolean {
-        if (result.type == MiniAppCustomPermissionResult.ALLOWED.type)
+        if (result == MiniAppCustomPermissionResult.ALLOWED)
             return true
 
         return false

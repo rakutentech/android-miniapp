@@ -76,7 +76,7 @@ abstract class MiniAppMessageBridge {
             callbackObj = Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
 
             val permissionObjList = arrayListOf<CustomPermissionObj>()
-            callbackObj.param?.customPermissions?.forEach {
+            callbackObj.param?.permissions?.forEach {
                 permissionObjList.add(CustomPermissionObj(it.name, it.description))
             }
 
