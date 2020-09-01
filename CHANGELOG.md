@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 2.x.0 (2020-08-DD)
+**SDK**
+- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. 
+
+**Sample App**
+- **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.
+
 ### 2.1.0 (in progress)
 **SDK**
 - Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
