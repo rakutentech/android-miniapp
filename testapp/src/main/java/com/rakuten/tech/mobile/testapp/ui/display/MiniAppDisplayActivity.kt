@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.mini_app_display_activity.*
 class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
-    private lateinit var miniAppId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
 
@@ -64,10 +63,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
 
-            miniAppId = if (intent.hasExtra(miniAppTag))
-                intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
-            else
-                ""
+            if (appId.isEmpty())
+                appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
             setContentView(R.layout.mini_app_display_activity)
 
@@ -112,25 +109,18 @@ class MiniAppDisplayActivity : BaseActivity() {
                 ) {
                     CustomPermissionPresenter().promptForCustomPermissions(
                         this@MiniAppDisplayActivity,
-                        miniAppId,
+                        appId,
                         permissions,
                         callback
                     )
                 }
             }
 
-            if (appId.isEmpty())
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id,
-                    miniAppMessageBridge
-                )
-            else
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    appId,
-                    miniAppMessageBridge
-                )
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                appId,
+                miniAppMessageBridge
+            )
         }
     }
 
