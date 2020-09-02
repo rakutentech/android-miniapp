@@ -11,7 +11,7 @@ Mini App SDK also facilitates communication between a mini app and the host app 
 
 ### Supported Android Versions
 
-This SDK supports Android API level 21 (Lollipop) and above.
+This SDK supports Android API level 23 and above.
 
 ## Getting Started
 
@@ -20,7 +20,8 @@ This SDK supports Android API level 21 (Lollipop) and above.
 ```groovy
 repositories {
     jcenter()
-    // Needed only if you want to use snapshot releases
+
+    // The following repo is needed only if you want to use snapshot releases
     maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
 }
 
@@ -57,11 +58,6 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="https://www.example.com" />
 
-        <!-- Version of your app - used to determine feature compatibility for Mini App -->
-        <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
-            android:value="your_app_version" />
-
         <!-- App ID for the Platform API -->
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.AppId"
@@ -71,6 +67,11 @@ In your `AndroidManifest.xml`:
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="your_subscription_key" />
+
+        <!-- Version of your app - used to determine feature compatibility for Mini App -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
+            android:value="your_app_version" />
 
         <!-- Optional User Agent Information relating to the host app -->
         <meta-data

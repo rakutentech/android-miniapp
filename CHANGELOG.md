@@ -1,9 +1,14 @@
 ## CHANGELOG
 
-### 2.1.0 (in progress)
+### 2.1.0 (2020-09-03)
 **SDK**
-- Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
-- Support webview video fullscreen.
+- **Feature:** Support telephone hyperlink in miniapp. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+- **Feature:** Support webview video fullscreen.
+- **Fix:** `MiniAppSdkException` had a null message in some cases.
+- **Fix:** Some Mini Apps which use sub-directories were failing to unzip.
+
+**Sample App**
+- No changes
 
 ### 2.0.0 (2020-08-07)
 **SDK**
