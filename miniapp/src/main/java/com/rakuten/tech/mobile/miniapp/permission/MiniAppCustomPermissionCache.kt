@@ -13,8 +13,7 @@ import java.lang.Exception
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class MiniAppCustomPermissionCache(context: Context) {
-    @VisibleForTesting
-    val prefs: SharedPreferences = context.getSharedPreferences(
+    private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
     )
 
@@ -82,7 +81,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return combined + supplied
     }
 
-    private fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
+    @VisibleForTesting
+    internal fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
         return MiniAppCustomPermission(
             miniAppId,
             listOf(

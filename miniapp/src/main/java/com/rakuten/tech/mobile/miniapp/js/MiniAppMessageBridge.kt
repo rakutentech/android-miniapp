@@ -37,9 +37,7 @@ abstract class MiniAppMessageBridge {
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
-            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(
-                jsonStr
-            )
+            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
         }
     }
 

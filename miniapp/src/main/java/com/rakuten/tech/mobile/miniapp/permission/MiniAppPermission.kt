@@ -20,7 +20,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
 
     internal companion object {
 
-        internal fun getValue(type: String) = values().find { it.type == type }
+        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
     }
 }
 
