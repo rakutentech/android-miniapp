@@ -109,9 +109,7 @@ abstract class MiniApp internal constructor() {
                 displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(
-                    context
-                )
+                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )
         }
     }

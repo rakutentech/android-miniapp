@@ -66,7 +66,7 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         val listener = DialogInterface.OnClickListener { _, _ ->
             miniapp.setCustomPermissions(permissionsToStore)
 
-            // send json response to miniapp
+            // send the callback with grant results
             sendGrantResultCallback(miniAppId, permissionWithDescriptions, callback)
         }
 
@@ -77,7 +77,7 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
             }
 
         // show dialog if there is any denied permission,
-        // otherwise just send the callback with grant results
+        // otherwise send the callback with grant results
         if (filteredPair.isNotEmpty())
             permissionDialogBuilder.show()
         else
