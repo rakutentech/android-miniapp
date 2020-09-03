@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 2.x.0 (2020-08-DD)
+### 2.x.x (in progress)
 **SDK**
 - **Feature:** Added public interface to read and store the custom permissions inside Android SDK. 
 
