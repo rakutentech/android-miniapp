@@ -67,7 +67,6 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
         var callbackObj: CustomPermissionCallbackObj? = null
 
@@ -120,7 +119,6 @@ abstract class MiniAppMessageBridge {
             postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
     }
 
-    @Suppress("FunctionMaxLength")
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestCustomPermissionsResult(callbackId: String, grantResult: String) {
         postValue(callbackId, grantResult)
