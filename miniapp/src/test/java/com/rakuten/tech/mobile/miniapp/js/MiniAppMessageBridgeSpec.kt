@@ -117,4 +117,15 @@ class MiniAppMessageBridgeSpec {
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
+
+    @Test
+    fun `should work without exception when there is custom permission request`() {
+        val customPermissionCallbackObj = CustomPermissionCallbackObj(
+            action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
+            param = CustomPermission(listOf(CustomPermissionObj(MiniAppCustomPermissionType.USER_NAME.type, ""))),
+            id = TEST_CALLBACK_ID)
+        val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+
+        miniAppBridge.postMessage(customPermissionJsonStr)
+    }
 }
