@@ -9,7 +9,7 @@ import java.lang.Exception
 
 /**
  * A caching class to read and store the grant results of custom permissions per MiniApp
- * using [SharedPreferences]
+ * using [SharedPreferences].
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class MiniAppCustomPermissionCache(context: Context) {
