@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.navigator
 
+import android.content.Intent
 import kotlin.properties.Delegates.observable
 
 /**
@@ -18,5 +19,15 @@ class ExternalResultHandler {
      **/
     fun emitResult(url: String) {
         result = url
+    }
+
+    /**
+     * Notify the result to mini app view. Use this when go with auto close Activity approach.
+     * @see [MiniAppExternalUrlLoader].
+     * @param intent The result intent from closing Activity.
+     **/
+    fun emitResult(intent: Intent) {
+        if (intent.hasExtra(MiniAppExternalUrlLoader.returnUrlTag))
+            emitResult(intent.getStringExtra(MiniAppExternalUrlLoader.returnUrlTag)!!)
     }
 }

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.AndroidRuntimeException
 import android.view.View
@@ -18,6 +19,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import org.amshove.kluent.*
 import org.junit.Before
@@ -143,8 +145,11 @@ class MiniAppWebviewTest : BaseWebViewTest() {
     fun `should load url which is internal mini app scheme from external emission`() {
         miniAppWebView.externalResultHandler.emitResult(TEST_URL_HTTPS_1)
         miniAppWebView.externalResultHandler.emitResult("mscheme.${miniAppWebView.miniAppInfo.id}://index.html")
-        miniAppWebView.externalResultHandler.emitResult(
-            "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
+        val intent = Intent().apply {
+            putExtra(MiniAppExternalUrlLoader.returnUrlTag,
+                "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html")
+        }
+        miniAppWebView.externalResultHandler.emitResult(intent)
 
         miniAppWebView.getLoadUrl() shouldBeEqualTo
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"

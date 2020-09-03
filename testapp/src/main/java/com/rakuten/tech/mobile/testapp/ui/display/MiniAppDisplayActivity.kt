@@ -149,11 +149,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                if (intent.hasExtra(MiniAppExternalUrlLoader.returnUrlTag))
-                    sampleWebViewExternalResultHandler.emitResult(
-                        intent.getStringExtra(MiniAppExternalUrlLoader.returnUrlTag)!!)
-            }
+            data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
         }
     }
 
