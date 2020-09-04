@@ -10,6 +10,7 @@ import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
@@ -18,8 +19,7 @@ internal class MiniAppWebViewClient(
     @VisibleForTesting internal val loader: WebViewAssetLoader,
     private val miniAppNavigator: MiniAppNavigator?,
     private val externalResultHandler: ExternalResultHandler,
-    private val customDomain: String,
-    private val customScheme: String
+    private val miniAppScheme: MiniAppScheme
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
@@ -35,7 +35,7 @@ internal class MiniAppWebViewClient(
             if (requestUrl.startsWith("tel:")) {
                 openPhoneDialer(requestUrl)
                 shouldCancelLoading = true
-            } else if (!(requestUrl.startsWith(customDomain) || requestUrl.startsWith(customScheme))) {
+            } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 // check if there is navigator implementation on miniapp.
                 if (miniAppNavigator != null) {
                     miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
@@ -51,8 +51,11 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest,
         error: WebResourceError
     ) {
-        if (request.url != null && request.url.toString().startsWith(customScheme)) {
-            loadWithCustomDomain(view, request.url.toString().replace(customScheme, customDomain))
+        if (request.url != null && request.url.toString().startsWith(miniAppScheme.miniAppCustomScheme)) {
+            loadWithCustomDomain(
+                view,
+                request.url.toString().replace(miniAppScheme.miniAppCustomScheme, miniAppScheme.miniAppCustomDomain)
+            )
             return
         }
         super.onReceivedError(view, request, error)

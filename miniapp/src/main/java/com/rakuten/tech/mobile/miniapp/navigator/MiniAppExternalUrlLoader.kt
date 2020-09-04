@@ -38,11 +38,9 @@ class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity
      */
     fun shouldClose(url: String): Boolean = miniAppScheme.isMiniAppUrl(url)
 
-    private fun closeExternalView(url: String) {
-        if (activity != null) {
-            val returnIntent = Intent().apply { putExtra(returnUrlTag, url) }
-            activity.setResult(Activity.RESULT_OK, returnIntent)
-            activity.finish()
-        }
+    private fun closeExternalView(url: String) = activity?.run {
+        val returnIntent = Intent().apply { putExtra(returnUrlTag, url) }
+        setResult(Activity.RESULT_OK, returnIntent)
+        finish()
     }
 }

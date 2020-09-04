@@ -8,7 +8,7 @@ import android.webkit.WebViewClient
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 
 @SuppressLint("SetJavaScriptEnabled")
-class SampleWebView(context: Context, url: String, sampleWebViewClient: WebViewClient): WebView(context) {
+class SampleExternalWebView(context: Context, url: String, sampleWebViewClient: WebViewClient): WebView(context) {
 
     init {
         settings.javaScriptEnabled = true

@@ -18,7 +18,6 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
-import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -111,12 +110,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
                 override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
                     sampleWebViewExternalResultHandler = externalResultHandler
-
-                    val intent = Intent(this@MiniAppDisplayActivity, WebViewActivity::class.java).apply {
-                        putExtra(WebViewActivity.loadUrlTag, url)
-                        putExtra(WebViewActivity.miniAppIdTag, intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id)
-                    }
-                    startActivityForResult(intent, externalWebViewReqCode)
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id, externalWebViewReqCode)
                 }
             }
 
