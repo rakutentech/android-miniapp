@@ -210,7 +210,7 @@ override fun onBackPressed() {
 
 ### #3 External url loader
 
-The mini app is loaded with specific custom scheme and custom domain in mini app view.
+The mini app is loaded with the specific custom scheme and custom domain in mini app view.
 
 In default, the external link is also loaded in mini app view.
 It is possible for hostapp to load this external link with its own webview / browser.
@@ -262,7 +262,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> externalResultHandler.emitResult(intent) }
         }
-    }
+}
 ```
 
 #### Manual check by host app
