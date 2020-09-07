@@ -10,10 +10,6 @@ commands:
       - run: |
           set -e
           git submodule update --init
-          cp miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/bridge.js miniapp/src/main/assets
-          rm -r miniapp/src/main/assets/js-miniapp
-          (cd miniapp/src/main/assets && mkdir -p js-miniapp/js-miniapp-bridge/export/android)
-          mv miniapp/src/main/assets/bridge.js miniapp/src/main/assets/js-miniapp/js-miniapp-bridge/export/android/
 
 workflows:
   version: 2.1
