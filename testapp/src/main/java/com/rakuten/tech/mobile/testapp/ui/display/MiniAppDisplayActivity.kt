@@ -67,6 +67,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
+            if (appId.isEmpty())
+                appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
             setContentView(R.layout.mini_app_display_activity)
 
@@ -111,24 +113,16 @@ class MiniAppDisplayActivity : BaseActivity() {
                 override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
                     sampleWebViewExternalResultHandler = externalResultHandler
                     WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                        intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id, externalWebViewReqCode)
+                        appId, externalWebViewReqCode)
                 }
             }
 
-            if (appId.isEmpty())
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id,
-                    miniAppMessageBridge,
-                    miniAppNavigator
-                )
-            else
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    appId,
-                    miniAppMessageBridge,
-                    miniAppNavigator
-                )
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                appId,
+                miniAppMessageBridge,
+                miniAppNavigator
+            )
         }
     }
 
