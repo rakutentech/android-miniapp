@@ -4,3 +4,4 @@
 [submodule "miniapp/src/main/assets/js-miniapp"]
 	path = miniapp/src/main/assets/js-miniapp
 	url = git@github.com:rakutentech/js-miniapp.git
+	branch = js-bridge-android
