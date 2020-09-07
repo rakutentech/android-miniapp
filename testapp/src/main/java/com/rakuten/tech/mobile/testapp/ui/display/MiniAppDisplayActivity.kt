@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -16,6 +17,8 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -27,7 +30,11 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var appId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
+    private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
+
+    private val externalWebViewReqCode = 100
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -116,10 +123,25 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
             }
 
+            miniAppNavigator = object : MiniAppNavigator {
+
+                override fun openExternalUrl(
+                    url: String,
+                    externalResultHandler: ExternalResultHandler
+                ) {
+                    sampleWebViewExternalResultHandler = externalResultHandler
+                    WebViewActivity.startForResult(
+                        this@MiniAppDisplayActivity, url,
+                        appId, externalWebViewReqCode
+                    )
+                }
+            }
+
             viewModel.obtainMiniAppDisplay(
                 this@MiniAppDisplayActivity,
                 appId,
-                miniAppMessageBridge
+                miniAppMessageBridge,
+                miniAppNavigator
             )
         }
     }
@@ -131,6 +153,13 @@ class MiniAppDisplayActivity : BaseActivity() {
     ) {
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         miniappPermissionCallback.invoke(isGranted)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
+            data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
+        }
     }
 
     private fun toggleProgressLoading(isOn: Boolean) {

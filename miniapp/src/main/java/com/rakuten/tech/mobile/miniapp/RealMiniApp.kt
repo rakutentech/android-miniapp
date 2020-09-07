@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -34,14 +35,21 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge
     ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge)
 
+    override suspend fun create(
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator
+    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge, miniAppNavigator)
+
     private suspend fun executingCreate(
         miniAppId: String,
-        miniAppMessageBridge: MiniAppMessageBridge
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId)
-            displayer.createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge)
+            displayer.createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge, miniAppNavigator)
         }
     }
 

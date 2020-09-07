@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ internal class RealMiniAppDisplay(
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
+    val miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String
 ) : MiniAppDisplay {
 
@@ -71,6 +73,7 @@ internal class RealMiniAppDisplay(
                 basePath = basePath,
                 miniAppInfo = miniAppInfo,
                 miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
                 hostAppUserAgentInfo = hostAppUserAgentInfo
             )
             miniAppWebView!!
