@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -34,10 +35,12 @@ class MiniAppDisplayViewModel constructor(
     fun obtainMiniAppDisplay(
         context: Context,
         appId: String,
-        miniAppMessageBridge: MiniAppMessageBridge) = viewModelScope.launch(Dispatchers.IO) {
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator
+    ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(appId, miniAppMessageBridge)
+            miniAppDisplay = miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {

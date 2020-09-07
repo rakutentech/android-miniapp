@@ -172,7 +172,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
 ## Advanced
 
-### Clearing up mini app display
+### #1 Clearing up mini app display
 
 For a mini app, it is required to destroy necessary view state and any services registered with, either automatically or manually. `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
 
@@ -196,7 +196,7 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
-### Navigating inside a mini app
+### #2 Navigating inside a mini app
 
 For a common usage pattern, the navigation inside a mini app can be attached to the Android back key navigation as shown:
 
@@ -208,13 +208,81 @@ override fun onBackPressed() {
 }
 ```
 
+### #3 External url loader
+
+The mini app is loaded with the specific custom scheme and custom domain in mini app view.
+
+In default, the external link is also loaded in mini app view.
+It is possible for hostapp to load this external link with its own webview / browser.
+
+- Implement `MiniAppNavigator`.
+
+```kotlin
+miniAppNavigator = object : MiniAppNavigator {
+    override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
+        // Load external url with own webview.
+    }
+}
+```
+
+- Create mini app display
+Using `MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge, miniAppNavigator)`.
+
+- Return URL result to mini app view.
+Some mini apps are loaded their services with external url but in the end that external url will
+trigger callback or webhook to redirect to mini app custom scheme, mini app custom domain.
+The external webview / browser cannot recognize mini app url so it is required the return of
+that url to mini app view.
+
+There are two approaches to return mini app url from host app webview to mini app view:
+
+#### Automatic check in WebView which belongs to separated Activity
+If the external webview Activity is different from the Activity running mini app, our SDK provide
+the auto check and Activity closing by overriding the [WebViewClient](https://developer.android.com/reference/android/webkit/WebViewClient).
+
+```kotlin
+val miniAppExternalUrlLoader = MiniAppExternalUrlLoader(miniAppId, externalWebViewActivity)
+```
+```kotlin
+class MyWebViewClient(private val miniAppExternalUrlLoader: MiniAppExternalUrlLoader): WebViewClient() {
+
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        val url = request.url.toString()
+        return miniAppExternalUrlLoader.shouldOverrideUrlLoading(url)
+    }
+}
+```
+
+Return the url result to mini app view:
+
+```kotlin
+// externalResultHandler is from MiniAppNavigator implementation.
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
+            data?.let { intent -> externalResultHandler.emitResult(intent) }
+        }
+}
+```
+
+#### Manual check by host app
+Host app can take full control and transmit the url back to mini app view.
+
+```kotlin
+val miniAppExternalUrlLoader = MiniAppExternalUrlLoader(miniAppId, null)
+```
+Using `miniAppExternalUrlLoader.shouldClose(url)` which returns `Boolean` to check if it is
+mini app scheme and should close external webview.
+
+Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
+
 ## Troubleshooting
 
 ### Exception: "Network requests must not be performed on the main thread."
 
 Some of the suspending functions in this SDK will perform network requests (`MiniApp.create`, `MiniApp.fetchInfo`, `MiniApp.listMiniApp`). Network requests should not be performed on the main thread, so the above exception will occur if your Coroutine is running in the `Dispatchers.Main` CoroutineContext. To avoid this exception, please use the `Dispatchers.IO` or `Dispatchers.Default` context instead. You can use [`withContext`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-context.html) to make sure your code is running in the appropriate CoroutineContext.
 
-```
+```kotlin
 CoroutineScope(Dispatchers.Main).launch {
     withContext(Dispatchers.IO) {
         // Call MiniApp suspending function i.e. `MiniApp.create`

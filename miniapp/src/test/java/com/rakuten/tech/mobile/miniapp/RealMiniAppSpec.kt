@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -24,12 +25,12 @@ class RealMiniAppSpec {
     private val apiClientRepository: ApiClientRepository = mock()
     private val displayer: Displayer = mock()
     private val miniAppDownloader: MiniAppDownloader = mock()
-    private val miniAppInfo = MiniAppInfo(TEST_MA_ID, "", "", Version("", TEST_MA_VERSION_ID))
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val realMiniApp =
         RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private val miniAppNavigator: MiniAppNavigator = mock()
 
     @Before
     fun setup() {
@@ -62,7 +63,21 @@ class RealMiniAppSpec {
 
             verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
             verify(displayer, times(1))
-                .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second, miniAppMessageBridge)
+                .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second,
+                    miniAppMessageBridge, null)
+        }
+
+    @Test
+    fun `should create mini app display with correct passing external navigator`() =
+        runBlockingTest {
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge, miniAppNavigator)
+
+            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
+            verify(displayer, times(1))
+                .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second,
+                    miniAppMessageBridge, miniAppNavigator)
         }
 
     @Test
