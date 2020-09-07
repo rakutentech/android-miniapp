@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -28,8 +29,8 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Creates a mini app.
+     * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.
-     * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful
      * @param miniAppMessageBridge the interface for communicating between host app & mini app
      * @throws MiniAppSdkException when there is some issue during fetching,
      * downloading or creating the view.
@@ -38,6 +39,18 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge
+    ): MiniAppDisplay
+
+    /**
+     * Same as {@link #create(String, MiniAppMessageBridge)}.
+     * Use this to control external url loader.
+     * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun create(
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator
     ): MiniAppDisplay
 
     /**
