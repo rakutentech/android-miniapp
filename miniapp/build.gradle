@@ -80,16 +80,11 @@ jacoco {
     toolVersion = "0.8.5"
 }
 
-apply from: '../gradle/documentation.gradle'
+apply from: '../config/documentation/dokka/android.gradle'
 dokka {
     configuration {
         sourceRoot {
             path = "miniapp/src/main"
-        }
-
-        perPackageOption {
-            prefix = "com.rakuten.tech.mobile.miniapp.legacy"
-            suppress = true
         }
     }
 }
