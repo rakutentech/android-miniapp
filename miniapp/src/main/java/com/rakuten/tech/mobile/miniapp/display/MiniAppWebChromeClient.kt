@@ -24,7 +24,7 @@ internal class MiniAppWebChromeClient(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @VisibleForTesting
     internal val bridgeJs = try {
-        val inputStream = context.assets.open("js-miniapp/js-miniapp-bridge/export/android/bridge.js")
+        val inputStream = context.assets.open("js-miniapp/bridge.js")
         inputStream.bufferedReader().use(BufferedReader::readText)
     } catch (e: Exception) {
         null
