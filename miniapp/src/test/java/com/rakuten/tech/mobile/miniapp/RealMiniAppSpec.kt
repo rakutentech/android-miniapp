@@ -6,7 +6,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,8 +31,15 @@ class RealMiniAppSpec {
     private val miniAppDownloader: MiniAppDownloader = mock()
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     private val realMiniApp =
-        RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher)
+        RealMiniApp(
+            apiClientRepository,
+            miniAppDownloader,
+            displayer,
+            miniAppInfoFetcher,
+            miniAppCustomPermissionCache
+        )
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
     private val miniAppNavigator: MiniAppNavigator = mock()
 
@@ -121,5 +132,26 @@ class RealMiniAppSpec {
         miniApp.updateConfiguration(miniAppSdkConfig)
 
         verify(miniApp, times(1)).createApiClient(miniAppSdkConfig)
+    }
+
+    @Test
+    fun `should invoke readPermissions from cache when getCustomPermissions is calling`() {
+        val miniAppId = "miniAppId"
+        realMiniApp.getCustomPermissions(miniAppId)
+
+        verify(miniAppCustomPermissionCache).readPermissions(miniAppId)
+    }
+
+    @Test
+    fun `should invoke storePermissions from cache when setCustomPermissions is calling`() {
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            "dummyMiniAppId",
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
+            )
+        )
+        realMiniApp.setCustomPermissions(miniAppCustomPermission)
+
+        verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
     }
 }

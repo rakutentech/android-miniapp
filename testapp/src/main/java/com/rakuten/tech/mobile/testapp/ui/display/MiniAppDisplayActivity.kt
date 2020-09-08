@@ -14,13 +14,15 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
@@ -67,6 +69,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
+
             if (appId.isEmpty())
                 appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
@@ -106,14 +109,31 @@ class MiniAppDisplayActivity : BaseActivity() {
                         AppPermission.getRequestCode(miniAppPermissionType)
                     )
                 }
+
+                override fun requestCustomPermissions(
+                    permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+                    callback: (grantResult: String) -> Unit
+                ) {
+                    CustomPermissionPresenter().promptForCustomPermissions(
+                        this@MiniAppDisplayActivity,
+                        appId,
+                        permissions,
+                        callback
+                    )
+                }
             }
 
             miniAppNavigator = object : MiniAppNavigator {
 
-                override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
+                override fun openExternalUrl(
+                    url: String,
+                    externalResultHandler: ExternalResultHandler
+                ) {
                     sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                        appId, externalWebViewReqCode)
+                    WebViewActivity.startForResult(
+                        this@MiniAppDisplayActivity, url,
+                        appId, externalWebViewReqCode
+                    )
                 }
             }
 

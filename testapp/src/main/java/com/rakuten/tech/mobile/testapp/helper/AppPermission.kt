@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.testapp.helper
 
 import android.Manifest
-import com.rakuten.tech.mobile.miniapp.js.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 
 object AppPermission {
 
