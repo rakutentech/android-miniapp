@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -10,6 +9,9 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert
 import org.junit.Before
@@ -33,6 +35,14 @@ class MiniAppMessageBridgeSpec {
                 callback: (isGranted: Boolean) -> Unit
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
+            }
+
+            override fun requestCustomPermissions(
+                permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+                callback: (grantResult: String) -> Unit
+            ) {
+                val grantResult = "{\"USER_NAME\":\"DENIED\"}"
+                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
 
             override fun share(content: String) {
@@ -117,6 +127,17 @@ class MiniAppMessageBridgeSpec {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `should work without exception when there is custom permission request`() {
+        val customPermissionCallbackObj = CustomPermissionCallbackObj(
+            action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
+            param = CustomPermission(listOf(CustomPermissionObj(MiniAppCustomPermissionType.USER_NAME.type, ""))),
+            id = TEST_CALLBACK_ID)
+        val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+
+        miniAppBridge.postMessage(customPermissionJsonStr)
     }
 
     @Test
