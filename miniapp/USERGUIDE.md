@@ -135,6 +135,20 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
         callback.invoke(true)
     }
+
+    override fun requestCustomPermissions(
+        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (grantResult: String) -> Unit
+    ) {
+        // Implementation details to request custom permissions
+        // .. .. ..
+
+        // sending json response to miniapp
+        val permissionResults: List<Pair<MiniAppCustomPermissionType, String>>
+        // .. .. ..
+        val result = MiniAppCustomPermissionManager(miniapp).createJsonResponse(miniAppId, permissionResults)
+        callback.invoke(result)
+    }
 }
 ```
 
@@ -223,6 +237,23 @@ miniAppNavigator = object : MiniAppNavigator {
         // Load external url with own webview.
     }
 }
+```
+
+### #4 Custom Permissions
+MiniApp Android SDK supports list of Custom Permissions ( ```MiniAppCustomPermissionType```) and these can be stored and retrieved using the following public interfaces.
+#### Retrieving the Mini App Custom Permissions using MiniAppID
+Custom permissions and its status can be retrieved using the following interface. ```getCustomPermissions``` will return ```MiniAppCustomPermission``` that contains the meta-info such as ```Pair``` of 
+name and grant result of the custom permissions per miniAppId.
+```kotlin
+val permissions = miniapp.getCustomPermissions(miniAppId)
+```
+#### Store the Mini App Custom Permissions
+Custom permissions for a mini app is cached by the SDK and you can use the following interface to store and retrieve it when you need.
+```kotlin
+var permissionPairs = listOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+// .. .. ..
+val permissionsToSet = MiniAppCustomPermission(miniAppId, permissionPairs)
+miniapp.setCustomPermissions(permissionsToSet)
 ```
 
 - Create mini app display
