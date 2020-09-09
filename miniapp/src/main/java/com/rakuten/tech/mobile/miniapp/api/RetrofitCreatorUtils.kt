@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
 import com.rakuten.tech.mobile.sdkutils.okhttp.addHeaderInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,6 +32,7 @@ internal fun createRetrofitClient(
     @Suppress("SpreadOperator")
     val httpClient = OkHttpClient.Builder()
         .addHeaderInterceptor(*headers.asArray())
+        .addInterceptor(provideHeaderInterceptor())
         .build()
     return Retrofit.Builder()
         .addConverterFactory(
@@ -41,4 +43,16 @@ internal fun createRetrofitClient(
         .baseUrl(baseUrl)
         .client(httpClient)
         .build()
+}
+
+private fun provideHeaderInterceptor(): Interceptor {
+    return Interceptor { chain ->
+        val original = chain.request()
+
+        val request = original.newBuilder()
+            .header("Accept-Encoding", "identity")
+            .build()
+
+        return@Interceptor chain.proceed(request)
+    }
 }
