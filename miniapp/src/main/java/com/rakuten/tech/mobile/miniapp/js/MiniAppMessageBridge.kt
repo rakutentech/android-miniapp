@@ -1,13 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.content.Context
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionManager
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 /** Bridge interface for communicating with mini app. **/
@@ -23,10 +24,14 @@ abstract class MiniAppMessageBridge {
         callback: (isGranted: Boolean) -> Unit
     )
 
-    /** Post custom permissions request with names and descriptions from external. **/
+    /**
+     * Post custom permissions request.
+     * @param permissionsWithDescription list of name and descriptions of custom permissions sent from external.
+     * @param callback to invoke a list of name and grant results of custom permissions sent from hostapp.
+     */
     abstract fun requestCustomPermissions(
-        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (grantResult: String) -> Unit
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (context: Context, permissionsWithResult: MiniAppCustomPermission) -> Unit
     )
 
     /** Handle the message from external. **/
@@ -73,32 +78,28 @@ abstract class MiniAppMessageBridge {
 
         try {
             callbackObj = Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
-
             val permissionObjList = arrayListOf<CustomPermissionObj>()
             callbackObj.param?.permissions?.forEach {
                 permissionObjList.add(CustomPermissionObj(it.name, it.description))
             }
 
-            val permissionPairList = arrayListOf<Pair<MiniAppCustomPermissionType, String>>()
-            permissionObjList.forEach {
-                MiniAppCustomPermissionType.getValue(it.name)?.let { type ->
-                    permissionPairList.add(Pair(type, it.description))
-                }
-                if (MiniAppCustomPermissionType.getValue(it.name) == null)
-                    permissionPairList.add(
-                        Pair(
-                            MiniAppCustomPermissionType.UNKNOWN,
-                            it.description
-                        )
-                    )
-            }
+            val permissionsWithDescription = MiniAppCustomPermissionManager()
+                .preparePermissionsWithDescription(permissionObjList)
 
             requestCustomPermissions(
-                permissionPairList
-            ) { grantResult ->
+                permissionsWithDescription
+            ) { context, permissionsWithResult ->
+                // store values in SDK cache
+                MiniAppCustomPermissionCache(context).storePermissions(permissionsWithResult)
+
+                // send JSON response to miniapp
                 onRequestCustomPermissionsResult(
                     callbackId = callbackObj.id,
-                    grantResult = grantResult
+                    jsonResult = MiniAppCustomPermissionManager().createJsonResponse(
+                        MiniAppCustomPermissionCache(context),
+                        permissionsWithResult.miniAppId,
+                        permissionsWithDescription
+                    )
                 )
             }
         } catch (e: Exception) {
@@ -122,8 +123,8 @@ abstract class MiniAppMessageBridge {
 
     /** Inform the permission request result to MiniApp. **/
     @Suppress("LongMethod", "FunctionMaxLength")
-    internal fun onRequestCustomPermissionsResult(callbackId: String, grantResult: String) {
-        postValue(callbackId, grantResult)
+    internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
+        postValue(callbackId, jsonResult)
     }
 
     /** Return a value to mini app. **/

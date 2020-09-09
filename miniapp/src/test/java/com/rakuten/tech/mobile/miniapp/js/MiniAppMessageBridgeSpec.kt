@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -9,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
@@ -37,10 +39,10 @@ class MiniAppMessageBridgeSpec {
             }
 
             override fun requestCustomPermissions(
-                permissions: List<Pair<MiniAppCustomPermissionType, String>>,
-                callback: (grantResult: String) -> Unit
+                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+                callback: (context: Context, permissionsWithResult: MiniAppCustomPermission) -> Unit
             ) {
-                val grantResult = "{\"USER_NAME\":\"DENIED\"}"
+                val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
                 onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
         }
