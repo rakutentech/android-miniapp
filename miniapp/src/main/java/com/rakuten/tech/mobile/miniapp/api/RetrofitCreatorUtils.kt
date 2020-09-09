@@ -35,24 +35,17 @@ internal fun createRetrofitClient(
         .addInterceptor(provideHeaderInterceptor())
         .build()
     return Retrofit.Builder()
-        .addConverterFactory(
-            GsonConverterFactory.create(
-                GsonBuilder().setLenient().create()
-            )
-        )
+        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
         .baseUrl(baseUrl)
         .client(httpClient)
         .build()
 }
 
-private fun provideHeaderInterceptor(): Interceptor {
-    return Interceptor { chain ->
-        val original = chain.request()
+private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
+    val original = chain.request()
+    val request = original.newBuilder()
+        .header("Accept-Encoding", "identity")
+        .build()
 
-        val request = original.newBuilder()
-            .header("Accept-Encoding", "identity")
-            .build()
-
-        return@Interceptor chain.proceed(request)
-    }
+    chain.proceed(request)
 }
