@@ -121,13 +121,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                     )
                 }
 
-                override fun share(content: String) {
+                override fun shareContent(content: String) {
                     val sendIntent: Intent = Intent().apply {
                         action = Intent.ACTION_SEND
                         putExtra(Intent.EXTRA_TEXT, content)
                         type = "text/plain"
                     }
-                    startActivity(sendIntent)
+                    startActivity(Intent.createChooser(sendIntent, null))
                 }
             }
 

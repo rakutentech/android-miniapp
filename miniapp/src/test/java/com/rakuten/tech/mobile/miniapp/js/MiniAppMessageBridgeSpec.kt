@@ -45,7 +45,7 @@ class MiniAppMessageBridgeSpec {
                 onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
 
-            override fun share(content: String) {
+            override fun shareContent(content: String) {
                 content shouldBeEqualTo "This is content"
             }
         }

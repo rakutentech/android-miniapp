@@ -30,7 +30,7 @@ abstract class MiniAppMessageBridge {
     )
 
     /** Share content info [ShareInfo]. This info is provided by mini app. **/
-    abstract fun share(content: String)
+    abstract fun shareContent(content: String)
 
     /** Handle the message from external. **/
     @JavascriptInterface
@@ -117,7 +117,7 @@ abstract class MiniAppMessageBridge {
 
     private fun onShareContent(jsonStr: String) {
         val shareInfo = Gson().fromJson<ShareInfo>(jsonStr, object : TypeToken<ShareInfo>() {}.type)
-        share(shareInfo.content)
+        shareContent(shareInfo.content)
     }
 
     @VisibleForTesting
