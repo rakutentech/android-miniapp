@@ -63,7 +63,7 @@ class MiniAppMessageBridgeSpec {
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
     private val shareContentCallbackObj = CallbackObj(
-        action = ActionType.SHARE_CONTENT.action,
+        action = ActionType.SHARE_INFO.action,
         param = Gson().toJson(ShareInfo("This is content")),
         id = TEST_CALLBACK_ID)
     private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)

@@ -41,7 +41,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
-            ActionType.SHARE_CONTENT.action -> onShareContent(callbackObj.param.toString())
+            ActionType.SHARE_INFO.action -> onShareContent(callbackObj.param.toString())
         }
     }
 
