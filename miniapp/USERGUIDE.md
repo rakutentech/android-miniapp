@@ -135,6 +135,10 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
         callback.invoke(true)
     }
+
+    override fun shareContent(content: String) {
+        // Share content implementation.
+    }
 }
 ```
 
