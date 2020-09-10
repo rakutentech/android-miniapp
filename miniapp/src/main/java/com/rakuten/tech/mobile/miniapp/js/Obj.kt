@@ -32,3 +32,6 @@ internal data class CustomPermissionObj(
 
 @Keep
 internal data class ShareInfo(val content: String)
+
+@Keep
+internal data class ShareInfoParam(val shareInfo: ShareInfo)
