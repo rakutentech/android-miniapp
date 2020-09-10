@@ -12,6 +12,7 @@ internal data class CallbackObj(
 @Keep
 internal data class Permission(val permission: String)
 
+// custom permission region
 @Keep
 internal data class CustomPermissionCallbackObj(
     var action: String,
@@ -29,9 +30,16 @@ internal data class CustomPermissionObj(
     val name: String,
     val description: String
 )
+// end region
 
+// shared info region
 @Keep
 internal data class ShareInfo(val content: String)
 
 @Keep
-internal data class ShareInfoParam(val shareInfo: ShareInfo)
+internal data class ShareInfoCallbackObj(val param: ShareInfoParam) {
+
+    @Keep
+    internal data class ShareInfoParam(val shareInfo: ShareInfo)
+}
+// end region

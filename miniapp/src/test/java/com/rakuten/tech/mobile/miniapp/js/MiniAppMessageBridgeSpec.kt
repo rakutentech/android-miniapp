@@ -64,7 +64,8 @@ class MiniAppMessageBridgeSpec {
 
     private val shareContentCallbackObj = CallbackObj(
         action = ActionType.SHARE_INFO.action,
-        param = Gson().toJson(ShareInfoParam(ShareInfo("This is content"))),
+        param = ShareInfoCallbackObj.ShareInfoParam(
+            ShareInfo("This is content")),
         id = TEST_CALLBACK_ID)
     private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
 
@@ -142,6 +143,7 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postError should be called when cannot share content`() {
+        miniAppBridge.postMessage(shareContentJsonStr)
         val errMsg = "Cannot share content: null"
         miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
         miniAppBridge.postMessage(shareContentJsonStr)

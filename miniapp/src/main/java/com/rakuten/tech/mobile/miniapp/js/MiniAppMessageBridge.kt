@@ -41,7 +41,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
-            ActionType.SHARE_INFO.action -> onShareContent(callbackObj)
+            ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
         }
     }
 
@@ -115,17 +115,14 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onShareContent(callbackObj: CallbackObj) {
+    private fun onShareContent(callbackId: String, jsonStr: String) {
         try {
-            val shareInfo = Gson().fromJson<ShareInfoParam>(
-                callbackObj.param.toString(),
-                object : TypeToken<ShareInfoParam>() {}.type
-            ).shareInfo
+            val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
 
-            shareContent(shareInfo.content)
-            postValue(callbackObj.id, "Share content successfully")
+            shareContent(callbackObj.param.shareInfo.content)
+            postValue(callbackId, "Share content successfully")
         } catch (e: Exception) {
-            postError(callbackObj.id, "Cannot share content: ${e.message}")
+            postError(callbackId, "Cannot share content: ${e.message}")
         }
     }
 
