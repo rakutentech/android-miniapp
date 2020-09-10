@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"
@@ -41,6 +42,14 @@
           android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
           android:theme="@style/AppThemeSettings" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
+        <activity
+          android:label="Profile"
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
+          android:theme="@style/AppThemeSettings" />
+        <activity
+          android:label="Contacts"
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactsActivity"
+          android:theme="@style/AppThemeSettings" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
