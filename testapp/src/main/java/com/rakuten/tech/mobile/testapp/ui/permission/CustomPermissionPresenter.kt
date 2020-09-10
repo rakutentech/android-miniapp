@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
@@ -20,7 +19,7 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         context: Context,
         miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (context: Context, permissionsWithResult: MiniAppCustomPermission) -> Unit
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
         if (miniAppId.isEmpty())
             return
@@ -55,14 +54,11 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
             CustomPermissionDialog.Builder().build(context).apply {
                 setView(permissionLayout.root)
                 setListener(DialogInterface.OnClickListener { _, _ ->
-                    callback.invoke(
-                        context,
-                        MiniAppCustomPermission(miniAppId, adapter.permissionPairs)
-                    )
+                    callback.invoke(adapter.permissionPairs)
                 })
             }.show()
         } else {
-            callback.invoke(context, MiniAppCustomPermission(miniAppId, cachedList))
+            callback.invoke(cachedList)
         }
     }
 

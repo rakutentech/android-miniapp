@@ -38,7 +38,8 @@ class RealMiniAppDisplaySpec {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
-            hostAppUserAgentInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME,
+            miniAppCustomPermissionCache = mock()
         )
     }
 

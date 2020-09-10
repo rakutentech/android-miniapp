@@ -138,11 +138,12 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
     override fun requestCustomPermissions(
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (context: Context, permissionResult: MiniAppCustomPermission) -> Unit
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
         // Implementation details to request custom permissions
         // .. .. ..
-        callback.invoke(context, permissionResult)
+        // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
+        callback.invoke(listOf()) 
     }
 }
 ```

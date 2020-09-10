@@ -1,10 +1,10 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.content.Context
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionManager
@@ -14,6 +14,8 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
+    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    private lateinit var miniAppInfo: MiniAppInfo
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -31,8 +33,18 @@ abstract class MiniAppMessageBridge {
      */
     abstract fun requestCustomPermissions(
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (context: Context, permissionsWithResult: MiniAppCustomPermission) -> Unit
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     )
+
+    internal fun init(
+        webViewListener: WebViewListener,
+        customPermissionCache: MiniAppCustomPermissionCache,
+        miniAppInfo: MiniAppInfo
+    ) {
+        this.webViewListener = webViewListener
+        this.customPermissionCache = customPermissionCache
+        this.miniAppInfo = miniAppInfo
+    }
 
     /** Handle the message from external. **/
     @JavascriptInterface
@@ -88,16 +100,20 @@ abstract class MiniAppMessageBridge {
 
             requestCustomPermissions(
                 permissionsWithDescription
-            ) { context, permissionsWithResult ->
+            ) { permissionsWithResult ->
                 // store values in SDK cache
-                MiniAppCustomPermissionCache(context).storePermissions(permissionsWithResult)
+                val miniAppCustomPermission = MiniAppCustomPermission(
+                    miniAppId = miniAppInfo.id,
+                    pairValues = permissionsWithResult
+                )
+                customPermissionCache.storePermissions(miniAppCustomPermission)
 
                 // send JSON response to miniapp
                 onRequestCustomPermissionsResult(
                     callbackId = callbackObj.id,
                     jsonResult = MiniAppCustomPermissionManager().createJsonResponse(
-                        MiniAppCustomPermissionCache(context),
-                        permissionsWithResult.miniAppId,
+                        customPermissionCache,
+                        miniAppCustomPermission.miniAppId,
                         permissionsWithDescription
                     )
                 )
@@ -135,9 +151,5 @@ abstract class MiniAppMessageBridge {
     /** Emit an error to mini app. **/
     internal fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
-    }
-
-    internal fun setWebViewListener(webViewListener: WebViewListener) {
-        this.webViewListener = webViewListener
     }
 }

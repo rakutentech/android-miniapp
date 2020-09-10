@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -10,10 +9,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +36,7 @@ class MiniAppMessageBridgeSpec {
 
             override fun requestCustomPermissions(
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-                callback: (context: Context, permissionsWithResult: MiniAppCustomPermission) -> Unit
+                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
                 val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
                 onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
@@ -72,7 +68,11 @@ class MiniAppMessageBridgeSpec {
 
     @Before
     fun setup() {
-        miniAppBridge.setWebViewListener(mock())
+        miniAppBridge.init(
+            webViewListener = mock(),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
     }
 
     @Test
@@ -87,8 +87,11 @@ class MiniAppMessageBridgeSpec {
     fun `postValue should be called when permission is granted`() {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
-        miniAppBridge.setWebViewListener(
-            createErrorWebViewListener("Cannot request permission: null"))
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener("Cannot request permission: null"),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
 
         miniAppBridge.postMessage(permissionJsonStr)
 
@@ -114,7 +117,11 @@ class MiniAppMessageBridgeSpec {
     @Test
     fun `postError should be called when cannot get unique id`() {
         val errMsg = "Cannot get unique id: null"
-        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener("Cannot get unique id: null"),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
