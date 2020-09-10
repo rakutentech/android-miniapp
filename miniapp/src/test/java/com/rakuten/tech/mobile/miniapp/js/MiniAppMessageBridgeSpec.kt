@@ -141,7 +141,11 @@ class MiniAppMessageBridgeSpec {
     }
 
     @Test
-    fun `should share the exact content`() {
+    fun `postError should be called when cannot share content`() {
+        val errMsg = "Cannot share content: null"
+        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
         miniAppBridge.postMessage(shareContentJsonStr)
+
+        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 }
