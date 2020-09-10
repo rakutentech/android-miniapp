@@ -65,13 +65,48 @@
         android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:layout_marginTop="@dimen/small_12"
+      android:layout_marginBottom="@dimen/small_12"
+      android:background="@color/colorAccent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/buttonProfile"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8"
+      android:layout_gravity="center"
+      android:padding="@dimen/small_8"
+      android:background="@color/colorAccent"
+      android:gravity="center_vertical|center"
+      android:text="Profile"
+      android:textAllCaps="false"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/text_large_18" />
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/buttonContacts"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8"
+      android:layout_gravity="center"
+      android:padding="@dimen/small_8"
+      android:background="@color/colorAccent"
+      android:gravity="center_vertical|center"
+      android:text="Contacts"
+      android:textAllCaps="false"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/text_large_18" />
+
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchTestMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_12"
         android:text="@string/lb_test_mode"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
 
   </LinearLayout>
 
