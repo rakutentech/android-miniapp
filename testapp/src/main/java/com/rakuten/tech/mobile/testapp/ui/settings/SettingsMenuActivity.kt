@@ -22,6 +22,8 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -87,6 +89,14 @@ class SettingsMenuActivity : BaseActivity() {
         )
     }
 
+    private fun onProfileAction() {
+        ProfileSettingsActivity.start(this@SettingsMenuActivity)
+    }
+
+    private fun onContactsAction() {
+        ContactsActivity.start(this@SettingsMenuActivity)
+    }
+
     private fun initializeActionBar() {
         val toolBar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolBar)
@@ -101,6 +111,14 @@ class SettingsMenuActivity : BaseActivity() {
 
         editAppId.addTextChangedListener(settingsTextWatcher)
         editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
+
+        buttonProfile.setOnClickListener {
+            onProfileAction()
+        }
+
+        buttonContacts.setOnClickListener {
+            onContactsAction()
+        }
 
         validateInputIDs()
     }
@@ -177,5 +195,9 @@ class SettingsMenuActivity : BaseActivity() {
             }
             else -> finish()
         }
+    }
+
+    companion object {
+        const val SETTINGS_SCREEN_NAME = "settings_screen_name"
     }
 }
