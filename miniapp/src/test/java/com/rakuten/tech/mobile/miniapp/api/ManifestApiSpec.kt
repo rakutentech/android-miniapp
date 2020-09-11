@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 open class ManifestApiSpec private constructor(
     internal val mockServer: MockWebServer
-) : MockWebServerBaseTest(mockServer) {
+) : MockWebServerBaseSpec(mockServer) {
 
     constructor() : this(MockWebServer())
 

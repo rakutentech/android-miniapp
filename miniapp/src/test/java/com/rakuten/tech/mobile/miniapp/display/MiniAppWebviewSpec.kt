@@ -29,7 +29,7 @@ import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
-open class BaseWebViewTest {
+open class BaseWebViewSpec {
     lateinit var context: Context
     lateinit var basePath: String
     internal lateinit var miniAppWebView: MiniAppWebView
@@ -58,7 +58,7 @@ open class BaseWebViewTest {
 }
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppWebviewTest : BaseWebViewTest() {
+class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
@@ -158,7 +158,7 @@ class MiniAppWebviewTest : BaseWebViewTest() {
 
 @Suppress("SwallowedException")
 @RunWith(AndroidJUnit4::class)
-class MiniAppWebClientTest : BaseWebViewTest() {
+class MiniAppWebClientSpec : BaseWebViewSpec() {
     private val externalResultHandler: ExternalResultHandler = spy()
     private val miniAppScheme = MiniAppScheme(TEST_MA_ID)
 
@@ -277,7 +277,7 @@ class MiniAppWebClientTest : BaseWebViewTest() {
 }
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppWebChromeTest : BaseWebViewTest() {
+class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {

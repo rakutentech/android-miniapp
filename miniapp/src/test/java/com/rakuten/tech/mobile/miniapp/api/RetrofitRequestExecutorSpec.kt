@@ -25,7 +25,7 @@ import java.net.UnknownHostException
 
 open class RetrofitRequestExecutorSpec private constructor(
     internal val mockServer: MockWebServer
-) : MockWebServerBaseTest(mockServer) {
+) : MockWebServerBaseSpec(mockServer) {
 
     constructor() : this(MockWebServer())
 

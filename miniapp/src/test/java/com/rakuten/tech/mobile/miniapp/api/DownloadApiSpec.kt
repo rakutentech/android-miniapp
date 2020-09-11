@@ -14,7 +14,7 @@ import java.nio.charset.Charset
 
 open class DownloadApiSpec private constructor(
     internal val mockServer: MockWebServer
-) : MockWebServerBaseTest(mockServer) {
+) : MockWebServerBaseSpec(mockServer) {
 
     constructor() : this(MockWebServer())
 
