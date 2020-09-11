@@ -55,6 +55,15 @@ class MiniAppMessageBridgeSpec {
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
+    private val customPermissionCallbackObj = CustomPermissionCallbackObj(
+        action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
+        param = CustomPermission(
+            listOf(CustomPermissionObj(MiniAppCustomPermissionType.USER_NAME.type, ""))
+        ),
+        id = TEST_CALLBACK_ID
+    )
+    private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+
     private fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
@@ -128,13 +137,31 @@ class MiniAppMessageBridgeSpec {
     }
 
     @Test
-    fun `should work without exception when there is custom permission request`() {
-        val customPermissionCallbackObj = CustomPermissionCallbackObj(
-            action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
-            param = CustomPermission(listOf(CustomPermissionObj(MiniAppCustomPermissionType.USER_NAME.type, ""))),
-            id = TEST_CALLBACK_ID)
-        val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+    fun `postValue should be called when can request custom permission`() {
+        val isPermissionGranted = false
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener("Cannot request custom permissions: null"),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
 
         miniAppBridge.postMessage(customPermissionJsonStr)
+
+        verify(miniAppBridge, times(1))
+            .postValue(customPermissionCallbackObj.id, "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}")
+    }
+
+    @Test
+    fun `postError should be called when cannot request custom permission`() {
+        val errMsg = "Cannot request custom permissions: null"
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener(errMsg),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+        miniAppBridge.postMessage(customPermissionJsonStr)
+
+        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 }
