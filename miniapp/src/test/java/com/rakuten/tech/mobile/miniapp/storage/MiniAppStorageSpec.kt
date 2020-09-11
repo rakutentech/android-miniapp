@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class MiniAppStorageTest {
+class MiniAppStorageSpec {
     private val fileWriter: FileWriter = mock()
     private val miniAppStorage: MiniAppStorage = MiniAppStorage(fileWriter, mock(), mock())
     private val zipFile = "test.zip"
