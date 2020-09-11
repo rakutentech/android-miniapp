@@ -7,7 +7,8 @@ import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 /**
  * A class to manage additional features involved with custom permissions in this SDK.
  */
-internal class MiniAppCustomPermissionManager {
+internal class
+MiniAppCustomPermissionManager {
 
     /**
      * Prepares a list of custom permissions Pair with names and description.
@@ -29,8 +30,8 @@ internal class MiniAppCustomPermissionManager {
 
     /**
      * Creates a JSON string by mapping with [MiniAppCustomPermissionResponse] class.
-     * @param [context] for using in SDK cache.
-     * @param [miniAppId] list of custom permissions Pair.
+     * @param [miniAppCustomPermissionCache] for filtering values from cache.
+     * @param [miniAppId] id of miniapp required by cache.
      * @param [suppliedPermissions] list of custom permissions Pair with names and description,
      * initially it was prepared in [MiniAppMessageBridge].
      * @return [String] as json response with permission grant results.

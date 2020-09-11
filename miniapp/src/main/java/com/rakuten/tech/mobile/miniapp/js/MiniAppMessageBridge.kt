@@ -137,7 +137,7 @@ abstract class MiniAppMessageBridge {
             postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
     }
 
-    /** Inform the permission request result to MiniApp. **/
+    /** Inform the custom permission request result to MiniApp. **/
     @Suppress("LongMethod", "FunctionMaxLength")
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
         postValue(callbackId, jsonResult)
