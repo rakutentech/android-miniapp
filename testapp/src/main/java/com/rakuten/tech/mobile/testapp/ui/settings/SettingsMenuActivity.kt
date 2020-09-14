@@ -9,7 +9,6 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -17,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
+import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
@@ -129,24 +129,27 @@ class SettingsMenuActivity : BaseActivity() {
         return "Build $sdkVersion - $buildVersion"
     }
 
-    internal fun validateInputIDs() {
+    private fun validateInputIDs() {
         val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
 
-        saveViewEnabled = !(isInputEmpty(editAppId)
-                || isInputEmpty(editSubscriptionKey)
+        saveViewEnabled = !(isInputEmpty(
+            editAppId
+        )
+                || isInputEmpty(
+            editSubscriptionKey
+        )
                 || isAppIdInvalid)
 
         if (isInputEmpty(editAppId) || isAppIdInvalid) {
             editAppId.error = getString(R.string.error_invalid_input)
         }
 
-        if (isInputEmpty(editSubscriptionKey)) {
+        if (isInputEmpty(
+                editSubscriptionKey
+            )
+        ) {
             editSubscriptionKey.error = getString(R.string.error_invalid_input)
         }
-    }
-
-    private fun isInputEmpty(input: AppCompatEditText): Boolean {
-        return input.text.toString().isEmpty() || input.text.toString().isBlank()
     }
 
     private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
