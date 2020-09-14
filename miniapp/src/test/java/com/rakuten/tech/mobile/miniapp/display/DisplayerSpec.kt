@@ -42,6 +42,7 @@ class DisplayerSpec {
             basePath = context.filesDir.path,
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = mock()
+            miniAppNavigator = mock(),
+            miniAppCustomPermissionCache = mock()
         )
 }

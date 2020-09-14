@@ -75,7 +75,7 @@ class RealMiniAppSpec {
             verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
             verify(displayer, times(1))
                 .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, null)
+                    miniAppMessageBridge, null, miniAppCustomPermissionCache)
         }
 
     @Test
@@ -88,7 +88,7 @@ class RealMiniAppSpec {
             verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
             verify(displayer, times(1))
                 .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, miniAppNavigator)
+                    miniAppMessageBridge, miniAppNavigator, miniAppCustomPermissionCache)
         }
 
     @Test

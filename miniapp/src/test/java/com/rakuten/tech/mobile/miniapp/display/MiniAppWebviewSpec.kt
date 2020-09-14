@@ -21,6 +21,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -36,6 +37,7 @@ open class BaseWebViewSpec {
     lateinit var webResourceRequest: WebResourceRequest
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
+    internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
 
     @Before
@@ -51,7 +53,8 @@ open class BaseWebViewSpec {
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = miniAppNavigator,
             hostAppUserAgentInfo = TEST_HA_NAME,
-            miniAppWebChromeClient = webChromeClient
+            miniAppWebChromeClient = webChromeClient,
+            miniAppCustomPermissionCache = miniAppCustomPermissionCache
         )
         webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
     }
@@ -111,7 +114,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = miniAppNavigator,
             hostAppUserAgentInfo = "",
-            miniAppWebChromeClient = webChromeClient
+            miniAppWebChromeClient = webChromeClient,
+            miniAppCustomPermissionCache = mock()
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -129,16 +133,24 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
-            context, miniAppWebView.basePath, TEST_MA, miniAppMessageBridge, miniAppNavigator, TEST_HA_NAME)
+            context,
+            miniAppWebView.basePath,
+            TEST_MA,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            TEST_HA_NAME,
+            mock(),
+            mock()
+        )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, TEST_HA_NAME)
+            miniAppNavigator, TEST_HA_NAME, mock(), mock())
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 
     @Test
     fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
-        verify(miniAppMessageBridge, atLeastOnce()).setWebViewListener(miniAppWebView)
+        verify(miniAppMessageBridge, atLeastOnce()).init(miniAppWebView, miniAppCustomPermissionCache, TEST_MA)
     }
 
     @Test

@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +25,8 @@ internal class RealMiniAppDisplay(
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
-    val hostAppUserAgentInfo: String
+    val hostAppUserAgentInfo: String,
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : MiniAppDisplay {
 
     @VisibleForTesting
@@ -74,7 +76,8 @@ internal class RealMiniAppDisplay(
                 miniAppInfo = miniAppInfo,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
-                hostAppUserAgentInfo = hostAppUserAgentInfo
+                hostAppUserAgentInfo = hostAppUserAgentInfo,
+                miniAppCustomPermissionCache = miniAppCustomPermissionCache
             )
             miniAppWebView!!
         }
