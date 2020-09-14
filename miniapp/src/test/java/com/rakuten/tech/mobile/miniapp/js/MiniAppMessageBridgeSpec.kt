@@ -186,7 +186,11 @@ class MiniAppMessageBridgeSpec {
     fun `postError should be called when cannot share content`() {
         miniAppBridge.postMessage(shareContentJsonStr)
         val errMsg = "Cannot share content: null"
-        miniAppBridge.setWebViewListener(createErrorWebViewListener(errMsg))
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener(errMsg),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)

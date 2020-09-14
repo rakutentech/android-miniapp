@@ -40,16 +40,6 @@ abstract class MiniAppMessageBridge {
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     )
 
-    internal fun init(
-        webViewListener: WebViewListener,
-        customPermissionCache: MiniAppCustomPermissionCache,
-        miniAppInfo: MiniAppInfo
-    ) {
-        this.webViewListener = webViewListener
-        this.customPermissionCache = customPermissionCache
-        this.miniAppInfo = miniAppInfo
-    }
-
     /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
@@ -59,6 +49,16 @@ abstract class MiniAppMessageBridge {
         content: String,
         callback: (isSuccess: Boolean, message: String?) -> Unit
     )
+
+    internal fun init(
+        webViewListener: WebViewListener,
+        customPermissionCache: MiniAppCustomPermissionCache,
+        miniAppInfo: MiniAppInfo
+    ) {
+        this.webViewListener = webViewListener
+        this.customPermissionCache = customPermissionCache
+        this.miniAppInfo = miniAppInfo
+    }
 
     /** Handle the message from external. **/
     @JavascriptInterface
