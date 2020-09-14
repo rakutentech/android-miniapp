@@ -43,3 +43,13 @@ internal data class ShareInfoCallbackObj(val param: ShareInfoParam) {
     internal data class ShareInfoParam(val shareInfo: ShareInfo)
 }
 // end region
+
+// action response region
+internal const val SUCCESS = "success"
+
+@Keep
+internal data class Error(
+    val message: String,
+    val name: String
+)
+// end region

@@ -12,7 +12,6 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -45,8 +44,14 @@ class MiniAppMessageBridgeSpec {
                 onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
 
-            override fun shareContent(content: String) {
-                content shouldBeEqualTo "This is content"
+            override fun shareContent(
+                content: String,
+                callback: (isSuccess: Boolean, message: String?) -> Unit
+            ) {
+                callback.invoke(true, null)
+                callback.invoke(true, SUCCESS)
+                callback.invoke(false, null)
+                callback.invoke(false, TEST_ERROR_MSG)
             }
         }
 

@@ -29,8 +29,15 @@ abstract class MiniAppMessageBridge {
         callback: (grantResult: String) -> Unit
     )
 
-    /** Share content info [ShareInfo]. This info is provided by mini app. **/
-    abstract fun shareContent(content: String)
+    /**
+     * Share content info [ShareInfo]. This info is provided by mini app.
+     * @param content The content property of [ShareInfo] object.
+     * @param callback The executed action status should be notified back to mini app.
+     **/
+    abstract fun shareContent(
+        content: String,
+        callback: (isSuccess: Boolean, message: String?) -> Unit
+    )
 
     /** Handle the message from external. **/
     @JavascriptInterface
@@ -119,8 +126,14 @@ abstract class MiniAppMessageBridge {
         try {
             val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
 
-            shareContent(callbackObj.param.shareInfo.content)
-            postValue(callbackId, "Share content successfully")
+            shareContent(
+                callbackObj.param.shareInfo.content
+            ) { isSuccess, message ->
+                if (isSuccess)
+                    postValue(callbackId, message ?: SUCCESS)
+                else
+                    postError(callbackId, message ?: "Cannot share content: Unknown error message from hostapp.")
+            }
         } catch (e: Exception) {
             postError(callbackId, "Cannot share content: ${e.message}")
         }
