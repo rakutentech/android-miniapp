@@ -61,5 +61,4 @@
         android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
   </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

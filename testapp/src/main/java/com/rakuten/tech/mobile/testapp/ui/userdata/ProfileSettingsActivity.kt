@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
@@ -21,18 +20,11 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 import kotlinx.android.synthetic.main.profile_settings_activity.*
-import kotlin.properties.Delegates
 
 class ProfileSettingsActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
-
-    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
-        if (new != old) {
-            invalidateOptionsMenu()
-        }
-    }
 
     private val nameTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -55,7 +47,6 @@ class ProfileSettingsActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
@@ -101,15 +92,14 @@ class ProfileSettingsActivity : BaseActivity() {
     }
 
     private fun openGallery() {
-        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        startActivityForResult(gallery, PICK_IMAGE)
+        val intent = Intent().apply {
+            type = "image/*"
+            action = Intent.ACTION_GET_CONTENT
+        }
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE)
     }
 
     private fun validateNameInput() {
-        saveViewEnabled = !(isInputEmpty(
-            editProfileName
-        ))
-
         if (isInputEmpty(editProfileName)) {
             editProfileName.error = getString(R.string.userdata_error_invalid_name)
         }

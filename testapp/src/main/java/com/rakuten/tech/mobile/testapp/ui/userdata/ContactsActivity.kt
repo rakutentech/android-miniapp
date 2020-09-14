@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.AppScreen
+import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 import kotlinx.android.synthetic.main.contacts_activity.*
+import java.util.UUID
 
 class ContactsActivity : BaseActivity() {
 
@@ -19,7 +21,7 @@ class ContactsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.contacts_activity)
         initializeActionBar()
-        renderContactList()
+        createContactList()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -38,18 +40,19 @@ class ContactsActivity : BaseActivity() {
         showBackIcon()
     }
 
-    private fun renderContactList() {
+    private fun createContactList() {
+        // prepare random contact list
+        val randomContacts = arrayListOf<String>()
+        for (i in 1..10)
+            randomContacts.add(clearWhiteSpaces((UUID.randomUUID().toString())))
+
+        // add contacts in adapter
         val adapter = ContactsAdapter()
-        val dummyContacts = arrayListOf<String>()
-        for (i in 1..10) dummyContacts.add("User Contact - $i")
-        adapter.addContactList(dummyContacts)
+        adapter.addContactList(randomContacts)
         listContacts.adapter = adapter
         listContacts.layoutManager = LinearLayoutManager(applicationContext)
         listContacts.addItemDecoration(
-            DividerItemDecoration(
-                applicationContext,
-                DividerItemDecoration.VERTICAL
-            )
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
     }
 

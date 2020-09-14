@@ -28,7 +28,5 @@
       android:layout_height="match_parent"
       android:padding="@dimen/small_8"
       tools:listitem="@layout/item_list_contacts" />
-
   </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
