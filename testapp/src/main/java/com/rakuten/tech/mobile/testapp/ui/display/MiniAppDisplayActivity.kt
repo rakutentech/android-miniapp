@@ -14,10 +14,10 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -70,7 +70,6 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
-
             if (appId.isEmpty())
                 appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
@@ -122,19 +121,28 @@ class MiniAppDisplayActivity : BaseActivity() {
                         callback
                     )
                 }
+
+                override fun shareContent(
+                    content: String,
+                    callback: (isSuccess: Boolean, message: String?) -> Unit
+                ) {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, content)
+                        type = "text/plain"
+                    }
+                    startActivity(Intent.createChooser(sendIntent, null))
+
+                    callback.invoke(true, null)
+                }
             }
 
             miniAppNavigator = object : MiniAppNavigator {
 
-                override fun openExternalUrl(
-                    url: String,
-                    externalResultHandler: ExternalResultHandler
-                ) {
+                override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
                     sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(
-                        this@MiniAppDisplayActivity, url,
-                        appId, externalWebViewReqCode
-                    )
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                        appId, externalWebViewReqCode)
                 }
             }
 

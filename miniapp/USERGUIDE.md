@@ -145,6 +145,16 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
         callback.invoke(listOf()) 
     }
+
+    override fun shareContent(
+        content: String,
+        callback: (isSuccess: Boolean, message: String?) -> Unit
+    ) {
+        // Share content implementation.
+        // .. .. ..
+        
+        callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
 }
 ```
 

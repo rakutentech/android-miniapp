@@ -41,6 +41,16 @@ class MiniAppMessageBridgeSpec {
                 val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
                 onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
+
+            override fun shareContent(
+                content: String,
+                callback: (isSuccess: Boolean, message: String?) -> Unit
+            ) {
+                callback.invoke(true, null)
+                callback.invoke(true, SUCCESS)
+                callback.invoke(false, null)
+                callback.invoke(false, TEST_ERROR_MSG)
+            }
         }
 
     private val uniqueIdCallbackObj = CallbackObj(
@@ -63,6 +73,13 @@ class MiniAppMessageBridgeSpec {
         id = TEST_CALLBACK_ID
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+
+    private val shareContentCallbackObj = CallbackObj(
+        action = ActionType.SHARE_INFO.action,
+        param = ShareInfoCallbackObj.ShareInfoParam(
+            ShareInfo("This is content")),
+        id = TEST_CALLBACK_ID)
+    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
 
     private fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
@@ -161,6 +178,20 @@ class MiniAppMessageBridgeSpec {
             miniAppInfo = mock()
         )
         miniAppBridge.postMessage(customPermissionJsonStr)
+
+        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when cannot share content`() {
+        miniAppBridge.postMessage(shareContentJsonStr)
+        val errMsg = "Cannot share content: null"
+        miniAppBridge.init(
+            webViewListener = createErrorWebViewListener(errMsg),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+        miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }

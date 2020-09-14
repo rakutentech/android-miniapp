@@ -40,6 +40,16 @@ abstract class MiniAppMessageBridge {
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     )
 
+    /**
+     * Share content info [ShareInfo]. This info is provided by mini app.
+     * @param content The content property of [ShareInfo] object.
+     * @param callback The executed action status should be notified back to mini app.
+     **/
+    abstract fun shareContent(
+        content: String,
+        callback: (isSuccess: Boolean, message: String?) -> Unit
+    )
+
     internal fun init(
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
@@ -59,6 +69,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
+            ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
         }
     }
 
@@ -129,6 +140,23 @@ abstract class MiniAppMessageBridge {
                     "Cannot request custom permissions: ${e.message}"
                 )
             }
+        }
+    }
+
+    private fun onShareContent(callbackId: String, jsonStr: String) {
+        try {
+            val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
+
+            shareContent(
+                callbackObj.param.shareInfo.content
+            ) { isSuccess, message ->
+                if (isSuccess)
+                    postValue(callbackId, message ?: SUCCESS)
+                else
+                    postError(callbackId, message ?: "Cannot share content: Unknown error message from hostapp.")
+            }
+        } catch (e: Exception) {
+            postError(callbackId, "Cannot share content: ${e.message}")
         }
     }
 
