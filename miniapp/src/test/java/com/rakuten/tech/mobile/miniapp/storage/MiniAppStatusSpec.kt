@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppStatusTest {
+class MiniAppStatusSpec {
     private lateinit var context: Context
     private lateinit var miniAppStatus: MiniAppStatus
     private lateinit var prefs: SharedPreferences
