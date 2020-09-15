@@ -24,10 +24,13 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ViewHolder?>() {
 
     override fun getItemCount(): Int = contactNames.size
 
-    fun addContactList(
-        names: ArrayList<String>
-    ) {
-        contactNames = names
+    fun addContact(position: Int, contact: String) {
+        contactNames.add(position, contact)
+        notifyItemInserted(position)
+    }
+
+    fun addContactList(contacts: ArrayList<String>) {
+        contactNames = contacts
         notifyDataSetChanged()
     }
 

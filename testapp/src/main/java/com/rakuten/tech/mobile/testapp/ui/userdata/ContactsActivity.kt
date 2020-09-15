@@ -1,9 +1,14 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,11 +22,18 @@ import java.util.UUID
 
 class ContactsActivity : BaseActivity() {
 
+    private val adapter = ContactsAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.contacts_activity)
         initializeActionBar()
         createContactList()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.contact_menu, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -30,8 +42,39 @@ class ContactsActivity : BaseActivity() {
                 finish()
                 return true
             }
+            R.id.contact_menu_add -> {
+                onAddAction()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun onAddAction() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Please enter the custom ID you would like to add in Contacts")
+        val contactView = layoutInflater.inflate(R.layout.dialog_add_contact, null)
+        val editNewContact: AppCompatEditText = contactView.findViewById(R.id.editNewContact)
+        builder.setView(contactView)
+        builder.setPositiveButton("Add") { dialog, _ ->
+            if (editNewContact.text.toString().isNotEmpty()) {
+                val name = editNewContact.text.toString()
+                // add name in the last position
+                adapter.addContact(adapter.itemCount, clearWhiteSpaces(name))
+            } else {
+                val toast =
+                    Toast.makeText(
+                        this@ContactsActivity,
+                        getString(R.string.userdata_error_invalid_contact),
+                        Toast.LENGTH_LONG
+                    )
+                toast.setGravity(Gravity.BOTTOM, 0, 100)
+                toast.show()
+            }
+            dialog.cancel()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        builder.show()
     }
 
     private fun initializeActionBar() {
@@ -42,13 +85,12 @@ class ContactsActivity : BaseActivity() {
 
     private fun createContactList() {
         // prepare random contact list
-        val randomContacts = arrayListOf<String>()
+        val contactNames = ArrayList<String>()
         for (i in 1..10)
-            randomContacts.add(clearWhiteSpaces((UUID.randomUUID().toString())))
+            contactNames.add(clearWhiteSpaces((UUID.randomUUID().toString())))
 
         // add contacts in adapter
-        val adapter = ContactsAdapter()
-        adapter.addContactList(randomContacts)
+        adapter.addContactList(contactNames)
         listContacts.adapter = adapter
         listContacts.layoutManager = LinearLayoutManager(applicationContext)
         listContacts.addItemDecoration(
