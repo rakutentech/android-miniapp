@@ -78,9 +78,8 @@ class ProfileSettingsActivity : BaseActivity() {
         setProfileImage(Uri.parse(settings.profilePictureUrl))
         editProfileName.setText(settings.profileName)
         editProfileName.addTextChangedListener(nameTextWatcher)
-        textEditPhoto.setOnClickListener {
-            openGallery()
-        }
+        textEditPhoto.setOnClickListener { openGallery() }
+        imageProfile.setOnClickListener { openGallery() }
         validateNameInput()
     }
 
