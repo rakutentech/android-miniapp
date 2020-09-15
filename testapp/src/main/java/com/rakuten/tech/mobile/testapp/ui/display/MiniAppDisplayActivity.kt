@@ -14,11 +14,12 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -69,7 +70,6 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
             appId = intent.getStringExtra(appIdTag) ?: ""
-
             if (appId.isEmpty())
                 appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
@@ -111,29 +111,38 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
                 override fun requestCustomPermissions(
-                    permissions: List<Pair<MiniAppCustomPermissionType, String>>,
-                    callback: (grantResult: String) -> Unit
+                    permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+                    callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
                 ) {
-                    CustomPermissionPresenter().promptForCustomPermissions(
+                    CustomPermissionPresenter().executeCustomPermissionsCallback(
                         this@MiniAppDisplayActivity,
                         appId,
-                        permissions,
+                        permissionsWithDescription,
                         callback
                     )
+                }
+
+                override fun shareContent(
+                    content: String,
+                    callback: (isSuccess: Boolean, message: String?) -> Unit
+                ) {
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, content)
+                        type = "text/plain"
+                    }
+                    startActivity(Intent.createChooser(sendIntent, null))
+
+                    callback.invoke(true, null)
                 }
             }
 
             miniAppNavigator = object : MiniAppNavigator {
 
-                override fun openExternalUrl(
-                    url: String,
-                    externalResultHandler: ExternalResultHandler
-                ) {
+                override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
                     sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(
-                        this@MiniAppDisplayActivity, url,
-                        appId, externalWebViewReqCode
-                    )
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                        appId, externalWebViewReqCode)
                 }
             }
 

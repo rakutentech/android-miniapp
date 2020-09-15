@@ -32,12 +32,12 @@
       tools:src="@drawable/r_logo" />
 
     <androidx.appcompat.widget.AppCompatTextView
-      android:id="@+id/textAddPhoto"
+      android:id="@+id/textEditPhoto"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/small_8"
       android:layout_gravity="center"
-      android:text="Add Photo"
+      android:text="@string/userdata_edit_photo"
       android:textColor="@color/colorAccent" />
 
     <View
@@ -56,10 +56,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/small_4"
-        android:hint="Enter your name here"
+        android:hint="@string/userdata_hint_edit_name"
         android:imeOptions="actionDone"
         android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
   </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

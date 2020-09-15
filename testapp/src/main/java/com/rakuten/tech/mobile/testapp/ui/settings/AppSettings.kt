@@ -45,6 +45,18 @@ class AppSettings private constructor(context: Context) {
             cache.isSettingSaved = isSettingSaved
         }
 
+    var profileName: String
+        get() = cache.profileName ?: ""
+        set(profileName) {
+            cache.profileName = profileName
+        }
+
+    var profilePictureUrl: String
+        get() = cache.profilePictureUrl ?: ""
+        set(profilePictureUrl) {
+            cache.profilePictureUrl = profilePictureUrl
+        }
+
     val baseUrl = manifestConfig.baseUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
@@ -100,11 +112,21 @@ private class Settings(context: Context) {
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
         set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
 
+    var profileName: String?
+        get() = prefs.getString(PROFILE_NAME, null)
+        set(profileName) = prefs.edit().putString(PROFILE_NAME, profileName).apply()
+
+    var profilePictureUrl: String?
+        get() = prefs.getString(PROFILE_PICTURE_URL, null)
+        set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl).apply()
+
     companion object {
         private const val IS_TEST_MODE = "is_test_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
         private const val IS_SETTING_SAVED = "is_setting_saved"
+        private const val PROFILE_NAME = "profile_name"
+        private const val PROFILE_PICTURE_URL = "profile_picture_url"
     }
 }

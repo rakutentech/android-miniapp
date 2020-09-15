@@ -135,6 +135,26 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
         callback.invoke(true)
     }
+
+    override fun requestCustomPermissions(
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+    ) {
+        // Implementation details to request custom permissions
+        // .. .. ..
+        // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
+        callback.invoke(listOf()) 
+    }
+
+    override fun shareContent(
+        content: String,
+        callback: (isSuccess: Boolean, message: String?) -> Unit
+    ) {
+        // Share content implementation.
+        // .. .. ..
+        
+        callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
 }
 ```
 
@@ -275,6 +295,23 @@ Using `miniAppExternalUrlLoader.shouldClose(url)` which returns `Boolean` to che
 mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
+
+### #4 Custom Permissions
+MiniApp Android SDK supports list of Custom Permissions (`MiniAppCustomPermissionType`) and these can be stored and retrieved using the following public interfaces.
+#### Retrieving the Mini App Custom Permissions using MiniAppID
+Custom permissions and its status can be retrieved using the following interface. `getCustomPermissions` will return `MiniAppCustomPermission` that contains the meta-info as a `Pair` of 
+name and grant result (`ALLOWED` or `DENIED`). The custom permissions are stored per each miniAppId.
+```kotlin
+val permissions = miniapp.getCustomPermissions(miniAppId)
+```
+#### Store the Mini App Custom Permissions
+Custom permissions for a mini app are cached by the SDK and you can use the following interface to store permissions when needed.
+```kotlin
+var permissionPairs = listOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+// .. .. ..
+val permissionsToSet = MiniAppCustomPermission(miniAppId, permissionPairs)
+miniapp.setCustomPermissions(permissionsToSet)
+```
 
 ## Troubleshooting
 

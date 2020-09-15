@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactsBinding
 import kotlinx.android.synthetic.main.item_list_contacts.view.*
-import kotlinx.android.synthetic.main.item_list_custom_permission.view.*
 
 class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ViewHolder?>() {
     private var contactNames = ArrayList<String>()
