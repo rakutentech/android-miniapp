@@ -89,14 +89,6 @@ class SettingsMenuActivity : BaseActivity() {
         )
     }
 
-    private fun onProfileAction() {
-        ProfileSettingsActivity.start(this@SettingsMenuActivity)
-    }
-
-    private fun onContactsAction() {
-        ContactsActivity.start(this@SettingsMenuActivity)
-    }
-
     private fun initializeActionBar() {
         val toolBar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolBar)
@@ -113,11 +105,11 @@ class SettingsMenuActivity : BaseActivity() {
         editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
         buttonProfile.setOnClickListener {
-            onProfileAction()
+            ProfileSettingsActivity.start(this@SettingsMenuActivity)
         }
 
         buttonContacts.setOnClickListener {
-            onContactsAction()
+            ContactsActivity.start(this@SettingsMenuActivity)
         }
 
         validateInputIDs()
