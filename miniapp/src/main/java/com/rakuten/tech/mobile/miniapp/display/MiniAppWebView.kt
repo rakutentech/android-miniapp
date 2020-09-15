@@ -78,7 +78,7 @@ internal class MiniAppWebView(
     override fun runSuccessCallback(callbackId: String, value: String) {
         post {
             evaluateJavascript(
-                "MiniAppBridge.execSuccessCallback(\"$callbackId\", \"$value\")"
+                "MiniAppBridge.execSuccessCallback(`$callbackId`, `${value.replace("`", "\\`")}`)"
             ) {}
         }
     }
