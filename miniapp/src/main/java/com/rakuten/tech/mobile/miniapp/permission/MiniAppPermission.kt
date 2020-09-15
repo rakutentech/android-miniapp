@@ -27,7 +27,6 @@ enum class MiniAppCustomPermissionType(val type: String) {
     }
 }
 
-@Keep
 internal enum class MiniAppPermissionResult(val type: String) {
     ALLOWED("Allowed"),
     DENIED("Denied");
