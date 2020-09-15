@@ -53,7 +53,7 @@ class ProfileSettingsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                navigateToPreviousScreen()
+                finish()
                 return true
             }
             R.id.settings_menu_save -> {
@@ -88,7 +88,7 @@ class ProfileSettingsActivity : BaseActivity() {
         settings.profilePictureUrl = profileUrl
         val nameToCache = clearWhiteSpaces(name)
         if (nameToCache.isNotEmpty()) settings.profileName = nameToCache
-        navigateToPreviousScreen()
+        finish()
     }
 
     private fun openGallery() {
@@ -120,19 +120,6 @@ class ProfileSettingsActivity : BaseActivity() {
             .load(uri).apply(RequestOptions().circleCrop())
             .placeholder(R.drawable.r_logo)
             .into(imageProfile as ImageView)
-    }
-
-    private fun navigateToPreviousScreen() {
-        when (intent.extras?.getString(SettingsMenuActivity.SETTINGS_SCREEN_NAME)) {
-            AppScreen.MINI_APP_SETTINGS_ACTIVITY -> {
-                val intent = Intent(this, SettingsMenuActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                startActivity(intent)
-                finish()
-            }
-            else -> finish()
-        }
     }
 
     companion object {

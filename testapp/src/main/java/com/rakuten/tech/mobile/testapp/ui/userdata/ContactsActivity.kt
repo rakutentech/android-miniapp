@@ -27,7 +27,7 @@ class ContactsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                navigateToPreviousScreen()
+                finish()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -54,19 +54,6 @@ class ContactsActivity : BaseActivity() {
         listContacts.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
-    }
-
-    private fun navigateToPreviousScreen() {
-        when (intent.extras?.getString(SettingsMenuActivity.SETTINGS_SCREEN_NAME)) {
-            AppScreen.MINI_APP_SETTINGS_ACTIVITY -> {
-                val intent = Intent(this, SettingsMenuActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                startActivity(intent)
-                finish()
-            }
-            else -> finish()
-        }
     }
 
     companion object {
