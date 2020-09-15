@@ -53,7 +53,7 @@ class MiniAppCustomPermissionManagerSpec {
             suppliedPermissions
         )
         val expected =
-            "{\"permissions\":[{\"name\":\"rakuten.miniapp.user.USER_NAME\",\"isGranted\":\"DENIED\"}]}"
+            "{\"permissions\":[{\"name\":\"rakuten.miniapp.user.USER_NAME\",\"status\":\"DENIED\"}]}"
 
         assertEquals(expected, actual)
     }
