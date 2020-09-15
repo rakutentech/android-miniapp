@@ -11,6 +11,6 @@ data class MiniAppCustomPermissionResponse(
      */
     data class CustomPermissionResponseObj(
         val name: String,
-        val isGranted: String
+        val status: String
     )
 }
