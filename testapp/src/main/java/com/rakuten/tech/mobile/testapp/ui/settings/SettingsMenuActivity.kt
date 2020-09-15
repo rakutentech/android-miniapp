@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
-import com.rakuten.tech.mobile.testapp.ui.userdata.ContactsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
@@ -109,7 +109,7 @@ class SettingsMenuActivity : BaseActivity() {
         }
 
         buttonContacts.setOnClickListener {
-            ContactsActivity.start(this@SettingsMenuActivity)
+            ContactListActivity.start(this@SettingsMenuActivity)
         }
 
         validateInputIDs()

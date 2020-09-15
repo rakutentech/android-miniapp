@@ -87,12 +87,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"
-        android:background="@drawable/bg_sec"
+        android:background="@drawable/bg_bottom_action"
         android:padding="@dimen/medium_16">
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Profile"
+          android:text="@string/action_profile"
           android:layout_centerVertical="true"
           android:textColor="@android:color/black"
           android:textSize="@dimen/text_large_16"/>
@@ -108,12 +108,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?attr/selectableItemBackground"
-        android:background="@drawable/bg_sec"
+        android:background="@drawable/bg_bottom_action"
         android:padding="@dimen/medium_16">
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Contact"
+          android:text="@string/action_contact"
           android:layout_centerVertical="true"
           android:textColor="@android:color/black"
           android:textSize="@dimen/text_large_16"/>

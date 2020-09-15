@@ -27,6 +27,17 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:padding="@dimen/small_8"
-      tools:listitem="@layout/item_list_contacts" />
+      tools:listitem="@layout/item_list_contact" />
+
+    <TextView
+      android:id="@+id/emptyContactView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:text="@string/userdata_warning_empty_contact_list"
+      android:textColor="@color/colorAccent"
+      android:textSize="@dimen/text_large_18"
+      android:visibility="gone"
+      tools:visibility="visible" />
   </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

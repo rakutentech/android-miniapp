@@ -47,7 +47,7 @@
           android:theme="@style/AppThemeSettings" />
         <activity
           android:label="Contacts"
-          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactsActivity"
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
           android:theme="@style/AppThemeSettings" />
 
         <meta-data
