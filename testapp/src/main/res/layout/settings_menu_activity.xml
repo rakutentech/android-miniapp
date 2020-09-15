@@ -15,90 +15,55 @@
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
   <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/medium_16"
-    android:orientation="vertical"
-    app:layout_constraintStart_toStartOf="@id/toolbar"
-    app:layout_constraintTop_toBottomOf="@id/toolbar">
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/medium_16"
+      android:orientation="vertical"
+      app:layout_constraintStart_toStartOf="@id/toolbar"
+      app:layout_constraintTop_toBottomOf="@id/toolbar">
 
     <androidx.appcompat.widget.AppCompatTextView
-      android:id="@+id/textInfo"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:padding="@dimen/small_8"
-      android:background="#198C8C8C"
-      android:textColor="@android:color/black"
-      tools:text="Build Info" />
-
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="@dimen/small_12"
-      android:layout_marginBottom="@dimen/small_12"
-      android:background="@color/colorAccent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-
-      <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/editAppId"
+        android:id="@+id/textInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/small_4"
-        android:hint="@string/hint_host_app_id"
-        android:imeOptions="actionDone"
-        android:inputType="text" />
+        android:padding="@dimen/small_8"
+        android:background="#198C8C8C"
+        android:textColor="@android:color/black"
+        tools:text="Build Info" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/small_12"
+        android:layout_marginBottom="@dimen/small_12"
+        android:background="@color/bg_section" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <androidx.appcompat.widget.AppCompatEditText
+          android:id="@+id/editAppId"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/small_4"
+          android:hint="@string/hint_host_app_id"
+          android:imeOptions="actionDone"
+          android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
       <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/editSubscriptionKey"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_subscription_key"
-        android:imeOptions="actionDone"
-        android:inputType="text" />
+          android:id="@+id/editSubscriptionKey"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/hint_subscription_key"
+          android:imeOptions="actionDone"
+          android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="@dimen/small_12"
-      android:layout_marginBottom="@dimen/small_12"
-      android:background="@color/colorAccent" />
-
-    <androidx.appcompat.widget.AppCompatButton
-      android:id="@+id/buttonProfile"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/small_8"
-      android:layout_gravity="center"
-      android:padding="@dimen/small_8"
-      android:background="@color/colorAccent"
-      android:gravity="center_vertical|center"
-      android:text="Profile"
-      android:textAllCaps="false"
-      android:textColor="@android:color/white"
-      android:textSize="@dimen/text_large_18" />
-
-    <androidx.appcompat.widget.AppCompatButton
-      android:id="@+id/buttonContacts"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/small_8"
-      android:layout_gravity="center"
-      android:padding="@dimen/small_8"
-      android:background="@color/colorAccent"
-      android:gravity="center_vertical|center"
-      android:text="Contacts"
-      android:textAllCaps="false"
-      android:textColor="@android:color/white"
-      android:textSize="@dimen/text_large_18" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchTestMode"
@@ -107,6 +72,57 @@
         android:layout_marginTop="@dimen/small_12"
         android:text="@string/lb_test_mode"
         android:visibility="gone"/>
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintStart_toStartOf="@id/toolbar"
+      app:layout_constraintBottom_toBottomOf="parent">
+
+    <RelativeLayout
+        android:id="@+id/buttonProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/bg_sec"
+        android:padding="@dimen/medium_16">
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Profile"
+          android:layout_centerVertical="true"
+          android:textColor="@android:color/black"
+          android:textSize="@dimen/text_large_16"/>
+      <ImageView
+          android:layout_width="@dimen/sec_icon_size"
+          android:layout_height="@dimen/sec_icon_size"
+          android:src="@drawable/ic_arrow_forward"
+          android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonContacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/bg_sec"
+        android:padding="@dimen/medium_16">
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Contact"
+          android:layout_centerVertical="true"
+          android:textColor="@android:color/black"
+          android:textSize="@dimen/text_large_16"/>
+      <ImageView
+          android:layout_width="@dimen/sec_icon_size"
+          android:layout_height="@dimen/sec_icon_size"
+          android:src="@drawable/ic_arrow_forward"
+          android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
   </LinearLayout>
 
