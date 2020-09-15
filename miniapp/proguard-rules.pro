@@ -25,7 +25,4 @@
   @com.google.gson.annotations.SerializedName <fields>;
 }
 
-# Prevent java.lang.AssertionError: java.lang.NoSuchFieldException
--keepclassmembers enum * { *; }
-
 ##---------------End: proguard configuration for Gson  ----------
