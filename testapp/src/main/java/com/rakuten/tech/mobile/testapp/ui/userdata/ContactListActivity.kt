@@ -112,7 +112,11 @@ class ContactListActivity : BaseActivity() {
                 renderAdapter(arrayListOf())
                 checkEmpty()
             } else renderAdapter(settings.contactNames)
-        } else renderAdapter(createRandomUUIDList())
+        } else {
+            val randomList = createRandomUUIDList()
+            renderAdapter(randomList)
+            settings.contactNames = randomList
+        }
     }
 
     private fun createRandomUUIDList(): ArrayList<String> {
