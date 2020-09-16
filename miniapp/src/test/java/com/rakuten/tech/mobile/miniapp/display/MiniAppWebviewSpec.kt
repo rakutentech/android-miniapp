@@ -15,6 +15,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
 import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -165,6 +166,24 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
         miniAppWebView.getLoadUrl() shouldBeEqualTo
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"
+    }
+
+    @Test
+    fun `should send response for the specified ID over the mini app bridge`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+        spyMiniAppWebView.runSuccessCallback("test_id", "test_value")
+
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""MiniAppBridge.execSuccessCallback(`test_id`""") }, any())
+    }
+
+    @Test
+    fun `should send response with escaped backtick characters`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
+
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""`\`test response\``""") }, any())
     }
 }
 
