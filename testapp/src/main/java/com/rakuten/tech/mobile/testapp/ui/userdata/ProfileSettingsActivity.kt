@@ -13,12 +13,10 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.AppScreen
 import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 import kotlinx.android.synthetic.main.profile_settings_activity.*
 
 class ProfileSettingsActivity : BaseActivity() {
@@ -120,12 +118,7 @@ class ProfileSettingsActivity : BaseActivity() {
         private const val PICK_IMAGE = 1001
 
         fun start(activity: Activity) {
-            val intent = Intent(activity, ProfileSettingsActivity::class.java)
-            intent.putExtra(
-                SettingsMenuActivity.SETTINGS_SCREEN_NAME,
-                AppScreen.MINI_APP_SETTINGS_ACTIVITY
-            )
-            activity.startActivity(intent)
+            activity.startActivity(Intent(activity, ProfileSettingsActivity::class.java))
         }
     }
 }

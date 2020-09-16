@@ -143,12 +143,7 @@ class ContactListActivity : BaseActivity() {
 
     companion object {
         fun start(activity: Activity) {
-            val intent = Intent(activity, ContactListActivity::class.java)
-            intent.putExtra(
-                SettingsMenuActivity.SETTINGS_SCREEN_NAME,
-                AppScreen.MINI_APP_SETTINGS_ACTIVITY
-            )
-            activity.startActivity(intent)
+            activity.startActivity(Intent(activity, ContactListActivity::class.java))
         }
     }
 }

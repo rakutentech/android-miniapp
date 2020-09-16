@@ -124,22 +124,15 @@ class SettingsMenuActivity : BaseActivity() {
     private fun validateInputIDs() {
         val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
 
-        saveViewEnabled = !(isInputEmpty(
-            editAppId
-        )
-                || isInputEmpty(
-            editSubscriptionKey
-        )
+        saveViewEnabled = !(isInputEmpty(editAppId)
+                || isInputEmpty(editSubscriptionKey)
                 || isAppIdInvalid)
 
         if (isInputEmpty(editAppId) || isAppIdInvalid) {
             editAppId.error = getString(R.string.error_invalid_input)
         }
 
-        if (isInputEmpty(
-                editSubscriptionKey
-            )
-        ) {
+        if (isInputEmpty(editSubscriptionKey)) {
             editSubscriptionKey.error = getString(R.string.error_invalid_input)
         }
     }
@@ -190,9 +183,5 @@ class SettingsMenuActivity : BaseActivity() {
             }
             else -> finish()
         }
-    }
-
-    companion object {
-        const val SETTINGS_SCREEN_NAME = "settings_screen_name"
     }
 }
