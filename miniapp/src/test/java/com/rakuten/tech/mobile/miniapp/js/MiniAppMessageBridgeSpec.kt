@@ -21,12 +21,12 @@ import org.mockito.Mockito
 
 @Suppress("TooGenericExceptionThrown")
 @RunWith(AndroidJUnit4::class)
-class MiniAppMessageBridgeSpec {
+open class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)
     )
 
-    private fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
+    protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
@@ -55,7 +55,7 @@ class MiniAppMessageBridgeSpec {
             }
         }
 
-    private fun createDefaultMiniAppMessageBridge(activity: Activity?): MiniAppMessageBridge =
+    protected fun createDefaultMiniAppMessageBridge(activity: Activity?): MiniAppMessageBridge =
         object : MiniAppMessageBridge(activity) {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
@@ -96,18 +96,7 @@ class MiniAppMessageBridgeSpec {
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
 
-    private val shareContentCallbackObj = createShareCallbackObj("This is content")
-    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
-
-    private fun createShareCallbackObj(content: String) = CallbackObj(
-        action = ActionType.SHARE_INFO.action,
-        param = ShareInfoCallbackObj.ShareInfoParam(
-            ShareInfo(content)
-        ),
-        id = TEST_CALLBACK_ID
-    )
-
-    private fun createErrorWebViewListener(errMsg: String): WebViewListener =
+    internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
                 throw Exception()
@@ -207,6 +196,30 @@ class MiniAppMessageBridgeSpec {
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
+}
+
+class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(null))
+
+    @Before
+    fun setupShareInfo() {
+        miniAppBridge.init(
+            webViewListener = mock(),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+    }
+
+    private val shareContentCallbackObj = createShareCallbackObj("This is content")
+    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
+
+    private fun createShareCallbackObj(content: String) = CallbackObj(
+        action = ActionType.SHARE_INFO.action,
+        param = ShareInfoCallbackObj.ShareInfoParam(
+            ShareInfo(content)
+        ),
+        id = TEST_CALLBACK_ID
+    )
 
     @Test
     fun `postValue should be called when content is shared successfully`() {
@@ -225,6 +238,7 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postError should be called when cannot share content`() {
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
         val errMsg = "${ErrorBridgeMessage.ERR_SHARE_CONTENT} null"
         miniAppBridge.init(
             webViewListener = createErrorWebViewListener(errMsg),
@@ -238,12 +252,6 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postValue should not be called when using default method without Activity`() {
-        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(null))
-        miniAppBridge.init(
-            webViewListener = mock(),
-            customPermissionCache = mock(),
-            miniAppInfo = mock()
-        )
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
@@ -251,13 +259,6 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postValue should not be called when sharing empty content`() {
-        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(null))
-        miniAppBridge.init(
-            webViewListener = mock(),
-            customPermissionCache = mock(),
-            miniAppInfo = mock()
-        )
-
         val shareContentJsonStr = Gson().toJson(createShareCallbackObj(" "))
         miniAppBridge.postMessage(shareContentJsonStr)
 
