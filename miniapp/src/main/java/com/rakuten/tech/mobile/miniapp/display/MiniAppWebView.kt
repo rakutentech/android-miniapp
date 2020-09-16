@@ -49,6 +49,7 @@ internal class MiniAppWebView(
 
         if (miniAppSdkConfig.adsEnabled)
             try {
+                Class.forName("com.google.android.gms.ads.MobileAds")
                 MobileAds.initialize(context)
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
