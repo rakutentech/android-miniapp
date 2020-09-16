@@ -95,7 +95,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            miniAppMessageBridge = object : MiniAppMessageBridge() {
+            miniAppMessageBridge = object : MiniAppMessageBridge(this) {
                 override fun getUniqueId() = AppSettings.instance.uniqueId
 
                 override fun requestPermission(
@@ -120,20 +120,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                         permissionsWithDescription,
                         callback
                     )
-                }
-
-                override fun shareContent(
-                    content: String,
-                    callback: (isSuccess: Boolean, message: String?) -> Unit
-                ) {
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, content)
-                        type = "text/plain"
-                    }
-                    startActivity(Intent.createChooser(sendIntent, null))
-
-                    callback.invoke(true, null)
                 }
             }
 

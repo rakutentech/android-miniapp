@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import android.app.Activity
+import android.content.Intent
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -16,7 +18,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge {
+abstract class MiniAppMessageBridge(val activity: Activity? = null) {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
@@ -45,10 +47,25 @@ abstract class MiniAppMessageBridge {
      * @param content The content property of [ShareInfo] object.
      * @param callback The executed action status should be notified back to mini app.
      **/
-    abstract fun shareContent(
+    open fun shareContent(
         content: String,
         callback: (isSuccess: Boolean, message: String?) -> Unit
-    )
+    ) {
+        when {
+            content.trim().isEmpty() -> callback.invoke(false, "content is empty")
+            activity == null -> callback.invoke(false, ErrorBridgeMessage.NO_ACTIVITY)
+            else -> {
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, content)
+                    type = "text/plain"
+                }
+                activity.startActivity(Intent.createChooser(sendIntent, null))
+
+                callback.invoke(true, SUCCESS)
+            }
+        }
+    }
 
     internal fun init(
         webViewListener: WebViewListener,
@@ -77,7 +94,7 @@ abstract class MiniAppMessageBridge {
         try {
             postValue(callbackObj.id, getUniqueId())
         } catch (e: Exception) {
-            postError(callbackObj.id, "Cannot get unique id: ${e.message}")
+            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
         }
     }
 
@@ -95,7 +112,7 @@ abstract class MiniAppMessageBridge {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            postError(callbackObj.id, "Cannot request permission: ${e.message}")
+            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
         }
     }
 
@@ -137,7 +154,7 @@ abstract class MiniAppMessageBridge {
             callbackObj?.id?.let {
                 postError(
                     it,
-                    "Cannot request custom permissions: ${e.message}"
+                    "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} ${e.message}"
                 )
             }
         }
@@ -153,10 +170,11 @@ abstract class MiniAppMessageBridge {
                 if (isSuccess)
                     postValue(callbackId, message ?: SUCCESS)
                 else
-                    postError(callbackId, message ?: "Cannot share content: Unknown error message from hostapp.")
+                    postError(callbackId,
+                        message ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp.")
             }
         } catch (e: Exception) {
-            postError(callbackId, "Cannot share content: ${e.message}")
+            postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
         }
     }
 
@@ -183,5 +201,16 @@ abstract class MiniAppMessageBridge {
     /** Emit an error to mini app. **/
     internal fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
+    }
+}
+
+internal class ErrorBridgeMessage {
+
+    companion object {
+        const val NO_ACTIVITY = "No Activity from MiniAppMessageBridge"
+        const val ERR_UNIQUE_ID = "Cannot get unique id:"
+        const val ERR_REQ_PERMISSION = "Cannot request permission:"
+        const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+        const val ERR_SHARE_CONTENT = "Cannot share content:"
     }
 }

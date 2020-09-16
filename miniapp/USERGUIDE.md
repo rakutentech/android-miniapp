@@ -116,8 +116,11 @@ CoroutineScope(Dispatchers.IO).launch {
 
 The `MiniAppMessageBridge` is used for passing messages between the Mini App (JavaScript) and the Host App (your native Android App) and vice versa. Your App must provide the implementation for these functions and pass this implementation to the `MiniApp#create` function.
 
+There are some methods have default implementation but host app can override them to fully control.
+The parameter `activity` is not required for `MiniAppMessageBridge` but it is essential to ensure all default methods work as expected.
+
 ```kotlin
-val miniAppMessageBridge = object: MiniAppMessageBridge() {
+val miniAppMessageBridge = object: MiniAppMessageBridge(activity) {
     override fun getUniqueId() {
         val id: String = ""
         // Implementation details to generate a Unique ID
