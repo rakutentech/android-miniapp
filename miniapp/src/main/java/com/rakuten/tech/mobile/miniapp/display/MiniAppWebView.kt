@@ -48,7 +48,11 @@ internal class MiniAppWebView(
         )
 
         if (miniAppSdkConfig.adsEnabled)
-            MobileAds.initialize(context)
+            try {
+                MobileAds.initialize(context)
+            } catch (e: ClassNotFoundException) {
+                e.printStackTrace()
+            }
 
         settings.javaScriptEnabled = true
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
