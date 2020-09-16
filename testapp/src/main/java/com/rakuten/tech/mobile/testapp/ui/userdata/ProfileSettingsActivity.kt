@@ -10,7 +10,6 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
-import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -40,8 +39,8 @@ class ProfileSettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
         profileUrl = settings.profilePictureUrl
+        showBackIcon()
         setContentView(R.layout.profile_settings_activity)
-        initializeActionBar()
         renderProfileSettingsScreen()
     }
 
@@ -62,12 +61,6 @@ class ProfileSettingsActivity : BaseActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun initializeActionBar() {
-        val toolBar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolBar)
-        showBackIcon()
     }
 
     private fun renderProfileSettingsScreen() {

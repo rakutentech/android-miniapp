@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,8 +40,8 @@ class ContactListActivity : BaseActivity() {
             "com.rakuten.tech.mobile.miniapp.sample.contacts", Context.MODE_PRIVATE
         )
         settings = AppSettings.instance
+        showBackIcon()
         setContentView(R.layout.contacts_activity)
-        initializeActionBar()
         renderContactList()
         fabAddContact.setOnClickListener { onAddAction() }
     }
@@ -93,12 +92,6 @@ class ContactListActivity : BaseActivity() {
                 dialog.cancel()
             })
         }.show()
-    }
-
-    private fun initializeActionBar() {
-        val toolBar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolBar)
-        showBackIcon()
     }
 
     override fun onResume() {

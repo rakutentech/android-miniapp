@@ -43,12 +43,10 @@
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
         <activity
           android:label="@string/action_profile"
-          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
-          android:theme="@style/AppThemeSettings" />
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity" />
         <activity
           android:label="@string/action_contacts"
-          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
-          android:theme="@style/AppThemeSettings" />
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
