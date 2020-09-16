@@ -2,8 +2,10 @@ package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -16,11 +18,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.AppScreen
 import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 import kotlinx.android.synthetic.main.contacts_activity.*
 import java.util.UUID
 
@@ -28,9 +28,18 @@ class ContactListActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private val adapter = ContactListAdapter()
+    private var contactListPrefs: SharedPreferences? = null
+    private var isFirstLaunch: Boolean
+        get() = contactListPrefs?.getBoolean(IS_FIRST_TIME, true) ?: true
+        set(value) {
+            contactListPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        contactListPrefs = getSharedPreferences(
+            "com.rakuten.tech.mobile.miniapp.sample.contacts", Context.MODE_PRIVATE
+        )
         settings = AppSettings.instance
         setContentView(R.layout.contacts_activity)
         initializeActionBar()
@@ -92,14 +101,18 @@ class ContactListActivity : BaseActivity() {
         showBackIcon()
     }
 
-    private fun renderContactList() {
-        var contactNames = ArrayList<String>()
-        if (settings.contactNames.isEmpty())
-            contactNames = createRandomUUIDList()
-        else
-            contactNames.addAll(settings.contactNames)
+    override fun onResume() {
+        super.onResume()
+        if (isFirstLaunch) isFirstLaunch = false
+    }
 
-        configureAdapter(contactNames)
+    private fun renderContactList() {
+        if (!isFirstLaunch && settings.isContactsSaved) {
+            if (settings.contactNames.isEmpty()) {
+                renderAdapter(arrayListOf())
+                checkEmpty()
+            } else renderAdapter(settings.contactNames)
+        } else renderAdapter(createRandomUUIDList())
     }
 
     private fun createRandomUUIDList(): ArrayList<String> {
@@ -110,7 +123,7 @@ class ContactListActivity : BaseActivity() {
         return randomUUIDs
     }
 
-    private fun configureAdapter(contactNames: ArrayList<String>) {
+    private fun renderAdapter(contactNames: ArrayList<String>) {
         adapter.addContactList(contactNames)
         listContacts.adapter = adapter
         listContacts.layoutManager = LinearLayoutManager(applicationContext)
@@ -118,30 +131,33 @@ class ContactListActivity : BaseActivity() {
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            @SuppressLint("SyntheticAccessor")
             override fun onChanged() {
                 super.onChanged()
                 checkEmpty()
             }
 
+            @SuppressLint("SyntheticAccessor")
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 checkEmpty()
             }
 
+            @SuppressLint("SyntheticAccessor")
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
                 checkEmpty()
             }
-
-            @SuppressLint("SyntheticAccessor")
-            private fun checkEmpty() {
-                viewEmptyContact.visibility =
-                    if (adapter.itemCount == 0) View.VISIBLE else View.GONE
-            }
         })
     }
 
+    private fun checkEmpty() {
+        viewEmptyContact.visibility =
+            if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+    }
+
     companion object {
+        private const val IS_FIRST_TIME = "is_first_time"
         fun start(activity: Activity) {
             activity.startActivity(Intent(activity, ContactListActivity::class.java))
         }

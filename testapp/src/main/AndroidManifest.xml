@@ -42,11 +42,11 @@
           android:theme="@style/AppThemeSettings" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
         <activity
-          android:label="Profile"
+          android:label="@string/action_profile"
           android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
           android:theme="@style/AppThemeSettings" />
         <activity
-          android:label="Contacts"
+          android:label="@string/action_contacts"
           android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
           android:theme="@style/AppThemeSettings" />
 

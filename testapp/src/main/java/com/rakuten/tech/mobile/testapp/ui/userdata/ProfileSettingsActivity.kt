@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -29,6 +30,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
+        @SuppressLint("SyntheticAccessor")
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             validateNameInput()
         }

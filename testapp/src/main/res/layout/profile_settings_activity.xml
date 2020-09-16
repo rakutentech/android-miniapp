@@ -27,8 +27,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      app:civ_border_color="@color/colorAccent"
-      app:civ_border_width="2dp"
       tools:src="@drawable/r_logo" />
 
     <androidx.appcompat.widget.AppCompatTextView

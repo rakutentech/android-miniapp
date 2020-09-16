@@ -65,6 +65,9 @@ class AppSettings private constructor(context: Context) {
             cache.contactNames = contactNames
         }
 
+    val isContactsSaved: Boolean
+        get() = cache.isContactsSaved
+
     val baseUrl = manifestConfig.baseUrl()
 
     val hostAppVersionId = manifestConfig.hostAppVersion()
@@ -134,8 +137,11 @@ private class Settings(context: Context) {
             prefs.getString(CONTACT_NAMES, null),
             object : TypeToken<ArrayList<String>>() {}.type
         )
-        set(contactNames) = prefs.edit().putString(CONTACT_NAMES, Gson().toJson(contactNames))
-            .apply()
+        set(contactNames) =
+            prefs.edit().putString(CONTACT_NAMES, Gson().toJson(contactNames)).apply()
+
+    val isContactsSaved: Boolean
+        get() = prefs.contains(CONTACT_NAMES)
 
     companion object {
         private const val IS_TEST_MODE = "is_test_mode"
