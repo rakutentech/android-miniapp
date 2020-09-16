@@ -38,7 +38,8 @@
       android:layout_marginTop="@dimen/small_8"
       android:layout_gravity="center"
       android:text="@string/userdata_edit_photo"
-      android:textColor="@color/colorAccent" />
+      android:textColor="@color/colorAccent"
+      android:textSize="@dimen/text_large_16" />
 
     <View
       android:layout_width="match_parent"

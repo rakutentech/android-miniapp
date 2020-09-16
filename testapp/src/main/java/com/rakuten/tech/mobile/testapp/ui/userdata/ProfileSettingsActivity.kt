@@ -57,15 +57,11 @@ class ProfileSettingsActivity : BaseActivity() {
                 return true
             }
             R.id.settings_menu_save -> {
-                onSaveAction()
+                updateProfile(editProfileName.text.toString())
                 return true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun onSaveAction() {
-        updateProfile(editProfileName.text.toString())
     }
 
     private fun initializeActionBar() {
@@ -79,7 +75,6 @@ class ProfileSettingsActivity : BaseActivity() {
         editProfileName.setText(settings.profileName)
         editProfileName.addTextChangedListener(nameTextWatcher)
         textEditPhoto.setOnClickListener { openGallery() }
-        imageProfile.setOnClickListener { openGallery() }
         validateNameInput()
     }
 
@@ -95,7 +90,7 @@ class ProfileSettingsActivity : BaseActivity() {
             type = "image/*"
             action = Intent.ACTION_GET_CONTENT
         }
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE)
+        startActivityForResult(Intent.createChooser(intent, null), PICK_IMAGE)
     }
 
     private fun validateNameInput() {

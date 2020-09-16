@@ -2,9 +2,11 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import java.util.*
+import java.util.UUID
 
 class AppSettings private constructor(context: Context) {
 
@@ -55,6 +57,12 @@ class AppSettings private constructor(context: Context) {
         get() = cache.profilePictureUrl ?: ""
         set(profilePictureUrl) {
             cache.profilePictureUrl = profilePictureUrl
+        }
+
+    var contactNames: ArrayList<String>
+        get() = cache.contactNames ?: arrayListOf()
+        set(contactNames) {
+            cache.contactNames = contactNames
         }
 
     val baseUrl = manifestConfig.baseUrl()
@@ -118,7 +126,16 @@ private class Settings(context: Context) {
 
     var profilePictureUrl: String?
         get() = prefs.getString(PROFILE_PICTURE_URL, null)
-        set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl).apply()
+        set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl)
+            .apply()
+
+    var contactNames: ArrayList<String>?
+        get() = Gson().fromJson(
+            prefs.getString(CONTACT_NAMES, null),
+            object : TypeToken<ArrayList<String>>() {}.type
+        )
+        set(contactNames) = prefs.edit().putString(CONTACT_NAMES, Gson().toJson(contactNames))
+            .apply()
 
     companion object {
         private const val IS_TEST_MODE = "is_test_mode"
@@ -128,5 +145,6 @@ private class Settings(context: Context) {
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
+        private const val CONTACT_NAMES = "contact_names"
     }
 }

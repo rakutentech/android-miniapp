@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
@@ -19,23 +19,27 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.AppScreen
 import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 import kotlinx.android.synthetic.main.contacts_activity.*
 import java.util.UUID
 
 class ContactListActivity : BaseActivity() {
 
+    private lateinit var settings: AppSettings
     private val adapter = ContactListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settings = AppSettings.instance
         setContentView(R.layout.contacts_activity)
         initializeActionBar()
-        createContactList()
+        renderContactList()
+        fabAddContact.setOnClickListener { onAddAction() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.contact_menu, menu)
+        menuInflater.inflate(R.menu.settings_menu, menu)
         return true
     }
 
@@ -45,39 +49,41 @@ class ContactListActivity : BaseActivity() {
                 finish()
                 return true
             }
-            R.id.contact_menu_add -> {
-                onAddAction()
+            R.id.settings_menu_save -> {
+                onSaveAction()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private fun onSaveAction() {
+        settings.contactNames = adapter.provideContactEntries()
+        finish()
+    }
+
     private fun onAddAction() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Please enter the custom ID you would like to add in Contacts")
         val contactView = layoutInflater.inflate(R.layout.dialog_add_contact, null)
         val editNewContact: AppCompatEditText = contactView.findViewById(R.id.editNewContact)
-        builder.setView(contactView)
-        builder.setPositiveButton("Add") { dialog, _ ->
-            if (editNewContact.text.toString().isNotEmpty()) {
-                val name = editNewContact.text.toString()
-                // add name in the last position
-                adapter.addContact(adapter.itemCount, clearWhiteSpaces(name))
-            } else {
-                val toast =
+        ContactInputDialog.Builder().build(this).apply {
+            setView(contactView)
+            setPositiveListener(DialogInterface.OnClickListener { dialog, _ ->
+                if (editNewContact.text.toString().isNotEmpty()) {
+                    val name = editNewContact.text.toString()
+                    // add contact in the last position
+                    adapter.addContact(adapter.itemCount, clearWhiteSpaces(name))
+                } else {
                     Toast.makeText(
                         this@ContactListActivity,
                         getString(R.string.userdata_error_invalid_contact),
                         Toast.LENGTH_LONG
-                    )
-                toast.setGravity(Gravity.BOTTOM, 0, 100)
-                toast.show()
-            }
-            dialog.cancel()
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-        builder.show()
+                    ).apply {
+                        setGravity(Gravity.BOTTOM, 0, 100)
+                    }.show()
+                }
+                dialog.cancel()
+            })
+        }.show()
     }
 
     private fun initializeActionBar() {
@@ -86,13 +92,22 @@ class ContactListActivity : BaseActivity() {
         showBackIcon()
     }
 
-    private fun createContactList() {
-        // prepare random contact list
-        val contactNames = ArrayList<String>()
-        for (i in 1..10)
-            contactNames.add(clearWhiteSpaces((UUID.randomUUID().toString())))
+    private fun renderContactList() {
+        var contactNames = ArrayList<String>()
+        if (settings.contactNames.isEmpty())
+            contactNames = createRandomUUIDList()
+        else
+            contactNames.addAll(settings.contactNames)
 
         configureAdapter(contactNames)
+    }
+
+    private fun createRandomUUIDList(): ArrayList<String> {
+        val randomUUIDs = ArrayList<String>()
+        for (i in 1..10)
+            randomUUIDs.add(clearWhiteSpaces((UUID.randomUUID().toString())))
+
+        return randomUUIDs
     }
 
     private fun configureAdapter(contactNames: ArrayList<String>) {
@@ -120,7 +135,7 @@ class ContactListActivity : BaseActivity() {
 
             @SuppressLint("SyntheticAccessor")
             private fun checkEmpty() {
-                emptyContactView.visibility =
+                viewEmptyContact.visibility =
                     if (adapter.itemCount == 0) View.VISIBLE else View.GONE
             }
         })
