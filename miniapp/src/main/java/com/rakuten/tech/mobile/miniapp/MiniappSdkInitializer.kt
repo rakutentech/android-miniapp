@@ -58,10 +58,6 @@ class MiniappSdkInitializer : ContentProvider() {
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectSubscriptionKey")
         fun subscriptionKey(): String
-
-        /** AdMod app id from host app. **/
-        @MetaData(key = "com.google.android.gms.ads.APPLICATION_ID")
-        fun adMobAppId(): String
     }
 
     override fun onCreate(): Boolean {
@@ -76,8 +72,7 @@ class MiniappSdkInitializer : ContentProvider() {
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-                isTestMode = manifestConfig.isTestMode(),
-                adsEnabled = manifestConfig.adMobAppId().trim().isNotEmpty()
+                isTestMode = manifestConfig.isTestMode()
             )
         )
 

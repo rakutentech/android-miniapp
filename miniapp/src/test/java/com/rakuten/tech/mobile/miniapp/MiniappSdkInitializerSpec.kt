@@ -39,7 +39,6 @@ class MiniappSdkInitializerSpec {
         When calling appManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
         When calling appManifestConfig.hostAppVersion() itReturns TEST_HA_ID_VERSION
         When calling appManifestConfig.hostAppUserAgentInfo() itReturns TEST_HA_NAME
-        When calling appManifestConfig.adMobAppId() itReturns "test_admob_id"
 
         sdkInitializer.onCreate() shouldBe true
     }

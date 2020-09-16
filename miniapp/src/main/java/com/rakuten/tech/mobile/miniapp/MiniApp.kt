@@ -119,7 +119,7 @@ abstract class MiniApp internal constructor() {
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(context, miniAppSdkConfig),
+                displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)

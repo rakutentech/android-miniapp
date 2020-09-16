@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import org.amshove.kluent.shouldBeInstanceOf
@@ -37,7 +38,7 @@ class DisplayerSpec {
     }
 
     private fun getMiniAppDisplay(): MiniAppDisplay =
-        Displayer(context, mock()).createMiniAppDisplay(
+        Displayer(context, TEST_HA_NAME).createMiniAppDisplay(
             basePath = context.filesDir.path,
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,

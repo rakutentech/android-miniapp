@@ -10,7 +10,7 @@ import androidx.webkit.WebViewAssetLoader
 import com.google.android.gms.ads.MobileAds
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.ads.whenAdMobProvided
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -25,9 +25,9 @@ internal class MiniAppWebView(
     context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
-    val miniAppSdkConfig: MiniAppSdkConfig,
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
+    val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebView(context), WebViewListener {
@@ -47,13 +47,9 @@ internal class MiniAppWebView(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
 
-        if (miniAppSdkConfig.adsEnabled)
-            try {
-                Class.forName("com.google.android.gms.ads.MobileAds")
-                MobileAds.initialize(context)
-            } catch (e: ClassNotFoundException) {
-                e.printStackTrace()
-            }
+        whenAdMobProvided {
+            MobileAds.initialize(context)
+        }
 
         settings.javaScriptEnabled = true
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
@@ -68,9 +64,9 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
-        if (miniAppSdkConfig.hostAppUserAgentInfo.isNotEmpty())
+        if (hostAppUserAgentInfo.isNotEmpty())
             settings.userAgentString =
-                String.format("%s %s", settings.userAgentString, miniAppSdkConfig.hostAppUserAgentInfo)
+                String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
             externalResultHandler, miniAppScheme)

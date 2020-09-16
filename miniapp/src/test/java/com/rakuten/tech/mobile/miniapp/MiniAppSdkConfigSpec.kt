@@ -10,7 +10,6 @@ class MiniAppSdkConfigSpec {
         val config = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
-            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -25,7 +24,6 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = "http://www.example.com/1",
             isTestMode = false,
-            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -38,7 +36,6 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = " ",
             isTestMode = true,
-            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -51,7 +48,6 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
-            adsEnabled = false,
             rasAppId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -64,7 +60,6 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
-            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = " ",
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -77,7 +72,6 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
-            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = " ",

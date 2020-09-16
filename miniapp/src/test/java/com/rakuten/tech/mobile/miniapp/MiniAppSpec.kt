@@ -36,8 +36,7 @@ class MiniAppSpec {
                 rasAppId = TEST_HA_ID_APP,
                 subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
                 hostAppVersionId = TEST_HA_ID_VERSION,
-                hostAppUserAgentInfo = TEST_HA_NAME,
-                adsEnabled = false
+                hostAppUserAgentInfo = TEST_HA_NAME
             )
         )
         MiniApp.instance shouldNotBe null

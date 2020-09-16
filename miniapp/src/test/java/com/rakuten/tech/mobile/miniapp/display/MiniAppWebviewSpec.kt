@@ -40,15 +40,6 @@ open class BaseWebViewSpec {
     val miniAppNavigator: MiniAppNavigator = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
-    internal val miniAppSdkConfig = MiniAppSdkConfig(
-        baseUrl = TEST_URL_HTTPS_2,
-        isTestMode = true,
-        adsEnabled = true,
-        rasAppId = TEST_HA_ID_APP,
-        subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-        hostAppVersionId = TEST_HA_ID_VERSION,
-        hostAppUserAgentInfo = TEST_HA_NAME
-    )
 
     @Before
     fun setup() {
@@ -62,7 +53,7 @@ open class BaseWebViewSpec {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = miniAppNavigator,
-            miniAppSdkConfig = miniAppSdkConfig,
+            hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = miniAppCustomPermissionCache
         )
@@ -111,7 +102,23 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `when MiniAppWebView is created then user-agent contains host app info`() {
-        miniAppWebView.settings.userAgentString shouldEndWith miniAppSdkConfig.hostAppUserAgentInfo
+        miniAppWebView.hostAppUserAgentInfo shouldBe TEST_HA_NAME
+        miniAppWebView.settings.userAgentString shouldEndWith TEST_HA_NAME
+    }
+
+    @Test
+    fun `should keep user-agent unchanged when host app info is empty`() {
+        miniAppWebView = MiniAppWebView(
+            context,
+            basePath = basePath,
+            miniAppInfo = TEST_MA,
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = miniAppNavigator,
+            hostAppUserAgentInfo = "",
+            miniAppWebChromeClient = webChromeClient,
+            miniAppCustomPermissionCache = mock()
+        )
+        miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
 
     @Test
@@ -124,29 +131,21 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         verify(displayer, times(1)).destroy()
     }
 
-    @Suppress("LongMethod")
     @Test
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
             context,
-            basePath = miniAppWebView.basePath,
-            miniAppInfo = TEST_MA,
-            miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = miniAppNavigator,
-            miniAppSdkConfig = miniAppSdkConfig,
-            miniAppWebChromeClient = mock(),
-            miniAppCustomPermissionCache = mock()
+            miniAppWebView.basePath,
+            TEST_MA,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            TEST_HA_NAME,
+            mock(),
+            mock()
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
-            context,
-            basePath = miniAppWebView.basePath,
-            miniAppInfo = TEST_MA.copy(id = "app-id-2"),
-            miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = miniAppNavigator,
-            miniAppSdkConfig = miniAppSdkConfig,
-            miniAppWebChromeClient = mock(),
-            miniAppCustomPermissionCache = mock()
-        )
+            context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
+            miniAppNavigator, TEST_HA_NAME, mock(), mock())
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 
@@ -209,7 +208,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
 
         webViewClient.shouldInterceptRequest(miniAppWebView, webResourceRequest)
 
-        verify(webAssetLoader, times(1)).shouldInterceptRequest(webResourceRequest.url)
+        verify(webAssetLoader, times(1))
+            .shouldInterceptRequest(webResourceRequest.url)
     }
 
     @Test

@@ -55,10 +55,9 @@ class AppSettings private constructor(context: Context) {
             rasAppId = appId,
             subscriptionKey = subscriptionKey,
             hostAppVersionId = hostAppVersionId,
-            isTestMode = isTestMode,
-            // no update for below parameters because SDK does not allow changing it at runtime
+            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            adsEnabled = manifestConfig.adMobAppId().isNotEmpty()
+            isTestMode = isTestMode
         )
 
     companion object {

@@ -11,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -24,9 +23,9 @@ internal class RealMiniAppDisplay(
     val context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
-    val miniAppSdkConfig: MiniAppSdkConfig,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
+    val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : MiniAppDisplay {
 
@@ -75,9 +74,9 @@ internal class RealMiniAppDisplay(
                 context = context,
                 basePath = basePath,
                 miniAppInfo = miniAppInfo,
-                miniAppSdkConfig = miniAppSdkConfig,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
+                hostAppUserAgentInfo = hostAppUserAgentInfo,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache
             )
             miniAppWebView!!
