@@ -8,6 +8,7 @@ package com.rakuten.tech.mobile.miniapp
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
  * @property isTestMode Whether the sdk is making use of the Test API Endpoints for under "Testing" mini apps.
+ * @property adsEnabled When the host app provides AdMob App Id, this flag will set to true.
  */
 data class MiniAppSdkConfig(
     val baseUrl: String,
@@ -15,7 +16,8 @@ data class MiniAppSdkConfig(
     val subscriptionKey: String,
     val hostAppVersionId: String,
     val hostAppUserAgentInfo: String,
-    val isTestMode: Boolean
+    val isTestMode: Boolean,
+    val adsEnabled: Boolean
 ) {
     internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey-$hostAppVersionId"
 

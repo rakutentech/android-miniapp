@@ -123,6 +123,7 @@ class RealMiniAppSpec {
         val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
+            adsEnabled = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,

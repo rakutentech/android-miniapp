@@ -8,9 +8,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_APP
+import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_VERSION
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
+import com.rakuten.tech.mobile.miniapp.TEST_HA_SUBSCRIPTION_KEY
 import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_2
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -27,6 +31,15 @@ class RealMiniAppDisplaySpec {
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private val miniAppSdkConfig = MiniAppSdkConfig(
+        baseUrl = TEST_URL_HTTPS_2,
+        isTestMode = true,
+        adsEnabled = false,
+        rasAppId = TEST_HA_ID_APP,
+        subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+        hostAppVersionId = TEST_HA_ID_VERSION,
+        hostAppUserAgentInfo = TEST_HA_NAME
+    )
 
     @Before
     fun setup() {
@@ -36,9 +49,9 @@ class RealMiniAppDisplaySpec {
             context,
             basePath = basePath,
             miniAppInfo = TEST_MA,
+            miniAppSdkConfig = miniAppSdkConfig,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
-            hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppCustomPermissionCache = mock()
         )
     }

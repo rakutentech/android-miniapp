@@ -9,6 +9,8 @@
 
     <application>
         <activity android:name="com.rakuten.tech.mobile.miniapp.TestActivity"/>
+
+        <meta-data android:name="com.google.android.gms.version" android:value="12451000" />
     </application>
 
 </manifest>

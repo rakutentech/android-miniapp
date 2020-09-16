@@ -7,8 +7,10 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
+import com.google.android.gms.ads.MobileAds
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -23,9 +25,9 @@ internal class MiniAppWebView(
     context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
+    val miniAppSdkConfig: MiniAppSdkConfig,
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
-    val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebView(context), WebViewListener {
@@ -45,6 +47,9 @@ internal class MiniAppWebView(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
 
+        if (miniAppSdkConfig.adsEnabled)
+            MobileAds.initialize(context)
+
         settings.javaScriptEnabled = true
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
 
@@ -58,9 +63,9 @@ internal class MiniAppWebView(
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
 
-        if (hostAppUserAgentInfo.isNotEmpty())
+        if (miniAppSdkConfig.hostAppUserAgentInfo.isNotEmpty())
             settings.userAgentString =
-                String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
+                String.format("%s %s", settings.userAgentString, miniAppSdkConfig.hostAppUserAgentInfo)
 
         webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
             externalResultHandler, miniAppScheme)
