@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import kotlinx.coroutines.flow.collect
@@ -49,7 +50,15 @@ internal class MiniAppStorage(
 
     fun getMiniAppVersionPath(appId: String, versionId: String) = "${getMiniAppPath(appId)}$versionId"
 
-    @Suppress("TooGenericExceptionCaught", "LongMethod")
+    fun removeApp(
+        appId: String,
+        appPath: String = getMiniAppPath(appId)
+    ) {
+        val parentFile = File(appPath)
+        deleteDirectory(parentFile)
+    }
+
+    @Suppress("LongMethod")
     suspend fun removeOutdatedVersionApp(
         appId: String,
         latestVersionId: String,
@@ -62,13 +71,20 @@ internal class MiniAppStorage(
                     if (!file.absolutePath.endsWith(latestVersionId))
                         emit(file)
                 }
-            }.collect { file ->
-                try {
-                    file.deleteRecursively()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
+            }.collect { file -> deleteDirectory(file) }
         }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun deleteDirectory(file: File) {
+        try {
+            file.deleteRecursively()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to delete the directory: $file", e)
+        }
+    }
+
+    companion object {
+        private val TAG = this::class.simpleName
     }
 }
