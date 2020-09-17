@@ -35,7 +35,7 @@
       android:layout_height="1dp"
       android:layout_marginTop="@dimen/small_12"
       android:layout_marginBottom="@dimen/small_12"
-      android:background="@color/colorAccent" />
+      android:background="@color/bg_section" />
 
     <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
