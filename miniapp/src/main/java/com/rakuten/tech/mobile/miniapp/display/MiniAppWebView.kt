@@ -7,10 +7,8 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
-import com.google.android.gms.ads.MobileAds
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
-import com.rakuten.tech.mobile.miniapp.ads.whenAdMobProvided
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -46,10 +44,6 @@ internal class MiniAppWebView(
         layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
-
-        whenAdMobProvided {
-            MobileAds.initialize(context)
-        }
 
         settings.javaScriptEnabled = true
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
