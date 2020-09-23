@@ -2,26 +2,48 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 
 /**
  * A class to manage additional features involved with custom permissions in this SDK.
  */
-class MiniAppCustomPermissionManager(val miniapp: MiniApp) {
+internal class
+MiniAppCustomPermissionManager {
+
+    /**
+     * Prepares a list of custom permissions Pair with names and description.
+     * @param [permissionObjList] list of CustomPermissionObj.
+     * @return [List<Pair<MiniAppCustomPermissionType, String>>].
+     */
+    fun preparePermissionsWithDescription(
+        permissionObjList: ArrayList<CustomPermissionObj>
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        val permissionsWithDescription =
+            arrayListOf<Pair<MiniAppCustomPermissionType, String>>()
+        permissionObjList.forEach {
+            MiniAppCustomPermissionType.getValue(it.name).let { type ->
+                permissionsWithDescription.add(Pair(type, it.description))
+            }
+        }
+        return permissionsWithDescription
+    }
 
     /**
      * Creates a JSON string by mapping with [MiniAppCustomPermissionResponse] class.
-     * @param [miniAppId] list of custom permissions Pair.
+     * @param [miniAppCustomPermissionCache] for filtering values from cache.
+     * @param [miniAppId] id of miniapp required by cache.
      * @param [suppliedPermissions] list of custom permissions Pair with names and description,
      * initially it was prepared in [MiniAppMessageBridge].
      * @return [String] as json response with permission grant results.
      */
     fun createJsonResponse(
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String,
         suppliedPermissions: List<Pair<MiniAppCustomPermissionType, String>>
     ): String {
         val responseObj = MiniAppCustomPermissionResponse(arrayListOf())
-        val permissions = filterPermissionsToSend(miniAppId, suppliedPermissions)
+        val permissions =
+            filterPermissionsToSend(miniAppCustomPermissionCache, miniAppId, suppliedPermissions)
         permissions.forEach {
             responseObj.permissions.add(
                 MiniAppCustomPermissionResponse.CustomPermissionResponseObj(
@@ -40,11 +62,12 @@ class MiniAppCustomPermissionManager(val miniapp: MiniApp) {
      * any unknown permission.
      */
     @VisibleForTesting
-    internal fun filterPermissionsToSend(
+    fun filterPermissionsToSend(
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String,
         suppliedPermissions: List<Pair<MiniAppCustomPermissionType, String>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val cachedPermissions = miniapp.getCustomPermissions(miniAppId).pairValues
+        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
         val filteredPair =
             mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 

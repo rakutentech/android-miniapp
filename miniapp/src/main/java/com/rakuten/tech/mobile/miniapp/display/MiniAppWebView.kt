@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -25,7 +26,8 @@ internal class MiniAppWebView(
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
-    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo)
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebView(context), WebViewListener {
 
     private val miniAppScheme = MiniAppScheme(miniAppInfo.id)
@@ -45,7 +47,12 @@ internal class MiniAppWebView(
 
         settings.javaScriptEnabled = true
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
-        miniAppMessageBridge.setWebViewListener(this)
+
+        miniAppMessageBridge.init(
+            webViewListener = this,
+            customPermissionCache = miniAppCustomPermissionCache,
+            miniAppInfo = miniAppInfo
+        )
 
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
@@ -71,7 +78,7 @@ internal class MiniAppWebView(
     override fun runSuccessCallback(callbackId: String, value: String) {
         post {
             evaluateJavascript(
-                "MiniAppBridge.execSuccessCallback(\"$callbackId\", \"$value\")"
+                "MiniAppBridge.execSuccessCallback(`$callbackId`, `${value.replace("`", "\\`")}`)"
             ) {}
         }
     }

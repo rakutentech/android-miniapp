@@ -49,7 +49,13 @@ internal class RealMiniApp(
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId)
-            displayer.createMiniAppDisplay(basePath, miniAppInfo, miniAppMessageBridge, miniAppNavigator)
+            displayer.createMiniAppDisplay(
+                basePath,
+                miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache
+            )
         }
     }
 

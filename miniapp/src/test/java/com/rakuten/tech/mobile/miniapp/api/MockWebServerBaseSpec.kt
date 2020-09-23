@@ -6,7 +6,7 @@ import org.junit.Before
 import java.util.logging.Level
 import java.util.logging.LogManager
 
-open class MockWebServerBaseTest(private val mockServer: MockWebServer) {
+open class MockWebServerBaseSpec(private val mockServer: MockWebServer) {
     private lateinit var baseUrl: String
 
     init {

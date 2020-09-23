@@ -15,7 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class DisplayerTest {
+class DisplayerSpec {
 
     private lateinit var context: Context
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
@@ -42,6 +42,7 @@ class DisplayerTest {
             basePath = context.filesDir.path,
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = mock()
+            miniAppNavigator = mock(),
+            miniAppCustomPermissionCache = mock()
         )
 }

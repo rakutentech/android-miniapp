@@ -3,6 +3,7 @@
 ### 2.x.x (in progress)
 **SDK**
 - **Feature:** Added public interface to read and store the custom permissions inside Android SDK. 
+- **Feature:** Share content from mini app. 
 
 **Sample App**
 - **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.

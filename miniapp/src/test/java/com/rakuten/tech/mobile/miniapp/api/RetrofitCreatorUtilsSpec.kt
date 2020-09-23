@@ -13,7 +13,7 @@ import org.junit.Test
 
 class RetrofitCreatorUtilsSpec private constructor(
     private val mockServer: MockWebServer
-) : MockWebServerBaseTest(mockServer) {
+) : MockWebServerBaseSpec(mockServer) {
 
     constructor() : this(MockWebServer())
 
