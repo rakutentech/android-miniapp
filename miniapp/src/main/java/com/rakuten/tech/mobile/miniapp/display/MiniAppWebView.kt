@@ -36,7 +36,9 @@ internal class MiniAppWebView(
     internal val externalResultHandler = ExternalResultHandler().apply {
         onResultChanged = { externalUrl ->
             if (miniAppScheme.isMiniAppUrl(externalUrl))
-                loadUrl(externalUrl)
+                miniAppScheme.ifLoadingCustomScheme(externalUrl) { customDomain ->
+                    loadUrl(customDomain)
+                }
         }
     }
 
