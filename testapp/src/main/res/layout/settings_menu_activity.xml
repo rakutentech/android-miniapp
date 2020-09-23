@@ -25,7 +25,7 @@
       android:id="@+id/textInfo"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/medium_16"
+      android:layout_margin="@dimen/small_8"
       android:padding="@dimen/small_8"
       android:textColor="@android:color/black"
       tools:text="Build Info" />
