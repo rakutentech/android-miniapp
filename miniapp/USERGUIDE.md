@@ -125,7 +125,7 @@ There are some methods have default implementation but host app can override the
 | shareContent                 | ✅       |
 
 ```kotlin
-val miniAppMessageBridge = object: MiniAppMessageBridge(activity) {
+val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() {
         val id: String = ""
         // Implementation details to generate a Unique ID
