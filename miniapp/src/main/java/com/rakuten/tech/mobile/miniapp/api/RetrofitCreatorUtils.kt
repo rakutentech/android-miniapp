@@ -42,8 +42,7 @@ internal fun createRetrofitClient(
 }
 
 private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
-    val original = chain.request()
-    val request = original.newBuilder()
+    val request = chain.request().newBuilder()
         .header("Accept-Encoding", "identity")
         .build()
 
