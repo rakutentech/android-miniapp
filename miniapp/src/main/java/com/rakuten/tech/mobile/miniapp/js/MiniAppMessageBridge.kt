@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -16,7 +17,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge {
+abstract class MiniAppMessageBridge(val adDisplayer: MiniAppAdDisplayer?) {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
