@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/small_8"
+    android:paddingBottom="@dimen/small_8"
+    android:paddingStart="@dimen/medium_16"
+    android:paddingEnd="@dimen/medium_16"
+    android:gravity="center_horizontal">
+
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/textContact"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_toStartOf="@+id/buttonRemoveContact"
+      android:textColor="@android:color/black"
+      android:textSize="@dimen/text_large_16"
+      tools:text="Contacts name here" />
+
+    <ImageView
+      android:id="@+id/buttonRemoveContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:src="@drawable/ic_remove_24dp" />
+  </RelativeLayout>
+</layout>

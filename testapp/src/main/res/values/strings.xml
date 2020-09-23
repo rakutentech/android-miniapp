@@ -10,10 +10,20 @@
     <string name="menu_title_change_settings">Change App Settings</string>
     <string name="menu_hint_search_miniapps">Search for a Mini App</string>
 
+    <string name="userdata_edit_photo">Edit Photo</string>
+    <string name="userdata_hint_edit_name">Enter your name here</string>
+    <string name="userdata_hint_edit_contact">Write contact name here</string>
+    <string name="userdata_error_invalid_name">Please enter a valid name</string>
+    <string name="userdata_error_invalid_contact">Invalid Contact ID, please try again.</string>
+    <string name="userdata_warning_empty_contact_list">No contact available!</string>
+
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From ID</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
+    <string name="action_add">Add</string>
+    <string name="action_profile">Profile</string>
+    <string name="action_contacts">Contacts</string>
 
     <string name="hint_host_app_id">Host App ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
