@@ -18,6 +18,7 @@
     <dimen name="text_large_16">16sp</dimen>
     <dimen name="text_medium_14">14sp</dimen>
 
+    <dimen name="sec_icon_size">20dp</dimen>
     <dimen name="miniapp_icon_size">48dp</dimen>
     <dimen name="miniapp_logo_size">86dp</dimen>
 
