@@ -51,11 +51,10 @@ internal class MiniAppWebViewClient(
         request: WebResourceRequest,
         error: WebResourceError
     ) {
-        if (request.url != null && request.url.toString().startsWith(miniAppScheme.miniAppCustomScheme)) {
-            loadWithCustomDomain(
-                view,
-                request.url.toString().replace(miniAppScheme.miniAppCustomScheme, miniAppScheme.miniAppCustomDomain)
-            )
+        if (request.url != null) {
+            miniAppScheme.ifLoadingCustomScheme(request.url.toString()) { customDomain ->
+                loadWithCustomDomain(view, customDomain)
+            }
             return
         }
         super.onReceivedError(view, request, error)

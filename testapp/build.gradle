@@ -39,7 +39,8 @@ android {
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_VERSION") ?: "test-host-app-version",
             appId                   : property("HOST_APP_ID") ?: "test-host-app-id",
-            subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
+            adMobAppId              : property("ADMOB_APP_ID") ?: ""
     ]
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
@@ -47,7 +48,8 @@ android {
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
             appId                   : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
-            subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key"
+            subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
+            adMobAppId              : property("PROD_ADMOB_APP_ID") ?: ""
     ]
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
@@ -114,6 +116,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_refresh_layout"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation "com.google.android.gms:play-services-ads:$google_ads"
 
     testImplementation "junit:junit:$junit"
 }
