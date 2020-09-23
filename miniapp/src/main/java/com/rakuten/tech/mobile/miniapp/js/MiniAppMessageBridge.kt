@@ -18,10 +18,11 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge(val activity: Activity? = null) {
+abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
+    private lateinit var activity: Activity
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -53,7 +54,6 @@ abstract class MiniAppMessageBridge(val activity: Activity? = null) {
     ) {
         when {
             content.trim().isEmpty() -> callback.invoke(false, "content is empty")
-            activity == null -> callback.invoke(false, ErrorBridgeMessage.NO_ACTIVITY)
             else -> {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
@@ -68,10 +68,12 @@ abstract class MiniAppMessageBridge(val activity: Activity? = null) {
     }
 
     internal fun init(
+        activity: Activity,
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
         miniAppInfo: MiniAppInfo
     ) {
+        this.activity = activity
         this.webViewListener = webViewListener
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
@@ -207,7 +209,6 @@ abstract class MiniAppMessageBridge(val activity: Activity? = null) {
 internal class ErrorBridgeMessage {
 
     companion object {
-        const val NO_ACTIVITY = "No Activity from MiniAppMessageBridge"
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"

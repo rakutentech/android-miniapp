@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -49,6 +50,7 @@ internal class MiniAppWebView(
         addJavascriptInterface(miniAppMessageBridge, MINI_APP_INTERFACE)
 
         miniAppMessageBridge.init(
+            activity = context as Activity,
             webViewListener = this,
             customPermissionCache = miniAppCustomPermissionCache,
             miniAppInfo = miniAppInfo

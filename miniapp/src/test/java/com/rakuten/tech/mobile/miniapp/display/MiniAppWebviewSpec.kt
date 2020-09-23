@@ -150,11 +150,6 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 
     @Test
-    fun `MiniAppMessageBridge should be connected with RealMiniAppDisplay`() {
-        verify(miniAppMessageBridge, atLeastOnce()).init(miniAppWebView, miniAppCustomPermissionCache, TEST_MA)
-    }
-
-    @Test
     fun `should load url which is internal mini app scheme from external emission`() {
         miniAppWebView.externalResultHandler.emitResult(TEST_URL_HTTPS_1)
         miniAppWebView.externalResultHandler.emitResult("mscheme.${miniAppWebView.miniAppInfo.id}://index.html")

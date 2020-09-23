@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.app.Activity
 import android.content.Context
 import android.webkit.WebView
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
@@ -11,6 +12,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -30,17 +32,19 @@ class RealMiniAppDisplaySpec {
 
     @Before
     fun setup() {
-        context = getApplicationContext()
-        basePath = context.filesDir.path
-        realDisplay = RealMiniAppDisplay(
-            context,
-            basePath = basePath,
-            miniAppInfo = TEST_MA,
-            miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = mock(),
-            hostAppUserAgentInfo = TEST_HA_NAME,
-            miniAppCustomPermissionCache = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            context = activity
+            basePath = context.filesDir.path
+            realDisplay = RealMiniAppDisplay(
+                context,
+                basePath = basePath,
+                miniAppInfo = TEST_MA,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = mock(),
+                hostAppUserAgentInfo = TEST_HA_NAME,
+                miniAppCustomPermissionCache = mock()
+            )
+        }
     }
 
     @Test
@@ -65,7 +69,7 @@ class RealMiniAppDisplaySpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when the context provider is not activity context`() =
-        runBlockingTest { realDisplay.getMiniAppView(context) }
+        runBlockingTest { realDisplay.getMiniAppView(getApplicationContext()) }
 
     @Test
     fun `should create MiniAppWebView when provide activity context`() = runBlockingTest {

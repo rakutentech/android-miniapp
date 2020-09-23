@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.app.Activity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
@@ -55,8 +54,8 @@ open class MiniAppMessageBridgeSpec {
             }
         }
 
-    protected fun createDefaultMiniAppMessageBridge(activity: Activity?): MiniAppMessageBridge =
-        object : MiniAppMessageBridge(activity) {
+    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
+        object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
             override fun requestPermission(
@@ -110,6 +109,7 @@ open class MiniAppMessageBridgeSpec {
     @Before
     fun setup() {
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -129,6 +129,7 @@ open class MiniAppMessageBridgeSpec {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_PERMISSION} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -159,6 +160,7 @@ open class MiniAppMessageBridgeSpec {
     fun `postError should be called when cannot get unique id`() {
         val errMsg = "Cannot get unique id: null"
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -173,6 +175,7 @@ open class MiniAppMessageBridgeSpec {
         val isPermissionGranted = false
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -188,6 +191,7 @@ open class MiniAppMessageBridgeSpec {
     fun `postError should be called when cannot request custom permission`() {
         val errMsg = "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener(errMsg),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -199,11 +203,12 @@ open class MiniAppMessageBridgeSpec {
 }
 
 class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
-    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(null))
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
     fun setupShareInfo() {
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -224,8 +229,9 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
     @Test
     fun `postValue should be called when content is shared successfully`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(activity))
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             miniAppBridge.init(
+                activity = activity,
                 webViewListener = mock(),
                 customPermissionCache = mock(),
                 miniAppInfo = mock()
@@ -241,6 +247,7 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
         val errMsg = "${ErrorBridgeMessage.ERR_SHARE_CONTENT} null"
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener(errMsg),
             customPermissionCache = mock(),
             miniAppInfo = mock()
