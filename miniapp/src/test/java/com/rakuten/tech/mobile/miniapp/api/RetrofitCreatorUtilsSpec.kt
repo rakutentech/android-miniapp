@@ -31,25 +31,30 @@ class RetrofitCreatorUtilsSpec private constructor(
 
     @Test
     fun `should attach the RAS headers to requests`() {
-        When calling mockRasSdkHeaders.asArray() itReturns
-                arrayOf("ras_header_name" to "ras_header_value")
+        When calling mockRasSdkHeaders.asArray() itReturns arrayOf("ras_header_name" to "ras_header_value")
 
-        createClient()
-            .create(TestApi::class.java)
-            .fetch()
-            .execute()
+        executeCreateClient()
 
         mockServer.takeRequest().getHeader("ras_header_name") shouldEqual "ras_header_value"
     }
 
     @Test
+    fun `should attach the required Accept-Encoding type to requests`() {
+        executeCreateClient()
+
+        mockServer.takeRequest().getHeader("Accept-Encoding") shouldEqual "identity"
+    }
+
+    private fun executeCreateClient() = createClient()
+        .create(TestApi::class.java)
+        .fetch()
+        .execute()
+
+    @Test
     fun `should parse a JSON response`() {
         mockServer.enqueue(createTestApiResponse(testValue = TEST_VALUE))
 
-        val response = createClient()
-            .create(TestApi::class.java)
-            .fetch()
-            .execute()
+        val response = executeCreateClient()
 
         response.body()!!.testKey shouldEqual TEST_VALUE
     }
