@@ -115,6 +115,7 @@ dependencies {
     implementation "com.google.android.material:material:$material"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_refresh_layout"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "com.google.android.gms:play-services-ads:$google_ads"
 
     testImplementation "junit:junit:$junit"
