@@ -47,6 +47,12 @@
         <activity
           android:label="@string/action_contacts"
           android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity" />
+        <activity
+          android:label="Mini Apps List"
+          android:name="com.rakuten.tech.mobile.testapp.ui.permission.DownloadedMiniAppListActivity" />
+        <activity
+          android:label="Permission Settings"
+          android:name="com.rakuten.tech.mobile.testapp.ui.permission.PermissionSettingsActivity" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
