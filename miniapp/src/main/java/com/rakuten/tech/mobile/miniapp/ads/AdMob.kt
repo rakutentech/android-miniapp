@@ -1,15 +1,19 @@
 package com.rakuten.tech.mobile.miniapp.ads
 
+import androidx.annotation.VisibleForTesting
+
 /**
  * Check whether hostapp provides AdMob dependency.
  * If the dependency is provided then it means the AdMob app id has also been set from hostapp.
  */
-@Suppress("EmptyCatchBlock", "SwallowedException")
-inline fun whenAdMobProvided(successExec: () -> Unit, errorExec: (String) -> Unit = {}) {
+@Suppress("SwallowedException")
+internal fun isAdMobProvided(): Boolean =
     try {
-        Class.forName("com.google.android.gms.ads.MobileAds")
-        successExec.invoke()
+        Class.forName(AdMobClassName)
+        true
     } catch (e: ClassNotFoundException) {
-        errorExec.invoke("No AdMob support from HostApp")
+        false
     }
-}
+
+@VisibleForTesting
+internal var AdMobClassName = "com.google.android.gms.ads.MobileAds"

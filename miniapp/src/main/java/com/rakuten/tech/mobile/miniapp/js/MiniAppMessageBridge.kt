@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.ads.whenAdMobProvided
+import com.rakuten.tech.mobile.miniapp.ads.isAdMobProvided
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -203,8 +203,8 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
         postValue(callbackId, jsonResult)
     }
 
-    private fun onLoadAd(callbackId: String, jsonStr: String) = whenAdMobProvided(
-        successExec = {
+    private fun onLoadAd(callbackId: String, jsonStr: String) {
+        if (isAdMobProvided()) {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
                 val adObj = callbackObj.param
@@ -224,12 +224,12 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
             } catch (e: Exception) {
                 postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
             }
-        },
-        errorExec = { errMsg -> postError(callbackId, errMsg) }
-    )
+        } else
+            postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    }
 
-    private fun onShowAd(callbackId: String, jsonStr: String) = whenAdMobProvided(
-        successExec = {
+    private fun onShowAd(callbackId: String, jsonStr: String) {
+        if (isAdMobProvided()) {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
                 val adObj = callbackObj.param
@@ -249,9 +249,9 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
             } catch (e: Exception) {
                 postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
             }
-        },
-        errorExec = { errMsg -> postError(callbackId, errMsg) }
-    )
+        } else
+            postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    }
 
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
@@ -267,6 +267,7 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
 internal class ErrorBridgeMessage {
 
     companion object {
+        const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"

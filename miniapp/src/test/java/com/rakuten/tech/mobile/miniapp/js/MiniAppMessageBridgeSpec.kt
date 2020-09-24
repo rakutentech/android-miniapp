@@ -6,10 +6,13 @@ import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.TestActivity
+import com.rakuten.tech.mobile.miniapp.ads.AdMobClassName
+import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
@@ -54,8 +57,8 @@ open class MiniAppMessageBridgeSpec {
             }
         }
 
-    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
-        object : MiniAppMessageBridge() {
+    protected fun createDefaultMiniAppMessageBridge(miniAppAdDisplayer: MiniAppAdDisplayer? = null): MiniAppMessageBridge =
+        object : MiniAppMessageBridge(miniAppAdDisplayer) {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
             override fun requestPermission(
@@ -270,5 +273,91 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+}
+
+class AdBridgeSpec : MiniAppMessageBridgeSpec() {
+    val adDisplayer = object: MiniAppAdDisplayer {
+        override fun loadInterstitial(
+            adUnitId: String,
+            onLoaded: () -> Unit,
+            onFailed: (String) -> Unit
+        ) {
+            throw Exception()
+        }
+
+        override fun showInterstitial(
+            adUnitId: String,
+            onClosed: () -> Unit,
+            onFailed: (String) -> Unit
+        ) {
+            throw Exception()
+        }
+
+    }
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(adDisplayer))
+
+    @Before
+    fun setupAd() {
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = mock(),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+        AdMobClassName = "org.junit.Assert"// AdMob is provided.
+    }
+
+    private val interestitialAdCallbackObj =  createAdCallbackObj(
+        ActionType.LOAD_AD.action,
+        AdType.INTERSTITIAL.value,
+        TEST_AD_UNIT_ID
+    )
+    private val interestitialAdJsonStr = Gson().toJson(interestitialAdCallbackObj)
+
+    private fun createAdCallbackObj(action: String, adType: Int, adUnitId: String) = CallbackObj(
+        action = action,
+        param = AdObj(adType, adUnitId),
+        id = TEST_CALLBACK_ID
+    )
+
+    @Test
+    fun `postError should be called when AdMob is not provided`() {
+        var errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
+        AdMobClassName = "non.existence.class"
+        miniAppBridge.postMessage(interestitialAdJsonStr)
+
+        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+
+        val showAdCallbackObj = createAdCallbackObj(
+            ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID
+        )
+        val jsonStr = Gson().toJson(showAdCallbackObj)
+        errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
+        miniAppBridge.postMessage(jsonStr)
+
+        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when cannot load interstitial`() {
+        val errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} null"
+        miniAppBridge.postMessage(interestitialAdJsonStr)
+
+        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when cannot show interstitial`() {
+        val errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} null"
+        val interestitialAdCallbackObj =  createAdCallbackObj(
+            ActionType.SHOW_AD.action,
+            AdType.INTERSTITIAL.value,
+            TEST_AD_UNIT_ID
+        )
+        val interestitialAdJsonStr = Gson().toJson(interestitialAdCallbackObj)
+        miniAppBridge.postMessage(interestitialAdJsonStr)
+
+        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
     }
 }
