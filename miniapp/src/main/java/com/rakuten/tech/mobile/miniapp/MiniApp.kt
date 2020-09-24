@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -116,11 +117,12 @@ abstract class MiniApp internal constructor() {
 
             val miniAppStatus = MiniAppStatus(context)
             val storage = MiniAppStorage(FileWriter(), context.filesDir)
+            val verifier = CachedMiniAppVerifier(context)
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus),
+                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )

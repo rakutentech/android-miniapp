@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -8,6 +9,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
+import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
@@ -18,12 +20,12 @@ import org.mockito.Mockito
 
 @Suppress("TooGenericExceptionThrown")
 @RunWith(AndroidJUnit4::class)
-class MiniAppMessageBridgeSpec {
+open class MiniAppMessageBridgeSpec {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)
     )
 
-    private fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
+    protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
@@ -46,10 +48,29 @@ class MiniAppMessageBridgeSpec {
                 content: String,
                 callback: (isSuccess: Boolean, message: String?) -> Unit
             ) {
-                callback.invoke(true, null)
                 callback.invoke(true, SUCCESS)
                 callback.invoke(false, null)
                 callback.invoke(false, TEST_ERROR_MSG)
+            }
+        }
+
+    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
+        object : MiniAppMessageBridge() {
+            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun requestPermission(
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+            }
+
+            override fun requestCustomPermissions(
+                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+            ) {
+                val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
+                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
             }
         }
 
@@ -74,14 +95,7 @@ class MiniAppMessageBridgeSpec {
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
 
-    private val shareContentCallbackObj = CallbackObj(
-        action = ActionType.SHARE_INFO.action,
-        param = ShareInfoCallbackObj.ShareInfoParam(
-            ShareInfo("This is content")),
-        id = TEST_CALLBACK_ID)
-    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
-
-    private fun createErrorWebViewListener(errMsg: String): WebViewListener =
+    internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
                 throw Exception()
@@ -95,6 +109,7 @@ class MiniAppMessageBridgeSpec {
     @Before
     fun setup() {
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -114,7 +129,8 @@ class MiniAppMessageBridgeSpec {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         miniAppBridge.init(
-            webViewListener = createErrorWebViewListener("Cannot request permission: null"),
+            activity = TestActivity(),
+            webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_PERMISSION} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
@@ -144,7 +160,8 @@ class MiniAppMessageBridgeSpec {
     fun `postError should be called when cannot get unique id`() {
         val errMsg = "Cannot get unique id: null"
         miniAppBridge.init(
-            webViewListener = createErrorWebViewListener("Cannot get unique id: null"),
+            activity = TestActivity(),
+            webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
@@ -158,7 +175,8 @@ class MiniAppMessageBridgeSpec {
         val isPermissionGranted = false
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         miniAppBridge.init(
-            webViewListener = createErrorWebViewListener("Cannot request custom permissions: null"),
+            activity = TestActivity(),
+            webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
@@ -171,8 +189,9 @@ class MiniAppMessageBridgeSpec {
 
     @Test
     fun `postError should be called when cannot request custom permission`() {
-        val errMsg = "Cannot request custom permissions: null"
+        val errMsg = "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener(errMsg),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -181,12 +200,54 @@ class MiniAppMessageBridgeSpec {
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
+}
+
+class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+
+    @Before
+    fun setupShareInfo() {
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = mock(),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+    }
+
+    private val shareContentCallbackObj = createShareCallbackObj("This is content")
+    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
+
+    private fun createShareCallbackObj(content: String) = CallbackObj(
+        action = ActionType.SHARE_INFO.action,
+        param = ShareInfoCallbackObj.ShareInfoParam(
+            ShareInfo(content)
+        ),
+        id = TEST_CALLBACK_ID
+    )
+
+    @Test
+    fun `postValue should be called when content is shared successfully`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = mock(),
+                customPermissionCache = mock(),
+                miniAppInfo = mock()
+            )
+            miniAppBridge.postMessage(shareContentJsonStr)
+
+            verify(miniAppBridge, times(1)).postValue(TEST_CALLBACK_ID, SUCCESS)
+        }
+    }
 
     @Test
     fun `postError should be called when cannot share content`() {
-        miniAppBridge.postMessage(shareContentJsonStr)
-        val errMsg = "Cannot share content: null"
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+        val errMsg = "${ErrorBridgeMessage.ERR_SHARE_CONTENT} null"
         miniAppBridge.init(
+            activity = TestActivity(),
             webViewListener = createErrorWebViewListener(errMsg),
             customPermissionCache = mock(),
             miniAppInfo = mock()
@@ -194,5 +255,20 @@ class MiniAppMessageBridgeSpec {
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postValue should not be called when using default method without Activity`() {
+        miniAppBridge.postMessage(shareContentJsonStr)
+
+        verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+
+    @Test
+    fun `postValue should not be called when sharing empty content`() {
+        val shareContentJsonStr = Gson().toJson(createShareCallbackObj(" "))
+        miniAppBridge.postMessage(shareContentJsonStr)
+
+        verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
     }
 }
