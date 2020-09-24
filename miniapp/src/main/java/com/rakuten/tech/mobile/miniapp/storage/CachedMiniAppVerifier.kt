@@ -47,7 +47,7 @@ internal class CachedMiniAppVerifier
         }
     }
 
-    @SuppressWarnings("TooGenericExceptionCaught")
+    @SuppressWarnings("TooGenericExceptionCaught", "LongMethod", "NestedBlockDepth")
     private fun calculateHash(
         directory: File
     ): String = try {

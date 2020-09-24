@@ -23,7 +23,7 @@ internal class MiniAppDownloader(
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
-    @Suppress("SwallowedException")
+    @Suppress("SwallowedException", "LongMethod")
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> {
         try {
             val miniAppInfo = apiClient.fetchInfo(appId)
