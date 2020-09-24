@@ -15,6 +15,7 @@ MiniAppCustomPermissionManager {
      * @param [permissionObjList] list of CustomPermissionObj.
      * @return [List<Pair<MiniAppCustomPermissionType, String>>].
      */
+    @Suppress("FunctionMaxLength")
     fun preparePermissionsWithDescription(
         permissionObjList: ArrayList<CustomPermissionObj>
     ): List<Pair<MiniAppCustomPermissionType, String>> {

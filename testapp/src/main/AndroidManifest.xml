@@ -41,6 +41,12 @@
           android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
           android:theme="@style/AppThemeSettings" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
+        <activity
+          android:label="@string/action_profile"
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity" />
+        <activity
+          android:label="@string/action_contacts"
+          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
@@ -60,6 +66,9 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="${subscriptionKey}" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${adMobAppId}" />
     </application>
 
 </manifest>

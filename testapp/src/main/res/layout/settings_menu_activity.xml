@@ -1,8 +1,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:layout_height="match_parent"
-  android:layout_width="match_parent">
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
   <androidx.appcompat.widget.Toolbar
     android:id="@+id/toolbar"
@@ -17,7 +17,6 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/medium_16"
     android:orientation="vertical"
     app:layout_constraintStart_toStartOf="@id/toolbar"
     app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -26,27 +25,30 @@
       android:id="@+id/textInfo"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8"
       android:padding="@dimen/small_8"
-      android:background="#198C8C8C"
       android:textColor="@android:color/black"
       tools:text="Build Info" />
 
-    <View
+    <androidx.appcompat.widget.AppCompatTextView
       android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginTop="@dimen/small_12"
-      android:layout_marginBottom="@dimen/small_12"
-      android:background="@color/colorAccent" />
+      android:layout_height="wrap_content"
+      android:paddingTop="@dimen/small_4"
+      android:paddingBottom="@dimen/small_4"
+      android:paddingStart="@dimen/medium_16"
+      android:paddingEnd="@dimen/medium_16"
+      android:background="@color/bg_section"
+      android:text="RAS" />
 
     <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8">
 
       <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/editAppId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/small_4"
         android:hint="@string/hint_host_app_id"
         android:imeOptions="actionDone"
         android:inputType="text" />
@@ -54,7 +56,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8">
 
       <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/editSubscriptionKey"
@@ -65,13 +68,72 @@
         android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchTestMode"
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatTextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="@dimen/small_4"
+      android:paddingBottom="@dimen/small_4"
+      android:paddingStart="@dimen/medium_16"
+      android:paddingEnd="@dimen/medium_16"
+      android:background="@color/bg_section"
+      android:text="User Details" />
+
+    <RelativeLayout
+      android:id="@+id/buttonProfile"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/medium_16"
+      android:foreground="?attr/selectableItemBackground">
+
+      <ImageView
+        android:layout_width="@dimen/sec_icon_size"
+        android:layout_height="@dimen/sec_icon_size"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_arrow_forward" />
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_12"
-        android:text="@string/lb_test_mode"
-        android:visibility="invisible"/>
+        android:layout_centerVertical="true"
+        android:text="@string/action_profile"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16" />
+    </RelativeLayout>
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="@color/bg_section" />
+
+    <RelativeLayout
+      android:id="@+id/buttonContacts"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/medium_16"
+      android:foreground="?attr/selectableItemBackground">
+
+      <ImageView
+        android:layout_width="@dimen/sec_icon_size"
+        android:layout_height="@dimen/sec_icon_size"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_arrow_forward" />
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="@string/action_contacts"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16" />
+    </RelativeLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+      android:id="@+id/switchTestMode"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_12"
+      android:text="@string/lb_test_mode"
+      android:visibility="gone" />
 
   </LinearLayout>
 

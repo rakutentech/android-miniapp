@@ -1,9 +1,11 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.CoroutineDispatcher
@@ -11,11 +13,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
+import java.io.File
 
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
     private val miniAppStatus: MiniAppStatus,
+    private val verifier: CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
 
@@ -23,20 +27,25 @@ internal class MiniAppDownloader(
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> {
         try {
             val miniAppInfo = apiClient.fetchInfo(appId)
-            var versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
-            if (!miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath))
-                versionPath = startDownload(miniAppInfo)
+            val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
 
-            storeDownloadedMiniApp(miniAppInfo)
+            return if (downloadedVersionPath == null) {
+                val versionPath = startDownload(miniAppInfo)
+                verifier.storeHashAsync(miniAppInfo.id, File(versionPath))
+                storeDownloadedMiniApp(miniAppInfo)
 
-            return Pair(versionPath, miniAppInfo)
+                Pair(versionPath, miniAppInfo)
+            } else {
+                Pair(downloadedVersionPath, miniAppInfo)
+            }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
             val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
             if (miniAppInfo != null) {
-                val versionPath = storage.getMiniAppVersionPath(appId, miniAppInfo.version.versionId)
-                if (miniAppStatus.isVersionDownloaded(appId, miniAppInfo.version.versionId, versionPath))
-                    return Pair(versionPath, miniAppInfo)
+                val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
+                if (downloadedVersionPath !== null) {
+                    return Pair(downloadedVersionPath, miniAppInfo)
+                }
             }
         }
         // cannot load miniapp from server
@@ -46,6 +55,24 @@ internal class MiniAppDownloader(
     private fun storeDownloadedMiniApp(miniAppInfo: MiniAppInfo) {
         miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, true)
         miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
+    }
+
+    private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
+        val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+
+        if (miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
+            return if (verifier.verify(miniAppInfo.id, File(versionPath))) {
+                versionPath
+            } else {
+                Log.e(TAG, "Failed to verify the hash of the cached files. " +
+                        "The files will be deleted and the Mini App re-downloaded.")
+                storage.removeApp(miniAppInfo.id)
+                miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
+                null
+            }
+        }
+
+        return null
     }
 
     @VisibleForTesting
@@ -88,5 +115,9 @@ internal class MiniAppDownloader(
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
+    }
+
+    companion object {
+        private const val TAG = "MiniAppDownloader"
     }
 }

@@ -45,6 +45,8 @@ dependencies {
 
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.webkit:webkit:$webkit"
+    implementation "androidx.security:security-crypto:$androidx_crypto"
+    compileOnly "com.google.android.gms:play-services-ads:$google_ads"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"

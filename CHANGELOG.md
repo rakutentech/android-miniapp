@@ -7,6 +7,7 @@
 
 **Sample App**
 - **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.
+- **Feature:** User name, profile photo, and contact list can be configured in the settings screen.
 
 ### 2.1.0 (2020-09-03)
 **SDK**
