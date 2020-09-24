@@ -41,7 +41,12 @@ class CustomPermissionAdapter : RecyclerView.Adapter<CustomPermissionAdapter.Vie
             )
         }
 
-        holder.permissionDescription.text = permissionDescription[position]
+        if (permissionDescription.isNotEmpty())
+            holder.permissionDescription.text = permissionDescription[position]
+
+        if (holder.permissionDescription.text.isEmpty())
+            holder.permissionDescription.visibility = View.GONE
+        else holder.permissionDescription.visibility = View.VISIBLE
     }
 
     override fun getItemCount(): Int = permissionNames.size

@@ -5,21 +5,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.downloaded_miniapp_list_activity.*
-import kotlinx.android.synthetic.main.downloaded_miniapp_list_activity.swipeRefreshLayout
 
-class DownloadedMiniAppListActivity : BaseActivity(), DownloadedMiniAppList {
+// TODO: rename
+class DownloadedMiniAppListActivity(private val miniapp: MiniApp) : BaseActivity(),
+    DownloadedMiniAppList {
 
     private lateinit var adapter: DownloadedMiniAppListAdapter
-    private lateinit var viewModel: DownloadedMiniAppListViewModel
+    private var miniAppList: List<MiniAppInfo> = emptyList()
+
+    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,41 +40,13 @@ class DownloadedMiniAppListActivity : BaseActivity(), DownloadedMiniAppList {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        swipeRefreshLayout.post {
-            swipeRefreshLayout.isRefreshing = true
-            executeLoadingList()
-        }
-    }
-
     private fun renderScreen() {
-        renderAdapter()
-
-        viewModel = ViewModelProvider.NewInstanceFactory()
-            .create(DownloadedMiniAppListViewModel::class.java).apply {
-                miniAppListData.observe(this@DownloadedMiniAppListActivity, Observer {
-                    swipeRefreshLayout.isRefreshing = false
-                    addMiniAppList(it)
-                    // MiniAppListStore.instance.saveMiniAppList(it)
-                })
-                errorData.observe(this@DownloadedMiniAppListActivity, Observer {
-                    val list = MiniAppListStore.instance.getMiniAppList()
-                    if (list.isEmpty())
-                        checkEmpty()
-                    else {
-                        addMiniAppList(list)
-                        swipeRefreshLayout.isRefreshing = false
-                    }
-                })
-            }
-
-        swipeRefreshLayout.setOnRefreshListener {
-            executeLoadingList()
-        }
+        initAdapter()
+        executeLoadingList()
+        addMiniAppList(miniAppList)
     }
 
-    private fun renderAdapter() {
+    private fun initAdapter() {
         adapter = DownloadedMiniAppListAdapter(this)
         listDownloadedMiniApp.adapter = adapter
         listDownloadedMiniApp.layoutManager = LinearLayoutManager(applicationContext)
@@ -81,23 +55,24 @@ class DownloadedMiniAppListActivity : BaseActivity(), DownloadedMiniAppList {
         )
     }
 
-    private fun checkEmpty() {
-        viewEmptyContact.visibility =
-            if (adapter.itemCount == 0) View.VISIBLE else View.GONE
-    }
-
     private fun addMiniAppList(list: List<MiniAppInfo>) {
         adapter.addList(list, arrayListOf())
+        checkEmpty()
     }
 
     private fun executeLoadingList() {
-        viewModel.getMiniAppList()
+        miniAppList = miniapp.listDownloadedWithCustomPermissions()
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
             PermissionSettingsActivity.start(this@DownloadedMiniAppListActivity, miniAppInfo)
         }
+    }
+
+    private fun checkEmpty() {
+        viewEmptyContact.visibility =
+            if (adapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
     companion object {

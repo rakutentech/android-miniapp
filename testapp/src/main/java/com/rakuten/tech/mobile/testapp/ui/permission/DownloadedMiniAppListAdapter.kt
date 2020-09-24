@@ -15,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListDownloadedMiniappBinding
 
+// TODO: rename
 class DownloadedMiniAppListAdapter(val miniAppList: DownloadedMiniAppList) :
     ListAdapter<MiniAppInfo, DownloadedMiniAppViewHolder>(MiniAppDiffCallback()) {
 

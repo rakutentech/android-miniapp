@@ -13,19 +13,12 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-      android:id="@+id/swipeRefreshLayout"
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/listDownloadedMiniApp"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-
-      <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/listDownloadedMiniApp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/small_8"
-        tools:listitem="@layout/item_list_downloaded_miniapp" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+      android:layout_height="wrap_content"
+      android:padding="@dimen/small_8"
+      tools:listitem="@layout/item_list_downloaded_miniapp" />
 
     <TextView
       android:id="@+id/viewEmptyContact"
