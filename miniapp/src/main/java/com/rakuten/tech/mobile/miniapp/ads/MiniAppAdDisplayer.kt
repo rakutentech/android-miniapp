@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.ads
 
 /**
  * Control ads load & display when want to use AdMob.
- * Note: Make all calls on the main thread.
  */
 interface MiniAppAdDisplayer {
 

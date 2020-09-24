@@ -5,37 +5,51 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.LoadAdError
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-internal class AdMobDisplayer(val context: Context) : MiniAppAdDisplayer {
+internal class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer, CoroutineScope {
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
 
     override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
-        val ad = InterstitialAd(context)
-        ad.adUnitId = adUnitId
-        interstitialAdMap[adUnitId] = ad
+        launch {
+            val ad = InterstitialAd(context)
+            ad.adUnitId = adUnitId
+            interstitialAdMap[adUnitId] = ad
 
-        ad.adListener = object : AdListener() {
-            override fun onAdLoaded() { onLoaded.invoke() }
-
-            override fun onAdFailedToLoad(adError: LoadAdError) { onFailed.invoke(adError.message) }
-        }
-
-        ad.loadAd(AdRequest.Builder().build())
-    }
-
-    override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
-        if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
-            val ad = interstitialAdMap[adUnitId]!!
             ad.adListener = object : AdListener() {
+                override fun onAdLoaded() {
+                    onLoaded.invoke()
+                }
 
-                override fun onAdClosed() {
-                    onClosed.invoke()
-                    interstitialAdMap.remove(adUnitId)
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    onFailed.invoke(adError.message)
                 }
             }
 
-            ad.show()
-        } else
-            onFailed.invoke("Ad is not loaded yet")
+            ad.loadAd(AdRequest.Builder().build())
+        }
+    }
+
+    override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
+        launch {
+            if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
+                val ad = interstitialAdMap[adUnitId]!!
+                ad.adListener = object : AdListener() {
+
+                    override fun onAdClosed() {
+                        onClosed.invoke()
+                        interstitialAdMap.remove(adUnitId)
+                    }
+                }
+
+                ad.show()
+            } else
+                onFailed.invoke("Ad is not loaded yet")
+        }
     }
 }

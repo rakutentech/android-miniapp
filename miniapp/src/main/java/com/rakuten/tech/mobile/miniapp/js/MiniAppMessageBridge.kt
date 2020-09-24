@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer?) {
+abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? = null) {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
@@ -95,8 +95,8 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer?)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
-            ActionType.LOAD_AD.action -> onLoadAd(callbackObj)
-            ActionType.SHOW_AD.action -> onShowAd(callbackObj)
+            ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
+            ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
         }
     }
 
@@ -203,58 +203,54 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer?)
         postValue(callbackId, jsonResult)
     }
 
-    private fun onLoadAd(callbackObj: CallbackObj) = whenAdMobProvided(
+    private fun onLoadAd(callbackId: String, jsonStr: String) = whenAdMobProvided(
         successExec = {
             try {
-                val adObj = Gson().fromJson<AdObj>(
-                    callbackObj.param.toString(),
-                    object : TypeToken<AdObj>() {}.type
-                )
+                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
+                val adObj = callbackObj.param
 
                 when (adObj.adType) {
                     AdType.INTERSTITIAL.value -> adMobDisplayer.loadInterstitial(
                         adUnitId = adObj.adUnitId,
-                        onLoaded = { postValue(callbackObj.id, SUCCESS) },
+                        onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
                             postError(
-                                callbackObj.id,
+                                callbackId,
                                 "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
                             )
                         }
                     )
                 }
             } catch (e: Exception) {
-                postError(callbackObj.id, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
+                postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
             }
         },
-        errorExec = { errMsg -> postError(callbackObj.id, errMsg) }
+        errorExec = { errMsg -> postError(callbackId, errMsg) }
     )
 
-    private fun onShowAd(callbackObj: CallbackObj) = whenAdMobProvided(
+    private fun onShowAd(callbackId: String, jsonStr: String) = whenAdMobProvided(
         successExec = {
             try {
-                val adObj = Gson().fromJson<AdObj>(
-                    callbackObj.param.toString(),
-                    object : TypeToken<AdObj>() {}.type
-                )
+                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
+                val adObj = callbackObj.param
 
                 when (adObj.adType) {
                     AdType.INTERSTITIAL.value -> adMobDisplayer.showInterstitial(
                         adUnitId = adObj.adUnitId,
-                        onClosed = { postValue(callbackObj.id, CLOSED) },
+                        onClosed = { postValue(callbackId, CLOSED) },
                         onFailed = { errMsg ->
                             postError(
-                                callbackObj.id,
+                                callbackId,
                                 "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
                             )
                         }
                     )
                 }
             } catch (e: Exception) {
-                postError(callbackObj.id, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
+                postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
             }
         },
-        errorExec = { errMsg -> postError(callbackObj.id, errMsg) }
+        errorExec = { errMsg -> postError(callbackId, errMsg) }
     )
 
     /** Return a value to mini app. **/
