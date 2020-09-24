@@ -57,7 +57,9 @@ open class MiniAppMessageBridgeSpec {
             }
         }
 
-    protected fun createDefaultMiniAppMessageBridge(miniAppAdDisplayer: MiniAppAdDisplayer? = null): MiniAppMessageBridge =
+    protected fun createDefaultMiniAppMessageBridge(
+        miniAppAdDisplayer: MiniAppAdDisplayer? = null
+    ): MiniAppMessageBridge =
         object : MiniAppMessageBridge(miniAppAdDisplayer) {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
@@ -276,8 +278,9 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
     }
 }
 
+@Suppress("TooGenericExceptionThrown")
 class AdBridgeSpec : MiniAppMessageBridgeSpec() {
-    val adDisplayer = object: MiniAppAdDisplayer {
+    val adDisplayer = object : MiniAppAdDisplayer {
         override fun loadInterstitial(
             adUnitId: String,
             onLoaded: () -> Unit,
@@ -293,7 +296,6 @@ class AdBridgeSpec : MiniAppMessageBridgeSpec() {
         ) {
             throw Exception()
         }
-
     }
     val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(adDisplayer))
 
@@ -305,10 +307,10 @@ class AdBridgeSpec : MiniAppMessageBridgeSpec() {
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
-        AdMobClassName = "org.junit.Assert"// AdMob is provided.
+        AdMobClassName = "org.junit.Assert" // AdMob is provided.
     }
 
-    private val interestitialAdCallbackObj =  createAdCallbackObj(
+    private val interestitialAdCallbackObj = createAdCallbackObj(
         ActionType.LOAD_AD.action,
         AdType.INTERSTITIAL.value,
         TEST_AD_UNIT_ID
@@ -350,7 +352,7 @@ class AdBridgeSpec : MiniAppMessageBridgeSpec() {
     @Test
     fun `postError should be called when cannot show interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} null"
-        val interestitialAdCallbackObj =  createAdCallbackObj(
+        val interestitialAdCallbackObj = createAdCallbackObj(
             ActionType.SHOW_AD.action,
             AdType.INTERSTITIAL.value,
             TEST_AD_UNIT_ID
