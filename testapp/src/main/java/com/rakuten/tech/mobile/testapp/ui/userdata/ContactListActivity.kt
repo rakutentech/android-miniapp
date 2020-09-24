@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.contacts_activity.*
@@ -79,7 +78,7 @@ class ContactListActivity : BaseActivity() {
                 if (editNewContact.text.toString().isNotEmpty()) {
                     val name = editNewContact.text.toString()
                     // add contact in the last position
-                    adapter.addContact(adapter.itemCount, clearWhiteSpaces(name))
+                    adapter.addContact(adapter.itemCount, name.trimEnd())
                 } else {
                     Toast.makeText(
                         this@ContactListActivity,
@@ -115,7 +114,7 @@ class ContactListActivity : BaseActivity() {
     private fun createRandomUUIDList(): ArrayList<String> {
         val randomUUIDs = ArrayList<String>()
         for (i in 1..10)
-            randomUUIDs.add(clearWhiteSpaces((UUID.randomUUID().toString())))
+            randomUUIDs.add(UUID.randomUUID().toString().trimEnd())
 
         return randomUUIDs
     }

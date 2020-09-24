@@ -13,7 +13,6 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.clearWhiteSpaces
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -74,8 +73,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
     private fun updateProfile(name: String) {
         settings.profilePictureUrl = profileUrl
-        val nameToCache = clearWhiteSpaces(name)
-        if (nameToCache.isNotEmpty()) settings.profileName = nameToCache
+        settings.profileName = name.trimEnd()
         finish()
     }
 
