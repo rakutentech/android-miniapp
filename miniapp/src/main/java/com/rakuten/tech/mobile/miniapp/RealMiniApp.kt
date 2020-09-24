@@ -30,6 +30,11 @@ internal class RealMiniApp(
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
+    // TODO
+    override fun listDownloadedWithCustomPermissions(): List<MiniAppInfo> {
+        return miniAppDownloader.getDownloadedMiniAppList()
+    }
+
     override suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge

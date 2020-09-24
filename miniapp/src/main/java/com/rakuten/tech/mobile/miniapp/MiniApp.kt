@@ -81,6 +81,13 @@ abstract class MiniApp internal constructor() {
     )
 
     /**
+     * Fetches and lists out the mini applications available with custom permissions
+     * in the MiniApp Ecosystem.
+     * @return
+     */
+    abstract fun listDownloadedWithCustomPermissions(): List<MiniAppInfo>
+
+    /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)

@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import java.lang.Exception
 
 /**
@@ -35,6 +37,24 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             }
         }
         return defaultDeniedList(miniAppId)
+    }
+
+    // TODO
+    fun readAllStoredPermissions(miniAppInfo: List<MiniAppInfo>): List<MiniAppCustomPermission> {
+        val list = arrayListOf<MiniAppCustomPermission>()
+        prefs.all.map { entry ->
+            try {
+                list.add(
+                    Gson().fromJson(
+                        prefs.getString(entry.key, ""),
+                        object : TypeToken<MiniAppCustomPermission>() {}.type
+                    )
+                )
+            } catch (error: JsonSyntaxException) {
+                return emptyList()
+            }
+        }
+        return list
     }
 
     /**
