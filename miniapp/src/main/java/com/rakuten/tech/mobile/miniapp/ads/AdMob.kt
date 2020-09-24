@@ -5,9 +5,11 @@ package com.rakuten.tech.mobile.miniapp.ads
  * If the dependency is provided then it means the AdMob app id has also been set from hostapp.
  */
 @Suppress("EmptyCatchBlock", "SwallowedException")
-inline fun <T> whenAdMobProvided(callback: () -> T) {
+inline fun whenAdMobProvided(successExec: () -> Unit, errorExec: (String) -> Unit = {}) {
     try {
         Class.forName("com.google.android.gms.ads.MobileAds")
-        callback.invoke()
-    } catch (e: ClassNotFoundException) {}
+        successExec.invoke()
+    } catch (e: ClassNotFoundException) {
+        errorExec.invoke("No AdMob support from HostApp")
+    }
 }

@@ -44,6 +44,13 @@ internal data class ShareInfoCallbackObj(val param: ShareInfoParam) {
 }
 // end region
 
+@Keep
+internal data class AdObj(
+    val adType: Int,
+    val adUnitId: String
+)
+
 // action response region
 internal const val SUCCESS = "success"
+internal const val CLOSED = "closed"
 // end region
