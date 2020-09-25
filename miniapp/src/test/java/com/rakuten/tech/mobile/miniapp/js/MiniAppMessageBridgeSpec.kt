@@ -279,7 +279,6 @@ class ShareContentBridgeSpec : BridgeCommon() {
     }
 }
 
-@Suppress("TooGenericExceptionThrown")
 class AdBridgeSpec : BridgeCommon() {
     val adDisplayer = object : MiniAppAdDisplayer {
         override fun loadInterstitial(
@@ -287,6 +286,7 @@ class AdBridgeSpec : BridgeCommon() {
             onLoaded: () -> Unit,
             onFailed: (String) -> Unit
         ) {
+            onFailed.invoke(TEST_ERROR_MSG)
             throw Exception()
         }
 
@@ -295,6 +295,7 @@ class AdBridgeSpec : BridgeCommon() {
             onClosed: () -> Unit,
             onFailed: (String) -> Unit
         ) {
+            onFailed.invoke(TEST_ERROR_MSG)
             throw Exception()
         }
     }
