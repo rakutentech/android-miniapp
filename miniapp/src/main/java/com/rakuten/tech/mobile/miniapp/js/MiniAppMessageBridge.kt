@@ -22,12 +22,27 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? = null) {
+abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
+
     private lateinit var adMobDisplayer: MiniAppAdDisplayer
+    private val isAdMobEnabled = isAdMobProvided()
+
+    internal fun init(
+        activity: Activity,
+        webViewListener: WebViewListener,
+        customPermissionCache: MiniAppCustomPermissionCache,
+        miniAppInfo: MiniAppInfo
+    ) {
+        this.activity = activity
+        this.webViewListener = webViewListener
+        this.customPermissionCache = customPermissionCache
+        this.miniAppInfo = miniAppInfo
+        this.adMobDisplayer = AdMobDisplayer(activity)
+    }
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -72,19 +87,6 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
         }
     }
 
-    internal fun init(
-        activity: Activity,
-        webViewListener: WebViewListener,
-        customPermissionCache: MiniAppCustomPermissionCache,
-        miniAppInfo: MiniAppInfo
-    ) {
-        this.activity = activity
-        this.webViewListener = webViewListener
-        this.customPermissionCache = customPermissionCache
-        this.miniAppInfo = miniAppInfo
-        this.adMobDisplayer = miniAppAdDisplayer ?: AdMobDisplayer(activity)
-    }
-
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -98,6 +100,11 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
         }
+    }
+
+    /** Set implemented ads displayer. **/
+    fun setAdMobDisplayer(miniAppAdDisplayer: MiniAppAdDisplayer) {
+        adMobDisplayer = miniAppAdDisplayer
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
@@ -204,7 +211,7 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
     }
 
     private fun onLoadAd(callbackId: String, jsonStr: String) {
-        if (isAdMobProvided()) {
+        if (isAdMobEnabled) {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
                 val adObj = callbackObj.param
@@ -229,7 +236,7 @@ abstract class MiniAppMessageBridge(val miniAppAdDisplayer: MiniAppAdDisplayer? 
     }
 
     private fun onShowAd(callbackId: String, jsonStr: String) {
-        if (isAdMobProvided()) {
+        if (isAdMobEnabled) {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
                 val adObj = callbackObj.param

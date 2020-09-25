@@ -22,12 +22,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 @Suppress("TooGenericExceptionThrown")
-@RunWith(AndroidJUnit4::class)
-open class MiniAppMessageBridgeSpec {
-    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
-        createMiniAppMessageBridge(false)
-    )
-
+open class BridgeCommon {
     protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
@@ -57,27 +52,42 @@ open class MiniAppMessageBridgeSpec {
             }
         }
 
-    protected fun createDefaultMiniAppMessageBridge(
-        miniAppAdDisplayer: MiniAppAdDisplayer? = null
-    ): MiniAppMessageBridge =
-        object : MiniAppMessageBridge(miniAppAdDisplayer) {
-            override fun getUniqueId() = TEST_CALLBACK_VALUE
+    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
+        override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-            override fun requestPermission(
-                miniAppPermissionType: MiniAppPermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+        override fun requestPermission(
+            miniAppPermissionType: MiniAppPermissionType,
+            callback: (isGranted: Boolean) -> Unit
+        ) {
+            onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+        }
+
+        override fun requestCustomPermissions(
+            permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+            callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+        ) {
+            val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
+            onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
+        }
+    }
+
+    internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
+        object : WebViewListener {
+            override fun runSuccessCallback(callbackId: String, value: String) {
+                throw Exception()
             }
 
-            override fun requestCustomPermissions(
-                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-            ) {
-                val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
-                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
+            override fun runErrorCallback(callbackId: String, errorMessage: String) {
+                Assert.assertEquals(errorMessage, errMsg)
             }
         }
+}
+
+@RunWith(AndroidJUnit4::class)
+class MiniAppMessageBridgeSpec : BridgeCommon() {
+    private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
+        createMiniAppMessageBridge(false)
+    )
 
     private val uniqueIdCallbackObj = CallbackObj(
         action = ActionType.GET_UNIQUE_ID.action,
@@ -99,17 +109,6 @@ open class MiniAppMessageBridgeSpec {
         id = TEST_CALLBACK_ID
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
-
-    internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
-        object : WebViewListener {
-            override fun runSuccessCallback(callbackId: String, value: String) {
-                throw Exception()
-            }
-
-            override fun runErrorCallback(callbackId: String, errorMessage: String) {
-                Assert.assertEquals(errorMessage, errMsg)
-            }
-        }
 
     @Before
     fun setup() {
@@ -207,7 +206,8 @@ open class MiniAppMessageBridgeSpec {
     }
 }
 
-class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
+@RunWith(AndroidJUnit4::class)
+class ShareContentBridgeSpec : BridgeCommon() {
     val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
@@ -220,15 +220,16 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
         )
     }
 
-    private val shareContentCallbackObj = createShareCallbackObj("This is content")
-    private val shareContentJsonStr = Gson().toJson(shareContentCallbackObj)
+    private val shareContentJsonStr = createShareCallbackJsonStr("This is content")
 
-    private fun createShareCallbackObj(content: String) = CallbackObj(
-        action = ActionType.SHARE_INFO.action,
-        param = ShareInfoCallbackObj.ShareInfoParam(
-            ShareInfo(content)
-        ),
-        id = TEST_CALLBACK_ID
+    private fun createShareCallbackJsonStr(content: String) = Gson().toJson(
+            CallbackObj(
+                action = ActionType.SHARE_INFO.action,
+                param = ShareInfoCallbackObj.ShareInfoParam(
+                    ShareInfo(content)
+                ),
+                id = TEST_CALLBACK_ID
+            )
     )
 
     @Test
@@ -271,7 +272,7 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
 
     @Test
     fun `postValue should not be called when sharing empty content`() {
-        val shareContentJsonStr = Gson().toJson(createShareCallbackObj(" "))
+        val shareContentJsonStr = createShareCallbackJsonStr(" ")
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(miniAppBridge, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
@@ -279,7 +280,7 @@ class ShareContentBridgeSpec : MiniAppMessageBridgeSpec() {
 }
 
 @Suppress("TooGenericExceptionThrown")
-class AdBridgeSpec : MiniAppMessageBridgeSpec() {
+class AdBridgeSpec : BridgeCommon() {
     val adDisplayer = object : MiniAppAdDisplayer {
         override fun loadInterstitial(
             adUnitId: String,
@@ -297,69 +298,64 @@ class AdBridgeSpec : MiniAppMessageBridgeSpec() {
             throw Exception()
         }
     }
-    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge(adDisplayer))
+    private lateinit var miniAppBridge: MiniAppMessageBridge
+    private lateinit var miniAppBridgeWithAdMob: MiniAppMessageBridge
 
     @Before
     fun setupAd() {
+        miniAppBridge = initMiniAppBridge("non.existence.class")
+        miniAppBridgeWithAdMob = initMiniAppBridge("org.junit.Assert")
+    }
+
+    private fun createAdJsonStr(action: String, adType: Int, adUnitId: String) = Gson().toJson(
+        CallbackObj(
+            action = action,
+            param = AdObj(adType, adUnitId),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    private fun initMiniAppBridge(adMobCheckedClass: String): MiniAppMessageBridge {
+        AdMobClassName = adMobCheckedClass
+        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
         miniAppBridge.init(
             activity = TestActivity(),
             webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
-        AdMobClassName = "org.junit.Assert" // AdMob is provided.
+        miniAppBridge.setAdMobDisplayer(adDisplayer)
+        return miniAppBridge
     }
-
-    private val interestitialAdCallbackObj = createAdCallbackObj(
-        ActionType.LOAD_AD.action,
-        AdType.INTERSTITIAL.value,
-        TEST_AD_UNIT_ID
-    )
-    private val interestitialAdJsonStr = Gson().toJson(interestitialAdCallbackObj)
-
-    private fun createAdCallbackObj(action: String, adType: Int, adUnitId: String) = CallbackObj(
-        action = action,
-        param = AdObj(adType, adUnitId),
-        id = TEST_CALLBACK_ID
-    )
 
     @Test
     fun `postError should be called when AdMob is not provided`() {
         var errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
-        AdMobClassName = "non.existence.class"
-        miniAppBridge.postMessage(interestitialAdJsonStr)
-
+        var jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        miniAppBridge.postMessage(jsonStr)
         verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
 
-        val showAdCallbackObj = createAdCallbackObj(
-            ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID
-        )
-        val jsonStr = Gson().toJson(showAdCallbackObj)
+        jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
         miniAppBridge.postMessage(jsonStr)
-
         verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `postError should be called when cannot load interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} null"
-        miniAppBridge.postMessage(interestitialAdJsonStr)
+        val jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        miniAppBridgeWithAdMob.postMessage(jsonStr)
 
-        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+        verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `postError should be called when cannot show interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} null"
-        val interestitialAdCallbackObj = createAdCallbackObj(
-            ActionType.SHOW_AD.action,
-            AdType.INTERSTITIAL.value,
-            TEST_AD_UNIT_ID
-        )
-        val interestitialAdJsonStr = Gson().toJson(interestitialAdCallbackObj)
-        miniAppBridge.postMessage(interestitialAdJsonStr)
+        val jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        miniAppBridgeWithAdMob.postMessage(jsonStr)
 
-        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+        verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
     }
 }
