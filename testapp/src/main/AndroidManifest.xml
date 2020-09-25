@@ -48,11 +48,11 @@
           android:label="@string/action_contacts"
           android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity" />
         <activity
-          android:label="Mini Apps List"
-          android:name="com.rakuten.tech.mobile.testapp.ui.permission.DownloadedMiniAppListActivity" />
+          android:label="Downloaded Mini App List"
+          android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity" />
         <activity
           android:label="Permission Settings"
-          android:name="com.rakuten.tech.mobile.testapp.ui.permission.PermissionSettingsActivity" />
+          android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"

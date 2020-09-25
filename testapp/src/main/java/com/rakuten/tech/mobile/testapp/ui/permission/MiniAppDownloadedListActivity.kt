@@ -5,28 +5,28 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.downloaded_miniapp_list_activity.*
+import kotlinx.android.synthetic.main.miniapp_downloaded_list_activity.*
+import kotlinx.android.synthetic.main.miniapp_downloaded_list_activity.emptyView
 
-// TODO: rename
-class DownloadedMiniAppListActivity(private val miniapp: MiniApp) : BaseActivity(),
-    DownloadedMiniAppList {
-
-    private lateinit var adapter: DownloadedMiniAppListAdapter
-    private var miniAppList: List<MiniAppInfo> = emptyList()
+class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity(), MiniAppList {
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
+
+    private lateinit var miniAppListAdapter: MiniAppListAdapter
+    private var miniAppList: List<MiniAppInfo> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
-        setContentView(R.layout.downloaded_miniapp_list_activity)
+        setContentView(R.layout.miniapp_downloaded_list_activity)
         renderScreen()
     }
 
@@ -47,37 +47,39 @@ class DownloadedMiniAppListActivity(private val miniapp: MiniApp) : BaseActivity
     }
 
     private fun initAdapter() {
-        adapter = DownloadedMiniAppListAdapter(this)
-        listDownloadedMiniApp.adapter = adapter
+        miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         listDownloadedMiniApp.layoutManager = LinearLayoutManager(applicationContext)
-        listDownloadedMiniApp.addItemDecoration(
-            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        )
-    }
-
-    private fun addMiniAppList(list: List<MiniAppInfo>) {
-        adapter.addList(list, arrayListOf())
-        checkEmpty()
+        listDownloadedMiniApp.adapter = miniAppListAdapter
     }
 
     private fun executeLoadingList() {
         miniAppList = miniapp.listDownloadedWithCustomPermissions()
     }
 
+    private fun addMiniAppList(miniAppsInfo: List<MiniAppInfo>) {
+        miniAppListAdapter.addListWithSection(miniAppsInfo)
+        updateEmptyView()
+    }
+
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
-            PermissionSettingsActivity.start(this@DownloadedMiniAppListActivity, miniAppInfo)
+            MiniAppPermissionSettingsActivity.start(
+                this@MiniAppDownloadedListActivity,
+                miniAppInfo.id
+            )
         }
     }
 
-    private fun checkEmpty() {
-        viewEmptyContact.visibility =
-            if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+    private fun updateEmptyView() {
+        if (miniAppListAdapter.itemCount == 0)
+            emptyView.visibility = View.VISIBLE
+        else
+            emptyView.visibility = View.GONE
     }
 
     companion object {
         fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, DownloadedMiniAppListActivity::class.java))
+            activity.startActivity(Intent(activity, MiniAppDownloadedListActivity::class.java))
         }
     }
 }

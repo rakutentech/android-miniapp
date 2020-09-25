@@ -320,6 +320,10 @@ var permissionPairs = listOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPerm
 val permissionsToSet = MiniAppCustomPermission(miniAppId, permissionPairs)
 miniapp.setCustomPermissions(permissionsToSet)
 ```
+#### List of downloaded Mini apps with Custom Permissions
+```kotlin
+miniapp.listDownloadedWithCustomPermissions()
+```
 
 ## Troubleshooting
 
