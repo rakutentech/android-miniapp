@@ -25,6 +25,7 @@ internal class MiniAppStatus(context: Context) {
             null
         }
 
+    @Suppress("EmptyCatchBlock", "SwallowedException")
     fun getDownloadedMiniAppList(): List<MiniAppInfo> {
         val list = arrayListOf<MiniAppInfo>()
         prefs.all.map { entry ->
