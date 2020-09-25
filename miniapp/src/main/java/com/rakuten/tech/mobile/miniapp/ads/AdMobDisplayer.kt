@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.ads
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
@@ -14,6 +15,10 @@ internal class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
+
+    @VisibleForTesting
+    internal fun isAdReady(adUnitId: String) =
+        interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded
 
     override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
         launch {
@@ -37,7 +42,7 @@ internal class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer
 
     override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
         launch {
-            if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
+            if (isAdReady(adUnitId)) {
                 val ad = interstitialAdMap[adUnitId]!!
                 ad.adListener = object : AdListener() {
 
