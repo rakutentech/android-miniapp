@@ -17,11 +17,18 @@ import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.profile_settings_activity.*
+import kotlin.properties.Delegates
 
 class ProfileSettingsActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
+
+    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
+        if (new != old) {
+            invalidateOptionsMenu()
+        }
+    }
 
     private val nameTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -45,6 +52,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
+        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
@@ -86,6 +94,7 @@ class ProfileSettingsActivity : BaseActivity() {
     }
 
     private fun validateNameInput() {
+        saveViewEnabled = !isInputEmpty(editProfileName)
         if (isInputEmpty(editProfileName)) {
             editProfileName.error = getString(R.string.userdata_error_invalid_name)
         }
