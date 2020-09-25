@@ -11,7 +11,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
 import kotlinx.android.synthetic.main.item_list_custom_permission.view.*
 
-class CustomPermissionAdapter : RecyclerView.Adapter<CustomPermissionAdapter.ViewHolder?>() {
+class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
     private var permissionDescription = ArrayList<String>()

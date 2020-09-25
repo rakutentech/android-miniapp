@@ -17,16 +17,15 @@
       android:id="@+id/listDownloadedMiniApp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:padding="@dimen/small_8"
-      tools:listitem="@layout/item_list_downloaded_miniapp" />
+      tools:listitem="@layout/item_list_miniapp" />
 
-    <TextView
-      android:id="@+id/viewEmptyContact"
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/emptyView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:gravity="center"
+      android:layout_margin="@dimen/large_24"
+      android:gravity="top|center"
       android:text="@string/message_empty_miniapps"
-      android:textColor="@color/colorAccent"
       android:textSize="@dimen/text_large_18"
       android:visibility="gone"
       tools:visibility="visible" />
