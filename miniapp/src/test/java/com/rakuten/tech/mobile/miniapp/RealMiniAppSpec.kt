@@ -1,10 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
+import com.nhaarman.mockitokotlin2.*
+import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -21,7 +18,9 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import kotlin.test.assertEquals
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
 
@@ -153,5 +152,58 @@ class RealMiniAppSpec {
         realMiniApp.setCustomPermissions(miniAppCustomPermission)
 
         verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions is calling`() {
+        realMiniApp.listDownloadedWithCustomPermissions()
+
+        verify(miniAppDownloader).getDownloadedMiniAppList()
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke readAllStoredPermissions from cache when listDownloadedWithCustomPermissions is calling`() {
+        realMiniApp.listDownloadedWithCustomPermissions()
+
+        verify(miniAppCustomPermissionCache).readAllStoredPermissions(arrayListOf())
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should return the correct result when listDownloadedWithCustomPermissions is calling`() {
+        val miniAppInfo1 = MiniAppInfo(
+            "test_id_1",
+            "display_name_1",
+            "test_icon_url_1",
+            Version("test_version_tag_1", "test_version_id_1")
+        )
+        val miniAppInfo2 = MiniAppInfo(
+            "test_id_2",
+            "display_name_2",
+            "test_icon_url_2",
+            Version("test_version_tag_2", "test_version_id_2")
+        )
+        val unfilteredList = listOf(miniAppInfo1, miniAppInfo2)
+
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            "test_id_1",
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
+        val filteredList = listOf(miniAppCustomPermission)
+
+        doReturn(unfilteredList).whenever(miniAppDownloader).getDownloadedMiniAppList()
+        doReturn(filteredList).whenever(miniAppCustomPermissionCache).readAllStoredPermissions(unfilteredList)
+
+        val actual = realMiniApp.listDownloadedWithCustomPermissions()
+        val expected = listOf(miniAppInfo1)
+
+        assertEquals(expected, actual)
     }
 }
