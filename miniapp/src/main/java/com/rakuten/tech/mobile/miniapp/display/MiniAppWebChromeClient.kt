@@ -115,7 +115,7 @@ internal class MiniAppWebChromeClient(
                 (window.decorView as FrameLayout).addView(customView, FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                 window.decorView.systemUiVisibility = fullScreenFlag
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
             }
         }
