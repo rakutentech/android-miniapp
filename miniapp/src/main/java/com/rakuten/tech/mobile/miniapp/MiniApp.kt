@@ -45,7 +45,7 @@ abstract class MiniApp internal constructor() {
     ): MiniAppDisplay
 
     /**
-     * Same as {@link #create(String, MiniAppMessageBridge)}.
+     * Same as [create(String, MiniAppMessageBridge)].
      * Use this to control external url loader.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      */
