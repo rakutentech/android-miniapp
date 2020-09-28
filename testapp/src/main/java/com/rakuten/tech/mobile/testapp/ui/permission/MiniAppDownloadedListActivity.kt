@@ -21,7 +21,7 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var miniAppListAdapter: MiniAppListAdapter
-    private var miniAppList: List<MiniAppInfo> = emptyList()
+    private var miniAppList: ArrayList<MiniAppInfo> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +53,10 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
     }
 
     private fun executeLoadingList() {
-        miniAppList = miniapp.listDownloadedWithCustomPermissions()
+        miniAppList.clear()
+        miniapp.listDownloadedWithCustomPermissions().forEach {
+            miniAppList.add(it.first)
+        }
     }
 
     private fun addMiniAppList(miniAppsInfo: List<MiniAppInfo>) {

@@ -87,7 +87,7 @@ abstract class MiniApp internal constructor() {
      * custom permissions data.
      */
     @Suppress("FunctionMaxLength")
-    abstract fun listDownloadedWithCustomPermissions(): List<MiniAppInfo>
+    abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
