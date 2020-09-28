@@ -234,6 +234,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val phoneUri = "tel:123456"
 
         try {
+            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
             webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
             webViewClient.shouldOverrideUrlLoading(displayer, phoneUri)
         } catch (e: AndroidRuntimeException) {
