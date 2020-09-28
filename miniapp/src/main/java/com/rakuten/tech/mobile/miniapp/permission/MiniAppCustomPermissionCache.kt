@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import java.lang.Exception
 
 /**
@@ -36,31 +35,6 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             }
         }
         return defaultDeniedList(miniAppId)
-    }
-
-    /**
-     * Reads the grant results from SharedPreferences for the given list of MiniAppInfo.
-     * @param [miniAppInfo] the query to find the grant results from cache.
-     * @return [MiniAppCustomPermission] an object to contain the results per MiniApp
-     * if data has been stored in cache, otherwise default value.
-     */
-    fun readAllStoredPermissions(miniAppInfo: List<MiniAppInfo>): List<MiniAppCustomPermission> {
-        val list = arrayListOf<MiniAppCustomPermission>()
-        miniAppInfo.forEach {
-            if (prefs.contains(it.id)) {
-                try {
-                    list.add(
-                        Gson().fromJson(
-                            prefs.getString(it.id, ""),
-                            object : TypeToken<MiniAppCustomPermission>() {}.type
-                        )
-                    )
-                } catch (e: Exception) {
-                    defaultDeniedList(it.id)
-                }
-            }
-        }
-        return list
     }
 
     /**

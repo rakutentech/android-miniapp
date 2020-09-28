@@ -164,45 +164,41 @@ class RealMiniAppSpec {
 
     @Test
     @Suppress("LongMethod")
-    fun `should invoke readAllStoredPermissions from cache when listDownloadedWithCustomPermissions is calling`() {
-        realMiniApp.listDownloadedWithCustomPermissions()
-
-        verify(miniAppCustomPermissionCache).readAllStoredPermissions(arrayListOf())
-    }
-
-    @Test
-    @Suppress("LongMethod")
     fun `should return the correct result when listDownloadedWithCustomPermissions is calling`() {
-        val miniAppInfo1 = MiniAppInfo(
-            "test_id_1",
-            "display_name_1",
-            "test_icon_url_1",
-            Version("test_version_tag_1", "test_version_id_1")
+        val miniAppInfo = MiniAppInfo(
+            "test_id",
+            "display_name",
+            "test_icon_url",
+            Version("test_version_tag", "test_version_id")
         )
-        val miniAppInfo2 = MiniAppInfo(
-            "test_id_2",
-            "display_name_2",
-            "test_icon_url_2",
-            Version("test_version_tag_2", "test_version_id_2")
-        )
-        val unfilteredList = listOf(miniAppInfo1, miniAppInfo2)
-
+        val downloadedList = listOf(miniAppInfo)
         val miniAppCustomPermission = MiniAppCustomPermission(
-            "test_id_1",
+            "test_id",
             listOf(
                 Pair(
                     MiniAppCustomPermissionType.USER_NAME,
                     MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
                 )
             )
         )
-        val filteredList = listOf(miniAppCustomPermission)
 
-        doReturn(unfilteredList).whenever(miniAppDownloader).getDownloadedMiniAppList()
-        doReturn(filteredList).whenever(miniAppCustomPermissionCache).readAllStoredPermissions(unfilteredList)
+        doReturn(downloadedList).whenever(miniAppDownloader).getDownloadedMiniAppList()
+
+        downloadedList.forEach {
+            doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
+                .readPermissions(it.id)
+        }
 
         val actual = realMiniApp.listDownloadedWithCustomPermissions()
-        val expected = listOf(miniAppInfo1)
+        val expected = listOf(Pair(miniAppInfo, miniAppCustomPermission))
 
         assertEquals(expected, actual)
     }
