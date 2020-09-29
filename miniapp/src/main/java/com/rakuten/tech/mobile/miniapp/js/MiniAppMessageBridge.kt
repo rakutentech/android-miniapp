@@ -62,7 +62,8 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.")
+        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions`" +
+                " method has not been implemented by the Host App.")
     }
 
     /**

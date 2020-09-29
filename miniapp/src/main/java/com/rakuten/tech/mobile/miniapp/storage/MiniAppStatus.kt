@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
