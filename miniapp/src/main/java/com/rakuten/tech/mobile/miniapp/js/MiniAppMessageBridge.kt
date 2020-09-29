@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -38,10 +39,12 @@ abstract class MiniAppMessageBridge {
      * @param permissionsWithDescription list of name and descriptions of custom permissions sent from external.
      * @param callback to invoke a list of name and grant results of custom permissions sent from hostapp.
      */
-    abstract fun requestCustomPermissions(
+    open fun requestCustomPermissions(
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-    )
+    ) {
+        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.")
+    }
 
     /**
      * Share content info [ShareInfo]. This info is provided by mini app.
