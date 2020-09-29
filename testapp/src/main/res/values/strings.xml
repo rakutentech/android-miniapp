@@ -24,6 +24,7 @@
     <string name="action_add">Add</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
+    <string name="action_custom_permissions">Permissions</string>
 
     <string name="hint_host_app_id">Host App ID</string>
     <string name="hint_subscription_key">Subscription Key</string>

@@ -18,6 +18,7 @@ import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -276,6 +277,14 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
         }
+
+    @Test
+    fun `getDownloadedMiniAppList should get values from miniAppStatus`() {
+        val actual = downloader.getDownloadedMiniAppList()
+        val expected = miniAppStatus.getDownloadedMiniAppList()
+
+        assertEquals(expected, actual)
+    }
 
     private suspend fun setupValidManifestResponse(
         downloader: MiniAppDownloader,

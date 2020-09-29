@@ -127,6 +127,33 @@
         android:textSize="@dimen/text_large_16" />
     </RelativeLayout>
 
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="@color/bg_section" />
+
+    <RelativeLayout
+      android:id="@+id/buttonCustomPermissions"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/medium_16"
+      android:foreground="?attr/selectableItemBackground">
+
+      <ImageView
+        android:layout_width="@dimen/sec_icon_size"
+        android:layout_height="@dimen/sec_icon_size"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_arrow_forward" />
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="@string/action_custom_permissions"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16" />
+    </RelativeLayout>
+
     <com.google.android.material.switchmaterial.SwitchMaterial
       android:id="@+id/switchTestMode"
       android:layout_width="match_parent"

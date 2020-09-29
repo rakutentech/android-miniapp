@@ -21,6 +21,7 @@ import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
+import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
@@ -110,6 +111,10 @@ class SettingsMenuActivity : BaseActivity() {
 
         buttonContacts.setOnClickListener {
             ContactListActivity.start(this@SettingsMenuActivity)
+        }
+
+        buttonCustomPermissions.setOnClickListener {
+            MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)
         }
 
         validateInputIDs()
