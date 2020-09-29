@@ -30,6 +30,13 @@ internal class RealMiniApp(
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
+    @Suppress("FunctionMaxLength")
+    override fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>> {
+        return miniAppDownloader.getDownloadedMiniAppList().map {
+            Pair(it, miniAppCustomPermissionCache.readPermissions(it.id))
+        }
+    }
+
     override suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge
