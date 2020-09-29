@@ -36,7 +36,6 @@ internal class MiniAppStatus(context: Context) {
                 Log.e(TAG, error.localizedMessage!!)
             }
         }
-
         return list
     }
 
