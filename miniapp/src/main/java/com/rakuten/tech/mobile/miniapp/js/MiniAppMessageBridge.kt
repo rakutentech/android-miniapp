@@ -19,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.userdata.UserDataType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
@@ -90,6 +91,14 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    /** Post user name request from external. **/
+    open fun requestUserName(
+        userDataType: UserDataType,
+        callback: (isSuccess: Boolean, message: String?) -> Unit
+    ) {
+        throw MiniAppSdkException("The `MiniAppMessageBridge.requestUserName` method has not been implemented by the Host App.")
+    }
+
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -102,6 +111,7 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
+            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj)
         }
     }
 
@@ -199,6 +209,27 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    private fun onRequestUserName(callbackObj: CallbackObj) {
+        try {
+            val userDataParam = Gson().fromJson<UserData>(
+                callbackObj.param.toString(),
+                object : TypeToken<Permission>() {}.type
+            )
+
+            requestUserName(
+                UserDataType.getValue(userDataParam.data)
+            ) { isSuccess, message ->
+                if (isSuccess)
+                    postValue(callbackObj.id, message ?: SUCCESS)
+                else
+                    postError(callbackObj.id,
+                        message ?: "${ErrorBridgeMessage.ERR_REQ_USER_DATA} Unknown error message from hostapp.")
+            }
+        } catch (e: Exception) {
+            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_USER_DATA} ${e.message}")
+        }
+    }
+
     @VisibleForTesting
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
@@ -285,5 +316,6 @@ internal class ErrorBridgeMessage {
         const val ERR_SHARE_CONTENT = "Cannot share content:"
         const val ERR_LOAD_AD = "Cannot load ad:"
         const val ERR_SHOW_AD = "Cannot show ad:"
+        const val ERR_REQ_USER_DATA = "Cannot request user data:"
     }
 }
