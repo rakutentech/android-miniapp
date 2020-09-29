@@ -28,8 +28,8 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
 
-    private lateinit var adMobDisplayer: MiniAppAdDisplayer
-    private val isAdMobEnabled = isAdMobProvided()
+    private lateinit var adDisplayer: MiniAppAdDisplayer
+    private var isAdMobEnabled = false
 
     internal fun init(
         activity: Activity,
@@ -41,7 +41,6 @@ abstract class MiniAppMessageBridge {
         this.webViewListener = webViewListener
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.adMobDisplayer = AdMobDisplayer(activity)
     }
 
     /** Get provided id of mini app for any purpose. **/
@@ -102,9 +101,10 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    /** Set implemented ads displayer. **/
-    fun setAdMobDisplayer(miniAppAdDisplayer: MiniAppAdDisplayer) {
-        adMobDisplayer = miniAppAdDisplayer
+    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
+    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) {
+        this.adDisplayer = adDisplayer
+        this.isAdMobEnabled = isAdMobProvided()
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
@@ -217,7 +217,7 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adMobDisplayer.loadInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -242,7 +242,7 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adMobDisplayer.showInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
                         adUnitId = adObj.adUnitId,
                         onClosed = { postValue(callbackId, CLOSED) },
                         onFailed = { errMsg ->

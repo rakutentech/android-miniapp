@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.ads.AdMobClassName
-import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
@@ -279,27 +279,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
     }
 }
 
-@Suppress("TooGenericExceptionThrown")
 class AdBridgeSpec : BridgeCommon() {
-    val adDisplayer = object : MiniAppAdDisplayer {
-        override fun loadInterstitial(
-            adUnitId: String,
-            onLoaded: () -> Unit,
-            onFailed: (String) -> Unit
-        ) {
-            onFailed.invoke(TEST_ERROR_MSG)
-            throw Exception()
-        }
-
-        override fun showInterstitial(
-            adUnitId: String,
-            onClosed: () -> Unit,
-            onFailed: (String) -> Unit
-        ) {
-            onFailed.invoke(TEST_ERROR_MSG)
-            throw Exception()
-        }
-    }
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private lateinit var miniAppBridgeWithAdMob: MiniAppMessageBridge
 
@@ -326,7 +306,7 @@ class AdBridgeSpec : BridgeCommon() {
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
-        miniAppBridge.setAdMobDisplayer(adDisplayer)
+        miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
         return miniAppBridge
     }
 

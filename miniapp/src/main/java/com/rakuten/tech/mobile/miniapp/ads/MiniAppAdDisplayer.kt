@@ -5,7 +5,7 @@ package com.rakuten.tech.mobile.miniapp.ads
  */
 interface MiniAppAdDisplayer {
 
-    /** Make interstitial ad load first to be ready to load. **/
+    /** Load the interstitial ad when it is ready. **/
     fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit)
 
     /** Show the interstitial ad when it is already loaded. **/

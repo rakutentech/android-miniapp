@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.ads
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
@@ -11,15 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-internal class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer, CoroutineScope {
+/**
+ * The ad displayer.
+ * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
+ * Support Interstitial, Reward ads.
+ */
+class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
 
-    @VisibleForTesting
-    internal fun isAdReady(adUnitId: String) =
-        interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded
-
+    /** Load the interstitial ad when it is ready. **/
     override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
         launch {
             val ad = InterstitialAd(context)
@@ -40,9 +41,10 @@ internal class AdMobDisplayer(private val context: Context) : MiniAppAdDisplayer
         }
     }
 
+    /** Show the interstitial ad when it is already loaded. **/
     override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
         launch {
-            if (isAdReady(adUnitId)) {
+            if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
                 val ad = interstitialAdMap[adUnitId]!!
                 ad.adListener = object : AdListener() {
 
