@@ -56,6 +56,13 @@ class MiniAppStatusSpec {
     }
 
     @Test
+    fun `getDownloadedMiniAppList should return the correct value`() {
+        miniAppStatus.saveDownloadedMiniApp(TEST_MA)
+        miniAppStatus.getDownloadedMiniAppList().size shouldEqual 1
+        miniAppStatus.getDownloadedMiniAppList()[0].id shouldEqual TEST_MA_ID
+    }
+
+    @Test
     fun `getDownloadedMiniAppList should return a list`() {
         miniAppStatus.getDownloadedMiniAppList() shouldEqual listOf()
     }
