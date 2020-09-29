@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -31,7 +32,9 @@ internal class MiniAppStatus(context: Context) {
         prefs.all.map { entry ->
             try {
                 list.add(gson.fromJson(entry.value.toString(), MiniAppInfo::class.java))
-            } catch (error: JsonSyntaxException) {}
+            } catch (error: JsonSyntaxException) {
+                Log.e(TAG, error.localizedMessage!!)
+            }
         }
 
         return list
@@ -50,4 +53,8 @@ internal class MiniAppStatus(context: Context) {
 
     @VisibleForTesting
     internal fun isExisted(filePath: String): Boolean = File(filePath).exists()
+
+    companion object {
+        private val TAG = this::class.simpleName
+    }
 }

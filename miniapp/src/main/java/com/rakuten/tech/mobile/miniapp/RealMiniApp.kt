@@ -32,14 +32,9 @@ internal class RealMiniApp(
 
     @Suppress("FunctionMaxLength")
     override fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>> {
-        val result: ArrayList<Pair<MiniAppInfo, MiniAppCustomPermission>> = arrayListOf()
-        val downloadedMiniApps = miniAppDownloader.getDownloadedMiniAppList()
-
-        downloadedMiniApps.forEach {
-            result.add(Pair(it, miniAppCustomPermissionCache.readPermissions(it.id)))
+        return miniAppDownloader.getDownloadedMiniAppList().map {
+            Pair(it, miniAppCustomPermissionCache.readPermissions(it.id))
         }
-
-        return result
     }
 
     override suspend fun create(
