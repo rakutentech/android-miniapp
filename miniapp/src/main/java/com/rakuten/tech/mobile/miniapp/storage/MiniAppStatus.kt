@@ -33,7 +33,7 @@ internal class MiniAppStatus(context: Context) {
             try {
                 list.add(gson.fromJson(entry.value.toString(), MiniAppInfo::class.java))
             } catch (error: JsonSyntaxException) {
-                Log.e(TAG, error.localizedMessage!!)
+                list.addAll(emptyList())
             }
         }
         return list
@@ -52,8 +52,4 @@ internal class MiniAppStatus(context: Context) {
 
     @VisibleForTesting
     internal fun isExisted(filePath: String): Boolean = File(filePath).exists()
-
-    companion object {
-        private val TAG = this::class.simpleName
-    }
 }

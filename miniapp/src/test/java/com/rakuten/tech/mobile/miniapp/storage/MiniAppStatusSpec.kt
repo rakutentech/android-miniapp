@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
@@ -65,5 +66,11 @@ class MiniAppStatusSpec {
     @Test
     fun `getDownloadedMiniAppList should return a list`() {
         miniAppStatus.getDownloadedMiniAppList() shouldEqual listOf()
+    }
+
+    @Test
+    fun `getDownloadedMiniAppList should should be empty when there is error on parsing`() {
+        prefs.edit().putString(TEST_MA_ID, "{test}").apply()
+        miniAppStatus.getDownloadedMiniAppList() shouldEqual emptyList<MiniAppInfo>()
     }
 }
