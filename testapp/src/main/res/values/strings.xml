@@ -13,7 +13,6 @@
     <string name="userdata_edit_photo">Edit Photo</string>
     <string name="userdata_hint_edit_name">Enter your name here</string>
     <string name="userdata_hint_edit_contact">Write contact name here</string>
-    <string name="userdata_error_invalid_name">Please enter a valid name</string>
     <string name="userdata_error_invalid_contact">Invalid Contact ID, please try again.</string>
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
 
