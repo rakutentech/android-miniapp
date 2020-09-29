@@ -67,6 +67,7 @@ abstract class MiniApp internal constructor() {
     /**
      * Get custom permissions with grant results per MiniApp from this SDK.
      * @param miniAppId mini app id as the key to retrieve data from cache.
+     * @return [MiniAppCustomPermission] an object contains the grant results per mini app.
      */
     abstract fun getCustomPermissions(
         miniAppId: String
@@ -79,6 +80,14 @@ abstract class MiniApp internal constructor() {
     abstract fun setCustomPermissions(
         miniAppCustomPermission: MiniAppCustomPermission
     )
+
+    /**
+     * lists out the mini applications available with custom permissions in cache.
+     * @return [List<MiniAppInfo>] list of MiniApp what is downloaded and containing
+     * custom permissions data.
+     */
+    @Suppress("FunctionMaxLength")
+    abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.

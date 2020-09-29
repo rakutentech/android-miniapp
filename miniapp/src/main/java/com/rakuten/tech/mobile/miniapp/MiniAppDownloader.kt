@@ -108,6 +108,9 @@ internal class MiniAppDownloader(
         }
     }
 
+    fun getDownloadedMiniAppList(): List<MiniAppInfo> =
+        miniAppStatus.getDownloadedMiniAppList()
+
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
     internal fun isManifestValid(manifest: ManifestEntity) =

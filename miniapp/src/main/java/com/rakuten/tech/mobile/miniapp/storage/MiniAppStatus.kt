@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -24,6 +25,19 @@ internal class MiniAppStatus(context: Context) {
         } catch (error: JsonSyntaxException) {
             null
         }
+
+    @Suppress("EmptyCatchBlock", "SwallowedException")
+    fun getDownloadedMiniAppList(): List<MiniAppInfo> {
+        val list = arrayListOf<MiniAppInfo>()
+        prefs.all.map { entry ->
+            try {
+                list.add(gson.fromJson(entry.value.toString(), MiniAppInfo::class.java))
+            } catch (error: JsonSyntaxException) {
+                list.addAll(emptyList())
+            }
+        }
+        return list
+    }
 
     fun setVersionDownloaded(appId: String, versionId: String, value: Boolean) =
         prefs.edit().putBoolean(appId + versionId, value).apply()

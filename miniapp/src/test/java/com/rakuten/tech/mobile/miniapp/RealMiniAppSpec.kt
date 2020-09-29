@@ -1,10 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
+import com.nhaarman.mockitokotlin2.*
+import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -21,7 +18,9 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import kotlin.test.assertEquals
 
+@Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 class RealMiniAppSpec {
 
@@ -153,5 +152,54 @@ class RealMiniAppSpec {
         realMiniApp.setCustomPermissions(miniAppCustomPermission)
 
         verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions is calling`() {
+        realMiniApp.listDownloadedWithCustomPermissions()
+
+        verify(miniAppDownloader).getDownloadedMiniAppList()
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should return the correct result when listDownloadedWithCustomPermissions is calling`() {
+        val miniAppInfo = MiniAppInfo(
+            "test_id",
+            "display_name",
+            "test_icon_url",
+            Version("test_version_tag", "test_version_id")
+        )
+        val downloadedList = listOf(miniAppInfo)
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            "test_id",
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
+
+        doReturn(downloadedList).whenever(miniAppDownloader).getDownloadedMiniAppList()
+
+        downloadedList.forEach {
+            doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
+                .readPermissions(it.id)
+        }
+
+        val actual = realMiniApp.listDownloadedWithCustomPermissions()
+        val expected = listOf(Pair(miniAppInfo, miniAppCustomPermission))
+
+        assertEquals(expected, actual)
     }
 }

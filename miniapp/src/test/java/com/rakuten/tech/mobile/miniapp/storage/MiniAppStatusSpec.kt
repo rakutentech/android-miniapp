@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
 import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -53,5 +54,23 @@ class MiniAppStatusSpec {
     fun `downloaded miniapp should be saved in storage`() {
         miniAppStatus.saveDownloadedMiniApp(TEST_MA)
         MiniAppStatus(context).getDownloadedMiniApp(TEST_MA_ID)?.id shouldEqual TEST_MA_ID
+    }
+
+    @Test
+    fun `getDownloadedMiniAppList should return the correct value`() {
+        miniAppStatus.saveDownloadedMiniApp(TEST_MA)
+        miniAppStatus.getDownloadedMiniAppList().size shouldEqual 1
+        miniAppStatus.getDownloadedMiniAppList()[0].id shouldEqual TEST_MA_ID
+    }
+
+    @Test
+    fun `getDownloadedMiniAppList should return a list`() {
+        miniAppStatus.getDownloadedMiniAppList() shouldEqual listOf()
+    }
+
+    @Test
+    fun `getDownloadedMiniAppList should should be empty when there is error on parsing`() {
+        prefs.edit().putString(TEST_MA_ID, "{test}").apply()
+        miniAppStatus.getDownloadedMiniAppList() shouldEqual emptyList<MiniAppInfo>()
     }
 }
