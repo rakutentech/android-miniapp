@@ -28,6 +28,7 @@ internal class MiniAppWebViewClient(
         return response
     }
 
+    // ToDo When the minimum support is upgraded to android 24, replace this function.
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         var shouldCancelLoading = super.shouldOverrideUrlLoading(view, url)
         if (url != null) {
