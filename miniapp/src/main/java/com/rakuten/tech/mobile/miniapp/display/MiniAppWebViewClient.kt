@@ -28,17 +28,17 @@ internal class MiniAppWebViewClient(
         return response
     }
 
-    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        var shouldCancelLoading = super.shouldOverrideUrlLoading(view, request)
-        if (request.url != null) {
-            val requestUrl = request.url.toString()
-            if (requestUrl.startsWith("tel:")) {
-                openPhoneDialer(requestUrl)
+    // ToDo When the minimum support is upgraded to android 24, replace this function.
+    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+        var shouldCancelLoading = super.shouldOverrideUrlLoading(view, url)
+        if (url != null) {
+            if (url.startsWith("tel:")) {
+                openPhoneDialer(url)
                 shouldCancelLoading = true
-            } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
+            } else if (!miniAppScheme.isMiniAppUrl(url)) {
                 // check if there is navigator implementation on miniapp.
                 if (miniAppNavigator != null) {
-                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
+                    miniAppNavigator.openExternalUrl(url, externalResultHandler)
                     shouldCancelLoading = true
                 }
             }
