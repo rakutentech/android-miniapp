@@ -43,7 +43,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private lateinit var searchView: SearchView
 
-    private var downloadedList: List<MiniAppInfo> = listOf()
+    private var fetchedMiniAppList: List<MiniAppInfo> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,7 +105,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     private fun addMiniAppList(list: List<MiniAppInfo>) {
-        downloadedList = list
+        fetchedMiniAppList = list
         updateMiniAppListState(list)
     }
 
@@ -174,7 +174,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     }
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
-        return downloadedList.filter { info ->
+        return fetchedMiniAppList.filter { info ->
             info.displayName.toLowerCase(Locale.ROOT)
                 .contains(newText.toString().toLowerCase(Locale.ROOT))
         }
