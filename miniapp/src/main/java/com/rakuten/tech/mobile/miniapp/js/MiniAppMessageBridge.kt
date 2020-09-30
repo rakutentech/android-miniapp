@@ -7,6 +7,9 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.ads.isAdMobProvided
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -17,13 +20,29 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 
-@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
+@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
+"LargeClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
+
+    private lateinit var adDisplayer: MiniAppAdDisplayer
+    private var isAdMobEnabled = false
+
+    internal fun init(
+        activity: Activity,
+        webViewListener: WebViewListener,
+        customPermissionCache: MiniAppCustomPermissionCache,
+        miniAppInfo: MiniAppInfo
+    ) {
+        this.activity = activity
+        this.webViewListener = webViewListener
+        this.customPermissionCache = customPermissionCache
+        this.miniAppInfo = miniAppInfo
+    }
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -43,7 +62,8 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.")
+        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions`" +
+                " method has not been implemented by the Host App.")
     }
 
     /**
@@ -70,18 +90,6 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    internal fun init(
-        activity: Activity,
-        webViewListener: WebViewListener,
-        customPermissionCache: MiniAppCustomPermissionCache,
-        miniAppInfo: MiniAppInfo
-    ) {
-        this.activity = activity
-        this.webViewListener = webViewListener
-        this.customPermissionCache = customPermissionCache
-        this.miniAppInfo = miniAppInfo
-    }
-
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -92,7 +100,15 @@ abstract class MiniAppMessageBridge {
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
+            ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
+            ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
         }
+    }
+
+    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
+    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) {
+        this.adDisplayer = adDisplayer
+        this.isAdMobEnabled = isAdMobProvided()
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
@@ -198,6 +214,56 @@ abstract class MiniAppMessageBridge {
         postValue(callbackId, jsonResult)
     }
 
+    private fun onLoadAd(callbackId: String, jsonStr: String) {
+        if (isAdMobEnabled) {
+            try {
+                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
+                val adObj = callbackObj.param
+
+                when (adObj.adType) {
+                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
+                        adUnitId = adObj.adUnitId,
+                        onLoaded = { postValue(callbackId, SUCCESS) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
+            }
+        } else
+            postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    }
+
+    private fun onShowAd(callbackId: String, jsonStr: String) {
+        if (isAdMobEnabled) {
+            try {
+                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
+                val adObj = callbackObj.param
+
+                when (adObj.adType) {
+                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
+                        adUnitId = adObj.adUnitId,
+                        onClosed = { postValue(callbackId, CLOSED) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
+            }
+        } else
+            postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    }
+
     /** Return a value to mini app. **/
     internal fun postValue(callbackId: String, value: String) {
         webViewListener.runSuccessCallback(callbackId, value)
@@ -212,9 +278,12 @@ abstract class MiniAppMessageBridge {
 internal class ErrorBridgeMessage {
 
     companion object {
+        const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
         const val ERR_SHARE_CONTENT = "Cannot share content:"
+        const val ERR_LOAD_AD = "Cannot load ad:"
+        const val ERR_SHOW_AD = "Cannot show ad:"
     }
 }

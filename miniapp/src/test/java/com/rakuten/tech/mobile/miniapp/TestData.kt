@@ -26,6 +26,8 @@ internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subscription_key"
 internal const val TEST_CALLBACK_ID = "test_callback_id"
 internal const val TEST_CALLBACK_VALUE = "test_callback_value"
 
+internal const val TEST_AD_UNIT_ID = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
+
 internal const val VALID_FILE_URL_PATH =
     "https://www.example.com/"
         .plus("map-published-v2/min-872f9172-804f-44e2-addd-ed612170dac9/")
