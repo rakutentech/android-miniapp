@@ -69,6 +69,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
+    testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
