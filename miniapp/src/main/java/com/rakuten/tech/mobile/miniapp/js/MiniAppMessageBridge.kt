@@ -19,7 +19,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.userdata.UserDataType
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
@@ -68,6 +67,16 @@ abstract class MiniAppMessageBridge {
     }
 
     /**
+     * Post user name request from external.
+     * @param callback to return user name.
+     */
+    open fun requestUserName(
+        callback: (isSuccess: Boolean, data: String?) -> Unit
+    ) {
+        throw MiniAppSdkException("The `MiniAppMessageBridge.requestUserName` method has not been implemented by the Host App.")
+    }
+
+    /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
      * @param callback The executed action status should be notified back to mini app.
@@ -91,14 +100,6 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    /** Post user name request from external. **/
-    open fun requestUserName(
-        userDataType: UserDataType,
-        callback: (isSuccess: Boolean, message: String?) -> Unit
-    ) {
-        throw MiniAppSdkException("The `MiniAppMessageBridge.requestUserName` method has not been implemented by the Host App.")
-    }
-
     /** Handle the message from external. **/
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -108,10 +109,10 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
+            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj.id)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
-            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj)
         }
     }
 
@@ -209,24 +210,13 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onRequestUserName(callbackObj: CallbackObj) {
-        try {
-            val userDataParam = Gson().fromJson<UserData>(
-                callbackObj.param.toString(),
-                object : TypeToken<Permission>() {}.type
-            )
-
-            requestUserName(
-                UserDataType.getValue(userDataParam.data)
-            ) { isSuccess, message ->
-                if (isSuccess)
-                    postValue(callbackObj.id, message ?: SUCCESS)
-                else
-                    postError(callbackObj.id,
-                        message ?: "${ErrorBridgeMessage.ERR_REQ_USER_DATA} Unknown error message from hostapp.")
-            }
-        } catch (e: Exception) {
-            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_USER_DATA} ${e.message}")
+    private fun onRequestUserName(callbackId: String) {
+        requestUserName { isSuccess, data ->
+            if (isSuccess)
+                postValue(callbackId, data ?: SUCCESS)
+            else
+                postError(callbackId,
+                    data ?: "${ErrorBridgeMessage.ERR_REQ_USER_NAME} Unknown error message from hostapp.")
         }
     }
 
@@ -313,9 +303,9 @@ internal class ErrorBridgeMessage {
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+        const val ERR_REQ_USER_NAME = "Cannot request user name:"
         const val ERR_SHARE_CONTENT = "Cannot share content:"
         const val ERR_LOAD_AD = "Cannot load ad:"
         const val ERR_SHOW_AD = "Cannot show ad:"
-        const val ERR_REQ_USER_DATA = "Cannot request user data:"
     }
 }

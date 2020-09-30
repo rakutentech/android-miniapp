@@ -44,9 +44,6 @@ internal data class ShareInfoCallbackObj(val param: ShareInfoParam) {
 }
 // end region
 
-@Keep
-internal data class UserData(val data: String)
-
 // Ad region
 @Keep
 internal data class AdObj(

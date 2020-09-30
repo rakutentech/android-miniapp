@@ -330,6 +330,12 @@ downloadedMiniApps.forEach {
 }
 ```
 
+### #5 User Data 
+#### Requesting user name
+```kotlin
+TODO()
+```
+
 ## Troubleshooting
 
 ### Exception: "Network requests must not be performed on the main thread."

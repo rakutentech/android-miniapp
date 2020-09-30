@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.permission
+package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.content.Context
 import android.content.DialogInterface
@@ -9,9 +9,11 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
+import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionDialog
+import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsAdapter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class CustomPermissionPresenter(private val miniapp: MiniApp) {
+class MiniAppDisplayPresenter(private val miniapp: MiniApp) {
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
@@ -71,5 +73,20 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         )
 
         return permissionLayout
+    }
+
+    fun executeUserNameCallback(
+        miniAppId: String,
+        callback: (isSuccess: Boolean, data: String?) -> Unit
+    ) {
+        var hasPermission = false
+        miniapp.getCustomPermissions(miniAppId).pairValues.find {
+            it.first == MiniAppCustomPermissionType.USER_NAME && it.second == MiniAppCustomPermissionResult.ALLOWED
+        }?.let { hasPermission = true }
+
+        if (hasPermission)
+            callback.invoke(true, AppSettings.instance.profileName)
+        else
+            callback.invoke(false, "Permission has been denied for user name.")
     }
 }
