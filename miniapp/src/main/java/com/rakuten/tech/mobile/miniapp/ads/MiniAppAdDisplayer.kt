@@ -10,4 +10,10 @@ interface MiniAppAdDisplayer {
 
     /** Show the interstitial ad when it is already loaded. **/
     fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit)
+
+    /** Load the rewarded ad when it is ready. **/
+    fun loadRewarded(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit)
+
+    /** Show the rewarded ad when it is already loaded. **/
+    fun showRewarded(adUnitId: String, onClosed: (reward: Reward?) -> Unit, onFailed: (String) -> Unit)
 }

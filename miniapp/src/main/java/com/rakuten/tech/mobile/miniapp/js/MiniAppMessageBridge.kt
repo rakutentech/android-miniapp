@@ -209,7 +209,7 @@ abstract class MiniAppMessageBridge {
     }
 
     /** Inform the custom permission request result to MiniApp. **/
-    @Suppress("LongMethod", "FunctionMaxLength")
+    @Suppress("FunctionMaxLength")
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
         postValue(callbackId, jsonResult)
     }
@@ -222,6 +222,16 @@ abstract class MiniAppMessageBridge {
 
                 when (adObj.adType) {
                     AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
+                        adUnitId = adObj.adUnitId,
+                        onLoaded = { postValue(callbackId, SUCCESS) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
+                            )
+                        }
+                    )
+                    AdType.REWARDED.value -> adDisplayer.loadRewarded(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -249,6 +259,21 @@ abstract class MiniAppMessageBridge {
                     AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
                         adUnitId = adObj.adUnitId,
                         onClosed = { postValue(callbackId, CLOSED) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
+                            )
+                        }
+                    )
+                    AdType.REWARDED.value -> adDisplayer.showRewarded(
+                        adUnitId = adObj.adUnitId,
+                        onClosed = { reward ->
+                            if (reward == null)
+                                postValue(callbackId, "null")
+                            else
+                                postValue(callbackId, Gson().toJson(reward).toString())
+                        },
                         onFailed = { errMsg ->
                             postError(
                                 callbackId,
