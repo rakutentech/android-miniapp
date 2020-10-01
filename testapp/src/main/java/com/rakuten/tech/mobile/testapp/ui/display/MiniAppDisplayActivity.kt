@@ -24,6 +24,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
@@ -114,7 +115,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                     callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
                 ) {
-                    MiniAppDisplayPresenter().executeCustomPermissionsCallback(
+                    CustomPermissionPresenter().executeCustomPermissionsCallback(
                         this@MiniAppDisplayActivity,
                         appId,
                         permissionsWithDescription,
@@ -122,8 +123,12 @@ class MiniAppDisplayActivity : BaseActivity() {
                     )
                 }
 
-                override fun requestUserName(callback: (isSuccess: Boolean, data: String?) -> Unit) {
-                    MiniAppDisplayPresenter().executeUserNameCallback(appId, callback)
+                override fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
+                    val name = AppSettings.instance.profileName
+                    if (name.isNotEmpty()) callback.invoke(true, name)
+                    else {
+                        callback.invoke(false, "There is no user name found in the host app.")
+                    }
                 }
             }
             miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))

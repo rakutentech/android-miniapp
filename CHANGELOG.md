@@ -5,7 +5,7 @@
 - **Feature:** Added public interface to read and store the custom permissions inside Android SDK. 
 - **Feature:** Share content from mini app. 
 - **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions.
-- **Feature:** Added `requestUserName()` interface in JS bridge to get the user name if it has permission.
+- **Feature:** Added `requestUserName()` interface in JavaScript bridge for receiving user name if the permission has been granted.
 
 **Sample App**
 - **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.

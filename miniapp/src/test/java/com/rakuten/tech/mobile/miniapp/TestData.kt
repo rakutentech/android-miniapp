@@ -34,6 +34,9 @@ internal const val VALID_FILE_URL_PATH =
         .plus("ver-6181004c-a6aa-4eda-b145-a5ff73fc4ad0/a/b/index.html")
 internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf2601cb63a2/js"
 
+internal const val TEST_USER_NAME_PERMISSION_RESULT = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
+internal const val TEST_USER_NAME = "test_user_name"
+
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
     displayName = TEST_MA_DISPLAY_NAME,

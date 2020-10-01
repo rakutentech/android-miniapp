@@ -38,8 +38,7 @@ open class BridgeCommon {
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
-                val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
-                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
+                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_USER_NAME_PERMISSION_RESULT)
             }
 
             override fun shareContent(
@@ -66,8 +65,7 @@ open class BridgeCommon {
             permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
             callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
         ) {
-            val grantResult = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
-            onRequestCustomPermissionsResult(TEST_CALLBACK_ID, grantResult)
+            onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_USER_NAME_PERMISSION_RESULT)
         }
     }
 
@@ -109,6 +107,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         id = TEST_CALLBACK_ID
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+
+    private val userNameCallbackObj = CallbackObj(
+        action = ActionType.REQUEST_USER_NAME.action,
+        param = null,
+        id = TEST_CALLBACK_ID
+    )
+    private val userNameJsonStr = Gson().toJson(userNameCallbackObj)
 
     @Before
     fun setup() {
@@ -176,11 +181,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postValue should be called when can request custom permission`() {
-        val isPermissionGranted = false
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         miniAppBridge.init(
             activity = TestActivity(),
-            webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"),
+            webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
@@ -188,21 +191,21 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(customPermissionJsonStr)
 
         verify(miniAppBridge, times(1))
-            .postValue(customPermissionCallbackObj.id, "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}")
+            .postValue(customPermissionCallbackObj.id, TEST_USER_NAME_PERMISSION_RESULT)
     }
 
     @Test
-    fun `postError should be called when cannot request custom permission`() {
-        val errMsg = "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} null"
+    fun `postError should be called when cannot request user name`() {
+        val errMsg = "Cannot request user name: null"
         miniAppBridge.init(
             activity = TestActivity(),
-            webViewListener = createErrorWebViewListener(errMsg),
+            webViewListener = mock(),
             customPermissionCache = mock(),
             miniAppInfo = mock()
         )
-        miniAppBridge.postMessage(customPermissionJsonStr)
+        miniAppBridge.postMessage(userNameJsonStr)
 
-        verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
     }
 }
 

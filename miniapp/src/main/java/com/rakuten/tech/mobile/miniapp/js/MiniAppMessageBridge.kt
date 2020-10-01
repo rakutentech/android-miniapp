@@ -62,18 +62,21 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException("The `MiniAppMessageBridge.requestCustomPermissions`" +
-                " method has not been implemented by the Host App.")
+        throw MiniAppSdkException(
+            "The `MiniAppMessageBridge.requestCustomPermissions`" +
+                    " method has not been implemented by the Host App."
+        )
     }
 
     /**
      * Post user name request from external.
      * @param callback to return user name.
      */
-    open fun requestUserName(
-        callback: (isSuccess: Boolean, data: String?) -> Unit
-    ) {
-        throw MiniAppSdkException("The `MiniAppMessageBridge.requestUserName` method has not been implemented by the Host App.")
+    open fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
+        throw MiniAppSdkException(
+            "The `MiniAppMessageBridge.requestUserName`" +
+                    " method has not been implemented by the Host App."
+        )
     }
 
     /**
@@ -109,7 +112,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
-            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj.id)
+            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
@@ -192,6 +195,33 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    private fun onRequestUserName(callbackObj: CallbackObj) {
+        try {
+            var isPermissionGranted = false
+            customPermissionCache.readPermissions(miniAppInfo.id).pairValues.find {
+                it.first == MiniAppCustomPermissionType.USER_NAME && it.second == MiniAppCustomPermissionResult.ALLOWED
+            }?.let { isPermissionGranted = true }
+
+            if (isPermissionGranted) {
+                requestUserName { isSuccess, data ->
+                    if (isSuccess)
+                        postValue(callbackObj.id, data)
+                    else
+                        postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_USER_NAME} $data")
+                }
+            } else
+                postError(
+                    callbackObj.id,
+                    "${ErrorBridgeMessage.ERR_REQ_USER_NAME} ${ErrorBridgeMessage.ERR_REQ_USER_NAME_NO_PERMISSION}"
+                )
+        } catch (e: Exception) {
+            postError(
+                callbackObj.id,
+                "${ErrorBridgeMessage.ERR_REQ_USER_NAME} ${e.message}"
+            )
+        }
+    }
+
     private fun onShareContent(callbackId: String, jsonStr: String) {
         try {
             val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
@@ -210,16 +240,6 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onRequestUserName(callbackId: String) {
-        requestUserName { isSuccess, data ->
-            if (isSuccess)
-                postValue(callbackId, data ?: SUCCESS)
-            else
-                postError(callbackId,
-                    data ?: "${ErrorBridgeMessage.ERR_REQ_USER_NAME} Unknown error message from hostapp.")
-        }
-    }
-
     @VisibleForTesting
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
@@ -231,6 +251,7 @@ abstract class MiniAppMessageBridge {
 
     /** Inform the custom permission request result to MiniApp. **/
     @Suppress("LongMethod", "FunctionMaxLength")
+    @VisibleForTesting
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
         postValue(callbackId, jsonResult)
     }
@@ -304,6 +325,7 @@ internal class ErrorBridgeMessage {
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
         const val ERR_REQ_USER_NAME = "Cannot request user name:"
+        const val ERR_REQ_USER_NAME_NO_PERMISSION = "Permission has not been accepted yet for requesting user name."
         const val ERR_SHARE_CONTENT = "Cannot share content:"
         const val ERR_LOAD_AD = "Cannot load ad:"
         const val ERR_SHOW_AD = "Cannot show ad:"

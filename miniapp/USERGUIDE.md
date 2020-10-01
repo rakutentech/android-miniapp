@@ -163,6 +163,12 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
+
+    override fun requestUserName(callback: (isSuccess: Boolean, data: String?) -> Unit) {
+        // requesting user name implementation.
+        // .. .. ..
+        callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
 }
 ```
 
@@ -328,12 +334,6 @@ downloadedMiniApps.forEach {
     val permissions = it.second
     // Display permissions in view, etc....
 }
-```
-
-### #5 User Data 
-#### Requesting user name
-```kotlin
-TODO()
 ```
 
 ## Troubleshooting
