@@ -342,6 +342,7 @@ class AdBridgeSpec : BridgeCommon() {
         verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
     }
 
+    @Suppress("LongMethod")
     @RunWith(AndroidJUnit4::class)
     class UserNameRequestBridgeSpec : BridgeCommon() {
         private val userNameCallbackObj = CallbackObj(
