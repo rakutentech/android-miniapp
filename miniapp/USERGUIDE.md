@@ -122,6 +122,7 @@ There are some methods have default implementation but host app can override the
 | getUniqueId                  | 🚫       |
 | requestPermission            | 🚫       |
 | requestCustomPermissions     | 🚫       |
+| requestUserName              | 🚫       |
 | shareContent                 | ✅       |
 
 ```kotlin
