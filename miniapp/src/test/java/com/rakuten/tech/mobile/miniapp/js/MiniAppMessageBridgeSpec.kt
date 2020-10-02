@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -69,6 +70,24 @@ open class BridgeCommon {
         }
     }
 
+    protected fun createUserNameMiniAppMessageBridge(
+        isSuccess: Boolean,
+        data: String
+    ): MiniAppMessageBridge = object : MiniAppMessageBridge() {
+        override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+        override fun requestPermission(
+            miniAppPermissionType: MiniAppPermissionType,
+            callback: (isGranted: Boolean) -> Unit
+        ) {
+            onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+        }
+
+        override fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
+            callback.invoke(isSuccess, data)
+        }
+    }
+
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
@@ -107,13 +126,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         id = TEST_CALLBACK_ID
     )
     private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
-
-    private val userNameCallbackObj = CallbackObj(
-        action = ActionType.REQUEST_USER_NAME.action,
-        param = null,
-        id = TEST_CALLBACK_ID
-    )
-    private val userNameJsonStr = Gson().toJson(userNameCallbackObj)
 
     @Before
     fun setup() {
@@ -192,20 +204,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
         verify(miniAppBridge, times(1))
             .postValue(customPermissionCallbackObj.id, TEST_USER_NAME_PERMISSION_RESULT)
-    }
-
-    @Test
-    fun `postError should be called when cannot request user name`() {
-        val errMsg = "Cannot request user name: null"
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = mock(),
-            customPermissionCache = mock(),
-            miniAppInfo = mock()
-        )
-        miniAppBridge.postMessage(userNameJsonStr)
-
-        verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
     }
 }
 
@@ -342,5 +340,132 @@ class AdBridgeSpec : BridgeCommon() {
         miniAppBridgeWithAdMob.postMessage(jsonStr)
 
         verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @RunWith(AndroidJUnit4::class)
+    class UserNameRequestBridgeSpec : BridgeCommon() {
+        private val userNameCallbackObj = CallbackObj(
+            action = ActionType.REQUEST_USER_NAME.action,
+            param = null,
+            id = TEST_CALLBACK_ID
+        )
+        private val userNameJsonStr = Gson().toJson(userNameCallbackObj)
+        private val customPermissionCache: MiniAppCustomPermissionCache = mock()
+        private val miniAppInfo = MiniAppInfo(
+            id = TEST_MA_ID,
+            displayName = TEST_MA_DISPLAY_NAME,
+            icon = TEST_MA_ICON,
+            version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+        )
+        private val allowedUserNamePermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.ALLOWED
+                )
+            )
+        )
+
+        @Before
+        fun setupAllowedUserName() {
+            whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+                allowedUserNamePermission
+            )
+        }
+
+        @Test
+        fun `postError should be called when cannot request user name`() {
+            val errMsg = "Cannot request user name: null"
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = mock(),
+                customPermissionCache = mock(),
+                miniAppInfo = mock()
+            )
+            miniAppBridge.postMessage(userNameJsonStr)
+
+            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        }
+
+        @Test
+        fun `postError should be called when requestUserName hasn't been implemented`() {
+            val errMsg = "Cannot request user name: The `MiniAppMessageBridge.requestUserName`" +
+                    " method has not been implemented by the Host App."
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = mock(),
+                customPermissionCache = customPermissionCache,
+                miniAppInfo = miniAppInfo
+            )
+            miniAppBridge.postMessage(userNameJsonStr)
+
+            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        }
+
+        @Test
+        fun `postError should be called when user name permission hasn't been allowed`() {
+            val errMsg = "Cannot request user name: Permission has not been accepted yet for requesting user name."
+
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(false, TEST_USER_NAME))
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = mock(),
+                customPermissionCache = customPermissionCache,
+                miniAppInfo = miniAppInfo
+            )
+            val deniedUserNamePermission = MiniAppCustomPermission(
+                TEST_MA_ID,
+                listOf(
+                    Pair(
+                        MiniAppCustomPermissionType.USER_NAME,
+                        MiniAppCustomPermissionResult.DENIED
+                    )
+                )
+            )
+
+            whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+                deniedUserNamePermission
+            )
+
+            miniAppBridge.postMessage(userNameJsonStr)
+
+            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        }
+
+        @Test
+        fun `postError should be called when requestUserName hasn't invoked successfully`() {
+            val errName = "error name"
+            val errMsg = "Cannot request user name: $errName"
+
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(false, errName))
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = mock(),
+                customPermissionCache = customPermissionCache,
+                miniAppInfo = miniAppInfo
+            )
+
+            miniAppBridge.postMessage(userNameJsonStr)
+
+            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        }
+
+        @Test
+        fun `postValue should be called when requestUserName has invoked successfully`() {
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(true, TEST_USER_NAME))
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = mock(),
+                customPermissionCache = customPermissionCache,
+                miniAppInfo = miniAppInfo
+            )
+
+            miniAppBridge.postMessage(userNameJsonStr)
+
+            verify(miniAppBridge, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        }
     }
 }
