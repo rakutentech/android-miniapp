@@ -24,10 +24,20 @@ import kotlin.coroutines.CoroutineContext
 class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
+    private val interstitialAdMap = HashMap<String, InterstitialAd>()
+    private val rewardedAdMap = HashMap<String, RewardedAd>()
+
     @VisibleForTesting
-    internal val interstitialAdMap = HashMap<String, InterstitialAd>()
-    @VisibleForTesting
-    internal val rewardedAdMap = HashMap<String, RewardedAd>()
+    internal fun initAdMap(
+        interstitialAdMap: Map<String, InterstitialAd> = HashMap(),
+        rewardedAdMap: Map<String, RewardedAd> = HashMap()
+    ) {
+        this.interstitialAdMap.clear()
+        this.interstitialAdMap.putAll(interstitialAdMap)
+
+        this.rewardedAdMap.clear()
+        this.rewardedAdMap.putAll(rewardedAdMap)
+    }
 
     /** Load the interstitial ad when it is ready. **/
     override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
@@ -82,15 +92,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
                 val ad = RewardedAd(context, adUnitId)
                 rewardedAdMap[adUnitId] = ad
 
-                val adLoadCallback = object : RewardedAdLoadCallback() {
-                    override fun onRewardedAdLoaded() {
-                        onLoaded.invoke()
-                    }
-
-                    override fun onRewardedAdFailedToLoad(adError: LoadAdError) {
-                        onFailed.invoke(adError.message)
-                    }
-                }
+                val adLoadCallback = createRewardedAdLoadCallback(onLoaded, onFailed)
 
                 ad.loadAd(AdRequest.Builder().build(), adLoadCallback)
             }
@@ -106,26 +108,48 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         launch {
             if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]!!.isLoaded) {
                 val ad = rewardedAdMap[adUnitId]!!
-                val adCallback = object : RewardedAdCallback() {
-                    var reward: Reward? = null
-
-                    override fun onRewardedAdClosed() {
-                        onClosed.invoke(reward)
-                        rewardedAdMap.remove(adUnitId)
-                    }
-
-                    override fun onUserEarnedReward(rewardItem: RewardItem) {
-                        reward = Reward(type = rewardItem.type, amount = rewardItem.amount)
-                    }
-
-                    override fun onRewardedAdFailedToShow(adError: AdError) {
-                        onFailed.invoke(adError.message)
-                    }
-                }
+                val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
 
                 ad.show(context, adCallback)
             } else
                 onFailed.invoke("Ad is not loaded yet")
+        }
+    }
+
+    @VisibleForTesting
+    internal fun createRewardedAdLoadCallback(
+        onLoaded: () -> Unit,
+        onFailed: (String) -> Unit
+    ): RewardedAdLoadCallback = object : RewardedAdLoadCallback() {
+
+        override fun onRewardedAdLoaded() {
+            onLoaded.invoke()
+        }
+
+        override fun onRewardedAdFailedToLoad(adError: LoadAdError) {
+            onFailed.invoke(adError.message)
+        }
+    }
+
+    @VisibleForTesting
+    internal fun createRewardedAdShowCallback(
+        adUnitId: String,
+        onClosed: (reward: Reward?) -> Unit,
+        onFailed: (String) -> Unit
+    ): RewardedAdCallback = object : RewardedAdCallback() {
+        var reward: Reward? = null
+
+        override fun onRewardedAdClosed() {
+            onClosed.invoke(reward)
+            rewardedAdMap.remove(adUnitId)
+        }
+
+        override fun onUserEarnedReward(rewardItem: RewardItem) {
+            reward = Reward(type = rewardItem.type, amount = rewardItem.amount)
+        }
+
+        override fun onRewardedAdFailedToShow(adError: AdError) {
+            onFailed.invoke(adError.message)
         }
     }
 

@@ -9,6 +9,7 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
     ) {
+        onLoaded.invoke()
         onFailed.invoke(TEST_ERROR_MSG)
         throw Exception()
     }
@@ -18,6 +19,24 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
     ) {
+        onClosed.invoke()
+        onFailed.invoke(TEST_ERROR_MSG)
+        throw Exception()
+    }
+
+    override fun loadRewarded(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+        onLoaded.invoke()
+        onFailed.invoke(TEST_ERROR_MSG)
+        throw Exception()
+    }
+
+    override fun showRewarded(
+        adUnitId: String,
+        onClosed: (reward: Reward?) -> Unit,
+        onFailed: (String) -> Unit
+    ) {
+        onClosed.invoke(null)
+        onClosed.invoke(Reward("", 1))
         onFailed.invoke(TEST_ERROR_MSG)
         throw Exception()
     }
