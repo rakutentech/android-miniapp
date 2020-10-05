@@ -168,7 +168,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun requestUserName(callback: (isSuccess: Boolean, data: String?) -> Unit) {
         // requesting user name implementation.
         // .. .. ..
-        callback.invoke(true, null) // or callback.invoke(false, "error message")
+        callback.invoke(true, "user_name") // or callback.invoke(false, "error message")
     }
 }
 ```
