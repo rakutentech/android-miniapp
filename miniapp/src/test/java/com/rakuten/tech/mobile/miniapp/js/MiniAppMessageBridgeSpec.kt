@@ -61,13 +61,6 @@ open class BridgeCommon {
         ) {
             onRequestPermissionsResult(TEST_CALLBACK_ID, false)
         }
-
-        override fun requestCustomPermissions(
-            permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-            callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-        ) {
-            onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_USER_NAME_PERMISSION_RESULT)
-        }
     }
 
     protected fun createUserNameMiniAppMessageBridge(
@@ -189,6 +182,23 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(miniAppBridge, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when requestCustomPermissions hasn't been implemented`() {
+        val errMsg =
+            "Cannot request custom permissions: The `MiniAppMessageBridge.requestCustomPermissions`" +
+                    " method has not been implemented by the Host App."
+        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = mock(),
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+        miniAppBridge.postMessage(customPermissionJsonStr)
+
+        verify(miniAppBridge, times(1)).postError(customPermissionCallbackObj.id, errMsg)
     }
 
     @Test
