@@ -330,6 +330,25 @@ downloadedMiniApps.forEach {
 }
 ```
 
+### #5 AdMob Integration
+It is optional to set AdMob for mini apps to show advertisement.
+The below implementation will allow ads to be shown when mini apps trigger a request.
+
+- Configure the Android Ads SDK from [here](https://developers.google.com/admob/android/quick-start).
+- Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
+```kotlin
+miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
+``` 
+
+In case the host app wants to take control of the ad display, there is the interface `MiniAppAdDisplayer` to implement.
+```kotlin
+class CustomAdDisplayer: MiniAppAdDisplayer { 
+// ad implementation 
+}
+
+miniAppMessageBridge.setAdMobDisplayer(CustomAdDisplayer())
+```
+
 ## Troubleshooting
 
 ### Exception: "Network requests must not be performed on the main thread."
