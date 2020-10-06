@@ -124,6 +124,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
 
                 override fun getUserName(): String = AppSettings.instance.profileName
+
+                override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
             }
 
             miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))

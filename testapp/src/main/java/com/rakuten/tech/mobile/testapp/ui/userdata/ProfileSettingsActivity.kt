@@ -2,8 +2,11 @@ package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -13,16 +16,20 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.profile_settings_activity.*
+import java.io.ByteArrayOutputStream
 
 class ProfileSettingsActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
+    private lateinit var profileUrlBase64: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
         profileUrl = settings.profilePictureUrl
+        profileUrlBase64 = settings.profilePictureUrlBase64
+
         showBackIcon()
         setContentView(R.layout.profile_settings_activity)
         renderProfileSettingsScreen()
@@ -56,6 +63,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
     private fun updateProfile(name: String) {
         settings.profilePictureUrl = profileUrl
+        settings.profilePictureUrlBase64 = profileUrlBase64
         settings.profileName = name.trimEnd()
         finish()
     }
@@ -75,7 +83,18 @@ class ProfileSettingsActivity : BaseActivity() {
             val imageUri = data?.data
             setProfileImage(imageUri)
             profileUrl = imageUri.toString()
+            profileUrlBase64 = encodeImageForMiniApp(profileUrl)
         }
+    }
+
+    private fun encodeImageForMiniApp(profileUrl: String): String {
+        val uri = Uri.parse(profileUrl)
+        val imageStream = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(imageStream)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val bytes: ByteArray = byteArrayOutputStream.toByteArray()
+        return BASE_64_DATA_PREFIX + Base64.encodeToString(bytes, Base64.DEFAULT)
     }
 
     private fun setProfileImage(uri: Uri?) {
@@ -87,6 +106,7 @@ class ProfileSettingsActivity : BaseActivity() {
 
     companion object {
         private const val PICK_IMAGE = 1001
+        private const val BASE_64_DATA_PREFIX = "data:image/png;base64,"
 
         fun start(activity: Activity) {
             activity.startActivity(Intent(activity, ProfileSettingsActivity::class.java))

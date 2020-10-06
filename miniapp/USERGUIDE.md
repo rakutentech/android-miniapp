@@ -124,6 +124,7 @@ There are some methods have default implementation but host app can override the
 | requestCustomPermissions     | 🚫       |
 | shareContent                 | ✅       |
 | getUserName                  | 🚫       |
+| getProfilePhoto              | 🚫       |
 
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
@@ -170,6 +171,13 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
       // Implementation details to get user name
       // .. .. ..
       return name
+    }
+
+    override fun getProfilePhoto(): String {
+      val profilePhotoUrl: String = ""
+      // Implementation details to get profile photo url
+      // .. .. ..
+      return profilePhotoUrl
     }
 }
 ```

@@ -7,7 +7,8 @@ internal enum class ActionType(val action: String) {
     SHARE_INFO("shareInfo"),
     LOAD_AD("loadAd"),
     SHOW_AD("showAd"),
-    GET_USER_NAME("getUserName")
+    GET_USER_NAME("getUserName"),
+    GET_PROFILE_PHOTO("getProfilePhoto")
 }
 
 internal enum class DialogType {

@@ -62,21 +62,6 @@ open class BridgeCommon {
         }
     }
 
-    protected fun createUserNameMiniAppMessageBridge(userName: String): MiniAppMessageBridge =
-        object : MiniAppMessageBridge() {
-
-        override fun getUniqueId() = TEST_CALLBACK_VALUE
-
-        override fun requestPermission(
-            miniAppPermissionType: MiniAppPermissionType,
-            callback: (isGranted: Boolean) -> Unit
-        ) {
-            onRequestPermissionsResult(TEST_CALLBACK_ID, false)
-        }
-
-        override fun getUserName() = userName
-    }
-
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {

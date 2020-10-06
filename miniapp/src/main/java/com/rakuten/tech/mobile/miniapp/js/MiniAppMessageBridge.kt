@@ -21,15 +21,17 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.userinfo.UserInfoHandler
 
-@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass")
+@Suppress(
+    "TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
+    "LargeClass", "StringLiteralDuplication"
+)
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
     internal lateinit var customPermissionCache: MiniAppCustomPermissionCache
     internal lateinit var miniAppInfo: MiniAppInfo
+    internal lateinit var activity: Activity
     private lateinit var userInfoHandler: UserInfoHandler
-    private lateinit var activity: Activity
 
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
@@ -79,6 +81,14 @@ abstract class MiniAppMessageBridge {
         )
     }
 
+    /** Get profile photo url from host app. **/
+    open fun getProfilePhoto(): String {
+        throw MiniAppSdkException(
+            "The `MiniAppMessageBridge.getProfilePhoto`" +
+                    " method has not been implemented by the Host App."
+        )
+    }
+
     /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
@@ -116,6 +126,7 @@ abstract class MiniAppMessageBridge {
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj)
         }
     }
 

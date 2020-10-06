@@ -32,6 +32,11 @@ class UserInfoHandlerSpec {
         param = null,
         id = TEST_CALLBACK_ID
     )
+    private val profilePhotoCallbackObj = CallbackObj(
+        action = ActionType.GET_PROFILE_PHOTO.action,
+        param = null,
+        id = TEST_CALLBACK_ID
+    )
     private val customPermissionCache: MiniAppCustomPermissionCache = mock()
     private val miniAppInfo = MiniAppInfo(
         id = TEST_MA_ID,
@@ -39,11 +44,15 @@ class UserInfoHandlerSpec {
         icon = TEST_MA_ICON,
         version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
     )
-    private val allowedUserNamePermission = MiniAppCustomPermission(
+    private val userInfoAllowedPermission = MiniAppCustomPermission(
         TEST_MA_ID,
         listOf(
             Pair(
                 MiniAppCustomPermissionType.USER_NAME,
+                MiniAppCustomPermissionResult.ALLOWED
+            ),
+            Pair(
+                MiniAppCustomPermissionType.PROFILE_PHOTO,
                 MiniAppCustomPermissionResult.ALLOWED
             )
         )
@@ -61,6 +70,7 @@ class UserInfoHandlerSpec {
         userInfoHandler = UserInfoHandler(miniAppBridge)
     }
 
+    /** start region: onGetUserName */
     @Test
     fun `postError should be called when user name permission hasn't been allowed`() {
         val errMsg = "Cannot get user name: Permission has not been accepted yet for getting user name."
@@ -86,7 +96,7 @@ class UserInfoHandlerSpec {
     fun `postError should be called when user name is empty`() {
         val errMsg = "Cannot get user name: User name is not found."
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
-            allowedUserNamePermission
+            userInfoAllowedPermission
         )
 
         userInfoHandler.onGetUserName(userNameCallbackObj)
@@ -97,7 +107,7 @@ class UserInfoHandlerSpec {
     @Test
     fun `postValue should be called when onGetUserName retrieve valid user name`() {
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
-            allowedUserNamePermission
+            userInfoAllowedPermission
         )
         whenever(miniAppBridge.getUserName()).thenReturn(TEST_USER_NAME)
 
@@ -105,6 +115,55 @@ class UserInfoHandlerSpec {
 
         verify(miniAppBridge, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
+    /** end region */
+
+    /** start region: onGetProfilePhoto */
+    @Test
+    fun `postError should be called when profile photo permission hasn't been allowed`() {
+        val errMsg = "Cannot get profile photo: Permission has not been accepted yet for getting profile photo."
+        val deniedProfilePhotoPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
+        whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+            deniedProfilePhotoPermission
+        )
+
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+
+        verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when profile photo is empty`() {
+        val errMsg = "Cannot get profile photo: Profile photo is not found."
+        whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+            userInfoAllowedPermission
+        )
+
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+
+        verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when onGetProfilePhoto retrieve valid profile photo url`() {
+        whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+            userInfoAllowedPermission
+        )
+        whenever(miniAppBridge.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
+
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+
+        verify(miniAppBridge, times(1)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
+    }
+
+    /** end region */
 
     private fun createUserInfoMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
@@ -119,5 +178,7 @@ class UserInfoHandlerSpec {
             }
 
             override fun getUserName() = ""
+
+            override fun getProfilePhoto() = ""
         }
 }
