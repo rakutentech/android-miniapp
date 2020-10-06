@@ -19,14 +19,16 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.userinfo.UserInfoHandler
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var webViewListener: WebViewListener
-    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
-    private lateinit var miniAppInfo: MiniAppInfo
+    internal lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    internal lateinit var miniAppInfo: MiniAppInfo
+    private lateinit var userInfoHandler: UserInfoHandler
     private lateinit var activity: Activity
 
     private lateinit var adDisplayer: MiniAppAdDisplayer
@@ -42,6 +44,7 @@ abstract class MiniAppMessageBridge {
         this.webViewListener = webViewListener
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
+        this.userInfoHandler = UserInfoHandler(this)
     }
 
     /** Get provided id of mini app for any purpose. **/
@@ -112,7 +115,7 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> onGetUserName(callbackObj)
+            ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj)
         }
     }
 
@@ -189,33 +192,6 @@ abstract class MiniAppMessageBridge {
                     "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} ${e.message}"
                 )
             }
-        }
-    }
-
-    private fun onGetUserName(callbackObj: CallbackObj) {
-        try {
-            var isPermissionGranted = false
-            customPermissionCache.readPermissions(miniAppInfo.id).pairValues.find {
-                it.first == MiniAppCustomPermissionType.USER_NAME && it.second == MiniAppCustomPermissionResult.ALLOWED
-            }?.let { isPermissionGranted = true }
-
-            if (isPermissionGranted) {
-                val name = getUserName()
-                if (name.isNotEmpty()) postValue(callbackObj.id, name)
-                else postError(
-                    callbackObj.id,
-                    "${ErrorBridgeMessage.ERR_GET_USER_NAME} User name is not found."
-                )
-            } else
-                postError(
-                    callbackObj.id,
-                    "${ErrorBridgeMessage.ERR_GET_USER_NAME} ${ErrorBridgeMessage.ERR_REQ_USER_NAME_NO_PERMISSION}"
-                )
-        } catch (e: Exception) {
-            postError(
-                callbackObj.id,
-                "${ErrorBridgeMessage.ERR_GET_USER_NAME} ${e.message}"
-            )
         }
     }
 
@@ -321,10 +297,8 @@ internal class ErrorBridgeMessage {
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-        const val ERR_REQ_USER_NAME_NO_PERMISSION = "Permission has not been accepted yet for getting user name."
         const val ERR_SHARE_CONTENT = "Cannot share content:"
         const val ERR_LOAD_AD = "Cannot load ad:"
         const val ERR_SHOW_AD = "Cannot show ad:"
-        const val ERR_GET_USER_NAME = "Cannot get user name:"
     }
 }

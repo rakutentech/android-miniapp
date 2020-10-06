@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -39,7 +38,7 @@ open class BridgeCommon {
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
-                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_USER_NAME_PERMISSION_RESULT)
+                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_CUSTOM_PERMISSION_RESULT)
             }
 
             override fun shareContent(
@@ -210,7 +209,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(customPermissionJsonStr)
 
         verify(miniAppBridge, times(1))
-            .postValue(customPermissionCallbackObj.id, TEST_USER_NAME_PERMISSION_RESULT)
+            .postValue(customPermissionCallbackObj.id, TEST_CUSTOM_PERMISSION_RESULT)
     }
 }
 
@@ -347,133 +346,5 @@ class AdBridgeSpec : BridgeCommon() {
         miniAppBridgeWithAdMob.postMessage(jsonStr)
 
         verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
-    }
-
-    @Suppress("LongMethod")
-    @RunWith(AndroidJUnit4::class)
-    class UserNameBridgeSpec : BridgeCommon() {
-        private val userNameCallbackObj = CallbackObj(
-            action = ActionType.GET_USER_NAME.action,
-            param = null,
-            id = TEST_CALLBACK_ID
-        )
-        private val userNameJsonStr = Gson().toJson(userNameCallbackObj)
-        private val customPermissionCache: MiniAppCustomPermissionCache = mock()
-        private val miniAppInfo = MiniAppInfo(
-            id = TEST_MA_ID,
-            displayName = TEST_MA_DISPLAY_NAME,
-            icon = TEST_MA_ICON,
-            version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
-        )
-        private val allowedUserNamePermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(
-                Pair(
-                    MiniAppCustomPermissionType.USER_NAME,
-                    MiniAppCustomPermissionResult.ALLOWED
-                )
-            )
-        )
-
-        @Before
-        fun setupAllowedUserName() {
-            whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
-                allowedUserNamePermission
-            )
-        }
-
-        @Test
-        fun `postError should be called when cannot get user name`() {
-            val errMsg = "Cannot get user name: null"
-            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-            miniAppBridge.init(
-                activity = TestActivity(),
-                webViewListener = mock(),
-                customPermissionCache = mock(),
-                miniAppInfo = mock()
-            )
-            miniAppBridge.postMessage(userNameJsonStr)
-
-            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
-        }
-
-        @Test
-        fun `postError should be called when getUserName hasn't been implemented`() {
-            val errMsg = "Cannot get user name: The `MiniAppMessageBridge.getUserName`" +
-                    " method has not been implemented by the Host App."
-            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
-            miniAppBridge.init(
-                activity = TestActivity(),
-                webViewListener = mock(),
-                customPermissionCache = customPermissionCache,
-                miniAppInfo = miniAppInfo
-            )
-            miniAppBridge.postMessage(userNameJsonStr)
-
-            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
-        }
-
-        @Test
-        fun `postError should be called when user name permission hasn't been allowed`() {
-            val errMsg = "Cannot get user name: Permission has not been accepted yet for getting user name."
-
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(TEST_USER_NAME))
-            miniAppBridge.init(
-                activity = TestActivity(),
-                webViewListener = mock(),
-                customPermissionCache = customPermissionCache,
-                miniAppInfo = miniAppInfo
-            )
-            val deniedUserNamePermission = MiniAppCustomPermission(
-                TEST_MA_ID,
-                listOf(
-                    Pair(
-                        MiniAppCustomPermissionType.USER_NAME,
-                        MiniAppCustomPermissionResult.DENIED
-                    )
-                )
-            )
-
-            whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
-                deniedUserNamePermission
-            )
-
-            miniAppBridge.postMessage(userNameJsonStr)
-
-            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
-        }
-
-        @Test
-        fun `postError should be called when user name is empty`() {
-            val emptyName = ""
-            val errMsg = "Cannot get user name: User name is not found."
-
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(emptyName))
-            miniAppBridge.init(
-                activity = TestActivity(),
-                webViewListener = mock(),
-                customPermissionCache = customPermissionCache,
-                miniAppInfo = miniAppInfo
-            )
-
-            miniAppBridge.postMessage(userNameJsonStr)
-
-            verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
-        }
-
-        @Test
-        fun `postValue should be called when getUserName returns valid user name`() {
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(TEST_USER_NAME))
-            miniAppBridge.init(
-                activity = TestActivity(),
-                webViewListener = mock(),
-                customPermissionCache = customPermissionCache,
-                miniAppInfo = miniAppInfo
-            )
-
-            miniAppBridge.postMessage(userNameJsonStr)
-
-            verify(miniAppBridge, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
-        }
     }
 }
