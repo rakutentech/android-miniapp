@@ -63,10 +63,9 @@ open class BridgeCommon {
         }
     }
 
-    protected fun createUserNameMiniAppMessageBridge(
-        isSuccess: Boolean,
-        data: String
-    ): MiniAppMessageBridge = object : MiniAppMessageBridge() {
+    protected fun createUserNameMiniAppMessageBridge(userName: String): MiniAppMessageBridge =
+        object : MiniAppMessageBridge() {
+
         override fun getUniqueId() = TEST_CALLBACK_VALUE
 
         override fun requestPermission(
@@ -76,9 +75,7 @@ open class BridgeCommon {
             onRequestPermissionsResult(TEST_CALLBACK_ID, false)
         }
 
-        override fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
-            callback.invoke(isSuccess, data)
-        }
+        override fun getUserName() = userName
     }
 
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
@@ -354,9 +351,9 @@ class AdBridgeSpec : BridgeCommon() {
 
     @Suppress("LongMethod")
     @RunWith(AndroidJUnit4::class)
-    class UserNameRequestBridgeSpec : BridgeCommon() {
+    class UserNameBridgeSpec : BridgeCommon() {
         private val userNameCallbackObj = CallbackObj(
-            action = ActionType.REQUEST_USER_NAME.action,
+            action = ActionType.GET_USER_NAME.action,
             param = null,
             id = TEST_CALLBACK_ID
         )
@@ -386,8 +383,8 @@ class AdBridgeSpec : BridgeCommon() {
         }
 
         @Test
-        fun `postError should be called when cannot request user name`() {
-            val errMsg = "Cannot request user name: null"
+        fun `postError should be called when cannot get user name`() {
+            val errMsg = "Cannot get user name: null"
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             miniAppBridge.init(
                 activity = TestActivity(),
@@ -401,8 +398,8 @@ class AdBridgeSpec : BridgeCommon() {
         }
 
         @Test
-        fun `postError should be called when requestUserName hasn't been implemented`() {
-            val errMsg = "Cannot request user name: The `MiniAppMessageBridge.requestUserName`" +
+        fun `postError should be called when getUserName hasn't been implemented`() {
+            val errMsg = "Cannot get user name: The `MiniAppMessageBridge.getUserName`" +
                     " method has not been implemented by the Host App."
             val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
             miniAppBridge.init(
@@ -418,9 +415,9 @@ class AdBridgeSpec : BridgeCommon() {
 
         @Test
         fun `postError should be called when user name permission hasn't been allowed`() {
-            val errMsg = "Cannot request user name: Permission has not been accepted yet for requesting user name."
+            val errMsg = "Cannot get user name: Permission has not been accepted yet for getting user name."
 
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(false, TEST_USER_NAME))
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(TEST_USER_NAME))
             miniAppBridge.init(
                 activity = TestActivity(),
                 webViewListener = mock(),
@@ -447,11 +444,11 @@ class AdBridgeSpec : BridgeCommon() {
         }
 
         @Test
-        fun `postError should be called when requestUserName hasn't invoked successfully`() {
-            val errName = "error name"
-            val errMsg = "Cannot request user name: $errName"
+        fun `postError should be called when user name is empty`() {
+            val emptyName = ""
+            val errMsg = "Cannot get user name: User name is not found."
 
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(false, errName))
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(emptyName))
             miniAppBridge.init(
                 activity = TestActivity(),
                 webViewListener = mock(),
@@ -465,8 +462,8 @@ class AdBridgeSpec : BridgeCommon() {
         }
 
         @Test
-        fun `postValue should be called when requestUserName has invoked successfully`() {
-            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(true, TEST_USER_NAME))
+        fun `postValue should be called when getUserName returns valid user name`() {
+            val miniAppBridge = Mockito.spy(createUserNameMiniAppMessageBridge(TEST_USER_NAME))
             miniAppBridge.init(
                 activity = TestActivity(),
                 webViewListener = mock(),

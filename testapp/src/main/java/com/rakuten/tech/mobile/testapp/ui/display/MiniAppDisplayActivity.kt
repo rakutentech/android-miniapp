@@ -123,14 +123,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                     )
                 }
 
-                override fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
-                    val name = AppSettings.instance.profileName
-                    if (name.isNotEmpty()) callback.invoke(true, name)
-                    else {
-                        callback.invoke(false, "There is no user name found in the host app.")
-                    }
-                }
+                override fun getUserName(): String = AppSettings.instance.profileName
             }
+
             miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
 
             miniAppNavigator = object : MiniAppNavigator {

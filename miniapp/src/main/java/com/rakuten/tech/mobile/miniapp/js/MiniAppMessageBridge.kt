@@ -68,13 +68,10 @@ abstract class MiniAppMessageBridge {
         )
     }
 
-    /**
-     * Post user name request from external.
-     * @param callback to return user name.
-     */
-    open fun requestUserName(callback: (isSuccess: Boolean, data: String) -> Unit) {
+    /** Get user name from host app. **/
+    open fun getUserName(): String {
         throw MiniAppSdkException(
-            "The `MiniAppMessageBridge.requestUserName`" +
+            "The `MiniAppMessageBridge.getUserName`" +
                     " method has not been implemented by the Host App."
         )
     }
@@ -112,10 +109,10 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
-            ActionType.REQUEST_USER_NAME.action -> onRequestUserName(callbackObj)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
+            ActionType.GET_USER_NAME.action -> onGetUserName(callbackObj)
         }
     }
 
@@ -195,7 +192,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onRequestUserName(callbackObj: CallbackObj) {
+    private fun onGetUserName(callbackObj: CallbackObj) {
         try {
             var isPermissionGranted = false
             customPermissionCache.readPermissions(miniAppInfo.id).pairValues.find {
@@ -203,21 +200,21 @@ abstract class MiniAppMessageBridge {
             }?.let { isPermissionGranted = true }
 
             if (isPermissionGranted) {
-                requestUserName { isSuccess, data ->
-                    if (isSuccess)
-                        postValue(callbackObj.id, data)
-                    else
-                        postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_USER_NAME} $data")
-                }
+                val name = getUserName()
+                if (name.isNotEmpty()) postValue(callbackObj.id, name)
+                else postError(
+                    callbackObj.id,
+                    "${ErrorBridgeMessage.ERR_GET_USER_NAME} User name is not found."
+                )
             } else
                 postError(
                     callbackObj.id,
-                    "${ErrorBridgeMessage.ERR_REQ_USER_NAME} ${ErrorBridgeMessage.ERR_REQ_USER_NAME_NO_PERMISSION}"
+                    "${ErrorBridgeMessage.ERR_GET_USER_NAME} ${ErrorBridgeMessage.ERR_REQ_USER_NAME_NO_PERMISSION}"
                 )
         } catch (e: Exception) {
             postError(
                 callbackObj.id,
-                "${ErrorBridgeMessage.ERR_REQ_USER_NAME} ${e.message}"
+                "${ErrorBridgeMessage.ERR_GET_USER_NAME} ${e.message}"
             )
         }
     }
@@ -324,10 +321,10 @@ internal class ErrorBridgeMessage {
         const val ERR_UNIQUE_ID = "Cannot get unique id:"
         const val ERR_REQ_PERMISSION = "Cannot request permission:"
         const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-        const val ERR_REQ_USER_NAME = "Cannot request user name:"
-        const val ERR_REQ_USER_NAME_NO_PERMISSION = "Permission has not been accepted yet for requesting user name."
+        const val ERR_REQ_USER_NAME_NO_PERMISSION = "Permission has not been accepted yet for getting user name."
         const val ERR_SHARE_CONTENT = "Cannot share content:"
         const val ERR_LOAD_AD = "Cannot load ad:"
         const val ERR_SHOW_AD = "Cannot show ad:"
+        const val ERR_GET_USER_NAME = "Cannot get user name:"
     }
 }

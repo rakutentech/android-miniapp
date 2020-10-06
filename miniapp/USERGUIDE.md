@@ -122,8 +122,8 @@ There are some methods have default implementation but host app can override the
 | getUniqueId                  | 🚫       |
 | requestPermission            | 🚫       |
 | requestCustomPermissions     | 🚫       |
-| requestUserName              | 🚫       |
 | shareContent                 | ✅       |
+| getUserName                  | 🚫       |
 
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
@@ -165,10 +165,11 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
 
-    override fun requestUserName(callback: (isSuccess: Boolean, data: String?) -> Unit) {
-        // requesting user name implementation.
-        // .. .. ..
-        callback.invoke(true, "user_name") // or callback.invoke(false, "error message")
+    override fun getUserName(): String {
+      val name: String = ""
+      // Implementation details to get user name
+      // .. .. ..
+      return name
     }
 }
 ```

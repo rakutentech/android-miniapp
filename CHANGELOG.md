@@ -2,7 +2,7 @@
 
 ### 2.x.x (in progress)
 **SDK**
-- **Feature:** Added `requestUserName()` interface in JavaScript bridge for receiving user name if the permission has been granted.
+- **Feature:** Added `getUserName()` interface in JavaScript bridge for receiving user name if the permission has been granted.
 
 ### 2.2.0 (2020-10-02)
 **SDK**

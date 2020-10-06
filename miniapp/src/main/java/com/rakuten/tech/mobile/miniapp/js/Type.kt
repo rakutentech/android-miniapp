@@ -4,11 +4,10 @@ internal enum class ActionType(val action: String) {
     GET_UNIQUE_ID("getUniqueId"),
     REQUEST_PERMISSION("requestPermission"),
     REQUEST_CUSTOM_PERMISSIONS("requestCustomPermissions"),
-    REQUEST_USER_NAME("requestUserName"),
     SHARE_INFO("shareInfo"),
-
     LOAD_AD("loadAd"),
-    SHOW_AD("showAd")
+    SHOW_AD("showAd"),
+    GET_USER_NAME("getUserName")
 }
 
 internal enum class DialogType {
