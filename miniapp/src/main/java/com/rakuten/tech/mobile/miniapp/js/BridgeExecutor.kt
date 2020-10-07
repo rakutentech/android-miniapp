@@ -2,12 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 
-internal class BridgeExecutor {
-    private lateinit var webViewListener: WebViewListener
-
-    fun setWebViewListener(webViewListener: WebViewListener) {
-        this.webViewListener = webViewListener
-    }
+internal class BridgeExecutor(private val webViewListener: WebViewListener) {
 
     /** Emit a value to mini app. **/
     fun postValue(callbackId: String, value: String) {
@@ -18,6 +13,4 @@ internal class BridgeExecutor {
     fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
     }
-
-
 }

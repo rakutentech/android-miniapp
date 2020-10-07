@@ -25,7 +25,8 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 "LargeClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
-    private val bridgeExecutor: BridgeExecutor = BridgeExecutor()
+    private lateinit var bridgeExecutor: BridgeExecutor
+    private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
@@ -40,13 +41,18 @@ abstract class MiniAppMessageBridge {
         miniAppInfo: MiniAppInfo
     ) {
         this.activity = activity
-        this.bridgeExecutor.setWebViewListener(webViewListener)
+        this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
 
         if (this::userInfoHandler.isInitialized)
             this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+
+        miniAppViewInitialized = true
     }
+
+    @VisibleForTesting
+    internal fun createBridgeExecutor(webViewListener: WebViewListener) = BridgeExecutor(webViewListener)
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -122,7 +128,8 @@ abstract class MiniAppMessageBridge {
     /** Set implemented userInfoHandler. Can use the default provided class from sdk [UserInfoHandler]. **/
     fun setUserInfoHandler(handler: UserInfoHandler) {
         userInfoHandler = handler
-        userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        if (miniAppViewInitialized)
+            userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
