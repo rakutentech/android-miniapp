@@ -19,16 +19,16 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.userinfo.UserInfoHandler
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 
 @Suppress(
     "TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
     "LargeClass", "StringLiteralDuplication"
 )
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge {
+abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
     private lateinit var webViewListener: WebViewListener
-    internal lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     internal lateinit var miniAppInfo: MiniAppInfo
     internal lateinit var activity: Activity
     private lateinit var userInfoHandler: UserInfoHandler
@@ -46,7 +46,6 @@ abstract class MiniAppMessageBridge {
         this.webViewListener = webViewListener
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.userInfoHandler = UserInfoHandler(this)
     }
 
     /** Get provided id of mini app for any purpose. **/
@@ -69,22 +68,6 @@ abstract class MiniAppMessageBridge {
     ) {
         throw MiniAppSdkException(
             "The `MiniAppMessageBridge.requestCustomPermissions`" +
-                    " method has not been implemented by the Host App."
-        )
-    }
-
-    /** Get user name from host app. **/
-    open fun getUserName(): String {
-        throw MiniAppSdkException(
-            "The `MiniAppMessageBridge.getUserName`" +
-                    " method has not been implemented by the Host App."
-        )
-    }
-
-    /** Get profile photo url from host app. **/
-    open fun getProfilePhoto(): String {
-        throw MiniAppSdkException(
-            "The `MiniAppMessageBridge.getProfilePhoto`" +
                     " method has not been implemented by the Host App."
         )
     }
@@ -125,8 +108,8 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj)
+            ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj.id)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj.id)
         }
     }
 
@@ -134,6 +117,11 @@ abstract class MiniAppMessageBridge {
     fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) {
         this.adDisplayer = adDisplayer
         this.isAdMobEnabled = isAdMobProvided()
+    }
+
+    fun setUserInfoHandler(handler: UserInfoHandler) {
+        this.userInfoHandler = handler
+        this.userInfoHandler.init(this, customPermissionCache, miniAppInfo.id)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
@@ -290,13 +278,13 @@ abstract class MiniAppMessageBridge {
             postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 
-    /** Return a value to mini app. **/
-    internal fun postValue(callbackId: String, value: String) {
+    /** Emit a value to mini app. **/
+    override fun postValue(callbackId: String, value: String) {
         webViewListener.runSuccessCallback(callbackId, value)
     }
 
-    /** Emit an error to mini app. **/
-    internal fun postError(callbackId: String, errorMessage: String) {
+    /** Emit an error response to mini app. **/
+    override fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
     }
 }

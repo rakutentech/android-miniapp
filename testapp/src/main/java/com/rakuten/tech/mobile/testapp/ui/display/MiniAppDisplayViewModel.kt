@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ class MiniAppDisplayViewModel constructor(
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var miniAppDisplay: MiniAppDisplay
+    private lateinit var userInfoHandler: UserInfoHandler
     private var hostLifeCycle: Lifecycle? = null
 
     private val _miniAppView = MutableLiveData<View>()
@@ -43,6 +45,13 @@ class MiniAppDisplayViewModel constructor(
             miniAppDisplay = miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
+
+            userInfoHandler = object : UserInfoHandler() {
+                override fun getUserName(): String = AppSettings.instance.profileName
+
+                override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
+            }
+            miniAppMessageBridge.setUserInfoHandler(userInfoHandler)
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
             _errorData.postValue(e.message)

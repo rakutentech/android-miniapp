@@ -13,16 +13,24 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.MiniAppCoroutines
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.profile_settings_activity.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.lang.Exception
 
 class ProfileSettingsActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
     private lateinit var profileUrlBase64: String
+    private val coroutines = MiniAppCoroutines()
+    private val encodePhotoUrlJob: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,18 +91,31 @@ class ProfileSettingsActivity : BaseActivity() {
             val imageUri = data?.data
             setProfileImage(imageUri)
             profileUrl = imageUri.toString()
-            profileUrlBase64 = encodeImageForMiniApp(profileUrl)
+            encodeImageForMiniApp(profileUrl)
         }
     }
 
-    private fun encodeImageForMiniApp(profileUrl: String): String {
-        val uri = Uri.parse(profileUrl)
-        val imageStream = contentResolver.openInputStream(uri)
-        val bitmap = BitmapFactory.decodeStream(imageStream)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val bytes: ByteArray = byteArrayOutputStream.toByteArray()
-        return BASE_64_DATA_PREFIX + Base64.encodeToString(bytes, Base64.DEFAULT)
+    private fun encodeImageForMiniApp(profileUrl: String) {
+        coroutines.buildMainScope(encodePhotoUrlJob).launch {
+            try {
+                withContext(IO) {
+                    val uri = Uri.parse(profileUrl)
+                    val inputStream = contentResolver.openInputStream(uri)
+                    inputStream?.use {
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+                        val bytes: ByteArray = byteArrayOutputStream.toByteArray()
+                        profileUrlBase64 = BASE_64_DATA_PREFIX + Base64.encodeToString(
+                            bytes,
+                            Base64.DEFAULT
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun setProfileImage(uri: Uri?) {

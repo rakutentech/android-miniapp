@@ -1,6 +1,7 @@
-package com.rakuten.tech.mobile.miniapp.userinfo
+package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -14,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.js.ActionType
+import com.rakuten.tech.mobile.miniapp.js.BridgeCommon
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -24,7 +26,7 @@ import org.mockito.Mockito
 
 @Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
-class UserInfoHandlerSpec {
+class UserInfoHandlerSpec : BridgeCommon() {
     private lateinit var userInfoHandler: UserInfoHandler
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val userNameCallbackObj = CallbackObj(
@@ -60,20 +62,30 @@ class UserInfoHandlerSpec {
 
     @Before
     fun setup() {
-        miniAppBridge = Mockito.spy(createUserInfoMessageBridge())
+        miniAppBridge = Mockito.spy(createMessageBridge())
         miniAppBridge.init(
             activity = TestActivity(),
             webViewListener = mock(),
             customPermissionCache = customPermissionCache,
             miniAppInfo = miniAppInfo
         )
-        userInfoHandler = UserInfoHandler(miniAppBridge)
+        userInfoHandler = Mockito.spy(createUserInfoHandler())
+        miniAppBridge.setUserInfoHandler(userInfoHandler)
     }
 
     /** start region: onGetUserName */
     @Test
+    fun `postError should be called when cannot get user name`() {
+        val errMsg = "Cannot get user name: null"
+        miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
+
+        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postError should be called when user name permission hasn't been allowed`() {
-        val errMsg = "Cannot get user name: Permission has not been accepted yet for getting user name."
+        val errMsg =
+            "Cannot get user name: Permission has not been accepted yet for getting user name."
         val deniedUserNamePermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
@@ -87,7 +99,7 @@ class UserInfoHandlerSpec {
             deniedUserNamePermission
         )
 
-        userInfoHandler.onGetUserName(userNameCallbackObj)
+        userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
     }
@@ -99,7 +111,7 @@ class UserInfoHandlerSpec {
             userInfoAllowedPermission
         )
 
-        userInfoHandler.onGetUserName(userNameCallbackObj)
+        userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
     }
@@ -109,9 +121,9 @@ class UserInfoHandlerSpec {
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
-        whenever(miniAppBridge.getUserName()).thenReturn(TEST_USER_NAME)
+        whenever(userInfoHandler.getUserName()).thenReturn(TEST_USER_NAME)
 
-        userInfoHandler.onGetUserName(userNameCallbackObj)
+        userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
@@ -119,8 +131,17 @@ class UserInfoHandlerSpec {
 
     /** start region: onGetProfilePhoto */
     @Test
+    fun `postError should be called when cannot get profile photo`() {
+        val errMsg = "Cannot get profile photo: null"
+        miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
+
+        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postError should be called when profile photo permission hasn't been allowed`() {
-        val errMsg = "Cannot get profile photo: Permission has not been accepted yet for getting profile photo."
+        val errMsg =
+            "Cannot get profile photo: Permission has not been accepted yet for getting profile photo."
         val deniedProfilePhotoPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
@@ -134,7 +155,7 @@ class UserInfoHandlerSpec {
             deniedProfilePhotoPermission
         )
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -146,7 +167,7 @@ class UserInfoHandlerSpec {
             userInfoAllowedPermission
         )
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -156,16 +177,16 @@ class UserInfoHandlerSpec {
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
-        whenever(miniAppBridge.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
+        whenever(userInfoHandler.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj)
+        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(miniAppBridge, times(1)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
 
     /** end region */
 
-    private fun createUserInfoMessageBridge(): MiniAppMessageBridge =
+    private fun createMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
             override fun getUniqueId() = TEST_CALLBACK_VALUE
@@ -176,7 +197,10 @@ class UserInfoHandlerSpec {
             ) {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, false)
             }
+        }
 
+    private fun createUserInfoHandler(): UserInfoHandler =
+        object : UserInfoHandler() {
             override fun getUserName() = ""
 
             override fun getProfilePhoto() = ""

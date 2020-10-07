@@ -123,8 +123,6 @@ There are some methods have default implementation but host app can override the
 | requestPermission            | 🚫       |
 | requestCustomPermissions     | 🚫       |
 | shareContent                 | ✅       |
-| getUserName                  | 🚫       |
-| getProfilePhoto              | 🚫       |
 
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
@@ -166,20 +164,25 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
 
+// initialize UserInfoHandler after ensuring that MiniApp has been created.
+val userInfoHandler = object : UserInfoHandler() {
     override fun getUserName(): String {
-      val name: String = ""
-      // Implementation details to get user name
-      // .. .. ..
-      return name
+        val name: String = ""
+        // Implementation details to get user name
+        // .. .. ..
+        return name
     }
 
     override fun getProfilePhoto(): String {
-      val profilePhotoUrl: String = ""
-      // Implementation details to get profile photo url
-      // .. .. ..
-      return profilePhotoUrl
+        val profilePhotoUrl: String = ""
+        // Implementation details to get profile photo url
+        // .. .. ..
+        return profilePhotoUrl
     }
 }
+
+// set UserInfoHandler object to miniAppMessageBridge
+miniAppMessageBridge.setUserInfoHandler(userInfoHandler)
 ```
 
 ### #5 Create and display a Mini App
