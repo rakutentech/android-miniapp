@@ -24,8 +24,8 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass")
 /** Bridge interface for communicating with mini app. **/
-abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
-    private lateinit var webViewListener: WebViewListener
+abstract class MiniAppMessageBridge {
+    private val bridgeExecutor: BridgeExecutor = BridgeExecutor()
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
@@ -40,7 +40,7 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
         miniAppInfo: MiniAppInfo
     ) {
         this.activity = activity
-        this.webViewListener = webViewListener
+        this.bridgeExecutor.setWebViewListener(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
     }
@@ -119,14 +119,14 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
     /** Set implemented userInfoHandler. Can use the default provided class from sdk [UserInfoHandler]. **/
     fun setUserInfoHandler(handler: UserInfoHandler) {
         this.userInfoHandler = handler
-        this.userInfoHandler.init(this, customPermissionCache, miniAppInfo.id)
+        this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
         try {
-            postValue(callbackObj.id, getUniqueId())
+            bridgeExecutor.postValue(callbackObj.id, getUniqueId())
         } catch (e: Exception) {
-            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
+            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
         }
     }
 
@@ -144,7 +144,7 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
+            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
         }
     }
 
@@ -184,7 +184,7 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
             }
         } catch (e: Exception) {
             callbackObj?.id?.let {
-                postError(
+                bridgeExecutor.postError(
                     it,
                     "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} ${e.message}"
                 )
@@ -200,13 +200,13 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                 callbackObj.param.shareInfo.content
             ) { isSuccess, message ->
                 if (isSuccess)
-                    postValue(callbackId, message ?: SUCCESS)
+                    bridgeExecutor.postValue(callbackId, message ?: SUCCESS)
                 else
-                    postError(callbackId,
+                    bridgeExecutor.postError(callbackId,
                         message ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp.")
             }
         } catch (e: Exception) {
-            postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
+            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
         }
     }
 
@@ -214,16 +214,16 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
         if (isGranted)
-            postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
         else
-            postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
     }
 
     /** Inform the custom permission request result to MiniApp. **/
     @Suppress("LongMethod", "FunctionMaxLength")
     @VisibleForTesting
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
-        postValue(callbackId, jsonResult)
+        bridgeExecutor.postValue(callbackId, jsonResult)
     }
 
     private fun onLoadAd(callbackId: String, jsonStr: String) {
@@ -235,9 +235,9 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                 when (adObj.adType) {
                     AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
                         adUnitId = adObj.adUnitId,
-                        onLoaded = { postValue(callbackId, SUCCESS) },
+                        onLoaded = { bridgeExecutor.postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
-                            postError(
+                            bridgeExecutor.postError(
                                 callbackId,
                                 "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
                             )
@@ -245,10 +245,10 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                     )
                 }
             } catch (e: Exception) {
-                postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
+                bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
             }
         } else
-            postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 
     private fun onShowAd(callbackId: String, jsonStr: String) {
@@ -260,9 +260,9 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                 when (adObj.adType) {
                     AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
                         adUnitId = adObj.adUnitId,
-                        onClosed = { postValue(callbackId, CLOSED) },
+                        onClosed = { bridgeExecutor.postValue(callbackId, CLOSED) },
                         onFailed = { errMsg ->
-                            postError(
+                            bridgeExecutor.postError(
                                 callbackId,
                                 "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
                             )
@@ -270,20 +270,10 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
                     )
                 }
             } catch (e: Exception) {
-                postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
+                bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
             }
         } else
-            postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
-    }
-
-    /** Emit a value to mini app. **/
-    override fun postValue(callbackId: String, value: String) {
-        webViewListener.runSuccessCallback(callbackId, value)
-    }
-
-    /** Emit an error response to mini app. **/
-    override fun postError(callbackId: String, errorMessage: String) {
-        webViewListener.runErrorCallback(callbackId, errorMessage)
+            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 }
 
