@@ -234,8 +234,9 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val phoneUri = "tel:123456"
 
         try {
-            webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
-            webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(phoneUri.toUri()))
+            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
+            webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
+            webViewClient.shouldOverrideUrlLoading(displayer, phoneUri)
         } catch (e: AndroidRuntimeException) {
             // context here is not activity
         }
@@ -249,10 +250,9 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, null,
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
-        val externalUri = TEST_URL_HTTPS_1.toUri()
 
         try {
-            webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(externalUri))
+            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
         } catch (e: AndroidRuntimeException) {
             // context here is not activity
         }
@@ -266,10 +266,9 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
-        val externalUri = TEST_URL_HTTPS_1.toUri()
 
         try {
-            webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(externalUri))
+            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
         } catch (e: AndroidRuntimeException) {
             // context here is not activity
         }

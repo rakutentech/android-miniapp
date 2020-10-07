@@ -25,6 +25,19 @@ internal class MiniAppStatus(context: Context) {
             null
         }
 
+    @Suppress("EmptyCatchBlock", "SwallowedException")
+    fun getDownloadedMiniAppList(): List<MiniAppInfo> {
+        val list = arrayListOf<MiniAppInfo>()
+        prefs.all.map { entry ->
+            try {
+                list.add(gson.fromJson(entry.value.toString(), MiniAppInfo::class.java))
+            } catch (error: JsonSyntaxException) {
+                list.addAll(emptyList())
+            }
+        }
+        return list
+    }
+
     fun setVersionDownloaded(appId: String, versionId: String, value: Boolean) =
         prefs.edit().putBoolean(appId + versionId, value).apply()
 

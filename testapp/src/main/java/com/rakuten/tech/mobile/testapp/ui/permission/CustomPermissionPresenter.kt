@@ -36,7 +36,7 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
 
         // show dialog if there is any denied permission
         if (permissionsForAdapter.isNotEmpty()) {
-            val adapter = CustomPermissionAdapter()
+            val adapter = MiniAppPermissionSettingsAdapter()
             val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
             val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
             val descriptionForAdapter: ArrayList<String> = arrayListOf()

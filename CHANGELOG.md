@@ -1,13 +1,17 @@
 ## CHANGELOG
 
-### 2.x.x (in progress)
+### 2.2.0 (2020-10-02)
 **SDK**
-- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. 
-- **Feature:** Share content from mini app. 
+- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. [See here](miniapp/USERGUIDE.md#4-custom-permissions)
+- **Feature:** Added interface for sharing content from a mini app. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge)
+- **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions. [See here](miniapp/USERGUIDE.md#4-custom-permissions)
+- **Feature:** Added capability to open external links in an external browser or WebView. By default, all external links should open in an external WebView. [See here](miniapp/USERGUIDE.md#3-external-url-loader)
+- **Fix:** Added header to all API requests to accept content encoding. This is to support caching which is done by the API.
 
 **Sample App**
 - **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.
 - **Feature:** User name, profile photo, and contact list can be configured in the settings screen.
+- **Feature:** Added sample app implementation to revoke/manage the custom permissions for the list of downloaded mini apps
 
 ### 2.1.0 (2020-09-03)
 **SDK**
