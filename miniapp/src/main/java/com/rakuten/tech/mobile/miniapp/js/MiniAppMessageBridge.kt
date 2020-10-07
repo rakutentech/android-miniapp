@@ -43,6 +43,9 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor.setWebViewListener(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
+
+        if (this::userInfoHandler.isInitialized)
+            this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
     }
 
     /** Get provided id of mini app for any purpose. **/
@@ -118,8 +121,8 @@ abstract class MiniAppMessageBridge {
 
     /** Set implemented userInfoHandler. Can use the default provided class from sdk [UserInfoHandler]. **/
     fun setUserInfoHandler(handler: UserInfoHandler) {
-        this.userInfoHandler = handler
-        this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        userInfoHandler = handler
+        userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
