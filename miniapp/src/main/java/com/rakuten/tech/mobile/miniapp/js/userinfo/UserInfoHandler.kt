@@ -6,6 +6,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
+/**
+ * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
+ */
 @Suppress("TooGenericExceptionCaught", "LongMethod")
 open class UserInfoHandler {
 
@@ -39,7 +42,7 @@ open class UserInfoHandler {
         this.miniAppId = miniAppId
     }
 
-    fun onGetUserName(callbackId: String) {
+    internal fun onGetUserName(callbackId: String) {
         try {
             var isPermissionGranted = false
             customPermissionCache.readPermissions(miniAppId).pairValues.find {
@@ -64,7 +67,7 @@ open class UserInfoHandler {
         }
     }
 
-    fun onGetProfilePhoto(callbackId: String) {
+    internal fun onGetProfilePhoto(callbackId: String) {
         try {
             var isPermissionGranted = false
             customPermissionCache.readPermissions(miniAppId).pairValues.find {

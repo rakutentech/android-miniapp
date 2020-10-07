@@ -21,18 +21,15 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 
-@Suppress(
-    "TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-    "LargeClass", "StringLiteralDuplication"
-)
+@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
+"LargeClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
     private lateinit var webViewListener: WebViewListener
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
-    internal lateinit var miniAppInfo: MiniAppInfo
-    internal lateinit var activity: Activity
+    private lateinit var miniAppInfo: MiniAppInfo
+    private lateinit var activity: Activity
     private lateinit var userInfoHandler: UserInfoHandler
-
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
 
@@ -119,6 +116,7 @@ abstract class MiniAppMessageBridge : MiniAppMessageBridgeListener {
         this.isAdMobEnabled = isAdMobProvided()
     }
 
+    /** Set implemented userInfoHandler. Can use the default provided class from sdk [UserInfoHandler]. **/
     fun setUserInfoHandler(handler: UserInfoHandler) {
         this.userInfoHandler = handler
         this.userInfoHandler.init(this, customPermissionCache, miniAppInfo.id)

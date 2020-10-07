@@ -125,6 +125,11 @@ class ProfileSettingsActivity : BaseActivity() {
             .into(imageProfile as ImageView)
     }
 
+    override fun onStop() {
+        encodePhotoUrlJob.cancel()
+        super.onStop()
+    }
+
     companion object {
         private const val PICK_IMAGE = 1001
         private const val BASE_64_DATA_PREFIX = "data:image/png;base64,"

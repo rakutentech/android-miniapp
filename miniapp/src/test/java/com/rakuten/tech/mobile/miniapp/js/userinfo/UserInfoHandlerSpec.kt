@@ -15,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.js.ActionType
-import com.rakuten.tech.mobile.miniapp.js.BridgeCommon
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -26,7 +25,7 @@ import org.mockito.Mockito
 
 @Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
-class UserInfoHandlerSpec : BridgeCommon() {
+class UserInfoHandlerSpec {
     private lateinit var userInfoHandler: UserInfoHandler
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val userNameCallbackObj = CallbackObj(
