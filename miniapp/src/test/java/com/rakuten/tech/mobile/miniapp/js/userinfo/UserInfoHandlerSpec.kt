@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
@@ -100,7 +99,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        verify(miniAppBridge).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
@@ -112,7 +111,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postError(userNameCallbackObj.id, errMsg)
+        verify(miniAppBridge).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
@@ -124,7 +123,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        verify(miniAppBridge).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
     /** end region */
 
@@ -156,7 +155,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -168,7 +167,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -180,7 +179,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge, times(1)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
+        verify(miniAppBridge).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
 
     /** end region */

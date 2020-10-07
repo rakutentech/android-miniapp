@@ -5,8 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
-class MiniAppCoroutines(
-    val mainDispatcher: CoroutineContext = Dispatchers.Main
-) {
+class MiniAppCoroutines(val mainDispatcher: CoroutineContext = Dispatchers.Main) {
     fun buildMainScope(job: Job): CoroutineScope = CoroutineScope(mainDispatcher + job)
 }

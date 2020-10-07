@@ -123,7 +123,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                     )
                 }
             }
-
             miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
 
             miniAppNavigator = object : MiniAppNavigator {
