@@ -32,7 +32,7 @@ class AdMobDisplayerSpec {
 
     @Test
     fun `should show interstitial ads when it is ready`() {
-        adDisplayer.loadInterstitial(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, InterstitialAd>()
         val ad = Mockito.spy(InterstitialAd(context))
@@ -41,7 +41,7 @@ class AdMobDisplayerSpec {
         map[TEST_AD_UNIT_ID] = ad
         adDisplayer.initAdMap(interstitialAdMap = map)
 
-        adDisplayer.showInterstitial(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
         verify(ad).show()
     }
 
@@ -50,10 +50,10 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer.showInterstitial(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer.loadInterstitial(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer.showInterstitial(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -61,14 +61,14 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID is still in progress"
         }
-        adDisplayer.loadInterstitial(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
 
-        adDisplayer.loadInterstitial(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
     fun `should show rewarded ads when it is ready`() {
-        adDisplayer.loadRewarded(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, RewardedAd>()
         val ad = Mockito.spy(RewardedAd(context, TEST_AD_UNIT_ID))
@@ -82,7 +82,7 @@ class AdMobDisplayerSpec {
         When calling adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, onClosed, onError) itReturns
                 rewardedAdCallback
 
-        adDisplayer.showRewarded(TEST_AD_UNIT_ID, onClosed, onError)
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, onClosed, onError)
         verify(ad).show(context, rewardedAdCallback)
     }
 
@@ -108,10 +108,10 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer.showRewarded(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer.loadRewarded(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer.showRewarded(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -119,8 +119,8 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID is still in progress"
         }
-        adDisplayer.loadRewarded(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
-        adDisplayer.loadRewarded(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 }

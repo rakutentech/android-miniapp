@@ -4,7 +4,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 
 @Suppress("TooGenericExceptionThrown")
 internal class TestAdMobDisplayer : MiniAppAdDisplayer {
-    override fun loadInterstitial(
+    override fun loadInterstitialAd(
         adUnitId: String,
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
@@ -14,7 +14,7 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         throw Exception()
     }
 
-    override fun showInterstitial(
+    override fun showInterstitialAd(
         adUnitId: String,
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
@@ -24,13 +24,13 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         throw Exception()
     }
 
-    override fun loadRewarded(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+    override fun loadRewardedAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
         onLoaded.invoke()
         onFailed.invoke(TEST_ERROR_MSG)
         throw Exception()
     }
 
-    override fun showRewarded(
+    override fun showRewardedAd(
         adUnitId: String,
         onClosed: (reward: Reward?) -> Unit,
         onFailed: (String) -> Unit

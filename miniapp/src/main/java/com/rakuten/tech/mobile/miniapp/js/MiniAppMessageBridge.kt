@@ -221,7 +221,7 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitialAd(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -231,7 +231,7 @@ abstract class MiniAppMessageBridge {
                             )
                         }
                     )
-                    AdType.REWARDED.value -> adDisplayer.loadRewarded(
+                    AdType.REWARDED.value -> adDisplayer.loadRewardedAd(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -256,7 +256,7 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitialAd(
                         adUnitId = adObj.adUnitId,
                         onClosed = { postValue(callbackId, CLOSED) },
                         onFailed = { errMsg ->
@@ -266,7 +266,7 @@ abstract class MiniAppMessageBridge {
                             )
                         }
                     )
-                    AdType.REWARDED.value -> adDisplayer.showRewarded(
+                    AdType.REWARDED.value -> adDisplayer.showRewardedAd(
                         adUnitId = adObj.adUnitId,
                         onClosed = { reward ->
                             if (reward == null)

@@ -347,11 +347,11 @@ In case the host app wants to take control of the ad display, there is the inter
 ```kotlin
 class CustomAdDisplayer: MiniAppAdDisplayer { 
 
-    override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+    override fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
       // load the ad
     }
     
-    override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
+    override fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
       // show the ad
     }
     //...more ad implementations.

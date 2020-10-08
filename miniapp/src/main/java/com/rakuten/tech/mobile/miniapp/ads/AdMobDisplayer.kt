@@ -40,7 +40,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     }
 
     /** Load the interstitial ad when it is ready. **/
-    override fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+    override fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
         launch {
             if (interstitialAdMap.containsKey(adUnitId))
                 onFailed.invoke(createLoadReqError(adUnitId))
@@ -65,7 +65,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     }
 
     /** Show the interstitial ad when it is already loaded. **/
-    override fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
+    override fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
         launch {
             if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
                 val ad = interstitialAdMap[adUnitId]!!
@@ -84,7 +84,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     }
 
     /** Load the rewarded ad when it is ready. **/
-    override fun loadRewarded(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+    override fun loadRewardedAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
         launch {
             if (rewardedAdMap.containsKey(adUnitId))
                 onFailed.invoke(createLoadReqError(adUnitId))
@@ -104,7 +104,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
      * @param onClosed When the ad is closed, forward the reward earned by the user.
      * Reward will be null if the user did not earn the reward.
      */
-    override fun showRewarded(adUnitId: String, onClosed: (reward: Reward?) -> Unit, onFailed: (String) -> Unit) {
+    override fun showRewardedAd(adUnitId: String, onClosed: (reward: Reward?) -> Unit, onFailed: (String) -> Unit) {
         launch {
             if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]!!.isLoaded) {
                 val ad = rewardedAdMap[adUnitId]!!
