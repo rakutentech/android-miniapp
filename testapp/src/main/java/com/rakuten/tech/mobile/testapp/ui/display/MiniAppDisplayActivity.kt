@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -96,34 +97,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     })
                 }
 
-            miniAppMessageBridge = object : MiniAppMessageBridge() {
-                override fun getUniqueId() = AppSettings.instance.uniqueId
-
-                override fun requestPermission(
-                    miniAppPermissionType: MiniAppPermissionType,
-                    callback: (isGranted: Boolean) -> Unit
-                ) {
-                    miniappPermissionCallback = callback
-                    ActivityCompat.requestPermissions(
-                        this@MiniAppDisplayActivity,
-                        AppPermission.getPermissionRequest(miniAppPermissionType),
-                        AppPermission.getRequestCode(miniAppPermissionType)
-                    )
-                }
-
-                override fun requestCustomPermissions(
-                    permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-                    callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-                ) {
-                    CustomPermissionPresenter().executeCustomPermissionsCallback(
-                        this@MiniAppDisplayActivity,
-                        appId,
-                        permissionsWithDescription,
-                        callback
-                    )
-                }
-            }
-            miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
+            setupMiniAppMessageBridge()
 
             miniAppNavigator = object : MiniAppNavigator {
 
@@ -141,6 +115,45 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppNavigator
             )
         }
+    }
+
+    private fun setupMiniAppMessageBridge() {
+        miniAppMessageBridge = object : MiniAppMessageBridge() {
+            override fun getUniqueId() = AppSettings.instance.uniqueId
+
+            override fun requestPermission(
+                miniAppPermissionType: MiniAppPermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                miniappPermissionCallback = callback
+                ActivityCompat.requestPermissions(
+                    this@MiniAppDisplayActivity,
+                    AppPermission.getPermissionRequest(miniAppPermissionType),
+                    AppPermission.getRequestCode(miniAppPermissionType)
+                )
+            }
+
+            override fun requestCustomPermissions(
+                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+            ) {
+                CustomPermissionPresenter().executeCustomPermissionsCallback(
+                    this@MiniAppDisplayActivity,
+                    appId,
+                    permissionsWithDescription,
+                    callback
+                )
+            }
+        }
+
+        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
+
+        val userInfoHandler = object : UserInfoHandler() {
+            override fun getUserName(): String = AppSettings.instance.profileName
+
+            override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
+        }
+        miniAppMessageBridge.setUserInfoHandler(userInfoHandler)
     }
 
     override fun onRequestPermissionsResult(

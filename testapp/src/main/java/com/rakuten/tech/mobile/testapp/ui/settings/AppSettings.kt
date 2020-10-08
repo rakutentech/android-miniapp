@@ -59,6 +59,12 @@ class AppSettings private constructor(context: Context) {
             cache.profilePictureUrl = profilePictureUrl
         }
 
+    var profilePictureUrlBase64: String
+        get() = cache.profilePictureUrlBase64 ?: ""
+        set(profilePictureUrlBase64) {
+            cache.profilePictureUrlBase64 = profilePictureUrlBase64
+        }
+
     var contactNames: ArrayList<String>
         get() = cache.contactNames ?: arrayListOf()
         set(contactNames) {
@@ -132,6 +138,11 @@ private class Settings(context: Context) {
         set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl)
             .apply()
 
+    var profilePictureUrlBase64: String?
+        get() = prefs.getString(PROFILE_PICTURE_URL_BASE_64, null)
+        set(profilePictureUrlBase64) = prefs.edit().putString(PROFILE_PICTURE_URL_BASE_64, profilePictureUrlBase64)
+            .apply()
+
     var contactNames: ArrayList<String>?
         get() = Gson().fromJson(
             prefs.getString(CONTACT_NAMES, null),
@@ -151,6 +162,7 @@ private class Settings(context: Context) {
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
+        private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
         private const val CONTACT_NAMES = "contact_names"
     }
 }
