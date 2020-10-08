@@ -24,12 +24,16 @@ class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity
      * Use this in the return value of [WebViewClient.shouldOverrideUrlLoading(WebView, WebResourceRequest)].
      **/
     fun shouldOverrideUrlLoading(url: String): Boolean {
-        if (shouldClose(url)) {
+        var shouldCancelLoading = false
+        if (url.startsWith("tel:") && activity != null) {
+            miniAppScheme.openPhoneDialer(activity, url)
+            shouldCancelLoading = true
+        } else if (shouldClose(url)) {
             closeExternalView(url)
-            return true
+            shouldCancelLoading = true
         }
 
-        return false
+        return shouldCancelLoading
     }
 
     /**

@@ -2,23 +2,25 @@
 
 ### 2.x.x (in progress)
 **SDK**
+- **Feature:** Load and display ads from miniapp. See [here](miniapp/USERGUIDE.md#5-ads-integration).
 - **Feature:** Added `getUserName()` interface in `UserInfoHandler` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
 - **Feature:** Added `getProfilePhoto()` interface in `UserInfoHandler` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
 
 **Sample App**
 - **Feature:** Added sample implementation for receiving username and profile photo to Mini app.
+
 ### 2.2.0 (2020-10-02)
 **SDK**
-- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. [See here](miniapp/USERGUIDE.md#4-custom-permissions)
-- **Feature:** Added interface for sharing content from a mini app. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge)
-- **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions. [See here](miniapp/USERGUIDE.md#4-custom-permissions)
-- **Feature:** Added capability to open external links in an external browser or WebView. By default, all external links should open in an external WebView. [See here](miniapp/USERGUIDE.md#3-external-url-loader)
+- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. [See here](miniapp/USERGUIDE.md#4-custom-permissions).
+- **Feature:** Added interface for sharing content from a mini app. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge).
+- **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions. [See here](miniapp/USERGUIDE.md#4-custom-permissions).
+- **Feature:** Added capability to open external links in an external browser or WebView. By default, all external links should open in an external WebView. [See here](miniapp/USERGUIDE.md#3-external-url-loader).
 - **Fix:** Added header to all API requests to accept content encoding. This is to support caching which is done by the API.
 
 **Sample App**
 - **Feature:** Added example for showing list of custom permissions (on request from Mini app) and response back to Mini app.
 - **Feature:** User name, profile photo, and contact list can be configured in the settings screen.
-- **Feature:** Added sample app implementation to revoke/manage the custom permissions for the list of downloaded mini apps
+- **Feature:** Added sample app implementation to revoke/manage the custom permissions for the list of downloaded mini apps.
 
 ### 2.1.0 (2020-09-03)
 **SDK**
@@ -26,9 +28,6 @@
 - **Feature:** Support webview video fullscreen.
 - **Fix:** `MiniAppSdkException` had a null message in some cases.
 - **Fix:** Some Mini Apps which use sub-directories were failing to unzip.
-
-**Sample App**
-- No changes
 
 ### 2.0.0 (2020-08-07)
 **SDK**
