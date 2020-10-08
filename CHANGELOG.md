@@ -5,6 +5,8 @@
 - **Feature:** Added `getUserName()` interface in `UserInfoHandler` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
 - **Feature:** Added `getProfilePhoto()` interface in `UserInfoHandler` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
 
+**Sample App**
+- **Feature:** Added sample implementation for receiving username and profile photo to Mini app.
 ### 2.2.0 (2020-10-02)
 **SDK**
 - **Feature:** Added public interface to read and store the custom permissions inside Android SDK. [See here](miniapp/USERGUIDE.md#4-custom-permissions)

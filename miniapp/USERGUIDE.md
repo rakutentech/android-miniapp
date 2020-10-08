@@ -164,7 +164,6 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
 
-// initialize UserInfoHandler after ensuring that MiniApp has been created.
 val userInfoHandler = object : UserInfoHandler() {
     override fun getUserName(): String {
         val name: String = ""
