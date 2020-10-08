@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass")
+"LargeClass", "MaxLineLength", "MaximumLineLength")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: BridgeExecutor

@@ -9,8 +9,8 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
-@Suppress("TooGenericExceptionCaught", "LongMethod")
-open class UserInfoHandler {
+@Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass")
+abstract class UserInfoHandler {
 
     private lateinit var bridgeExecutor: BridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
