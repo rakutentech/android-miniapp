@@ -315,29 +315,37 @@ class AdBridgeSpec : BridgeCommon() {
         var errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
         var jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         miniAppBridge.postMessage(jsonStr)
-        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+        jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
+        miniAppBridge.postMessage(jsonStr)
+        verify(miniAppBridge, times(2)).postError(TEST_CALLBACK_ID, errMsg)
 
         jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
         miniAppBridge.postMessage(jsonStr)
-        verify(miniAppBridge).postError(TEST_CALLBACK_ID, errMsg)
+        jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
+        miniAppBridge.postMessage(jsonStr)
+        verify(miniAppBridge, times(2)).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `postError should be called when cannot load interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} null"
-        val jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        var jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        miniAppBridgeWithAdMob.postMessage(jsonStr)
+        jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
 
-        verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
+        verify(miniAppBridgeWithAdMob, times(2)).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `postError should be called when cannot show interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} null"
-        val jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        var jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        miniAppBridgeWithAdMob.postMessage(jsonStr)
+        jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
 
-        verify(miniAppBridgeWithAdMob).postError(TEST_CALLBACK_ID, errMsg)
+        verify(miniAppBridgeWithAdMob, times(2)).postError(TEST_CALLBACK_ID, errMsg)
     }
 }

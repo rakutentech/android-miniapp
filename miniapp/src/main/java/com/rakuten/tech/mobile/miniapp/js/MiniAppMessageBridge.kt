@@ -209,7 +209,7 @@ abstract class MiniAppMessageBridge {
     }
 
     /** Inform the custom permission request result to MiniApp. **/
-    @Suppress("LongMethod", "FunctionMaxLength")
+    @Suppress("FunctionMaxLength")
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
         postValue(callbackId, jsonResult)
     }
@@ -221,7 +221,17 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitialAd(
+                        adUnitId = adObj.adUnitId,
+                        onLoaded = { postValue(callbackId, SUCCESS) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
+                            )
+                        }
+                    )
+                    AdType.REWARDED.value -> adDisplayer.loadRewardedAd(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -246,9 +256,24 @@ abstract class MiniAppMessageBridge {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitial(
+                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitialAd(
                         adUnitId = adObj.adUnitId,
                         onClosed = { postValue(callbackId, CLOSED) },
+                        onFailed = { errMsg ->
+                            postError(
+                                callbackId,
+                                "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
+                            )
+                        }
+                    )
+                    AdType.REWARDED.value -> adDisplayer.showRewardedAd(
+                        adUnitId = adObj.adUnitId,
+                        onClosed = { reward ->
+                            if (reward == null)
+                                postValue(callbackId, "null")
+                            else
+                                postValue(callbackId, Gson().toJson(reward).toString())
+                        },
                         onFailed = { errMsg ->
                             postError(
                                 callbackId,
