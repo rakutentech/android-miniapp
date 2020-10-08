@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridgeListener
+import com.rakuten.tech.mobile.miniapp.js.BridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 @Suppress("TooGenericExceptionCaught", "LongMethod")
 open class UserInfoHandler {
 
-    private lateinit var bridgeListener: MiniAppMessageBridgeListener
+    private lateinit var bridgeExecutor: BridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
 
@@ -33,11 +33,11 @@ open class UserInfoHandler {
     }
 
     internal fun init(
-        miniAppMessageBridgeListener: MiniAppMessageBridgeListener,
+        bridgeExecutor: BridgeExecutor,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String
     ) {
-        this.bridgeListener = miniAppMessageBridgeListener
+        this.bridgeExecutor = bridgeExecutor
         this.customPermissionCache = miniAppCustomPermissionCache
         this.miniAppId = miniAppId
     }
@@ -52,18 +52,18 @@ open class UserInfoHandler {
 
             if (isPermissionGranted) {
                 val name = getUserName()
-                if (name.isNotEmpty()) bridgeListener.postValue(callbackId, name)
-                else bridgeListener.postError(
+                if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
+                else bridgeExecutor.postError(
                     callbackId,
                     "$ERR_GET_USER_NAME User name is not found."
                 )
             } else
-                bridgeListener.postError(
+                bridgeExecutor.postError(
                     callbackId,
                     "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION"
                 )
         } catch (e: Exception) {
-            bridgeListener.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
+            bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
         }
     }
 
@@ -78,18 +78,18 @@ open class UserInfoHandler {
             if (isPermissionGranted) {
                 val photoUrl = getProfilePhoto()
                 if (photoUrl.isNotEmpty())
-                    bridgeListener.postValue(callbackId, photoUrl)
-                else bridgeListener.postError(
+                    bridgeExecutor.postValue(callbackId, photoUrl)
+                else bridgeExecutor.postError(
                     callbackId,
                     "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
                 )
             } else
-                bridgeListener.postError(
+                bridgeExecutor.postError(
                     callbackId,
                     "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION"
                 )
         } catch (e: Exception) {
-            bridgeListener.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
+            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
     }
 

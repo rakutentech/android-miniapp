@@ -13,10 +13,15 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
+import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ActionType
+import com.rakuten.tech.mobile.miniapp.js.BridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.*
+import org.amshove.kluent.When
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,12 +63,16 @@ class UserInfoHandlerSpec {
         )
     )
 
+    private val webViewListener: WebViewListener = mock()
+    private val bridgeExecutor = Mockito.spy(BridgeExecutor(webViewListener))
+
     @Before
     fun setup() {
         miniAppBridge = Mockito.spy(createMessageBridge())
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
             activity = TestActivity(),
-            webViewListener = mock(),
+            webViewListener = webViewListener,
             customPermissionCache = customPermissionCache,
             miniAppInfo = miniAppInfo
         )
@@ -77,7 +86,7 @@ class UserInfoHandlerSpec {
         val errMsg = "Cannot get user name: null"
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
 
-        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -99,7 +108,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge).postError(userNameCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
@@ -111,7 +120,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge).postError(userNameCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
@@ -123,7 +132,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetUserName(userNameCallbackObj.id)
 
-        verify(miniAppBridge).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
     /** end region */
 
@@ -133,7 +142,7 @@ class UserInfoHandlerSpec {
         val errMsg = "Cannot get profile photo: null"
         miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
 
-        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -155,7 +164,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -167,7 +176,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge).postError(profilePhotoCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -179,7 +188,7 @@ class UserInfoHandlerSpec {
 
         userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
-        verify(miniAppBridge).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
+        verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
 
     /** end region */
