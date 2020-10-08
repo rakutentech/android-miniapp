@@ -9,7 +9,6 @@
 # Gson specific classes
 -dontwarn sun.misc.**
 #-keep class com.google.gson.stream.** { *; }
--keep class com.google.android.gms.ads.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.google.gson.examples.android.model.** { <fields>; }
@@ -27,3 +26,5 @@
 }
 
 ##---------------End: proguard configuration for Gson  ----------
+
+-keep class com.google.android.gms.ads.MobileAds { *; }
