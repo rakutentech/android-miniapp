@@ -21,7 +21,7 @@ internal enum class AdType(val value: Int) {
     REWARDED(1),
 }
 
-internal enum class ScreenLockAction(val action: String) {
+internal enum class ScreenAction(val action: String) {
     LOCK_PORTRAIT("rakuten.miniapp.screen.lock_portrait"),
     LOCK_LANDSCAPE("rakuten.miniapp.screen.lock_landscape"),
     LOCK_RELEASE("rakuten.miniapp.screen.lock_release"),
