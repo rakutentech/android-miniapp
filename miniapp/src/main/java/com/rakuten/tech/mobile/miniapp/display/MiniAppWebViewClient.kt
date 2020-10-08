@@ -1,14 +1,12 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
-import android.content.Intent
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
-import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -33,7 +31,7 @@ internal class MiniAppWebViewClient(
         var shouldCancelLoading = super.shouldOverrideUrlLoading(view, url)
         if (url != null) {
             if (url.startsWith("tel:")) {
-                openPhoneDialer(url)
+                miniAppScheme.openPhoneDialer(context, url)
                 shouldCancelLoading = true
             } else if (!miniAppScheme.isMiniAppUrl(url)) {
                 // check if there is navigator implementation on miniapp.
@@ -77,11 +75,5 @@ internal class MiniAppWebViewClient(
             { view.loadUrl(requestUrl) },
             100
         )
-    }
-
-    @VisibleForTesting
-    internal fun openPhoneDialer(requestUrl: String) = Intent(Intent.ACTION_DIAL).let {
-        it.data = requestUrl.toUri()
-        context.startActivity(it)
     }
 }
