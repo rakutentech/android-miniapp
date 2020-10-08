@@ -6,8 +6,14 @@ package com.rakuten.tech.mobile.miniapp.ads
 interface MiniAppAdDisplayer {
 
     /** Load the interstitial ad when it is ready. **/
-    fun loadInterstitial(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit)
+    fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit)
 
     /** Show the interstitial ad when it is already loaded. **/
-    fun showInterstitial(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit)
+    fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit)
+
+    /** Load the rewarded ad when it is ready. **/
+    fun loadRewardedAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit)
+
+    /** Show the rewarded ad when it is already loaded. **/
+    fun showRewardedAd(adUnitId: String, onClosed: (reward: Reward?) -> Unit, onFailed: (String) -> Unit)
 }

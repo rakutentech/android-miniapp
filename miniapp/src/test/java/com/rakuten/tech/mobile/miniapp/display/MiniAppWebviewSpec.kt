@@ -188,7 +188,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebClientSpec : BaseWebViewSpec() {
     private val externalResultHandler: ExternalResultHandler = spy()
-    private val miniAppScheme = MiniAppScheme(TEST_MA_ID)
+    private val miniAppScheme = Mockito.spy(MiniAppScheme(TEST_MA_ID))
 
     @Test
     fun `for a WebViewClient, it should be MiniAppWebViewClient`() {
@@ -231,17 +231,16 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
-        val phoneUri = "tel:123456"
 
         try {
             webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
             webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
-            webViewClient.shouldOverrideUrlLoading(displayer, phoneUri)
+            webViewClient.shouldOverrideUrlLoading(displayer, TEST_PHONE_URI)
         } catch (e: AndroidRuntimeException) {
             // context here is not activity
         }
 
-        verify(webViewClient, times(1)).openPhoneDialer(phoneUri)
+        verify(miniAppScheme, times(1)).openPhoneDialer(context, TEST_PHONE_URI)
     }
 
     @Test

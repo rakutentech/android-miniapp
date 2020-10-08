@@ -11,6 +11,7 @@ internal const val TEST_BASE_PATH = "dummy"
 internal const val TEST_URL_FILE = "file.storage/test/file.abc"
 internal const val TEST_URL_HTTPS_1 = "https://www.example.com/1"
 internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
+internal const val TEST_PHONE_URI = "tel:123456"
 
 internal const val TEST_MA_ID = "test_id"
 internal const val TEST_MA_DISPLAY_NAME = "test_name"
@@ -33,6 +34,10 @@ internal const val VALID_FILE_URL_PATH =
         .plus("map-published-v2/min-872f9172-804f-44e2-addd-ed612170dac9/")
         .plus("ver-6181004c-a6aa-4eda-b145-a5ff73fc4ad0/a/b/index.html")
 internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf2601cb63a2/js"
+
+internal const val TEST_CUSTOM_PERMISSION_RESULT = "{\"rakuten.miniapp.user.USER_NAME\":\"DENIED\"}"
+internal const val TEST_USER_NAME = "test_user_name"
+internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
 
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
