@@ -31,6 +31,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoHandler: UserInfoHandler
+    private lateinit var bridgeScreen: BridgeScreen
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
 
@@ -44,6 +45,7 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
+        this.bridgeScreen = BridgeScreen(activity)
 
         if (this::userInfoHandler.isInitialized)
             this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
