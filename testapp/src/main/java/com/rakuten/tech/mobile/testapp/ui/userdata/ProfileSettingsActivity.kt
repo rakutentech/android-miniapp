@@ -125,9 +125,9 @@ class ProfileSettingsActivity : BaseActivity() {
             .into(imageProfile as ImageView)
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
         encodePhotoUrlJob.cancel()
-        super.onStop()
+        super.onDestroy()
     }
 
     companion object {
