@@ -8,7 +8,8 @@ internal enum class ActionType(val action: String) {
     LOAD_AD("loadAd"),
     SHOW_AD("showAd"),
     GET_USER_NAME("getUserName"),
-    GET_PROFILE_PHOTO("getProfilePhoto")
+    GET_PROFILE_PHOTO("getProfilePhoto"),
+    REQUEST_SCREEN_ORIENTATION("requestScreenOrientation")
 }
 
 internal enum class DialogType {

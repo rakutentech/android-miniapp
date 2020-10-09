@@ -12,6 +12,9 @@ internal data class CallbackObj(
 @Keep
 internal data class Permission(val permission: String)
 
+@Keep
+internal data class Screen(val action: String)
+
 // custom permission region
 @Keep
 internal data class CustomPermissionCallbackObj(

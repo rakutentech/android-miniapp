@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.display
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
@@ -72,13 +71,11 @@ internal class MiniAppWebView(
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
-        //TODO context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
     }
 
     fun destroyView() {
         stopLoading()
         webViewClient = null
-        //TODO (context as Activity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         destroy()
     }
 

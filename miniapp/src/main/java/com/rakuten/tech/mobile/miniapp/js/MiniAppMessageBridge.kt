@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass", "MaxLineLength", "MaximumLineLength")
+"LargeClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: BridgeExecutor
@@ -45,7 +45,7 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.bridgeScreen = BridgeScreen(activity)
+        this.bridgeScreen = BridgeScreen(activity, bridgeExecutor)
 
         if (this::userInfoHandler.isInitialized)
             this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
@@ -117,7 +117,7 @@ abstract class MiniAppMessageBridge {
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj.id)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj.id)
+            ActionType.REQUEST_SCREEN_ORIENTATION.action -> bridgeScreen.onScreenRequest(callbackObj)
         }
     }
 
@@ -270,7 +270,8 @@ abstract class MiniAppMessageBridge {
                 bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
             }
         } else
-            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+            bridgeExecutor.postError(callbackId,
+                "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 
     private fun onShowAd(callbackId: String, jsonStr: String) {
@@ -310,7 +311,8 @@ abstract class MiniAppMessageBridge {
                 bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
             }
         } else
-            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+            bridgeExecutor.postError(callbackId,
+                "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 }
 

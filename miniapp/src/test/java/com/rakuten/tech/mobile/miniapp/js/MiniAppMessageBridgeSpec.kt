@@ -361,3 +361,55 @@ class AdBridgeSpec : BridgeCommon() {
         verify(bridgeExecutor, times(2)).postError(TEST_CALLBACK_ID, errMsg)
     }
 }
+
+@RunWith(AndroidJUnit4::class)
+class ScreenBridgeSpec : BridgeCommon() {
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+
+    @Before
+    fun setupShareInfo() {
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+    }
+
+    private fun createCallbackJsonStr(action: ScreenAction) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.REQUEST_SCREEN_ORIENTATION.action,
+            param = Screen(action.action),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    @Test
+    fun `postValue should be called when screen action is executed successfully`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                miniAppInfo = mock()
+            )
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_PORTRAIT))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_LANDSCAPE))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_RELEASE))
+
+            verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
+        }
+    }
+
+    @Test
+    fun `postValue should not be called when there is invalid action request`() {
+        miniAppBridge.postMessage(Gson().toJson(
+            CallbackObj(ActionType.REQUEST_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
+        )
+
+        verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+}
