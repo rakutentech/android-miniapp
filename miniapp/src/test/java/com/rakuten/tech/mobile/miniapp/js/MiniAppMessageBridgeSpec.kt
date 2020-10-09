@@ -27,7 +27,7 @@ import org.mockito.Mockito
 @Suppress("TooGenericExceptionThrown")
 open class BridgeCommon {
     internal val webViewListener: WebViewListener = mock()
-    internal val bridgeExecutor = Mockito.spy(BridgeExecutor(webViewListener))
+    internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
@@ -367,7 +367,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
-    fun setupShareInfo() {
+    fun setupScreenBridgeDispatcher() {
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
             activity = TestActivity(),

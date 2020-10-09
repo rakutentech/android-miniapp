@@ -6,7 +6,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 @Suppress("TooGenericExceptionCaught")
-internal class BridgeScreen(private val activity: Activity, private val bridgeExecutor: BridgeExecutor) {
+internal class ScreenBridgeDispatcher(
+    private val activity: Activity,
+    private val bridgeExecutor: MiniAppBridgeExecutor
+) {
 
     fun onScreenRequest(callbackObj: CallbackObj) {
         try {

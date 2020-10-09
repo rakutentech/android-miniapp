@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.js.BridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 @Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass")
 abstract class UserInfoHandler {
 
-    private lateinit var bridgeExecutor: BridgeExecutor
+    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
 
@@ -33,7 +33,7 @@ abstract class UserInfoHandler {
     }
 
     internal fun init(
-        bridgeExecutor: BridgeExecutor,
+        bridgeExecutor: MiniAppBridgeExecutor,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String
     ) {
