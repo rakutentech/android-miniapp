@@ -118,7 +118,7 @@ abstract class MiniAppMessageBridge {
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj.id)
-            ActionType.REQUEST_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
+            ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
         }
     }
 

@@ -377,10 +377,10 @@ class ScreenBridgeSpec : BridgeCommon() {
         )
     }
 
-    private fun createCallbackJsonStr(action: ScreenAction) = Gson().toJson(
+    private fun createCallbackJsonStr(orientation: ScreenOrientation) = Gson().toJson(
         CallbackObj(
-            action = ActionType.REQUEST_SCREEN_ORIENTATION.action,
-            param = Screen(action.action),
+            action = ActionType.SET_SCREEN_ORIENTATION.action,
+            param = Screen(orientation.value),
             id = TEST_CALLBACK_ID
         )
     )
@@ -396,9 +396,9 @@ class ScreenBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 miniAppInfo = mock()
             )
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_PORTRAIT))
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_LANDSCAPE))
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenAction.LOCK_RELEASE))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
 
             verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
         }
@@ -407,7 +407,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     @Test
     fun `postValue should not be called when there is invalid action request`() {
         miniAppBridge.postMessage(Gson().toJson(
-            CallbackObj(ActionType.REQUEST_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
+            CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
         )
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)

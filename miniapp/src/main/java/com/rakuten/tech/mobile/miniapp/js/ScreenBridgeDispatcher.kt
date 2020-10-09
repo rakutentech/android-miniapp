@@ -19,11 +19,11 @@ internal class ScreenBridgeDispatcher(
             ).action
 
             when (requestAction) {
-                ScreenAction.LOCK_LANDSCAPE.action ->
+                ScreenOrientation.LOCK_LANDSCAPE.value ->
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                ScreenAction.LOCK_PORTRAIT.action ->
+                ScreenOrientation.LOCK_PORTRAIT.value ->
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                ScreenAction.LOCK_RELEASE.action ->
+                ScreenOrientation.LOCK_RELEASE.value ->
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
             }
             bridgeExecutor.postValue(callbackObj.id, SUCCESS)
