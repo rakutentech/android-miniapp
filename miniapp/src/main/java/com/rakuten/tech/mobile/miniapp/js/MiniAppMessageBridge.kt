@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass")
+"LargeClass", "ComplexMethod")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: BridgeExecutor
@@ -117,6 +117,7 @@ abstract class MiniAppMessageBridge {
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj.id)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj.id)
             ActionType.REQUEST_SCREEN_ORIENTATION.action -> bridgeScreen.onScreenRequest(callbackObj)
         }
     }
