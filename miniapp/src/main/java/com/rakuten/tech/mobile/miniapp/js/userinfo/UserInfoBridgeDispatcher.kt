@@ -19,7 +19,7 @@ abstract class UserInfoBridgeDispatcher {
     /** Get user name from host app. **/
     open fun getUserName(): String {
         throw MiniAppSdkException(
-            "The `UserInfoHandler.getUserName`" +
+            "The `UserInfoBridgeDispatcher.getUserName`" +
                     " method has not been implemented by the Host App."
         )
     }
@@ -27,7 +27,7 @@ abstract class UserInfoBridgeDispatcher {
     /** Get profile photo url from host app. **/
     open fun getProfilePhoto(): String {
         throw MiniAppSdkException(
-            "The `UserInfoHandler.getProfilePhoto`" +
+            "The `UserInfoBridgeDispatcher.getProfilePhoto`" +
                     " method has not been implemented by the Host App."
         )
     }
