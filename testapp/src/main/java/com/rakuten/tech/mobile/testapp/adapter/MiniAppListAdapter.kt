@@ -49,7 +49,7 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
     override fun getItemViewType(position: Int): Int =
         when {
             sectionPos.contains(position) -> R.layout.item_section_miniapp
-            position >= itemCount - 1 -> R.layout.item_footer_miniapp
+            (position == itemCount - 1) -> R.layout.item_footer_miniapp
             else -> R.layout.item_list_miniapp
         }
 
