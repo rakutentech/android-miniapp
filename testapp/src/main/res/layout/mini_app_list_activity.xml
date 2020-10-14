@@ -6,13 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
+
     <RelativeLayout
         android:id="@+id/layoutTut"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
-        tools:visibility="visible"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
+
         <ImageView
             android:id="@+id/img_arrow"
             android:layout_width="@dimen/large_32"
@@ -22,6 +24,7 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_alignParentEnd="true"
             app:tint="@color/colorAccent" />
+
         <TextView
             android:id="@+id/tvTut"
             android:layout_width="match_parent"
@@ -29,13 +32,14 @@
             android:textColor="@android:color/black"
             android:textSize="15sp"
             android:layout_toStartOf="@+id/img_arrow"
-            tools:text="@string/tut_setting"
             android:gravity="end"
-            android:layout_margin="@dimen/activity_horizontal_margin"/>
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            tools:text="@string/tut_setting" />
+
         <ImageView
             android:layout_width="@dimen/miniapp_logo_size"
             android:layout_height="@dimen/miniapp_logo_size"
             android:src="@drawable/r_logo"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 </FrameLayout>

@@ -38,7 +38,7 @@
       android:paddingStart="@dimen/medium_16"
       android:paddingEnd="@dimen/medium_16"
       android:background="@color/bg_section"
-      android:text="RAS" />
+      android:text="@string/lb_ras" />
 
     <com.google.android.material.textfield.TextInputLayout
       android:layout_width="match_parent"
@@ -76,7 +76,7 @@
       android:paddingStart="@dimen/medium_16"
       android:paddingEnd="@dimen/medium_16"
       android:background="@color/bg_section"
-      android:text="User Details" />
+      android:text="@string/lb_user_details" />
 
     <RelativeLayout
       android:id="@+id/buttonProfile"
@@ -102,7 +102,7 @@
 
     <View
       android:layout_width="match_parent"
-      android:layout_height="1dp"
+      android:layout_height="@dimen/horizontal_divider_height"
       android:background="@color/bg_section" />
 
     <RelativeLayout
@@ -129,7 +129,7 @@
 
     <View
       android:layout_width="match_parent"
-      android:layout_height="1dp"
+      android:layout_height="@dimen/horizontal_divider_height"
       android:background="@color/bg_section" />
 
     <RelativeLayout

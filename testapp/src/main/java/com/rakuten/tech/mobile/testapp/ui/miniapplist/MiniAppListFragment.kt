@@ -3,7 +3,12 @@ package com.rakuten.tech.mobile.testapp.ui.miniapplist
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -22,7 +27,8 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import kotlinx.android.synthetic.main.mini_app_list_fragment.*
-import java.util.*
+import java.util.Locale
+
 import kotlin.collections.ArrayList
 
 class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
