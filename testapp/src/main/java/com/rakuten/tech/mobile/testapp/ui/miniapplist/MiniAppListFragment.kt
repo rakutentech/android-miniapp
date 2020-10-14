@@ -174,6 +174,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
             return true
 
         updateMiniAppListState(produceSearchResult(newText))
+        swipeRefreshLayout.isEnabled = newText.isNullOrEmpty()
+
         return true
     }
 
@@ -187,6 +189,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     private fun resetSearchBox() {
         if (searchView.query.isNotEmpty() || !searchView.isIconified) {
             searchView.onActionViewCollapsed()
+            swipeRefreshLayout.isEnabled = true
         }
     }
 
