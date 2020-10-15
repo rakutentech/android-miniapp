@@ -8,7 +8,8 @@ internal enum class ActionType(val action: String) {
     LOAD_AD("loadAd"),
     SHOW_AD("showAd"),
     GET_USER_NAME("getUserName"),
-    GET_PROFILE_PHOTO("getProfilePhoto")
+    GET_PROFILE_PHOTO("getProfilePhoto"),
+    SET_SCREEN_ORIENTATION("setScreenOrientation")
 }
 
 internal enum class DialogType {
@@ -20,4 +21,10 @@ internal enum class DialogType {
 internal enum class AdType(val value: Int) {
     INTERSTITIAL(0),
     REWARDED(1),
+}
+
+internal enum class ScreenOrientation(val value: String) {
+    LOCK_PORTRAIT("rakuten.miniapp.screen.LOCK_PORTRAIT"),
+    LOCK_LANDSCAPE("rakuten.miniapp.screen.LOCK_LANDSCAPE"),
+    LOCK_RELEASE("rakuten.miniapp.screen.LOCK_RELEASE"),
 }
