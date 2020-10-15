@@ -154,6 +154,11 @@
         android:textSize="@dimen/text_large_16" />
     </RelativeLayout>
 
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/horizontal_divider_height"
+      android:background="@color/bg_section" />
+
     <com.google.android.material.switchmaterial.SwitchMaterial
       android:id="@+id/switchTestMode"
       android:layout_width="match_parent"
