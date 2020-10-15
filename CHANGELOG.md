@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### x.x.x
+**SDK**
+- **Feature:** Handle the screen orientation change request from miniapp.
+
 ### 2.3.0 (2020-10-15)
 **SDK**
 - **Feature:** Load and display ads from miniapp. See [here](miniapp/USERGUIDE.md#5-ads-integration).
