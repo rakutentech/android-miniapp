@@ -29,8 +29,8 @@ import org.mockito.Mockito
 
 @Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
-class UserInfoHandlerSpec {
-    private lateinit var userInfoHandler: UserInfoHandler
+class UserInfoBridgeDispatcherSpec {
+    private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val userNameCallbackObj = CallbackObj(
         action = ActionType.GET_USER_NAME.action,
@@ -76,8 +76,8 @@ class UserInfoHandlerSpec {
             customPermissionCache = customPermissionCache,
             miniAppInfo = miniAppInfo
         )
-        userInfoHandler = Mockito.spy(createUserInfoHandler())
-        miniAppBridge.setUserInfoHandler(userInfoHandler)
+        userInfoBridgeDispatcher = Mockito.spy(createUserInfoBridgeDispatcher())
+        miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
     }
 
     /** start region: onGetUserName */
@@ -106,7 +106,7 @@ class UserInfoHandlerSpec {
             deniedUserNamePermission
         )
 
-        userInfoHandler.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -118,7 +118,7 @@ class UserInfoHandlerSpec {
             userInfoAllowedPermission
         )
 
-        userInfoHandler.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -128,9 +128,9 @@ class UserInfoHandlerSpec {
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
-        whenever(userInfoHandler.getUserName()).thenReturn(TEST_USER_NAME)
+        whenever(userInfoBridgeDispatcher.getUserName()).thenReturn(TEST_USER_NAME)
 
-        userInfoHandler.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
@@ -162,7 +162,7 @@ class UserInfoHandlerSpec {
             deniedProfilePhotoPermission
         )
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -174,7 +174,7 @@ class UserInfoHandlerSpec {
             userInfoAllowedPermission
         )
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -184,9 +184,9 @@ class UserInfoHandlerSpec {
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
-        whenever(userInfoHandler.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
+        whenever(userInfoBridgeDispatcher.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
 
-        userInfoHandler.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
@@ -206,8 +206,8 @@ class UserInfoHandlerSpec {
             }
         }
 
-    private fun createUserInfoHandler(): UserInfoHandler =
-        object : UserInfoHandler() {
+    private fun createUserInfoBridgeDispatcher(): UserInfoBridgeDispatcher =
+        object : UserInfoBridgeDispatcher() {
             override fun getUserName() = ""
 
             override fun getProfilePhoto() = ""

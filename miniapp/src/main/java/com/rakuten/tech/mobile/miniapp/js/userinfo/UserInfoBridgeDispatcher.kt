@@ -10,7 +10,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
 @Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass")
-abstract class UserInfoHandler {
+abstract class UserInfoBridgeDispatcher {
 
     private lateinit var bridgeExecutor: BridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
@@ -19,7 +19,7 @@ abstract class UserInfoHandler {
     /** Get user name from host app. **/
     open fun getUserName(): String {
         throw MiniAppSdkException(
-            "The `UserInfoHandler.getUserName`" +
+            "The `UserInfoBridgeDispatcher.getUserName`" +
                     " method has not been implemented by the Host App."
         )
     }
@@ -27,7 +27,7 @@ abstract class UserInfoHandler {
     /** Get profile photo url from host app. **/
     open fun getProfilePhoto(): String {
         throw MiniAppSdkException(
-            "The `UserInfoHandler.getProfilePhoto`" +
+            "The `UserInfoBridgeDispatcher.getProfilePhoto`" +
                     " method has not been implemented by the Host App."
         )
     }

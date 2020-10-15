@@ -164,7 +164,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
 
-val userInfoHandler = object : UserInfoHandler() {
+val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
     override fun getUserName(): String {
         val name: String = ""
         // Implementation details to get user name
@@ -180,8 +180,8 @@ val userInfoHandler = object : UserInfoHandler() {
     }
 }
 
-// set UserInfoHandler object to miniAppMessageBridge
-miniAppMessageBridge.setUserInfoHandler(userInfoHandler)
+// set UserInfoBridgeDispatcher object to miniAppMessageBridge
+miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 ```
 
 ### #5 Create and display a Mini App
