@@ -19,7 +19,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
 "LargeClass", "ComplexMethod")
@@ -30,7 +30,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
-    private lateinit var userInfoHandler: UserInfoHandler
+    private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
@@ -47,8 +47,8 @@ abstract class MiniAppMessageBridge {
         this.miniAppInfo = miniAppInfo
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor)
 
-        if (this::userInfoHandler.isInitialized)
-            this.userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        if (this::userInfoBridgeDispatcher.isInitialized)
+            this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
 
         miniAppViewInitialized = true
     }
@@ -116,8 +116,8 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> userInfoHandler.onGetUserName(callbackObj.id)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoHandler.onGetProfilePhoto(callbackObj.id)
+            ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
         }
     }
@@ -128,11 +128,11 @@ abstract class MiniAppMessageBridge {
         this.isAdMobEnabled = isAdMobProvided()
     }
 
-    /** Set implemented userInfoHandler. Can use the default provided class from sdk [UserInfoHandler]. **/
-    fun setUserInfoHandler(handler: UserInfoHandler) {
-        userInfoHandler = handler
+    /** Set implemented userInfoBridgeDispatcher. Can use the default provided class from sdk [UserInfoBridgeDispatcher]. **/
+    fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) {
+        userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
-            userInfoHandler.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+            userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {

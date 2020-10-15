@@ -1,13 +1,16 @@
 ## CHANGELOG
 
-### 2.x.x (in progress)
+### 2.3.0 (2020-10-15)
 **SDK**
 - **Feature:** Load and display ads from miniapp. See [here](miniapp/USERGUIDE.md#5-ads-integration).
-- **Feature:** Added `getUserName()` interface in `UserInfoHandler` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
-- **Feature:** Added `getProfilePhoto()` interface in `UserInfoHandler` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
+- **Feature:** Added `getUserName()` interface in `UserInfoBridgeDispatcher` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
+- **Feature:** Added `getProfilePhoto()` interface in `UserInfoBridgeDispatcher` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
+- **Fix:** `tel:` links weren't functioning correctly on API 23.
+- **Fix:** `tel:` links weren't functioning in the external WebView.
 
 **Sample App**
 - **Feature:** Added sample implementation for receiving username and profile photo to Mini app.
+- **Fix:** Made the name field optional on the Profile settings screen.
 
 ### 2.2.0 (2020-10-02)
 **SDK**
