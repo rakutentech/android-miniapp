@@ -17,7 +17,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoHandler
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -148,12 +148,12 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
 
-        val userInfoHandler = object : UserInfoHandler() {
+        val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
             override fun getUserName(): String = AppSettings.instance.profileName
 
             override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
         }
-        miniAppMessageBridge.setUserInfoHandler(userInfoHandler)
+        miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(
