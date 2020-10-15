@@ -128,7 +128,10 @@ abstract class MiniAppMessageBridge {
         this.isAdMobEnabled = isAdMobProvided()
     }
 
-    /** Set implemented userInfoBridgeDispatcher. Can use the default provided class from sdk [UserInfoBridgeDispatcher]. **/
+    /**
+     * Set implemented userInfoBridgeDispatcher.
+     * Can use the default provided class from sdk [UserInfoBridgeDispatcher].
+     **/
     fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) {
         userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
