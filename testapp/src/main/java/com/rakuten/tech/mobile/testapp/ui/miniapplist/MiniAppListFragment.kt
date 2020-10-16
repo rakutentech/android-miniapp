@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -150,6 +151,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
         }
         // by default, search menu is hidden, show search menu here
         itemSearch.isVisible = true
+
+        val closeButton = searchView.findViewById<ImageView>(R.id.search_close_btn)
+        closeButton.setOnClickListener { resetSearchBox() }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -170,6 +174,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
             return true
 
         updateMiniAppListState(produceSearchResult(newText))
+        swipeRefreshLayout.isEnabled = newText.isNullOrEmpty()
+
         return true
     }
 
@@ -183,6 +189,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     private fun resetSearchBox() {
         if (searchView.query.isNotEmpty() || !searchView.isIconified) {
             searchView.onActionViewCollapsed()
+            swipeRefreshLayout.isEnabled = true
         }
     }
 

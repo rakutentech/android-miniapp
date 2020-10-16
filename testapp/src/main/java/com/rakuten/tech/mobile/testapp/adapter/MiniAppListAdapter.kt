@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.Version
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemFooterMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemSectionMiniappBinding
 import java.util.*
@@ -25,6 +27,9 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MiniAppsListViewHolder {
         val binding = when (viewType) {
             R.layout.item_section_miniapp -> ItemSectionMiniappBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+            R.layout.item_footer_miniapp -> ItemFooterMiniappBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             else -> ItemListMiniappBinding.inflate(
@@ -42,8 +47,11 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
     override fun getItemCount() = miniapps.size
 
     override fun getItemViewType(position: Int): Int =
-        if (sectionPos.contains(position)) R.layout.item_section_miniapp
-        else R.layout.item_list_miniapp
+        when {
+            sectionPos.contains(position) -> R.layout.item_section_miniapp
+            (position == itemCount - 1) -> R.layout.item_footer_miniapp
+            else -> R.layout.item_list_miniapp
+        }
 
     fun addListWithSection(list: List<MiniAppInfo>) {
         miniapps.clear()
@@ -58,8 +66,16 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
             }
             miniapps.add(item)
         }
+        addFooter()
 
         notifyDataSetChanged()
+    }
+
+    private fun addFooter() {
+        if (miniapps.size > 0) {
+            val footerItem = MiniAppInfo("", "", "", Version("", ""))
+            miniapps.add(itemCount, footerItem)
+        }
     }
 }
 
