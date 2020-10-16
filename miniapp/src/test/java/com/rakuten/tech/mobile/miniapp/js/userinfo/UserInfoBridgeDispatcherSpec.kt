@@ -15,7 +15,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ActionType
-import com.rakuten.tech.mobile.miniapp.js.BridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -64,7 +64,7 @@ class UserInfoBridgeDispatcherSpec {
     )
 
     private val webViewListener: WebViewListener = mock()
-    private val bridgeExecutor = Mockito.spy(BridgeExecutor(webViewListener))
+    private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     @Before
     fun setup() {

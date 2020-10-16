@@ -27,7 +27,7 @@ import org.mockito.Mockito
 @Suppress("TooGenericExceptionThrown")
 open class BridgeCommon {
     internal val webViewListener: WebViewListener = mock()
-    internal val bridgeExecutor = Mockito.spy(BridgeExecutor(webViewListener))
+    internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
@@ -359,5 +359,57 @@ class AdBridgeSpec : BridgeCommon() {
         miniAppBridgeWithAdMob.postMessage(jsonStr)
 
         verify(bridgeExecutor, times(2)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+class ScreenBridgeSpec : BridgeCommon() {
+    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+
+    @Before
+    fun setupScreenBridgeDispatcher() {
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+    }
+
+    private fun createCallbackJsonStr(orientation: ScreenOrientation) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.SET_SCREEN_ORIENTATION.action,
+            param = Screen(orientation.value),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    @Test
+    fun `postValue should be called when screen action is executed successfully`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                miniAppInfo = mock()
+            )
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
+            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
+
+            verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
+        }
+    }
+
+    @Test
+    fun `postValue should not be called when there is invalid action request`() {
+        miniAppBridge.postMessage(Gson().toJson(
+            CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
+        )
+
+        verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
     }
 }

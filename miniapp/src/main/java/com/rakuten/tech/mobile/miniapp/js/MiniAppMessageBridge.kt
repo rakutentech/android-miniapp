@@ -22,15 +22,16 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass", "MaxLineLength", "MaximumLineLength")
+"LargeClass", "ComplexMethod")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
-    private lateinit var bridgeExecutor: BridgeExecutor
+    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
+    private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
 
@@ -44,6 +45,7 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
+        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor)
 
         if (this::userInfoBridgeDispatcher.isInitialized)
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
@@ -52,7 +54,7 @@ abstract class MiniAppMessageBridge {
     }
 
     @VisibleForTesting
-    internal fun createBridgeExecutor(webViewListener: WebViewListener) = BridgeExecutor(webViewListener)
+    internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
 
     /** Get provided id of mini app for any purpose. **/
     abstract fun getUniqueId(): String
@@ -116,6 +118,7 @@ abstract class MiniAppMessageBridge {
             ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
+            ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
         }
     }
 
@@ -125,7 +128,10 @@ abstract class MiniAppMessageBridge {
         this.isAdMobEnabled = isAdMobProvided()
     }
 
-    /** Set implemented userInfoBridgeDispatcher. Can use the default provided class from sdk [UserInfoBridgeDispatcher]. **/
+    /**
+     * Set implemented userInfoBridgeDispatcher.
+     * Can use the default provided class from sdk [UserInfoBridgeDispatcher].
+     **/
     fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) {
         userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
@@ -268,7 +274,8 @@ abstract class MiniAppMessageBridge {
                 bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
             }
         } else
-            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+            bridgeExecutor.postError(callbackId,
+                "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 
     private fun onShowAd(callbackId: String, jsonStr: String) {
@@ -308,7 +315,8 @@ abstract class MiniAppMessageBridge {
                 bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
             }
         } else
-            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+            bridgeExecutor.postError(callbackId,
+                "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
     }
 }
 
