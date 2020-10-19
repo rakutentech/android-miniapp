@@ -55,7 +55,8 @@ internal class MiniAppWebView(
             activity = context as Activity,
             webViewListener = this,
             customPermissionCache = miniAppCustomPermissionCache,
-            miniAppInfo = miniAppInfo
+            miniAppInfo = miniAppInfo,
+            webView = this
         )
 
         settings.allowUniversalAccessFromFileURLs = true

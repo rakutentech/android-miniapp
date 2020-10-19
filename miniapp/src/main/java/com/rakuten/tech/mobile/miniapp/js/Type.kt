@@ -9,7 +9,8 @@ internal enum class ActionType(val action: String) {
     SHOW_AD("showAd"),
     GET_USER_NAME("getUserName"),
     GET_PROFILE_PHOTO("getProfilePhoto"),
-    SET_SCREEN_ORIENTATION("setScreenOrientation")
+    SET_SCREEN_ORIENTATION("setScreenOrientation"),
+    GET_KEYBOARD_VISIBILITY("getKeyboardVisibility")
 }
 
 internal enum class DialogType {
