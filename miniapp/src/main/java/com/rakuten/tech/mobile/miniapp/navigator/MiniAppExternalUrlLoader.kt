@@ -1,10 +1,9 @@
 package com.rakuten.tech.mobile.miniapp.navigator
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
-import androidx.core.net.toUri
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
+import com.rakuten.tech.mobile.miniapp.display.openNonSSLDialog
 
 /**
  * This support the scenario that external loader redirect to url which is only supported in mini app view,
@@ -35,7 +34,7 @@ class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity
                 miniAppScheme.openPhoneDialer(activity, url)
                 shouldCancelLoading = true
             } else if (url.startsWith("http://")) {
-                openNonSSLDialog(url)
+                openNonSSLDialog(activity, url)
                 shouldCancelLoading = true
             }
         }
@@ -54,15 +53,4 @@ class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }
-
-    private fun openNonSSLDialog(url: String) =
-        AlertDialog.Builder(activity)
-            .setMessage("This link is unsafe. If you would like to proceed, it will be opened in your native browser.")
-            .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                activity?.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
-            .create()
-            .show()
 }

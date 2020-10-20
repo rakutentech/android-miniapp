@@ -226,6 +226,22 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     }
 
     @Test
+    fun `should override the support url scheme`() {
+        val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
+            externalResultHandler, miniAppScheme))
+        val displayer = Mockito.spy(miniAppWebView)
+
+        try {
+            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null) shouldBe false
+            webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl()) shouldBe false
+            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTP) shouldBe true
+        } catch (e: AndroidRuntimeException) {
+            // context here is not activity
+        }
+    }
+
+    @Test
     fun `should open phone dialer when there is telephone scheme`() {
         val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
@@ -233,8 +249,6 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val displayer = Mockito.spy(miniAppWebView)
 
         try {
-            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
-            webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
             webViewClient.shouldOverrideUrlLoading(displayer, TEST_PHONE_URI)
         } catch (e: AndroidRuntimeException) {
             // context here is not activity

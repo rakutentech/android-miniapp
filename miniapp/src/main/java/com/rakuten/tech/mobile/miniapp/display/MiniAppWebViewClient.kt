@@ -33,6 +33,9 @@ internal class MiniAppWebViewClient(
             if (url.startsWith("tel:")) {
                 miniAppScheme.openPhoneDialer(context, url)
                 shouldCancelLoading = true
+            } else if (url.startsWith("http://")) {
+                openNonSSLDialog(context, url)
+                shouldCancelLoading = true
             } else if (!miniAppScheme.isMiniAppUrl(url)) {
                 // check if there is navigator implementation on miniapp.
                 if (miniAppNavigator != null) {

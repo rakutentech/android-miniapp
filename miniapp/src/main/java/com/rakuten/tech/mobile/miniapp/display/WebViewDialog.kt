@@ -2,11 +2,13 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.webkit.JsPromptResult
 import android.webkit.JsResult
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.core.net.toUri
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 
@@ -35,6 +37,17 @@ internal fun onShowDialog(
 
     return true
 }
+
+internal fun openNonSSLDialog(context: Context, url: String) =
+    AlertDialog.Builder(context)
+        .setMessage("This link is unsafe. If you would like to proceed, it will be opened in your native browser.")
+        .setPositiveButton(android.R.string.ok) { dialog, _ ->
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            dialog.dismiss()
+        }
+        .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
+        .create()
+        .show()
 
 private fun onOkBuild(
     dialogBuilder: AlertDialog.Builder,
