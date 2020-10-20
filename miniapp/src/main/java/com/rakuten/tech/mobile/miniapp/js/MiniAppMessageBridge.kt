@@ -238,16 +238,13 @@ abstract class MiniAppMessageBridge {
     }
 }
 
-internal class ErrorBridgeMessage {
-
-    companion object {
-        const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
-        const val ERR_UNIQUE_ID = "Cannot get unique id:"
-        const val ERR_REQ_PERMISSION = "Cannot request permission:"
-        const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-        const val ERR_SHARE_CONTENT = "Cannot share content:"
-        const val ERR_LOAD_AD = "Cannot load ad:"
-        const val ERR_SHOW_AD = "Cannot show ad:"
-        const val ERR_SCREEN_ACTION = "Cannot request screen action:"
-    }
+internal object ErrorBridgeMessage {
+    const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
+    const val ERR_UNIQUE_ID = "Cannot get unique id:"
+    const val ERR_REQ_PERMISSION = "Cannot request permission:"
+    const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+    const val ERR_SHARE_CONTENT = "Cannot share content:"
+    const val ERR_LOAD_AD = "Cannot load ad:"
+    const val ERR_SHOW_AD = "Cannot show ad:"
+    const val ERR_SCREEN_ACTION = "Cannot request screen action:"
 }

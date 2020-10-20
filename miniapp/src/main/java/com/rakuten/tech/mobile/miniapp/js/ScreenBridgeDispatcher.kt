@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.Companion.ERR_SCREEN_ACTION
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_SCREEN_ACTION
 
 @Suppress("TooGenericExceptionCaught")
 internal class ScreenBridgeDispatcher(
