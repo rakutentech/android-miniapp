@@ -11,6 +11,7 @@ internal const val TEST_BASE_PATH = "dummy"
 internal const val TEST_URL_FILE = "file.storage/test/file.abc"
 internal const val TEST_URL_HTTPS_1 = "https://www.example.com/1"
 internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
+internal const val TEST_URL_HTTP = "http://www.example.com/"
 internal const val TEST_PHONE_URI = "tel:123456"
 
 internal const val TEST_MA_ID = "test_id"

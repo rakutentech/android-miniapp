@@ -29,6 +29,7 @@ class MiniAppExternalUrlLoaderSpec {
         externalUrlLoader.shouldOverrideUrlLoading(miniAppScheme.miniAppCustomScheme) shouldBe true
         externalUrlLoader.shouldOverrideUrlLoading(miniAppScheme.miniAppCustomDomain) shouldBe true
         externalUrlLoader.shouldOverrideUrlLoading(TEST_PHONE_URI) shouldBe true
+        externalUrlLoader.shouldOverrideUrlLoading(TEST_URL_HTTP) shouldBe true
     }
 
     @Test
