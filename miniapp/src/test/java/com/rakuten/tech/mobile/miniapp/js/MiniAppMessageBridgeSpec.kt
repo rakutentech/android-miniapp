@@ -364,7 +364,7 @@ class AdBridgeSpec : BridgeCommon() {
 
 @RunWith(AndroidJUnit4::class)
 class ScreenBridgeSpec : BridgeCommon() {
-    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+    private val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
     fun setupScreenBridgeDispatcher() {
@@ -411,5 +411,46 @@ class ScreenBridgeSpec : BridgeCommon() {
         )
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+class KeyboardBridgeSpec : BridgeCommon() {
+    private val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+
+    @Before
+    fun setupKeyboardBridgeDispatcher() {
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppInfo = mock()
+        )
+    }
+
+    private val callbackJsonStr = Gson().toJson(
+        CallbackObj(
+            action = ActionType.GET_KEYBOARD_VISIBILITY.action,
+            param = null,
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    @Test
+    fun `postValue should be called when keyboard action is executed successfully`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                miniAppInfo = mock()
+            )
+            miniAppBridge.postMessage(callbackJsonStr)
+
+            verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, "invisible")
+        }
     }
 }

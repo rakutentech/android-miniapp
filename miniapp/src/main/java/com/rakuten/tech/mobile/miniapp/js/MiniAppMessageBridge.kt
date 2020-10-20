@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.app.Activity
 import android.content.Intent
 import android.webkit.JavascriptInterface
-import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -31,7 +30,6 @@ abstract class MiniAppMessageBridge {
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
-    private lateinit var webView: WebView
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private lateinit var adDisplayer: MiniAppAdDisplayer
@@ -42,16 +40,14 @@ abstract class MiniAppMessageBridge {
         activity: Activity,
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
-        miniAppInfo: MiniAppInfo,
-        webView: WebView
+        miniAppInfo: MiniAppInfo
     ) {
         this.activity = activity
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.webView = webView
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor)
-        this.keyboardBridgeDispatcher = KeyboardBridgeDispatcher(bridgeExecutor)
+        this.keyboardBridgeDispatcher = KeyboardBridgeDispatcher(bridgeExecutor, activity)
 
         if (this::userInfoBridgeDispatcher.isInitialized)
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
@@ -125,7 +121,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
-            ActionType.GET_KEYBOARD_VISIBILITY.action -> keyboardBridgeDispatcher.onGetKeyboardVisibility(callbackObj.id, webView)
+            ActionType.GET_KEYBOARD_VISIBILITY.action -> keyboardBridgeDispatcher.onGetKeyboardVisibility(callbackObj.id)
         }
     }
 
