@@ -6,6 +6,8 @@
     <string name="lb_test_mode">Test Mode</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_user_details">User Details</string>
+    <string name="lb_access_token">Access Token</string>
+    <string name="lb_valid_until">Expired Date</string>
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>

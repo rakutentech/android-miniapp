@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
+import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.android.synthetic.main.settings_menu_activity.*
@@ -112,6 +113,8 @@ class SettingsMenuActivity : BaseActivity() {
         buttonContacts.setOnClickListener {
             ContactListActivity.start(this@SettingsMenuActivity)
         }
+
+        buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
 
         buttonCustomPermissions.setOnClickListener {
             MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)

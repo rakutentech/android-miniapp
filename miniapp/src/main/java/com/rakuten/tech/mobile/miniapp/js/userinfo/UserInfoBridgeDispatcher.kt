@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
+import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -28,6 +29,14 @@ abstract class UserInfoBridgeDispatcher {
     open fun getProfilePhoto(): String {
         throw MiniAppSdkException(
             "The `UserInfoBridgeDispatcher.getProfilePhoto`" +
+                    " method has not been implemented by the Host App."
+        )
+    }
+
+    /** Get access token from host app. **/
+    open fun getAccessToken(miniAppId: String): TokenData {
+        throw MiniAppSdkException(
+            "The `UserInfoBridgeDispatcher.getAccessToken`" +
                     " method has not been implemented by the Host App."
         )
     }
@@ -93,6 +102,15 @@ abstract class UserInfoBridgeDispatcher {
         }
     }
 
+    internal fun onGetAccessToken(callbackId: String, miniAppId: String) {
+        try {
+            val accessToken = getAccessToken(miniAppId)
+            bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
+        }
+    }
+
     private companion object {
         const val ERR_GET_USER_NAME = "Cannot get user name:"
         const val ERR_USER_NAME_NO_PERMISSION =
@@ -100,5 +118,6 @@ abstract class UserInfoBridgeDispatcher {
         const val ERR_GET_PROFILE_PHOTO = "Cannot get profile photo:"
         const val ERR_PROFILE_PHOTO_NO_PERMISSION =
             "Permission has not been accepted yet for getting profile photo."
+        const val ERR_GET_ACCESS_TOKEN = "Cannot get access token:"
     }
 }
