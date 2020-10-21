@@ -128,9 +128,11 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         val displayer = Mockito.spy(miniAppWebView)
         displayer.destroyView()
 
-        verify(displayer, times(1)).stopLoading()
+        verify(displayer).stopLoading()
         displayer.webViewClient shouldBe null
-        verify(displayer, times(1)).destroy()
+        verify(displayer.miniAppWebChromeClient).destroy()
+        displayer.webChromeClient shouldBe null
+        verify(displayer).destroy()
     }
 
     @Test
@@ -352,7 +354,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should only close custom view when exit`() {
+    fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
         webChromeClient.onShowCustomView(mock(), mock())
@@ -370,6 +372,15 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         webChromeClient.updateControls()
         webChromeClient.onHideCustomView()
         webChromeClient.updateControls()
+    }
+
+    @Test
+    fun `should exit fullscreen when destroy miniapp view`() {
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
+        webChromeClient.onShowCustomView(View(context), mock())
+        webChromeClient.destroy()
+
+        verify(webChromeClient).onHideCustomView()
     }
 }
 

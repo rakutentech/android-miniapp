@@ -76,6 +76,8 @@ internal class MiniAppWebView(
     fun destroyView() {
         stopLoading()
         webViewClient = null
+        miniAppWebChromeClient.destroy()
+        webChromeClient = null
         destroy()
     }
 
