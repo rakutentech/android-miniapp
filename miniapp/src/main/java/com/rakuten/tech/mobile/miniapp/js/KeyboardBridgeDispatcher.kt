@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_KEYBOARD_VISIBILITY
 
 internal class KeyboardBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
@@ -57,6 +58,5 @@ internal class KeyboardBridgeDispatcher(
     private companion object {
         const val VISIBLE = "visible"
         const val INVISIBLE = "invisible"
-        const val ERR_KEYBOARD_VISIBILITY = "Cannot execute keyboard visibility:"
     }
 }
