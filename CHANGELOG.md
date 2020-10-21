@@ -1,8 +1,9 @@
 ## CHANGELOG
 
-### x.x.x
+### 2.4.0
 **SDK**
 - **Feature:** Handle the screen orientation change request from miniapp.
+- **Fix:** Clean up fullscreen view when exit miniapp. `MiniAppDisplay.destroyView` is mandatory for single activity architect.
 
 ### 2.3.0 (2020-10-15)
 **SDK**
