@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_SCREEN_ACTION
 
 @Suppress("TooGenericExceptionCaught")
 internal class ScreenBridgeDispatcher(
@@ -30,9 +31,5 @@ internal class ScreenBridgeDispatcher(
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackObj.id, "$ERR_SCREEN_ACTION ${e.message}")
         }
-    }
-
-    private companion object {
-        const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     }
 }
