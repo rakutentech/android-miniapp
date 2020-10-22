@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -152,6 +154,27 @@ class MiniAppDisplayActivity : BaseActivity() {
             override fun getUserName(): String = AppSettings.instance.profileName
 
             override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
+
+            override fun getAccessToken(miniAppId: String): TokenData {
+                var tokenAllow = false
+                AlertDialog.Builder(this@MiniAppDisplayActivity)
+                    .setMessage("Allow $miniAppId to get access token?")
+                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
+                        tokenAllow = true
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(android.R.string.no) { dialog, _ ->
+                        tokenAllow = false
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+
+                return if (tokenAllow)
+                    AppSettings.instance.tokenData
+                else
+                    throw Exception("$miniAppId not allowed to get access token")
+            }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
     }

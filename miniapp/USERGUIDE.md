@@ -127,7 +127,7 @@ There are some methods have default implementation but host app can override the
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() {
-        val id: String = ""
+        var id: String = ""
         // Implementation details to generate a Unique ID
         // .. .. ..
 
@@ -163,20 +163,30 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
+}
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
     override fun getUserName(): String {
-        val name: String = ""
+        var name: String = ""
         // Implementation details to get user name
         // .. .. ..
         return name
     }
 
     override fun getProfilePhoto(): String {
-        val profilePhotoUrl: String = ""
+        var profilePhotoUrl: String = ""
         // Implementation details to get profile photo url
         // .. .. ..
         return profilePhotoUrl
+    }
+
+    override fun getAccessToken(miniAppId: String): TokenData {
+        var allowToken: Boolean = false
+        // .. .. ..
+        if (allowToken)
+            return tokenData // allow miniapp to get token and return TokenData value.
+        else
+            throw Exception(message) // reject miniapp to get token with message explaination.
     }
 }
 
