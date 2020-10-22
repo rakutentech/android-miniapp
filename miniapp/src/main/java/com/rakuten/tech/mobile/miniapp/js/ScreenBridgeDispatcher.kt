@@ -5,12 +5,13 @@ import android.content.pm.ActivityInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-@Suppress("TooGenericExceptionCaught")
 internal class ScreenBridgeDispatcher(
     private val activity: Activity,
     private val bridgeExecutor: MiniAppBridgeExecutor
 ) {
+    private var isLocked = false
 
+    @Suppress("TooGenericExceptionCaught", "LongMethod")
     fun onScreenRequest(callbackObj: CallbackObj) {
         try {
             val requestAction = Gson().fromJson<Screen>(
@@ -19,16 +20,26 @@ internal class ScreenBridgeDispatcher(
             ).action
 
             when (requestAction) {
-                ScreenOrientation.LOCK_LANDSCAPE.value ->
+                ScreenOrientation.LOCK_LANDSCAPE.value -> {
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                ScreenOrientation.LOCK_PORTRAIT.value ->
+                    isLocked = true
+                }
+                ScreenOrientation.LOCK_PORTRAIT.value -> {
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                ScreenOrientation.LOCK_RELEASE.value ->
-                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                    isLocked = true
+                }
+                ScreenOrientation.LOCK_RELEASE.value -> releaseLock()
             }
             bridgeExecutor.postValue(callbackObj.id, SUCCESS)
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackObj.id, "$ERR_SCREEN_ACTION ${e.message}")
+        }
+    }
+
+    fun releaseLock() {
+        if (isLocked) {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+            isLocked = false
         }
     }
 

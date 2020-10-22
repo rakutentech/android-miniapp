@@ -24,7 +24,7 @@ internal class MiniAppWebView(
     context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
-    miniAppMessageBridge: MiniAppMessageBridge,
+    val miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
@@ -73,12 +73,16 @@ internal class MiniAppWebView(
         loadUrl(getLoadUrl())
     }
 
-    fun destroyView() {
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun destroyView() = try {
         stopLoading()
         webViewClient = null
         miniAppWebChromeClient.destroy()
         webChromeClient = null
+        miniAppMessageBridge.screenBridgeDispatcher.releaseLock()
         destroy()
+    } catch (e: Exception) {
+        // The activity may release before those executions.
     }
 
     override fun runSuccessCallback(callbackId: String, value: String) {

@@ -31,7 +31,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
-    private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
+    internal lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private lateinit var adDisplayer: MiniAppAdDisplayer
     private var isAdMobEnabled = false
 
