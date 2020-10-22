@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
@@ -18,6 +19,9 @@ import com.rakuten.tech.mobile.miniapp.js.ActionType
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_ACCESS_TOKEN
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_PROFILE_PHOTO
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -27,7 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
 class UserInfoBridgeDispatcherSpec {
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
@@ -39,6 +43,11 @@ class UserInfoBridgeDispatcherSpec {
     )
     private val profilePhotoCallbackObj = CallbackObj(
         action = ActionType.GET_PROFILE_PHOTO.action,
+        param = null,
+        id = TEST_CALLBACK_ID
+    )
+    private val tokenCallbackObj = CallbackObj(
+        action = ActionType.GET_ACCESS_TOKEN.action,
         param = null,
         id = TEST_CALLBACK_ID
     )
@@ -83,7 +92,7 @@ class UserInfoBridgeDispatcherSpec {
     /** start region: onGetUserName */
     @Test
     fun `postError should be called when cannot get user name`() {
-        val errMsg = "Cannot get user name: null"
+        val errMsg = "$ERR_GET_USER_NAME null"
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
@@ -91,8 +100,7 @@ class UserInfoBridgeDispatcherSpec {
 
     @Test
     fun `postError should be called when user name permission hasn't been allowed`() {
-        val errMsg =
-            "Cannot get user name: Permission has not been accepted yet for getting user name."
+        val errMsg = "$ERR_GET_USER_NAME Permission has not been accepted yet for getting user name."
         val deniedUserNamePermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
@@ -113,7 +121,7 @@ class UserInfoBridgeDispatcherSpec {
 
     @Test
     fun `postError should be called when user name is empty`() {
-        val errMsg = "Cannot get user name: User name is not found."
+        val errMsg = "$ERR_GET_USER_NAME User name is not found."
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
@@ -139,7 +147,7 @@ class UserInfoBridgeDispatcherSpec {
     /** start region: onGetProfilePhoto */
     @Test
     fun `postError should be called when cannot get profile photo`() {
-        val errMsg = "Cannot get profile photo: null"
+        val errMsg = "$ERR_GET_PROFILE_PHOTO null"
         miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
@@ -147,8 +155,7 @@ class UserInfoBridgeDispatcherSpec {
 
     @Test
     fun `postError should be called when profile photo permission hasn't been allowed`() {
-        val errMsg =
-            "Cannot get profile photo: Permission has not been accepted yet for getting profile photo."
+        val errMsg = "$ERR_GET_PROFILE_PHOTO Permission has not been accepted yet for getting profile photo."
         val deniedProfilePhotoPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
@@ -169,7 +176,7 @@ class UserInfoBridgeDispatcherSpec {
 
     @Test
     fun `postError should be called when profile photo is empty`() {
-        val errMsg = "Cannot get profile photo: Profile photo is not found."
+        val errMsg = "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
         whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
             userInfoAllowedPermission
         )
@@ -191,6 +198,30 @@ class UserInfoBridgeDispatcherSpec {
         verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
 
+    /** end region */
+
+    /** start region: access token */
+    @Test
+    fun `postError should be called when there is no access token retrieval implementation`() {
+        val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken`" +
+                " method has not been implemented by the Host App."
+        miniAppBridge.postMessage(Gson().toJson(tokenCallbackObj))
+
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when retrieve access token successfully`() {
+        val testToken = TokenData("test_token", 0)
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher() {
+            override fun getAccessToken(miniAppId: String): TokenData = testToken
+        })
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+
+        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id, TEST_MA_ID)
+
+        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+    }
     /** end region */
 
     private fun createMessageBridge(): MiniAppMessageBridge =

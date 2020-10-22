@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -18,28 +19,16 @@ abstract class UserInfoBridgeDispatcher {
     private lateinit var miniAppId: String
 
     /** Get user name from host app. **/
-    open fun getUserName(): String {
-        throw MiniAppSdkException(
-            "The `UserInfoBridgeDispatcher.getUserName`" +
-                    " method has not been implemented by the Host App."
-        )
-    }
+    open fun getUserName(): String =
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
 
     /** Get profile photo url from host app. **/
-    open fun getProfilePhoto(): String {
-        throw MiniAppSdkException(
-            "The `UserInfoBridgeDispatcher.getProfilePhoto`" +
-                    " method has not been implemented by the Host App."
-        )
-    }
+    open fun getProfilePhoto(): String =
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
 
     /** Get access token from host app. **/
-    open fun getAccessToken(miniAppId: String): TokenData {
-        throw MiniAppSdkException(
-            "The `UserInfoBridgeDispatcher.getAccessToken`" +
-                    " method has not been implemented by the Host App."
-        )
-    }
+    open fun getAccessToken(miniAppId: String): TokenData =
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
 
     internal fun init(
         bridgeExecutor: MiniAppBridgeExecutor,
@@ -102,16 +91,16 @@ abstract class UserInfoBridgeDispatcher {
         }
     }
 
-    internal fun onGetAccessToken(callbackId: String, miniAppId: String) {
-        try {
-            val accessToken = getAccessToken(miniAppId)
-            bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
-        } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
-        }
+    internal fun onGetAccessToken(callbackId: String, miniAppId: String) = try {
+        val accessToken = getAccessToken(miniAppId)
+        bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
     }
 
-    private companion object {
+    @VisibleForTesting
+    internal companion object {
+        const val NO_IMPL = "method has not been implemented by the Host App."
         const val ERR_GET_USER_NAME = "Cannot get user name:"
         const val ERR_USER_NAME_NO_PERMISSION =
             "Permission has not been accepted yet for getting user name."
