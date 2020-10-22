@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_SCREEN_ACTION
 
 internal class ScreenBridgeDispatcher(
     private val activity: Activity,
@@ -41,9 +42,5 @@ internal class ScreenBridgeDispatcher(
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
             isLocked = false
         }
-    }
-
-    private companion object {
-        const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     }
 }
