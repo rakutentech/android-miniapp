@@ -216,11 +216,14 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
 `MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
 
+**Note:** Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
+
 ## Advanced
 
 ### #1 Clearing up mini app display
 
-For a mini app, it is required to destroy necessary view state and any services registered with, either automatically or manually. `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
+For a mini app, it is required to destroy necessary view state and any services registered with.
+The automatic way can be used only if we want to end the `Activity` container along with mini app display.  `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
 
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
