@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -19,6 +20,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.ScreenBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
@@ -126,11 +128,16 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     @Test
     fun `when destroyView called then the MiniAppWebView should be disposed`() {
         val displayer = Mockito.spy(miniAppWebView)
+        val screenBridgeDispatcher = Mockito.spy(ScreenBridgeDispatcher(context as Activity, mock()))
+        When calling miniAppMessageBridge.screenBridgeDispatcher itReturns screenBridgeDispatcher
         displayer.destroyView()
 
-        verify(displayer, times(1)).stopLoading()
+        verify(displayer).stopLoading()
         displayer.webViewClient shouldBe null
-        verify(displayer, times(1)).destroy()
+        verify(displayer.miniAppWebChromeClient).destroy()
+        displayer.webChromeClient shouldBe null
+        verify(screenBridgeDispatcher).releaseLock()
+        verify(displayer).destroy()
     }
 
     @Test
@@ -352,7 +359,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should only close custom view when exit`() {
+    fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
         webChromeClient.onShowCustomView(mock(), mock())
@@ -370,6 +377,15 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         webChromeClient.updateControls()
         webChromeClient.onHideCustomView()
         webChromeClient.updateControls()
+    }
+
+    @Test
+    fun `should exit fullscreen when destroy miniapp view`() {
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
+        webChromeClient.onShowCustomView(View(context), mock())
+        webChromeClient.destroy()
+
+        verify(webChromeClient).onHideCustomView()
     }
 }
 

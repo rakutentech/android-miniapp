@@ -15,7 +15,7 @@ interface MiniAppDisplay : LifecycleObserver {
     /**
      * Provides the view associated with the mini app to the caller for showing the mini app.
      * @param activityContext is used by the view for initializing the internal services.
-     * Should be the context of activity to ensure that all standard html components work properly.
+     * Must be the context of activity to ensure that all standard html components work properly.
      * @return [View] as mini app's view with [LayoutParams] set to match
      * the parent's dimensions.
      * @throws MiniAppSdkException when a non-matching context is supplied
