@@ -21,11 +21,11 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
@@ -137,7 +137,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
-                CustomPermissionPresenter().executeCustomPermissionsCallback(
+                MiniAppCustomPermissionWindow().show(
+                    viewModel.getMiniApp(),
                     this@MiniAppDisplayActivity,
                     appId,
                     permissionsWithDescription,

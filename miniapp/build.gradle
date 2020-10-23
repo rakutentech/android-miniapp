@@ -25,6 +25,10 @@ android {
     }
 
     buildToolsVersion = androidBuildTool
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 androidExtensions {
@@ -54,6 +58,9 @@ dependencies {
 
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
+
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
 
     kapt "com.rakuten.tech.mobile:manifest-config-processor:$manifest_config"
     implementation "com.rakuten.tech.mobile:manifest-config-annotations:$manifest_config"

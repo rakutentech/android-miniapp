@@ -37,7 +37,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
-        setContentView(R.layout.list_custom_permission)
+        setContentView(R.layout.window_custom_permission)
 
         renderScreen()
     }
@@ -58,8 +58,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
 
         permissionSettingsAdapter.addPermissionList(
             namesForAdapter,
-            resultsForAdapter,
-            arrayListOf()
+            resultsForAdapter
         )
     }
 

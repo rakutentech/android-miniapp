@@ -7,8 +7,7 @@ import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 /**
  * A class to manage additional features involved with custom permissions in this SDK.
  */
-internal class
-MiniAppCustomPermissionManager {
+internal class MiniAppCustomPermissionManager {
 
     /**
      * Prepares a list of custom permissions Pair with names and description.

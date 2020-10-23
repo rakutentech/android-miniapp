@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.permission
+package com.rakuten.tech.mobile.miniapp.permission
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,28 +6,27 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
-import kotlinx.android.synthetic.main.item_list_custom_permission.view.*
+import com.rakuten.tech.mobile.miniapp.R
+import kotlinx.android.synthetic.main.item_custom_permission.view.*
 
-class MiniAppPermissionSettingsAdapter :
-    RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
+internal class MiniAppPermissionCustomAdapter :
+    RecyclerView.Adapter<MiniAppPermissionCustomAdapter.ViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
+    private var permissionDescription = ArrayList<String>()
     var permissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemListCustomPermissionBinding.inflate(layoutInflater, parent, false)
+        val view = layoutInflater.inflate(R.layout.item_custom_permission, null)
 
-        return ViewHolder(binding.root)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = toReadable(permissionNames[position])
+        holder.permissionName.text = parsePermissionName(permissionNames[position])
         holder.permissionSwitch.isChecked =
             permissionResultToChecked(permissionToggles[position])
 
@@ -41,13 +40,21 @@ class MiniAppPermissionSettingsAdapter :
                 )
             )
         }
+
+        if (permissionDescription.isNotEmpty())
+            holder.permissionDescription.text = permissionDescription[position]
+
+        if (holder.permissionDescription.text.isEmpty())
+            holder.permissionDescription.visibility = View.GONE
+        else holder.permissionDescription.visibility = View.VISIBLE
     }
 
     override fun getItemCount(): Int = permissionNames.size
 
     fun addPermissionList(
         names: ArrayList<MiniAppCustomPermissionType>,
-        results: ArrayList<MiniAppCustomPermissionResult>
+        results: ArrayList<MiniAppCustomPermissionResult>,
+        description: ArrayList<String>
     ) {
         permissionNames = names
         permissionToggles = results
@@ -57,15 +64,17 @@ class MiniAppPermissionSettingsAdapter :
                 Pair(permissionNames[position], permissionToggles[position])
             )
         }
+        permissionDescription = description
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val permissionName: TextView = itemView.permissionText
+        val permissionDescription: TextView = itemView.permissionDescription
         val permissionSwitch: SwitchCompat = itemView.permissionSwitch
     }
 
-    private fun toReadable(type: MiniAppCustomPermissionType): String {
+    private fun parsePermissionName(type: MiniAppCustomPermissionType): String {
         return when (type) {
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
             MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
