@@ -370,6 +370,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     @Before
     fun setupScreenBridgeDispatcher() {
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.allowScreenOrientation(false)
         miniAppBridge.init(
             activity = TestActivity(),
             webViewListener = webViewListener,
@@ -409,7 +410,6 @@ class ScreenBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postValue should not be called when there is invalid action request`() {
-        miniAppBridge.allowScreenOrientation(true)
         miniAppBridge.postMessage(Gson().toJson(
             CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
         )
