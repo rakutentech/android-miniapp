@@ -417,7 +417,7 @@ class ScreenBridgeSpec : BridgeCommon() {
 
     @Test
     fun `should not execute when hostapp does not allow miniapp to change screen orientation`() {
-        val screenDispatcher = Mockito.spy(ScreenBridgeDispatcher(mock(), mock(), false))
+        val screenDispatcher = Mockito.spy(ScreenBridgeDispatcher(mock(), bridgeExecutor, false))
         screenDispatcher.onScreenRequest(mock())
         screenDispatcher.releaseLock()
 
