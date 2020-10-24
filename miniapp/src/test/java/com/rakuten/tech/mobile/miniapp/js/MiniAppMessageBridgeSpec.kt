@@ -401,6 +401,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
+            miniAppBridge.onWebViewDestroy()
 
             verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
         }
@@ -408,6 +409,7 @@ class ScreenBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postValue should not be called when there is invalid action request`() {
+        miniAppBridge.allowScreenOrientation(true)
         miniAppBridge.postMessage(Gson().toJson(
             CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
         )
