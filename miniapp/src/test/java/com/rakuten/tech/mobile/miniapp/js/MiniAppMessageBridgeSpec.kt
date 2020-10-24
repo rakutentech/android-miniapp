@@ -4,6 +4,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.rakuten.tech.mobile.miniapp.*
@@ -396,6 +397,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 miniAppInfo = mock()
             )
+            miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
@@ -409,6 +411,15 @@ class ScreenBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(Gson().toJson(
             CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
         )
+
+        verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+
+    @Test
+    fun `should not execute when hostapp does not allow miniapp to change screen orientation`() {
+        val screenDispatcher = Mockito.spy(ScreenBridgeDispatcher(mock(), mock(), false))
+        screenDispatcher.onScreenRequest(mock())
+        screenDispatcher.releaseLock()
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
     }
