@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
 import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -12,6 +11,25 @@ import com.rakuten.tech.mobile.miniapp.R
 import kotlinx.android.synthetic.main.window_custom_permission.view.*
 
 class MiniAppCustomPermissionWindow {
+
+//    private lateinit var activity: Activity
+//    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
+//    private lateinit var miniAppId: String
+//    private lateinit var permissionAlertDialog: AlertDialog.Builder
+//    private lateinit var customPermissionLayout: View
+//    private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
+
+//    fun init(
+//        activity: Activity,
+//        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+//        miniAppId: String
+//    ) {
+//        this.activity = activity
+//        this.customPermissionCache = miniAppCustomPermissionCache
+//        this.miniAppId = miniAppId
+//
+//        preparePermissionDefaultUI()
+//    }
 
     fun show(
         miniApp: MiniApp,
@@ -35,7 +53,6 @@ class MiniAppCustomPermissionWindow {
 
         // show dialog if there is any denied permission
         if (permissionsForAdapter.isNotEmpty()) {
-            val adapter = MiniAppPermissionCustomAdapter()
             val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
             val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
             val descriptionForAdapter: ArrayList<String> = arrayListOf()
@@ -45,29 +62,49 @@ class MiniAppCustomPermissionWindow {
                 resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
             }
 
-            adapter.addPermissionList(namesForAdapter, resultsForAdapter, descriptionForAdapter)
+            val customPermissionAdapter = MiniAppCustomPermissionAdapter()
+            customPermissionAdapter.addPermissionList(namesForAdapter, resultsForAdapter, descriptionForAdapter)
             val permissionLayout = getPermissionLayout(activity)
-            permissionLayout.listCustomPermission.adapter = adapter
+            permissionLayout.listCustomPermission.adapter = customPermissionAdapter
 
             // show dialog with listener which will invoke the callback
-            AlertDialog.Builder(activity, android.R.style.Theme_NoTitleBar_Fullscreen)
-                .setMessage("The miniapp wants to access the below permissions. You can also manage these permissions later in the Mini App settings.")
+            val alert = AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog)
                 .setView(permissionLayout)
-                .setPositiveButton("Done") { _, _ ->
-                    callback.invoke(adapter.permissionPairs)
-                }
-                .create().show()
+                .create()
+
+            permissionLayout.permissionAllow.setOnClickListener {
+                callback.invoke(customPermissionAdapter.permissionPairs)
+                alert.dismiss()
+            }
+
+            permissionLayout.permissionDontAllow.setOnClickListener {
+                callback.invoke(cachedList)
+                alert.dismiss()
+            }
+
+            alert.show()
         } else {
             callback.invoke(cachedList)
         }
     }
 
-    private fun getPermissionLayout(context: Context): View {
-        val layoutInflater = LayoutInflater.from(context)
+//    private fun preparePermissionDefaultUI() {
+//        customPermissionLayout = getPermissionLayout(activity)
+//        customPermissionAdapter = MiniAppCustomPermissionAdapter()
+//        permissionAlertDialog = AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog)
+//                .setView(customPermissionLayout)
+//    }
+
+    private fun setPositiveButton() {
+
+    }
+
+    private fun getPermissionLayout(activity: Activity): View {
+        val layoutInflater = LayoutInflater.from(activity)
         val permissionLayout = layoutInflater.inflate(R.layout.window_custom_permission, null)
-        permissionLayout.listCustomPermission.layoutManager = LinearLayoutManager(context)
+        permissionLayout.listCustomPermission.layoutManager = LinearLayoutManager(activity)
         permissionLayout.listCustomPermission.addItemDecoration(
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
         )
 
         return permissionLayout

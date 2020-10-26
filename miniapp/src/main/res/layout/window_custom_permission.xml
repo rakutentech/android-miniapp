@@ -1,11 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-  <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/listCustomPermission"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp"
-    android:background="@android:color/white"
-    tools:listitem="@layout/item_custom_permission" />
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+      android:id="@+id/permissionTopView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="8dp"
+      android:background="#F8F5F5"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/permissionDontAllow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:padding="8dp"
+        android:text="Don't Allow"
+        android:textColor="@android:color/holo_red_dark" />
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/permissionAllow"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="Allow"
+        android:textColor="@android:color/black" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/permissionTutorial"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:paddingTop="8dp"
+      android:paddingBottom="8dp"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:background="#F8F5F5"
+      android:text="@string/miniapp_custom_permission_tutorial"
+      app:layout_constraintBottom_toTopOf="@id/listCustomPermission"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/permissionTopView"
+      app:layout_constraintVertical_bias="0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/listCustomPermission"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:padding="8dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/permissionTutorial"
+      tools:listitem="@layout/item_custom_permission" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

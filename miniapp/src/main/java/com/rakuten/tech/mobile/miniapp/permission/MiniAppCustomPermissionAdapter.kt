@@ -1,16 +1,17 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
 import kotlinx.android.synthetic.main.item_custom_permission.view.*
 
-internal class MiniAppPermissionCustomAdapter :
-    RecyclerView.Adapter<MiniAppPermissionCustomAdapter.ViewHolder?>() {
+internal class MiniAppCustomPermissionAdapter :
+    RecyclerView.Adapter<MiniAppCustomPermissionAdapter.ViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
@@ -21,7 +22,6 @@ internal class MiniAppPermissionCustomAdapter :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_custom_permission, null)
-
         return ViewHolder(view)
     }
 
@@ -68,10 +68,11 @@ internal class MiniAppPermissionCustomAdapter :
         notifyDataSetChanged()
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val permissionName: TextView = itemView.permissionText
         val permissionDescription: TextView = itemView.permissionDescription
-        val permissionSwitch: SwitchCompat = itemView.permissionSwitch
+        val permissionSwitch: Switch = itemView.permissionSwitch
     }
 
     private fun parsePermissionName(type: MiniAppCustomPermissionType): String {
