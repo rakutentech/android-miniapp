@@ -10,93 +10,89 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.R
 import kotlinx.android.synthetic.main.window_custom_permission.view.*
 
-class MiniAppCustomPermissionWindow {
+// TODO
+class MiniAppCustomPermissionWindow(
+    private val miniApp: MiniApp,
+    private val miniAppId: String,
+    private val activity: Activity
+) {
 
-//    private lateinit var activity: Activity
-//    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
-//    private lateinit var miniAppId: String
-//    private lateinit var permissionAlertDialog: AlertDialog.Builder
-//    private lateinit var customPermissionLayout: View
-//    private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
+    private lateinit var customPermissionAlertDialog: AlertDialog
+    private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
+    private lateinit var customPermissionLayout: View
 
-//    fun init(
-//        activity: Activity,
-//        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-//        miniAppId: String
-//    ) {
-//        this.activity = activity
-//        this.customPermissionCache = miniAppCustomPermissionCache
-//        this.miniAppId = miniAppId
-//
-//        preparePermissionDefaultUI()
-//    }
+    private fun getCachedList() = miniApp.getCustomPermissions(miniAppId).pairValues
+
+    private fun getDeniedPermissions(permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>) =
+        permissionsWithDescription.filter { (first) ->
+
+            getCachedList().find {
+                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
+            } != null
+        }
 
     fun show(
-        miniApp: MiniApp,
-        activity: Activity,
-        miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
         if (miniAppId.isEmpty())
             return
 
-        // get cached data from SDK
-        val cachedList = miniApp.getCustomPermissions(miniAppId).pairValues
+        val deniedPermissions = getDeniedPermissions(permissionsWithDescription)
 
-        // prepare data for adapter to check if there is any denied permission
-        val permissionsForAdapter = permissionsWithDescription.filter { (first) ->
-            cachedList.find {
-                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
-            } != null
-        }
+        // show permission default UI if there is any denied permission
+        if (deniedPermissions.isNotEmpty()) {
 
-        // show dialog if there is any denied permission
-        if (permissionsForAdapter.isNotEmpty()) {
+            // initialize permission view after ensuring if there is any denied permission
+            initPermissionView(activity)
+
+            // prepare data for adapter
             val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
             val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
             val descriptionForAdapter: ArrayList<String> = arrayListOf()
-            permissionsForAdapter.forEach {
+            deniedPermissions.forEach {
                 namesForAdapter.add(it.first)
                 descriptionForAdapter.add(it.second)
                 resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
             }
+            customPermissionAdapter.addPermissionList(
+                namesForAdapter,
+                resultsForAdapter,
+                descriptionForAdapter
+            )
+            customPermissionLayout.listCustomPermission.adapter = customPermissionAdapter
 
-            val customPermissionAdapter = MiniAppCustomPermissionAdapter()
-            customPermissionAdapter.addPermissionList(namesForAdapter, resultsForAdapter, descriptionForAdapter)
-            val permissionLayout = getPermissionLayout(activity)
-            permissionLayout.listCustomPermission.adapter = customPermissionAdapter
+            // add action listeners
+            addPermissionClickListeners(callback)
 
-            // show dialog with listener which will invoke the callback
-            val alert = AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog)
-                .setView(permissionLayout)
-                .create()
-
-            permissionLayout.permissionAllow.setOnClickListener {
-                callback.invoke(customPermissionAdapter.permissionPairs)
-                alert.dismiss()
-            }
-
-            permissionLayout.permissionDontAllow.setOnClickListener {
-                callback.invoke(cachedList)
-                alert.dismiss()
-            }
-
-            alert.show()
+            // preview dialog
+            customPermissionAlertDialog.show()
         } else {
-            callback.invoke(cachedList)
+            callback.invoke(getCachedList())
         }
     }
 
-//    private fun preparePermissionDefaultUI() {
-//        customPermissionLayout = getPermissionLayout(activity)
-//        customPermissionAdapter = MiniAppCustomPermissionAdapter()
-//        permissionAlertDialog = AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog)
-//                .setView(customPermissionLayout)
-//    }
+    private fun initPermissionView(activity: Activity) {
+        customPermissionLayout = getPermissionLayout(activity)
+        customPermissionAdapter = MiniAppCustomPermissionAdapter()
+        customPermissionAlertDialog =
+            AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog).apply {
+                setView(customPermissionLayout)
+            }.create()
+    }
 
-    private fun setPositiveButton() {
+    private fun addPermissionClickListeners(
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+    ) {
+        customPermissionLayout.permissionAllow.setOnClickListener {
+            callback.invoke(customPermissionAdapter.permissionPairs)
+            customPermissionAlertDialog.dismiss()
+        }
 
+        customPermissionLayout.permissionDontAllow.setOnClickListener {
+            callback.invoke(getCachedList())
+            customPermissionAlertDialog.dismiss()
+        }
     }
 
     private fun getPermissionLayout(activity: Activity): View {

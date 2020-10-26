@@ -137,13 +137,11 @@ class MiniAppDisplayActivity : BaseActivity() {
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
-                MiniAppCustomPermissionWindow().show(
+                MiniAppCustomPermissionWindow(
                     viewModel.getMiniApp(),
-                    this@MiniAppDisplayActivity,
                     appId,
-                    permissionsWithDescription,
-                    callback
-                )
+                    this@MiniAppDisplayActivity
+                ).apply { show(permissionsWithDescription, callback) }
             }
         }
 
