@@ -12,6 +12,7 @@ internal class ScreenBridgeDispatcher(
     var allowScreenOrientation: Boolean
 ) {
     private var isLocked = false
+    private val originalOrientation = activity.requestedOrientation
 
     @Suppress("TooGenericExceptionCaught", "LongMethod")
     fun onScreenRequest(callbackObj: CallbackObj) {
@@ -44,7 +45,7 @@ internal class ScreenBridgeDispatcher(
 
     fun releaseLock() {
         if (allowScreenOrientation && isLocked) {
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+            activity.requestedOrientation = originalOrientation
             isLocked = false
         }
     }
