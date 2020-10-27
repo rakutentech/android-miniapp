@@ -7,7 +7,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.R
-import kotlinx.android.synthetic.main.window_custom_permission.view.*
+import kotlinx.android.synthetic.main.window_custom_permission.view.listCustomPermission
+import kotlinx.android.synthetic.main.window_custom_permission.view.permissionSave
+import kotlinx.android.synthetic.main.window_custom_permission.view.permissionCloseWindow
 
 /**
  * A class to show default custom permissions UI to manage permissions in this SDK.

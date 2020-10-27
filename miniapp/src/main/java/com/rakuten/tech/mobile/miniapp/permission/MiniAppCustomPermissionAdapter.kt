@@ -8,7 +8,9 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
-import kotlinx.android.synthetic.main.item_custom_permission.view.*
+import kotlinx.android.synthetic.main.item_custom_permission.view.permissionDescription
+import kotlinx.android.synthetic.main.item_custom_permission.view.permissionSwitch
+import kotlinx.android.synthetic.main.item_custom_permission.view.permissionText
 
 internal class MiniAppCustomPermissionAdapter :
     RecyclerView.Adapter<MiniAppCustomPermissionAdapter.ViewHolder?>() {
