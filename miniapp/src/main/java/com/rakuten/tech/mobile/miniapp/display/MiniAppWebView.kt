@@ -79,7 +79,7 @@ internal class MiniAppWebView(
         webViewClient = null
         miniAppWebChromeClient.destroy()
         webChromeClient = null
-        miniAppMessageBridge.screenBridgeDispatcher.releaseLock()
+        miniAppMessageBridge.onWebViewDestroy()
         destroy()
     } catch (e: Exception) {
         // The activity may release before those executions.
