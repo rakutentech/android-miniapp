@@ -390,7 +390,9 @@ miniAppMessageBridge.allowScreenOrientation(true)
 
 In case miniapp is allowed to control, please ensure that your activity handles screen orientation.
 There are several ways to prevent the view from being reset.
-In our Demo App, we set the config on activity. See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
+In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
+See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
+
 
 ## Troubleshooting
 
