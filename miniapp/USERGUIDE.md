@@ -381,6 +381,19 @@ class CustomAdDisplayer: MiniAppAdDisplayer {
 miniAppMessageBridge.setAdMobDisplayer(CustomAdDisplayer())
 ```
 
+### #6 Screen Orientation
+The default setting does not allow miniapp to change hostapp screen orientation.
+Hostapp can allow miniapp to control the screen orientation for better experience by calling 
+```kotlin
+miniAppMessageBridge.allowScreenOrientation(true)
+```
+
+In case miniapp is allowed to control, please ensure that your activity handles screen orientation.
+There are several ways to prevent the view from being reset.
+In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
+See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
+
+
 ## Troubleshooting
 
 ### Exception: "Network requests must not be performed on the main thread."

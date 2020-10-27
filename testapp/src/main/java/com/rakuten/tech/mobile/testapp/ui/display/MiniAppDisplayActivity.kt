@@ -147,6 +147,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
+        miniAppMessageBridge.allowScreenOrientation(true)
 
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
             override fun getUserName(): String = AppSettings.instance.profileName
