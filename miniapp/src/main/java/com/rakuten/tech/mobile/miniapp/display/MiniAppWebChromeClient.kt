@@ -152,4 +152,9 @@ internal class MiniAppWebChromeClient(
         }
     }
     // end region video fullscreen
+
+    fun destroy() {
+        if (customView != null)
+            onHideCustomView()
+    }
 }
