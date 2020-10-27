@@ -149,7 +149,7 @@ internal class MiniAppWebChromeClient(
     }
     // end region video fullscreen
 
-    fun destroy() {
+    fun onWebViewDetach() {
         if (customView != null)
             onHideCustomView()
     }

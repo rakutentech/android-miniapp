@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -130,10 +131,18 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
         verify(displayer).stopLoading()
         displayer.webViewClient shouldBe null
-        verify(displayer.miniAppWebChromeClient).destroy()
-        displayer.webChromeClient shouldBe null
-        verify(miniAppMessageBridge).onWebViewDestroy()
+
         verify(displayer).destroy()
+    }
+
+    @Test
+    fun `should restore the original state of activity when detach webview`() {
+        val displayer = Mockito.spy(miniAppWebView)
+        (context as Activity).setContentView(displayer)
+        (context as Activity).setContentView(R.layout.browser_actions_context_menu_page)
+
+        verify(displayer.miniAppWebChromeClient).onWebViewDetach()
+        verify(miniAppMessageBridge).onWebViewDetach()
     }
 
     @Test
@@ -379,7 +388,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     fun `should exit fullscreen when destroy miniapp view`() {
         val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
         webChromeClient.onShowCustomView(View(context), mock())
-        webChromeClient.destroy()
+        webChromeClient.onWebViewDetach()
 
         verify(webChromeClient).onHideCustomView()
     }

@@ -73,16 +73,19 @@ internal class MiniAppWebView(
         loadUrl(getLoadUrl())
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    fun destroyView() = try {
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        if (!(context as Activity).isDestroyed) {
+            miniAppWebChromeClient.onWebViewDetach()
+            miniAppMessageBridge.onWebViewDetach()
+        }
+    }
+
+    fun destroyView() {
         stopLoading()
         webViewClient = null
-        miniAppWebChromeClient.destroy()
-        webChromeClient = null
-        miniAppMessageBridge.onWebViewDestroy()
         destroy()
-    } catch (e: Exception) {
-        // The activity may release before those executions.
     }
 
     override fun runSuccessCallback(callbackId: String, value: String) {
