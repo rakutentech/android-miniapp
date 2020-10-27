@@ -2,5 +2,7 @@
     <string name="app_name">MiniAppPlatform</string>
 
     <!-- Custom permission resources -->
+    <string name="miniapp_custom_permission_save">Save</string>
+    <string name="miniapp_custom_permission_close">Close</string>
     <string name="miniapp_custom_permission_tutorial">MiniApp wants to access the following permissions. Please choose your preference accordingly.</string>
 </resources>

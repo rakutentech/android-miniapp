@@ -152,6 +152,9 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // .. .. ..
         // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
         callback.invoke(listOf()) 
+        
+        // Alternatively, there is a default UI implementation for managing custom permissions given below
+        MiniApp.showCustomPermissionWindow(activity, miniAppId, permissionsWithDescription, callback)
     }
 
     override fun shareContent(

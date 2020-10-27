@@ -21,7 +21,6 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
@@ -137,11 +136,12 @@ class MiniAppDisplayActivity : BaseActivity() {
                 permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
                 callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
             ) {
-                MiniAppCustomPermissionWindow(
-                    viewModel.getMiniApp(),
+                viewModel.getMiniApp().showCustomPermissionWindow(
+                    this@MiniAppDisplayActivity,
                     appId,
-                    this@MiniAppDisplayActivity
-                ).apply { show(permissionsWithDescription, callback) }
+                    permissionsWithDescription,
+                    callback
+                )
             }
         }
 

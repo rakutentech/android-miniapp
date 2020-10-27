@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.x.x (In progress)
+- Added `showCustomPermissionWindow` interface to show a default UI for managing custom permissions. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge).
+
 ### 2.4.0
 **SDK**
 - **Feature:** Handle the screen orientation change request from miniapp.
@@ -7,7 +10,7 @@
 
 ### 2.3.0 (2020-10-15)
 **SDK**
-- **Feature:** Load and display ads from miniapp. See [here](miniapp/USERGUIDE.md#5-ads-integration).
+- **Feature:** Load and display ads from miniapp. [See here](miniapp/USERGUIDE.md#5-ads-integration).
 - **Feature:** Added `getUserName()` interface in `UserInfoBridgeDispatcher` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
 - **Feature:** Added `getProfilePhoto()` interface in `UserInfoBridgeDispatcher` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
 - **Fix:** `tel:` links weren't functioning correctly on API 23.
