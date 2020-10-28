@@ -25,10 +25,6 @@ android {
     }
 
     buildToolsVersion = androidBuildTool
-
-    dataBinding {
-        enabled = true
-    }
 }
 
 androidExtensions {
