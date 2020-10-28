@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
+import com.rakuten.tech.mobile.testapp.helper.showDialogToCopy
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
@@ -164,10 +165,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    val toast =
-                        Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.BOTTOM, 0, 100)
-                    toast.show()
+                    showDialogToCopy(this@SettingsMenuActivity, error.message.toString())
                 }
             }
         }
