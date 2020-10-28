@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.display
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +11,7 @@ import android.webkit.GeolocationPermissions
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -40,10 +42,13 @@ open class BaseWebViewSpec {
     val miniAppNavigator: MiniAppNavigator = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
+    lateinit var activityScenario: ActivityScenario<TestActivity>
 
+    @Suppress("LongMethod")
     @Before
     fun setup() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+        activityScenario = ActivityScenario.launch(TestActivity::class.java)
+        activityScenario.onActivity { activity ->
             context = activity
             basePath = context.filesDir.path
             webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
@@ -130,10 +135,31 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
         verify(displayer).stopLoading()
         displayer.webViewClient shouldBe null
-        verify(displayer.miniAppWebChromeClient).destroy()
-        displayer.webChromeClient shouldBe null
-        verify(miniAppMessageBridge).onWebViewDestroy()
+
         verify(displayer).destroy()
+    }
+
+    @Test
+    fun `should not restore the original state of activity when activity is destroyed`() {
+        val displayer = Mockito.spy(miniAppWebView)
+        (context as Activity).setContentView(displayer)
+        activityScenario.moveToState(Lifecycle.State.DESTROYED)
+        (context as Activity).setContentView(R.layout.browser_actions_context_menu_page)
+
+        verify(displayer.miniAppWebChromeClient, times(0)).onWebViewDetach()
+        verify(miniAppMessageBridge, times(0)).onWebViewDetach()
+    }
+
+    @Test
+    fun `should trigger executions when attach and detach webview`() {
+        val displayer = Mockito.spy(miniAppWebView)
+        (context as Activity).setContentView(displayer)
+        (context as Activity).setContentView(R.layout.browser_actions_context_menu_page)
+
+        verify(displayer, times(1)).onResume()
+        verify(displayer).onPause()
+        verify(displayer.miniAppWebChromeClient).onWebViewDetach()
+        verify(miniAppMessageBridge).onWebViewDetach()
     }
 
     @Test
@@ -358,7 +384,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
         webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
-        webChromeClient.onShowCustomView(mock(), mock())
+        webChromeClient.onShowCustomView(null, mock())
         webChromeClient.customView = mock()
         webChromeClient.onShowCustomView(mock(), mock())
 
@@ -379,7 +405,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     fun `should exit fullscreen when destroy miniapp view`() {
         val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA))
         webChromeClient.onShowCustomView(View(context), mock())
-        webChromeClient.destroy()
+        webChromeClient.onWebViewDetach()
 
         verify(webChromeClient).onHideCustomView()
     }

@@ -239,7 +239,7 @@ abstract class MiniAppMessageBridge {
         bridgeExecutor.postValue(callbackId, jsonResult)
     }
 
-    internal fun onWebViewDestroy() {
+    internal fun onWebViewDetach() {
         screenBridgeDispatcher.releaseLock()
     }
 
