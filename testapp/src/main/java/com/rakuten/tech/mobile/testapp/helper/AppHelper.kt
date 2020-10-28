@@ -13,8 +13,8 @@ fun isInputEmpty(input: AppCompatEditText): Boolean {
     return input.text.toString().isEmpty() || input.text.toString().isBlank()
 }
 
-fun showDialogToCopy(activity: Activity, content: String) {
-    // prepare view with copy option
+fun showNormalDialog(activity: Activity, content: String) {
+    // prepare an EditText where the content can be copied by long press
     val editText = EditText(activity)
     editText.setText(content)
     editText.setTextIsSelectable(true)

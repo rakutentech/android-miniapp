@@ -5,10 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -17,7 +15,7 @@ import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.showDialogToCopy
+import com.rakuten.tech.mobile.testapp.helper.showNormalDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
@@ -165,7 +163,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    showDialogToCopy(this@SettingsMenuActivity, error.message.toString())
+                    showNormalDialog(this@SettingsMenuActivity, error.message.toString())
                 }
             }
         }
