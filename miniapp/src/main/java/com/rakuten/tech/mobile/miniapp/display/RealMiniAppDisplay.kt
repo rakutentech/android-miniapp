@@ -14,6 +14,9 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,6 +34,7 @@ internal class RealMiniAppDisplay(
 
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
+    private lateinit var miniAppCustomPermissionWindow: MiniAppCustomPermissionWindow
 
     // Returns the view only when context type is legit else throw back error
     // Activity context needs to be used here, to prevent issues, where some native elements are
@@ -68,8 +72,24 @@ internal class RealMiniAppDisplay(
         }
     } else false
 
+    override fun showCustomPermissionWindow(
+        miniAppId: String,
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+    ) {
+        if (this::miniAppCustomPermissionWindow.isInitialized)
+            miniAppCustomPermissionWindow.displayPermissions(
+                miniAppId,
+                permissionsWithDescription,
+                callback
+            )
+    }
+
     private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
         miniAppWebView ?: withContext(Dispatchers.Main) {
+            miniAppCustomPermissionWindow =
+                MiniAppCustomPermissionWindow(context as Activity, miniAppCustomPermissionCache)
+
             miniAppWebView = MiniAppWebView(
                 context = context,
                 basePath = basePath,

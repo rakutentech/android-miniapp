@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.app.Activity
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -10,9 +9,6 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
@@ -86,20 +82,6 @@ abstract class MiniApp internal constructor() {
     )
 
     /**
-     * Show default custom permissions UI to manage permission grant results.
-     * @param activity the supplied context as Activity will be used to inflate the UI.
-     * @param miniAppId mini app id as the key to retrieve data from cache.
-     * @param permissionsWithDescription a list of Pair includes MiniAppCustomPermissionType and description as String.
-     * @param callback to invoke the permission grant results for sending to the Mini App.
-     */
-    abstract fun showCustomPermissionWindow(
-        activity: Activity,
-        miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-    )
-
-    /**
      * lists out the mini applications available with custom permissions in cache.
      * @return [List<MiniAppInfo>] list of MiniApp what is downloaded and containing
      * custom permissions data.
@@ -152,10 +134,7 @@ abstract class MiniApp internal constructor() {
                 displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = customPermissionCache,
-                miniAppCustomPermissionWindow = MiniAppCustomPermissionWindow(
-                    customPermissionCache
-                )
+                miniAppCustomPermissionCache = customPermissionCache
             )
         }
     }

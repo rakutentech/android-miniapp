@@ -8,6 +8,8 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,11 +57,22 @@ class MiniAppDisplayViewModel constructor(
         this.hostLifeCycle = lifecycle
     }
 
-    fun getMiniApp() = miniapp
-
     fun canGoBackwards(): Boolean =
         if (::miniAppDisplay.isInitialized)
             miniAppDisplay.navigateBackward()
         else
             false
+
+    fun displayPermissions(
+        miniAppId: String,
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+    ) {
+        if (::miniAppDisplay.isInitialized)
+            miniAppDisplay.showCustomPermissionWindow(
+                miniAppId,
+                permissionsWithDescription,
+                callback
+            )
+    }
 }

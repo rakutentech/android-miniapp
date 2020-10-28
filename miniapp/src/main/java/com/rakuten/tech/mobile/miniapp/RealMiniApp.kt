@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.app.Activity
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -9,9 +8,6 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
 @SuppressWarnings("TooManyFunctions")
 internal class RealMiniApp(
@@ -19,8 +15,7 @@ internal class RealMiniApp(
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
-    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppCustomPermissionWindow: MiniAppCustomPermissionWindow
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : MiniApp() {
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
@@ -35,18 +30,6 @@ internal class RealMiniApp(
 
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
-
-    override fun showCustomPermissionWindow(
-        activity: Activity,
-        miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-    ) = miniAppCustomPermissionWindow.show(
-        activity,
-        miniAppId,
-        permissionsWithDescription,
-        callback
-    )
 
     @Suppress("FunctionMaxLength")
     override fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>> {

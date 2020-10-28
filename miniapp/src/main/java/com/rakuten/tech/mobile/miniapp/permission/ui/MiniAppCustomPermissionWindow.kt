@@ -12,19 +12,27 @@ import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A class to show default custom permissions UI to manage permissions in this SDK.
  */
 internal class MiniAppCustomPermissionWindow(
+    private val activity: Activity,
     private val customPermissionCache: MiniAppCustomPermissionCache
-) {
+) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
+
     private lateinit var customPermissionAlertDialog: AlertDialog
     private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
     private lateinit var customPermissionLayout: View
 
-    fun show(
-        activity: Activity,
+    fun displayPermissions(
         miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
@@ -36,21 +44,23 @@ internal class MiniAppCustomPermissionWindow(
 
         // show permission default UI if there is any denied permission
         if (deniedPermissions.isNotEmpty()) {
-            // initialize permission view after ensuring if there is any denied permission
-            initDefaultWindow(activity)
-            prepareDataForAdapter(deniedPermissions)
+            launch {
+                // initialize permission view after ensuring if there is any denied permission
+                initDefaultWindow()
+                prepareDataForAdapter(deniedPermissions)
 
-            // add action listeners
-            addPermissionClickListeners(miniAppId, callback)
+                // add action listeners
+                addPermissionClickListeners(miniAppId, callback)
 
-            // preview dialog
-            customPermissionAlertDialog.show()
+                // preview dialog
+                customPermissionAlertDialog.show()
+            }
         } else {
             callback.invoke(getCachedList(miniAppId))
         }
     }
 
-    private fun initDefaultWindow(activity: Activity) {
+    private fun initDefaultWindow() {
         val layoutInflater = LayoutInflater.from(activity)
         customPermissionLayout = layoutInflater.inflate(R.layout.window_custom_permission, null)
         val permissionRecyclerView = customPermissionLayout.findViewById<RecyclerView>(R.id.listCustomPermission)
