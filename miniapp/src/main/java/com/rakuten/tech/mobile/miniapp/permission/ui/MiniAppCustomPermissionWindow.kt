@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.permission
+package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -7,6 +7,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.R
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlinx.android.synthetic.main.window_custom_permission.view.listCustomPermission
 import kotlinx.android.synthetic.main.window_custom_permission.view.permissionSave
 import kotlinx.android.synthetic.main.window_custom_permission.view.permissionCloseWindow
@@ -36,21 +39,7 @@ internal class MiniAppCustomPermissionWindow(
         if (deniedPermissions.isNotEmpty()) {
             // initialize permission view after ensuring if there is any denied permission
             initDefaultWindow(activity)
-
-            // prepare data for adapter
-            val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-            val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
-            val descriptionForAdapter: ArrayList<String> = arrayListOf()
-            deniedPermissions.forEach {
-                namesForAdapter.add(it.first)
-                descriptionForAdapter.add(it.second)
-                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
-            }
-            customPermissionAdapter.addPermissionList(
-                namesForAdapter,
-                resultsForAdapter,
-                descriptionForAdapter
-            )
+            prepareDataForAdapter(deniedPermissions)
 
             // add action listeners
             addPermissionClickListeners(miniAppId, callback)
@@ -70,12 +59,31 @@ internal class MiniAppCustomPermissionWindow(
             DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
         )
 
-        customPermissionAdapter = MiniAppCustomPermissionAdapter()
+        customPermissionAdapter =
+            MiniAppCustomPermissionAdapter()
         customPermissionLayout.listCustomPermission.adapter = customPermissionAdapter
 
         customPermissionAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog).create()
         customPermissionAlertDialog.setView(customPermissionLayout)
+    }
+
+    private fun prepareDataForAdapter(deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>) {
+        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
+        val descriptionForAdapter: ArrayList<String> = arrayListOf()
+
+        deniedPermissions.forEach {
+            namesForAdapter.add(it.first)
+            descriptionForAdapter.add(it.second)
+            resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+        }
+
+        customPermissionAdapter.addPermissionList(
+            namesForAdapter,
+            resultsForAdapter,
+            descriptionForAdapter
+        )
     }
 
     private fun addPermissionClickListeners(

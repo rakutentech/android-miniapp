@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.permission
+package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,12 +8,17 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlinx.android.synthetic.main.item_custom_permission.view.permissionDescription
 import kotlinx.android.synthetic.main.item_custom_permission.view.permissionSwitch
 import kotlinx.android.synthetic.main.item_custom_permission.view.permissionText
 
+/**
+ * A RecyclerView Adapter to bind each custom permission view to be displayed in the default UI.
+ */
 internal class MiniAppCustomPermissionAdapter :
-    RecyclerView.Adapter<MiniAppCustomPermissionAdapter.ViewHolder?>() {
+    RecyclerView.Adapter<MiniAppCustomPermissionAdapter.PermissionViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
@@ -21,34 +26,14 @@ internal class MiniAppCustomPermissionAdapter :
     var permissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PermissionViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_custom_permission, null)
-        return ViewHolder(view)
+        return PermissionViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = parsePermissionName(permissionNames[position])
-        holder.permissionSwitch.isChecked =
-            permissionResultToChecked(permissionToggles[position])
-
-        holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
-            permissionPairs.removeAt(position)
-            permissionPairs.add(
-                position,
-                Pair(
-                    permissionNames[position],
-                    permissionResultToText(holder.permissionSwitch.isChecked)
-                )
-            )
-        }
-
-        if (permissionDescription.isNotEmpty())
-            holder.permissionDescription.text = permissionDescription[position]
-
-        if (holder.permissionDescription.text.isEmpty())
-            holder.permissionDescription.visibility = View.GONE
-        else holder.permissionDescription.visibility = View.VISIBLE
+    override fun onBindViewHolder(holder: PermissionViewHolder, position: Int) {
+        bindView(holder, position)
     }
 
     override fun getItemCount(): Int = permissionNames.size
@@ -70,11 +55,38 @@ internal class MiniAppCustomPermissionAdapter :
         notifyDataSetChanged()
     }
 
+    /**
+     * A RecyclerView ViewHolder contains View for each custom permission to be bound in Adapter.
+     */
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PermissionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val permissionName: TextView = itemView.permissionText
         val permissionDescription: TextView = itemView.permissionDescription
         val permissionSwitch: Switch = itemView.permissionSwitch
+    }
+
+    private fun bindView(holder: PermissionViewHolder, position: Int) {
+        holder.permissionName.text = parsePermissionName(permissionNames[position])
+        holder.permissionSwitch.isChecked =
+            permissionResultToChecked(permissionToggles[position])
+
+        holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
+            permissionPairs.removeAt(position)
+            permissionPairs.add(
+                position,
+                Pair(
+                    permissionNames[position],
+                    permissionResultToText(holder.permissionSwitch.isChecked)
+                )
+            )
+        }
+
+        if (permissionDescription.isNotEmpty())
+            holder.permissionDescription.text = permissionDescription[position]
+
+        if (holder.permissionDescription.text.isEmpty())
+            holder.permissionDescription.visibility = View.GONE
+        else holder.permissionDescription.visibility = View.VISIBLE
     }
 
     private fun parsePermissionName(type: MiniAppCustomPermissionType): String {
