@@ -73,9 +73,15 @@ internal class MiniAppWebView(
         loadUrl(getLoadUrl())
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        onResume()
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
 
+        onPause()
         if (!(context as Activity).isDestroyed) {
             miniAppWebChromeClient.onWebViewDetach()
             miniAppMessageBridge.onWebViewDetach()
