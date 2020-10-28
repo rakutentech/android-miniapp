@@ -4,6 +4,7 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +29,9 @@ internal class MiniAppCustomPermissionWindow(
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
 
-    private lateinit var customPermissionAlertDialog: AlertDialog
+    @VisibleForTesting
+    lateinit var customPermissionAlertDialog: AlertDialog
+
     private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
     private lateinit var customPermissionLayout: View
 
@@ -56,14 +59,23 @@ internal class MiniAppCustomPermissionWindow(
                 customPermissionAlertDialog.show()
             }
         } else {
-            callback.invoke(getCachedList(miniAppId))
+            invokeCachedPermissions(miniAppId, callback)
         }
     }
 
-    private fun initDefaultWindow() {
+    private fun invokeCachedPermissions(
+        miniAppId: String,
+        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+    ) {
+        callback.invoke(getCachedList(miniAppId))
+    }
+
+    @VisibleForTesting
+    fun initDefaultWindow() {
         val layoutInflater = LayoutInflater.from(activity)
         customPermissionLayout = layoutInflater.inflate(R.layout.window_custom_permission, null)
-        val permissionRecyclerView = customPermissionLayout.findViewById<RecyclerView>(R.id.listCustomPermission)
+        val permissionRecyclerView =
+            customPermissionLayout.findViewById<RecyclerView>(R.id.listCustomPermission)
         permissionRecyclerView.layoutManager = LinearLayoutManager(activity)
         permissionRecyclerView.addItemDecoration(
             DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
@@ -77,7 +89,8 @@ internal class MiniAppCustomPermissionWindow(
         customPermissionAlertDialog.setView(customPermissionLayout)
     }
 
-    private fun prepareDataForAdapter(deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>) {
+    @VisibleForTesting
+    fun prepareDataForAdapter(deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>) {
         val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
         val descriptionForAdapter: ArrayList<String> = arrayListOf()
@@ -95,7 +108,8 @@ internal class MiniAppCustomPermissionWindow(
         )
     }
 
-    private fun addPermissionClickListeners(
+    @VisibleForTesting
+    fun addPermissionClickListeners(
         miniAppId: String,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
@@ -106,15 +120,17 @@ internal class MiniAppCustomPermissionWindow(
 
         customPermissionLayout.findViewById<TextView>(R.id.permissionCloseWindow)
             .setOnClickListener {
-                callback.invoke(getCachedList(miniAppId))
+                invokeCachedPermissions(miniAppId, callback)
                 customPermissionAlertDialog.dismiss()
             }
     }
 
-    private fun getCachedList(miniAppId: String) =
+    @VisibleForTesting
+    fun getCachedList(miniAppId: String) =
         customPermissionCache.readPermissions(miniAppId).pairValues
 
-    private fun getDeniedPermissions(
+    @VisibleForTesting
+    fun getDeniedPermissions(
         miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
     ) = permissionsWithDescription.filter { (first) ->
