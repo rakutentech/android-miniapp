@@ -124,6 +124,14 @@ There are some methods have default implementation but host app can override the
 | requestCustomPermissions     | 🚫       |
 | shareContent                 | ✅       |
 
+The `UserInfoBridgeDispatcher`:
+
+| Method                       | Default  |
+|------------------------------|----------|
+| getUserName                  | 🚫       |
+| getProfilePhoto              | 🚫       |
+| getAccessToken               | 🚫       |
+
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() {
@@ -180,13 +188,18 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         return profilePhotoUrl
     }
 
-    override fun getAccessToken(miniAppId: String): TokenData {
+    override fun getAccessToken(
+        miniAppId: String,
+        onSuccess: (tokenData: TokenData) -> Unit,
+        onError: (message: String) -> Unit
+    ){
         var allowToken: Boolean = false
+        // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..
         if (allowToken)
-            return tokenData // allow miniapp to get token and return TokenData value.
+            onSuccess(tokenData) // allow miniapp to get token and invoke success callback with TokenData value.
         else
-            throw Exception(message) // reject miniapp to get token with message explaination.
+            onError(message)    // reject miniapp to get token and invoke error callback with message.
     }
 }
 

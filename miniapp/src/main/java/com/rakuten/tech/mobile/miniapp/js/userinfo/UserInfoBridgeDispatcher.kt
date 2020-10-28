@@ -27,8 +27,13 @@ abstract class UserInfoBridgeDispatcher {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
 
     /** Get access token from host app. **/
-    open fun getAccessToken(miniAppId: String): TokenData =
+    open fun getAccessToken(
+        miniAppId: String,
+        onSuccess: (tokenData: TokenData) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+    }
 
     internal fun init(
         bridgeExecutor: MiniAppBridgeExecutor,
@@ -92,8 +97,14 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetAccessToken(callbackId: String, miniAppId: String) = try {
-        val accessToken = getAccessToken(miniAppId)
-        bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
+        val successCallback = { accessToken: TokenData ->
+            bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
+        }
+
+        getAccessToken(miniAppId, successCallback, errorCallback)
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
     }

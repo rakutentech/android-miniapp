@@ -201,6 +201,20 @@ class UserInfoBridgeDispatcherSpec {
     /** end region */
 
     /** start region: access token */
+    val testToken = TokenData("test_token", 0)
+    fun createUserInfoImpl(canGetToken: Boolean) = object : UserInfoBridgeDispatcher() {
+        override fun getAccessToken(
+            miniAppId: String,
+            onSuccess: (tokenData: TokenData) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (canGetToken)
+                onSuccess.invoke(testToken)
+            else
+                onError.invoke(TEST_ERROR_MSG)
+        }
+    }
+
     @Test
     fun `postError should be called when there is no access token retrieval implementation`() {
         val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken`" +
@@ -211,11 +225,19 @@ class UserInfoBridgeDispatcherSpec {
     }
 
     @Test
+    fun `postError should be called when hostapp denies providing access token`() {
+        val errMsg = "$ERR_GET_ACCESS_TOKEN $TEST_ERROR_MSG"
+        val userInfoBridgeDispatcher = Mockito.spy(createUserInfoImpl(false))
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+
+        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id, TEST_MA_ID)
+
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postValue should be called when retrieve access token successfully`() {
-        val testToken = TokenData("test_token", 0)
-        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher() {
-            override fun getAccessToken(miniAppId: String): TokenData = testToken
-        })
+        val userInfoBridgeDispatcher = Mockito.spy(createUserInfoImpl(true))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id, TEST_MA_ID)

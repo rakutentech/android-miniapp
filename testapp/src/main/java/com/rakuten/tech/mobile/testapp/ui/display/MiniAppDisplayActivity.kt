@@ -156,25 +156,23 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
 
-            override fun getAccessToken(miniAppId: String): TokenData {
-                var tokenAllow = false
+            override fun getAccessToken(
+                miniAppId: String,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
                 AlertDialog.Builder(this@MiniAppDisplayActivity)
                     .setMessage("Allow $miniAppId to get access token?")
                     .setPositiveButton(android.R.string.yes) { dialog, _ ->
-                        tokenAllow = true
+                        onSuccess(AppSettings.instance.tokenData)
                         dialog.dismiss()
                     }
-                    .setNegativeButton(android.R.string.no) { dialog, _ ->
-                        tokenAllow = false
+                    .setNegativeButton("No") { dialog, _ ->
+                        onError("$miniAppId not allowed to get access token")
                         dialog.dismiss()
                     }
                     .create()
                     .show()
-
-                return if (tokenAllow)
-                    AppSettings.instance.tokenData
-                else
-                    throw Exception("$miniAppId not allowed to get access token")
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
