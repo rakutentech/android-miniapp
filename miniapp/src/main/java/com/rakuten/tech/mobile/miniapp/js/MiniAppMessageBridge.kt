@@ -29,8 +29,10 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
-    internal lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private val adBridgeDispatcher = AdBridgeDispatcher()
+
+    private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
+    private var allowScreenOrientation = false
 
     internal fun init(
         activity: Activity,
@@ -42,7 +44,7 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor)
+        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 
         if (this::userInfoBridgeDispatcher.isInitialized)
@@ -235,6 +237,17 @@ abstract class MiniAppMessageBridge {
     @VisibleForTesting
     internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
         bridgeExecutor.postValue(callbackId, jsonResult)
+    }
+
+    internal fun onWebViewDetach() {
+        screenBridgeDispatcher.releaseLock()
+    }
+
+    /** Allow miniapp to change screen orientation. The default setting is false. */
+    fun allowScreenOrientation(isAllowed: Boolean) {
+        allowScreenOrientation = isAllowed
+        if (this::screenBridgeDispatcher.isInitialized)
+            screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
     }
 }
 
