@@ -3,16 +3,15 @@ package com.rakuten.tech.mobile.miniapp.permission.ui
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import kotlinx.android.synthetic.main.window_custom_permission.view.listCustomPermission
-import kotlinx.android.synthetic.main.window_custom_permission.view.permissionSave
-import kotlinx.android.synthetic.main.window_custom_permission.view.permissionCloseWindow
 
 /**
  * A class to show default custom permissions UI to manage permissions in this SDK.
@@ -54,14 +53,14 @@ internal class MiniAppCustomPermissionWindow(
     private fun initDefaultWindow(activity: Activity) {
         val layoutInflater = LayoutInflater.from(activity)
         customPermissionLayout = layoutInflater.inflate(R.layout.window_custom_permission, null)
-        customPermissionLayout.listCustomPermission.layoutManager = LinearLayoutManager(activity)
-        customPermissionLayout.listCustomPermission.addItemDecoration(
+        val permissionRecyclerView = customPermissionLayout.findViewById<RecyclerView>(R.id.listCustomPermission)
+        permissionRecyclerView.layoutManager = LinearLayoutManager(activity)
+        permissionRecyclerView.addItemDecoration(
             DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
         )
 
-        customPermissionAdapter =
-            MiniAppCustomPermissionAdapter()
-        customPermissionLayout.listCustomPermission.adapter = customPermissionAdapter
+        customPermissionAdapter = MiniAppCustomPermissionAdapter()
+        permissionRecyclerView.adapter = customPermissionAdapter
 
         customPermissionAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_CustomPermissionDialog).create()
@@ -90,15 +89,16 @@ internal class MiniAppCustomPermissionWindow(
         miniAppId: String,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        customPermissionLayout.permissionSave.setOnClickListener {
+        customPermissionLayout.findViewById<TextView>(R.id.permissionSave).setOnClickListener {
             callback.invoke(customPermissionAdapter.permissionPairs)
             customPermissionAlertDialog.dismiss()
         }
 
-        customPermissionLayout.permissionCloseWindow.setOnClickListener {
-            callback.invoke(getCachedList(miniAppId))
-            customPermissionAlertDialog.dismiss()
-        }
+        customPermissionLayout.findViewById<TextView>(R.id.permissionCloseWindow)
+            .setOnClickListener {
+                callback.invoke(getCachedList(miniAppId))
+                customPermissionAlertDialog.dismiss()
+            }
     }
 
     private fun getCachedList(miniAppId: String) =
