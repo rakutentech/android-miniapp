@@ -369,6 +369,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     @Before
     fun setupScreenBridgeDispatcher() {
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.allowScreenOrientation(false)
         miniAppBridge.init(
             activity = TestActivity(),
             webViewListener = webViewListener,
@@ -396,9 +397,11 @@ class ScreenBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 miniAppInfo = mock()
             )
+            miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
+            miniAppBridge.onWebViewDetach()
 
             verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
         }
@@ -409,6 +412,15 @@ class ScreenBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(Gson().toJson(
             CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
         )
+
+        verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+
+    @Test
+    fun `should not execute when hostapp does not allow miniapp to change screen orientation`() {
+        val screenDispatcher = Mockito.spy(ScreenBridgeDispatcher(mock(), bridgeExecutor, false))
+        screenDispatcher.onScreenRequest(mock())
+        screenDispatcher.releaseLock()
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
     }
