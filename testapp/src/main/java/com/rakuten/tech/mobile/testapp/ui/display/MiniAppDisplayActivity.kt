@@ -12,6 +12,7 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -25,11 +26,11 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.mini_app_display_activity.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -38,6 +39,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
+    private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
 
@@ -77,7 +79,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             if (appId.isEmpty())
                 appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
 
-            setContentView(R.layout.mini_app_display_activity)
+            binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
             viewModel = ViewModelProvider.NewInstanceFactory()
                 .create(MiniAppDisplayViewModel::class.java).apply {
@@ -195,11 +197,9 @@ class MiniAppDisplayActivity : BaseActivity() {
     }
 
     private fun toggleProgressLoading(isOn: Boolean) {
-        if (findViewById<View>(R.id.pb) != null) {
-            when (isOn) {
-                true -> pb.visibility = View.VISIBLE
-                false -> pb.visibility = View.GONE
-            }
+        when (isOn) {
+            true -> binding.pb.visibility = View.VISIBLE
+            false -> binding.pb.visibility = View.GONE
         }
     }
 

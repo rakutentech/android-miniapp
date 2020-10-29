@@ -10,9 +10,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
@@ -26,7 +28,6 @@ import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.ME
 import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
-import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
@@ -34,6 +35,7 @@ class SettingsMenuActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
     private lateinit var settingsProgressDialog: SettingsProgressDialog
+    private lateinit var binding: SettingsMenuActivityBinding
 
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
@@ -54,7 +56,7 @@ class SettingsMenuActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
-        setContentView(R.layout.settings_menu_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.settings_menu_activity)
 
         initializeActionBar()
         settingsProgressDialog = SettingsProgressDialog(this)
@@ -85,9 +87,9 @@ class SettingsMenuActivity : BaseActivity() {
         settingsProgressDialog.show()
 
         updateSettings(
-            editAppId.text.toString(),
-            editSubscriptionKey.text.toString(),
-            switchTestMode.isChecked
+            binding.editAppId.text.toString(),
+            binding.editSubscriptionKey.text.toString(),
+            binding.switchTestMode.isChecked
         )
     }
 
@@ -98,27 +100,27 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun renderAppSettingsScreen() {
-        textInfo.text = createBuildInfo()
-        editAppId.setText(settings.appId)
-        editSubscriptionKey.setText(settings.subscriptionKey)
-        switchTestMode.isChecked = settings.isTestMode
+        binding.textInfo.text = createBuildInfo()
+        binding.editAppId.setText(settings.appId)
+        binding.editSubscriptionKey.setText(settings.subscriptionKey)
+        binding.switchTestMode.isChecked = settings.isTestMode
 
-        editAppId.addTextChangedListener(settingsTextWatcher)
-        editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
+        binding.editAppId.addTextChangedListener(settingsTextWatcher)
+        binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
-        buttonProfile.setOnClickListener {
+        binding.buttonProfile.setOnClickListener {
             ProfileSettingsActivity.start(this@SettingsMenuActivity)
         }
 
-        buttonContacts.setOnClickListener {
+        binding.buttonContacts.setOnClickListener {
             ContactListActivity.start(this@SettingsMenuActivity)
         }
 
-        buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
-
-        buttonCustomPermissions.setOnClickListener {
+        binding.buttonCustomPermissions.setOnClickListener {
             MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)
         }
+
+        binding.buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
 
         validateInputIDs()
     }
@@ -130,18 +132,18 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun validateInputIDs() {
-        val isAppIdInvalid = editAppId.text.toString().isInvalidUuid()
+        val isAppIdInvalid = binding.editAppId.text.toString().isInvalidUuid()
 
-        saveViewEnabled = !(isInputEmpty(editAppId)
-                || isInputEmpty(editSubscriptionKey)
+        saveViewEnabled = !(isInputEmpty(binding.editAppId)
+                || isInputEmpty(binding.editSubscriptionKey)
                 || isAppIdInvalid)
 
-        if (isInputEmpty(editAppId) || isAppIdInvalid) {
-            editAppId.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editAppId) || isAppIdInvalid) {
+            binding.editAppId.error = getString(R.string.error_invalid_input)
         }
 
-        if (isInputEmpty(editSubscriptionKey)) {
-            editSubscriptionKey.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editSubscriptionKey)) {
+            binding.editSubscriptionKey.error = getString(R.string.error_invalid_input)
         }
     }
 

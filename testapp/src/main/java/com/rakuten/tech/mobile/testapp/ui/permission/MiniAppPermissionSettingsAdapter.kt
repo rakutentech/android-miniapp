@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
-import kotlinx.android.synthetic.main.item_list_custom_permission.view.*
 
 class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
@@ -22,7 +21,7 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemListCustomPermissionBinding.inflate(layoutInflater, parent, false)
 
-        return ViewHolder(binding.root)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -68,7 +67,7 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: ItemListCustomPermissionBinding) : RecyclerView.ViewHolder(itemView.root) {
         val permissionName: TextView = itemView.permissionText
         val permissionDescription: TextView = itemView.permissionDescription
         val permissionSwitch: SwitchCompat = itemView.permissionSwitch

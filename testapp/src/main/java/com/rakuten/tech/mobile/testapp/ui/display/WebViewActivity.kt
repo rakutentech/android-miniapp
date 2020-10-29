@@ -9,7 +9,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.component.SampleExternalWebView
 import com.rakuten.tech.mobile.testapp.ui.component.SampleWebViewClient
 
-class WebViewActivity: BaseActivity() {
+class WebViewActivity : BaseActivity() {
     private lateinit var sampleExternalWebView: SampleExternalWebView
 
     companion object {

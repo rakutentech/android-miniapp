@@ -5,16 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniappDownloadedListActivityBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.miniapp_downloaded_list_activity.*
-import kotlinx.android.synthetic.main.miniapp_downloaded_list_activity.emptyView
 
 class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity(), MiniAppList {
 
@@ -22,11 +22,12 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
 
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private var miniAppList: ArrayList<MiniAppInfo> = arrayListOf()
+    private lateinit var binding: MiniappDownloadedListActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
-        setContentView(R.layout.miniapp_downloaded_list_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.miniapp_downloaded_list_activity)
         renderScreen()
     }
 
@@ -48,8 +49,8 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
 
     private fun initAdapter() {
         miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
-        listDownloadedMiniApp.layoutManager = LinearLayoutManager(applicationContext)
-        listDownloadedMiniApp.adapter = miniAppListAdapter
+        binding.listDownloadedMiniApp.layoutManager = LinearLayoutManager(applicationContext)
+        binding.listDownloadedMiniApp.adapter = miniAppListAdapter
     }
 
     private fun executeLoadingList() {
@@ -75,9 +76,9 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
 
     private fun updateEmptyView() {
         if (miniAppListAdapter.itemCount == 0)
-            emptyView.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.VISIBLE
         else
-            emptyView.visibility = View.GONE
+            binding.emptyView.visibility = View.GONE
     }
 
     companion object {

@@ -13,18 +13,20 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.contacts_activity.*
 import java.util.UUID
 
 class ContactListActivity : BaseActivity() {
 
     private lateinit var settings: AppSettings
+    private lateinit var binding: ContactsActivityBinding
     private val adapter = ContactListAdapter()
     private var contactListPrefs: SharedPreferences? = null
     private var isFirstLaunch: Boolean
@@ -40,9 +42,9 @@ class ContactListActivity : BaseActivity() {
         )
         settings = AppSettings.instance
         showBackIcon()
-        setContentView(R.layout.contacts_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.contacts_activity)
         renderContactList()
-        fabAddContact.setOnClickListener { onAddAction() }
+        binding.fabAddContact.setOnClickListener { onAddAction() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -121,9 +123,9 @@ class ContactListActivity : BaseActivity() {
 
     private fun renderAdapter(contactNames: ArrayList<String>) {
         adapter.addContactList(contactNames)
-        listContacts.adapter = adapter
-        listContacts.layoutManager = LinearLayoutManager(applicationContext)
-        listContacts.addItemDecoration(
+        binding.listContacts.adapter = adapter
+        binding.listContacts.layoutManager = LinearLayoutManager(applicationContext)
+        binding.listContacts.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -148,7 +150,7 @@ class ContactListActivity : BaseActivity() {
     }
 
     private fun checkEmpty() {
-        viewEmptyContact.visibility =
+        binding.viewEmptyContact.visibility =
             if (adapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
