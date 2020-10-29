@@ -16,72 +16,153 @@
       app:layout_constraintTop_toTopOf="parent"
       app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical"
-      app:layout_constraintStart_toStartOf="@id/toolbar"
-      app:layout_constraintTop_toBottomOf="@id/toolbar">
-
-      <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/textInfo"
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_8"
-        android:padding="@dimen/small_8"
-        android:textColor="@android:color/black"
-        tools:text="Build Info" />
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-      <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/small_4"
-        android:paddingBottom="@dimen/small_4"
-        android:paddingStart="@dimen/medium_16"
-        android:paddingEnd="@dimen/medium_16"
-        android:background="@color/bg_section"
-        android:text="@string/lb_ras" />
-
-      <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_8">
-
-        <androidx.appcompat.widget.AppCompatEditText
-          android:id="@+id/editAppId"
+        <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/textInfo"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="@string/hint_host_app_id"
-          android:imeOptions="actionDone"
-          android:inputType="text" />
-      </com.google.android.material.textfield.TextInputLayout>
+          android:layout_margin="@dimen/small_8"
+          android:padding="@dimen/small_8"
+          android:textColor="@android:color/black"
+          tools:text="Build Info" />
 
-      <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_8">
-
-        <androidx.appcompat.widget.AppCompatEditText
-          android:id="@+id/editSubscriptionKey"
+        <androidx.appcompat.widget.AppCompatTextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="@string/hint_subscription_key"
-          android:imeOptions="actionDone"
-          android:inputType="text" />
-      </com.google.android.material.textfield.TextInputLayout>
+          android:paddingTop="@dimen/small_4"
+          android:paddingBottom="@dimen/small_4"
+          android:paddingStart="@dimen/medium_16"
+          android:paddingEnd="@dimen/medium_16"
+          android:background="@color/bg_section"
+          android:text="@string/lb_ras" />
 
-      <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/small_4"
-        android:paddingBottom="@dimen/small_4"
-        android:paddingStart="@dimen/medium_16"
-        android:paddingEnd="@dimen/medium_16"
-        android:background="@color/bg_section"
-        android:text="@string/lb_user_details" />
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/small_8">
+
+          <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/editAppId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_host_app_id"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/small_8">
+
+          <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/editSubscriptionKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_subscription_key"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/small_4"
+          android:paddingBottom="@dimen/small_4"
+          android:paddingStart="@dimen/medium_16"
+          android:paddingEnd="@dimen/medium_16"
+          android:background="@color/bg_section"
+          android:text="@string/lb_user_details" />
+
+        <RelativeLayout
+          android:id="@+id/buttonProfile"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/medium_16"
+          android:foreground="?attr/selectableItemBackground">
+
+          <ImageView
+            android:layout_width="@dimen/sec_icon_size"
+            android:layout_height="@dimen/sec_icon_size"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_arrow_forward" />
+
+          <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/action_profile"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
+        </RelativeLayout>
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/horizontal_divider_height"
+          android:background="@color/bg_section" />
+
+        <RelativeLayout
+          android:id="@+id/buttonContacts"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/medium_16"
+          android:foreground="?attr/selectableItemBackground">
+
+          <ImageView
+            android:layout_width="@dimen/sec_icon_size"
+            android:layout_height="@dimen/sec_icon_size"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_arrow_forward" />
+
+          <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/action_contacts"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
+        </RelativeLayout>
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/horizontal_divider_height"
+          android:background="@color/bg_section" />
 
       <RelativeLayout
-        android:id="@+id/buttonProfile"
+          android:id="@+id/buttonAccessToken"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/medium_16"
+          android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:layout_width="@dimen/sec_icon_size"
+            android:layout_height="@dimen/sec_icon_size"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_arrow_forward" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/lb_access_token"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
+      </RelativeLayout>
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/horizontal_divider_height"
+          android:background="@color/bg_section" />
+
+      <RelativeLayout
+        android:id="@+id/buttonCustomPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/medium_16"
@@ -97,7 +178,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerVertical="true"
-          android:text="@string/action_profile"
+          android:text="@string/action_custom_permissions"
           android:textColor="@android:color/black"
           android:textSize="@dimen/text_large_16" />
       </RelativeLayout>
@@ -107,95 +188,15 @@
         android:layout_height="@dimen/horizontal_divider_height"
         android:background="@color/bg_section" />
 
-      <RelativeLayout
-        android:id="@+id/buttonContacts"
+      <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchTestMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/medium_16"
-        android:foreground="?attr/selectableItemBackground">
+        android:layout_marginTop="@dimen/small_12"
+        android:text="@string/lb_test_mode"
+        android:visibility="gone" />
 
-        <ImageView
-          android:layout_width="@dimen/sec_icon_size"
-          android:layout_height="@dimen/sec_icon_size"
-          android:layout_alignParentEnd="true"
-          android:src="@drawable/ic_arrow_forward" />
+    </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerVertical="true"
-          android:text="@string/action_contacts"
-          android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16" />
-      </RelativeLayout>
-
-      <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_divider_height"
-        android:background="@color/bg_section" />
-
-    <RelativeLayout
-        android:id="@+id/buttonAccessToken"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/medium_16"
-        android:foreground="?attr/selectableItemBackground">
-
-      <ImageView
-          android:layout_width="@dimen/sec_icon_size"
-          android:layout_height="@dimen/sec_icon_size"
-          android:layout_alignParentEnd="true"
-          android:src="@drawable/ic_arrow_forward" />
-
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerVertical="true"
-          android:text="@string/lb_access_token"
-          android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16" />
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_divider_height"
-        android:background="@color/bg_section" />
-
-    <RelativeLayout
-      android:id="@+id/buttonCustomPermissions"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:padding="@dimen/medium_16"
-      android:foreground="?attr/selectableItemBackground">
-
-      <ImageView
-        android:layout_width="@dimen/sec_icon_size"
-        android:layout_height="@dimen/sec_icon_size"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_arrow_forward" />
-
-      <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:text="@string/action_custom_permissions"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/text_large_16" />
-    </RelativeLayout>
-
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/horizontal_divider_height"
-      android:background="@color/bg_section" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-      android:id="@+id/switchTestMode"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/small_12"
-      android:text="@string/lb_test_mode"
-      android:visibility="gone" />
-
-  </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
