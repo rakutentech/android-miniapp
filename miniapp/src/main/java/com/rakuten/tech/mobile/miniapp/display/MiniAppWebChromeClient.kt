@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.Activity
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
@@ -95,11 +94,11 @@ internal class MiniAppWebChromeClient(
     @VisibleForTesting
     internal var customView: View? = null
     private var customViewCallback: CustomViewCallback? = null
-    private var originalOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     private var originalSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
     private val fullScreenFlag = View.SYSTEM_UI_FLAG_FULLSCREEN or
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 
     override fun onShowCustomView(paramView: View?, paramCustomViewCallback: CustomViewCallback?) {
         if (customView != null) {
@@ -110,12 +109,11 @@ internal class MiniAppWebChromeClient(
         if (context is Activity) {
             context.apply {
                 originalSystemUiVisibility = window.decorView.systemUiVisibility
-                originalOrientation = requestedOrientation
                 customViewCallback = paramCustomViewCallback
                 (window.decorView as FrameLayout).addView(customView, FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                 window.decorView.systemUiVisibility = fullScreenFlag
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                customView?.setBackgroundColor(getColor(android.R.color.black))
                 customView?.setOnSystemUiVisibilityChangeListener { updateControls() }
             }
         }
@@ -127,10 +125,8 @@ internal class MiniAppWebChromeClient(
                 (window.decorView as FrameLayout).removeView(customView)
                 customView = null
                 window.decorView.systemUiVisibility = originalSystemUiVisibility
-                requestedOrientation = originalOrientation
                 customViewCallback!!.onCustomViewHidden()
                 customViewCallback = null
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
             }
         }
     }
@@ -152,4 +148,9 @@ internal class MiniAppWebChromeClient(
         }
     }
     // end region video fullscreen
+
+    fun onWebViewDetach() {
+        if (customView != null)
+            onHideCustomView()
+    }
 }

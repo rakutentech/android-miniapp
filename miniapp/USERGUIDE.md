@@ -124,10 +124,18 @@ There are some methods have default implementation but host app can override the
 | requestCustomPermissions     | 🚫       |
 | shareContent                 | ✅       |
 
+The `UserInfoBridgeDispatcher`:
+
+| Method                       | Default  |
+|------------------------------|----------|
+| getUserName                  | 🚫       |
+| getProfilePhoto              | 🚫       |
+| getAccessToken               | 🚫       |
+
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
     override fun getUniqueId() {
-        val id: String = ""
+        var id: String = ""
         // Implementation details to generate a Unique ID
         // .. .. ..
 
@@ -163,20 +171,35 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
     }
+}
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
     override fun getUserName(): String {
-        val name: String = ""
+        var name: String = ""
         // Implementation details to get user name
         // .. .. ..
         return name
     }
 
     override fun getProfilePhoto(): String {
-        val profilePhotoUrl: String = ""
+        var profilePhotoUrl: String = ""
         // Implementation details to get profile photo url
         // .. .. ..
         return profilePhotoUrl
+    }
+
+    override fun getAccessToken(
+        miniAppId: String,
+        onSuccess: (tokenData: TokenData) -> Unit,
+        onError: (message: String) -> Unit
+    ){
+        var allowToken: Boolean = false
+        // Check if you want to allow this Mini App ID to use the Access Token
+        // .. .. ..
+        if (allowToken)
+            onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
+        else
+            onError(message)    // reject miniapp to get token and with message explanation.
     }
 }
 
@@ -216,11 +239,14 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
 `MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
 
+**Note:** Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
+
 ## Advanced
 
 ### #1 Clearing up mini app display
 
-For a mini app, it is required to destroy necessary view state and any services registered with, either automatically or manually. `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
+For a mini app, it is required to destroy necessary view state and any services registered with.
+The automatic way can be used only if we want to end the `Activity` container along with mini app display.  `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
 
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
@@ -377,6 +403,19 @@ class CustomAdDisplayer: MiniAppAdDisplayer {
 
 miniAppMessageBridge.setAdMobDisplayer(CustomAdDisplayer())
 ```
+
+### #6 Screen Orientation
+The default setting does not allow miniapp to change hostapp screen orientation.
+Hostapp can allow miniapp to control the screen orientation for better experience by calling 
+```kotlin
+miniAppMessageBridge.allowScreenOrientation(true)
+```
+
+In case miniapp is allowed to control, please ensure that your activity handles screen orientation.
+There are several ways to prevent the view from being reset.
+In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
+See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
+
 
 ## Troubleshooting
 

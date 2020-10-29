@@ -1,0 +1,10 @@
+ignore:
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/MiniappSdkInitializer.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/MiniApp.kt"
+coverage:
+  status:
+    patch: off
+    project:
+      default:
+        target: 80%
+        threshold: 4%

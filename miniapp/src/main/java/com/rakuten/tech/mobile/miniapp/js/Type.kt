@@ -9,6 +9,7 @@ internal enum class ActionType(val action: String) {
     SHOW_AD("showAd"),
     GET_USER_NAME("getUserName"),
     GET_PROFILE_PHOTO("getProfilePhoto"),
+    GET_ACCESS_TOKEN("getAccessToken"),
     SET_SCREEN_ORIENTATION("setScreenOrientation")
 }
 

@@ -4,35 +4,49 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_SCREEN_ACTION
 
-@Suppress("TooGenericExceptionCaught")
 internal class ScreenBridgeDispatcher(
     private val activity: Activity,
-    private val bridgeExecutor: MiniAppBridgeExecutor
+    private val bridgeExecutor: MiniAppBridgeExecutor,
+    var allowScreenOrientation: Boolean
 ) {
+    private var isLocked = false
+    private val originalOrientation = activity.requestedOrientation
 
+    @Suppress("TooGenericExceptionCaught", "LongMethod")
     fun onScreenRequest(callbackObj: CallbackObj) {
-        try {
-            val requestAction = Gson().fromJson<Screen>(
-                callbackObj.param.toString(),
-                object : TypeToken<Screen>() {}.type
-            ).action
+        if (allowScreenOrientation) {
+            try {
+                val requestAction = Gson().fromJson<Screen>(
+                    callbackObj.param.toString(),
+                    object : TypeToken<Screen>() {}.type
+                ).action
 
-            when (requestAction) {
-                ScreenOrientation.LOCK_LANDSCAPE.value ->
-                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                ScreenOrientation.LOCK_PORTRAIT.value ->
-                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                ScreenOrientation.LOCK_RELEASE.value ->
-                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                when (requestAction) {
+                    ScreenOrientation.LOCK_LANDSCAPE.value -> {
+                        activity.requestedOrientation =
+                            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                        isLocked = true
+                    }
+                    ScreenOrientation.LOCK_PORTRAIT.value -> {
+                        activity.requestedOrientation =
+                            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                        isLocked = true
+                    }
+                    ScreenOrientation.LOCK_RELEASE.value -> releaseLock()
+                }
+                bridgeExecutor.postValue(callbackObj.id, SUCCESS)
+            } catch (e: Exception) {
+                bridgeExecutor.postError(callbackObj.id, "$ERR_SCREEN_ACTION ${e.message}")
             }
-            bridgeExecutor.postValue(callbackObj.id, SUCCESS)
-        } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "$ERR_SCREEN_ACTION ${e.message}")
         }
     }
 
-    private companion object {
-        const val ERR_SCREEN_ACTION = "Cannot request screen action:"
+    fun releaseLock() {
+        if (allowScreenOrientation && isLocked) {
+            activity.requestedOrientation = originalOrientation
+            isLocked = false
+        }
     }
 }

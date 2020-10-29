@@ -24,7 +24,7 @@ internal class MiniAppWebView(
     context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
-    miniAppMessageBridge: MiniAppMessageBridge,
+    val miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
@@ -71,6 +71,21 @@ internal class MiniAppWebView(
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        onResume()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        onPause()
+        if (!(context as Activity).isDestroyed) {
+            miniAppWebChromeClient.onWebViewDetach()
+            miniAppMessageBridge.onWebViewDetach()
+        }
     }
 
     fun destroyView() {

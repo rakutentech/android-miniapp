@@ -9,7 +9,6 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.ads.isAdMobProvided
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -21,8 +20,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 
-@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions", "LongMethod",
-"LargeClass", "ComplexMethod")
+@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -31,9 +29,10 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
+    private val adBridgeDispatcher = AdBridgeDispatcher()
+
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
-    private lateinit var adDisplayer: MiniAppAdDisplayer
-    private var isAdMobEnabled = false
+    private var allowScreenOrientation = false
 
     internal fun init(
         activity: Activity,
@@ -45,7 +44,8 @@ abstract class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.miniAppInfo = miniAppInfo
-        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor)
+        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
+        adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 
         if (this::userInfoBridgeDispatcher.isInitialized)
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
@@ -114,19 +114,18 @@ abstract class MiniAppMessageBridge {
             ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
-            ActionType.LOAD_AD.action -> onLoadAd(callbackObj.id, jsonStr)
-            ActionType.SHOW_AD.action -> onShowAd(callbackObj.id, jsonStr)
+            ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
+            ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
+            ActionType.GET_ACCESS_TOKEN.action ->
+                userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id, miniAppInfo.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
         }
     }
 
     /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
-    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) {
-        this.adDisplayer = adDisplayer
-        this.isAdMobEnabled = isAdMobProvided()
-    }
+    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) = adBridgeDispatcher.setAdMobDisplayer(adDisplayer)
 
     /**
      * Set implemented userInfoBridgeDispatcher.
@@ -242,93 +241,25 @@ abstract class MiniAppMessageBridge {
         bridgeExecutor.postValue(callbackId, jsonResult)
     }
 
-    private fun onLoadAd(callbackId: String, jsonStr: String) {
-        if (isAdMobEnabled) {
-            try {
-                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
-                val adObj = callbackObj.param
-
-                when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitialAd(
-                        adUnitId = adObj.adUnitId,
-                        onLoaded = { bridgeExecutor.postValue(callbackId, SUCCESS) },
-                        onFailed = { errMsg ->
-                            bridgeExecutor.postError(
-                                callbackId,
-                                "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
-                            )
-                        }
-                    )
-                    AdType.REWARDED.value -> adDisplayer.loadRewardedAd(
-                        adUnitId = adObj.adUnitId,
-                        onLoaded = { bridgeExecutor.postValue(callbackId, SUCCESS) },
-                        onFailed = { errMsg ->
-                            bridgeExecutor.postError(
-                                callbackId,
-                                "${ErrorBridgeMessage.ERR_LOAD_AD} $errMsg"
-                            )
-                        }
-                    )
-                }
-            } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_LOAD_AD} ${e.message}")
-            }
-        } else
-            bridgeExecutor.postError(callbackId,
-                "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    internal fun onWebViewDetach() {
+        screenBridgeDispatcher.releaseLock()
     }
 
-    private fun onShowAd(callbackId: String, jsonStr: String) {
-        if (isAdMobEnabled) {
-            try {
-                val callbackObj = Gson().fromJson(jsonStr, AdCallbackObj::class.java)
-                val adObj = callbackObj.param
-
-                when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitialAd(
-                        adUnitId = adObj.adUnitId,
-                        onClosed = { bridgeExecutor.postValue(callbackId, CLOSED) },
-                        onFailed = { errMsg ->
-                            bridgeExecutor.postError(
-                                callbackId,
-                                "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
-                            )
-                        }
-                    )
-                    AdType.REWARDED.value -> adDisplayer.showRewardedAd(
-                        adUnitId = adObj.adUnitId,
-                        onClosed = { reward ->
-                            if (reward == null)
-                                bridgeExecutor.postValue(callbackId, "null")
-                            else
-                                bridgeExecutor.postValue(callbackId, Gson().toJson(reward).toString())
-                        },
-                        onFailed = { errMsg ->
-                            bridgeExecutor.postError(
-                                callbackId,
-                                "${ErrorBridgeMessage.ERR_SHOW_AD} $errMsg"
-                            )
-                        }
-                    )
-                }
-            } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHOW_AD} ${e.message}")
-            }
-        } else
-            bridgeExecutor.postError(callbackId,
-                "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}")
+    /** Allow miniapp to change screen orientation. The default setting is false. */
+    fun allowScreenOrientation(isAllowed: Boolean) {
+        allowScreenOrientation = isAllowed
+        if (this::screenBridgeDispatcher.isInitialized)
+            screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
     }
 }
 
-internal class ErrorBridgeMessage {
-
-    companion object {
-        const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
-        const val ERR_UNIQUE_ID = "Cannot get unique id:"
-        const val ERR_REQ_PERMISSION = "Cannot request permission:"
-        const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-        const val ERR_SHARE_CONTENT = "Cannot share content:"
-        const val ERR_LOAD_AD = "Cannot load ad:"
-        const val ERR_SHOW_AD = "Cannot show ad:"
-    }
+internal object ErrorBridgeMessage {
+    const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
+    const val ERR_UNIQUE_ID = "Cannot get unique id:"
+    const val ERR_REQ_PERMISSION = "Cannot request permission:"
+    const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+    const val ERR_SHARE_CONTENT = "Cannot share content:"
+    const val ERR_LOAD_AD = "Cannot load ad:"
+    const val ERR_SHOW_AD = "Cannot show ad:"
+    const val ERR_SCREEN_ACTION = "Cannot request screen action:"
 }

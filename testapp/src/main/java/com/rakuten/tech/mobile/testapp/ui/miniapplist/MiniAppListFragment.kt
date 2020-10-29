@@ -26,7 +26,6 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
-import kotlinx.android.synthetic.main.mini_app_list_fragment.*
 import java.util.Locale
 
 import kotlin.collections.ArrayList
@@ -67,8 +66,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
 
     override fun onStart() {
         super.onStart()
-        swipeRefreshLayout.post {
-            swipeRefreshLayout.isRefreshing = true
+        binding.swipeRefreshLayout.post {
+            binding.swipeRefreshLayout.isRefreshing = true
             executeLoadingList()
         }
     }
@@ -79,7 +78,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
-                    swipeRefreshLayout.isRefreshing = false
+                    binding.swipeRefreshLayout.isRefreshing = false
                     addMiniAppList(it)
                     MiniAppListStore.instance.saveMiniAppList(it)
                 })
@@ -89,12 +88,12 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
                         updateEmptyView(list)
                     else {
                         addMiniAppList(list)
-                        swipeRefreshLayout.isRefreshing = false
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 })
             }
 
-        swipeRefreshLayout.setOnRefreshListener {
+        binding.swipeRefreshLayout.setOnRefreshListener {
             executeLoadingList()
             resetSearchBox()
         }
@@ -174,7 +173,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
             return true
 
         updateMiniAppListState(produceSearchResult(newText))
-        swipeRefreshLayout.isEnabled = newText.isNullOrEmpty()
+        binding.swipeRefreshLayout.isEnabled = newText.isNullOrEmpty()
 
         return true
     }
@@ -189,14 +188,14 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
     private fun resetSearchBox() {
         if (searchView.query.isNotEmpty() || !searchView.isIconified) {
             searchView.onActionViewCollapsed()
-            swipeRefreshLayout.isEnabled = true
+            binding.swipeRefreshLayout.isEnabled = true
         }
     }
 
     private fun updateEmptyView(collection: List<MiniAppInfo>) {
         if (collection.isEmpty())
-            emptyView.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.VISIBLE
         else
-            emptyView.visibility = View.GONE
+            binding.emptyView.visibility = View.GONE
     }
 }

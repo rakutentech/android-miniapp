@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
@@ -12,17 +14,18 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
-import kotlinx.android.synthetic.main.mini_app_input_activity.*
 
 class MiniAppInputActivity : MenuBaseActivity() {
 
+    private lateinit var binding: MiniAppInputActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.mini_app_input_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.mini_app_input_activity)
 
-        edtAppId.requestFocus()
-        validateAppId(edtAppId.text.toString())
-        edtAppId.addTextChangedListener(object: TextWatcher {
+        binding.edtAppId.requestFocus()
+        validateAppId(binding.edtAppId.text.toString())
+        binding.edtAppId.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -32,24 +35,24 @@ class MiniAppInputActivity : MenuBaseActivity() {
             }
         })
 
-        btnDisplay.setOnClickListener {
+        binding.btnDisplay.setOnClickListener {
             raceExecutor.run { display() }
         }
-        btnDisplayList.setOnClickListener {
+        binding.btnDisplayList.setOnClickListener {
             raceExecutor.run { launchActivity<MiniAppListActivity>() }
         }
     }
 
     private fun validateAppId(appId: String) {
         if (appId.isBlank())
-            btnDisplay.isEnabled = false
+            binding.btnDisplay.isEnabled = false
         else {
             if (appId.isInvalidUuid()) {
-                edtAppId.error = getString(R.string.error_invalid_input)
-                btnDisplay.isEnabled = false
+                binding.edtAppId.error = getString(R.string.error_invalid_input)
+                binding.btnDisplay.isEnabled = false
             } else {
-                edtAppId.error = null
-                btnDisplay.isEnabled = true
+                binding.edtAppId.error = null
+                binding.btnDisplay.isEnabled = true
             }
         }
     }
@@ -57,7 +60,7 @@ class MiniAppInputActivity : MenuBaseActivity() {
     private fun display() {
         MiniAppDisplayActivity.start(
             this,
-            edtAppId.text.toString().trim()
+            binding.edtAppId.text.toString().trim()
         )
     }
 
