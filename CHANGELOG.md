@@ -1,10 +1,16 @@
 ## CHANGELOG
 
-### 2.4.0
+### 2.X.X (In progress)
+**SDK**
+- **Feature:** Provide the access token to miniapp.
+
+### 2.4.0 (2020-10-30)
 **SDK**
 - **Feature:** Handle the screen orientation change request from miniapp.
-- **Feature:** Provide the access token to miniapp.
 - **Fix:** Clean up fullscreen view when exit miniapp. `MiniAppDisplay.destroyView` is mandatory for single activity architecture.
+
+**Sample App**
+- **Fix:** Disable pull to refresh while searching.
 
 ### 2.3.0 (2020-10-15)
 **SDK**
