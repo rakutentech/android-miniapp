@@ -197,9 +197,9 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..
         if (allowToken)
-            onSuccess(tokenData) // allow miniapp to get token and invoke success callback with TokenData value.
+            onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
         else
-            onError(message)    // reject miniapp to get token and invoke error callback with message.
+            onError(message)    // reject miniapp to get token and with message explanation.
     }
 }
 
