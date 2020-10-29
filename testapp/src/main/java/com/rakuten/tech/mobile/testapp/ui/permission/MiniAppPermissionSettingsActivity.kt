@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -12,9 +13,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.list_custom_permission.*
 
 class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActivity() {
 
@@ -22,6 +23,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
 
     private lateinit var permissionSettingsAdapter: MiniAppPermissionSettingsAdapter
     private lateinit var miniAppId: String
+    private lateinit var binding: ListCustomPermissionBinding
 
     companion object {
         private const val miniAppIdTag = "mini_app_id_tag"
@@ -37,7 +39,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
-        setContentView(R.layout.list_custom_permission)
+        binding = DataBindingUtil.setContentView(this, R.layout.list_custom_permission)
 
         renderScreen()
     }
@@ -65,9 +67,9 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
 
     private fun initAdapter() {
         permissionSettingsAdapter = MiniAppPermissionSettingsAdapter()
-        listCustomPermission.layoutManager = LinearLayoutManager(applicationContext)
-        listCustomPermission.adapter = permissionSettingsAdapter
-        listCustomPermission.addItemDecoration(
+        binding.listCustomPermission.layoutManager = LinearLayoutManager(applicationContext)
+        binding.listCustomPermission.adapter = permissionSettingsAdapter
+        binding.listCustomPermission.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
     }

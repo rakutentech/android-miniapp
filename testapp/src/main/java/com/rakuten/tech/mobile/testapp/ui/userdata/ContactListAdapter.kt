@@ -1,13 +1,11 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBinding
-import kotlinx.android.synthetic.main.item_list_contact.view.*
 
 class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
     ContactAdapterPresenter {
@@ -17,7 +15,7 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemListContactBinding.inflate(layoutInflater, parent, false)
 
-        return ViewHolder(binding.root)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -45,7 +43,7 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
 
     override fun provideContactEntries() = contactEntries
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: ItemListContactBinding) : RecyclerView.ViewHolder(itemView.root) {
         val contactName: AppCompatTextView = itemView.textContact
         val contactRemoveButton: ImageView = itemView.buttonRemoveContact
     }
