@@ -58,7 +58,8 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
 
         permissionSettingsAdapter.addPermissionList(
             namesForAdapter,
-            resultsForAdapter
+            resultsForAdapter,
+            arrayListOf()
         )
     }
 

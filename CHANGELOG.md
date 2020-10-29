@@ -1,7 +1,7 @@
 ## CHANGELOG
 
 ### 2.x.x (In progress)
-- Added `showCustomPermissionWindow` interface to show a default UI for managing custom permissions. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge).
+- Added `MiniAppDisplay.showCustomPermissionWindow` interface to show a default UI for managing custom permissions. 
 
 ### 2.4.0
 **SDK**

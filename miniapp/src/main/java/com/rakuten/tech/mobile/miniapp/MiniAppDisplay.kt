@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp
 import android.content.Context
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
 /**
@@ -50,11 +49,9 @@ interface MiniAppDisplay : LifecycleObserver {
      * Show default custom permissions UI to manage permission grant results.
      * @param miniAppId mini app id as the key to retrieve data from cache.
      * @param permissionsWithDescription a list of Pair includes MiniAppCustomPermissionType and description as String.
-     * @param callback to invoke the permission grant results for sending to the Mini App.
      */
     fun showCustomPermissionWindow(
         miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
     )
 }

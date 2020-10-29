@@ -14,7 +14,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
@@ -74,14 +73,12 @@ internal class RealMiniAppDisplay(
 
     override fun showCustomPermissionWindow(
         miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
     ) {
         if (this::miniAppCustomPermissionWindow.isInitialized)
             miniAppCustomPermissionWindow.displayPermissions(
                 miniAppId,
-                permissionsWithDescription,
-                callback
+                permissionsWithDescription
             )
     }
 

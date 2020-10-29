@@ -9,13 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
-import kotlinx.android.synthetic.main.item_list_custom_permission.view.*
+import kotlinx.android.synthetic.main.item_list_custom_permission.view.permissionDescription
+import kotlinx.android.synthetic.main.item_list_custom_permission.view.permissionSwitch
+import kotlinx.android.synthetic.main.item_list_custom_permission.view.permissionText
 
-class MiniAppPermissionSettingsAdapter :
-    RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
+class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
+    private var permissionDescriptions = ArrayList<String>()
     var permissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -41,13 +43,21 @@ class MiniAppPermissionSettingsAdapter :
                 )
             )
         }
+
+        if (permissionDescriptions.isNotEmpty())
+            holder.permissionDescription.text = permissionDescriptions[position]
+
+        if (holder.permissionDescription.text.isEmpty())
+            holder.permissionDescription.visibility = View.GONE
+        else holder.permissionDescription.visibility = View.VISIBLE
     }
 
     override fun getItemCount(): Int = permissionNames.size
 
     fun addPermissionList(
         names: ArrayList<MiniAppCustomPermissionType>,
-        results: ArrayList<MiniAppCustomPermissionResult>
+        results: ArrayList<MiniAppCustomPermissionResult>,
+        description: ArrayList<String>
     ) {
         permissionNames = names
         permissionToggles = results
@@ -57,11 +67,13 @@ class MiniAppPermissionSettingsAdapter :
                 Pair(permissionNames[position], permissionToggles[position])
             )
         }
+        permissionDescriptions = description
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val permissionName: TextView = itemView.permissionText
+        val permissionDescription: TextView = itemView.permissionDescription
         val permissionSwitch: SwitchCompat = itemView.permissionSwitch
     }
 

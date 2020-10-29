@@ -8,7 +8,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
@@ -63,16 +62,14 @@ class MiniAppDisplayViewModel constructor(
         else
             false
 
-    fun displayPermissions(
+    private fun displayPermissions(
         miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-        callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
+        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
     ) {
         if (::miniAppDisplay.isInitialized)
             miniAppDisplay.showCustomPermissionWindow(
                 miniAppId,
-                permissionsWithDescription,
-                callback
+                permissionsWithDescription
             )
     }
 }

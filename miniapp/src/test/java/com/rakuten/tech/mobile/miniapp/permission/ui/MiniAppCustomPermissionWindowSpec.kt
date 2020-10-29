@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.junit.Before
 import org.junit.Test
@@ -37,8 +36,6 @@ class MiniAppCustomPermissionWindowSpec {
             Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "dummy description"),
             Pair(MiniAppCustomPermissionType.CONTACT_LIST, "dummy description")
         )
-    private val dummyCallback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit =
-        {}
     private lateinit var cachedCustomPermission: MiniAppCustomPermission
 
     @Before
@@ -61,7 +58,7 @@ class MiniAppCustomPermissionWindowSpec {
         doReturn(permissionWithDescriptions).whenever(permissionWindow)
             .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions, dummyCallback)
+        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
         verify(permissionWindow).initDefaultWindow()
         verify(permissionWindow).prepareDataForAdapter(permissionWithDescriptions)
@@ -72,9 +69,9 @@ class MiniAppCustomPermissionWindowSpec {
         doReturn(permissionWithDescriptions).whenever(permissionWindow)
             .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions, dummyCallback)
+        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
-        verify(permissionWindow).addPermissionClickListeners(miniAppId, dummyCallback)
+        verify(permissionWindow).addPermissionClickListeners(miniAppId)
     }
 
     @Test
@@ -84,7 +81,7 @@ class MiniAppCustomPermissionWindowSpec {
         doReturn(permissionWithDescriptions).whenever(permissionWindow)
             .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions, dummyCallback)
+        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
         verify(mockDialog).show()
     }
@@ -96,11 +93,11 @@ class MiniAppCustomPermissionWindowSpec {
         doReturn(permissionWithDescriptions).whenever(permissionWindow)
             .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
-        permissionWindow.displayPermissions("", permissionWithDescriptions, dummyCallback)
+        permissionWindow.displayPermissions("", permissionWithDescriptions)
 
         verify(permissionWindow, times(0)).initDefaultWindow()
         verify(permissionWindow, times(0)).prepareDataForAdapter(permissionWithDescriptions)
-        verify(permissionWindow, times(0)).addPermissionClickListeners(miniAppId, dummyCallback)
+        verify(permissionWindow, times(0)).addPermissionClickListeners(miniAppId)
         verify(mockDialog, times(0)).show()
     }
 
