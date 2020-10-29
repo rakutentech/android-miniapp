@@ -25,6 +25,7 @@ import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
+import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.coroutines.launch
@@ -118,6 +119,8 @@ class SettingsMenuActivity : BaseActivity() {
         binding.buttonCustomPermissions.setOnClickListener {
             MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)
         }
+
+        binding.buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
 
         validateInputIDs()
     }

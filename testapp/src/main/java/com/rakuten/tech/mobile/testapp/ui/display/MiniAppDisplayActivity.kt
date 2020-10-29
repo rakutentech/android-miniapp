@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -18,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -155,6 +157,25 @@ class MiniAppDisplayActivity : BaseActivity() {
             override fun getUserName(): String = AppSettings.instance.profileName
 
             override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
+
+            override fun getAccessToken(
+                miniAppId: String,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                AlertDialog.Builder(this@MiniAppDisplayActivity)
+                    .setMessage("Allow $miniAppId to get access token?")
+                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
+                        onSuccess(AppSettings.instance.tokenData)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        onError("$miniAppId not allowed to get access token")
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+            }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
     }

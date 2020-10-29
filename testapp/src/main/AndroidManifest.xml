@@ -53,6 +53,9 @@
         <activity
           android:label="Permission Settings"
           android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity" />
+        <activity
+            android:label="@string/lb_access_token"
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
