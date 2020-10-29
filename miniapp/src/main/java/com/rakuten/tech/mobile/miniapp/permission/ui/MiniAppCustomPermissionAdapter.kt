@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
+import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
@@ -17,9 +18,16 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 internal class MiniAppCustomPermissionAdapter :
     RecyclerView.Adapter<MiniAppCustomPermissionAdapter.PermissionViewHolder?>() {
 
-    private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
-    private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
-    private var permissionDescription = ArrayList<String>()
+    @VisibleForTesting
+    var permissionNames = ArrayList<MiniAppCustomPermissionType>()
+
+    @VisibleForTesting
+    var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
+
+    @VisibleForTesting
+    var permissionDescriptions = ArrayList<String>()
+
+    @VisibleForTesting
     var permissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -38,7 +46,7 @@ internal class MiniAppCustomPermissionAdapter :
     fun addPermissionList(
         names: ArrayList<MiniAppCustomPermissionType>,
         results: ArrayList<MiniAppCustomPermissionResult>,
-        description: ArrayList<String>
+        descriptions: ArrayList<String>
     ) {
         permissionNames = names
         permissionToggles = results
@@ -48,7 +56,7 @@ internal class MiniAppCustomPermissionAdapter :
                 Pair(permissionNames[position], permissionToggles[position])
             )
         }
-        permissionDescription = description
+        permissionDescriptions = descriptions
         notifyDataSetChanged()
     }
 
@@ -62,9 +70,10 @@ internal class MiniAppCustomPermissionAdapter :
         val permissionSwitch: Switch = itemView.findViewById(R.id.permissionSwitch)
     }
 
-    private fun bindView(holder: PermissionViewHolder, position: Int) {
+    @VisibleForTesting
+    fun bindView(holder: PermissionViewHolder, position: Int) {
         holder.permissionName.text = parsePermissionName(permissionNames[position])
-        holder.permissionDescription.text = permissionDescription[position]
+        holder.permissionDescription.text = permissionDescriptions[position]
         holder.permissionSwitch.isChecked = permissionResultToChecked(permissionToggles[position])
 
         holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
@@ -77,7 +86,8 @@ internal class MiniAppCustomPermissionAdapter :
         }
     }
 
-    private fun parsePermissionName(type: MiniAppCustomPermissionType): String {
+    @VisibleForTesting
+    fun parsePermissionName(type: MiniAppCustomPermissionType): String {
         return when (type) {
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
             MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
@@ -86,14 +96,16 @@ internal class MiniAppCustomPermissionAdapter :
         }
     }
 
-    private fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {
+    @VisibleForTesting
+    fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {
         if (isChecked)
             return MiniAppCustomPermissionResult.ALLOWED
 
         return MiniAppCustomPermissionResult.DENIED
     }
 
-    private fun permissionResultToChecked(result: MiniAppCustomPermissionResult): Boolean {
+    @VisibleForTesting
+    fun permissionResultToChecked(result: MiniAppCustomPermissionResult): Boolean {
         if (result == MiniAppCustomPermissionResult.ALLOWED)
             return true
 
