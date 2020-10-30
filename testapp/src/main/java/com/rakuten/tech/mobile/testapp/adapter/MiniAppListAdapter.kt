@@ -17,7 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemFooterMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemSectionMiniappBinding
-import java.util.*
+import java.util.TreeSet
 
 class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: MiniAppList) :
     ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
