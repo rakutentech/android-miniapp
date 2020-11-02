@@ -44,7 +44,8 @@ abstract class MiniAppMessageBridge {
         this.miniAppInfo = miniAppInfo
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
-        this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        this.customPermissionBridgeDispatcher =
+            CustomPermissionBridgeDispatcher(bridgeExecutor, customPermissionCache, miniAppInfo.id)
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 

@@ -11,6 +11,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import kotlin.test.assertEquals
 
+@SuppressWarnings("LongMethod", "LargeClass")
 class CustomPermissionBridgeDispatcherSpec {
 
     private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher

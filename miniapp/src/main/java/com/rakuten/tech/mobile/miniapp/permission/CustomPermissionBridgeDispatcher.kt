@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 /**
  * A class to dispatch the bridge operations involved with custom permissions in this SDK.
  */
+@Suppress("TooGenericExceptionCaught")
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,

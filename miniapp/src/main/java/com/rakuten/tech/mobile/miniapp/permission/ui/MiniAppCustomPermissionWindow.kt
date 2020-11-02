@@ -24,6 +24,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * A class to show default custom permissions UI to manage permissions in this SDK.
  */
+@SuppressWarnings("LongMethod")
 internal class MiniAppCustomPermissionWindow(
     private val activity: Activity,
     private val customPermissionCache: MiniAppCustomPermissionCache
@@ -38,6 +39,7 @@ internal class MiniAppCustomPermissionWindow(
     private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
     private lateinit var customPermissionLayout: View
 
+    @SuppressWarnings("MagicNumber")
     fun displayPermissions(
         miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
@@ -59,7 +61,6 @@ internal class MiniAppCustomPermissionWindow(
 
                 // preview dialog
                 customPermissionAlertDialog.show()
-
             } else {
                 val toast =
                     Toast.makeText(
