@@ -1,0 +1,48 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+    <variable name="activity" type="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity" />
+  </data>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/small_8"
+      android:orientation="vertical"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <EditText
+          android:id="@+id/edtToken"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/small_4"
+          android:onTextChanged="@{(text, start, before, count) -> activity.setAccessToken(text)}"
+          android:hint="@string/lb_access_token"
+          android:imeOptions="actionDone"
+          android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <EditText
+          android:id="@+id/edtDateExpired"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/small_4"
+          android:hint="@string/lb_valid_until"
+          android:imeOptions="actionDone"
+          android:onClick="@{() -> activity.setExpiredDate()}"
+          android:focusable="false"
+          android:inputType="datetime" />
+    </com.google.android.material.textfield.TextInputLayout>
+  </LinearLayout>
+</layout>

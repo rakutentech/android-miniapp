@@ -5,10 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -19,12 +17,14 @@ import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
+import com.rakuten.tech.mobile.testapp.helper.showNormalDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
+import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.coroutines.launch
@@ -119,6 +119,8 @@ class SettingsMenuActivity : BaseActivity() {
             MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)
         }
 
+        binding.buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
+
         validateInputIDs()
     }
 
@@ -166,10 +168,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    val toast =
-                        Toast.makeText(this@SettingsMenuActivity, error.message, Toast.LENGTH_LONG)
-                    toast.setGravity(Gravity.BOTTOM, 0, 100)
-                    toast.show()
+                    showNormalDialog(this@SettingsMenuActivity, error.message.toString())
                 }
             }
         }

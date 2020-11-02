@@ -6,7 +6,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import java.util.UUID
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AppSettings private constructor(context: Context) {
 
@@ -65,6 +67,12 @@ class AppSettings private constructor(context: Context) {
             cache.profilePictureUrlBase64 = profilePictureUrlBase64
         }
 
+    var tokenData: TokenData
+        get() = cache.tokenData ?: TokenData("test_token", Date().time)
+        set(tokenData) {
+            cache.tokenData = tokenData
+        }
+
     var contactNames: ArrayList<String>
         get() = cache.contactNames ?: arrayListOf()
         set(contactNames) {
@@ -100,6 +108,7 @@ class AppSettings private constructor(context: Context) {
 
 private class Settings(context: Context) {
 
+    private val gson = Gson()
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.settings",
         Context.MODE_PRIVATE
@@ -143,6 +152,11 @@ private class Settings(context: Context) {
         set(profilePictureUrlBase64) = prefs.edit().putString(PROFILE_PICTURE_URL_BASE_64, profilePictureUrlBase64)
             .apply()
 
+    var tokenData: TokenData?
+        get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), TokenData::class.java)
+        set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
+            .apply()
+
     var contactNames: ArrayList<String>?
         get() = Gson().fromJson(
             prefs.getString(CONTACT_NAMES, null),
@@ -164,5 +178,6 @@ private class Settings(context: Context) {
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
         private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
         private const val CONTACT_NAMES = "contact_names"
+        private const val TOKEN_DATA = "token_data"
     }
 }

@@ -15,11 +15,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ProfileSettingsActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.MiniAppCoroutines
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -31,8 +29,6 @@ class ProfileSettingsActivity : BaseActivity() {
     private lateinit var profileUrl: String
     private lateinit var profileUrlBase64: String
     private lateinit var binding: ProfileSettingsActivityBinding
-    private val coroutines = MiniAppCoroutines()
-    private val encodePhotoUrlJob: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +94,7 @@ class ProfileSettingsActivity : BaseActivity() {
     }
 
     private fun encodeImageForMiniApp(profileUrl: String) {
-        coroutines.buildMainScope(encodePhotoUrlJob).launch {
+        launch {
             try {
                 withContext(IO) {
                     val uri = Uri.parse(profileUrl)
@@ -125,11 +121,6 @@ class ProfileSettingsActivity : BaseActivity() {
             .load(uri).apply(RequestOptions().circleCrop())
             .placeholder(R.drawable.r_logo)
             .into(binding.imageProfile as ImageView)
-    }
-
-    override fun onDestroy() {
-        encodePhotoUrlJob.cancel()
-        super.onDestroy()
     }
 
     companion object {
