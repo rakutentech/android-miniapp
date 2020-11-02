@@ -175,13 +175,12 @@ abstract class MiniAppMessageBridge {
 
     @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
-        // initialize required properties using JsonStr before execute operations
+        // initialize required properties using JsonStr before executing operations
         customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
 
         // check if there is any denied permission
         val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
 
-        // call requestCustomPermissions only for the denied custom permissions
         if (deniedPermissions.isNotEmpty()) {
             try {
                 requestCustomPermissions(

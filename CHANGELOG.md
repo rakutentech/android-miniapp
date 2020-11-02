@@ -1,7 +1,7 @@
 ## CHANGELOG
 
 ### 2.x.x (In progress)
-- Added default UI support for managing custom permissions when `requestCustomPermissions` hasn't been implemented in Host App. 
+- Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App. 
 
 ### 2.4.0
 **SDK**
