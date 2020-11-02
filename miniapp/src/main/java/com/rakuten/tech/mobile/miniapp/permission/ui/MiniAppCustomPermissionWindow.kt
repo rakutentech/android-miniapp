@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +27,8 @@ import kotlin.coroutines.CoroutineContext
 @SuppressWarnings("LongMethod")
 internal class MiniAppCustomPermissionWindow(
     private val activity: Activity,
-    private val customPermissionCache: MiniAppCustomPermissionCache
+    private val customPermissionCache: MiniAppCustomPermissionCache,
+    private val customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
@@ -44,7 +45,7 @@ internal class MiniAppCustomPermissionWindow(
         miniAppId: String,
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
     ) {
-        if (miniAppId.isEmpty())
+        if (miniAppId.isEmpty() || permissionsWithDescription.isEmpty())
             return
 
         val deniedPermissions = getDeniedPermissions(miniAppId, permissionsWithDescription)
@@ -57,7 +58,7 @@ internal class MiniAppCustomPermissionWindow(
                 prepareDataForAdapter(deniedPermissions)
 
                 // add action listeners
-                addPermissionClickListeners(miniAppId)
+                addPermissionClickListeners()
 
                 // preview dialog
                 customPermissionAlertDialog.show()
@@ -113,22 +114,15 @@ internal class MiniAppCustomPermissionWindow(
     }
 
     @VisibleForTesting
-    fun addPermissionClickListeners(
-        miniAppId: String
-    ) {
+    fun addPermissionClickListeners() {
         customPermissionLayout.findViewById<TextView>(R.id.permissionSave).setOnClickListener {
-            // store values in SDK cache
-            val miniAppCustomPermission = MiniAppCustomPermission(
-                miniAppId = miniAppId,
-                pairValues = customPermissionAdapter.permissionPairs
-            )
-            customPermissionCache.storePermissions(miniAppCustomPermission)
-
+            customPermissionBridgeDispatcher.sendHostAppCustomPermissions(customPermissionAdapter.permissionPairs)
             customPermissionAlertDialog.dismiss()
         }
 
         customPermissionLayout.findViewById<TextView>(R.id.permissionCloseWindow)
             .setOnClickListener {
+                customPermissionBridgeDispatcher.sendCachedCustomPermissions()
                 customPermissionAlertDialog.dismiss()
             }
     }

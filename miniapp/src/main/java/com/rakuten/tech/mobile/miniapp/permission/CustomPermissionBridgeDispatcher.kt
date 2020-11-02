@@ -18,7 +18,7 @@ internal class CustomPermissionBridgeDispatcher(
 ) {
 
     private var callbackObj: CustomPermissionCallbackObj? = null
-    private var permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
+    var permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
 
     /**
      * assign values to callbackObj and permissionsWithDescription properties using jsonStr data.
@@ -159,7 +159,7 @@ internal class CustomPermissionBridgeDispatcher(
         MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
     )
 
-    private companion object {
-        const val EMPTY_RESPONSE = "{}"
+    companion object {
+        private const val EMPTY_RESPONSE = "{}"
     }
 }

@@ -9,6 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -23,6 +25,8 @@ import kotlin.test.assertEquals
 @RunWith(AndroidJUnit4::class)
 class MiniAppCustomPermissionWindowSpec {
     private lateinit var permissionCache: MiniAppCustomPermissionCache
+    private lateinit var dispatcher: CustomPermissionBridgeDispatcher
+    private val bridgeExecutor: MiniAppBridgeExecutor = mock()
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
     private val mockContext: Context = mock()
@@ -49,7 +53,8 @@ class MiniAppCustomPermissionWindowSpec {
 
         ActivityScenario.launch(TestActivity::class.java).onActivity {
             activity = it
-            permissionWindow = spy(MiniAppCustomPermissionWindow(activity, permissionCache))
+            dispatcher = CustomPermissionBridgeDispatcher(bridgeExecutor, permissionCache, miniAppId)
+            permissionWindow = spy(MiniAppCustomPermissionWindow(activity, permissionCache, dispatcher))
         }
     }
 
@@ -71,7 +76,7 @@ class MiniAppCustomPermissionWindowSpec {
 
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
-        verify(permissionWindow).addPermissionClickListeners(miniAppId)
+        verify(permissionWindow).addPermissionClickListeners()
     }
 
     @Test
@@ -97,7 +102,23 @@ class MiniAppCustomPermissionWindowSpec {
 
         verify(permissionWindow, times(0)).initDefaultWindow()
         verify(permissionWindow, times(0)).prepareDataForAdapter(permissionWithDescriptions)
-        verify(permissionWindow, times(0)).addPermissionClickListeners(miniAppId)
+        verify(permissionWindow, times(0)).addPermissionClickListeners()
+        verify(mockDialog, times(0)).show()
+    }
+
+    @Test
+    fun `should not init anything while permissions are empty`() {
+        val mockDialog: AlertDialog = mock()
+        val emptyPermissions: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
+        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+        doReturn(permissionWithDescriptions).whenever(permissionWindow)
+            .getDeniedPermissions(miniAppId, emptyPermissions)
+
+        permissionWindow.displayPermissions(miniAppId, emptyPermissions)
+
+        verify(permissionWindow, times(0)).initDefaultWindow()
+        verify(permissionWindow, times(0)).prepareDataForAdapter(emptyPermissions)
+        verify(permissionWindow, times(0)).addPermissionClickListeners()
         verify(mockDialog, times(0)).show()
     }
 

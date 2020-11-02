@@ -164,7 +164,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
 @RunWith(AndroidJUnit4::class)
 class ShareContentBridgeSpec : BridgeCommon() {
-    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+    private val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
     fun setupShareInfo() {

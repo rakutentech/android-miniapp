@@ -11,6 +11,7 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -18,14 +19,16 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
-@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions")
+@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
+    private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
@@ -44,8 +47,17 @@ abstract class MiniAppMessageBridge {
         this.miniAppInfo = miniAppInfo
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
-        this.customPermissionBridgeDispatcher =
-            CustomPermissionBridgeDispatcher(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
+            bridgeExecutor,
+            customPermissionCache,
+            miniAppInfo.id
+        )
+        this.customPermissionWindow = MiniAppCustomPermissionWindow(
+            activity,
+            customPermissionCache,
+            customPermissionBridgeDispatcher
+        )
+
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 
@@ -76,10 +88,7 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException(
-            "The `MiniAppMessageBridge.requestCustomPermissions`" +
-                    " method has not been implemented by the Host App."
-        )
+        throw MiniAppSdkException(NO_IMPLEMENT_CUSTOM_PERMISSION)
     }
 
     /**
@@ -168,22 +177,31 @@ abstract class MiniAppMessageBridge {
     @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
         // initialize required properties using JsonStr before execute operations
+
         customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
 
-        // check if there is any denied permission
-        val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
+        try {
+            // check if there is any denied permission
+            val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
 
-        // call requestCustomPermissions only for the denied custom permissions
-        if (deniedPermissions.isNotEmpty()) {
-            requestCustomPermissions(
-                deniedPermissions
-            ) { permissionsWithResult ->
-                customPermissionBridgeDispatcher.sendHostAppCustomPermissions(
-                    permissionsWithResult
-                )
+            // call requestCustomPermissions only for the denied custom permissions
+            if (deniedPermissions.isNotEmpty()) {
+                requestCustomPermissions(
+                    deniedPermissions
+                ) { permissionsWithResult ->
+                    customPermissionBridgeDispatcher.sendHostAppCustomPermissions(
+                        permissionsWithResult
+                    )
+                }
+            } else {
+                customPermissionBridgeDispatcher.sendCachedCustomPermissions()
             }
-        } else {
-            customPermissionBridgeDispatcher.sendCachedCustomPermissions()
+        } catch (e: Exception) {
+            if (e.message.toString() == NO_IMPLEMENT_CUSTOM_PERMISSION)
+                customPermissionWindow.displayPermissions(
+                    miniAppInfo.id,
+                    customPermissionBridgeDispatcher.permissionsWithDescription
+                )
         }
     }
 
@@ -231,6 +249,9 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_PERMISSION = "Cannot request permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+    const val NO_IMPLEMENT_CUSTOM_PERMISSION =
+        "The `MiniAppMessageBridge.requestCustomPermissions`" +
+                " method has not been implemented by the Host App."
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"

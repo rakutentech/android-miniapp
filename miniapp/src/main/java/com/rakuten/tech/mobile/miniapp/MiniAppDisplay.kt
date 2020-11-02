@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp
 import android.content.Context
 import android.view.View
 import androidx.lifecycle.LifecycleObserver
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
 /**
  * This represents the contract by which the host app can interact with the
@@ -44,14 +43,4 @@ interface MiniAppDisplay : LifecycleObserver {
      * Navigates one level forward from current position, in the call hierarchy, if possible.
      */
     fun navigateForward(): Boolean
-
-    /**
-     * Show default custom permissions UI to manage permission grant results.
-     * @param miniAppId mini app id as the key to retrieve data from cache.
-     * @param permissionsWithDescription a list of Pair includes MiniAppCustomPermissionType and description as String.
-     */
-    fun showCustomPermissionWindow(
-        miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
-    )
 }
