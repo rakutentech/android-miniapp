@@ -18,7 +18,7 @@ internal class CustomPermissionBridgeDispatcher(
 ) {
 
     private var callbackObj: CustomPermissionCallbackObj? = null
-    var permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
+    private var permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
 
     /**
      * assign values to callbackObj and permissionsWithDescription properties using jsonStr data.

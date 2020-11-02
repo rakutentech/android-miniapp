@@ -1,11 +1,9 @@
 package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.app.Activity
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +24,6 @@ import kotlin.coroutines.CoroutineContext
 @SuppressWarnings("LongMethod")
 internal class MiniAppCustomPermissionWindow(
     private val activity: Activity,
-    private val customPermissionCache: MiniAppCustomPermissionCache,
     private val customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
 ) : CoroutineScope {
 
@@ -43,12 +39,10 @@ internal class MiniAppCustomPermissionWindow(
     @SuppressWarnings("MagicNumber")
     fun displayPermissions(
         miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
+        deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>
     ) {
-        if (miniAppId.isEmpty() || permissionsWithDescription.isEmpty())
+        if (miniAppId.isEmpty())
             return
-
-        val deniedPermissions = getDeniedPermissions(miniAppId, permissionsWithDescription)
 
         launch {
             // show permission default UI if there is any denied permission
@@ -62,15 +56,6 @@ internal class MiniAppCustomPermissionWindow(
 
                 // preview dialog
                 customPermissionAlertDialog.show()
-            } else {
-                val toast =
-                    Toast.makeText(
-                        activity,
-                        "Requested permissions has been granted!",
-                        Toast.LENGTH_LONG
-                    )
-                toast.setGravity(Gravity.BOTTOM, 0, 100)
-                toast.show()
             }
         }
     }
@@ -125,19 +110,5 @@ internal class MiniAppCustomPermissionWindow(
                 customPermissionBridgeDispatcher.sendCachedCustomPermissions()
                 customPermissionAlertDialog.dismiss()
             }
-    }
-
-    @VisibleForTesting
-    fun getCachedList(miniAppId: String) =
-        customPermissionCache.readPermissions(miniAppId).pairValues
-
-    @VisibleForTesting
-    fun getDeniedPermissions(
-        miniAppId: String,
-        permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>
-    ) = permissionsWithDescription.filter { (first) ->
-        getCachedList(miniAppId).find {
-            it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
-        } != null
     }
 }

@@ -54,7 +54,6 @@ abstract class MiniAppMessageBridge {
         )
         this.customPermissionWindow = MiniAppCustomPermissionWindow(
             activity,
-            customPermissionCache,
             customPermissionBridgeDispatcher
         )
 
@@ -177,15 +176,14 @@ abstract class MiniAppMessageBridge {
     @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
         // initialize required properties using JsonStr before execute operations
-
         customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
 
-        try {
-            // check if there is any denied permission
-            val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
+        // check if there is any denied permission
+        val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
 
-            // call requestCustomPermissions only for the denied custom permissions
-            if (deniedPermissions.isNotEmpty()) {
+        // call requestCustomPermissions only for the denied custom permissions
+        if (deniedPermissions.isNotEmpty()) {
+            try {
                 requestCustomPermissions(
                     deniedPermissions
                 ) { permissionsWithResult ->
@@ -193,15 +191,16 @@ abstract class MiniAppMessageBridge {
                         permissionsWithResult
                     )
                 }
-            } else {
-                customPermissionBridgeDispatcher.sendCachedCustomPermissions()
+            } catch (e: Exception) {
+                if (e.message.toString() == NO_IMPLEMENT_CUSTOM_PERMISSION) {
+                    customPermissionWindow.displayPermissions(
+                        miniAppInfo.id,
+                        deniedPermissions
+                    )
+                }
             }
-        } catch (e: Exception) {
-            if (e.message.toString() == NO_IMPLEMENT_CUSTOM_PERMISSION)
-                customPermissionWindow.displayPermissions(
-                    miniAppInfo.id,
-                    customPermissionBridgeDispatcher.permissionsWithDescription
-                )
+        } else {
+            customPermissionBridgeDispatcher.sendCachedCustomPermissions()
         }
     }
 

@@ -20,7 +20,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
-import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class MiniAppCustomPermissionWindowSpec {
@@ -53,16 +52,14 @@ class MiniAppCustomPermissionWindowSpec {
 
         ActivityScenario.launch(TestActivity::class.java).onActivity {
             activity = it
-            dispatcher = CustomPermissionBridgeDispatcher(bridgeExecutor, permissionCache, miniAppId)
-            permissionWindow = spy(MiniAppCustomPermissionWindow(activity, permissionCache, dispatcher))
+            dispatcher =
+                CustomPermissionBridgeDispatcher(bridgeExecutor, permissionCache, miniAppId)
+            permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         }
     }
 
     @Test
     fun `should init default view with preparing data when trying to display permissions`() {
-        doReturn(permissionWithDescriptions).whenever(permissionWindow)
-            .getDeniedPermissions(miniAppId, permissionWithDescriptions)
-
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
         verify(permissionWindow).initDefaultWindow()
@@ -71,9 +68,6 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `should add click listeners when trying to display permissions`() {
-        doReturn(permissionWithDescriptions).whenever(permissionWindow)
-            .getDeniedPermissions(miniAppId, permissionWithDescriptions)
-
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
         verify(permissionWindow).addPermissionClickListeners()
@@ -83,8 +77,6 @@ class MiniAppCustomPermissionWindowSpec {
     fun `should show dialog when trying to display permissions`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(permissionWithDescriptions).whenever(permissionWindow)
-            .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
@@ -95,8 +87,6 @@ class MiniAppCustomPermissionWindowSpec {
     fun `should not init anything while miniAppId is empty`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(permissionWithDescriptions).whenever(permissionWindow)
-            .getDeniedPermissions(miniAppId, permissionWithDescriptions)
 
         permissionWindow.displayPermissions("", permissionWithDescriptions)
 
@@ -111,8 +101,6 @@ class MiniAppCustomPermissionWindowSpec {
         val mockDialog: AlertDialog = mock()
         val emptyPermissions: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(permissionWithDescriptions).whenever(permissionWindow)
-            .getDeniedPermissions(miniAppId, emptyPermissions)
 
         permissionWindow.displayPermissions(miniAppId, emptyPermissions)
 
@@ -120,26 +108,5 @@ class MiniAppCustomPermissionWindowSpec {
         verify(permissionWindow, times(0)).prepareDataForAdapter(emptyPermissions)
         verify(permissionWindow, times(0)).addPermissionClickListeners()
         verify(mockDialog, times(0)).show()
-    }
-
-    @Test
-    fun `getCachedList should be the equal to the original pairs stored in cache`() {
-        val actual = permissionWindow.getCachedList(miniAppId)
-        val expected = permissionCache.readPermissions(miniAppId).pairValues
-
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `getDeniedPermissions should be the equal to the original pairs stored in cache`() {
-        val expected =
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, "dummy description"),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "dummy description"),
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "dummy description")
-            )
-        val actual = permissionWindow.getDeniedPermissions(miniAppId, permissionWithDescriptions)
-
-        assertEquals(expected, actual)
     }
 }
