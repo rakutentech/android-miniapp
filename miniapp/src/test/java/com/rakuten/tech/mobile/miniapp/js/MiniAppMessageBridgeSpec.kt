@@ -40,13 +40,6 @@ open class BridgeCommon {
                 onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
             }
 
-            override fun requestCustomPermissions(
-                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-            ) {
-                onRequestCustomPermissionsResult(TEST_CALLBACK_ID, TEST_CUSTOM_PERMISSION_RESULT)
-            }
-
             override fun shareContent(
                 content: String,
                 callback: (isSuccess: Boolean, message: String?) -> Unit
@@ -98,15 +91,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
-    private val customPermissionCallbackObj = CustomPermissionCallbackObj(
-        action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
-        param = CustomPermission(
-            listOf(CustomPermissionObj(MiniAppCustomPermissionType.USER_NAME.type, ""))
-        ),
-        id = TEST_CALLBACK_ID
-    )
-    private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
-
     @Before
     fun setup() {
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
@@ -114,7 +98,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
     }
 
@@ -136,7 +120,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
 
         miniAppBridge.postMessage(permissionJsonStr)
@@ -170,45 +154,11 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
-    }
-
-    @Test
-    fun `postError should be called when requestCustomPermissions hasn't been implemented`() {
-        val errMsg =
-            "Cannot request custom permissions: The `MiniAppMessageBridge.requestCustomPermissions`" +
-                    " method has not been implemented by the Host App."
-        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            miniAppInfo = mock()
-        )
-        miniAppBridge.postMessage(customPermissionJsonStr)
-
-        verify(bridgeExecutor, times(1)).postError(customPermissionCallbackObj.id, errMsg)
-    }
-
-    @Test
-    fun `postValue should be called when can request custom permission`() {
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            miniAppInfo = mock()
-        )
-
-        miniAppBridge.postMessage(customPermissionJsonStr)
-
-        verify(bridgeExecutor, times(1))
-            .postValue(customPermissionCallbackObj.id, TEST_CUSTOM_PERMISSION_RESULT)
     }
 }
 
@@ -223,7 +173,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
     }
 
@@ -248,7 +198,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
-                miniAppInfo = mock()
+                miniAppInfo = TEST_MA
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -267,7 +217,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -316,7 +266,7 @@ class AdBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
         return miniAppBridge
@@ -364,7 +314,7 @@ class AdBridgeSpec : BridgeCommon() {
 
 @RunWith(AndroidJUnit4::class)
 class ScreenBridgeSpec : BridgeCommon() {
-    val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+    private val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
 
     @Before
     fun setupScreenBridgeDispatcher() {
@@ -374,7 +324,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
     }
 
@@ -395,7 +345,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
-                miniAppInfo = mock()
+                miniAppInfo = TEST_MA
             )
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))

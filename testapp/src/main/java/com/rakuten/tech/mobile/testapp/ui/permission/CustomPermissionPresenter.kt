@@ -5,15 +5,11 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class CustomPermissionPresenter(private val miniapp: MiniApp) {
-
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
+class CustomPermissionPresenter {
 
     fun executeCustomPermissionsCallback(
         context: Context,
@@ -24,23 +20,13 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
         if (miniAppId.isEmpty())
             return
 
-        // get cached data from SDK
-        val cachedList = miniapp.getCustomPermissions(miniAppId).pairValues
-
-        // prepare data for adapter to check if there is any denied permission
-        val permissionsForAdapter = permissionsWithDescription.filter { (first) ->
-            cachedList.find {
-                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
-            } != null
-        }
-
-        // show dialog if there is any denied permission
-        if (permissionsForAdapter.isNotEmpty()) {
+        // show dialog if permissions are not empty sent by the SDK
+        if (permissionsWithDescription.isNotEmpty()) {
             val adapter = MiniAppPermissionSettingsAdapter()
             val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
             val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
             val descriptionForAdapter: ArrayList<String> = arrayListOf()
-            permissionsForAdapter.forEach {
+            permissionsWithDescription.forEach {
                 namesForAdapter.add(it.first)
                 descriptionForAdapter.add(it.second)
                 resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
@@ -57,8 +43,6 @@ class CustomPermissionPresenter(private val miniapp: MiniApp) {
                     callback.invoke(adapter.permissionPairs)
                 })
             }.show()
-        } else {
-            callback.invoke(cachedList)
         }
     }
 
