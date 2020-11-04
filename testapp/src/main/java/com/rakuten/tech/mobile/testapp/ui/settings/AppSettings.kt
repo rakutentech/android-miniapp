@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import com.rakuten.tech.mobile.miniapp.js.userinfo.AccessTokenData
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -67,10 +67,10 @@ class AppSettings private constructor(context: Context) {
             cache.profilePictureUrlBase64 = profilePictureUrlBase64
         }
 
-    var tokenData: TokenData
-        get() = cache.tokenData ?: TokenData("test_token", Date().time)
-        set(tokenData) {
-            cache.tokenData = tokenData
+    var accessTokenData: AccessTokenData
+        get() = cache.accessTokenData ?: AccessTokenData("test_token", Date().time)
+        set(accessTokenData) {
+            cache.accessTokenData = accessTokenData
         }
 
     var contactNames: ArrayList<String>
@@ -152,8 +152,8 @@ private class Settings(context: Context) {
         set(profilePictureUrlBase64) = prefs.edit().putString(PROFILE_PICTURE_URL_BASE_64, profilePictureUrlBase64)
             .apply()
 
-    var tokenData: TokenData?
-        get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), TokenData::class.java)
+    var accessTokenData: AccessTokenData?
+        get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), AccessTokenData::class.java)
         set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
             .apply()
 

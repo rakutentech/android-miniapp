@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 
 /** Access token object for miniapp. */
 @Keep
-data class TokenData(
+data class AccessTokenData(
     val token: String,
     val validUntil: Long
 )
