@@ -35,10 +35,13 @@ abstract class MiniApp internal constructor() {
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app
-     * @throws MiniAppSdkException when there is some issue during fetching,
+     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
+     * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
+     * server but has no published versions
+     * @throws [MiniAppSdkException] when there is any other issue during fetching,
      * downloading or creating the view.
      */
-    @Throws(MiniAppSdkException::class)
+    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge
@@ -49,7 +52,7 @@ abstract class MiniApp internal constructor() {
      * Use this to control external url loader.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      */
-    @Throws(MiniAppSdkException::class)
+    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -59,9 +62,12 @@ abstract class MiniApp internal constructor() {
     /**
      * Fetches meta data information of a mini app.
      * @return [MiniAppInfo] for the provided appId of a mini app
-     * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
+     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
+     * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
+     * server but has no published versions
+     * @throws [MiniAppSdkException] when fetching fails from the BE server for any other reason.
      */
-    @Throws(MiniAppSdkException::class)
+    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**

@@ -102,8 +102,9 @@ open class ApiClientSpec {
         apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
     }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `fetchInfo should throw MiniAppSdkException when the API returns zero items`() = runBlockingTest {
+    @Test(expected = MiniAppHasNoPublishedVersionException::class)
+    fun `fetchInfo should throw MiniAppHasNoPublishedVersionException when the API returns zero items`() =
+            runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
         When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall

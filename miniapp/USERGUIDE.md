@@ -242,6 +242,11 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
 **Note:** Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
 
+**Note:** There are several different types of exceptions which could be thrown by `MiniApp.create`, but all are sub-classes of `MiniAppSdkException`.
+You can handle each exception type differently if you would like different behavior for different cases.
+For example you may wish to display a different error message when the server contains no published versions of a mini app.
+See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
+
 ## Advanced
 
 ### #1 Clearing up mini app display

@@ -171,6 +171,16 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         executor.executeRequest(request)
     }
 
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `should throw MiniAppNotFoundException when the server returns 404`() = runBlockingTest {
+        mockServer.enqueue(
+            MockResponse().setResponseCode(404)
+        )
+
+        createRequestExecutor()
+            .executeRequest(createApi().fetch())
+    }
+
     private val standardErrorBody = { code: Int, message: String ->
         """
             {
