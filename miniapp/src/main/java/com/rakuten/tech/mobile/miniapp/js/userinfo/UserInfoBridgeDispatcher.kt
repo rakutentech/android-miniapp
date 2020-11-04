@@ -29,7 +29,7 @@ abstract class UserInfoBridgeDispatcher {
     /** Get access token from host app. **/
     open fun getAccessToken(
         miniAppId: String,
-        onSuccess: (accessTokenData: AccessTokenData) -> Unit,
+        onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
@@ -97,8 +97,8 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetAccessToken(callbackId: String) = try {
-        val successCallback = { accessAccessToken: AccessTokenData ->
-            bridgeExecutor.postValue(callbackId, Gson().toJson(accessAccessToken))
+        val successCallback = { accessToken: TokenData ->
+            bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
         }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")

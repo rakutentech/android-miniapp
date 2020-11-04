@@ -190,14 +190,14 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
     override fun getAccessToken(
         miniAppId: String,
-        onSuccess: (accessTokenData: AccessTokenData) -> Unit,
+        onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ){
         var allowToken: Boolean = false
         // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..
         if (allowToken)
-            onSuccess(accessTokenData) // allow miniapp to get token and return AccessTokenData value.
+            onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
         else
             onError(message)    // reject miniapp to get token and with message explanation.
     }

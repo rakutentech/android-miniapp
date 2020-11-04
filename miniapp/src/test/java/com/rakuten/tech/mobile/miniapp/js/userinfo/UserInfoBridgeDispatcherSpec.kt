@@ -200,11 +200,11 @@ class UserInfoBridgeDispatcherSpec {
     /** end region */
 
     /** start region: access token */
-    private val testToken = AccessTokenData("test_token", 0)
+    private val testToken = TokenData("test_token", 0)
     private fun createUserInfoImpl(canGetToken: Boolean) = object : UserInfoBridgeDispatcher() {
         override fun getAccessToken(
             miniAppId: String,
-            onSuccess: (accessTokenData: AccessTokenData) -> Unit,
+            onSuccess: (tokenData: TokenData) -> Unit,
             onError: (message: String) -> Unit
         ) {
             if (canGetToken)

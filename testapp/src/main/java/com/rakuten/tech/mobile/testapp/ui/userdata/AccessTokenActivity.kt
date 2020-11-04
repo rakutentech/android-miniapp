@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.js.userinfo.AccessTokenData
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.AccessTokenSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.parseDateToString
@@ -33,7 +33,7 @@ class AccessTokenActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
-        val tokenData = settings.accessTokenData
+        val tokenData = settings.tokenData
         accessToken = tokenData.token
         expiredDate = tokenData.validUntil
 
@@ -82,7 +82,7 @@ class AccessTokenActivity : BaseActivity() {
     }
 
     private fun update() {
-        settings.accessTokenData = AccessTokenData(accessToken, expiredDate)
+        settings.tokenData = TokenData(accessToken, expiredDate)
         finish()
     }
 

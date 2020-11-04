@@ -104,22 +104,27 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    /** Handle the message from external. **/
+    @SuppressWarnings("UndocumentedPublicFunction", "LongMethod")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
 
-        when (callbackObj.action) {
-            ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
-            ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
-            ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
-            ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
-            ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
-            ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
-            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
-            ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
+        try {
+            when (callbackObj.action) {
+                ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
+                ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
+                ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
+                ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
+                ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
+                ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
+                ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
+                ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
+                ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
+                ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
+            }
+        } catch (e: UninitializedPropertyAccessException) {
+            if (this::bridgeExecutor.isInitialized)
+                e.message?.let { bridgeExecutor.postError(callbackObj.id, it) }
         }
     }
 
