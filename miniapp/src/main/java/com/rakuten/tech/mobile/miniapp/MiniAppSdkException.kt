@@ -13,6 +13,12 @@ open class MiniAppSdkException(message: String, cause: Throwable?) : Exception(m
     constructor(message: String) : this(message, null)
 }
 
+/**
+ * Exception which is thrown when HostApp doesn't implement requestCustomPermissions interface.
+ */
+internal class CustomPermissionsNotImplementedException(errorMessage: String) :
+    MiniAppSdkException(errorMessage)
+
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 
     constructor(e: Exception) : this("Found some problem, ${e.message}", e)

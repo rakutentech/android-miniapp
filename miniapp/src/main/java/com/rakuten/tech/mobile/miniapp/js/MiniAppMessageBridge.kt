@@ -6,19 +6,19 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
 @Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
@@ -87,7 +87,7 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException(NO_IMPLEMENT_CUSTOM_PERMISSION)
+        throw CustomPermissionsNotImplementedException(NO_IMPLEMENT_CUSTOM_PERMISSION)
     }
 
     /**
@@ -175,7 +175,7 @@ abstract class MiniAppMessageBridge {
 
     @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
-        // initialize required properties using JsonStr before executing operations
+        // initialize required properties using jsonStr before executing operations
         customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
 
         // check if there is any denied permission
@@ -190,13 +190,10 @@ abstract class MiniAppMessageBridge {
                         permissionsWithResult
                     )
                 }
+            } catch (e: CustomPermissionsNotImplementedException) {
+                customPermissionWindow.displayPermissions(miniAppInfo.id, deniedPermissions)
             } catch (e: Exception) {
-                if (e.message.toString() == NO_IMPLEMENT_CUSTOM_PERMISSION) {
-                    customPermissionWindow.displayPermissions(
-                        miniAppInfo.id,
-                        deniedPermissions
-                    )
-                }
+                customPermissionBridgeDispatcher.postCustomPermissionError(e.message.toString())
             }
         } else {
             customPermissionBridgeDispatcher.sendCachedCustomPermissions()
