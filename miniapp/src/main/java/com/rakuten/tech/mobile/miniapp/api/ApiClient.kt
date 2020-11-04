@@ -2,8 +2,10 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
@@ -67,7 +69,7 @@ internal class ApiClient @VisibleForTesting constructor(
         if (info.isNotEmpty()) {
             return info.first()
         } else {
-            throw MiniAppSdkException("Server returned no info for the Mini App Id: $appId")
+            throw MiniAppHasNoPublishedVersionException(appId)
         }
     }
 
@@ -105,12 +107,13 @@ internal class RetrofitRequestExecutor(
             }
             else -> throw exceptionForHttpError<T>(response)
         }
-    } catch (error: UnknownHostException) {
-        throw MiniAppNetException(error)
-    } catch (error: SocketTimeoutException) {
-        throw MiniAppNetException(error)
-    } catch (error: Exception) { // when response is not Type T or malformed JSON is received
-        throw MiniAppSdkException(error)
+    } catch (error: Exception) {
+        when (error) {
+            is UnknownHostException,
+            is SocketTimeoutException -> throw MiniAppNetException(error)
+            is MiniAppSdkException -> throw error
+            else -> throw MiniAppSdkException(error) // when response is not Type T or malformed JSON is received
+        }
     }
 
     @Throws(MiniAppSdkException::class)
@@ -124,6 +127,7 @@ internal class RetrofitRequestExecutor(
                     response, errorData, createErrorConvertor(retrofit)
                 )
             )
+            404 -> throw MiniAppNotFoundException(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConvertor(retrofit)
