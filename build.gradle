@@ -7,6 +7,7 @@ buildscript {
     ext.androidx_lifecycle = '2.2.0'
     ext.androidx_crypto = '1.0.0-rc03'
     ext.androidx_test_ext = '1.1.2-rc01'
+    ext.androidx_activity = '1.2.0-alpha04'
     ext.detekt = '1.1.1'
     ext.dokka_version = '0.10.0'
     ext.glide = '4.11.0'

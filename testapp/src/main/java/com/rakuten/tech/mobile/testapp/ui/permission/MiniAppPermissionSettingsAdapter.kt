@@ -25,7 +25,7 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = toReadable(permissionNames[position])
+        holder.permissionName.text = toReadableName(permissionNames[position])
         holder.permissionSwitch.isChecked =
             permissionResultToChecked(permissionToggles[position])
 
@@ -71,15 +71,6 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
         val permissionName: TextView = itemView.permissionText
         val permissionDescription: TextView = itemView.permissionDescription
         val permissionSwitch: SwitchCompat = itemView.permissionSwitch
-    }
-
-    private fun toReadable(type: MiniAppCustomPermissionType): String {
-        return when (type) {
-            MiniAppCustomPermissionType.USER_NAME -> "User Name"
-            MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
-            MiniAppCustomPermissionType.PROFILE_PHOTO -> "Profile Photo"
-            else -> "Unknown"
-        }
     }
 
     private fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {
