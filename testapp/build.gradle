@@ -106,6 +106,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_lifecycle"
+    implementation "androidx.activity:activity:$androidx_activity"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson"
