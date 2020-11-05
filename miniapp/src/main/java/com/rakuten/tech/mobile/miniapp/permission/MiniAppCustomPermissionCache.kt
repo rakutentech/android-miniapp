@@ -25,15 +25,24 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      */
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
         if (prefs.contains(miniAppId)) {
+            var miniAppCustomPermission: MiniAppCustomPermission? = null
             return try {
-                Gson().fromJson(
+                val oldValues: MiniAppCustomPermission = Gson().fromJson(
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
+                val newValues = getNewPermissions(miniAppId, oldValues.pairValues)
+                if (newValues.isNotEmpty()) {
+                    miniAppCustomPermission =
+                        MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
+                }
+                miniAppCustomPermission!!
             } catch (e: Exception) {
                 defaultDeniedList(miniAppId)
             }
         }
+
+        // TODO: if not stored, then store it and return. No need to return any unstored default list
         return defaultDeniedList(miniAppId)
     }
 
@@ -53,12 +62,13 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         }
 
         try {
-            val jsonToStore: String = Gson().toJson(
-                MiniAppCustomPermission(
-                    miniAppCustomPermission.miniAppId,
-                    prepareAllPermissionsToStore(cached, supplied)
+            val miniAppId = miniAppCustomPermission.miniAppId
+            val allPermissions =
+                prepareSuppliedPermissionsToStore(cached, supplied) + getNewPermissions(
+                    miniAppId,
+                    supplied
                 )
-            )
+            val jsonToStore: String = Gson().toJson(MiniAppCustomPermission(miniAppId, allPermissions))
             prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
         } catch (e: Exception) {
             e.message.toString()
@@ -70,7 +80,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * custom permissions with replacing old grant results with new grant results.
      */
     @VisibleForTesting
-    internal fun prepareAllPermissionsToStore(
+    fun prepareSuppliedPermissionsToStore(
         cached: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
@@ -78,11 +88,26 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         combined.removeAll { (first) ->
             first.type in supplied.groupBy { it.first.type }
         }
+
         return combined + supplied
     }
 
+    private fun getNewPermissions(
+        miniAppId: String,
+        supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        val combined = (defaultDeniedList(miniAppId).pairValues + supplied).toMutableList()
+        combined.removeAll { (first) ->
+            first.type in supplied.groupBy { it.first.type }
+        }
+        return combined
+    }
+
+    /**
+     * Update this default list when a new permission will be included.
+     */
     @VisibleForTesting
-    internal fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
+    fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
         return MiniAppCustomPermission(
             miniAppId,
             listOf(
@@ -96,6 +121,10 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                 ),
                 Pair(
                     MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.LOCATION,
                     MiniAppCustomPermissionResult.DENIED
                 )
             )

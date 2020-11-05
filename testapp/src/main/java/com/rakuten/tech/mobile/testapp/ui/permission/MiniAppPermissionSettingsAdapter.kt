@@ -78,6 +78,7 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
             MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
             MiniAppCustomPermissionType.PROFILE_PHOTO -> "Profile Photo"
+            MiniAppCustomPermissionType.LOCATION -> "Location"
             else -> "Unknown"
         }
     }

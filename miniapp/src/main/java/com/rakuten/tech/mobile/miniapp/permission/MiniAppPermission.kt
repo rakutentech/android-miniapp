@@ -19,6 +19,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
     USER_NAME("rakuten.miniapp.user.USER_NAME"),
     PROFILE_PHOTO("rakuten.miniapp.user.PROFILE_PHOTO"),
     CONTACT_LIST("rakuten.miniapp.user.CONTACT_LIST"),
+    LOCATION("rakuten.miniapp.device.LOCATION"),
     UNKNOWN("UNKNOWN");
 
     internal companion object {
