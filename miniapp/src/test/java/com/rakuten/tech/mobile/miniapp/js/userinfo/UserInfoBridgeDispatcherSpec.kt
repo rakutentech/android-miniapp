@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
@@ -201,8 +200,8 @@ class UserInfoBridgeDispatcherSpec {
     /** end region */
 
     /** start region: access token */
-    val testToken = TokenData("test_token", 0)
-    fun createUserInfoImpl(canGetToken: Boolean) = object : UserInfoBridgeDispatcher() {
+    private val testToken = TokenData("test_token", 0)
+    private fun createUserInfoImpl(canGetToken: Boolean) = object : UserInfoBridgeDispatcher() {
         override fun getAccessToken(
             miniAppId: String,
             onSuccess: (tokenData: TokenData) -> Unit,
@@ -230,7 +229,7 @@ class UserInfoBridgeDispatcherSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createUserInfoImpl(false))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
-        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id, TEST_MA_ID)
+        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
     }
@@ -240,7 +239,7 @@ class UserInfoBridgeDispatcherSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createUserInfoImpl(true))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
-        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id, TEST_MA_ID)
+        userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
 
         verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }

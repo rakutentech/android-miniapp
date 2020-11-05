@@ -96,7 +96,7 @@ abstract class UserInfoBridgeDispatcher {
         }
     }
 
-    internal fun onGetAccessToken(callbackId: String, miniAppId: String) = try {
+    internal fun onGetAccessToken(callbackId: String) = try {
         val successCallback = { accessToken: TokenData ->
             bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
         }

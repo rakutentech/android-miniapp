@@ -62,6 +62,7 @@ abstract class MiniAppMessageBridge {
 
         if (this::userInfoBridgeDispatcher.isInitialized)
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+        else this.userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {}
 
         miniAppViewInitialized = true
     }
@@ -114,7 +115,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    /** Handle the message from external. **/
+    @SuppressWarnings("UndocumentedPublicFunction", "LongMethod")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
@@ -128,8 +129,7 @@ abstract class MiniAppMessageBridge {
             ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
-            ActionType.GET_ACCESS_TOKEN.action ->
-                userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id, miniAppInfo.id)
+            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
         }
     }
