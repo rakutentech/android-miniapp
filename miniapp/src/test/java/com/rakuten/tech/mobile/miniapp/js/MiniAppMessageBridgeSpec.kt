@@ -170,7 +170,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
@@ -202,7 +202,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = mock()
+            miniAppInfo = TEST_MA
         )
 
         miniAppBridge.postMessage(customPermissionJsonStr)
