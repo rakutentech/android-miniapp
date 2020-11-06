@@ -172,7 +172,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    @Suppress("LongMethod")
+    @Suppress("SwallowedException", "LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
         // initialize required properties using jsonStr before executing operations
         customPermissionBridgeDispatcher.initCallBackObject(jsonStr)

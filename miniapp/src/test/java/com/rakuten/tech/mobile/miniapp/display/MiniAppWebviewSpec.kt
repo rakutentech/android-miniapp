@@ -213,7 +213,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 }
 
-@Suppress("SwallowedException")
+@Suppress("SwallowedException", "LongMethod")
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebClientSpec : BaseWebViewSpec() {
     private val externalResultHandler: ExternalResultHandler = spy()
@@ -273,11 +273,21 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should not open external url loader when there is no config for navigation`() {
-        val webAssetLoader: WebViewAssetLoader = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, null,
+    fun `should have default external link handler when there is no config for navigation`() {
+        val displayer = Mockito.spy(MiniAppWebView(
+            context,
+            basePath = basePath,
+            miniAppInfo = TEST_MA,
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = null,
+            hostAppUserAgentInfo = TEST_HA_NAME,
+            miniAppWebChromeClient = webChromeClient,
+            miniAppCustomPermissionCache = miniAppCustomPermissionCache
+        ))
+        val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
+        val webAssetLoader: WebViewAssetLoader = (displayer.webViewClient as MiniAppWebViewClient).loader
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
             externalResultHandler, miniAppScheme))
-        val displayer = Mockito.spy(miniAppWebView)
 
         try {
             webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
@@ -285,7 +295,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             // context here is not activity
         }
 
-        verify(miniAppNavigator, times(0)).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
+        miniAppNavigator shouldNotBe null
+        verify(miniAppNavigator)!!.openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
     }
 
     @Test
