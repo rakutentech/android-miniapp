@@ -6,26 +6,28 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionManager
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
-@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions")
+@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
+    private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
     private lateinit var miniAppInfo: MiniAppInfo
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
@@ -41,9 +43,19 @@ abstract class MiniAppMessageBridge {
         miniAppInfo: MiniAppInfo
     ) {
         this.activity = activity
+        this.miniAppInfo = miniAppInfo
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
-        this.miniAppInfo = miniAppInfo
+        this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
+            bridgeExecutor,
+            customPermissionCache,
+            miniAppInfo.id
+        )
+        this.customPermissionWindow = MiniAppCustomPermissionWindow(
+            activity,
+            customPermissionBridgeDispatcher
+        )
+
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 
@@ -75,10 +87,7 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw MiniAppSdkException(
-            "The `MiniAppMessageBridge.requestCustomPermissions`" +
-                    " method has not been implemented by the Host App."
-        )
+        throw CustomPermissionsNotImplementedException()
     }
 
     /**
@@ -105,7 +114,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    @SuppressWarnings("UndocumentedPublicFunction", "LongMethod")
+    @SuppressWarnings("UndocumentedPublicFunction")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
@@ -165,45 +174,28 @@ abstract class MiniAppMessageBridge {
 
     @Suppress("LongMethod")
     private fun onRequestCustomPermissions(jsonStr: String) {
-        var callbackObj: CustomPermissionCallbackObj? = null
+        // initialize required properties using jsonStr before executing operations
+        customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
 
-        try {
-            callbackObj = Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
-            val permissionObjList = arrayListOf<CustomPermissionObj>()
-            callbackObj.param?.permissions?.forEach {
-                permissionObjList.add(CustomPermissionObj(it.name, it.description))
-            }
+        // check if there is any denied permission
+        val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
 
-            val permissionsWithDescription = MiniAppCustomPermissionManager()
-                .preparePermissionsWithDescription(permissionObjList)
-
-            requestCustomPermissions(
-                permissionsWithDescription
-            ) { permissionsWithResult ->
-                // store values in SDK cache
-                val miniAppCustomPermission = MiniAppCustomPermission(
-                    miniAppId = miniAppInfo.id,
-                    pairValues = permissionsWithResult
-                )
-                customPermissionCache.storePermissions(miniAppCustomPermission)
-
-                // send JSON response to miniapp
-                onRequestCustomPermissionsResult(
-                    callbackId = callbackObj.id,
-                    jsonResult = MiniAppCustomPermissionManager().createJsonResponse(
-                        customPermissionCache,
-                        miniAppCustomPermission.miniAppId,
-                        permissionsWithDescription
+        if (deniedPermissions.isNotEmpty()) {
+            try {
+                requestCustomPermissions(
+                    deniedPermissions
+                ) { permissionsWithResult ->
+                    customPermissionBridgeDispatcher.sendHostAppCustomPermissions(
+                        permissionsWithResult
                     )
-                )
+                }
+            } catch (e: CustomPermissionsNotImplementedException) {
+                customPermissionWindow.displayPermissions(miniAppInfo.id, deniedPermissions)
+            } catch (e: Exception) {
+                customPermissionBridgeDispatcher.postCustomPermissionError(e.message.toString())
             }
-        } catch (e: Exception) {
-            callbackObj?.id?.let {
-                bridgeExecutor.postError(
-                    it,
-                    "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} ${e.message}"
-                )
-            }
+        } else {
+            customPermissionBridgeDispatcher.sendCachedCustomPermissions()
         }
     }
 
@@ -234,13 +226,6 @@ abstract class MiniAppMessageBridge {
             bridgeExecutor.postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
     }
 
-    /** Inform the custom permission request result to MiniApp. **/
-    @Suppress("FunctionMaxLength")
-    @VisibleForTesting
-    internal fun onRequestCustomPermissionsResult(callbackId: String, jsonResult: String) {
-        bridgeExecutor.postValue(callbackId, jsonResult)
-    }
-
     internal fun onWebViewDetach() {
         screenBridgeDispatcher.releaseLock()
     }
@@ -258,6 +243,9 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_PERMISSION = "Cannot request permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+    const val NO_IMPLEMENT_CUSTOM_PERMISSION =
+        "The `MiniAppMessageBridge.requestCustomPermissions`" +
+                " method has not been implemented by the Host App."
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
