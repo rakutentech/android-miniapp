@@ -121,7 +121,7 @@ There are some methods have default implementation but host app can override the
 |------------------------------|----------|
 | getUniqueId                  | 🚫       |
 | requestPermission            | 🚫       |
-| requestCustomPermissions     | 🚫       |
+| requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 
 The `UserInfoBridgeDispatcher`:
@@ -152,6 +152,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true)
     }
 
+    // Implement requestCustomPermissions if HostApp wants to show their own UI for managing permissions
     override fun requestCustomPermissions(
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
@@ -159,7 +160,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // Implementation details to request custom permissions
         // .. .. ..
         // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
-        callback.invoke(listOf()) 
+        callback.invoke(list) 
     }
 
     override fun shareContent(
