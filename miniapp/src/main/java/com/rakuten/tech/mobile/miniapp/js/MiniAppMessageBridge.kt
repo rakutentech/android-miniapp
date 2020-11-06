@@ -105,7 +105,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    @SuppressWarnings("UndocumentedPublicFunction", "LongMethod")
+    @SuppressWarnings("UndocumentedPublicFunction")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
