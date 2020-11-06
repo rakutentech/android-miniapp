@@ -24,26 +24,28 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * if data has been stored in cache, otherwise default value.
      */
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
-        if (prefs.contains(miniAppId)) {
+        val defaultValue = defaultDeniedList(miniAppId)
+        return if (prefs.contains(miniAppId)) {
             var miniAppCustomPermission: MiniAppCustomPermission? = null
-            return try {
+            try {
                 val oldValues: MiniAppCustomPermission = Gson().fromJson(
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
                 val newValues = getNewPermissions(miniAppId, oldValues.pairValues)
                 if (newValues.isNotEmpty()) {
-                    miniAppCustomPermission =
-                        MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
+                    miniAppCustomPermission = MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
+                    applyStoringPermissions(miniAppCustomPermission)
                 }
                 miniAppCustomPermission!!
             } catch (e: Exception) {
+                applyStoringPermissions(defaultValue)
                 defaultDeniedList(miniAppId)
             }
+        } else {
+            applyStoringPermissions(defaultValue)
+            defaultDeniedList(miniAppId)
         }
-
-        // TODO: if not stored, then store it and return. No need to return any unstored default list
-        return defaultDeniedList(miniAppId)
     }
 
     /**
@@ -61,17 +63,17 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             first.type == MiniAppCustomPermissionType.UNKNOWN.type
         }
 
+        val miniAppId = miniAppCustomPermission.miniAppId
+        val allPermissions = prepareAllPermissionsToStore(miniAppId, cached, supplied)
+        applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
+    }
+
+    private fun applyStoringPermissions(permission: MiniAppCustomPermission) {
         try {
-            val miniAppId = miniAppCustomPermission.miniAppId
-            val allPermissions =
-                prepareSuppliedPermissionsToStore(cached, supplied) + getNewPermissions(
-                    miniAppId,
-                    supplied
-                )
-            val jsonToStore: String = Gson().toJson(MiniAppCustomPermission(miniAppId, allPermissions))
-            prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
+            val jsonToStore: String = Gson().toJson(permission)
+            prefs.edit().putString(permission.miniAppId, jsonToStore).apply()
         } catch (e: Exception) {
-            e.message.toString()
+            e.printStackTrace()
         }
     }
 
@@ -80,7 +82,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * custom permissions with replacing old grant results with new grant results.
      */
     @VisibleForTesting
-    fun prepareSuppliedPermissionsToStore(
+    fun prepareAllPermissionsToStore(
+        miniAppId: String,
         cached: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
@@ -89,7 +92,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
             first.type in supplied.groupBy { it.first.type }
         }
 
-        return combined + supplied
+        return combined + supplied + getNewPermissions(miniAppId, supplied)
     }
 
     private fun getNewPermissions(
@@ -104,7 +107,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     }
 
     /**
-     * Update this default list when a new permission will be included.
+     * Update this default list when adding or removing a custom permission,
+     * [MiniAppCustomPermissionCache] should automatically handle the value.
      */
     @VisibleForTesting
     fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
