@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
@@ -88,7 +87,7 @@ abstract class MiniAppMessageBridge {
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
     ) {
-        throw CustomPermissionsNotImplementedException(NO_IMPLEMENT_CUSTOM_PERMISSION)
+        throw CustomPermissionsNotImplementedException()
     }
 
     /**
