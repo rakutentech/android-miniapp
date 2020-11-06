@@ -286,7 +286,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader = (displayer.webViewClient as MiniAppWebViewClient).loader
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator!!,
             externalResultHandler, miniAppScheme))
 
         try {
@@ -296,7 +296,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         }
 
         miniAppNavigator shouldNotBe null
-        verify(miniAppNavigator)!!.openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
+        verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
     }
 
     @Test

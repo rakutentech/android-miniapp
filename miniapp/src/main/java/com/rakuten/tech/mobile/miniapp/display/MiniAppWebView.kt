@@ -69,7 +69,7 @@ internal class MiniAppWebView(
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         setupMiniAppNavigator()
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator!!,
             externalResultHandler, miniAppScheme)
         webChromeClient = miniAppWebChromeClient
 
