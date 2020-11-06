@@ -68,7 +68,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
-    private fun applyStoringPermissions(permission: MiniAppCustomPermission) {
+    @VisibleForTesting
+    fun applyStoringPermissions(permission: MiniAppCustomPermission) {
         try {
             val jsonToStore: String = Gson().toJson(permission)
             prefs.edit().putString(permission.miniAppId, jsonToStore).apply()
@@ -95,7 +96,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return combined + supplied + getNewPermissions(miniAppId, supplied)
     }
 
-    private fun getNewPermissions(
+    @VisibleForTesting
+    fun getNewPermissions(
         miniAppId: String,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
