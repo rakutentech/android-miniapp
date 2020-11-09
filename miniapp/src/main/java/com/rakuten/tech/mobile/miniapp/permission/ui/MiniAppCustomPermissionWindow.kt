@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.app.Activity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -10,9 +11,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.R
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -107,8 +108,19 @@ internal class MiniAppCustomPermissionWindow(
 
         customPermissionLayout.findViewById<TextView>(R.id.permissionCloseWindow)
             .setOnClickListener {
-                customPermissionBridgeDispatcher.sendCachedCustomPermissions()
-                customPermissionAlertDialog.dismiss()
+                onNoPermissionsSaved()
             }
+
+        customPermissionAlertDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
+                onNoPermissionsSaved()
+                true
+            } else false
+        }
+    }
+
+    private fun onNoPermissionsSaved() {
+        customPermissionBridgeDispatcher.sendCachedCustomPermissions()
+        customPermissionAlertDialog.dismiss()
     }
 }
