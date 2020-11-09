@@ -7,10 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +47,13 @@ class MiniAppDisplayViewModel constructor(
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
-            _errorData.postValue(e.message)
+            when (e) {
+                is MiniAppHasNoPublishedVersionException ->
+                    _errorData.postValue("No published versions for the provided Mini App ID.")
+                is MiniAppNotFoundException ->
+                    _errorData.postValue("No Mini App found for the provided Mini App ID.")
+                else -> _errorData.postValue(e.message)
+            }
         } finally {
             _isLoading.postValue(false)
         }
