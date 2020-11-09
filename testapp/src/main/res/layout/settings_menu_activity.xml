@@ -2,9 +2,13 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools">
 
-  <androidx.constraintlayout.widget.ConstraintLayout
+  <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.Toolbar
       android:id="@+id/toolbar"
@@ -16,21 +20,21 @@
       app:layout_constraintTop_toTopOf="parent"
       app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-      <LinearLayout
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintStart_toStartOf="@id/toolbar"
+      app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="@id/toolbar"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
-
-        <androidx.appcompat.widget.AppCompatTextView
-          android:id="@+id/textInfo"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="@dimen/small_8"
-          android:padding="@dimen/small_8"
-          android:textColor="@android:color/black"
-          tools:text="Build Info" />
+        android:layout_margin="@dimen/small_8"
+        android:padding="@dimen/small_8"
+        android:textColor="@android:color/black"
+        tools:text="Build Info" />
 
         <androidx.appcompat.widget.AppCompatTextView
           android:layout_width="match_parent"
@@ -134,39 +138,34 @@
           android:layout_height="@dimen/horizontal_divider_height"
           android:background="@color/bg_section" />
 
-      <RelativeLayout
+        <RelativeLayout
           android:id="@+id/buttonAccessToken"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:padding="@dimen/medium_16"
           android:foreground="?attr/selectableItemBackground">
 
-        <ImageView
+          <ImageView
             android:layout_width="@dimen/sec_icon_size"
             android:layout_height="@dimen/sec_icon_size"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_arrow_forward" />
 
-        <TextView
+          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/lb_access_token"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_large_16" />
-      </RelativeLayout>
+        </RelativeLayout>
 
-      <View
+        <RelativeLayout
+          android:id="@+id/buttonCustomPermissions"
           android:layout_width="match_parent"
-          android:layout_height="@dimen/horizontal_divider_height"
-          android:background="@color/bg_section" />
-
-      <RelativeLayout
-        android:id="@+id/buttonCustomPermissions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/medium_16"
-        android:foreground="?attr/selectableItemBackground">
+          android:layout_height="wrap_content"
+          android:padding="@dimen/medium_16"
+          android:foreground="?attr/selectableItemBackground">
 
         <ImageView
           android:layout_width="@dimen/sec_icon_size"
@@ -183,20 +182,26 @@
           android:textSize="@dimen/text_large_16" />
       </RelativeLayout>
 
-      <View
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/horizontal_divider_height"
+          android:background="@color/bg_section" />
+
+        <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/horizontal_divider_height"
         android:background="@color/bg_section" />
 
-      <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchTestMode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_12"
-        android:text="@string/lb_test_mode"
-        android:visibility="gone" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+          android:id="@+id/switchTestMode"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/small_12"
+          android:text="@string/lb_test_mode"
+          android:visibility="gone" />
 
-    </LinearLayout>
+      </LinearLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
+  </ScrollView>
 </layout>
