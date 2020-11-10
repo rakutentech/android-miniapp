@@ -102,7 +102,9 @@ internal class MiniAppWebView(
         if (miniAppNavigator == null) {
             miniAppNavigator = object : MiniAppNavigator {
                 override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                    val customTabsIntent = CustomTabsIntent.Builder().build()
+                    val customTabsIntent = CustomTabsIntent.Builder()
+                        .setShowTitle(true)
+                        .build()
                     customTabsIntent.launchUrl(context, url.toUri())
                 }
             }

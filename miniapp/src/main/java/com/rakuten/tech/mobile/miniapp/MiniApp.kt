@@ -31,23 +31,6 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
-     * Creates a mini app.
-     * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
-     * @param appId mini app id.
-     * @param miniAppMessageBridge the interface for communicating between host app & mini app
-     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
-     * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
-     * server but has no published versions
-     * @throws [MiniAppSdkException] when there is any other issue during fetching,
-     * downloading or creating the view.
-     */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
-    abstract suspend fun create(
-        appId: String,
-        miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay
-
-    /**
      * Same as [create(String, MiniAppMessageBridge)].
      * Use this to control external url loader.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
@@ -56,7 +39,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator
+        miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay
 
     /**
