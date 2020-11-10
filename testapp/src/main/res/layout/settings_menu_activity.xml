@@ -160,6 +160,11 @@
             android:textSize="@dimen/text_large_16" />
         </RelativeLayout>
 
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/horizontal_divider_height"
+          android:background="@color/bg_section" />
+
         <RelativeLayout
           android:id="@+id/buttonCustomPermissions"
           android:layout_width="match_parent"
@@ -186,11 +191,6 @@
           android:layout_width="match_parent"
           android:layout_height="@dimen/horizontal_divider_height"
           android:background="@color/bg_section" />
-
-        <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_divider_height"
-        android:background="@color/bg_section" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
           android:id="@+id/switchTestMode"
