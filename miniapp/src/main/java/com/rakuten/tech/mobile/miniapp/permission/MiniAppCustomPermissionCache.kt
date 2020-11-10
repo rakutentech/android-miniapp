@@ -34,7 +34,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                 )
                 val newValues = getNewPermissions(miniAppId, oldValues.pairValues)
                 if (newValues.isNotEmpty()) {
-                    miniAppCustomPermission = MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
+                    miniAppCustomPermission =
+                        MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
                     applyStoringPermissions(miniAppCustomPermission)
                 }
                 miniAppCustomPermission!!
@@ -68,11 +69,15 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
+    /**
+     * Apply SharedPreferences operation to save the grant results.
+     * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
+     */
     @VisibleForTesting
-    fun applyStoringPermissions(permission: MiniAppCustomPermission) {
+    fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         try {
-            val jsonToStore: String = Gson().toJson(permission)
-            prefs.edit().putString(permission.miniAppId, jsonToStore).apply()
+            val jsonToStore: String = Gson().toJson(miniAppCustomPermission)
+            prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -81,6 +86,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     /**
      * Prepares all custom permissions per MiniApp by comparing the cached and supplied
      * custom permissions with replacing old grant results with new grant results.
+     * @param [cached] cached permissions in SharedPreferences.
+     * @param [supplied] supplied permissions to be stored in SharedPreferences.
      */
     @VisibleForTesting
     fun prepareAllPermissionsToStore(
@@ -96,6 +103,9 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return combined + supplied + getNewPermissions(miniAppId, supplied)
     }
 
+    /**
+     * Provide information if there is any new permission added in defaultDeniedList
+     */
     @VisibleForTesting
     fun getNewPermissions(
         miniAppId: String,

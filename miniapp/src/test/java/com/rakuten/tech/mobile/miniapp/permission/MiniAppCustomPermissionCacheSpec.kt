@@ -14,6 +14,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 
+
 @Suppress("LongMethod")
 class MiniAppCustomPermissionCacheSpec {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
