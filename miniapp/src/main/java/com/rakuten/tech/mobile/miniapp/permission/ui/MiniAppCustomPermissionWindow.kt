@@ -112,7 +112,7 @@ internal class MiniAppCustomPermissionWindow(
             }
 
         customPermissionAlertDialog.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 onNoPermissionsSaved()
                 true
             } else false
