@@ -33,15 +33,15 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                 )
                 val cachedPairs = cachedPermission.pairValues.toMutableList()
 
-                // detect any new change with comparing previousPermissions and defaultDeniedList
+                // detect any new change with comparing cached permissions and defaultDeniedList
                 // change means added new permission / removed existing permission from defaultDeniedList
-                val default = defaultDeniedList(miniAppId).pairValues
-                val changedPermissions = (default + cachedPairs).groupBy { it.first.type }
+                val defaultPairs = defaultValue.pairValues
+                val changedPermissions = (defaultPairs + cachedPairs).groupBy { it.first.type }
                     .filter { it.value.size == 1 }
                     .flatMap { it.value }
 
                 return if (changedPermissions.isNotEmpty()) {
-                    if (cachedPairs.size < default.size) {
+                    if (cachedPairs.size < defaultPairs.size) {
                         val filteredValue =
                             MiniAppCustomPermission(miniAppId, cachedPairs + changedPermissions)
                         applyStoringPermissions(filteredValue)
@@ -93,6 +93,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Apply to be saved the grant results as json string to SharedPreferences.
      * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
      */
+    @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         try {
             val jsonToStore: String = Gson().toJson(miniAppCustomPermission)
