@@ -5,6 +5,7 @@
 - **Feature:** Provide the access token to miniapp.
 - **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
 - **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
+- **Feature:** Added `rakuten.miniapp.device.location` custom permission.
 
 ### 2.4.0 (2020-10-30)
 **SDK**

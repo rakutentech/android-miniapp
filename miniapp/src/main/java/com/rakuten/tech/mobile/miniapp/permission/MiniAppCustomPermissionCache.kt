@@ -17,6 +17,9 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
     )
 
+    @VisibleForTesting
+    fun isDataExist(miniAppId: String) = prefs.contains(miniAppId)
+
     /**
      * Reads the grant results from SharedPreferences.
      * @param [miniAppId] the key provided to find the stored results per MiniApp
@@ -25,7 +28,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      */
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
         val defaultValue = defaultDeniedList(miniAppId)
-        return if (prefs.contains(miniAppId)) {
+        return if (isDataExist(miniAppId)) {
             try {
                 val cachedPermission: MiniAppCustomPermission = Gson().fromJson(
                     prefs.getString(miniAppId, ""),

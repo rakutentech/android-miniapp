@@ -30,6 +30,24 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     @Test
+    fun `isDataExist should return false when miniAppId is not stored`() {
+        val actual = miniAppCustomPermissionCache.isDataExist(TEST_MA_ID)
+
+        actual shouldEqual false
+    }
+
+    @Test
+    fun `isDataExist should return true when miniAppId is stored`() {
+        doReturn(true).whenever(mockSharedPrefs).contains(TEST_MA_ID)
+        val actual = miniAppCustomPermissionCache.isDataExist(TEST_MA_ID)
+
+        actual shouldEqual true
+    }
+
+    /**
+     * region: readPermissions
+     */
+    @Test
     fun `readPermissions should return default value when it hasn't stored any data yet`() {
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
         val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
@@ -39,12 +57,50 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     @Test
+    fun `readPermissions should return actual value when it has stored data`() {
+        doReturn(true).whenever(miniAppCustomPermissionCache).isDataExist(TEST_MA_ID)
+        val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
+        val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
+
+        actual shouldEqual expected
+    }
+
+    @Test
+    fun `readPermissions will not apply data to be stored when exception`() {
+        val default = MiniAppCustomPermission(
+            TEST_MA_ID, listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
+            )
+        )
+
+        doReturn(true).whenever(miniAppCustomPermissionCache).isDataExist(TEST_MA_ID)
+        doReturn(default).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
+
+        val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
+
+        verify(miniAppCustomPermissionCache, times(0)).applyStoringPermissions(default)
+        actual shouldEqual default
+    }
+
+    /** end region */
+
+    @Test
+    fun `storePermissions will invoke necessary functions to save value`() {
+        val list = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
+        val miniAppCustomPermission = MiniAppCustomPermission(TEST_MA_ID, list)
+        doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
+
+        miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
+
+        verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, list)
+        verify(miniAppCustomPermissionCache, times(2)).applyStoringPermissions(miniAppCustomPermission)
+    }
+
+    @Test
     fun `applyStoringPermissions will invoke putString while storing custom permissions`() {
         val miniAppCustomPermission = MiniAppCustomPermission(
             TEST_MA_ID,
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
-            )
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
         )
 
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
@@ -57,14 +113,8 @@ class MiniAppCustomPermissionCacheSpec {
      */
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with unknown permissions`() {
-        val testId = TEST_MA_ID
         val cached = MiniAppCustomPermission(
-            testId, listOf(
-                Pair(
-                    MiniAppCustomPermissionType.UNKNOWN,
-                    MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
-                )
-            )
+            TEST_MA_ID, listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE))
         )
         val supplied = listOf(
             Pair(
@@ -72,7 +122,7 @@ class MiniAppCustomPermissionCacheSpec {
                 MiniAppCustomPermissionResult.ALLOWED
             )
         )
-        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(testId)
+        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
 
         val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, supplied)
 
@@ -81,15 +131,11 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with empty cached`() {
-        val testId = TEST_MA_ID
-        val cached = MiniAppCustomPermission(testId, emptyList())
+        val cached = MiniAppCustomPermission(TEST_MA_ID, emptyList())
         val supplied = listOf(
-            Pair(
-                MiniAppCustomPermissionType.CONTACT_LIST,
-                MiniAppCustomPermissionResult.ALLOWED
-            )
+            Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.ALLOWED)
         )
-        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(testId)
+        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
 
         val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, supplied)
 
