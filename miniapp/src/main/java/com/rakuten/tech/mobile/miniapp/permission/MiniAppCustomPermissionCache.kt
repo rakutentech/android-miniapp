@@ -26,26 +26,47 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
         val defaultValue = defaultDeniedList(miniAppId)
         return if (prefs.contains(miniAppId)) {
-            var miniAppCustomPermission: MiniAppCustomPermission? = null
             try {
-                val oldValues: MiniAppCustomPermission = Gson().fromJson(
+                val cachedPermission: MiniAppCustomPermission = Gson().fromJson(
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
-                val newValues = getNewPermissions(miniAppId, oldValues.pairValues)
-                if (newValues.isNotEmpty()) {
-                    miniAppCustomPermission =
-                        MiniAppCustomPermission(miniAppId, oldValues.pairValues + newValues)
-                    applyStoringPermissions(miniAppCustomPermission)
+                val cachedPairs = cachedPermission.pairValues.toMutableList()
+
+                // detect any new change with comparing previousPermissions and defaultDeniedList
+                // change means added new permission / removed existing permission from defaultDeniedList
+                val default = defaultDeniedList(miniAppId).pairValues
+                val changedPermissions = (default + cachedPairs).groupBy { it.first.type }
+                    .filter { it.value.size == 1 }
+                    .flatMap { it.value }
+
+                return if (changedPermissions.isNotEmpty()) {
+                    if (cachedPairs.size < default.size) {
+                        val filteredValue =
+                            MiniAppCustomPermission(miniAppId, cachedPairs + changedPermissions)
+                        applyStoringPermissions(filteredValue)
+                        filteredValue
+                    } else {
+                        cachedPairs.removeAll { (first) ->
+                            first.type in changedPermissions.groupBy { it.first.type }
+                        }
+                        val filteredValue = MiniAppCustomPermission(miniAppId, cachedPairs)
+                        applyStoringPermissions(filteredValue)
+                        filteredValue
+                    }
+                } else {
+                    val filteredValue = MiniAppCustomPermission(miniAppId, cachedPairs)
+                    applyStoringPermissions(filteredValue)
+                    filteredValue
                 }
-                miniAppCustomPermission!!
             } catch (e: Exception) {
-                applyStoringPermissions(defaultValue)
-                defaultDeniedList(miniAppId)
+                // if there is any exception, just return the default value
+                defaultValue
             }
         } else {
+            // if value hasn't been found in SharedPreferences, save the value
             applyStoringPermissions(defaultValue)
-            defaultDeniedList(miniAppId)
+            defaultValue
         }
     }
 
@@ -56,7 +77,6 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
     ) {
-        val cached = readPermissions(miniAppCustomPermission.miniAppId).pairValues
         val supplied = miniAppCustomPermission.pairValues.toMutableList()
 
         // Remove any unknown permission parameter from HostApp.
@@ -65,15 +85,14 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         }
 
         val miniAppId = miniAppCustomPermission.miniAppId
-        val allPermissions = prepareAllPermissionsToStore(miniAppId, cached, supplied)
+        val allPermissions = prepareAllPermissionsToStore(miniAppId, supplied)
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
     /**
-     * Apply SharedPreferences operation to save the grant results.
+     * Apply to be saved the grant results as json string to SharedPreferences.
      * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
      */
-    @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         try {
             val jsonToStore: String = Gson().toJson(miniAppCustomPermission)
@@ -86,36 +105,20 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     /**
      * Prepares all custom permissions per MiniApp by comparing the cached and supplied
      * custom permissions with replacing old grant results with new grant results.
-     * @param [cached] cached permissions in SharedPreferences.
-     * @param [supplied] supplied permissions to be stored in SharedPreferences.
      */
     @VisibleForTesting
     fun prepareAllPermissionsToStore(
         miniAppId: String,
-        cached: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        // retrieve permissions by comparing cached and supplied (from HostApp) permissions
+        // readPermissions already filters the changed permissions from defaultDeniedList
+        val cached = readPermissions(miniAppId).pairValues
         val combined = (cached + supplied).toMutableList()
         combined.removeAll { (first) ->
             first.type in supplied.groupBy { it.first.type }
         }
-
-        return combined + supplied + getNewPermissions(miniAppId, supplied)
-    }
-
-    /**
-     * Provide information if there is any new permission added in defaultDeniedList
-     */
-    @VisibleForTesting
-    fun getNewPermissions(
-        miniAppId: String,
-        supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val combined = (defaultDeniedList(miniAppId).pairValues + supplied).toMutableList()
-        combined.removeAll { (first) ->
-            first.type in supplied.groupBy { it.first.type }
-        }
-        return combined
+        return combined + supplied
     }
 
     /**

@@ -2,9 +2,7 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
@@ -13,7 +11,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
-
 
 @Suppress("LongMethod")
 class MiniAppCustomPermissionCacheSpec {
@@ -60,57 +57,45 @@ class MiniAppCustomPermissionCacheSpec {
      */
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with unknown permissions`() {
-        val cached = listOf(
-            Pair(
-                MiniAppCustomPermissionType.UNKNOWN,
-                MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+        val testId = TEST_MA_ID
+        val cached = MiniAppCustomPermission(
+            testId, listOf(
+                Pair(
+                    MiniAppCustomPermissionType.UNKNOWN,
+                    MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
+                )
             )
         )
-
         val supplied = listOf(
             Pair(
                 MiniAppCustomPermissionType.PROFILE_PHOTO,
                 MiniAppCustomPermissionResult.ALLOWED
             )
         )
+        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(testId)
 
-        val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, cached, supplied)
+        val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, supplied)
 
-        actual.size shouldBe 5
-        verify(miniAppCustomPermissionCache).getNewPermissions(TEST_MA_ID, supplied)
+        actual.size shouldBe 2
     }
 
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with empty cached`() {
-        val cached =
-            emptyList<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
+        val testId = TEST_MA_ID
+        val cached = MiniAppCustomPermission(testId, emptyList())
         val supplied = listOf(
             Pair(
                 MiniAppCustomPermissionType.CONTACT_LIST,
                 MiniAppCustomPermissionResult.ALLOWED
             )
         )
+        doReturn(cached).whenever(miniAppCustomPermissionCache).readPermissions(testId)
 
-        val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, cached, supplied)
+        val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, supplied)
 
-        actual.size shouldBe 4
+        actual.size shouldBe 1
     }
     /** end region */
-
-    @Test
-    fun `getNewPermissions should return the correct values based on supplied list`() {
-        val supplied = listOf(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME,
-                MiniAppCustomPermissionResult.ALLOWED
-            )
-        )
-
-        val actual = miniAppCustomPermissionCache.getNewPermissions(TEST_MA_ID, supplied)
-
-        actual.size shouldBe 3
-    }
 
     /**
      * region: defaultDeniedList.
