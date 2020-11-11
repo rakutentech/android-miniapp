@@ -290,8 +290,7 @@ override fun onBackPressed() {
 
 The mini app is loaded with the specific custom scheme and custom domain in mini app view.
 
-In default, the external link is also loaded in mini app view.
-It is possible for hostapp to load this external link with its own webview / browser.
+In default, the external link will be opened in custom tab. See [this](https://developers.google.com/web/android/custom-tabs).
 
 - Implement `MiniAppNavigator`.
 

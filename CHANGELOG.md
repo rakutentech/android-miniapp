@@ -5,6 +5,7 @@
 - **Feature:** Provide the access token to miniapp.
 - **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
 - **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
+- **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
 
 ### 2.4.0 (2020-10-30)
 **SDK**
