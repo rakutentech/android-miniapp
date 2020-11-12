@@ -11,6 +11,10 @@ class SampleExternalWebView(context: Context, url: String, sampleWebViewClient: 
 
     init {
         settings.javaScriptEnabled = true
+        settings.allowUniversalAccessFromFileURLs = true
+        settings.domStorageEnabled = true
+        settings.databaseEnabled = true
+        settings.mediaPlaybackRequiresUserGesture = false
         webViewClient = sampleWebViewClient
         loadUrl(url)
     }
