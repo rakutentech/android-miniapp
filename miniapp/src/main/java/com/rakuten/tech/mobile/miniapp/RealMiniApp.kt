@@ -39,19 +39,14 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge)
-
-    override suspend fun create(
-        appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator
+        miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge, miniAppNavigator)
 
     private suspend fun executingCreate(
         miniAppId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {

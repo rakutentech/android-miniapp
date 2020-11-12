@@ -15,7 +15,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 internal class MiniAppWebViewClient(
     private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader,
-    private val miniAppNavigator: MiniAppNavigator?,
+    private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
     private val miniAppScheme: MiniAppScheme
 ) : WebViewClient() {
@@ -34,11 +34,8 @@ internal class MiniAppWebViewClient(
                 miniAppScheme.openPhoneDialer(context, url)
                 shouldCancelLoading = true
             } else if (!miniAppScheme.isMiniAppUrl(url)) {
-                // check if there is navigator implementation on miniapp.
-                if (miniAppNavigator != null) {
-                    miniAppNavigator.openExternalUrl(url, externalResultHandler)
-                    shouldCancelLoading = true
-                }
+                miniAppNavigator.openExternalUrl(url, externalResultHandler)
+                shouldCancelLoading = true
             }
         }
         return shouldCancelLoading
