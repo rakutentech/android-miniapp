@@ -106,6 +106,38 @@ class MiniAppCustomPermissionCacheSpec {
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
 
         verify(mockEditor).putString(anyString(), anyString())
+        verify(miniAppCustomPermissionCache).orderByDefaultList(miniAppCustomPermission)
+    }
+
+    @Test
+    fun `orderByDefaultList should return correct ordering by MiniAppCustomPermissionType`() {
+        val defaultPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED)
+            )
+        )
+        doReturn(defaultPermission).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
+
+        val unorderedPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED),
+                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED)
+            )
+        )
+
+        val actual = miniAppCustomPermissionCache.orderByDefaultList(unorderedPermission)
+
+        actual.pairValues[0].first shouldEqual MiniAppCustomPermissionType.USER_NAME
+        actual.pairValues[1].first shouldEqual MiniAppCustomPermissionType.PROFILE_PHOTO
+        actual.pairValues[2].first shouldEqual MiniAppCustomPermissionType.CONTACT_LIST
+        actual.pairValues[3].first shouldEqual MiniAppCustomPermissionType.LOCATION
     }
 
     /**
