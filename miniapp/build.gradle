@@ -58,6 +58,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
+    implementation "androidx.browser:browser:$custom_tab"
 
     kapt "com.rakuten.tech.mobile:manifest-config-processor:$manifest_config"
     implementation "com.rakuten.tech.mobile:manifest-config-annotations:$manifest_config"
