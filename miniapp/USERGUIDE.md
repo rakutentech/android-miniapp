@@ -292,6 +292,8 @@ The mini app is loaded with the specific custom scheme and custom domain in mini
 
 In default, the external link will be opened in custom tab. See [this](https://developers.google.com/web/android/custom-tabs).
 
+HostApp also can implement their own way by passing `MiniAppNavigator` object to `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppNavigator: MiniAppNavigator)`.
+
 - Implement `MiniAppNavigator`.
 
 ```kotlin
