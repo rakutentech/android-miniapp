@@ -31,7 +31,7 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Test
     fun `isDataExist should return false when miniAppId is not stored`() {
-        val actual = miniAppCustomPermissionCache.isDataExist(TEST_MA_ID)
+        val actual = miniAppCustomPermissionCache.doesDataExist(TEST_MA_ID)
 
         actual shouldEqual false
     }
@@ -39,7 +39,7 @@ class MiniAppCustomPermissionCacheSpec {
     @Test
     fun `isDataExist should return true when miniAppId is stored`() {
         doReturn(true).whenever(mockSharedPrefs).contains(TEST_MA_ID)
-        val actual = miniAppCustomPermissionCache.isDataExist(TEST_MA_ID)
+        val actual = miniAppCustomPermissionCache.doesDataExist(TEST_MA_ID)
 
         actual shouldEqual true
     }
@@ -58,7 +58,7 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Test
     fun `readPermissions should return actual value when it has stored data`() {
-        doReturn(true).whenever(miniAppCustomPermissionCache).isDataExist(TEST_MA_ID)
+        doReturn(true).whenever(miniAppCustomPermissionCache).doesDataExist(TEST_MA_ID)
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
         val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
 
@@ -73,7 +73,7 @@ class MiniAppCustomPermissionCacheSpec {
             )
         )
 
-        doReturn(true).whenever(miniAppCustomPermissionCache).isDataExist(TEST_MA_ID)
+        doReturn(true).whenever(miniAppCustomPermissionCache).doesDataExist(TEST_MA_ID)
         doReturn(default).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
 
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
