@@ -18,11 +18,17 @@ abstract class UserInfoBridgeDispatcher {
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
 
-    /** Get user name from host app. **/
+    /**
+     * Get user name from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
     open fun getUserName(): String =
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
 
-    /** Get profile photo url from host app. **/
+    /**
+     * Get profile photo url from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
     open fun getProfilePhoto(): String =
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
 
