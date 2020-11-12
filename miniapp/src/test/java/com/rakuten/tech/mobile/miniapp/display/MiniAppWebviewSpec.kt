@@ -99,12 +99,17 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `when MiniAppWebView is created then domStorageEnabled should be enabled`() {
-        miniAppWebView.settings.allowUniversalAccessFromFileURLs shouldBe true
+        miniAppWebView.settings.domStorageEnabled shouldBe true
     }
 
     @Test
     fun `when MiniAppWebView is created then databaseEnabled should be enabled`() {
-        miniAppWebView.settings.allowUniversalAccessFromFileURLs shouldBe true
+        miniAppWebView.settings.databaseEnabled shouldBe true
+    }
+
+    @Test
+    fun `when MiniAppWebView is created then mediaPlaybackRequiresUserGesture should be disabled`() {
+        miniAppWebView.settings.mediaPlaybackRequiresUserGesture shouldBe false
     }
 
     @Test
