@@ -1,10 +1,14 @@
 ## CHANGELOG
 
-### 2.X.X (In progress)
+### 2.5.0 (2020-11-13)
 **SDK**
-- **Feature:** Provide the access token to miniapp.
+- **Feature:** Provide the access token to miniapp. You can implement `MiniAppMessageBridge.getAccessToken` to use this feature.
 - **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
 - **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
+
+**Sample App**
+- **Feature:** Added "Access Token" configuration options to settings screen.
+- **Feature:** Show error dialog instead of Toast for errors in settings screen.
 
 ### 2.4.0 (2020-10-30)
 **SDK**
