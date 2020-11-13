@@ -63,6 +63,8 @@ class MiniAppDisplayViewModel constructor(
         this.hostLifeCycle = lifecycle
     }
 
+    fun provideMiniApp() = this.miniapp
+
     fun canGoBackwards(): Boolean =
         if (::miniAppDisplay.isInitialized)
             miniAppDisplay.navigateBackward()

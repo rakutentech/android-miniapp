@@ -17,7 +17,7 @@ import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.showNormalDialog
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
@@ -168,7 +168,7 @@ class SettingsMenuActivity : BaseActivity() {
                 settings.isTestMode = isTestModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
-                    showNormalDialog(this@SettingsMenuActivity, error.message.toString())
+                    showAlertDialog(this@SettingsMenuActivity, error.message.toString())
                 }
             }
         }
