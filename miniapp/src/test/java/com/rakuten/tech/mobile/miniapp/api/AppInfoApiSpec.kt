@@ -62,7 +62,7 @@ class AppInfoApiRequestSpec : AppInfoApiSpec() {
     fun `should fetch mini apps for the provided host app version in test mode`() {
         mockServer.enqueue(createResponse())
         retrofit.create(AppInfoApi::class.java)
-            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION, testPath = "test")
+            .list(hostAppId = TEST_HA_ID_APP, testPath = "test")
             .execute()
         val request = mockServer.takeRequest()
 
@@ -73,7 +73,7 @@ class AppInfoApiRequestSpec : AppInfoApiSpec() {
     private fun executeListingCallByRetrofit() {
         mockServer.enqueue(createResponse())
         retrofit.create(AppInfoApi::class.java)
-            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
+            .list(hostAppId = TEST_HA_ID_APP)
             .execute()
     }
 }
@@ -87,7 +87,7 @@ class AppInfoApiResponseSpec : AppInfoApiSpec() {
         mockServer.enqueue(createResponse())
 
         miniAppInfo = retrofit.create(AppInfoApi::class.java)
-            .list(hostAppId = TEST_HA_ID_APP, hostAppVersionId = TEST_HA_ID_VERSION)
+            .list(hostAppId = TEST_HA_ID_APP)
             .execute().body()!![0]
     }
 

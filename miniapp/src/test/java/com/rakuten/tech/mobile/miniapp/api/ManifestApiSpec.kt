@@ -65,7 +65,6 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
                 hostAppId = TEST_HA_ID_APP,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION,
                 testPath = "test"
             ).execute()
         mockServer.takeRequest().path!! shouldContain "test"
@@ -77,8 +76,7 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
             .fetchFileListFromManifest(
                 hostAppId = TEST_HA_ID_APP,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION
             ).execute()
     }
 }
@@ -94,8 +92,7 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
             .fetchFileListFromManifest(
                 hostAppId = TEST_HA_ID_APP,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION
             )
             .execute().body()!!
     }

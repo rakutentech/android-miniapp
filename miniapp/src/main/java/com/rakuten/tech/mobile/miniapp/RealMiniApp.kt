@@ -79,7 +79,6 @@ internal class RealMiniApp(
         baseUrl = newConfig.baseUrl,
         rasAppId = newConfig.rasAppId,
         subscriptionKey = newConfig.subscriptionKey,
-        hostAppVersionId = newConfig.hostAppVersionId,
         isTestMode = newConfig.isTestMode
     )
 }
