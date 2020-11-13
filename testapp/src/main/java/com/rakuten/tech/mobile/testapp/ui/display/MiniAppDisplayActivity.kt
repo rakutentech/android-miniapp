@@ -127,7 +127,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                 callback: (isGranted: Boolean) -> Unit
             ) {
                 miniappPermissionCallback = callback
-
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
                     AppPermission.getPermissionRequest(miniAppPermissionType),

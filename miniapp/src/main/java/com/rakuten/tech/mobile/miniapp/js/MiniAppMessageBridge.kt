@@ -155,6 +155,7 @@ abstract class MiniAppMessageBridge {
         }
     }
 
+    @SuppressWarnings("NestedBlockDepth")
     private fun onRequestPermission(callbackObj: CallbackObj) {
         try {
             val permissionParam = Gson().fromJson<Permission>(
@@ -172,9 +173,13 @@ abstract class MiniAppMessageBridge {
                     if (location.second.name == MiniAppCustomPermissionResult.ALLOWED.name) {
                         requestDevicePermission(permissionName, callbackObj.id)
                     } else {
-                        val errorMessage = MiniAppCustomPermissionType.LOCATION.type + " hasn't been granted for this MiniApp."
+                        val errorMessage =
+                            MiniAppCustomPermissionType.LOCATION.type + " hasn't been granted for this MiniApp."
                         Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show()
-                        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} $errorMessage")
+                        bridgeExecutor.postError(
+                            callbackObj.id,
+                            "${ErrorBridgeMessage.ERR_REQ_PERMISSION} $errorMessage"
+                        )
                     }
                 }
             } else {

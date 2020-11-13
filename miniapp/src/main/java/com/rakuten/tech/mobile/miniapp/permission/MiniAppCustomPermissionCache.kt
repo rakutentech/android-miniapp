@@ -1,10 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.annotation.WantedPrivateButTesting
 import java.lang.Exception
 
 /**
@@ -17,7 +18,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
     )
 
-    @WantedPrivateButTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun doesDataExist(miniAppId: String) = prefs.contains(miniAppId)
 
     /**
@@ -26,6 +27,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * @return [MiniAppCustomPermission] an object to contain the results per MiniApp
      * if data has been stored in cache, otherwise default value.
      */
+    @SuppressLint("RestrictedApi")
+    @SuppressWarnings("NestedBlockDepth")
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
         val defaultValue = defaultDeniedList(miniAppId)
         return if (doesDataExist(miniAppId)) {
@@ -77,6 +80,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Stores the grant results to SharedPreferences.
      * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
      */
+    @SuppressLint("RestrictedApi")
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
     ) {
@@ -92,7 +96,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
-    @WantedPrivateButTesting
+    @SuppressWarnings("PrintStackTrace")
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         try {
             val jsonToStore: String = Gson().toJson(orderByDefaultList(miniAppCustomPermission))
@@ -102,7 +107,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         }
     }
 
-    @WantedPrivateButTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun orderByDefaultList(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
         val miniAppId = miniAppCustomPermission.miniAppId
         val defaultTypesOrder = mutableListOf<MiniAppCustomPermissionType>()
@@ -131,7 +136,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return MiniAppCustomPermission(miniAppId, orderedPair)
     }
 
-    @WantedPrivateButTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun prepareAllPermissionsToStore(
         miniAppId: String,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
@@ -150,7 +155,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Note: Update this default list when adding or removing a custom permission,
      * [MiniAppCustomPermissionCache] should automatically handle the value.
      */
-    @WantedPrivateButTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
         return MiniAppCustomPermission(
             miniAppId,

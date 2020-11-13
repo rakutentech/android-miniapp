@@ -143,6 +143,7 @@ class MiniAppCustomPermissionCacheSpec {
     /**
      * region: prepareAllPermissionsToStore
      */
+    @Suppress("MaximumLineLength")
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with unknown permissions`() {
         val cached = MiniAppCustomPermission(
