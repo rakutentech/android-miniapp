@@ -9,6 +9,9 @@
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
 - **Feature:** Added `rakuten.miniapp.device.location` custom permission.
 
+**Sample App**
+- **Change:** Update setting of external webview.
+
 ### 2.4.0 (2020-10-30)
 **SDK**
 - **Feature:** Handle the screen orientation change request from miniapp.
