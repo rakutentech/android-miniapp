@@ -12,11 +12,10 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
         config.key shouldEqual "${config.baseUrl}-${config.isTestMode}" +
-                "-${config.rasAppId}-${config.subscriptionKey}-${config.hostAppVersionId}"
+                "-${config.rasAppId}-${config.subscriptionKey}"
     }
 
     @Test(expected = MiniAppSdkException::class)
@@ -26,7 +25,6 @@ class MiniAppSdkConfigSpec {
             isTestMode = false,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
@@ -38,7 +36,6 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
@@ -50,7 +47,6 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
@@ -62,19 +58,6 @@ class MiniAppSdkConfigSpec {
             isTestMode = true,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = " ",
-            hostAppVersionId = TEST_HA_ID_VERSION,
-            hostAppUserAgentInfo = TEST_HA_NAME
-        )
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when hostAppVersionId is blank`() {
-        MiniAppSdkConfig(
-            baseUrl = TEST_URL_HTTPS_2,
-            isTestMode = true,
-            rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = " ",
             hostAppUserAgentInfo = TEST_HA_NAME
         )
     }

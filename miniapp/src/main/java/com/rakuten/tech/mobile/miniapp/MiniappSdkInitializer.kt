@@ -70,7 +70,6 @@ class MiniappSdkInitializer : ContentProvider() {
                 baseUrl = manifestConfig.baseUrl(),
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
-                hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isTestMode = manifestConfig.isTestMode()
             )

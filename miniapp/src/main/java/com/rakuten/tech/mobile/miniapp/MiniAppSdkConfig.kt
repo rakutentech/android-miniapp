@@ -13,11 +13,10 @@ data class MiniAppSdkConfig(
     val baseUrl: String,
     val rasAppId: String,
     val subscriptionKey: String,
-    val hostAppVersionId: String,
     val hostAppUserAgentInfo: String,
     val isTestMode: Boolean
 ) {
-    internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey-$hostAppVersionId"
+    internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey"
 
     init {
         when {
@@ -27,8 +26,6 @@ data class MiniAppSdkConfig(
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasAppId")
             subscriptionKey.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
-            hostAppVersionId.isBlank() ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
         }
     }
 }

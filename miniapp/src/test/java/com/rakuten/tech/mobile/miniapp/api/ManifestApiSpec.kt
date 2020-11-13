@@ -47,7 +47,6 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
         executeManifestCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!
         requestUrl.encodedPath shouldEndWith "manifest"
-        requestUrl.encodedQuery.toString() shouldContain "hostVersion=$TEST_HA_ID_VERSION"
     }
 
     @Test
