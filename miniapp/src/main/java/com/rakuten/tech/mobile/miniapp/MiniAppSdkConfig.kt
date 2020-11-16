@@ -5,7 +5,6 @@ package com.rakuten.tech.mobile.miniapp
  * @property baseUrl Base URL used for retrieving a Mini App.
  * @property rasAppId App ID for the Platform API.
  * @property subscriptionKey Subscription Key for the Platform API.
- * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
  * @property isTestMode Whether the sdk is making use of the Test API Endpoints for under "Testing" mini apps.
  */

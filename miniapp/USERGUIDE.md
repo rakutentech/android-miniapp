@@ -43,7 +43,6 @@ The SDK is configured via manifest meta-data, the configurable values are:
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
-* All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
 * The host app info is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
 In your `AndroidManifest.xml`:
@@ -66,11 +65,6 @@ In your `AndroidManifest.xml`:
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="your_subscription_key" />
-
-        <!-- Version of your app - used to determine feature compatibility for Mini App -->
-        <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
-            android:value="your_app_version" />
 
         <!-- Optional User Agent Information relating to the host app -->
         <meta-data
