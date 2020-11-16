@@ -58,10 +58,10 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="https://www.example.com" />
 
-        <!-- App ID for the Platform API -->
+        <!-- Project ID for the Platform API -->
         <meta-data
-            android:name="com.rakuten.tech.mobile.ras.AppId"
-            android:value="your_app_id" />
+            android:name="com.rakuten.tech.mobile.ras.ProjectId"
+            android:value="your_project_id" />
 
         <!-- Subscription Key for the Platform API -->
         <meta-data

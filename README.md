@@ -21,6 +21,7 @@ Next, you must define a few settings used by the Sample App. These can be define
 
 ```
 MINIAPP_SERVER_BASE_URL=https://www.example.com/
+HOST_PROJECT_ID=test-host-project-id
 HOST_APP_ID=test-host-app-id
 HOST_APP_SUBSCRIPTION_KEY=test-subs-key
 HOST_APP_UA_INFO=MiniAppDemoApp/1.0.0-SNAPSHOT

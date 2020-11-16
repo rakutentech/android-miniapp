@@ -38,7 +38,7 @@ android {
             isTestMode              : property("IS_TEST_MODE") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_VERSION") ?: "test-host-app-version",
-            appId                   : property("HOST_APP_ID") ?: "test-host-app-id",
+            projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: ""
     ]
@@ -47,7 +47,7 @@ android {
             isTestMode              : property("PROD_IS_TEST_MODE") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
-            appId                   : property("HOST_APP_PROD_ID") ?: "test-host-app-id",
+            projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: ""
     ]
