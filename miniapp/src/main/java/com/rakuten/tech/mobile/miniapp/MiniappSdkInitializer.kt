@@ -51,7 +51,11 @@ class MiniappSdkInitializer : ContentProvider() {
          * App Id assigned to host App.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
+        @Deprecated("Use rasProjectId()")
         fun rasAppId(): String
+
+        @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectId")
+        fun rasProjectId(): String
 
         /**
          * Subscription Key for the registered host app.

@@ -22,7 +22,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var appId: String
-        get() = cache.appId ?: manifestConfig.rasAppId()
+        get() = cache.appId ?: manifestConfig.rasProjectId()
         set(appId) {
             cache.appId = appId
         }
