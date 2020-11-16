@@ -6,10 +6,41 @@ import org.junit.Test
 class MiniAppSdkConfigSpec {
 
     @Test
-    fun `the key pattern should match the defined scheme`() {
+    fun `the key pattern should match the defined scheme when both project and app id has value`() {
         val config = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
+            rasProjectId = TEST_HA_ID_PROJECT,
+            rasAppId = TEST_HA_ID_APP,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppUserAgentInfo = TEST_HA_NAME
+        )
+        config.key shouldEqual "${config.baseUrl}-${config.isTestMode}" +
+                "-${config.rasProjectId}-${config.subscriptionKey}-${config.hostAppVersionId}"
+    }
+
+    @Test
+    fun `the key pattern should match the defined scheme when only project id has value`() {
+        val config = MiniAppSdkConfig(
+            baseUrl = TEST_URL_HTTPS_2,
+            isTestMode = true,
+            rasProjectId = TEST_HA_ID_PROJECT,
+            rasAppId = " ",
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+            hostAppVersionId = TEST_HA_ID_VERSION,
+            hostAppUserAgentInfo = TEST_HA_NAME
+        )
+        config.key shouldEqual "${config.baseUrl}-${config.isTestMode}" +
+                "-${config.rasProjectId}-${config.subscriptionKey}-${config.hostAppVersionId}"
+    }
+
+    @Test
+    fun `the key pattern should match the defined scheme when only app id has value`() {
+        val config = MiniAppSdkConfig(
+            baseUrl = TEST_URL_HTTPS_2,
+            isTestMode = true,
+            rasProjectId = " ",
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -24,6 +55,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = "http://www.example.com/1",
             isTestMode = false,
+            rasProjectId = TEST_HA_ID_PROJECT,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -36,6 +68,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = " ",
             isTestMode = true,
+            rasProjectId = TEST_HA_ID_PROJECT,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -44,10 +77,11 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when rasAppId is blank`() {
+    fun `should throw exception when both projectId and rasAppId is blank`() {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
+            rasProjectId = " ",
             rasAppId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -60,6 +94,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
+            rasProjectId = TEST_HA_ID_PROJECT,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = " ",
             hostAppVersionId = TEST_HA_ID_VERSION,
@@ -72,6 +107,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
+            rasProjectId = TEST_HA_ID_PROJECT,
             rasAppId = TEST_HA_ID_APP,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = " ",

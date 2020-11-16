@@ -22,7 +22,7 @@ internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val isTestMode: Boolean,
     private val hostAppVersionId: String,
-    private val hostProjectId: String,
+    private val hostProjectOrAppId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
@@ -31,19 +31,19 @@ internal class ApiClient @VisibleForTesting constructor(
 
     constructor(
         baseUrl: String,
-        rasProjectId: String,
+        rasProjectOrAppId: String,
         subscriptionKey: String,
         hostAppVersionId: String,
         isTestMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
-            rasProjectId = rasProjectId,
+            rasProjectOrAppId = rasProjectOrAppId,
             subscriptionKey = subscriptionKey
         ),
         isTestMode = isTestMode,
         hostAppVersionId = hostAppVersionId,
-        hostProjectId = rasProjectId
+        hostProjectOrAppId = rasProjectOrAppId
     )
 
     private val testPath = if (isTestMode) "test" else ""
@@ -51,7 +51,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(
-            hostAppId = hostProjectId,
+            hostAppId = hostProjectOrAppId,
             hostAppVersionId = hostAppVersionId,
             testPath = testPath)
         return requestExecutor.executeRequest(request)
@@ -60,7 +60,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(
-            hostAppId = hostProjectId,
+            hostAppId = hostProjectOrAppId,
             hostAppVersionId = hostAppVersionId,
             miniAppId = appId,
             testPath = testPath)
@@ -75,7 +75,7 @@ internal class ApiClient @VisibleForTesting constructor(
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(
-            hostAppId = hostProjectId,
+            hostAppId = hostProjectOrAppId,
             miniAppId = miniAppId,
             versionId = versionId,
             hostAppVersionId = hostAppVersionId,

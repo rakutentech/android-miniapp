@@ -12,12 +12,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 internal fun createRetrofitClient(
     baseUrl: String,
-    rasProjectId: String,
+    rasProjectOrAppId: String,
     subscriptionKey: String
 ) = createRetrofitClient(
     baseUrl = baseUrl,
     headers = RasSdkHeaders(
-        appId = rasProjectId,
+        appId = rasProjectOrAppId,
         subscriptionKey = subscriptionKey,
         sdkName = "MiniApp",
         sdkVersion = BuildConfig.VERSION_NAME

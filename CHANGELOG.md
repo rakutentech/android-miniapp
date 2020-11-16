@@ -7,9 +7,11 @@
 - **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
+- **Change:** `MiniAppSdkConfig.rasAppId` has been deprecated, use `MiniAppSdkConfig.rasProjectId` instead
 
 **Sample App**
-- **Change:** Update setting of external webview.
+- **Change:** Updated setting of external webview.
+- **Change:** Updated sample app Manifest configuration with replacing RAS App ID by Project ID.
 
 ### 2.4.0 (2020-10-30)
 **SDK**

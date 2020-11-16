@@ -50,10 +50,13 @@ class MiniappSdkInitializer : ContentProvider() {
         /**
          * App Id assigned to host App.
          **/
-        @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
         @Deprecated("Use rasProjectId()")
+        @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
         fun rasAppId(): String
 
+        /**
+         * Project Id assigned to host App.
+         **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectId")
         fun rasProjectId(): String
 
@@ -73,6 +76,7 @@ class MiniappSdkInitializer : ContentProvider() {
             miniAppSdkConfig = MiniAppSdkConfig(
                 baseUrl = manifestConfig.baseUrl(),
                 rasProjectId = manifestConfig.rasProjectId(),
+                rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),

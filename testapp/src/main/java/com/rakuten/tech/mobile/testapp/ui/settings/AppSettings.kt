@@ -90,6 +90,7 @@ class AppSettings private constructor(context: Context) {
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
             rasProjectId = projectId,
+            rasAppId = projectId, // rasAppId is deprecated
             subscriptionKey = subscriptionKey,
             hostAppVersionId = hostAppVersionId,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
