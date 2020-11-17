@@ -9,7 +9,7 @@
 
 **Sample App**
 - **Change:** Update setting of external webview.
-- **Change:** Adopted Preview Mode in sample app.
+- **Change:** Use `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
 
 ### 2.5.0 (2020-11-13)
 **SDK**
