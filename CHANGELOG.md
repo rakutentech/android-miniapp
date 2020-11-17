@@ -1,10 +1,8 @@
 ## CHANGELOG
 
-### 2.X.X (In progress)
+2.X.X (In progress)
+
 **SDK**
-- **Feature:** Provide the access token to miniapp.
-- **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
-- **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
 - **Change:** `MiniAppSdkConfig.rasAppId` has been deprecated, use `MiniAppSdkConfig.rasProjectId` instead
@@ -12,6 +10,16 @@
 **Sample App**
 - **Change:** Updated setting of external webview.
 - **Change:** Updated sample app Manifest configuration with replacing RAS App ID by Project ID.
+
+### 2.5.0 (2020-11-13)
+**SDK**
+- **Feature:** Provide the access token to miniapp. You can implement `MiniAppMessageBridge.getAccessToken` to use this feature.
+- **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
+- **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
+
+**Sample App**
+- **Feature:** Added "Access Token" configuration options to settings screen.
+- **Feature:** Show error dialog instead of Toast for errors in settings screen.
 
 ### 2.4.0 (2020-10-30)
 **SDK**
