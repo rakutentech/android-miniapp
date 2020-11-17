@@ -78,7 +78,7 @@ class MiniappSdkInitializer : ContentProvider() {
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-                isTestMode = manifestConfig.isPreviewMode()
+                isTestMode = manifestConfig.isPreviewMode() || manifestConfig.isTestMode()
             )
         )
 

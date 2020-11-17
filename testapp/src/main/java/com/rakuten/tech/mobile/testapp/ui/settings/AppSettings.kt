@@ -117,7 +117,7 @@ private class Settings(context: Context) {
     var isPreviewMode: Boolean?
         get() =
             if (prefs.contains(IS_PREVIEW_MODE))
-                prefs.getBoolean(IS_PREVIEW_MODE, false)
+                prefs.getBoolean(IS_PREVIEW_MODE, true)
             else
                 null
         set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
