@@ -41,12 +41,12 @@ data class MiniAppSdkConfig(
         when {
             !isBaseUrlValid(baseUrl) ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid baseUrl")
+            rasProjectId.isBlank() ->
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
             subscriptionKey.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
             hostAppVersionId.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
-            rasProjectId.isBlank() ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
         }
     }
 }

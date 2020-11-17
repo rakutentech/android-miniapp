@@ -22,7 +22,6 @@ Next, you must define a few settings used by the Sample App. These can be define
 ```
 MINIAPP_SERVER_BASE_URL=https://www.example.com/
 HOST_PROJECT_ID=test-host-project-id
-HOST_APP_ID=test-host-app-id (deprecated, use HOST_PROJECT_ID)
 HOST_APP_SUBSCRIPTION_KEY=test-subs-key
 HOST_APP_UA_INFO=MiniAppDemoApp/1.0.0-SNAPSHOT
 HOST_APP_VERSION=test-host-app-version
@@ -49,7 +48,6 @@ Next, you must define the prod settings for the Sample App as either environment
 ```
 MINIAPP_PROD_SERVER_BASE_URL=https://www.example.com/
 HOST_PROJECT_PROD_ID=test-host-project-id
-HOST_APP_PROD_ID=test-host-app-id (deprecated, use HOST_PROJECT_PROD_ID)
 HOST_APP_PROD_SUBSCRIPTION_KEY=test-subs-key
 HOST_APP_PROD_UA_INFO=MiniAppDemoApp/1.0.0
 HOST_APP_PROD_VERSION=test-host-app-version
