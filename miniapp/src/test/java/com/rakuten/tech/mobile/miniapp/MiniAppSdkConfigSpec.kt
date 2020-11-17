@@ -20,7 +20,7 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test
-    fun `the key pattern should match the defined scheme when both project and app id has value`() {
+    fun `the key pattern should match the defined scheme when both project and app id have value`() {
         val config = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
@@ -74,7 +74,7 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when both projectId is blank`() {
+    fun `should throw exception when projectId is blank`() {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
@@ -86,7 +86,7 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when both projectId and rasAppId is blank`() {
+    fun `should throw exception when both projectId and rasAppId are blank`() {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isTestMode = true,
