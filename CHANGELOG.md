@@ -5,7 +5,7 @@
 **SDK**
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
-- **Change:** `isTestMode` has been deprecated and replaced with `isPreviewMode` to adopt the Preview mode.  
+- **Change:** `isTestMode` has been deprecated and replaced with `isPreviewMode` to adopt the Preview mode. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
 
 **Sample App**
 - **Change:** Update setting of external webview.

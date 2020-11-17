@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.util.Log
-
 /**
  * This represents the configuration settings for the Mini App SDK.
  * @property baseUrl Base URL used for retrieving a Mini App.
@@ -40,8 +38,6 @@ data class MiniAppSdkConfig(
     )
 
     init {
-        Log.d("AAAAA",""+isPreviewMode)
-
         when {
             !isBaseUrlValid(baseUrl) ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid baseUrl")
