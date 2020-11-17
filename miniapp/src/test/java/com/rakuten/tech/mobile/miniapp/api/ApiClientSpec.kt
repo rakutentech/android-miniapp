@@ -135,7 +135,7 @@ open class ApiClientSpec {
         AppInfo.instance = mock()
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
-            rasProjectOrAppId = TEST_HA_ID_PROJECT,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppVersionId = TEST_HA_ID_VERSION
         )
@@ -152,7 +152,7 @@ open class ApiClientSpec {
 
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostProjectOrAppId: String = TEST_HA_ID_PROJECT,
+        hostProjectId: String = TEST_HA_ID_PROJECT,
         hostAppVersionId: String = TEST_HA_ID_VERSION,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
@@ -161,7 +161,7 @@ open class ApiClientSpec {
     ) = ApiClient(
         retrofit = retrofit,
         isTestMode = false,
-        hostProjectOrAppId = hostProjectOrAppId,
+        hostProjectId = hostProjectId,
         hostAppVersionId = hostAppVersionId,
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,

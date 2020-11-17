@@ -4,7 +4,6 @@ package com.rakuten.tech.mobile.miniapp
  * This represents the configuration settings for the Mini App SDK.
  * @property baseUrl Base URL used for retrieving a Mini App.
  * @property rasProjectId Project ID for the Platform API.
- * @property rasAppId App ID for the Platform API (Deprecated).
  * @property subscriptionKey Subscription Key for the Platform API.
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
@@ -12,14 +11,31 @@ package com.rakuten.tech.mobile.miniapp
  */
 data class MiniAppSdkConfig(
     val baseUrl: String,
-    var rasProjectId: String,
-    @Deprecated("Use rasProjectId") var rasAppId: String,
+    val rasProjectId: String,
     val subscriptionKey: String,
     val hostAppVersionId: String,
     val hostAppUserAgentInfo: String,
     val isTestMode: Boolean
 ) {
-    internal var projectOrAppId = ""
+    internal val key = "$baseUrl-$isTestMode-$rasProjectId-$subscriptionKey-$hostAppVersionId"
+
+    @Deprecated("Use rasProjectId instead of rasAppId")
+    constructor(
+        baseUrl: String,
+        rasAppId: String,
+        rasProjectId: String = rasAppId,
+        subscriptionKey: String,
+        hostAppVersionId: String,
+        hostAppUserAgentInfo: String,
+        isTestMode: Boolean
+    ) : this(
+        baseUrl = baseUrl,
+        rasProjectId = rasProjectId,
+        subscriptionKey = subscriptionKey,
+        hostAppVersionId = hostAppVersionId,
+        hostAppUserAgentInfo = hostAppUserAgentInfo,
+        isTestMode = isTestMode
+    )
 
     init {
         when {
@@ -29,18 +45,10 @@ data class MiniAppSdkConfig(
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
             hostAppVersionId.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
-            rasProjectId.isBlank() && rasAppId.isBlank() ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid either rasProjectId or rasAppId")
-            rasProjectId.isNotBlank() && rasAppId.isNotBlank() ->
-                projectOrAppId = rasProjectId // Project ID has the first priority
-            rasProjectId.isBlank() && rasAppId.isNotBlank() ->
-                projectOrAppId = rasAppId
-            rasProjectId.isNotBlank() && rasAppId.isBlank() ->
-                projectOrAppId = rasProjectId
+            rasProjectId.isBlank() ->
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
         }
     }
-
-    internal val key = "$baseUrl-$isTestMode-$projectOrAppId-$subscriptionKey-$hostAppVersionId"
 }
 
 private fun isBaseUrlValid(url: String) = url.startsWith("https://")
