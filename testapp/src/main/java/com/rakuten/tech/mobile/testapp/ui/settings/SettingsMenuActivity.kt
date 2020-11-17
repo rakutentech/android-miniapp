@@ -88,7 +88,7 @@ class SettingsMenuActivity : BaseActivity() {
         updateSettings(
             binding.editAppId.text.toString(),
             binding.editSubscriptionKey.text.toString(),
-            binding.switchTestMode.isChecked
+            binding.switchPreviewMode.isChecked
         )
     }
 
@@ -102,7 +102,7 @@ class SettingsMenuActivity : BaseActivity() {
         binding.textInfo.text = createBuildInfo()
         binding.editAppId.setText(settings.appId)
         binding.editSubscriptionKey.setText(settings.subscriptionKey)
-        binding.switchTestMode.isChecked = settings.isTestMode
+        binding.switchPreviewMode.isChecked = settings.isPreviewMode
 
         binding.editAppId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -146,13 +146,13 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
+    private fun updateSettings(appId: String, subscriptionKey: String, isPreviewMode: Boolean) {
         val appIdHolder = settings.appId
         val subscriptionKeyHolder = settings.subscriptionKey
-        val isTestModeHolder = settings.isTestMode
+        val isPreviewModeHolder = settings.isPreviewMode
         settings.appId = appId
         settings.subscriptionKey = subscriptionKey
-        settings.isTestMode = isTestMode
+        settings.isPreviewMode = isPreviewMode
 
         launch {
             try {
@@ -165,7 +165,7 @@ class SettingsMenuActivity : BaseActivity() {
             } catch (error: MiniAppSdkException) {
                 settings.appId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
-                settings.isTestMode = isTestModeHolder
+                settings.isPreviewMode = isPreviewModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
                     showNormalDialog(this@SettingsMenuActivity, error.message.toString())

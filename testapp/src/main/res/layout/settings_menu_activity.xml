@@ -189,11 +189,11 @@
             android:background="@color/bg_section" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchTestMode"
+            android:id="@+id/switchPreviewMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/small_12"
-            android:text="@string/lb_test_mode"
+            android:text="@string/lb_preview_mode"
             android:visibility="gone" />
 
       </LinearLayout>
