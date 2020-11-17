@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
@@ -20,7 +21,7 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val isTestMode: Boolean,
+    private val isPreviewMode: Boolean,
     private val hostAppVersionId: String,
     private val hostAppId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
@@ -34,19 +35,19 @@ internal class ApiClient @VisibleForTesting constructor(
         rasAppId: String,
         subscriptionKey: String,
         hostAppVersionId: String,
-        isTestMode: Boolean = false
+        isPreviewMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
             rasAppId = rasAppId,
             subscriptionKey = subscriptionKey
         ),
-        isTestMode = isTestMode,
+        isPreviewMode = isPreviewMode,
         hostAppVersionId = hostAppVersionId,
         hostAppId = rasAppId
     )
 
-    private val testPath = if (isTestMode) "test" else ""
+    private val testPath = if (isPreviewMode) "preview" else ""
 
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
@@ -103,6 +104,7 @@ internal class RetrofitRequestExecutor(
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
+                Log.d("AAAA",""+response.body().toString())
                 response.body() ?: throw sdkExceptionForInternalServerError()
             }
             else -> throw exceptionForHttpError<T>(response)
