@@ -70,12 +70,14 @@ class MiniappSdkInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
         val context = context ?: return false
         val manifestConfig = createAppManifestConfig(context)
+        val backwardCompatibleHostId = if (manifestConfig.rasProjectId().isEmpty())
+            manifestConfig.rasAppId() else manifestConfig.rasProjectId()
 
         MiniApp.init(
             context = context,
             miniAppSdkConfig = MiniAppSdkConfig(
                 baseUrl = manifestConfig.baseUrl(),
-                rasProjectId = manifestConfig.rasProjectId(),
+                rasProjectId = backwardCompatibleHostId,
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppVersionId = manifestConfig.hostAppVersion(),

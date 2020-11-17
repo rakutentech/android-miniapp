@@ -5,7 +5,7 @@
 **SDK**
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
-- **Change:** `MiniAppSdkConfig.rasAppId` has been deprecated, use `MiniAppSdkConfig.rasProjectId` instead
+- **Change:** `com.rakuten.tech.mobile.ras.AppId` has been deprecated, use `com.rakuten.tech.mobile.ras.ProjectId` instead. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
 
 **Sample App**
 - **Change:** Updated setting of external webview.
