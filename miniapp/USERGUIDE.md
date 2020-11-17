@@ -58,7 +58,7 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="https://www.example.com" />
 
-        <!-- Preview Mode used for retrieving the Mini Apps -->
+        <!-- Preview mode used for retrieving the Mini Apps -->
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
             android:value="${isPreviewMode}" />
