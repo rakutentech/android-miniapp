@@ -23,7 +23,7 @@ class MiniAppListStore private constructor(context: Context) {
         Context.MODE_PRIVATE
     )
     private val gson = Gson()
-    private val MINI_APP_LIST = "mini_app_list" + "_is_test_${AppSettings.instance.isTestMode}"
+    private val MINI_APP_LIST = "mini_app_list" + "_is_test_${AppSettings.instance.isPreviewMode}"
 
     fun saveMiniAppList(list: List<MiniAppInfo>): Boolean = when {
         list.isEmpty() -> false

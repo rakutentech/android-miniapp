@@ -114,7 +114,7 @@ abstract class MiniApp internal constructor() {
                 rasProjectId = miniAppSdkConfig.rasProjectId,
                 subscriptionKey = miniAppSdkConfig.subscriptionKey,
                 hostAppVersionId = miniAppSdkConfig.hostAppVersionId,
-                isTestMode = miniAppSdkConfig.isTestMode
+                isPreviewMode = miniAppSdkConfig.isPreviewMode
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)

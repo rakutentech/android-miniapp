@@ -35,7 +35,7 @@ android {
     def appName = "Mini App Sample"
     def stagingManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
-            isTestMode              : property("IS_TEST_MODE") ?: false,
+            isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_VERSION") ?: "test-host-app-version",
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
@@ -44,7 +44,7 @@ android {
     ]
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
-            isTestMode              : property("PROD_IS_TEST_MODE") ?: false,
+            isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             hostAppVersion          : property("HOST_APP_PROD_VERSION") ?: "test-host-app-version",
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",

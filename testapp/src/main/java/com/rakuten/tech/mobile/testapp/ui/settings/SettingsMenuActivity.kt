@@ -88,7 +88,7 @@ class SettingsMenuActivity : BaseActivity() {
         updateSettings(
             binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString(),
-            binding.switchTestMode.isChecked
+            binding.switchPreviewMode.isChecked
         )
     }
 
@@ -102,7 +102,7 @@ class SettingsMenuActivity : BaseActivity() {
         binding.textInfo.text = createBuildInfo()
         binding.editProjectId.setText(settings.projectId)
         binding.editSubscriptionKey.setText(settings.subscriptionKey)
-        binding.switchTestMode.isChecked = settings.isTestMode
+        binding.switchPreviewMode.isChecked = settings.isPreviewMode
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -146,13 +146,13 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(projectId: String, subscriptionKey: String, isTestMode: Boolean) {
+    private fun updateSettings(projectId: String, subscriptionKey: String, isPreviewMode: Boolean) {
         val appIdHolder = settings.projectId
         val subscriptionKeyHolder = settings.subscriptionKey
-        val isTestModeHolder = settings.isTestMode
+        val isPreviewModeHolder = settings.isPreviewMode
         settings.projectId = projectId
         settings.subscriptionKey = subscriptionKey
-        settings.isTestMode = isTestMode
+        settings.isPreviewMode = isPreviewMode
 
         launch {
             try {
@@ -165,7 +165,7 @@ class SettingsMenuActivity : BaseActivity() {
             } catch (error: MiniAppSdkException) {
                 settings.projectId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
-                settings.isTestMode = isTestModeHolder
+                settings.isPreviewMode = isPreviewModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
                     showNormalDialog(this@SettingsMenuActivity, error.message.toString())

@@ -37,6 +37,7 @@ The SDK is configured via manifest meta-data, the configurable values are:
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
 | Project ID                   | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
@@ -57,6 +58,11 @@ In your `AndroidManifest.xml`:
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="https://www.example.com" />
+
+        <!-- Preview mode used for retrieving the Mini Apps -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
+            android:value="${isPreviewMode}" />
 
         <!-- Project ID for the Platform API -->
         <meta-data

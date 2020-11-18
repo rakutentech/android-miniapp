@@ -160,7 +160,7 @@ open class ApiClientSpec {
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
-        isTestMode = false,
+        isPreviewMode = false,
         hostProjectId = hostProjectId,
         hostAppVersionId = hostAppVersionId,
         requestExecutor = requestExecutor,
