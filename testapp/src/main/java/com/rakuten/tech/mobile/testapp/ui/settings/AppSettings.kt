@@ -15,10 +15,10 @@ class AppSettings private constructor(context: Context) {
     private val manifestConfig = AppManifestConfig(context)
     private val cache = Settings(context)
 
-    var isTestMode: Boolean
-        get() = cache.isTestMode ?: manifestConfig.isTestMode()
-        set(isTestMode) {
-            cache.isTestMode = isTestMode
+    var isPreviewMode: Boolean
+        get() = cache.isPreviewMode ?: manifestConfig.isPreviewMode()
+        set(isPreviewMode) {
+            cache.isPreviewMode = isPreviewMode
         }
 
     var appId: String
@@ -94,7 +94,7 @@ class AppSettings private constructor(context: Context) {
             hostAppVersionId = hostAppVersionId,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isTestMode = isTestMode
+            isPreviewMode = isPreviewMode
         )
 
     companion object {
@@ -114,13 +114,13 @@ private class Settings(context: Context) {
         Context.MODE_PRIVATE
     )
 
-    var isTestMode: Boolean?
+    var isPreviewMode: Boolean?
         get() =
-            if (prefs.contains(IS_TEST_MODE))
-                prefs.getBoolean(IS_TEST_MODE, false)
+            if (prefs.contains(IS_PREVIEW_MODE))
+                prefs.getBoolean(IS_PREVIEW_MODE, true)
             else
                 null
-        set(isTestMode) = prefs.edit().putBoolean(IS_TEST_MODE, isTestMode!!).apply()
+        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
 
     var appId: String?
         get() = prefs.getString(APP_ID, null)
@@ -169,7 +169,7 @@ private class Settings(context: Context) {
         get() = prefs.contains(CONTACT_NAMES)
 
     companion object {
-        private const val IS_TEST_MODE = "is_test_mode"
+        private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

@@ -80,6 +80,6 @@ internal class RealMiniApp(
         rasAppId = newConfig.rasAppId,
         subscriptionKey = newConfig.subscriptionKey,
         hostAppVersionId = newConfig.hostAppVersionId,
-        isTestMode = newConfig.isTestMode
+        isPreviewMode = newConfig.isPreviewMode
     )
 }
