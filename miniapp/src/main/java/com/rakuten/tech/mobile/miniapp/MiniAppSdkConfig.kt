@@ -6,16 +6,16 @@ package com.rakuten.tech.mobile.miniapp
  * @property rasAppId App ID for the Platform API.
  * @property subscriptionKey Subscription Key for the Platform API.
  * @property hostAppUserAgentInfo User Agent information from Host App.
- * @property isTestMode Whether the sdk is making use of the Test API Endpoints for under "Testing" mini apps.
+ * @property isPreviewMode Whether the host app wants to use the API Endpoints under "Preview" mode.
  */
 data class MiniAppSdkConfig(
     val baseUrl: String,
     val rasAppId: String,
     val subscriptionKey: String,
     val hostAppUserAgentInfo: String,
-    val isTestMode: Boolean
+    val isPreviewMode: Boolean
 ) {
-    internal val key = "$baseUrl-$isTestMode-$rasAppId-$subscriptionKey"
+    internal val key = "$baseUrl-$isPreviewMode-$rasAppId-$subscriptionKey"
 
     init {
         when {

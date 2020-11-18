@@ -28,6 +28,12 @@ class MiniappSdkInitializer : ContentProvider() {
         fun baseUrl(): String
 
         /**
+         * Whether the sdk is running in Preview mode.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsPreviewMode")
+        fun isPreviewMode(): Boolean
+
+        /**
          * Whether the sdk is running in Testing mode.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsTestMode")
@@ -65,7 +71,7 @@ class MiniappSdkInitializer : ContentProvider() {
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-                isTestMode = manifestConfig.isTestMode()
+                isTestMode = manifestConfig.isPreviewMode() || manifestConfig.isTestMode()
             )
         )
 

@@ -20,7 +20,7 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val isTestMode: Boolean,
+    private val isPreviewMode: Boolean,
     private val hostAppId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
@@ -32,18 +32,18 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasAppId: String,
         subscriptionKey: String,
-        isTestMode: Boolean = false
+        isPreviewMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
             rasAppId = rasAppId,
             subscriptionKey = subscriptionKey
         ),
-        isTestMode = isTestMode,
+        isPreviewMode = isPreviewMode,
         hostAppId = rasAppId
     )
 
-    private val testPath = if (isTestMode) "test" else ""
+    private val testPath = if (isPreviewMode) "preview" else ""
 
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
