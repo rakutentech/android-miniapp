@@ -11,6 +11,7 @@
 **Sample App**
 - **Change:** Update setting of external webview.
 - **Change:** Use `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
+- **Feature:** `rakuten.miniapp.device.location` permission as "Location" in custom permissions settings screen is visible now.
 
 ### 2.5.0 (2020-11-13)
 **SDK**
