@@ -38,9 +38,11 @@ class SampleWebChromeClient(val context: Context) : WebChromeClient() {
         isUserGesture: Boolean,
         resultMsg: Message?
     ): Boolean {
-        // redirect to default browser when there is window.open / _blank type anchor
-        (resultMsg?.obj as WebView.WebViewTransport).webView = WebView(context)
-        resultMsg.sendToTarget()
-        return true
+        return if (isUserGesture) {
+            // redirect to default browser when there is window.open / _blank type anchor
+            (resultMsg?.obj as WebView.WebViewTransport).webView = WebView(context)
+            resultMsg.sendToTarget()
+            true
+        } else false
     }
 }
