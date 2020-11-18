@@ -70,7 +70,10 @@ abstract class MiniAppMessageBridge {
     @VisibleForTesting
     internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
 
-    /** Get provided id of mini app for any purpose. **/
+    /**
+     * Get provided id of mini app for any purpose.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
     abstract fun getUniqueId(): String
 
     /** Post permission request from external. **/
