@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.app.Activity
 import android.content.Intent
 import android.webkit.JavascriptInterface
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -158,7 +157,6 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    @SuppressWarnings("NestedBlockDepth")
     private fun onRequestPermission(callbackObj: CallbackObj) {
         try {
             val permissionParam = Gson().fromJson<Permission>(
@@ -166,41 +164,14 @@ abstract class MiniAppMessageBridge {
                 object : TypeToken<Permission>() {}.type
             )
 
-            val permissionName = MiniAppPermissionType.getValue(permissionParam.permission)
-
-            if (permissionName.type == MiniAppPermissionType.LOCATION.type) {
-                val customPermission = customPermissionCache.readPermissions(miniAppInfo.id)
-                customPermission.pairValues.find {
-                    it.first.type == MiniAppCustomPermissionType.LOCATION.type
-                }?.let { location ->
-                    if (location.second.name == MiniAppCustomPermissionResult.ALLOWED.name) {
-                        requestDevicePermission(permissionName, callbackObj.id)
-                    } else {
-                        val errorMessage =
-                            MiniAppCustomPermissionType.LOCATION.type + " hasn't been granted for this MiniApp."
-                        Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show()
-                        bridgeExecutor.postError(
-                            callbackObj.id,
-                            "${ErrorBridgeMessage.ERR_REQ_PERMISSION} $errorMessage"
-                        )
-                    }
-                }
-            } else {
-                requestDevicePermission(permissionName, callbackObj.id)
-            }
+            requestPermission(
+                MiniAppPermissionType.getValue(permissionParam.permission)
+            ) { isGranted -> onRequestPermissionsResult(
+                callbackId = callbackObj.id,
+                isGranted = isGranted
+            ) }
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
-        }
-    }
-
-    private fun requestDevicePermission(type: MiniAppPermissionType, callBackId: String) {
-        requestPermission(
-            type
-        ) { isGranted ->
-            onRequestPermissionsResult(
-                callbackId = callBackId,
-                isGranted = isGranted
-            )
         }
     }
 
