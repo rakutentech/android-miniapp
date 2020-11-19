@@ -146,7 +146,7 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeOutdatedVersionApp(
+            verify(storage, times(1)).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -166,7 +166,7 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeOutdatedVersionApp(
+            verify(storage, times(1)).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )

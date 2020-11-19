@@ -36,13 +36,17 @@ class MiniAppDisplayViewModel constructor(
 
     fun obtainMiniAppDisplay(
         context: Context,
+        appInfo: MiniAppInfo?,
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
+            miniAppDisplay = if (appInfo != null)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator)
+            else
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {

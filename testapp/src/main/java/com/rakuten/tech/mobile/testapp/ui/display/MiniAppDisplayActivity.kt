@@ -107,20 +107,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
             }
 
-            if (appInfo == null)
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    appId,
-                    miniAppMessageBridge,
-                    miniAppNavigator
-                )
-            else
-                viewModel.obtainMiniAppDisplay(
-                    this@MiniAppDisplayActivity,
-                    appId,
-                    miniAppMessageBridge,
-                    miniAppNavigator
-                )
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                appInfo,
+                appId,
+                miniAppMessageBridge,
+                miniAppNavigator
+            )
         }
     }
 

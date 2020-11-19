@@ -209,7 +209,7 @@ miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
 ### #5 Create and display a Mini App
 
-Calling `MiniApp.create` with a Mini App ID object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
+Calling `MiniApp.create` with a Mini App ID or `MiniAppInfo` object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
 
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
@@ -224,6 +224,7 @@ class MiniAppActivity : Activity(), CoroutineScope {
         launch {
             try {
                 val miniAppDisplay = withContext(Dispatchers.IO) {
+                    // MINI_APP_ID can be replaced with MiniAppInfo.
                     MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge)
                 }
                 val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
