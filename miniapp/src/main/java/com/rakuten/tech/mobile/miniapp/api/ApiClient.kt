@@ -20,7 +20,7 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val isPreviewMode: Boolean,
+    internal val isPreviewMode: Boolean,
     private val hostProjectId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),

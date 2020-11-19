@@ -41,32 +41,28 @@ internal class RealMiniApp(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
-    ): MiniAppDisplay = executingCreate(
-        miniAppId = appId,
-        miniAppMessageBridge = miniAppMessageBridge,
-        miniAppNavigator = miniAppNavigator
-    )
+    ): MiniAppDisplay = when {
+        appId.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> {
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
+            displayer.createMiniAppDisplay(
+                basePath,
+                miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache
+            )
+        }
+    }
 
     override suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
-    ): MiniAppDisplay = executingCreate(
-        appInfo = appInfo,
-        miniAppId = appInfo.id,
-        miniAppMessageBridge = miniAppMessageBridge,
-        miniAppNavigator = miniAppNavigator
-    )
-
-    private suspend fun executingCreate(
-        appInfo: MiniAppInfo? = null,
-        miniAppId: String,
-        miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
-        miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
+        appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId, appInfo)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
