@@ -29,7 +29,7 @@
     <string name="action_contacts">Contacts</string>
     <string name="action_custom_permissions">Permissions</string>
 
-    <string name="hint_host_app_id">Host App ID</string>
+    <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
 
     <string name="error_empty">Required</string>
@@ -37,5 +37,5 @@
 
     <string name="message_empty_miniapps">There is no Mini App found!</string>
 
-    <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host App ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
+    <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>

@@ -6,10 +6,12 @@
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
 - **Change:** `isTestMode` has been deprecated and replaced with `isPreviewMode` to adopt the Preview mode. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
+- **Change:** `com.rakuten.tech.mobile.ras.AppId` has been deprecated, use `com.rakuten.tech.mobile.ras.ProjectId` instead. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
 
 **Sample App**
-- **Change:** Update setting of external webview.
-- **Change:** Use `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
+- **Change:** Updated setting of external webview.
+- **Change:** Used `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
+- **Change:** Updated sample app Manifest configuration with replacing RAS App ID by Project ID.
 
 ### 2.5.0 (2020-11-13)
 **SDK**
