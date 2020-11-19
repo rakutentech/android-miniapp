@@ -21,7 +21,6 @@ import java.net.UnknownHostException
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     private val isPreviewMode: Boolean,
-    private val hostAppVersionId: String,
     private val hostProjectId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
@@ -33,7 +32,6 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasProjectId: String,
         subscriptionKey: String,
-        hostAppVersionId: String,
         isPreviewMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
@@ -42,7 +40,6 @@ internal class ApiClient @VisibleForTesting constructor(
             subscriptionKey = subscriptionKey
         ),
         isPreviewMode = isPreviewMode,
-        hostAppVersionId = hostAppVersionId,
         hostProjectId = rasProjectId
     )
 
@@ -52,7 +49,6 @@ internal class ApiClient @VisibleForTesting constructor(
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(
             hostAppId = hostProjectId,
-            hostAppVersionId = hostAppVersionId,
             testPath = testPath)
         return requestExecutor.executeRequest(request)
     }
@@ -61,7 +57,6 @@ internal class ApiClient @VisibleForTesting constructor(
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(
             hostAppId = hostProjectId,
-            hostAppVersionId = hostAppVersionId,
             miniAppId = appId,
             testPath = testPath)
         val info = requestExecutor.executeRequest(request)
@@ -78,7 +73,6 @@ internal class ApiClient @VisibleForTesting constructor(
             hostAppId = hostProjectId,
             miniAppId = miniAppId,
             versionId = versionId,
-            hostAppVersionId = hostAppVersionId,
             testPath = testPath
         )
         return requestExecutor.executeRequest(request)
