@@ -61,10 +61,10 @@
             android:layout_margin="@dimen/small_8">
 
           <androidx.appcompat.widget.AppCompatEditText
-              android:id="@+id/editAppId"
+              android:id="@+id/editProjectId"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:hint="@string/hint_host_app_id"
+              android:hint="@string/hint_host_project_id"
               android:imeOptions="actionDone"
               android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>

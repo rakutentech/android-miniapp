@@ -7,7 +7,8 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import kotlin.collections.ArrayList
 
 class AppSettings private constructor(context: Context) {
@@ -21,10 +22,10 @@ class AppSettings private constructor(context: Context) {
             cache.isPreviewMode = isPreviewMode
         }
 
-    var appId: String
-        get() = cache.appId ?: manifestConfig.rasAppId()
-        set(appId) {
-            cache.appId = appId
+    var projectId: String
+        get() = cache.projectId ?: manifestConfig.rasProjectId()
+        set(projectId) {
+            cache.projectId = projectId
         }
 
     var subscriptionKey: String
@@ -89,7 +90,7 @@ class AppSettings private constructor(context: Context) {
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
-            rasAppId = appId,
+            rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
             hostAppVersionId = hostAppVersionId,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
@@ -122,7 +123,7 @@ private class Settings(context: Context) {
                 null
         set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
 
-    var appId: String?
+    var projectId: String?
         get() = prefs.getString(APP_ID, null)
         set(appId) = prefs.edit().putString(APP_ID, appId).apply()
 
