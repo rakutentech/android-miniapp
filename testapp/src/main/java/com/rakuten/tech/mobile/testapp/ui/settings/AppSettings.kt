@@ -7,7 +7,8 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import kotlin.collections.ArrayList
 
 class AppSettings private constructor(context: Context) {
