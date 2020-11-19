@@ -23,24 +23,6 @@
           android:layout_height="wrap_content"
           android:orientation="vertical">
 
-        <RelativeLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:padding="@dimen/medium_16"
-          android:foreground="?attr/selectableItemBackground">
-
-          <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchPreviewMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/lb_preview_mode" />
-        </RelativeLayout>
-
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/horizontal_divider_height"
-          android:background="@color/bg_section" />
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textInfo"
             android:layout_width="match_parent"
@@ -49,6 +31,19 @@
             android:padding="@dimen/small_8"
             android:textColor="@android:color/black"
             tools:text="Build Info" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/horizontal_divider_height"
+            android:background="@color/bg_section" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchPreviewMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_8"
+            android:padding="@dimen/small_8"
+            android:text="@string/lb_preview_mode" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
