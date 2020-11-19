@@ -124,9 +124,8 @@ class RealMiniAppSpec {
             isTestMode = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             isPreviewMode = true,
-            rasAppId = TEST_HA_ID_APP,
+            rasAppId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
 

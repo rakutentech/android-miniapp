@@ -64,9 +64,6 @@
             android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
             android:value="${isPreviewMode}" />
         <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
-            android:value="${hostAppVersion}" />
-        <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
             android:value="${hostAppUserAgentInfo}" />
         <meta-data

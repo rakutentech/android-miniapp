@@ -34,7 +34,7 @@ open class ApiClientSpec {
     fun `should fetch the list of mini apps`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.list(any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.list(any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -48,7 +48,7 @@ open class ApiClientSpec {
         val mockCall: Call<ManifestEntity> = mock()
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns ManifestEntity(fileList)
@@ -82,7 +82,7 @@ open class ApiClientSpec {
     fun `should fetch meta data for a mini app for a given appId`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -95,7 +95,7 @@ open class ApiClientSpec {
         val secondItem = miniAppInfo.copy()
         val resultList = listOf(miniAppInfo, secondItem)
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns resultList
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -107,7 +107,7 @@ open class ApiClientSpec {
             runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns emptyList()
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -127,7 +127,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
-        ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT, TEST_HA_ID_VERSION).downloadFile(TEST_URL_FILE)
+        ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
     }
 
     @Test
@@ -136,8 +136,7 @@ open class ApiClientSpec {
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
             rasProjectId = TEST_HA_ID_PROJECT,
-            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )
     }
 
@@ -153,7 +152,6 @@ open class ApiClientSpec {
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
         hostProjectId: String = TEST_HA_ID_PROJECT,
-        hostAppVersionId: String = TEST_HA_ID_VERSION,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
@@ -162,7 +160,6 @@ open class ApiClientSpec {
         retrofit = retrofit,
         isPreviewMode = false,
         hostProjectId = hostProjectId,
-        hostAppVersionId = hostAppVersionId,
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,

@@ -85,14 +85,11 @@ class AppSettings private constructor(context: Context) {
 
     val baseUrl = manifestConfig.baseUrl()
 
-    val hostAppVersionId = manifestConfig.hostAppVersion()
-
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
             rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
-            hostAppVersionId = hostAppVersionId,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode
