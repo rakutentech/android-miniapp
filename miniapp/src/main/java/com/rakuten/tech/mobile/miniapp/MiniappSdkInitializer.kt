@@ -78,7 +78,6 @@ class MiniappSdkInitializer : ContentProvider() {
             miniAppSdkConfig = MiniAppSdkConfig(
                 baseUrl = manifestConfig.baseUrl(),
                 rasProjectId = backwardCompatibleHostId,
-                rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isPreviewMode = manifestConfig.isPreviewMode() || manifestConfig.isTestMode()
