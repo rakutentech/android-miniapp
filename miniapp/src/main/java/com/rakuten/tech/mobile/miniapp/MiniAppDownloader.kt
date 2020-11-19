@@ -24,9 +24,9 @@ internal class MiniAppDownloader(
 ) : UpdatableApiClient {
 
     @Suppress("SwallowedException", "LongMethod")
-    suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> {
+    suspend fun getMiniApp(appId: String, appInfo: MiniAppInfo?): Pair<String, MiniAppInfo> {
         try {
-            val miniAppInfo = apiClient.fetchInfo(appId)
+            val miniAppInfo = appInfo ?: apiClient.fetchInfo(appId)
             val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
 
             return if (downloadedVersionPath == null) {
@@ -40,7 +40,7 @@ internal class MiniAppDownloader(
             }
         } catch (netError: MiniAppNetException) {
             // load local if possible when offline
-            val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
+            val miniAppInfo = appInfo ?: miniAppStatus.getDownloadedMiniApp(appId)
             if (miniAppInfo != null) {
                 val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
                 if (downloadedVersionPath !== null) {
