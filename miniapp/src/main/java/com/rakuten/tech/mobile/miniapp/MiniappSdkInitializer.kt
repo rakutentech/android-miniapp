@@ -40,12 +40,6 @@ class MiniappSdkInitializer : ContentProvider() {
         fun isTestMode(): Boolean
 
         /**
-         * Host app version for the mini app backend.
-         **/
-        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppVersion")
-        fun hostAppVersion(): String
-
-        /**
          * This user agent specific info will be appended to the default user-agent.
          * It should be meaningful e.g. host-app-name/version.
          * @see [link][https://developer.chrome.com/multidevice/user-agent] for more information.
@@ -86,7 +80,6 @@ class MiniappSdkInitializer : ContentProvider() {
                 rasProjectId = backwardCompatibleHostId,
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
-                hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isPreviewMode = manifestConfig.isPreviewMode(),
                 isTestMode = manifestConfig.isTestMode()

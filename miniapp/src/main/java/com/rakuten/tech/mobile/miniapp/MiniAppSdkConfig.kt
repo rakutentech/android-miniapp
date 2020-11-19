@@ -13,11 +13,11 @@ data class MiniAppSdkConfig(
     val baseUrl: String,
     val rasProjectId: String,
     val subscriptionKey: String,
-    val hostAppVersionId: String,
+    val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean
 ) {
-    internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey-$hostAppVersionId"
+    internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 
     @Deprecated("Use isPreviewMode instead of isTestMode, Use rasProjectId instead of rasAppId")
     constructor(
@@ -25,7 +25,7 @@ data class MiniAppSdkConfig(
         rasAppId: String,
         rasProjectId: String = rasAppId,
         subscriptionKey: String,
-        hostAppVersionId: String,
+        hostAppVersionId: String = "",
         hostAppUserAgentInfo: String,
         isTestMode: Boolean,
         isPreviewMode: Boolean = isTestMode
@@ -46,8 +46,6 @@ data class MiniAppSdkConfig(
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
             subscriptionKey.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
-            hostAppVersionId.isBlank() ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid hostAppVersionId")
         }
     }
 }
