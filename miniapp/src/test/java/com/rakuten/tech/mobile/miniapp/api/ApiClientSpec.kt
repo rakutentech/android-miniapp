@@ -127,7 +127,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
-        ApiClient(mockRetrofitClient, false, TEST_HA_ID_APP).downloadFile(TEST_URL_FILE)
+        ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
     }
 
     @Test
@@ -135,7 +135,7 @@ open class ApiClientSpec {
         AppInfo.instance = mock()
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )
     }
@@ -151,7 +151,7 @@ open class ApiClientSpec {
 
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostAppId: String = TEST_HA_ID_APP,
+        hostProjectId: String = TEST_HA_ID_PROJECT,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
@@ -159,7 +159,7 @@ open class ApiClientSpec {
     ) = ApiClient(
         retrofit = retrofit,
         isPreviewMode = false,
-        hostAppId = hostAppId,
+        hostProjectId = hostProjectId,
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,

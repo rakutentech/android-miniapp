@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 /**
  * This represents the configuration settings for the Mini App SDK.
  * @property baseUrl Base URL used for retrieving a Mini App.
- * @property rasAppId App ID for the Platform API.
+ * @property rasProjectId Project ID for the Platform API.
  * @property subscriptionKey Subscription Key for the Platform API.
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
@@ -11,18 +11,19 @@ package com.rakuten.tech.mobile.miniapp
  */
 data class MiniAppSdkConfig(
     val baseUrl: String,
-    val rasAppId: String,
+    val rasProjectId: String,
     val subscriptionKey: String,
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean
 ) {
-    internal val key = "$baseUrl-$isPreviewMode-$rasAppId-$subscriptionKey"
+    internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 
-    @Deprecated("Use isPreviewMode instead of isTestMode")
+    @Deprecated("Use isPreviewMode instead of isTestMode, Use rasProjectId instead of rasAppId")
     constructor(
         baseUrl: String,
         rasAppId: String,
+        rasProjectId: String = rasAppId,
         subscriptionKey: String,
         hostAppVersionId: String = "",
         hostAppUserAgentInfo: String,
@@ -30,7 +31,7 @@ data class MiniAppSdkConfig(
         isPreviewMode: Boolean = isTestMode
     ) : this(
         baseUrl = baseUrl,
-        rasAppId = rasAppId,
+        rasProjectId = rasProjectId,
         subscriptionKey = subscriptionKey,
         hostAppVersionId = hostAppVersionId,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
@@ -41,8 +42,8 @@ data class MiniAppSdkConfig(
         when {
             !isBaseUrlValid(baseUrl) ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid baseUrl")
-            rasAppId.isBlank() ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasAppId")
+            rasProjectId.isBlank() ->
+                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
             subscriptionKey.isBlank() ->
                 throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid subscriptionKey")
         }

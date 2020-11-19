@@ -77,7 +77,7 @@ internal class RealMiniApp(
     @VisibleForTesting
     internal fun createApiClient(newConfig: MiniAppSdkConfig) = ApiClient(
         baseUrl = newConfig.baseUrl,
-        rasAppId = newConfig.rasAppId,
+        rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
         isPreviewMode = newConfig.isPreviewMode
     )

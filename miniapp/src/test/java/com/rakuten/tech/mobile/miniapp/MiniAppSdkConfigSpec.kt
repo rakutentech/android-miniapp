@@ -10,12 +10,12 @@ class MiniAppSdkConfigSpec {
         val config = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
         config.key shouldEqual "${config.baseUrl}-${config.isPreviewMode}" +
-                "-${config.rasAppId}-${config.subscriptionKey}"
+                "-${config.rasProjectId}-${config.subscriptionKey}"
     }
 
     @Test(expected = MiniAppSdkException::class)
@@ -23,7 +23,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = "http://www.example.com/1",
             isPreviewMode = false,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
@@ -34,18 +34,18 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = " ",
             isPreviewMode = true,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
     }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when rasAppId is blank`() {
+    fun `should throw exception when projectId is blank`() {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            rasAppId = " ",
+            rasProjectId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
@@ -56,7 +56,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = " ",
             hostAppUserAgentInfo = TEST_HA_NAME
         )

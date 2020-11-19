@@ -50,8 +50,15 @@ class MiniappSdkInitializer : ContentProvider() {
         /**
          * App Id assigned to host App.
          **/
+        @Deprecated("Use rasProjectId()")
         @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
         fun rasAppId(): String
+
+        /**
+         * Project Id assigned to host App.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectId")
+        fun rasProjectId(): String
 
         /**
          * Subscription Key for the registered host app.
@@ -63,11 +70,14 @@ class MiniappSdkInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
         val context = context ?: return false
         val manifestConfig = createAppManifestConfig(context)
+        val backwardCompatibleHostId = if (manifestConfig.rasProjectId().isEmpty())
+            manifestConfig.rasAppId() else manifestConfig.rasProjectId()
 
         MiniApp.init(
             context = context,
             miniAppSdkConfig = MiniAppSdkConfig(
                 baseUrl = manifestConfig.baseUrl(),
+                rasProjectId = backwardCompatibleHostId,
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),

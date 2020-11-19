@@ -37,8 +37,8 @@ The SDK is configured via manifest meta-data, the configurable values are:
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                    | ❌         | 🚫        |
 | Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
+| Project ID                   | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 
@@ -62,10 +62,10 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
             android:value="${isPreviewMode}" />
 
-        <!-- App ID for the Platform API -->
+        <!-- Project ID for the Platform API -->
         <meta-data
-            android:name="com.rakuten.tech.mobile.ras.AppId"
-            android:value="your_app_id" />
+            android:name="com.rakuten.tech.mobile.ras.ProjectId"
+            android:value="your_project_id" />
 
         <!-- Subscription Key for the Platform API -->
         <meta-data
