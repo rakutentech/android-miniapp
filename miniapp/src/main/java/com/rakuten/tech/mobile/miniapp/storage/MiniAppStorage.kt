@@ -58,17 +58,12 @@ internal class MiniAppStorage(
         deleteDirectory(parentFile)
     }
 
-    @Suppress("LongMethod")
-    suspend fun removeOutdatedVersionApp(
-        appId: String,
-        latestVersionId: String,
-        appPath: String = getMiniAppPath(appId)
-    ) {
+    suspend fun removeVersions(appId: String, exclusiveVersionId: String, appPath: String = getMiniAppPath(appId)) {
         val parentFile = File(appPath)
         if (parentFile.isDirectory && parentFile.listFiles() != null) {
             flow {
                 parentFile.listFiles()?.forEach { file ->
-                    if (!file.absolutePath.endsWith(latestVersionId))
+                    if (!file.absolutePath.endsWith(exclusiveVersionId))
                         emit(file)
                 }
             }.collect { file -> deleteDirectory(file) }
