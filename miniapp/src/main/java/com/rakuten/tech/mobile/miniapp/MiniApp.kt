@@ -53,7 +53,7 @@ abstract class MiniApp internal constructor() {
      * Creates a mini app using the mini app ID and version specified in [MiniAppInfo].
      * This should only be used in "Preview Mode".
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
-     * @param info metadata of a mini app.
+     * @param appInfo metadata of a mini app.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server

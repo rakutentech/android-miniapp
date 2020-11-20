@@ -67,7 +67,7 @@ internal class MiniAppDownloader(
         miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
     }
 
-    fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
+    private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
         if (miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
