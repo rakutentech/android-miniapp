@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import java.io.File
 
-@Suppress("SwallowedException")
+@Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
     private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
@@ -28,7 +28,7 @@ internal class MiniAppDownloader(
         val miniAppInfo = apiClient.fetchInfo(appId)
         onGetMiniApp(miniAppInfo)
     } catch (netError: MiniAppNetException) {
-       onNetworkError(miniAppStatus.getDownloadedMiniApp(appId))
+        onNetworkError(miniAppStatus.getDownloadedMiniApp(appId))
     }
 
     suspend fun getMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> = try {
@@ -67,21 +67,22 @@ internal class MiniAppDownloader(
         miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
     }
 
-    private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
+    fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
         if (miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
-            return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath))) {
+            return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
-            } else {
-                Log.e(TAG, "Failed to verify the hash of the cached files. " +
-                        "The files will be deleted and the Mini App re-downloaded.")
+            else {
+                Log.e(
+                    TAG, "Failed to verify the hash of the cached files. " +
+                            "The files will be deleted and the Mini App re-downloaded."
+                )
                 storage.removeApp(miniAppInfo.id)
                 miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
                 null
             }
         }
-
         return null
     }
 
@@ -98,7 +99,10 @@ internal class MiniAppDownloader(
     ) = apiClient.fetchFileList(appId, versionId)
 
     @SuppressWarnings("LongMethod")
-    private suspend fun downloadMiniApp(miniAppInfo: MiniAppInfo, manifest: ManifestEntity): String {
+    private suspend fun downloadMiniApp(
+        miniAppInfo: MiniAppInfo,
+        manifest: ManifestEntity
+    ): String {
         val appId = miniAppInfo.id
         val versionId = miniAppInfo.version.versionId
         val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
