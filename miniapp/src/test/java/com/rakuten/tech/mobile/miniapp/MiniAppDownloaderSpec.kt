@@ -131,7 +131,7 @@ class MiniAppDownloaderSpec {
         }
 
     @Test
-    fun `should execute old file deletion after downloading new version`() {
+    fun `should execute old file deletion after downloading new version when in host mode`() {
         runBlockingTest {
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
@@ -144,6 +144,9 @@ class MiniAppDownloaderSpec {
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
+            downloader.getMiniApp(TEST_ID_MINIAPP)
+
+            When calling apiClient.isPreviewMode itReturns true
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
             verify(storage, times(1)).removeVersions(
@@ -240,6 +243,7 @@ class MiniAppDownloaderSpec {
             When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
             downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(testMiniApp).first shouldBe TEST_BASE_PATH
         }
 
     @Test(expected = MiniAppSdkException::class)
