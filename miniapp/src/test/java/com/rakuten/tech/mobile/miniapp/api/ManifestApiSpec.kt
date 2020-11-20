@@ -47,7 +47,6 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
         executeManifestCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!
         requestUrl.encodedPath shouldEndWith "manifest"
-        requestUrl.encodedQuery.toString() shouldContain "hostVersion=$TEST_HA_ID_VERSION"
     }
 
     @Test
@@ -62,10 +61,9 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
-                hostAppId = TEST_HA_ID_APP,
+                hostAppId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION,
                 testPath = "test"
             ).execute()
         mockServer.takeRequest().path!! shouldContain "test"
@@ -75,10 +73,9 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
-                hostAppId = TEST_HA_ID_APP,
+                hostAppId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION
             ).execute()
     }
 }
@@ -92,10 +89,9 @@ class ManifestApiResponseSpec : ManifestApiSpec() {
         mockServer.enqueue(createResponse())
         manifestEntity = retrofit.create(ManifestApi::class.java)
             .fetchFileListFromManifest(
-                hostAppId = TEST_HA_ID_APP,
+                hostAppId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION,
-                hostAppVersionId = TEST_HA_ID_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION
             )
             .execute().body()!!
     }

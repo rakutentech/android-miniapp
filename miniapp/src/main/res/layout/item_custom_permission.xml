@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/permissionTopView"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:padding="@dimen/small_8"
+  app:layout_constraintLeft_toLeftOf="parent"
+  app:layout_constraintStart_toStartOf="parent"
+  app:layout_constraintTop_toTopOf="parent">
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/small_8"
+    android:layout_alignParentStart="true"
+    android:layout_toStartOf="@+id/permissionSwitch"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/permissionText"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@android:color/black"
+      android:textSize="@dimen/text_large_16"
+      tools:text="Custom permission name" />
+
+    <TextView
+      android:id="@+id/permissionDescription"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_4"
+      android:textColor="@android:color/black"
+      android:textSize="@dimen/text_medium_14"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/permissionTopView"
+      tools:text="Custom permission description" />
+
+  </LinearLayout>
+
+  <Switch
+    android:id="@+id/permissionSwitch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+</RelativeLayout>

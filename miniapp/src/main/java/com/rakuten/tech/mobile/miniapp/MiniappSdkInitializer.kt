@@ -28,16 +28,16 @@ class MiniappSdkInitializer : ContentProvider() {
         fun baseUrl(): String
 
         /**
+         * Whether the sdk is running in Preview mode.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsPreviewMode")
+        fun isPreviewMode(): Boolean
+
+        /**
          * Whether the sdk is running in Testing mode.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsTestMode")
         fun isTestMode(): Boolean
-
-        /**
-         * Host app version for the mini app backend.
-         **/
-        @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppVersion")
-        fun hostAppVersion(): String
 
         /**
          * This user agent specific info will be appended to the default user-agent.
@@ -50,8 +50,15 @@ class MiniappSdkInitializer : ContentProvider() {
         /**
          * App Id assigned to host App.
          **/
+        @Deprecated("Use rasProjectId()")
         @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
         fun rasAppId(): String
+
+        /**
+         * Project Id assigned to host App.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectId")
+        fun rasProjectId(): String
 
         /**
          * Subscription Key for the registered host app.
@@ -63,15 +70,18 @@ class MiniappSdkInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
         val context = context ?: return false
         val manifestConfig = createAppManifestConfig(context)
+        val backwardCompatibleHostId = if (manifestConfig.rasProjectId().isEmpty())
+            manifestConfig.rasAppId() else manifestConfig.rasProjectId()
 
         MiniApp.init(
             context = context,
             miniAppSdkConfig = MiniAppSdkConfig(
                 baseUrl = manifestConfig.baseUrl(),
+                rasProjectId = backwardCompatibleHostId,
                 rasAppId = manifestConfig.rasAppId(),
                 subscriptionKey = manifestConfig.subscriptionKey(),
-                hostAppVersionId = manifestConfig.hostAppVersion(),
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isPreviewMode = manifestConfig.isPreviewMode(),
                 isTestMode = manifestConfig.isTestMode()
             )
         )

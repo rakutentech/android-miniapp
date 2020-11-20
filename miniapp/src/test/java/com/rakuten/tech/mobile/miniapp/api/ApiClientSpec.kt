@@ -34,7 +34,7 @@ open class ApiClientSpec {
     fun `should fetch the list of mini apps`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.list(any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.list(any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -48,7 +48,7 @@ open class ApiClientSpec {
         val mockCall: Call<ManifestEntity> = mock()
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns ManifestEntity(fileList)
@@ -82,7 +82,7 @@ open class ApiClientSpec {
     fun `should fetch meta data for a mini app for a given appId`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -95,18 +95,19 @@ open class ApiClientSpec {
         val secondItem = miniAppInfo.copy()
         val resultList = listOf(miniAppInfo, secondItem)
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns resultList
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
     }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `fetchInfo should throw MiniAppSdkException when the API returns zero items`() = runBlockingTest {
+    @Test(expected = MiniAppHasNoPublishedVersionException::class)
+    fun `fetchInfo should throw MiniAppHasNoPublishedVersionException when the API returns zero items`() =
+            runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any(), any()) itReturns mockCall
+        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns emptyList()
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
@@ -126,7 +127,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
-        ApiClient(mockRetrofitClient, false, TEST_HA_ID_APP, TEST_HA_ID_VERSION).downloadFile(TEST_URL_FILE)
+        ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
     }
 
     @Test
@@ -134,9 +135,8 @@ open class ApiClientSpec {
         AppInfo.instance = mock()
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
-            rasAppId = TEST_HA_ID_APP,
-            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppVersionId = TEST_HA_ID_VERSION
+            rasProjectId = TEST_HA_ID_PROJECT,
+            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )
     }
 
@@ -151,17 +151,15 @@ open class ApiClientSpec {
 
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostAppId: String = TEST_HA_ID_APP,
-        hostAppVersionId: String = TEST_HA_ID_VERSION,
+        hostProjectId: String = TEST_HA_ID_PROJECT,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
-        isTestMode = false,
-        hostAppId = hostAppId,
-        hostAppVersionId = hostAppVersionId,
+        isPreviewMode = false,
+        hostProjectId = hostProjectId,
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,

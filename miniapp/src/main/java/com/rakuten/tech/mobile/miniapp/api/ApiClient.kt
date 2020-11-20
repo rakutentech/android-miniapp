@@ -2,8 +2,10 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
@@ -18,9 +20,8 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val isTestMode: Boolean,
-    private val hostAppVersionId: String,
-    private val hostAppId: String,
+    private val isPreviewMode: Boolean,
+    private val hostProjectId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
@@ -29,28 +30,25 @@ internal class ApiClient @VisibleForTesting constructor(
 
     constructor(
         baseUrl: String,
-        rasAppId: String,
+        rasProjectId: String,
         subscriptionKey: String,
-        hostAppVersionId: String,
-        isTestMode: Boolean = false
+        isPreviewMode: Boolean = false
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
-            rasAppId = rasAppId,
+            rasProjectId = rasProjectId,
             subscriptionKey = subscriptionKey
         ),
-        isTestMode = isTestMode,
-        hostAppVersionId = hostAppVersionId,
-        hostAppId = rasAppId
+        isPreviewMode = isPreviewMode,
+        hostProjectId = rasProjectId
     )
 
-    private val testPath = if (isTestMode) "test" else ""
+    private val testPath = if (isPreviewMode) "preview" else ""
 
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(
-            hostAppId = hostAppId,
-            hostAppVersionId = hostAppVersionId,
+            hostAppId = hostProjectId,
             testPath = testPath)
         return requestExecutor.executeRequest(request)
     }
@@ -58,8 +56,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(
-            hostAppId = hostAppId,
-            hostAppVersionId = hostAppVersionId,
+            hostAppId = hostProjectId,
             miniAppId = appId,
             testPath = testPath)
         val info = requestExecutor.executeRequest(request)
@@ -67,16 +64,15 @@ internal class ApiClient @VisibleForTesting constructor(
         if (info.isNotEmpty()) {
             return info.first()
         } else {
-            throw MiniAppSdkException("Server returned no info for the Mini App Id: $appId")
+            throw MiniAppHasNoPublishedVersionException(appId)
         }
     }
 
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(
-            hostAppId = hostAppId,
+            hostAppId = hostProjectId,
             miniAppId = miniAppId,
             versionId = versionId,
-            hostAppVersionId = hostAppVersionId,
             testPath = testPath
         )
         return requestExecutor.executeRequest(request)
@@ -105,12 +101,13 @@ internal class RetrofitRequestExecutor(
             }
             else -> throw exceptionForHttpError<T>(response)
         }
-    } catch (error: UnknownHostException) {
-        throw MiniAppNetException(error)
-    } catch (error: SocketTimeoutException) {
-        throw MiniAppNetException(error)
-    } catch (error: Exception) { // when response is not Type T or malformed JSON is received
-        throw MiniAppSdkException(error)
+    } catch (error: Exception) {
+        when (error) {
+            is UnknownHostException,
+            is SocketTimeoutException -> throw MiniAppNetException(error)
+            is MiniAppSdkException -> throw error
+            else -> throw MiniAppSdkException(error) // when response is not Type T or malformed JSON is received
+        }
     }
 
     @Throws(MiniAppSdkException::class)
@@ -124,6 +121,7 @@ internal class RetrofitRequestExecutor(
                     response, errorData, createErrorConvertor(retrofit)
                 )
             )
+            404 -> throw MiniAppNotFoundException(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConvertor(retrofit)

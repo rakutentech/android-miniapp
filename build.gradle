@@ -29,6 +29,7 @@ buildscript {
     ext.recyclerview = '1.1.0'
     ext.gson = '2.8.6'
     ext.google_ads = '19.4.0'
+    ext.custom_tab = '1.2.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'

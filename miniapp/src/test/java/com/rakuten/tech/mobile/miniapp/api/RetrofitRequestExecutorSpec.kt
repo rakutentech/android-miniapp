@@ -55,7 +55,7 @@ open class RetrofitRequestExecutorSpec private constructor(
         AppInfo.instance = mock()
         val retrofit = createRetrofitClient(
             baseUrl = TEST_URL_HTTPS_2,
-            rasAppId = TEST_HA_ID_APP,
+            rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )
         return Mockito.spy(RetrofitRequestExecutor(retrofit))
@@ -169,6 +169,16 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         val executor = spyRetrofitExecutor()
         val request: Call<String> = SocketTimeOutCall()
         executor.executeRequest(request)
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `should throw MiniAppNotFoundException when the server returns 404`() = runBlockingTest {
+        mockServer.enqueue(
+            MockResponse().setResponseCode(404)
+        )
+
+        createRequestExecutor()
+            .executeRequest(createApi().fetch())
     }
 
     private val standardErrorBody = { code: Int, message: String ->

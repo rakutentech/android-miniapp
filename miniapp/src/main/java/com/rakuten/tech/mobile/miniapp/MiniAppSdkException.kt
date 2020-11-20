@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.os.NetworkOnMainThreadException
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 
 /**
  * A custom exception class which treats the purpose of providing
@@ -12,6 +13,26 @@ open class MiniAppSdkException(message: String, cause: Throwable?) : Exception(m
 
     constructor(message: String) : this(message, null)
 }
+
+/**
+ * Exception which is thrown when the server returns no published
+ * versions for the provided mini app ID.
+ */
+class MiniAppHasNoPublishedVersionException(appId: String) :
+    MiniAppSdkException("Server returned no published version info for the provided Mini App Id: $appId")
+
+/**
+ * Exception which is thrown when the provided mini app ID
+ * does not exist on the server.
+ */
+class MiniAppNotFoundException(serverMessage: String) :
+    MiniAppSdkException("$serverMessage: Server returned no mini app for the provided Mini App ID.")
+
+/**
+ * Exception which is thrown when HostApp doesn't implement requestCustomPermissions interface.
+ */
+internal class CustomPermissionsNotImplementedException :
+    MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
 
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 

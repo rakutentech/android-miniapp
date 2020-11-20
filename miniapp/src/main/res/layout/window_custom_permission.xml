@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <RelativeLayout
+    android:id="@+id/permissionTopView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_8"
+    android:background="@color/colorCustomPermissionTop"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <TextView
+      android:id="@+id/permissionCloseWindow"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:padding="@dimen/small_8"
+      android:text="@string/miniapp_custom_permission_close"
+      android:textColor="@android:color/holo_red_dark" />
+
+    <TextView
+      android:id="@+id/permissionSave"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:padding="@dimen/small_8"
+      android:text="@string/miniapp_custom_permission_save"
+      android:textColor="@android:color/black" />
+
+  </RelativeLayout>
+
+  <TextView
+    android:id="@+id/permissionTutorial"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/small_8"
+    android:paddingBottom="@dimen/small_8"
+    android:paddingStart="@dimen/medium_16"
+    android:paddingEnd="@dimen/medium_16"
+    android:background="@color/colorCustomPermissionTop"
+    android:text="@string/miniapp_custom_permission_tutorial"
+    app:layout_constraintBottom_toTopOf="@id/listCustomPermission"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/permissionTopView"
+    app:layout_constraintVertical_bias="0" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/listCustomPermission"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/small_4"
+    android:padding="@dimen/small_8"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/permissionTutorial"
+    tools:listitem="@layout/item_custom_permission" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

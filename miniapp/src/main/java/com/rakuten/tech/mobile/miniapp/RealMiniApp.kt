@@ -39,19 +39,14 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        miniAppMessageBridge: MiniAppMessageBridge
-    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge)
-
-    override suspend fun create(
-        appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator
+        miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge, miniAppNavigator)
 
     private suspend fun executingCreate(
         miniAppId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -82,9 +77,8 @@ internal class RealMiniApp(
     @VisibleForTesting
     internal fun createApiClient(newConfig: MiniAppSdkConfig) = ApiClient(
         baseUrl = newConfig.baseUrl,
-        rasAppId = newConfig.rasAppId,
+        rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
-        hostAppVersionId = newConfig.hostAppVersionId,
-        isTestMode = newConfig.isTestMode
+        isPreviewMode = newConfig.isPreviewMode
     )
 }

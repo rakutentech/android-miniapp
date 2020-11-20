@@ -7,7 +7,8 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import kotlin.collections.ArrayList
 
 class AppSettings private constructor(context: Context) {
@@ -15,16 +16,16 @@ class AppSettings private constructor(context: Context) {
     private val manifestConfig = AppManifestConfig(context)
     private val cache = Settings(context)
 
-    var isTestMode: Boolean
-        get() = cache.isTestMode ?: manifestConfig.isTestMode()
-        set(isTestMode) {
-            cache.isTestMode = isTestMode
+    var isPreviewMode: Boolean
+        get() = cache.isPreviewMode ?: manifestConfig.isPreviewMode()
+        set(isPreviewMode) {
+            cache.isPreviewMode = isPreviewMode
         }
 
-    var appId: String
-        get() = cache.appId ?: manifestConfig.rasAppId()
-        set(appId) {
-            cache.appId = appId
+    var projectId: String
+        get() = cache.projectId ?: manifestConfig.rasProjectId()
+        set(projectId) {
+            cache.projectId = projectId
         }
 
     var subscriptionKey: String
@@ -84,17 +85,14 @@ class AppSettings private constructor(context: Context) {
 
     val baseUrl = manifestConfig.baseUrl()
 
-    val hostAppVersionId = manifestConfig.hostAppVersion()
-
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
-            rasAppId = appId,
+            rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
-            hostAppVersionId = hostAppVersionId,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isTestMode = isTestMode
+            isPreviewMode = isPreviewMode
         )
 
     companion object {
@@ -114,15 +112,15 @@ private class Settings(context: Context) {
         Context.MODE_PRIVATE
     )
 
-    var isTestMode: Boolean?
+    var isPreviewMode: Boolean?
         get() =
-            if (prefs.contains(IS_TEST_MODE))
-                prefs.getBoolean(IS_TEST_MODE, false)
+            if (prefs.contains(IS_PREVIEW_MODE))
+                prefs.getBoolean(IS_PREVIEW_MODE, true)
             else
                 null
-        set(isTestMode) = prefs.edit().putBoolean(IS_TEST_MODE, isTestMode!!).apply()
+        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
 
-    var appId: String?
+    var projectId: String?
         get() = prefs.getString(APP_ID, null)
         set(appId) = prefs.edit().putString(APP_ID, appId).apply()
 
@@ -169,7 +167,7 @@ private class Settings(context: Context) {
         get() = prefs.contains(CONTACT_NAMES)
 
     companion object {
-        private const val IS_TEST_MODE = "is_test_mode"
+        private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

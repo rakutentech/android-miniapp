@@ -11,15 +11,13 @@ internal interface AppInfoApi {
     @GET("host/{hostappId}/miniapps/{testPath}")
     fun list(
         @Path("hostappId") hostAppId: String,
-        @Path("testPath") testPath: String = "",
-        @Query("hostVersion") hostAppVersionId: String
+        @Path("testPath") testPath: String = ""
     ): Call<List<MiniAppInfo>>
 
     @GET("host/{hostappId}/miniapps/{testPath}")
     fun fetchInfo(
         @Path("hostappId") hostAppId: String,
         @Path("testPath") testPath: String = "",
-        @Query("hostVersion") hostAppVersionId: String,
         @Query("miniAppId") miniAppId: String
     ): Call<List<MiniAppInfo>>
 }

@@ -1,8 +1,27 @@
 ## CHANGELOG
 
-### 2.X.X (In progress)
+2.X.X (In progress)
+
 **SDK**
-- **Feature:** Provide the access token to miniapp.
+- **Feature:** Mini App can call media execution play/pause programmatically.
+- **Change:** Added the default implementation for external link handler. Using [custom tab](https://developers.google.com/web/android/custom-tabs).
+- **Change:** `isTestMode` has been deprecated and replaced with `isPreviewMode` to adopt the Preview mode. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
+- **Change:** `com.rakuten.tech.mobile.ras.AppId` has been deprecated, use `com.rakuten.tech.mobile.ras.ProjectId` instead. See [this](miniapp/USERGUIDE.md#2-configure-sdk-settings-in-androidmanifestxml).
+
+**Sample App**
+- **Change:** Updated setting of external webview.
+- **Change:** Used `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
+- **Change:** Updated sample app Manifest configuration with replacing RAS App ID by Project ID.
+
+### 2.5.0 (2020-11-13)
+**SDK**
+- **Feature:** Provide the access token to miniapp. You can implement `MiniAppMessageBridge.getAccessToken` to use this feature.
+- **Feature:** Added default UI support for managing custom permissions in case `requestCustomPermissions` hasn't been implemented in Host App.
+- **Feature:** Added `MiniAppHasNoPublishedVersionException` and `MiniAppNotFoundException` exception types to `MiniApp.create` and `MiniApp.fetchInfo`.
+
+**Sample App**
+- **Feature:** Added "Access Token" configuration options to settings screen.
+- **Feature:** Show error dialog instead of Toast for errors in settings screen.
 
 ### 2.4.0 (2020-10-30)
 **SDK**
@@ -14,7 +33,7 @@
 
 ### 2.3.0 (2020-10-15)
 **SDK**
-- **Feature:** Load and display ads from miniapp. See [here](miniapp/USERGUIDE.md#5-ads-integration).
+- **Feature:** Load and display ads from miniapp. See [this](miniapp/USERGUIDE.md#5-ads-integration).
 - **Feature:** Added `getUserName()` interface in `UserInfoBridgeDispatcher` for receiving user name if the required permission has been granted e.g. "rakuten.miniapp.user.USER_NAME".
 - **Feature:** Added `getProfilePhoto()` interface in `UserInfoBridgeDispatcher` for receiving profile photo url if the required permission has been granted e.g. "rakuten.miniapp.user.PROFILE_PHOTO".
 - **Fix:** `tel:` links weren't functioning correctly on API 23.
@@ -26,10 +45,10 @@
 
 ### 2.2.0 (2020-10-02)
 **SDK**
-- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. [See here](miniapp/USERGUIDE.md#4-custom-permissions).
-- **Feature:** Added interface for sharing content from a mini app. [See here](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge).
-- **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions. [See here](miniapp/USERGUIDE.md#4-custom-permissions).
-- **Feature:** Added capability to open external links in an external browser or WebView. By default, all external links should open in an external WebView. [See here](miniapp/USERGUIDE.md#3-external-url-loader).
+- **Feature:** Added public interface to read and store the custom permissions inside Android SDK. See [this](miniapp/USERGUIDE.md#4-custom-permissions).
+- **Feature:** Added interface for sharing content from a mini app. See [this](miniapp/USERGUIDE.md#4-implement-the-miniappmessagebridge).
+- **Feature:** Added `listDownloadedWithCustomPermissions()` public interface that enables the host app to retrieve the list of downloaded mini-apps and their respective custom permissions. See [this](miniapp/USERGUIDE.md#4-custom-permissions).
+- **Feature:** Added capability to open external links in an external browser or WebView. By default, all external links should open in an external WebView. See [this](miniapp/USERGUIDE.md#3-external-url-loader).
 - **Fix:** Added header to all API requests to accept content encoding. This is to support caching which is done by the API.
 
 **Sample App**

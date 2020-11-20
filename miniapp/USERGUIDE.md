@@ -37,14 +37,13 @@ The SDK is configured via manifest meta-data, the configurable values are:
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| App ID                       | String  | `com.rakuten.tech.mobile.ras.AppId`                    | ❌         | 🚫        |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
+| Project ID                   | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
-| Host App Version             | String  | `com.rakuten.tech.mobile.miniapp.HostAppVersion`       | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
-* All meta-data values must be string values, including the value for `com.rakuten.tech.mobile.miniapp.HostAppVersion`. For example it could be set to the string value `1.0.0`, but if you need to use a number value such as `1.0` or `1`, then you must declare the value in your string resources (`res/values/strings.xml`) and reference the string ID in the manifest, for example `@string/app_version`.
 * The host app info is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
 In your `AndroidManifest.xml`:
@@ -58,20 +57,20 @@ In your `AndroidManifest.xml`:
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
             android:value="https://www.example.com" />
 
-        <!-- App ID for the Platform API -->
+        <!-- Preview mode used for retrieving the Mini Apps -->
         <meta-data
-            android:name="com.rakuten.tech.mobile.ras.AppId"
-            android:value="your_app_id" />
+            android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
+            android:value="${isPreviewMode}" />
+
+        <!-- Project ID for the Platform API -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.ras.ProjectId"
+            android:value="your_project_id" />
 
         <!-- Subscription Key for the Platform API -->
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="your_subscription_key" />
-
-        <!-- Version of your app - used to determine feature compatibility for Mini App -->
-        <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.HostAppVersion"
-            android:value="your_app_version" />
 
         <!-- Optional User Agent Information relating to the host app -->
         <meta-data
@@ -121,7 +120,7 @@ There are some methods have default implementation but host app can override the
 |------------------------------|----------|
 | getUniqueId                  | 🚫       |
 | requestPermission            | 🚫       |
-| requestCustomPermissions     | 🚫       |
+| requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 
 The `UserInfoBridgeDispatcher`:
@@ -152,6 +151,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         callback.invoke(true)
     }
 
+    // Implement requestCustomPermissions if HostApp wants to show their own UI for managing permissions
     override fun requestCustomPermissions(
         permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
         callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
@@ -159,7 +159,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // Implementation details to request custom permissions
         // .. .. ..
         // pass a list of Pair of MiniAppCustomPermissionType and MiniAppCustomPermissionResult in callback 
-        callback.invoke(listOf()) 
+        callback.invoke(list) 
     }
 
     override fun shareContent(
@@ -241,6 +241,11 @@ class MiniAppActivity : Activity(), CoroutineScope {
 
 **Note:** Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
 
+**Note:** There are several different types of exceptions which could be thrown by `MiniApp.create`, but all are sub-classes of `MiniAppSdkException`.
+You can handle each exception type differently if you would like different behavior for different cases.
+For example you may wish to display a different error message when the server contains no published versions of a mini app.
+See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
+
 ## Advanced
 
 ### #1 Clearing up mini app display
@@ -284,8 +289,9 @@ override fun onBackPressed() {
 
 The mini app is loaded with the specific custom scheme and custom domain in mini app view.
 
-In default, the external link is also loaded in mini app view.
-It is possible for hostapp to load this external link with its own webview / browser.
+In default, the external link will be opened in custom tab. See [this](https://developers.google.com/web/android/custom-tabs).
+
+HostApp also can implement their own way by passing `MiniAppNavigator` object to `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppNavigator: MiniAppNavigator)`.
 
 - Implement `MiniAppNavigator`.
 

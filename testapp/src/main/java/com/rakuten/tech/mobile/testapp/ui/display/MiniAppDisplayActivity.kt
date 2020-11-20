@@ -22,14 +22,11 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.CustomPermissionPresenter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -134,18 +131,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                     this@MiniAppDisplayActivity,
                     AppPermission.getPermissionRequest(miniAppPermissionType),
                     AppPermission.getRequestCode(miniAppPermissionType)
-                )
-            }
-
-            override fun requestCustomPermissions(
-                permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
-                callback: (List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>) -> Unit
-            ) {
-                CustomPermissionPresenter().executeCustomPermissionsCallback(
-                    this@MiniAppDisplayActivity,
-                    appId,
-                    permissionsWithDescription,
-                    callback
                 )
             }
         }

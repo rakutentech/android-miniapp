@@ -86,9 +86,9 @@ class SettingsMenuActivity : BaseActivity() {
         settingsProgressDialog.show()
 
         updateSettings(
-            binding.editAppId.text.toString(),
+            binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString(),
-            binding.switchTestMode.isChecked
+            binding.switchPreviewMode.isChecked
         )
     }
 
@@ -100,11 +100,11 @@ class SettingsMenuActivity : BaseActivity() {
 
     private fun renderAppSettingsScreen() {
         binding.textInfo.text = createBuildInfo()
-        binding.editAppId.setText(settings.appId)
+        binding.editProjectId.setText(settings.projectId)
         binding.editSubscriptionKey.setText(settings.subscriptionKey)
-        binding.switchTestMode.isChecked = settings.isTestMode
+        binding.switchPreviewMode.isChecked = settings.isPreviewMode
 
-        binding.editAppId.addTextChangedListener(settingsTextWatcher)
+        binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
         binding.buttonProfile.setOnClickListener {
@@ -131,14 +131,14 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun validateInputIDs() {
-        val isAppIdInvalid = binding.editAppId.text.toString().isInvalidUuid()
+        val isAppIdInvalid = binding.editProjectId.text.toString().isInvalidUuid()
 
-        saveViewEnabled = !(isInputEmpty(binding.editAppId)
+        saveViewEnabled = !(isInputEmpty(binding.editProjectId)
                 || isInputEmpty(binding.editSubscriptionKey)
                 || isAppIdInvalid)
 
-        if (isInputEmpty(binding.editAppId) || isAppIdInvalid) {
-            binding.editAppId.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editProjectId) || isAppIdInvalid) {
+            binding.editProjectId.error = getString(R.string.error_invalid_input)
         }
 
         if (isInputEmpty(binding.editSubscriptionKey)) {
@@ -146,13 +146,13 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(appId: String, subscriptionKey: String, isTestMode: Boolean) {
-        val appIdHolder = settings.appId
+    private fun updateSettings(projectId: String, subscriptionKey: String, isPreviewMode: Boolean) {
+        val appIdHolder = settings.projectId
         val subscriptionKeyHolder = settings.subscriptionKey
-        val isTestModeHolder = settings.isTestMode
-        settings.appId = appId
+        val isPreviewModeHolder = settings.isPreviewMode
+        settings.projectId = projectId
         settings.subscriptionKey = subscriptionKey
-        settings.isTestMode = isTestMode
+        settings.isPreviewMode = isPreviewMode
 
         launch {
             try {
@@ -163,9 +163,9 @@ class SettingsMenuActivity : BaseActivity() {
                     navigateToPreviousScreen()
                 }
             } catch (error: MiniAppSdkException) {
-                settings.appId = appIdHolder
+                settings.projectId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
-                settings.isTestMode = isTestModeHolder
+                settings.isPreviewMode = isPreviewModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
                     showNormalDialog(this@SettingsMenuActivity, error.message.toString())

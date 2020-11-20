@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
@@ -25,7 +27,7 @@ internal class MiniAppWebView(
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
-    miniAppNavigator: MiniAppNavigator?,
+    var miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
@@ -61,12 +63,14 @@ internal class MiniAppWebView(
         settings.allowUniversalAccessFromFileURLs = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
+        settings.mediaPlaybackRequiresUserGesture = false
 
         if (hostAppUserAgentInfo.isNotEmpty())
             settings.userAgentString =
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator,
+        setupMiniAppNavigator()
+        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator!!,
             externalResultHandler, miniAppScheme)
         webChromeClient = miniAppWebChromeClient
 
@@ -92,6 +96,20 @@ internal class MiniAppWebView(
         stopLoading()
         webViewClient = null
         destroy()
+    }
+
+    @VisibleForTesting
+    internal fun setupMiniAppNavigator() {
+        if (miniAppNavigator == null) {
+            miniAppNavigator = object : MiniAppNavigator {
+                override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
+                    val customTabsIntent = CustomTabsIntent.Builder()
+                        .setShowTitle(true)
+                        .build()
+                    customTabsIntent.launchUrl(context, url.toUri())
+                }
+            }
+        }
     }
 
     override fun runSuccessCallback(callbackId: String, value: String) {

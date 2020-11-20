@@ -11,9 +11,10 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
 
 class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
+
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
-    private var permissionDescription = ArrayList<String>()
+    private var permissionDescriptions = ArrayList<String>()
     var permissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -40,8 +41,8 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
             )
         }
 
-        if (permissionDescription.isNotEmpty())
-            holder.permissionDescription.text = permissionDescription[position]
+        if (permissionDescriptions.isNotEmpty())
+            holder.permissionDescription.text = permissionDescriptions[position]
 
         if (holder.permissionDescription.text.isEmpty())
             holder.permissionDescription.visibility = View.GONE
@@ -63,7 +64,7 @@ class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionS
                 Pair(permissionNames[position], permissionToggles[position])
             )
         }
-        permissionDescription = description
+        permissionDescriptions = description
         notifyDataSetChanged()
     }
 
