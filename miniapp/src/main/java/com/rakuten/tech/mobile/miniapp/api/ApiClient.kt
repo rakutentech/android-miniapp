@@ -68,6 +68,7 @@ internal class ApiClient @VisibleForTesting constructor(
         }
     }
 
+    @Throws(MiniAppSdkException::class)
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(
             hostAppId = hostProjectId,

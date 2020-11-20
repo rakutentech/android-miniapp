@@ -64,6 +64,12 @@ class RealMiniAppSpec {
         realMiniApp.create(" ", miniAppMessageBridge)
     }
 
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when id of MiniAppInfo is blank`() = runBlockingTest {
+        val testMiniAppInfo = TEST_MA.copy(id = "")
+        realMiniApp.create(testMiniAppInfo, miniAppMessageBridge)
+    }
+
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
@@ -81,10 +87,10 @@ class RealMiniAppSpec {
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge, miniAppNavigator)
+            When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
+            realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
 
-            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
+            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA)
             verify(displayer, times(1))
                 .createMiniAppDisplay(getMiniAppResult.first, getMiniAppResult.second,
                     miniAppMessageBridge, miniAppNavigator, miniAppCustomPermissionCache)
