@@ -209,7 +209,7 @@ miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
 ### #5 Create and display a Mini App
 
-Calling `MiniApp.create` with a Mini App ID or `MiniAppInfo` object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
+Calling `MiniApp.create` with a Mini App ID object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
 
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
@@ -224,7 +224,6 @@ class MiniAppActivity : Activity(), CoroutineScope {
         launch {
             try {
                 val miniAppDisplay = withContext(Dispatchers.IO) {
-                    // MINI_APP_ID can be replaced with MiniAppInfo.
                     MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge)
                 }
                 val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
@@ -246,6 +245,9 @@ class MiniAppActivity : Activity(), CoroutineScope {
 You can handle each exception type differently if you would like different behavior for different cases.
 For example you may wish to display a different error message when the server contains no published versions of a mini app.
 See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
+
+**Note:** Preview Mode
+In preview mode, you can have multiple versions of single miniapp so you can load the specific version with MiniAppInfo object by using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge)`.
 
 ## Advanced
 
@@ -306,6 +308,7 @@ miniAppNavigator = object : MiniAppNavigator {
 
 - Create mini app display
 Using `MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge, miniAppNavigator)`.
+In preview mode, using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge, miniAppNavigator)`.
 
 - Return URL result to mini app view.
 Some mini apps are loaded their services with external url but in the end that external url will
