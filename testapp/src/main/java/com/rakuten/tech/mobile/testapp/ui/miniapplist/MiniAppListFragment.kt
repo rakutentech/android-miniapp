@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
@@ -31,7 +31,7 @@ import java.util.Locale
 
 import kotlin.collections.ArrayList
 
-class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
+class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener {
 
     companion object {

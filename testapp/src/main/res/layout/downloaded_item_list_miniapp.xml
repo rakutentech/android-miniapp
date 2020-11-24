@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/downloaded_miniapp_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_8"
+    android:background="?selectableItemBackground"
+    android:orientation="horizontal">
+
+    <ImageView
+      android:id="@+id/downloaded_miniapp_icon"
+      android:layout_width="@dimen/miniapp_icon_size"
+      android:layout_height="@dimen/miniapp_icon_size"
+      android:layout_marginStart="@dimen/small_8"
+      tools:src="@drawable/ic_default" />
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/small_8"
+      android:orientation="vertical">
+
+      <TextView
+        android:id="@+id/downloaded_miniapp_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16"
+        tools:text="MiniApp Name" />
+
+      <TextView
+        android:id="@+id/downloaded_miniapp_permissions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_4"
+        android:textSize="@dimen/text_medium_14"
+        tools:text="Permissions Status" />
+    </LinearLayout>
+  </LinearLayout>
+</layout>

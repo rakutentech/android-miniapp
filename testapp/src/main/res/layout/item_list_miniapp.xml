@@ -15,10 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:paddingTop="@dimen/small_8"
-        android:paddingBottom="@dimen/small_8"
-        android:paddingStart="@dimen/small_8"
-        android:paddingEnd="@dimen/small_8"
+        android:padding="@dimen/small_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent">

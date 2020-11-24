@@ -169,6 +169,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         miniappPermissionCallback.invoke(isGranted)
     }
