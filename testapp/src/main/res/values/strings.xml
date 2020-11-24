@@ -12,7 +12,7 @@
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
     <string name="menu_title_change_settings">Change App Settings</string>
-    <string name="menu_hint_search_miniapps">Search for a Mini App</string>
+    <string name="menu_hint_search_miniapps">Search by Name or ID</string>
 
     <string name="userdata_edit_photo">Edit Photo</string>
     <string name="userdata_hint_edit_name">Enter your name here</string>
