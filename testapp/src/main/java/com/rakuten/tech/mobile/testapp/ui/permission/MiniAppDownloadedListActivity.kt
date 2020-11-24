@@ -5,24 +5,31 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniappDownloadedListActivityBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity(), MiniAppList {
+class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity(),
+    MiniAppDownloadedListAdapter.MiniAppDownloadedListener {
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
-    private lateinit var miniAppListAdapter: MiniAppListAdapter
-    private var miniAppList: ArrayList<MiniAppInfo> = arrayListOf()
+    private lateinit var adapter: MiniAppDownloadedListAdapter
     private lateinit var binding: MiniappDownloadedListActivityBinding
+
+    private val startPermissionSettingsForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == MiniAppPermissionSettingsActivity.REQ_CODE_PERMISSIONS_UPDATE) {
+                loadList()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,39 +50,36 @@ class MiniAppDownloadedListActivity(private val miniapp: MiniApp) : BaseActivity
 
     private fun renderScreen() {
         initAdapter()
-        executeLoadingList()
-        addMiniAppList(miniAppList)
+        loadList()
     }
 
     private fun initAdapter() {
-        miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
+        adapter = MiniAppDownloadedListAdapter(this)
         binding.listDownloadedMiniApp.layoutManager = LinearLayoutManager(applicationContext)
-        binding.listDownloadedMiniApp.adapter = miniAppListAdapter
+        binding.listDownloadedMiniApp.adapter = adapter
+        binding.listDownloadedMiniApp.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        )
     }
 
-    private fun executeLoadingList() {
-        miniAppList.clear()
-        miniapp.listDownloadedWithCustomPermissions().forEach {
+    private fun loadList() {
+        val miniAppList: ArrayList<MiniAppInfo> = arrayListOf()
+        val miniAppPermissions: ArrayList<String> = arrayListOf()
+        miniApp.listDownloadedWithCustomPermissions().forEach {
             miniAppList.add(it.first)
+            miniAppPermissions.add(parsePermissionText(it.second.pairValues))
         }
-    }
-
-    private fun addMiniAppList(miniAppsInfo: List<MiniAppInfo>) {
-        miniAppListAdapter.addListWithSection(miniAppsInfo)
+        adapter.addDownloadedList(miniAppList, miniAppPermissions)
         updateEmptyView()
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
-        raceExecutor.run {
-            MiniAppPermissionSettingsActivity.start(
-                this@MiniAppDownloadedListActivity,
-                miniAppInfo.id
-            )
-        }
+        val intent = MiniAppPermissionSettingsActivity.getStartIntent(this, miniAppInfo.id)
+        startPermissionSettingsForResult.launch(intent)
     }
 
     private fun updateEmptyView() {
-        if (miniAppListAdapter.itemCount == 0)
+        if (adapter.itemCount == 0)
             binding.emptyView.visibility = View.VISIBLE
         else
             binding.emptyView.visibility = View.GONE
