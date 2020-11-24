@@ -36,7 +36,7 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
+     * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
@@ -56,7 +56,7 @@ abstract class MiniApp internal constructor() {
      * @param appInfo metadata of a mini app.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
+     * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
@@ -72,7 +72,7 @@ abstract class MiniApp internal constructor() {
     /**
      * Fetches meta data information of a mini app.
      * @return [MiniAppInfo] for the provided appId of a mini app
-     * @throws [MiniAppNotFoundException] when the specified mini app ID does not exist on the server
+     * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any other reason.

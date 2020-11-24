@@ -18,19 +18,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppList
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
 
 import kotlin.collections.ArrayList
 
-class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
+class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener {
 
     companion object {
@@ -61,6 +62,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
         miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
+        if (AppSettings.instance.isPreviewMode)
+            binding.btnInput.visibility = View.GONE
         return binding.root
     }
 
@@ -180,8 +183,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppList, OnSearchListener,
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
         return fetchedMiniAppList.filter { info ->
-            info.displayName.toLowerCase(Locale.ROOT)
-                .contains(newText.toString().toLowerCase(Locale.ROOT))
+            val searchText = newText.toString().toLowerCase(Locale.ROOT)
+            info.displayName.toLowerCase(Locale.ROOT).contains(searchText) ||
+                    info.id.toLowerCase(Locale.ROOT).contains(searchText)
         }
     }
 

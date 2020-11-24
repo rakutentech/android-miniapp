@@ -111,7 +111,7 @@ internal class RetrofitRequestExecutor(
         }
     }
 
-    @Throws(MiniAppSdkException::class)
+    @Throws(MiniAppSdkException::class, MiniAppNotFoundException::class)
     @Suppress("MagicNumber", "ThrowsCount")
     private fun <T> exceptionForHttpError(response: Response<T>): MiniAppSdkException {
         // Error body shouldn't be null if request wasn't successful
