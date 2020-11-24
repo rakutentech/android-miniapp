@@ -13,6 +13,7 @@ If you find a bug in the source code, you can help us by submitting an issue to 
 Please include unit tests where necessary to cover any functionality that is introduced.
 
 ## Coding Guidelines
+* **See our [Android SDK Development guidelines](https://github.com/rakutentech/mobile-sdk-guidelines/blob/master/android-sdk-development-guidelines.md)**
 * All features or bug fixes **must be tested** by one or more unit tests/specs
 * All public API methods **must be documented** in the KDoc/JavaDoc and potentially in the user guide.
 * All Kotlin code must follow [Kotlin's Coding Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html).
@@ -96,3 +97,34 @@ A sentence describing the type of change with necessary and relevant information
 * **Obsoleted**: No longer works as expected since a better alternative is available and will maybe discontinued from the next releases.
 * **Removed**: When a feature has been expired by the sunsetting deadline.
 * Write "No changes" when there is no difference with the previous release version.
+
+## SDK Development Learning Path
+
+If you would like to submit a pull request for a major feature, please follow the learning path below to ensure you understand the development guidelines and the tools which we use.
+
+* **Read and understand our [Android SDK Development guidelines](https://github.com/rakutentech/mobile-sdk-guidelines/blob/master/android-sdk-development-guidelines.md)**.
+* Be familiar with the [Kotlin Coding Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html).
+* Read about best practices for Android:
+    * [Best Practices for Background Jobs](https://developer.android.com/training/best-background)
+    * [Best Practices for Performance](https://developer.android.com/topic/performance)
+    * [Best Practices for Security](https://developer.android.com/topic/security)
+    * [Best Practices for Permissions](https://developer.android.com/guide/topics/permissions/overview)
+    * [Best Practices for Testing](https://developer.android.com/training/testing/index.html)
+    * [Read about Support Annotations](https://developer.android.com/studio/write/annotations.html)
+* Learn how to use unit testing tools:
+    * [JUnit](https://junit.org/junit4/)
+    * [Mockito](https://github.com/mockito/mockito) & [Mockito-Kotlin](https://github.com/nhaarman/mockito-kotlin)
+    * [Kluent](https://github.com/MarkusAmshove/Kluent)
+    * [Robolectric](http://robolectric.org/)
+    * [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)
+    * [kotlinx-coroutines-test](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)
+* Learn how to write Kotlin documentation.
+    * [KDocs reference](https://kotlinlang.org/docs/reference/kotlin-doc.html)
+    * Learn how to use [Dokka](https://github.com/Kotlin/dokka) and how to [generate docs locally](../DEV.md#How-to-generate-KDocs-SDK-documentation-locally).
+* Read about [our shared build config for SDKs](https://github.com/rakutentech/android-buildconfig) and understand how its integrated in the project.
+* Be familiar with [code quality tools](https://github.com/rakutentech/android-buildconfig/tree/master/quality).
+    * [Detekt](https://detekt.github.io/detekt/) and [our Detekt rules](https://github.com/rakutentech/android-buildconfig/blob/master/quality/detekt/detekt-config.yml)
+    * [ktlint](https://github.com/pinterest/ktlint)
+* Be familiar with the [OWASP mobile security checklist](https://github.com/OWASP/owasp-mstg/tree/master/Checklists).
+    * Optional: Read the [OWASP Android Testing Guide](https://github.com/OWASP/owasp-mstg#android-testing-guide).
+* Learn about [Semantic versioning](https://semver.org/spec/v2.0.0.html).
