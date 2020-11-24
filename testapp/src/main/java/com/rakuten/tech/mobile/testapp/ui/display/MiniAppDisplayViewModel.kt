@@ -55,7 +55,7 @@ class MiniAppDisplayViewModel constructor(
                 is MiniAppHasNoPublishedVersionException ->
                     _errorData.postValue("No published versions for the provided Mini App ID.")
                 is MiniAppNotFoundException ->
-                    _errorData.postValue("No Mini App found for the provided Mini App ID.")
+                    _errorData.postValue("No Mini App found for the provided Project ID.")
                 else -> _errorData.postValue(e.message)
             }
         } finally {
