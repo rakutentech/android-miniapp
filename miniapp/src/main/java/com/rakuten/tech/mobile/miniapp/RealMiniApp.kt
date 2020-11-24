@@ -41,16 +41,28 @@ internal class RealMiniApp(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
-    ): MiniAppDisplay = executingCreate(appId, miniAppMessageBridge, miniAppNavigator)
+    ): MiniAppDisplay = when {
+        appId.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> {
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
+            displayer.createMiniAppDisplay(
+                basePath,
+                miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache
+            )
+        }
+    }
 
-    private suspend fun executingCreate(
-        miniAppId: String,
+    override suspend fun create(
+        appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
-        miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
+        appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(miniAppId)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,

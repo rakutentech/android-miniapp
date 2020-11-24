@@ -131,7 +131,7 @@ class MiniAppDownloaderSpec {
         }
 
     @Test
-    fun `should execute old file deletion after downloading new version`() {
+    fun `should execute old file deletion after downloading new version when in host mode`() {
         runBlockingTest {
             When calling storage.getMiniAppVersionPath(
                 TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns TEST_BASE_PATH
@@ -146,7 +146,10 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeOutdatedVersionApp(
+            When calling apiClient.isPreviewMode itReturns true
+            downloader.getMiniApp(TEST_ID_MINIAPP)
+
+            verify(storage, times(1)).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -166,7 +169,7 @@ class MiniAppDownloaderSpec {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeOutdatedVersionApp(
+            verify(storage, times(1)).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -240,6 +243,7 @@ class MiniAppDownloaderSpec {
             When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
             downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(testMiniApp).first shouldBe TEST_BASE_PATH
         }
 
     @Test(expected = MiniAppSdkException::class)
@@ -262,21 +266,19 @@ class MiniAppDownloaderSpec {
         }
 
     @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when cannot get miniapp`() =
-        runBlockingTest {
-            When calling miniAppStatus.isVersionDownloaded(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION,
-                TEST_BASE_PATH
-            ) itReturns false
-            When calling storage.getMiniAppVersionPath(
-                TEST_ID_MINIAPP,
-                TEST_ID_MINIAPP_VERSION
-            ) itReturns TEST_BASE_PATH
-            When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
+    fun `should throw exception when cannot get miniapp by id from server`() = runBlockingTest {
+        When calling apiClient.fetchInfo(TEST_ID_MINIAPP) doThrow MiniAppNetException(TEST_ERROR_MSG)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP)
-        }
+        downloader.getMiniApp(TEST_ID_MINIAPP)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when cannot get miniapp by MiniAppInfo from server`() = runBlockingTest {
+        When calling apiClient.fetchFileList(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) doThrow
+                MiniAppNetException(TEST_ERROR_MSG)
+
+        downloader.getMiniApp(testMiniApp)
+    }
 
     @Test
     fun `getDownloadedMiniAppList should get values from miniAppStatus`() {

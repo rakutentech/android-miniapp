@@ -62,7 +62,7 @@ class MiniAppStorageSpec {
         val oldFile2 = tempFolder.newFile()
         val latestPackage = tempFolder.newFolder(TEST_ID_MINIAPP_VERSION)
 
-        miniAppStorage.removeOutdatedVersionApp(
+        miniAppStorage.removeVersions(
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION,
             tempFolder.root.path)
