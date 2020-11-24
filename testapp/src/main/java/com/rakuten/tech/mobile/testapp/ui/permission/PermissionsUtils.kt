@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.permission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
-fun toReadableName(type: MiniAppCustomPermissionType): String {
+fun toReadableName(type: MiniAppCustomPermissionType?): String {
     return when (type) {
         MiniAppCustomPermissionType.USER_NAME -> "User Name"
         MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
