@@ -11,13 +11,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(
-    val context: Context,
-    val miniAppInfo: MiniAppInfo
+    private val context: Context,
+    private val miniAppTitle: String
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -53,7 +52,7 @@ internal class MiniAppWebChromeClient(
             message = message,
             result = result as JsResult,
             dialogType = DialogType.ALERT,
-            miniAppInfo = miniAppInfo
+            miniAppTitle = miniAppTitle
         )
 
     override fun onJsConfirm(
@@ -67,7 +66,7 @@ internal class MiniAppWebChromeClient(
             message = message,
             result = result as JsResult,
             dialogType = DialogType.CONFIRM,
-            miniAppInfo = miniAppInfo
+            miniAppTitle = miniAppTitle
         )
 
     override fun onJsPrompt(
@@ -82,7 +81,7 @@ internal class MiniAppWebChromeClient(
         defaultValue = defaultValue,
         result = result,
         dialogType = DialogType.PROMPT,
-        miniAppInfo = miniAppInfo
+        miniAppTitle = miniAppTitle
     )
 
     @VisibleForTesting

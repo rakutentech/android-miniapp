@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -28,7 +27,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
     private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
-    private lateinit var miniAppInfo: MiniAppInfo
+    private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
     private val adBridgeDispatcher = AdBridgeDispatcher()
@@ -40,16 +39,16 @@ abstract class MiniAppMessageBridge {
         activity: Activity,
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
-        miniAppInfo: MiniAppInfo
+        miniAppId: String
     ) {
         this.activity = activity
-        this.miniAppInfo = miniAppInfo
+        this.miniAppId = miniAppId
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
             bridgeExecutor,
             customPermissionCache,
-            miniAppInfo.id
+            miniAppId
         )
         this.customPermissionWindow = MiniAppCustomPermissionWindow(
             activity,
@@ -60,7 +59,7 @@ abstract class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
 
         if (this::userInfoBridgeDispatcher.isInitialized)
-            this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+            this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
         else this.userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {}
 
         miniAppViewInitialized = true
@@ -146,7 +145,7 @@ abstract class MiniAppMessageBridge {
     fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) {
         userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
-            userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppInfo.id)
+            userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
@@ -193,7 +192,7 @@ abstract class MiniAppMessageBridge {
                     )
                 }
             } catch (e: CustomPermissionsNotImplementedException) {
-                customPermissionWindow.displayPermissions(miniAppInfo.id, deniedPermissions)
+                customPermissionWindow.displayPermissions(miniAppId, deniedPermissions)
             } catch (e: Exception) {
                 customPermissionBridgeDispatcher.postCustomPermissionError(e.message.toString())
             }

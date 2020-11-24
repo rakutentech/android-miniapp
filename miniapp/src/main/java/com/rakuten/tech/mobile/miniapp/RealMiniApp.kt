@@ -4,10 +4,10 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
@@ -66,6 +66,23 @@ internal class RealMiniApp(
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache
+            )
+        }
+    }
+
+    override suspend fun createWithUrl(
+        appUrl: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator?
+    ): MiniAppDisplay = when {
+        appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> {
+            miniAppDownloader.validateHttpAppUrl(appUrl)
+            displayer.createMiniAppDisplay(
+                appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache

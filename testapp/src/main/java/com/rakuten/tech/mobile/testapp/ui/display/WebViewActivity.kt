@@ -15,11 +15,13 @@ class WebViewActivity : BaseActivity() {
     companion object {
         val loadUrlTag = "load_url_tag"
         val miniAppIdTag = "miniapp_id_tag"
+        val appUrlTag = "miniapp_url_tag"
 
-        fun startForResult(activity: Activity, url: String, appId: String, externalWebViewReqCode: Int) {
+        fun startForResult(activity: Activity, url: String, appId: String?, appUrl: String? = null, externalWebViewReqCode: Int) {
             val intent = Intent(activity, WebViewActivity::class.java).apply {
                 putExtra(loadUrlTag, url)
-                putExtra(miniAppIdTag, appId)
+                appId?.let { putExtra(miniAppIdTag, it) }
+                appUrl?.let { putExtra(appUrlTag, it) }
             }
             activity.startActivityForResult(intent, externalWebViewReqCode)
         }
@@ -30,8 +32,13 @@ class WebViewActivity : BaseActivity() {
         showBackIcon()
         title = "External WebView Sample"
 
-        val miniAppExternalUrlLoader = MiniAppExternalUrlLoader(
-            intent.getStringExtra(miniAppIdTag) ?: "", this)
+        val appUrl = intent.getStringExtra(appUrlTag) ?: ""
+        val miniAppExternalUrlLoader = if (appUrl.isNotBlank()) {
+            MiniAppExternalUrlLoader.loaderWithUrl(appUrl, this)
+        } else {
+            MiniAppExternalUrlLoader.loaderWithId(intent.getStringExtra(miniAppIdTag), this)
+        }
+
         val webViewClient = SampleWebViewClient(miniAppExternalUrlLoader)
 
         sampleExternalWebView = SampleExternalWebView(this, intent.getStringExtra(loadUrlTag) ?: "", webViewClient)

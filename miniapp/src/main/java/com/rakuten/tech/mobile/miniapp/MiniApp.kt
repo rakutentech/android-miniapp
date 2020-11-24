@@ -70,6 +70,23 @@ abstract class MiniApp internal constructor() {
     ): MiniAppDisplay
 
     /**
+     * Creates a mini app using provided url.
+     * Mini app is NOT downloaded and cached in local, its content are read directly from the url.
+     * This should only be used for previewing a mini app from a local server.
+     * @param appUrl a HTTP url containing Mini App content.
+     * @param miniAppMessageBridge the interface for communicating between host app & mini app.
+     * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
+     * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
+     */
+    @Throws(MiniAppNotFoundException::class, MiniAppSdkException::class)
+    abstract suspend fun createWithUrl(
+        appUrl: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator? = null
+    ): MiniAppDisplay
+
+    /**
      * Fetches meta data information of a mini app.
      * @return [MiniAppInfo] for the provided appId of a mini app
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.

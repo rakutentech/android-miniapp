@@ -14,6 +14,7 @@ internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
 internal const val TEST_PHONE_URI = "tel:123456"
 
 internal const val TEST_MA_ID = "test_id"
+internal const val TEST_MA_URL = "https://miniapp"
 internal const val TEST_MA_DISPLAY_NAME = "test_name"
 internal const val TEST_MA_ICON = "test_icon"
 internal const val TEST_MA_VERSION_TAG = "test_vtag"
