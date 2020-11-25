@@ -22,11 +22,11 @@ class MiniAppHasNoPublishedVersionException(appId: String) :
     MiniAppSdkException("Server returned no published version info for the provided Mini App Id: $appId")
 
 /**
- * Exception which is thrown when the provided mini app ID
- * does not exist on the server.
+ * Exception which is thrown when the provided project ID
+ * does not have any mini app exist on the server.
  */
 class MiniAppNotFoundException(serverMessage: String) :
-    MiniAppSdkException("$serverMessage: Server returned no mini app for the provided Mini App ID.")
+    MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
  * Exception which is thrown when HostApp doesn't implement requestCustomPermissions interface.

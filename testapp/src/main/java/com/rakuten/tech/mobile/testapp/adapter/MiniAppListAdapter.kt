@@ -1,26 +1,25 @@
 package com.rakuten.tech.mobile.testapp.adapter
 
-import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.Version
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemFooterMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemSectionMiniappBinding
+import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.util.TreeSet
 
-class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: MiniAppList) :
-    ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
+class MiniAppListAdapter(
+    private val miniApps: ArrayList<MiniAppInfo>,
+    private val miniAppListener: MiniAppListener
+) : ListAdapter<MiniAppInfo, MiniAppsListViewHolder>(MiniAppDiffCallback()) {
 
     private val sectionPos = TreeSet<Int>()
 
@@ -41,10 +40,10 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
 
     override fun onBindViewHolder(holder: MiniAppsListViewHolder, position: Int) {
         holder.itemView.tag = holder
-        holder.bindTo(holder.binding, miniapps[position], miniAppList)
+        holder.bindTo(holder.binding, miniApps[position], miniAppListener)
     }
 
-    override fun getItemCount() = miniapps.size
+    override fun getItemCount() = miniApps.size
 
     override fun getItemViewType(position: Int): Int =
         when {
@@ -54,17 +53,17 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
         }
 
     fun addListWithSection(list: List<MiniAppInfo>) {
-        miniapps.clear()
+        miniApps.clear()
         sectionPos.clear()
         val sectionMiniApp = TreeSet<String>()
 
         for (item in list) {
             if (!sectionMiniApp.contains(item.id)) {
-                miniapps.add(item)
-                sectionPos.add(miniapps.size - 1)
+                miniApps.add(item)
+                sectionPos.add(miniApps.size - 1)
                 sectionMiniApp.add(item.id)
             }
-            miniapps.add(item)
+            miniApps.add(item)
         }
         addFooter()
 
@@ -72,9 +71,9 @@ class MiniAppListAdapter(val miniapps: ArrayList<MiniAppInfo>, val miniAppList: 
     }
 
     private fun addFooter() {
-        if (miniapps.size > 0) {
+        if (miniApps.size > 0) {
             val footerItem = MiniAppInfo("", "", "", Version("", ""))
-            miniapps.add(itemCount, footerItem)
+            miniApps.add(itemCount, footerItem)
         }
     }
 }
@@ -90,13 +89,13 @@ private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
     }
 }
 
-interface MiniAppList {
+interface MiniAppListener {
     fun onMiniAppItemClick(miniAppInfo: MiniAppInfo)
 }
 
 class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bindTo(binding: ViewDataBinding, miniAppInfo: MiniAppInfo, miniAppList: MiniAppList) {
+    fun bindTo(binding: ViewDataBinding, miniAppInfo: MiniAppInfo, miniAppListener: MiniAppListener) {
         if (binding is ItemSectionMiniappBinding)
             binding.miniapp = miniAppInfo
         else if (binding is ItemListMiniappBinding) {
@@ -106,15 +105,8 @@ class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHo
             binding.tvVersion.isSelected = true
 
             binding.itemRoot.setOnClickListener {
-                miniAppList.onMiniAppItemClick(miniAppInfo)
+                miniAppListener.onMiniAppItemClick(miniAppInfo)
             }
         }
     }
-}
-
-fun setIcon(context: Context, uri: Uri, view: ImageView) {
-    Glide.with(context)
-        .load(uri).apply(RequestOptions().circleCrop())
-        .placeholder(R.drawable.ic_default)
-        .into(view)
 }

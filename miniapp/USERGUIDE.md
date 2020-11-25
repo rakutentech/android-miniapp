@@ -246,6 +246,9 @@ You can handle each exception type differently if you would like different behav
 For example you may wish to display a different error message when the server contains no published versions of a mini app.
 See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
 
+**Note:** Preview Mode
+In preview mode, you can have multiple versions of single miniapp so you can load the specific version with MiniAppInfo object by using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge)`.
+
 ## Advanced
 
 ### #1 Clearing up mini app display
@@ -305,6 +308,7 @@ miniAppNavigator = object : MiniAppNavigator {
 
 - Create mini app display
 Using `MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge, miniAppNavigator)`.
+In preview mode, using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge, miniAppNavigator)`.
 
 - Return URL result to mini app view.
 Some mini apps are loaded their services with external url but in the end that external url will

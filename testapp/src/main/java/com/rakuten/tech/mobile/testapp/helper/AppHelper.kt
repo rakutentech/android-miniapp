@@ -2,11 +2,16 @@ package com.rakuten.tech.mobile.testapp.helper
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
+import android.net.Uri
 import android.text.InputType
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -61,4 +66,11 @@ fun showAlertDialog(activity: Activity, content: String) {
         dialog.dismiss()
     }
     alertDialog.create().show()
+}
+
+fun setIcon(context: Context, uri: Uri, view: ImageView) {
+    Glide.with(context)
+        .load(uri).apply(RequestOptions().circleCrop())
+        .placeholder(R.drawable.ic_default)
+        .into(view)
 }

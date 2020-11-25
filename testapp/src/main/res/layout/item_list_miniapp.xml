@@ -15,10 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:paddingTop="@dimen/small_8"
-        android:paddingBottom="@dimen/small_8"
-        android:paddingStart="@dimen/small_8"
-        android:paddingEnd="@dimen/small_8"
+        android:padding="@dimen/small_8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent">
@@ -48,7 +45,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tv_lb_version"
+                android:id="@+id/tv_app_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/small_8"
@@ -56,16 +53,32 @@
                 android:gravity="start"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
-                android:text="@{@string/lb_version + `: `}"
+                android:text="@{miniapp.displayName}"
+                android:singleLine="true"
+                android:ellipsize="end"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                tools:text="Name of the Mini App" />
+
+            <TextView
+                android:id="@+id/tv_lb_version"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:alpha="0.6"
+                android:gravity="start"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_medium_14"
+                android:text="@{@string/lb_version + `: `}"
+                app:layout_constraintTop_toBottomOf="@+id/tv_app_name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:text="Version: " />
 
             <TextView
                 android:id="@+id/tv_version"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/small_8"
                 android:alpha="0.6"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium_14"
@@ -75,7 +88,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 app:layout_constraintStart_toEndOf="@id/tv_lb_version"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_lb_version"
                 tools:text="9ab14a68-e8f9-4216-a6df-2c3b06f3c7f7" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

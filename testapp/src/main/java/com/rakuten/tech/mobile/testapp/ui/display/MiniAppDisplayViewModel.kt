@@ -36,13 +36,17 @@ class MiniAppDisplayViewModel constructor(
 
     fun obtainMiniAppDisplay(
         context: Context,
+        appInfo: MiniAppInfo?,
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
+            miniAppDisplay = if (appInfo != null)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator)
+            else
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
@@ -51,7 +55,7 @@ class MiniAppDisplayViewModel constructor(
                 is MiniAppHasNoPublishedVersionException ->
                     _errorData.postValue("No published versions for the provided Mini App ID.")
                 is MiniAppNotFoundException ->
-                    _errorData.postValue("No Mini App found for the provided Mini App ID.")
+                    _errorData.postValue("No Mini App found for the provided Project ID.")
                 else -> _errorData.postValue(e.message)
             }
         } finally {

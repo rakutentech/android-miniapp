@@ -31,7 +31,6 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppDisplayActivity : BaseActivity() {
 
-    private lateinit var appId: String
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
@@ -72,9 +71,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         showBackIcon()
 
         if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
-            appId = intent.getStringExtra(appIdTag) ?: ""
-            if (appId.isEmpty())
-                appId = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
+            val appId = intent.getStringExtra(appIdTag) ?: intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
+            val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
 
             binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
@@ -111,6 +109,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             viewModel.obtainMiniAppDisplay(
                 this@MiniAppDisplayActivity,
+                appInfo,
                 appId,
                 miniAppMessageBridge,
                 miniAppNavigator
@@ -170,6 +169,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         miniappPermissionCallback.invoke(isGranted)
     }

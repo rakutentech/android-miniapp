@@ -20,7 +20,7 @@ import java.net.UnknownHostException
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
-    private val isPreviewMode: Boolean,
+    internal val isPreviewMode: Boolean,
     private val hostProjectId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
@@ -68,6 +68,7 @@ internal class ApiClient @VisibleForTesting constructor(
         }
     }
 
+    @Throws(MiniAppSdkException::class)
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(
             hostAppId = hostProjectId,
@@ -110,7 +111,7 @@ internal class RetrofitRequestExecutor(
         }
     }
 
-    @Throws(MiniAppSdkException::class)
+    @Throws(MiniAppSdkException::class, MiniAppNotFoundException::class)
     @Suppress("MagicNumber", "ThrowsCount")
     private fun <T> exceptionForHttpError(response: Response<T>): MiniAppSdkException {
         // Error body shouldn't be null if request wasn't successful

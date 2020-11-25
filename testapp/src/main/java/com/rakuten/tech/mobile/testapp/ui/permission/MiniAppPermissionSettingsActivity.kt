@@ -26,14 +26,13 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     private lateinit var binding: ListCustomPermissionBinding
 
     companion object {
+        const val REQ_CODE_PERMISSIONS_UPDATE = 10101
         private const val miniAppIdTag = "mini_app_id_tag"
 
-        fun start(context: Context, miniAppId: String) {
-            context.startActivity(
-                Intent(context, MiniAppPermissionSettingsActivity::class.java).apply {
-                    putExtra(miniAppIdTag, miniAppId)
-                })
-        }
+        fun getStartIntent(context: Context, miniAppId: String): Intent =
+            Intent(context, MiniAppPermissionSettingsActivity::class.java).apply {
+                putExtra(miniAppIdTag, miniAppId)
+            }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +86,6 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
             }
             R.id.settings_menu_save -> {
                 onSaveAction()
-                finish()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -101,5 +99,9 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
             pairValues = permissionSettingsAdapter.permissionPairs
         )
         miniapp.setCustomPermissions(miniAppCustomPermission)
+
+        // echo a result that permissions has been saved
+        setResult(REQ_CODE_PERMISSIONS_UPDATE, Intent())
+        finish()
     }
 }
