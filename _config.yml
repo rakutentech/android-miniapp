@@ -1,4 +1,6 @@
 markdown: kramdown
+kramdown:
+  parse_block_html: true
 plugins:
   - github-pages
 remote_theme: rakutentech/android-buildconfig@gh-pages-theme
