@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 2.6.0 (2020-11-26)
+2.X.X (In progress)
 
 **SDK**
 - **Feature:** Mini App can call media execution play/pause programmatically.
