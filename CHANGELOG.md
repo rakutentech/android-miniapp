@@ -14,6 +14,7 @@
 - **Change:** Updated setting of external webview.
 - **Change:** Used `isPreviewMode` in sample app. "Preview Mode" switch in the settings screen is visible now.
 - **Change:** Updated sample app Manifest configuration with replacing RAS App ID by Project ID.
+- **Change:** Updated setting permission screen with permission preview.
 
 ### 2.5.0 (2020-11-13)
 **SDK**
