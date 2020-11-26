@@ -1,6 +1,7 @@
 markdown: kramdown
 kramdown:
   parse_block_html: true
+  toc_levels: 2..3
 plugins:
   - github-pages
 remote_theme: rakutentech/android-buildconfig@gh-pages-theme
