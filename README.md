@@ -63,6 +63,24 @@ $ ./gradlew assembleRelease
 
 We currently don't provide an API for public use, so you must provide your own API.
 
+## How to generate KDocs SDK documentation locally
+
+You may want to generate the SDK documentation locally so that you can ensure that the generated docs look correct. We use Dokka for this, so you can run the following command, and the generated docs will be output at `miniapp/build/publishableDocs` in the markdown format. 
+
+```
+$ ./gradlew generatePublishableDocs
+```
+
+The docs are hosted on Github Pages in markdown, and therefore the HTML version is only generated after the docs are published to Github. If you wish to preview the HTML version of the docs, you can do so by copying the markdown files to the `gh-pages` branch and locally building the HTML:
+
+```
+$ ./gradlew generatePublishableDocs
+$ git checkout gh-pages
+$ cp miniapp/build/publishableDocs/docs ./
+$ bundle install
+$ bundle exec jekyll serve
+```
+
 ## Continuous Integration and Deployment
 
 [CircleCI](https://circleci.com/gh/rakutentech/android-miniapp) is used for building and testing the project for every pull request. It is also used for publishing the SDK and the Sample App. 
