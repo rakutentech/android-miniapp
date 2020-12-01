@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.rakuten.tech.mobile.miniapp.testapp">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"
@@ -17,8 +17,8 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-          android:launchMode="singleTop"
-          android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity">
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -27,35 +27,36 @@
             </intent-filter>
 
             <meta-data
-              android:name="android.app.searchable"
-              android:resource="@xml/searchable" />
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
-            android:label="@string/action_go_input"/>
+            android:label="@string/action_go_input" />
         <activity
-          android:label="@string/lb_app_settings"
-          android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
-          android:theme="@style/AppThemeSettings" />
-        <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
+            android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
+            android:label="@string/lb_app_settings"
+            android:theme="@style/AppThemeSettings"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity" />
         <activity
-          android:label="@string/action_profile"
-          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
+            android:label="@string/action_profile" />
         <activity
-          android:label="@string/action_contacts"
-          android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
+            android:label="@string/action_contacts" />
         <activity
-          android:label="Downloaded Mini App List"
-          android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity"
+            android:label="Downloaded Mini App List" />
         <activity
-          android:label="Permission Settings"
-          android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity"
+            android:label="Permission Settings" />
         <activity
-            android:label="@string/lb_access_token"
-            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
+            android:label="@string/lb_access_token" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
@@ -67,8 +68,8 @@
             android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
             android:value="${hostAppUserAgentInfo}" />
         <meta-data
-          android:name="com.rakuten.tech.mobile.ras.ProjectId"
-          android:value="${projectId}" />
+            android:name="com.rakuten.tech.mobile.ras.ProjectId"
+            android:value="${projectId}" />
         <meta-data
             android:name="com.rakuten.tech.mobile.ras.ProjectSubscriptionKey"
             android:value="${subscriptionKey}" />
