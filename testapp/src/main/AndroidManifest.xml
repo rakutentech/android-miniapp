@@ -37,9 +37,10 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
             android:label="@string/action_go_input"/>
         <activity
-          android:label="@string/lb_app_settings"
-          android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
-          android:theme="@style/AppThemeSettings" />
+            android:label="@string/lb_app_settings"
+            android:windowSoftInputMode="stateHidden"
+            android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
+            android:theme="@style/AppThemeSettings" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity"/>
         <activity
           android:label="@string/action_profile"
