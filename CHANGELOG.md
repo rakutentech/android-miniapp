@@ -1,7 +1,13 @@
 ## CHANGELOG
 
-### 2.6.0 (2020-11-27)
+2.X.X (In progress)
+**SDK**
+- **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
 
+**Sample App**
+- **Feature:** `rakuten.miniapp.device.LOCATION` permission as "Location" in custom permissions settings screen is visible now.
+
+### 2.6.0 (2020-11-27)
 **SDK**
 - **Feature:** Mini App can call media execution play/pause programmatically.
 - **Feature:** Added `MiniApp#create(appInfo: MiniAppInfo, miniAppMessageBridge: MiniAppMessageBridge, miniAppNavigator: MiniAppNavigator? = null)`.

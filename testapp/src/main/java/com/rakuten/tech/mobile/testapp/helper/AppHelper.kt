@@ -38,7 +38,7 @@ fun parseStringToDate(format: String, str: String): Date {
     return Date()
 }
 
-fun showNormalDialog(activity: Activity, content: String) {
+fun showAlertDialog(activity: Activity, content: String) {
     // prepare an EditText where the content can be copied by long press
     val editText = EditText(activity)
     editText.setText(content)

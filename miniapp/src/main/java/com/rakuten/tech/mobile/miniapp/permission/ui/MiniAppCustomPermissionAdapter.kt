@@ -87,11 +87,12 @@ internal class MiniAppCustomPermissionAdapter :
     }
 
     @VisibleForTesting
-    fun parsePermissionName(type: MiniAppCustomPermissionType): String {
+    fun parsePermissionName(type: MiniAppCustomPermissionType?): String {
         return when (type) {
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
             MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
             MiniAppCustomPermissionType.PROFILE_PHOTO -> "Profile Photo"
+            MiniAppCustomPermissionType.LOCATION -> "Device Location"
             else -> "Unknown"
         }
     }
