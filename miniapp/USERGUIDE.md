@@ -7,22 +7,28 @@ layout: userguide
 Provides functionality to show a Mini App in Android Applications. The SDK offers features like downloading, caching, updating, and displaying of a Mini App.
 Mini App SDK also facilitates communication between a mini app and the host app via a message bridge.
 
+## Table of Contents
+{:.no_toc}
+
+* Table of contents
+{:toc}
+
 ## Requirements
 
-### Supported Android Versions
-
-This SDK supports Android API level 23 and above.
+- **Minimum Android Version**: This SDK supports Android 6.0+ (API level 23+).
+- **Base URL, App ID, Subscription Key**: We don't currently provide a public API for use with this SDK. You must provide a URL for your API as well as an App ID and Subscription Key for the API.
 
 ## Getting Started
 
-### #1 Add dependency to your app's `build.gradle`
+This section will guide you through setting up the Mini App SDK in your App and you will learn how to display your first mini app.
+
+### #1 Add dependency to your App
+
+Add the following to your `build.gradle` file:
 
 ```groovy
 repositories {
     jcenter()
-
-    // The following repo is needed only if you want to use snapshot releases
-    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
 }
 
 dependency {
@@ -32,21 +38,22 @@ dependency {
 
 ### #2 Configure SDK settings in AndroidManifest.xml
 
-The SDK is configured via manifest meta-data, the configurable values are:
+The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The following table lists the configurable values.
 
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
 | Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
-| Project ID                   | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
+| RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
-* The host app info is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
+* The "Host App User Agent Info" is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
-In your `AndroidManifest.xml`:
+<details><summary markdown="span"><b>Click to expand example AndroidManifest.xml</b>
+</summary>
 
 ```xml
 <manifest>
@@ -80,41 +87,116 @@ In your `AndroidManifest.xml`:
     </application>
 </manifest>
 ```
+</details>
 
-### #3 Fetch Mini App Info
+### #3 Create and display a Mini App
+**API Docs:** [MiniApp.create](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html), [MiniAppDisplay](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/), [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
-Information about Mini Apps can be fetched in two different ways: by using `MiniApp.listMiniApp` to get a list of info for all Mini Apps, or by using `MiniApp.fetchInfo` to get info for a single Mini App. Either method will return `MiniAppInfo` objects with info about the Mini App such as name, icon URL, ID, version, etc.
+`MiniApp.create` is used to create a `View` for displaying a specific mini app. You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
 
-Use `MiniApp.listMiniApp` if you want a list of all Mini Apps:
+- Check what is the latest, published version of the mini app.
+- Check if the latest version of the mini app has been downloaded.
+    - If yes, return the already downloaded mini app.
+    - If no, download the latest version and then return the downloaded version.
+- If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
+
+After calling `MiniApp.create`, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
+
+The following is a simplified example:
 
 ```kotlin
-CoroutineScope(Dispatchers.IO).launch {
-    try {
-        val miniAppList = MiniApp.instance().listMiniApp()
-    } catch(e: MiniAppSdkException) {
-        Log.e("MiniApp", "There was an error retrieving the list", e)
+try {
+    val miniAppMessageBridge = object : MiniAppMessageBridge() {
+        // implement methods for mini app bridge
     }
+
+    val miniAppDisplay = withContext(Dispatchers.IO) {
+        MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge)
+    }
+    val miniAppView = miniAppDisplay.getMiniAppView(this@YourActivity)
+
+    // Add the view to your Activity
+} catch (e: MiniAppSdkException) {
+    // Handle exception
 }
 ```
 
-Or use `MiniApp.fetchInfo` if you want info for a single Mini App and already know the Mini App's ID:
+Note that this is a simplified example. See [Mini App Features](#mini-app-features) for the full functionality which you can provide to the mini app. The following is a more complete example:
+
+<details><summary markdown="span"><b>Click here to expand a full code example</b>
+</summary>
 
 ```kotlin
-CoroutineScope(Dispatchers.IO).launch {
-    try {
-        val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID")
-    } catch(e: MiniAppSdkException) {
-        Log.e("MiniApp", "There was an error retrieving the Mini App info", e)
+class MiniAppActivity : Activity(), CoroutineScope {
+
+    override val coroutineContext = Dispatchers.Main
+
+    private var miniAppDisplay: MiniAppDisplay
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super(savedInstanceState)
+        setContentView(R.layout.loading)
+
+        launch {
+            try {
+                miniAppDisplay = withContext(Dispatchers.IO) {
+                    MiniApp.instance().create("MINI_APP_ID", createMessageBridge())
+                }
+                val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+
+                setContentView(miniAppView)
+            } catch (e: MiniAppSdkException) {
+                setContentView(R.layout.error_screen)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        miniAppDisplay.destroyView()
+    }
+
+    fun createMessageBridge() = object : MiniAppMessageBridge() {
+        override fun getUniqueId() {
+            // Implementation details to generate a Unique ID
+
+            return "your-unique-id"
+        }
+
+        override fun requestPermission(
+            miniAppPermissionType: MiniAppPermissionType,
+            callback: (isGranted: Boolean) -> Unit
+        ) {
+            // Implementation details to request device permissions
+
+            callback.invoke(true)
+        }
+        
+        // You can additionally implement other MiniAppMessageBridge methods
     }
 }
 ```
+</details>
 
-**Note:** This SDK uses `suspend` functions, so you should use [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) when calling the functions. These examples use `Dispatchers.IO`, but you can use whichever `CoroutineContext` and `CouroutineScope` that is appropriate for your App. However, you MUST NOT use `Dispatchers.Main` because network requests cannot be performed on the main thread.
+**Note:** 
+* **Clean-up:** 
+Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
+* **Suspend functions:** 
+This SDK uses `suspend` functions, so you should use [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) when calling the functions. These examples use `Dispatchers.IO`, but you can use whichever `CoroutineContext` and `CouroutineScope` that is appropriate for your App. However, you MUST NOT use `Dispatchers.Main` because network requests cannot be performed on the main thread.
+* **Preview Mode:** 
+In preview mode, you can have multiple versions of single miniapp so you can load the specific version with MiniAppInfo object by using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge)`.
+* **Exceptions:** 
+There are several different types of exceptions which could be thrown by `MiniApp.create`, but all are sub-classes of `MiniAppSdkException`.
+You can handle each exception type differently if you would like different behavior for different cases.
+For example you may wish to display a different error message when the server contains no published versions of a mini app.
+See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
 
-### #4 Implement the MiniAppMessageBridge
+## Mini App Features
+**API Docs:** [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
-The `MiniAppMessageBridge` is used for passing messages between the Mini App (JavaScript) and the Host App (your native Android App) and vice versa. Your App must provide the implementation for these functions and pass this implementation to the `MiniApp#create` function.
-There are some methods have default implementation but host app can override them to fully control.
+The `MiniAppMessageBridge` is used for passing messages between the Mini App (JavaScript) and the Host App (your native Android App) and vice versa. Your App must provide the implementation for these functions and pass this implementation to the `MiniApp.create` function.
+
+There are some methods have a default implementation but the host app can override them to fully control.
 
 | Method                       | Default  |
 |------------------------------|----------|
@@ -130,6 +212,13 @@ The `UserInfoBridgeDispatcher`:
 | getUserName                  | 🚫       |
 | getProfilePhoto              | 🚫       |
 | getAccessToken               | 🚫       |
+
+The sections below explain each feature in more detail. 
+
+The following is a full code example of using `MiniAppMessageBridge`.
+
+<details><summary markdown="span"><b>Click here to expand full code example of MiniAppMessageBridge</b>
+</summary>
 
 ```kotlin
 val miniAppMessageBridge = object: MiniAppMessageBridge() {
@@ -206,52 +295,135 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 // set UserInfoBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 ```
+</details>
 
-### #5 Create and display a Mini App
+### Unique ID
+**API Docs:** [MiniAppMessageBridge.getUniqueId](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-unique-id.html)
 
-Calling `MiniApp.create` with a Mini App ID object will download the latest version of the Mini App if it has not yet been downloaded. A view will then be returned which will display the Mini App.
+Your App should provide an ID to the mini app which is unique to each user or device. The mini app can use this ID for storing session information for each user.
+
+### Device Permission Requests
+
+**API Docs:** [MiniAppMessageBridge.requestPermission](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-permission.html)
+
+The mini app is able to request some device permissions. Your App should be able to handle requests from the mini app for the following device permissions by ensuring that the Android permission dialog is displayed. Alternatively, if your App is not able to request certain device permissions, you can just deny that permission to all mini apps.
+
+- Location (`MiniAppPermissionType.LOCATION`)
+
+### Custom Permission Requests
+**API Docs:** [MiniAppMessageBridge.requestCustomPermissions](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
+
+Mini apps are able to make requests for custom permission types which are defined by the Mini App SDK. These permissions include things like user data. When a mini app requests a permission, your App should display a dialog to the user asking them to accept or deny the permissions. You can also choose to always deny some permissions if your App is not capable of providing that type of data. The following custom permission types are supported:
+
+- User name (`MiniAppCustomPermissionType.USER_NAME`)
+- Profile photo (`MiniAppCustomPermissionType.PROFILE_PHOTO`)
+- Contact list (`MiniAppCustomPermissionType.CONTACT_LIST`)
+
+**Note:** The Mini App SDK has a default UI built-in for the custom permission dialog, but you can choose to override this and use a custom UI. The Mini App SDK will handle caching the permission accept/deny state, and your `requestCustomPermission` function will only receive permissions which have not yet been granted to the mini app.
+
+### Share Content
+**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
+
+The mini app can share text content to either your App or another App. The default functionality for this will create a `text` type `Intent` which shows the Android chooser and allows the user to share the content to any App which accepts text.
+
+You can also choose to override the default functionality and instead share the text content to some feature within your own App.
+
+### User Info
+**API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
+
+The mini app is able to request data about the current user from your App. Each of these types of data is associated with a `MiniAppCustomPermissionType`  (except where noted). The mini app should have requested the permission before requesting the user data type. Note that the Mini App SDK will handle making sure that the permission has been granted, so if the permission has not been granted, then these functions will not be called within your App.
+
+The following user data types are supported. If your App does not support a certain type of data, you do not have to implement the function for it.
+
+- User name: string representing the user's name. See [UserInfoBridgeDispatcher.getUserName](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-user-name.html)
+- Profile photo: URL pointing to a photo. This can also be a Base64 data string. See [UserInfoBridgeDispatcher.getProfilePhoto](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-profile-photo.html)
+- Access Token (does not currenlty have a custom permission type): OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
+
+
+### Ads Integration
+**API Docs:** [MiniAppMessageBridge.setAdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-ad-mob-displayer.html)
+
+It is optional to set AdMob for mini apps to show advertisement.
+The below implementation will allow ads to be shown when mini apps trigger a request.
+
+Configure the Android Ads SDK from [here](https://developers.google.com/admob/android/quick-start). Don't forget to [initialize the Ads SDK](https://developers.google.com/admob/android/quick-start#initialize_the_mobile_ads_sdk).
+
+#### AdMob
+**API Docs:** [AdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.ads/-ad-mob-displayer/)
+
+Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
+```kotlin
+miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
+``` 
+
+#### Custom Ads Provider
+**API Docs:** [MiniAppAdDisplayer](com.rakuten.tech.mobile.miniapp.ads/-mini-app-ad-displayer/)
+
+In case the host app wants to take control of the ad display, there is the interface `MiniAppAdDisplayer` to implement.
+```kotlin
+class CustomAdDisplayer: MiniAppAdDisplayer { 
+
+    override fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+      // load the ad
+    }
+    
+    override fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
+      // show the ad
+    }
+    //...more ad implementations.
+}
+
+miniAppMessageBridge.setAdMobDisplayer(CustomAdDisplayer())
+```
+
+### Screen Orientation
+**API Docs:** [MiniAppMessageBridge.allowScreenOrientation](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/)
+
+The default setting does not allow miniapp to change hostapp screen orientation.
+Hostapp can allow miniapp to control the screen orientation for better experience by calling 
 
 ```kotlin
-class MiniAppActivity : Activity(), CoroutineScope {
+miniAppMessageBridge.allowScreenOrientation(true)
+```
 
-    override val coroutineContext = Dispatchers.Main
+In case miniapp is allowed to control, please ensure that your activity handles screen orientation.
+There are several ways to prevent the view from being reset.
+In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
+See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super(savedInstanceState)
-        setContentView(R.layout.loading)
+## Fetching Mini App Info
+**API Docs:** [MiniApp.listMiniApp](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-mini-app.html), [MiniApp.fetchInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app/fetch-info.html), [MiniAppInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app-info/)
 
-        val context = this
-        launch {
-            try {
-                val miniAppDisplay = withContext(Dispatchers.IO) {
-                    MiniApp.instance().create("MINI_APP_ID", miniAppMessageBridge)
-                }
-                val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+Information about Mini Apps can be fetched in two different ways: by using `MiniApp.listMiniApp` to get a list of info for all Mini Apps, or by using `MiniApp.fetchInfo` to get info for a single Mini App. Either method will return `MiniAppInfo` objects with info about the Mini App such as name, icon URL, ID, version, etc.
 
-                setContentView(miniAppView)
-            } catch (e: MiniAppSdkException) {
-                setContentView(R.layout.error_screen)
-            }
-        }
+Use `MiniApp.listMiniApp` if you want a list of all Mini Apps:
+
+```kotlin
+CoroutineScope(Dispatchers.IO).launch {
+    try {
+        val miniAppList = MiniApp.instance().listMiniApp()
+    } catch(e: MiniAppSdkException) {
+        Log.e("MiniApp", "There was an error retrieving the list", e)
     }
 }
 ```
 
-`MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
+Or use `MiniApp.fetchInfo` if you want info for a single Mini App and already know the Mini App's ID:
 
-**Note:** Clearing up the mini app display is essential. `MiniAppDisplay.destroyView` is required to be called when exit miniapp.
+```kotlin
+CoroutineScope(Dispatchers.IO).launch {
+    try {
+        val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID")
+    } catch(e: MiniAppSdkException) {
+        Log.e("MiniApp", "There was an error retrieving the Mini App info", e)
+    }
+}
+```
 
-**Note:** There are several different types of exceptions which could be thrown by `MiniApp.create`, but all are sub-classes of `MiniAppSdkException`.
-You can handle each exception type differently if you would like different behavior for different cases.
-For example you may wish to display a different error message when the server contains no published versions of a mini app.
-See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
+## Advanced Features
 
-**Note:** Preview Mode
-In preview mode, you can have multiple versions of single miniapp so you can load the specific version with MiniAppInfo object by using `MiniApp.instance().create(MINI_APP_INFO, miniAppMessageBridge)`.
-
-## Advanced
-
-### #1 Clearing up mini app display
+### Clearing up mini app display
+**API Docs:** [MiniAppDisplay.destroyView](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/destroy-view.html)
 
 For a mini app, it is required to destroy necessary view state and any services registered with.
 The automatic way can be used only if we want to end the `Activity` container along with mini app display.  `MiniAppDisplay` complies to Android's `LifecycleObserver` contract. It is quite easy to setup for automatic clean up of resources.
@@ -276,9 +448,10 @@ To read more about `Lifecycle` please see [link](https://developer.android.com/t
 
 On the other hand, when the consuming app manages resources manually or where it has more control on the lifecycle of views `MiniAppDisplay.destroyView` should be called upon e.g. when removing a view from the view system, yet within the same state of parent's lifecycle.
 
-### #2 Navigating inside a mini app
+### Navigating inside a mini app
+**API Docs:** [MiniAppDisplay.navigateBackward](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/navigate-backward.html), [MiniAppDisplay.navigateForward](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/navigate-forward.html)
 
-For a common usage pattern, the navigation inside a mini app can be attached to the Android back key navigation as shown:
+`MiniAppDisplay.navigateBackward` and `MiniAppDisplay.navigateForward` facilitates the navigation inside a mini app if the history stack is available in it. A common usage pattern could be to link it up to the Android Back Key navigation.
 
 ```kotlin
 override fun onBackPressed() {
@@ -288,7 +461,8 @@ override fun onBackPressed() {
 }
 ```
 
-### #3 External url loader
+### External url loader
+**API Docs:** [MiniAppNavigator](api/com.rakuten.tech.mobile.miniapp.navigator/), [MiniAppExternalUrlLoader](api/com.rakuten.tech.mobile.miniapp.navigator/-mini-app-external-url-loader/), [ExternalResultHandler](api/com.rakuten.tech.mobile.miniapp.navigator/-external-result-handler/)
 
 The mini app is loaded with the specific custom scheme and custom domain in mini app view.
 
@@ -358,14 +532,18 @@ mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
 
-### #4 Custom Permissions
+### Custom Permissions
+**API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
+
 MiniApp Android SDK supports list of Custom Permissions (`MiniAppCustomPermissionType`) and these can be stored and retrieved using the following public interfaces.
+
 #### Retrieving the Mini App Custom Permissions using MiniAppID
 Custom permissions and its status can be retrieved using the following interface. `getCustomPermissions` will return `MiniAppCustomPermission` that contains the meta-info as a `Pair` of 
 name and grant result (`ALLOWED` or `DENIED`). The custom permissions are stored per each miniAppId.
 ```kotlin
 val permissions = miniapp.getCustomPermissions(miniAppId)
 ```
+
 #### Store the Mini App Custom Permissions
 Custom permissions for a mini app are cached by the SDK and you can use the following interface to store permissions when needed.
 ```kotlin
@@ -374,6 +552,7 @@ var permissionPairs = listOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPerm
 val permissionsToSet = MiniAppCustomPermission(miniAppId, permissionPairs)
 miniapp.setCustomPermissions(permissionsToSet)
 ```
+
 #### List of downloaded Mini apps with Custom Permissions
 ```kotlin
 val downloadedMiniApps = miniapp.listDownloadedWithCustomPermissions()
@@ -384,52 +563,10 @@ downloadedMiniApps.forEach {
 }
 ```
 
-### #5 Ads Integration
-It is optional to set AdMob for mini apps to show advertisement.
-The below implementation will allow ads to be shown when mini apps trigger a request.
+## Troubleshooting & FAQs
 
-Configure the Android Ads SDK from [here](https://developers.google.com/admob/android/quick-start). Don't forget to [initialize the Ads SDK](https://developers.google.com/admob/android/quick-start#initialize_the_mobile_ads_sdk).
-
-#### AdMob
-Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
-```kotlin
-miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
-``` 
-
-#### Custom Ads Provider
-In case the host app wants to take control of the ad display, there is the interface `MiniAppAdDisplayer` to implement.
-```kotlin
-class CustomAdDisplayer: MiniAppAdDisplayer { 
-
-    override fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
-      // load the ad
-    }
-    
-    override fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
-      // show the ad
-    }
-    //...more ad implementations.
-}
-
-miniAppMessageBridge.setAdMobDisplayer(CustomAdDisplayer())
-```
-
-### #6 Screen Orientation
-The default setting does not allow miniapp to change hostapp screen orientation.
-Hostapp can allow miniapp to control the screen orientation for better experience by calling 
-```kotlin
-miniAppMessageBridge.allowScreenOrientation(true)
-```
-
-In case miniapp is allowed to control, please ensure that your activity handles screen orientation.
-There are several ways to prevent the view from being reset.
-In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
-See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
-
-
-## Troubleshooting
-
-### Exception: "Network requests must not be performed on the main thread."
+<details><summary markdown="span"><b>Exception: "Network requests must not be performed on the main thread."</b>
+</summary>
 
 Some of the suspending functions in this SDK will perform network requests (`MiniApp.create`, `MiniApp.fetchInfo`, `MiniApp.listMiniApp`). Network requests should not be performed on the main thread, so the above exception will occur if your Coroutine is running in the `Dispatchers.Main` CoroutineContext. To avoid this exception, please use the `Dispatchers.IO` or `Dispatchers.Default` context instead. You can use [`withContext`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-context.html) to make sure your code is running in the appropriate CoroutineContext.
 
@@ -444,6 +581,23 @@ CoroutineScope(Dispatchers.Main).launch {
     // This runs on the main thread
 }
 ```
+</details>
+
+<details><summary markdown="span"><b>How do I use snapshot versions of this SDK?</b>
+</summary>
+
+We may periodically publish snapshot versions for testing pre-release features. These versions will always end in `-SNAPSHOT`, for example `1.0.0-SNAPSHOT`. If you wish to use a snapshot version, you will need to add the snapshot repo to your Gradle configuration.
+
+```
+repositories {
+    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
+}
+
+dependency {
+    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:X.X.X-SNAPSHOT'
+}
+```
+</details>
 
 ## Changelog
 

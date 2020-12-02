@@ -63,7 +63,22 @@ $ ./gradlew assembleRelease
 
 We currently don't provide an API for public use, so you must provide your own API.
 
-## How to generate KDocs SDK documentation locally
+## Writing and generating documentation
+
+Our documentation is hosted on Github Pages using the `gh-pages` branch of this repo. So this means that the docs are hosted as markdown and then Github Pages generates HTML using Jekyll. The documentation has two parts: a userguide and the API docs. The userguide is generated from [USERGUIDE.md](miniapp/USERGUIDE.md) and the API docs are generated using Dokka.
+
+For the most part, you can use standard markdown in the userguide, but please note the following:
+
+- If you wish to use a `<details>` tag for an expandable section, then you must use the following format (note that the closing `</summary>` tag is on a new line):
+```xml
+<details><summary markdown="span">Title goes here
+</summary>
+
+    Content goes here.
+</details>
+```
+
+### How to generate KDocs SDK documentation locally
 
 You may want to generate the SDK documentation locally so that you can ensure that the generated docs look correct. We use Dokka for this, so you can run the following command, and the generated docs will be output at `miniapp/build/publishableDocs` in the markdown format. 
 
@@ -76,7 +91,7 @@ The docs are hosted on Github Pages in markdown, and therefore the HTML version 
 ```
 $ ./gradlew generatePublishableDocs
 $ git checkout gh-pages
-$ cp miniapp/build/publishableDocs/docs ./
+$ cp -r miniapp/build/publishableDocs/docs/ ./
 $ bundle install
 $ bundle exec jekyll serve
 ```
