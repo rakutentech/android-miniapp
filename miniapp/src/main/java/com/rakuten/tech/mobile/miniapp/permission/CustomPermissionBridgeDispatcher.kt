@@ -144,8 +144,7 @@ internal class CustomPermissionBridgeDispatcher(
         callbackObj?.id?.let { bridgeExecutor.postValue(it, jsonResult) }
     }
 
-    @VisibleForTesting
-    fun postCustomPermissionError(errMessage: String) {
+    internal fun postCustomPermissionError(errMessage: String) {
         callbackObj?.id?.let {
             bridgeExecutor.postError(
                 it,
