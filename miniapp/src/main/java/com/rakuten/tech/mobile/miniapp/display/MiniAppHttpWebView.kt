@@ -1,12 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import java.util.*
+import java.util.UUID
 
 internal class MiniAppHttpWebView(
     context: Context,
@@ -42,4 +43,14 @@ internal class MiniAppHttpWebView(
     )
 
     override fun getLoadUrl(): String = appUrl
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        miniAppCustomPermissionCache.removeId(miniAppId)
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun callOnDetached() {
+        onDetachedFromWindow()
+    }
 }

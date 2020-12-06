@@ -29,6 +29,7 @@ import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
@@ -46,7 +47,7 @@ open class BaseWebViewSpec {
 
     @Suppress("LongMethod")
     @Before
-    fun setup() {
+    open fun setup() {
         activityScenario = ActivityScenario.launch(TestActivity::class.java)
         activityScenario.onActivity { activity ->
             context = activity
@@ -65,6 +66,30 @@ open class BaseWebViewSpec {
             )
             webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
         }
+    }
+}
+
+@RunWith(AndroidJUnit4::class)
+class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
+
+    override fun setup() {
+        super.setup()
+        miniAppWebView = MiniAppHttpWebView(
+                context,
+                miniAppTitle = TEST_MA.displayName,
+                appUrl = TEST_MA_URL,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                hostAppUserAgentInfo = TEST_HA_NAME,
+                miniAppWebChromeClient = webChromeClient,
+                miniAppCustomPermissionCache = miniAppCustomPermissionCache
+        )
+    }
+
+    @Test
+    fun `should remove cached permission data when window is closed`() {
+        (miniAppWebView as MiniAppHttpWebView).callOnDetached()
+        verify(miniAppCustomPermissionCache, times(1)).removeId(anyString())
     }
 }
 
