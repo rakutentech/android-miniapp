@@ -82,7 +82,7 @@ class UserInfoBridgeDispatcherSpec {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = customPermissionCache,
-            miniAppInfo = miniAppInfo
+            miniAppId = TEST_MA.id
         )
         userInfoBridgeDispatcher = Mockito.spy(createUserInfoBridgeDispatcher())
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)

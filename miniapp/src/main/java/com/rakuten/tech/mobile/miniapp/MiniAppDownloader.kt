@@ -14,6 +14,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import java.io.File
+import java.io.IOException
+import java.net.ConnectException
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
@@ -23,6 +27,9 @@ internal class MiniAppDownloader(
     private val verifier: CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
+
+    @Suppress("MagicNumber")
+    private val validHTTPResponseCodes = 100..399
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -35,6 +42,24 @@ internal class MiniAppDownloader(
         onGetMiniApp(miniAppInfo)
     } catch (netError: MiniAppNetException) {
         onNetworkError(miniAppInfo)
+    }
+
+    @Suppress("ThrowsCount")
+    fun validateHttpAppUrl(url: String) {
+        var connection: HttpURLConnection? = null
+        try {
+            connection = URL(url).openConnection() as HttpURLConnection
+            val code = connection.responseCode
+            if (code !in validHTTPResponseCodes) {
+                throw MiniAppSdkException("Invalid URL error")
+            }
+        } catch (netError: ConnectException) {
+            throw MiniAppNotFoundException("Invalid URL error")
+        } catch (ioError: IOException) {
+            throw sdkExceptionForInternalServerError()
+        } finally {
+            connection?.disconnect()
+        }
     }
 
     private suspend fun onGetMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> {

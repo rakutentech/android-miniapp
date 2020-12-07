@@ -62,8 +62,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
         miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
-        if (AppSettings.instance.isPreviewMode)
-            binding.btnInput.visibility = View.GONE
+        if (AppSettings.instance.isPreviewMode) {
+            binding.btnInput.text = getString(R.string.action_go_input_preview_mode)
+        } else {
+            binding.btnInput.text = getString(R.string.action_go_input)
+        }
         return binding.root
     }
 

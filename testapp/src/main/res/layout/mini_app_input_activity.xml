@@ -18,7 +18,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/large_24">
+                android:layout_marginBottom="@dimen/medium_16">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtAppId"
@@ -29,11 +29,34 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/btnDisplay"
+                android:id="@+id/btnDisplayAppId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
+                android:layout_marginTop="@dimen/medium_16"
+                android:layout_marginBottom="@dimen/large_24"
+                android:text="@string/action_display" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/large_24"
+                android:layout_marginBottom="@dimen/medium_16">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/lb_app_url"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnDisplayUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="@dimen/medium_16"
                 android:text="@string/action_display" />
         </LinearLayout>
 

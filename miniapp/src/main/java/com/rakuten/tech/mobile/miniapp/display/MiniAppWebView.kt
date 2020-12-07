@@ -22,18 +22,19 @@ private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
 @SuppressLint("SetJavaScriptEnabled")
-internal class MiniAppWebView(
+internal open class MiniAppWebView(
     context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     var miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
-    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo),
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo.displayName),
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebView(context), WebViewListener {
 
-    private val miniAppScheme = MiniAppScheme(miniAppInfo.id)
+    protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
+    protected var miniAppId = miniAppInfo.id
 
     @VisibleForTesting
     internal val externalResultHandler = ExternalResultHandler().apply {
@@ -46,6 +47,11 @@ internal class MiniAppWebView(
     }
 
     init {
+        commonInit()
+    }
+
+    @Suppress("LongMethod")
+    protected fun commonInit() {
         layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
@@ -57,7 +63,7 @@ internal class MiniAppWebView(
             activity = context as Activity,
             webViewListener = this,
             customPermissionCache = miniAppCustomPermissionCache,
-            miniAppInfo = miniAppInfo
+            miniAppId = miniAppId
         )
 
         settings.allowUniversalAccessFromFileURLs = true
@@ -70,8 +76,7 @@ internal class MiniAppWebView(
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         setupMiniAppNavigator()
-        webViewClient = MiniAppWebViewClient(context, getWebViewAssetLoader(), miniAppNavigator!!,
-            externalResultHandler, miniAppScheme)
+        webViewClient = getMiniAppWebViewClient()
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
@@ -144,8 +149,15 @@ internal class MiniAppWebView(
         )
         .build()
 
-    @VisibleForTesting
-    internal fun getLoadUrl() = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
+    internal open fun getLoadUrl(): String = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
+
+    protected open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
+        context,
+        getWebViewAssetLoader(),
+        miniAppNavigator!!,
+        externalResultHandler,
+        miniAppScheme
+    )
 }
 
 internal interface WebViewListener {
