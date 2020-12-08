@@ -30,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.util.ArrayList
 
 @Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
@@ -252,14 +253,14 @@ class UserInfoBridgeDispatcherSpec {
     /** end region */
 
     /** start region: get contacts */
-    private val contactIdsAsJson = "dummy contacts id"
-    private fun createUserInfoContactsImpl(areContactsAvailable: Boolean) = object : UserInfoBridgeDispatcher() {
+    private val contacts = arrayListOf(Contact(TEST_CONTACT_ID))
+    private fun createUserInfoContactsImpl(hasContact: Boolean) = object : UserInfoBridgeDispatcher() {
         override fun getContacts(
-            onSuccess: (contactIdsAsJson: String) -> Unit,
+            onSuccess: (contacts: ArrayList<Contact>) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            if (areContactsAvailable)
-                onSuccess.invoke(contactIdsAsJson)
+            if (hasContact)
+                onSuccess.invoke(contacts)
             else
                 onError.invoke(TEST_ERROR_MSG)
         }
@@ -292,7 +293,7 @@ class UserInfoBridgeDispatcherSpec {
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(contactsCallbackObj.id, contactIdsAsJson)
+        verify(bridgeExecutor).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
     }
     /** end region */
 

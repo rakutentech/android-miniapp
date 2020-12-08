@@ -293,13 +293,13 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
     }
 
      override fun getContacts(
-        onSuccess: (contactIdsAsJson: String) -> Unit,
+        onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        // Check if there is any contact id in hostapp to send
+        // Check if there is any contact id in HostApp
         // .. .. ..
         if (hasContact)
-            onSuccess(contactIds)
+            onSuccess(contacts) // invoke the list of contact IDs
         else
             onError("There is no contact found in HostApp.")
     }

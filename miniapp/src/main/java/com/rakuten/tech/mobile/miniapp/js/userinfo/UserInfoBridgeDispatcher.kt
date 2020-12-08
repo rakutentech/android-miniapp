@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import java.util.ArrayList
 
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
@@ -46,7 +47,7 @@ abstract class UserInfoBridgeDispatcher {
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
     open fun getContacts(
-        onSuccess: (contactIdsAsJson: String) -> Unit,
+        onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getContacts` $NO_IMPL")
@@ -127,8 +128,8 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetContacts(callbackId: String) = try {
-        val successCallback = { contactIdsAsJson: String ->
-            bridgeExecutor.postValue(callbackId, contactIdsAsJson)
+        val successCallback = { contacts: ArrayList<Contact> ->
+            bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
         }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $message")

@@ -19,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
@@ -28,6 +29,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivit
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.util.ArrayList
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -181,13 +183,17 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
 
             override fun getContacts(
-                onSuccess: (contactIdsAsJson: String) -> Unit,
+                onSuccess: (contacts: ArrayList<Contact>) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                if (AppSettings.instance.isContactsSaved)
-                    onSuccess(AppSettings.instance.contactNames.toString())
-                else
-                    onError("There is no contact has been saved in HostApp yet.")
+                val hasContact = AppSettings.instance.isContactsSaved
+                if (hasContact) {
+                    val contacts: ArrayList<Contact> = arrayListOf()
+                    AppSettings.instance.contactNames.forEach {
+                        contacts.add(Contact(it))
+                    }
+                    onSuccess(contacts)
+                } else onError("There is no contact found in HostApp.")
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
