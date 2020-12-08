@@ -19,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_ACCESS_TOKEN
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_CONTACTS
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_PROFILE_PHOTO
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -47,6 +48,11 @@ class UserInfoBridgeDispatcherSpec {
     )
     private val tokenCallbackObj = CallbackObj(
         action = ActionType.GET_ACCESS_TOKEN.action,
+        param = null,
+        id = TEST_CALLBACK_ID
+    )
+    private val contactsCallbackObj = CallbackObj(
+        action = ActionType.GET_CONTACTS.action,
         param = null,
         id = TEST_CALLBACK_ID
     )
@@ -242,6 +248,51 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
 
         verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+    }
+    /** end region */
+
+    /** start region: get contacts */
+    private val contactIdsAsJson = "dummy contacts id"
+    private fun createUserInfoContactsImpl(areContactsAvailable: Boolean) = object : UserInfoBridgeDispatcher() {
+        override fun getContacts(
+            onSuccess: (contactIdsAsJson: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (areContactsAvailable)
+                onSuccess.invoke(contactIdsAsJson)
+            else
+                onError.invoke(TEST_ERROR_MSG)
+        }
+    }
+
+    @Test
+    fun `postError should be called when there is no get contacts retrieval implementation`() {
+        val errMsg = "$ERR_GET_CONTACTS The `UserInfoBridgeDispatcher.getContacts`" +
+                " method has not been implemented by the Host App."
+        miniAppBridge.postMessage(Gson().toJson(contactsCallbackObj))
+
+        verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when hostapp doesn't providing contacts`() {
+        val errMsg = "$ERR_GET_CONTACTS $TEST_ERROR_MSG"
+        val userInfoBridgeDispatcher = Mockito.spy(createUserInfoContactsImpl(false))
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+
+        userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+
+        verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when retrieve contacts successfully`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createUserInfoContactsImpl(true))
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+
+        userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+
+        verify(bridgeExecutor).postValue(contactsCallbackObj.id, contactIdsAsJson)
     }
     /** end region */
 
