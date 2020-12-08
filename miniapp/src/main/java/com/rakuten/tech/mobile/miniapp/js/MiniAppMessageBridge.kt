@@ -132,6 +132,7 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
             ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
+            ActionType.GET_CONTACTS.action -> userInfoBridgeDispatcher.onGetContacts(callbackObj.id)
         }
     }
 
