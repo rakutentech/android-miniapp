@@ -3,6 +3,7 @@
 2.X.X (In progress)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
+- **Fix:** Remove app_name property to avoid conflict.
 
 **Sample App**
 - **Feature:** `rakuten.miniapp.device.LOCATION` permission as "Location" in custom permissions settings screen is visible now.
