@@ -108,8 +108,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     }
 
     // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
-    @VisibleForTesting
-    internal fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
         val sortedPairValues = miniAppCustomPermission.pairValues.sortedBy { it.first.ordinal }
         return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
     }
