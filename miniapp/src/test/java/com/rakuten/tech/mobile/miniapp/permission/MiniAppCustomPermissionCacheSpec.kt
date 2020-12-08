@@ -25,6 +25,7 @@ class MiniAppCustomPermissionCacheSpec {
         `when`(mockContext.getSharedPreferences(anyString(), anyInt()))
             .thenReturn(mockSharedPrefs)
         `when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
+        `when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
 
         miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(mockContext))
     }
@@ -83,6 +84,12 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     /** end region */
+
+    @Test
+    fun `removeId will remove all permission data from the store`() {
+        miniAppCustomPermissionCache.removeId(TEST_MA_ID)
+        verify(mockEditor, times(1)).remove(TEST_MA_ID)
+    }
 
     @Test
     fun `storePermissions will invoke necessary functions to save value`() {

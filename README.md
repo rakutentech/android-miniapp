@@ -62,6 +62,7 @@ $ ./gradlew assembleRelease
 ## How to Test the Sample App
 
 We currently don't provide an API for public use, so you must provide your own API.
+Alternatively you can launch your MiniApp on a local sever and then use 'Load by URL' option in the Sample App.
 
 ## Writing and generating documentation
 

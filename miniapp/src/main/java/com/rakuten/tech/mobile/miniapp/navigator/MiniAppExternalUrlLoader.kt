@@ -7,17 +7,49 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 /**
  * This support the scenario that external loader redirect to url which is only supported in mini app view,
  * close the external loader and emit that url to mini app view by [ExternalResultHandler.emitResult].
- * @param miniAppId The id of loading mini app.
- * @param activity The Activity contains webview. Pass the activity if you want to auto finish
- * the Activity with current external loading url as result data.
  **/
-class MiniAppExternalUrlLoader(miniAppId: String, private val activity: Activity? = null) {
+class MiniAppExternalUrlLoader private constructor(
+    private val activity: Activity?
+) {
 
     companion object {
         const val returnUrlTag = "return_url_tag"
+
+        /**
+         * Creates new MiniAppExternalUrlLoader.
+         * @param miniAppId The id of loading mini app.
+         * @param activity The Activity contains webview. Pass the activity if you want to auto finish
+         * the Activity with current external loading url as result data.
+         **/
+        fun loaderWithId(miniAppId: String, activity: Activity? = null): MiniAppExternalUrlLoader {
+            val loader = MiniAppExternalUrlLoader(activity)
+            loader.miniAppId = miniAppId
+            return loader
+        }
+
+        /**
+         * Creates new MiniAppExternalUrlLoader.
+         * This should only be used for previewing a mini app from a local server.
+         * @param customAppUrl The url that was used to load the Mini App.
+         * @param activity The Activity contains webview. Pass the activity if you want to auto finish
+         * the Activity with current external loading url as result data.
+         **/
+        fun loaderWithUrl(customAppUrl: String, activity: Activity? = null): MiniAppExternalUrlLoader {
+            val loader = MiniAppExternalUrlLoader(activity)
+            loader.customAppUrl = customAppUrl
+            return loader
+        }
     }
 
-    private val miniAppScheme = MiniAppScheme(miniAppId)
+    private var miniAppId = ""
+    private var customAppUrl: String? = null
+    private val miniAppScheme: MiniAppScheme by lazy {
+        if (customAppUrl != null) {
+            MiniAppScheme.schemeWithCustomUrl(customAppUrl!!)
+        } else {
+            MiniAppScheme.schemeWithAppId(miniAppId)
+        }
+    }
 
     /**
      * Determine to close the external loader.

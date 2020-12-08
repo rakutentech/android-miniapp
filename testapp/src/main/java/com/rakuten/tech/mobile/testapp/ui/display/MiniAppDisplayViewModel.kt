@@ -63,6 +63,25 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    fun obtainMiniAppDisplayUrl(
+        context: Context,
+        appUrl: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            _isLoading.postValue(true)
+            miniAppDisplay = miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator)
+            hostLifeCycle?.addObserver(miniAppDisplay)
+            _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
+        } catch (e: MiniAppSdkException) {
+            e.printStackTrace()
+             _errorData.postValue(e.message)
+        } finally {
+            _isLoading.postValue(false)
+        }
+    }
+
     fun setHostLifeCycle(lifecycle: Lifecycle) {
         this.hostLifeCycle = lifecycle
     }

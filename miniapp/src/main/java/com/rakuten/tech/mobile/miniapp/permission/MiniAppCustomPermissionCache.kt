@@ -96,6 +96,11 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
+    fun removeId(miniAppId: String) {
+        prefs.edit().remove(miniAppId).apply()
+    }
+
+    @SuppressWarnings("PrintStackTrace")
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))

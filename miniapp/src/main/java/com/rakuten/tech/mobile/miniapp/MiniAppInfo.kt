@@ -18,7 +18,11 @@ data class MiniAppInfo(
     @SerializedName("displayName") val displayName: String,
     @SerializedName("icon") val icon: String,
     @SerializedName("version") val version: Version
-) : Parcelable
+) : Parcelable {
+    companion object {
+        internal fun empty() = MiniAppInfo("", "", "", Version("", ""))
+    }
+}
 
 /**
  * This represents a version entity of a Mini App.

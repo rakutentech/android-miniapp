@@ -42,10 +42,17 @@ class MiniAppDisplayActivity : BaseActivity() {
     companion object {
         private val appIdTag = "app_id_tag"
         private val miniAppTag = "mini_app_tag"
+        private val appUrlTag = "app_url_tag"
 
         fun start(context: Context, appId: String) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
+            })
+        }
+
+        fun startUrl(context: Context, appUrl: String) {
+            context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
+                putExtra(appUrlTag, appUrl)
             })
         }
 
@@ -70,47 +77,59 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         showBackIcon()
 
-        if (intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag)) {
-            val appId = intent.getStringExtra(appIdTag) ?: intent.getParcelableExtra<MiniAppInfo>(miniAppTag)!!.id
-            val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        if (!(intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag) || intent.hasExtra(appUrlTag))) {
+            return
+        }
 
-            binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
+        val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        val appUrl = intent.getStringExtra(appUrlTag)
+        var appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
 
-            viewModel = ViewModelProvider.NewInstanceFactory()
-                .create(MiniAppDisplayViewModel::class.java).apply {
+        binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
-                    setHostLifeCycle(lifecycle)
-                    miniAppView.observe(this@MiniAppDisplayActivity, Observer {
-                        if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
-                            WebView.setWebContentsDebuggingEnabled(true)
-                        //action: display webview
-                        setContentView(it)
-                    })
+        viewModel = ViewModelProvider.NewInstanceFactory()
+            .create(MiniAppDisplayViewModel::class.java).apply {
 
-                    errorData.observe(this@MiniAppDisplayActivity, Observer {
-                        Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-                    })
+                setHostLifeCycle(lifecycle)
+                miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+                    if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+                        WebView.setWebContentsDebuggingEnabled(true)
+                    //action: display webview
+                    setContentView(it)
+                })
 
-                    isLoading.observe(this@MiniAppDisplayActivity, Observer {
-                        toggleProgressLoading(it)
-                    })
-                }
+                errorData.observe(this@MiniAppDisplayActivity, Observer {
+                    Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
+                })
 
-            setupMiniAppMessageBridge()
-
-            miniAppNavigator = object : MiniAppNavigator {
-
-                override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                    sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                        appId, externalWebViewReqCode)
-                }
+                isLoading.observe(this@MiniAppDisplayActivity, Observer {
+                    toggleProgressLoading(it)
+                })
             }
 
+        setupMiniAppMessageBridge()
+
+        miniAppNavigator = object : MiniAppNavigator {
+
+            override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
+                sampleWebViewExternalResultHandler = externalResultHandler
+                WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                    appId, appUrl, externalWebViewReqCode)
+            }
+        }
+
+        if (appUrl != null) {
+            viewModel.obtainMiniAppDisplayUrl(
+                this@MiniAppDisplayActivity,
+                appUrl,
+                miniAppMessageBridge,
+                miniAppNavigator
+            )
+        } else {
             viewModel.obtainMiniAppDisplay(
                 this@MiniAppDisplayActivity,
                 appInfo,
-                appId,
+                appId!!,
                 miniAppMessageBridge,
                 miniAppNavigator
             )

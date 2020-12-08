@@ -14,14 +14,14 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
 internal class MiniAppWebViewClient(
     private val context: Context,
-    @VisibleForTesting internal val loader: WebViewAssetLoader,
+    @VisibleForTesting internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
     private val miniAppScheme: MiniAppScheme
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-        val response = loader.shouldInterceptRequest(request.url)
+        val response = loader?.shouldInterceptRequest(request.url)
         interceptMimeType(response, request)
         return response
     }

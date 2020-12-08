@@ -7,7 +7,6 @@ import android.webkit.JsPromptResult
 import android.webkit.JsResult
 import android.widget.EditText
 import android.widget.FrameLayout
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 
 @Suppress("LongParameterList", "LongMethod")
@@ -17,10 +16,10 @@ internal fun onShowDialog(
     defaultValue: String? = "",
     result: JsResult?,
     dialogType: DialogType,
-    miniAppInfo: MiniAppInfo
+    miniAppTitle: String
 ): Boolean {
     val dialogBuilder = AlertDialog.Builder(context)
-        .setTitle(miniAppInfo.displayName)
+        .setTitle(miniAppTitle)
         .setMessage(message)
 
     if (dialogType != DialogType.ALERT)

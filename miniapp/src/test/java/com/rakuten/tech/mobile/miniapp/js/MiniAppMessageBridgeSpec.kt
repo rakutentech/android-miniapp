@@ -98,7 +98,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
     }
 
@@ -120,7 +120,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
 
         miniAppBridge.postMessage(permissionJsonStr)
@@ -154,7 +154,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
@@ -173,7 +173,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
     }
 
@@ -198,7 +198,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
-                miniAppInfo = TEST_MA
+                miniAppId = TEST_MA_ID
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -217,7 +217,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -266,7 +266,7 @@ class AdBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
         return miniAppBridge
@@ -324,7 +324,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
-            miniAppInfo = TEST_MA
+            miniAppId = TEST_MA_ID
         )
     }
 
@@ -345,7 +345,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
-                miniAppInfo = TEST_MA
+                miniAppId = TEST_MA_ID
             )
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))

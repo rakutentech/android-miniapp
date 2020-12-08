@@ -2,12 +2,14 @@
     <string name="lb_version">Version</string>
     <string name="lb_description">Description</string>
     <string name="lb_app_id">App ID</string>
+    <string name="lb_app_url">URL</string>
     <string name="lb_app_settings">App Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_user_details">User Details</string>
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
+    <string name="lb_display_input">Display by Input</string>
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
@@ -21,7 +23,8 @@
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
 
     <string name="action_display">Display</string>
-    <string name="action_go_input">Display Miniapp From ID</string>
+    <string name="action_go_input">Display Miniapp From ID or URL</string>
+    <string name="action_go_input_preview_mode">Display Miniapp From URL</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
