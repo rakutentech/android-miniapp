@@ -113,22 +113,11 @@ class MiniAppCustomPermissionCacheSpec {
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
 
         verify(mockEditor).putString(anyString(), anyString())
-        verify(miniAppCustomPermissionCache).orderByDefaultList(miniAppCustomPermission)
+        verify(miniAppCustomPermissionCache).sortedByDefault(miniAppCustomPermission)
     }
 
     @Test
     fun `orderByDefaultList should return correct ordering by MiniAppCustomPermissionType`() {
-        val defaultPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED)
-            )
-        )
-        doReturn(defaultPermission).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
-
         val unorderedPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
@@ -139,7 +128,7 @@ class MiniAppCustomPermissionCacheSpec {
             )
         )
 
-        val actual = miniAppCustomPermissionCache.orderByDefaultList(unorderedPermission)
+        val actual = miniAppCustomPermissionCache.sortedByDefault(unorderedPermission)
 
         actual.pairValues[0].first shouldEqual MiniAppCustomPermissionType.USER_NAME
         actual.pairValues[1].first shouldEqual MiniAppCustomPermissionType.PROFILE_PHOTO
@@ -150,7 +139,6 @@ class MiniAppCustomPermissionCacheSpec {
     /**
      * region: prepareAllPermissionsToStore
      */
-    @Suppress("MaximumLineLength")
     @Test
     fun `prepareAllPermissionsToStore should combine cached and supplied list properly with unknown permissions`() {
         val cached = MiniAppCustomPermission(

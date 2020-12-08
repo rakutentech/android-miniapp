@@ -100,44 +100,17 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         prefs.edit().remove(miniAppId).apply()
     }
 
-    @SuppressWarnings("PrintStackTrace")
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
-        try {
-            val jsonToStore: String = Gson().toJson(orderByDefaultList(miniAppCustomPermission))
-            prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))
+        prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
     }
 
+    // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun orderByDefaultList(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
-        val miniAppId = miniAppCustomPermission.miniAppId
-        val defaultTypesOrder = mutableListOf<MiniAppCustomPermissionType>()
-        defaultDeniedList(miniAppId).pairValues.forEach {
-            defaultTypesOrder.add(it.first)
-        }
-
-        val currentTypesOrder = mutableListOf<MiniAppCustomPermissionType>()
-        miniAppCustomPermission.pairValues.forEach {
-            currentTypesOrder.add(it.first)
-        }
-
-        val expectedTypesOrder = currentTypesOrder.map {
-            defaultTypesOrder.indexOf(it)
-        }.sorted().map { value -> defaultTypesOrder[value] }
-
-        val orderedPair =
-            mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        expectedTypesOrder.forEachIndexed { index, type ->
-            miniAppCustomPermission.pairValues.find {
-                it.first == type
-            }?.let { orderedPair.add(index, it) }
-        }
-
-        return MiniAppCustomPermission(miniAppId, orderedPair)
+    fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
+        val sortedPairValues = miniAppCustomPermission.pairValues.sortedBy { it.first.ordinal }
+        return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
