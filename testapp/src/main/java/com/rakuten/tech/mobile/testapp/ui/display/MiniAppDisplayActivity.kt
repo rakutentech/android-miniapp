@@ -179,6 +179,16 @@ class MiniAppDisplayActivity : BaseActivity() {
                     .create()
                     .show()
             }
+
+            override fun getContacts(
+                onSuccess: (contactIdsAsJson: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                if (AppSettings.instance.isContactsSaved)
+                    onSuccess(AppSettings.instance.contactNames.toString())
+                else
+                    onError("There is no contact has been saved in HostApp yet.")
+            }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
     }
