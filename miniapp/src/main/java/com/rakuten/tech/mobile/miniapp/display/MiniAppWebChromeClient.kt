@@ -12,11 +12,15 @@ import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.js.DialogType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(
     private val context: Context,
-    private val miniAppTitle: String
+    private val miniAppTitle: String,
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -38,7 +42,9 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        callback?.invoke(origin, true, false)
+        if (hasLocationPermission ?: return)
+            callback?.invoke(origin, true, false)
+        else callback?.invoke(origin, false, false)
     }
 
     override fun onJsAlert(
@@ -152,4 +158,12 @@ internal class MiniAppWebChromeClient(
         if (customView != null)
             onHideCustomView()
     }
+
+    private val hasLocationPermission =
+        miniAppCustomPermissionCache.readPermissions("23925fa1-260b-43bd-bd7c-4bb256004905")
+            .pairValues.find {
+                it.first == MiniAppCustomPermissionType.LOCATION
+            }?.let {
+                it.second == MiniAppCustomPermissionResult.ALLOWED
+            }
 }
