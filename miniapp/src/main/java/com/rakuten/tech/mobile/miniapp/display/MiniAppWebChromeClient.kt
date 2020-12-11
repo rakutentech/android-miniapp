@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
@@ -11,6 +12,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.core.app.ActivityCompat
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -43,14 +45,19 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        val hasLocationCustomPermission =
+        val hasCustomPermission =
             miniAppCustomPermissionCache.readPermissions(miniAppInfo.id)
                 .pairValues.find {
                     it.first == MiniAppCustomPermissionType.LOCATION
                 }?.let {
                     it.second == MiniAppCustomPermissionResult.ALLOWED
                 }
-        callback?.invoke(origin, hasLocationCustomPermission!!, false)
+        val hasDevicePermission = ActivityCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val allow = hasCustomPermission!! && hasDevicePermission
+        callback?.invoke(origin, allow, false)
     }
 
     override fun onJsAlert(

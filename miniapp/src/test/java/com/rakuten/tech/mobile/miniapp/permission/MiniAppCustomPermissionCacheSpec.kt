@@ -87,7 +87,7 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Test
     fun `removeId will remove all permission data from the store`() {
-        miniAppCustomPermissionCache.removeId(TEST_MA_ID)
+        miniAppCustomPermissionCache.removePermission(TEST_MA_ID)
         verify(mockEditor, times(1)).remove(TEST_MA_ID)
     }
 

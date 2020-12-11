@@ -92,7 +92,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
     @Test
     fun `should remove cached permission data when window is closed`() {
         (miniAppWebView as MiniAppHttpWebView).callOnDetached()
-        verify(miniAppCustomPermissionCache, times(1)).removeId(anyString())
+        verify(miniAppCustomPermissionCache, times(1)).removePermission(anyString())
     }
 }
 
@@ -401,20 +401,20 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     fun `should invoke callback from onRequestPermissionsResult when it is called`() {
         val locationCustomPermission = MiniAppCustomPermission(
             TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.ALLOWED))
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED))
         )
         doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(TEST_MA_ID)
 
         val geoLocationCallback = Mockito.spy(
             GeolocationPermissions.Callback { _, allow, retain ->
-                allow shouldBe true
+                allow shouldBe false
                 retain shouldBe false
             }
         )
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
 
-        verify(geoLocationCallback, times(1)).invoke("", true, false)
+        verify(geoLocationCallback, times(1)).invoke("", false, false)
     }
 
     @Test

@@ -50,7 +50,7 @@ internal class MiniAppHttpWebView(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        miniAppCustomPermissionCache.removeId(miniAppId)
+        miniAppCustomPermissionCache.removePermission(miniAppId)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

@@ -50,7 +50,6 @@ abstract class MiniAppMessageBridge {
             customPermissionCache,
             miniAppId
         )
-
         this.customPermissionWindow = MiniAppCustomPermissionWindow(
             activity,
             customPermissionBridgeDispatcher
