@@ -32,22 +32,26 @@ android {
         }
     }
 
-    def appName = "Mini App Sample"
-    def stagingManifestPlaceholders = [
+    def defaultAppName = "Mini App Sample"
+    def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
-            adMobAppId              : property("ADMOB_APP_ID") ?: ""
+            adMobAppId              : property("ADMOB_APP_ID") ?: "",
+            appName                 : defaultAppName + " DEBUG"
     ]
+    def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
+    stagingManifestPlaceholders.appName = defaultAppName + " STG"
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
-            adMobAppId              : property("PROD_ADMOB_APP_ID") ?: ""
+            adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
+            appName                 : defaultAppName
     ]
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
@@ -56,16 +60,14 @@ android {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
-            resValue "string", "app_name", "$appName DEBUG"
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             debuggable true
             minifyEnabled false
 
-            manifestPlaceholders = stagingManifestPlaceholders
+            manifestPlaceholders = debugManifestPlaceholders
         }
         release {
-            resValue "string", "app_name", appName
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             debuggable true
@@ -78,7 +80,6 @@ android {
             initWith release
             applicationIdSuffix '.staging'
             versionNameSuffix "-STG-build-$buildVersion"
-            resValue "string", "app_name", "$appName STG"
             matchingFallbacks = ['release', 'debug']
 
             manifestPlaceholders = stagingManifestPlaceholders

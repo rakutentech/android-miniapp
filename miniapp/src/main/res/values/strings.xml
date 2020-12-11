@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">MiniAppPlatform</string>
-
     <!-- Custom permission resources -->
     <string name="miniapp_custom_permission_save">Save</string>
     <string name="miniapp_custom_permission_close">Close</string>
