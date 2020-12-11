@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import java.util.ArrayList
 
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
@@ -39,6 +40,17 @@ abstract class UserInfoBridgeDispatcher {
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+    }
+
+    /**
+     * Get contacts from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getContacts(
+        onSuccess: (contacts: ArrayList<Contact>) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getContacts` $NO_IMPL")
     }
 
     internal fun init(
@@ -115,6 +127,19 @@ abstract class UserInfoBridgeDispatcher {
         bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
     }
 
+    internal fun onGetContacts(callbackId: String) = try {
+        val successCallback = { contacts: ArrayList<Contact> ->
+            bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $message")
+        }
+
+        getContacts(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS ${e.message}")
+    }
+
     @VisibleForTesting
     internal companion object {
         const val NO_IMPL = "method has not been implemented by the Host App."
@@ -125,5 +150,6 @@ abstract class UserInfoBridgeDispatcher {
         const val ERR_PROFILE_PHOTO_NO_PERMISSION =
             "Permission has not been accepted yet for getting profile photo."
         const val ERR_GET_ACCESS_TOKEN = "Cannot get access token:"
+        const val ERR_GET_CONTACTS = "Cannot get contacts:"
     }
 }

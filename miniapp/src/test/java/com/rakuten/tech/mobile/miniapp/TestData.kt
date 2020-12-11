@@ -37,6 +37,7 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
+internal const val TEST_CONTACT_ID = "test_contact_id"
 
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
