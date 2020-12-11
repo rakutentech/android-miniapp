@@ -212,6 +212,7 @@ The `UserInfoBridgeDispatcher`:
 | getUserName                  | 🚫       |
 | getProfilePhoto              | 🚫       |
 | getAccessToken               | 🚫       |
+| getContacts                  | 🚫       |
 
 The sections below explain each feature in more detail. 
 
@@ -289,6 +290,18 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
             onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
         else
             onError(message)    // reject miniapp to get token and with message explanation.
+    }
+
+     override fun getContacts(
+        onSuccess: (contacts: ArrayList<Contact>) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // Check if there is any contact id in HostApp
+        // .. .. ..
+        if (hasContact)
+            onSuccess(contacts) // invoke the list of contact IDs
+        else
+            onError("There is no contact found in HostApp.")
     }
 }
 

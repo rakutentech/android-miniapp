@@ -3,10 +3,12 @@
 2.X.X (In progress)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
+- **Feature:** Added `getContacts()` interface in `UserInfoBridgeDispatcher` for receiving list of contact IDs.
 - **Change:** Remove `app_name` property.
 
 **Sample App**
 - **Feature:** `rakuten.miniapp.device.LOCATION` permission as "Location" in custom permissions settings screen is visible now.
+- **Change:** Added `getContacts()` implementation for sending the list of contact IDs.
 
 ### 2.6.0 (2020-11-27)
 **SDK**
