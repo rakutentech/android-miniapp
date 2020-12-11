@@ -11,7 +11,7 @@ import java.util.UUID
 
 internal class MiniAppHttpWebView(
     context: Context,
-    miniAppTitle: String,
+    miniAppInfo: MiniAppInfo,
     val appUrl: String,
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
@@ -19,7 +19,7 @@ internal class MiniAppHttpWebView(
     miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
         context,
-        miniAppTitle,
+        miniAppInfo,
         miniAppCustomPermissionCache
     )
 ) : MiniAppWebView(

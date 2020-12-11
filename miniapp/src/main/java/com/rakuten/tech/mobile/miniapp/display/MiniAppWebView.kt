@@ -32,7 +32,7 @@ internal open class MiniAppWebView(
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
         context,
-        miniAppInfo.displayName,
+        miniAppInfo,
         miniAppCustomPermissionCache
     )
 ) : WebView(context), WebViewListener {

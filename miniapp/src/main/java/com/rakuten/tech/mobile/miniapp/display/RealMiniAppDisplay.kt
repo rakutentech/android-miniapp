@@ -95,7 +95,7 @@ internal class RealMiniAppDisplay(
             if (appUrl != null) {
                 miniAppWebView = MiniAppHttpWebView(
                     context = context,
-                    miniAppTitle = "Mini app",
+                    miniAppInfo = miniAppInfo,
                     appUrl = appUrl!!,
                     miniAppMessageBridge = miniAppMessageBridge,
                     miniAppNavigator = miniAppNavigator,

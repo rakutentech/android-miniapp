@@ -24,7 +24,10 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +55,7 @@ open class BaseWebViewSpec {
         activityScenario.onActivity { activity ->
             context = activity
             basePath = context.filesDir.path
-            webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA.displayName))
+            webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, miniAppCustomPermissionCache))
 
             miniAppWebView = MiniAppWebView(
                 context,
@@ -76,7 +79,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
         super.setup()
         miniAppWebView = MiniAppHttpWebView(
                 context,
-                miniAppTitle = TEST_MA.displayName,
+                miniAppInfo = TEST_MA,
                 appUrl = TEST_MA_URL,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
@@ -390,21 +393,26 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock(), "title")
+        val webClient = MiniAppWebChromeClient(mock(), TEST_MA, mock())
         webClient.bridgeJs shouldBe null
     }
 
     @Test
     fun `should invoke callback from onRequestPermissionsResult when it is called`() {
+        val locationCustomPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.ALLOWED))
+        )
+        doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
+            .readPermissions(TEST_MA_ID)
+
         val geoLocationCallback = Mockito.spy(
-            GeolocationPermissions.Callback { origin, allow, retain ->
+            GeolocationPermissions.Callback { _, allow, retain ->
                 allow shouldBe true
                 retain shouldBe false
             }
         )
-
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
-        webChromeClient.onGeolocationPermissionsShowPrompt(null, null)
 
         verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
@@ -424,7 +432,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     @Test
     fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
-        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA.displayName))
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
         webChromeClient.onShowCustomView(null, mock())
         webChromeClient.customView = mock()
         webChromeClient.onShowCustomView(mock(), mock())
@@ -434,7 +442,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should execute custom view flow without error`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA.displayName))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
 
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.updateControls()
@@ -444,7 +452,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should exit fullscreen when destroy miniapp view`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA.displayName))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.onWebViewDetach()
 
