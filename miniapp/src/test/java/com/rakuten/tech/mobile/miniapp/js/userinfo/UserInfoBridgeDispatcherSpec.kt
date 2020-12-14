@@ -295,6 +295,27 @@ class UserInfoBridgeDispatcherSpec {
 
         verify(bridgeExecutor).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
     }
+
+    @Test
+    fun `postError should be called when get permission hasn't been allowed`() {
+        val errMsg = "$ERR_GET_CONTACTS Permission has not been accepted yet for getting contacts."
+        val deniedContactsPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
+        )
+        whenever(customPermissionCache.readPermissions(miniAppInfo.id)).thenReturn(
+            deniedContactsPermission
+        )
+
+        userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+
+        verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
+    }
     /** end region */
 
     private fun createMessageBridge(): MiniAppMessageBridge =

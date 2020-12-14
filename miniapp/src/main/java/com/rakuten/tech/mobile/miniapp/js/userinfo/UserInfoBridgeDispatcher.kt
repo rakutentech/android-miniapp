@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.util.ArrayList
 
@@ -65,11 +64,10 @@ abstract class UserInfoBridgeDispatcher {
 
     internal fun onGetUserName(callbackId: String) {
         try {
-            var isPermissionGranted = false
-            customPermissionCache.readPermissions(miniAppId).pairValues.find {
-                it.first == MiniAppCustomPermissionType.USER_NAME &&
-                        it.second == MiniAppCustomPermissionResult.ALLOWED
-            }?.let { isPermissionGranted = true }
+            val isPermissionGranted = customPermissionCache.hasPermission(
+                miniAppId,
+                MiniAppCustomPermissionType.USER_NAME
+            )
 
             if (isPermissionGranted) {
                 val name = getUserName()
@@ -90,11 +88,10 @@ abstract class UserInfoBridgeDispatcher {
 
     internal fun onGetProfilePhoto(callbackId: String) {
         try {
-            var isPermissionGranted = false
-            customPermissionCache.readPermissions(miniAppId).pairValues.find {
-                it.first == MiniAppCustomPermissionType.PROFILE_PHOTO &&
-                        it.second == MiniAppCustomPermissionResult.ALLOWED
-            }?.let { isPermissionGranted = true }
+            val isPermissionGranted = customPermissionCache.hasPermission(
+                miniAppId,
+                MiniAppCustomPermissionType.PROFILE_PHOTO
+            )
 
             if (isPermissionGranted) {
                 val photoUrl = getProfilePhoto()
@@ -128,14 +125,25 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetContacts(callbackId: String) = try {
-        val successCallback = { contacts: ArrayList<Contact> ->
-            bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
-        }
-        val errorCallback = { message: String ->
-            bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $message")
-        }
+        val isPermissionGranted = customPermissionCache.hasPermission(
+            miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
+        )
 
-        getContacts(successCallback, errorCallback)
+        if (isPermissionGranted) {
+            val successCallback = { contacts: ArrayList<Contact> ->
+                bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
+            }
+            val errorCallback = { message: String ->
+                bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $message")
+            }
+
+            getContacts(successCallback, errorCallback)
+        } else {
+            bridgeExecutor.postError(
+                callbackId,
+                "$ERR_GET_CONTACTS $ERR_GET_CONTACTS_NO_PERMISSION"
+            )
+        }
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS ${e.message}")
     }
@@ -151,5 +159,7 @@ abstract class UserInfoBridgeDispatcher {
             "Permission has not been accepted yet for getting profile photo."
         const val ERR_GET_ACCESS_TOKEN = "Cannot get access token:"
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
+        const val ERR_GET_CONTACTS_NO_PERMISSION =
+            "Permission has not been accepted yet for getting contacts."
     }
 }
