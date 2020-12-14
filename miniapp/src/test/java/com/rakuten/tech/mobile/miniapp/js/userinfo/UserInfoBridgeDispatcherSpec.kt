@@ -102,9 +102,8 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when there is no get user name retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(false))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-
         val errMsg = "$ERR_GET_USER_NAME The `UserInfoBridgeDispatcher.getUserName`" +
                 " method has not been implemented by the Host App."
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
@@ -115,14 +114,13 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when user name permission hasn't been allowed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
-
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         val errMsg = "$ERR_GET_USER_NAME Permission has not been accepted yet for getting user name."
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.USER_NAME)
         ).thenReturn(false)
 
-        userInfoBridgeDispatcher?.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -130,11 +128,10 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when user name is empty`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
-
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         val errMsg = "$ERR_GET_USER_NAME User name is not found."
 
-        userInfoBridgeDispatcher?.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -142,11 +139,10 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postValue should be called when onGetUserName retrieve valid user name`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        whenever(userInfoBridgeDispatcher.getUserName()).thenReturn(TEST_USER_NAME)
 
-        whenever(userInfoBridgeDispatcher?.getUserName()).thenReturn(TEST_USER_NAME)
-
-        userInfoBridgeDispatcher?.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
@@ -166,9 +162,8 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when there is no get profile photo retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(false))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-
         val errMsg = "$ERR_GET_PROFILE_PHOTO The `UserInfoBridgeDispatcher.getProfilePhoto`" +
                 " method has not been implemented by the Host App."
         miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
@@ -179,13 +174,13 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when profile photo permission hasn't been allowed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         val errMsg = "$ERR_GET_PROFILE_PHOTO Permission has not been accepted yet for getting profile photo."
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.PROFILE_PHOTO)
         ).thenReturn(false)
 
-        userInfoBridgeDispatcher?.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -193,10 +188,10 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when profile photo is empty`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         val errMsg = "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
 
-        userInfoBridgeDispatcher?.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -204,10 +199,10 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postValue should be called when onGetProfilePhoto retrieve valid profile photo url`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
-        whenever(userInfoBridgeDispatcher?.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        whenever(userInfoBridgeDispatcher.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
 
-        userInfoBridgeDispatcher?.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
@@ -241,7 +236,7 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when there is no access token retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(false, false))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
         val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken`" +
                 " method has not been implemented by the Host App."
@@ -298,7 +293,7 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when there is no get contacts retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createContactsImpl(false, false))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
         val errMsg = "$ERR_GET_CONTACTS The `UserInfoBridgeDispatcher.getContacts`" +
                 " method has not been implemented by the Host App."
@@ -310,7 +305,7 @@ class UserInfoBridgeDispatcherSpec {
     @Test
     fun `postError should be called when contact permission hasn't been allowed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createContactsImpl(true, true))
-        userInfoBridgeDispatcher?.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
         val errMsg = "$ERR_GET_CONTACTS Permission has not been accepted yet for getting contacts."
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.CONTACT_LIST)
