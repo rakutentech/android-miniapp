@@ -173,6 +173,42 @@ class MiniAppCustomPermissionCacheSpec {
     /** end region */
 
     /**
+     * region: hasPermission
+     */
+    @Test
+    fun `hasPermission should return false by default when there is no allowed permission found`() {
+        val actual = miniAppCustomPermissionCache.hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
+
+        actual shouldBe false
+    }
+
+    @Test
+    fun `hasPermission should return true when there is allowed permission found`() {
+        val allowedUserName = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.ALLOWED
+                )
+            )
+        )
+
+        doReturn(allowedUserName).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+
+        val actual = miniAppCustomPermissionCache.hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
+
+        actual shouldBe true
+    }
+    /** end region */
+
+    /**
      * region: defaultDeniedList.
      * Update the values in the following tests when adding or removing a custom permission.
      */
