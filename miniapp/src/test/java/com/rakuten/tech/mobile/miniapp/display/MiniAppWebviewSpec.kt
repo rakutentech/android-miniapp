@@ -401,7 +401,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     fun `should invoke callback from onRequestPermissionsResult when it is called`() {
         val locationCustomPermission = MiniAppCustomPermission(
             TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED))
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.ALLOWED))
         )
         doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(TEST_MA_ID)
