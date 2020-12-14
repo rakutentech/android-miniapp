@@ -408,13 +408,13 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
         val geoLocationCallback = Mockito.spy(
             GeolocationPermissions.Callback { _, allow, retain ->
-                allow shouldBe false
+                allow shouldBe true
                 retain shouldBe false
             }
         )
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
 
-        verify(geoLocationCallback, times(1)).invoke("", false, false)
+        verify(geoLocationCallback, times(1)).invoke("", true, false)
     }
 
     @Test
