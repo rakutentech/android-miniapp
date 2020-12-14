@@ -297,7 +297,7 @@ class UserInfoBridgeDispatcherSpec {
     }
 
     @Test
-    fun `postError should be called when get permission hasn't been allowed`() {
+    fun `postError should be called when contact permission hasn't been allowed`() {
         val errMsg = "$ERR_GET_CONTACTS Permission has not been accepted yet for getting contacts."
         val deniedContactsPermission = MiniAppCustomPermission(
             TEST_MA_ID,
