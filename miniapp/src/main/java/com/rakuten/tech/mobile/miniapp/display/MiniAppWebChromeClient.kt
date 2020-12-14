@@ -51,7 +51,8 @@ internal class MiniAppWebChromeClient(
                     it.second == MiniAppCustomPermissionResult.ALLOWED
                 }
 
-        callback?.invoke(origin, hasCustomPermission!!, false)
+        if (hasCustomPermission!!) callback?.invoke(origin, true, false)
+        else callback?.invoke(origin, false, false)
     }
 
     override fun onJsAlert(

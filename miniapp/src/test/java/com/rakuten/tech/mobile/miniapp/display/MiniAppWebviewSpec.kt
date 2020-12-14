@@ -398,7 +398,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should invoke callback from onRequestPermissionsResult when it is called`() {
+    fun `should allow geolocation callback when custom permission is allowed`() {
         val locationCustomPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.ALLOWED))
@@ -415,6 +415,26 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
 
         verify(geoLocationCallback, times(1)).invoke("", true, false)
+    }
+
+    @Test
+    fun `should not allow geolocation callback when custom permission is denied`() {
+        val locationCustomPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED))
+        )
+        doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
+            .readPermissions(TEST_MA_ID)
+
+        val geoLocationCallback = Mockito.spy(
+            GeolocationPermissions.Callback { _, allow, retain ->
+                allow shouldBe false
+                retain shouldBe false
+            }
+        )
+        webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
+
+        verify(geoLocationCallback, times(1)).invoke("", false, false)
     }
 
     @Test
