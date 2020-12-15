@@ -133,10 +133,10 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     }
 
     /**
-     * Check if any specific custom permission has been allowed or denied
-     * @param [miniAppId] the key provided to find the stored results per MiniApp
-     * @param [type] MiniAppCustomPermissionType to check
-     * @return [Boolean] True if the permission has been allowed, otherwise false
+     * Check if any specific custom permission has been allowed or denied.
+     * @param [miniAppId] the key provided to find the stored results per MiniApp.
+     * @param [type] MiniAppCustomPermissionType to check.
+     * @return [Boolean] True if the permission has been allowed, otherwise false.
      */
     fun hasPermission(miniAppId: String, type: MiniAppCustomPermissionType): Boolean {
         var isPermissionGranted = false

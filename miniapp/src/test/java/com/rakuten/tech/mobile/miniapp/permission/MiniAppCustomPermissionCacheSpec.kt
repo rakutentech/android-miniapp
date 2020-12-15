@@ -12,7 +12,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 class MiniAppCustomPermissionCacheSpec {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private val mockSharedPrefs: SharedPreferences = mock()
