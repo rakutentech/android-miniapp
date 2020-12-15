@@ -11,13 +11,17 @@ import java.util.UUID
 
 internal class MiniAppHttpWebView(
     context: Context,
-    miniAppTitle: String,
+    miniAppInfo: MiniAppInfo,
     val appUrl: String,
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
     hostAppUserAgentInfo: String,
-    miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppTitle),
-    miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
+        context,
+        miniAppInfo,
+        miniAppCustomPermissionCache
+    )
 ) : MiniAppWebView(
     context,
     "",
@@ -25,8 +29,8 @@ internal class MiniAppHttpWebView(
     miniAppMessageBridge,
     miniAppNavigator,
     hostAppUserAgentInfo,
-    miniAppWebChromeClient,
-    miniAppCustomPermissionCache
+    miniAppCustomPermissionCache,
+    miniAppWebChromeClient
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)
@@ -46,7 +50,7 @@ internal class MiniAppHttpWebView(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        miniAppCustomPermissionCache.removeId(miniAppId)
+        miniAppCustomPermissionCache.removePermission(miniAppId)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

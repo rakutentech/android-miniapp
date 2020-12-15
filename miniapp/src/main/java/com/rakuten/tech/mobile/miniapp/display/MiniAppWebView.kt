@@ -29,8 +29,12 @@ internal open class MiniAppWebView(
     val miniAppMessageBridge: MiniAppMessageBridge,
     var miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
-    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(context, miniAppInfo.displayName),
-    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
+        context,
+        miniAppInfo,
+        miniAppCustomPermissionCache
+    )
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)

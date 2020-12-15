@@ -11,12 +11,17 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
 
 internal class MiniAppWebChromeClient(
     private val context: Context,
-    private val miniAppTitle: String
+    private val miniAppInfo: MiniAppInfo,
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -38,7 +43,16 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        callback?.invoke(origin, true, false)
+        val hasCustomPermission =
+            miniAppCustomPermissionCache.readPermissions(miniAppInfo.id)
+                .pairValues.find {
+                    it.first == MiniAppCustomPermissionType.LOCATION
+                }?.let {
+                    it.second == MiniAppCustomPermissionResult.ALLOWED
+                }
+
+        if (hasCustomPermission!!) callback?.invoke(origin, true, false)
+        else callback?.invoke(origin, false, false)
     }
 
     override fun onJsAlert(
@@ -52,7 +66,7 @@ internal class MiniAppWebChromeClient(
             message = message,
             result = result as JsResult,
             dialogType = DialogType.ALERT,
-            miniAppTitle = miniAppTitle
+            miniAppTitle = miniAppInfo.displayName
         )
 
     override fun onJsConfirm(
@@ -66,7 +80,7 @@ internal class MiniAppWebChromeClient(
             message = message,
             result = result as JsResult,
             dialogType = DialogType.CONFIRM,
-            miniAppTitle = miniAppTitle
+            miniAppTitle = miniAppInfo.displayName
         )
 
     override fun onJsPrompt(
@@ -81,7 +95,7 @@ internal class MiniAppWebChromeClient(
         defaultValue = defaultValue,
         result = result,
         dialogType = DialogType.PROMPT,
-        miniAppTitle = miniAppTitle
+        miniAppTitle = miniAppInfo.displayName
     )
 
     @VisibleForTesting

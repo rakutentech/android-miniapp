@@ -96,7 +96,11 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
-    fun removeId(miniAppId: String) {
+    /**
+     * Remove the grant results per MiniApp from SharedPreferences.
+     * @param [miniAppId] the key provided to find the stored results per MiniApp.
+     */
+    fun removePermission(miniAppId: String) {
         prefs.edit().remove(miniAppId).apply()
     }
 
