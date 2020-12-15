@@ -43,15 +43,11 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        val hasCustomPermission =
-            miniAppCustomPermissionCache.readPermissions(miniAppInfo.id)
-                .pairValues.find {
-                    it.first == MiniAppCustomPermissionType.LOCATION
-                }?.let {
-                    it.second == MiniAppCustomPermissionResult.ALLOWED
-                }
-
-        if (hasCustomPermission!!) callback?.invoke(origin, true, false)
+        if (miniAppCustomPermissionCache.hasPermission(
+                miniAppInfo.id,
+                MiniAppCustomPermissionType.LOCATION
+            )
+        ) callback?.invoke(origin, true, false)
         else callback?.invoke(origin, false, false)
     }
 
