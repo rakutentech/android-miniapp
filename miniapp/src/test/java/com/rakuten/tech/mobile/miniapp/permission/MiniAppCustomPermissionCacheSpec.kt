@@ -12,7 +12,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 class MiniAppCustomPermissionCacheSpec {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private val mockSharedPrefs: SharedPreferences = mock()
@@ -169,6 +169,42 @@ class MiniAppCustomPermissionCacheSpec {
         val actual = miniAppCustomPermissionCache.prepareAllPermissionsToStore(TEST_MA_ID, supplied)
 
         actual.size shouldBe 1
+    }
+    /** end region */
+
+    /**
+     * region: hasPermission
+     */
+    @Test
+    fun `hasPermission should return false by default when there is no allowed permission found`() {
+        val actual = miniAppCustomPermissionCache.hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
+
+        actual shouldBe false
+    }
+
+    @Test
+    fun `hasPermission should return true when there is allowed permission found`() {
+        val allowedUserName = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(
+                Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.ALLOWED
+                )
+            )
+        )
+
+        doReturn(allowedUserName).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+
+        val actual = miniAppCustomPermissionCache.hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
+
+        actual shouldBe true
     }
     /** end region */
 

@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
 
@@ -43,15 +42,11 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
-        val hasCustomPermission =
-            miniAppCustomPermissionCache.readPermissions(miniAppInfo.id)
-                .pairValues.find {
-                    it.first == MiniAppCustomPermissionType.LOCATION
-                }?.let {
-                    it.second == MiniAppCustomPermissionResult.ALLOWED
-                }
-
-        if (hasCustomPermission!!) callback?.invoke(origin, true, false)
+        if (miniAppCustomPermissionCache.hasPermission(
+                miniAppInfo.id,
+                MiniAppCustomPermissionType.LOCATION
+            )
+        ) callback?.invoke(origin, true, false)
         else callback?.invoke(origin, false, false)
     }
 

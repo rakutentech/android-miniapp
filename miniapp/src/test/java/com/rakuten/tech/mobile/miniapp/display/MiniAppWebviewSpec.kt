@@ -24,9 +24,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
 import org.junit.Before
@@ -399,12 +397,8 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should allow geolocation callback when custom permission is allowed`() {
-        val locationCustomPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.ALLOWED))
-        )
-        doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
-            .readPermissions(TEST_MA_ID)
+        doReturn(true).whenever(miniAppCustomPermissionCache)
+            .hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.LOCATION)
 
         val geoLocationCallback = Mockito.spy(
             GeolocationPermissions.Callback { _, allow, retain ->
@@ -419,12 +413,8 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should not allow geolocation callback when custom permission is denied`() {
-        val locationCustomPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED))
-        )
-        doReturn(locationCustomPermission).whenever(miniAppCustomPermissionCache)
-            .readPermissions(TEST_MA_ID)
+        doReturn(false).whenever(miniAppCustomPermissionCache)
+            .hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.LOCATION)
 
         val geoLocationCallback = Mockito.spy(
             GeolocationPermissions.Callback { _, allow, retain ->
