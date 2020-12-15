@@ -64,12 +64,11 @@ abstract class UserInfoBridgeDispatcher {
 
     internal fun onGetUserName(callbackId: String) {
         try {
-            val isPermissionGranted = customPermissionCache.hasPermission(
-                miniAppId,
-                MiniAppCustomPermissionType.USER_NAME
-            )
-
-            if (isPermissionGranted) {
+            if (customPermissionCache.hasPermission(
+                    miniAppId,
+                    MiniAppCustomPermissionType.USER_NAME
+                )
+            ) {
                 val name = getUserName()
                 if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
                 else bridgeExecutor.postError(
@@ -88,12 +87,11 @@ abstract class UserInfoBridgeDispatcher {
 
     internal fun onGetProfilePhoto(callbackId: String) {
         try {
-            val isPermissionGranted = customPermissionCache.hasPermission(
-                miniAppId,
-                MiniAppCustomPermissionType.PROFILE_PHOTO
-            )
-
-            if (isPermissionGranted) {
+            if (customPermissionCache.hasPermission(
+                    miniAppId,
+                    MiniAppCustomPermissionType.PROFILE_PHOTO
+                )
+            ) {
                 val photoUrl = getProfilePhoto()
                 if (photoUrl.isNotEmpty())
                     bridgeExecutor.postValue(callbackId, photoUrl)
@@ -125,11 +123,10 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetContacts(callbackId: String) = try {
-        val isPermissionGranted = customPermissionCache.hasPermission(
-            miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
-        )
-
-        if (isPermissionGranted) {
+        if (customPermissionCache.hasPermission(
+                miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
+            )
+        ) {
             val successCallback = { contacts: ArrayList<Contact> ->
                 bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
             }
