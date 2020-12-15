@@ -175,6 +175,7 @@ class UserInfoBridgeDispatcherSpec {
     fun `postError should be called when profile photo permission hasn't been allowed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
         val errMsg = "$ERR_GET_PROFILE_PHOTO Permission has not been accepted yet for getting profile photo."
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.PROFILE_PHOTO)

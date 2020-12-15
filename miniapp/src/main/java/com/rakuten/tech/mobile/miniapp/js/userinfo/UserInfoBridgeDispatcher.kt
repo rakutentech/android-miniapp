@@ -22,15 +22,45 @@ abstract class UserInfoBridgeDispatcher {
      * Get user name from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith("getUserName(onSuccess: (name: String) -> Unit, onError: (message: String) -> Unit)")
+    )
     open fun getUserName(): String =
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
+
+    /**
+     * Get user name from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getUserName(
+        onSuccess: (name: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
+    }
 
     /**
      * Get profile photo url from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith("getProfilePhoto(onSuccess: (photoUrl: String) -> Unit, onError: (message: String) -> Unit)")
+    )
     open fun getProfilePhoto(): String =
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
+
+    /**
+     * Get profile photo url from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getProfilePhoto(
+        onSuccess: (photoUrl: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
+    }
 
     /** Get access token from host app. **/
     open fun getAccessToken(
@@ -63,47 +93,78 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     internal fun onGetUserName(callbackId: String) {
+        if (customPermissionCache.hasPermission(
+                miniAppId,
+                MiniAppCustomPermissionType.USER_NAME
+            )
+        ) {
+            try {
+                // asynchronously retrieve user name
+                val successCallback = { name: String ->
+                    bridgeExecutor.postValue(callbackId, name)
+                }
+                val errorCallback = { message: String ->
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $message")
+                }
+                getUserName(successCallback, errorCallback)
+            } catch (e: Exception) {
+                if (e.message.toString().contains(NO_IMPL)) getUserNameSynchronously(callbackId)
+                else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
+            }
+        } else
+            bridgeExecutor.postError(
+                callbackId,
+                "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION"
+            )
+    }
+
+    private fun getUserNameSynchronously(callbackId: String) {
         try {
-            if (customPermissionCache.hasPermission(
-                    miniAppId,
-                    MiniAppCustomPermissionType.USER_NAME
-                )
-            ) {
-                val name = getUserName()
-                if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_USER_NAME User name is not found."
-                )
-            } else
-                bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION"
-                )
+            val name = getUserName()
+            if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
+            else bridgeExecutor.postError(
+                callbackId,
+                "$ERR_GET_USER_NAME User name is not found."
+            )
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
         }
     }
 
     internal fun onGetProfilePhoto(callbackId: String) {
-        try {
-            if (customPermissionCache.hasPermission(
-                    miniAppId,
-                    MiniAppCustomPermissionType.PROFILE_PHOTO
-                )
-            ) {
-                val photoUrl = getProfilePhoto()
-                if (photoUrl.isNotEmpty())
+        if (customPermissionCache.hasPermission(
+                miniAppId,
+                MiniAppCustomPermissionType.PROFILE_PHOTO
+            )
+        ) {
+            try {
+                // asynchronously retrieve profile photo url
+                val successCallback = { photoUrl: String ->
                     bridgeExecutor.postValue(callbackId, photoUrl)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
-                )
-            } else
-                bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION"
-                )
+                }
+                val errorCallback = { message: String ->
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $message")
+                }
+                getProfilePhoto(successCallback, errorCallback)
+            } catch (e: Exception) {
+                if (e.message.toString().contains(NO_IMPL)) getProfilePhotoSynchronously(callbackId)
+                else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
+            }
+        } else
+            bridgeExecutor.postError(
+                callbackId,
+                "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION"
+            )
+    }
+
+    private fun getProfilePhotoSynchronously(callbackId: String) {
+        try {
+            val photoUrl = getProfilePhoto()
+            if (photoUrl.isNotEmpty()) bridgeExecutor.postValue(callbackId, photoUrl)
+            else bridgeExecutor.postError(
+                callbackId,
+                "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
+            )
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
