@@ -90,14 +90,14 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `filterDeniedPermissions should return correct list permissionsWithDescription is not empty`() {
-        val expected = listOf(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME,
-                ""
-            )
-        )
-
+        val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, ""))
         assertEquals(expected, customPermissionBridgeDispatcher.filterDeniedPermissions())
+    }
+
+    @Test
+    fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
+        customPermissionBridgeDispatcher.filterDeniedPermissions()
+        verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
     }
 
     @Test

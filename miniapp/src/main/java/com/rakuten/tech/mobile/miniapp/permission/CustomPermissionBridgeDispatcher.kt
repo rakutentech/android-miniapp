@@ -64,11 +64,8 @@ internal class CustomPermissionBridgeDispatcher(
     fun filterDeniedPermissions(): List<Pair<MiniAppCustomPermissionType, String>> {
         if (permissionsWithDescription.isEmpty()) return emptyList()
 
-        val cachedList = customPermissionCache.readPermissions(miniAppId).pairValues
         return permissionsWithDescription.filter { (first) ->
-            cachedList.find {
-                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
-            } != null
+            !customPermissionCache.hasPermission(miniAppId, first)
         }
     }
 
