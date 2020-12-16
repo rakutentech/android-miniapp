@@ -264,6 +264,8 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 }
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
+
+    // note: it has been deprecated now.
     override fun getUserName(): String {
         var name: String = ""
         // Implementation details to get user name
@@ -271,11 +273,38 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         return name
     }
 
+    override fun getUserName(
+        onSuccess: (name: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        val name: String = ""
+        // Check if there is any valid username in HostApp
+        // .. .. ..
+        if (name is valid)
+            onSuccess(name) // allow miniapp to get the name.
+        else
+            onError(message) // reject miniapp to get the name with message explanation.
+    }
+
+    // note: it has been deprecated now
     override fun getProfilePhoto(): String {
         var profilePhotoUrl: String = ""
         // Implementation details to get profile photo url
         // .. .. ..
         return profilePhotoUrl
+    }
+
+    override fun getProfilePhoto(
+        onSuccess: (photoUrl: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        val photoUrl: String = ""
+        // Check if there is any valid photo url in HostApp
+        // .. .. ..
+        if (photoUrl is valid)
+            onSuccess(photoUrl) // allow miniapp to get the photo url.
+        else
+            onError(message) // reject miniapp to get the photo url with message explanation.
     }
 
     override fun getAccessToken(
@@ -299,9 +328,9 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         // Check if there is any contact id in HostApp
         // .. .. ..
         if (hasContact)
-            onSuccess(contacts) // invoke the list of contact IDs
+            onSuccess(contacts) // allow miniapp to get the contacts.
         else
-            onError("There is no contact found in HostApp.")
+            onError(message) // reject miniapp to get the contacts with message explanation.
     }
 }
 

@@ -1,6 +1,15 @@
 ## CHANGELOG
 
-2.X.X (In progress)
+### 2.X.X (Next release)
+**SDK**
+- **Feature:** Added `getUserName(onSuccess: (name: String) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving user name.
+- **Feature:** Added `getProfilePhoto(onSuccess: (photoUrl: String) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving profile photo url.
+- **Deprecated:** `fun getUserName(): String` and `fun getProfilePhoto(): String` interfaces in `UserInfoBridgeDispatcher`, you can implement the new interfaces instead.
+
+**Sample App**
+- **Change:** Replaced the implementation of `getUserName` and `getProfilePhoto` using new interfaces.
+
+### 2.X.X (In progress)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
 - **Feature:** Added `getContacts()` interface in `UserInfoBridgeDispatcher` for receiving list of contact IDs.
