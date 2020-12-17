@@ -33,6 +33,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import java.io.ByteArrayInputStream
+import kotlin.collections.HashMap
 import kotlin.test.assertTrue
 
 open class BaseWebViewSpec {

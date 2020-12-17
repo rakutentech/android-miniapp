@@ -9,10 +9,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
-import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -21,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.util.*
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -44,6 +44,27 @@ class RealMiniAppDisplaySpec {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock()
             )
+        }
+    }
+
+    @Test
+    fun `should pass MiniAppInfo forUrl through the constructor`() {
+        val realDisplay = RealMiniAppDisplay(
+            context = context,
+            appUrl = "",
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = mock(),
+            hostAppUserAgentInfo = TEST_HA_NAME,
+            miniAppCustomPermissionCache = mock()
+        )
+
+        realDisplay.miniAppInfo.apply {
+            id shouldNotBe ""
+            id.length shouldBe UUID.randomUUID().toString().length
+            displayName shouldBe ""
+            icon shouldBe ""
+            version.versionId shouldBe ""
+            version.versionTag shouldBe ""
         }
     }
 
