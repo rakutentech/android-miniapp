@@ -21,7 +21,7 @@
     <string name="userdata_hint_edit_contact">Write contact name here</string>
     <string name="userdata_error_invalid_contact">Invalid Contact ID, please try again.</string>
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
-    <string name="userdata_warning_not_saved_contact">No contact has been saved yet.</string>
+    <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
 
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From ID or URL</string>
