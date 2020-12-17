@@ -20,5 +20,10 @@
           android:exported="false"
           android:initOrder="100"
           tools:replace="android:initOrder" />
+
+        <meta-data  android:name="analytics.accountId"
+            android:value="ACCOUNT_ID" />
+        <meta-data  android:name="analytics.applicationId"
+            android:value="APPLICATION_ID" />
     </application>
 </manifest>
