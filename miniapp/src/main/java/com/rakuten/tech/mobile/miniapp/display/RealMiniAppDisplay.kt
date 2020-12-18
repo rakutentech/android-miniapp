@@ -44,7 +44,7 @@ internal class RealMiniAppDisplay(
     ) : this(
         context,
         "",
-        MiniAppInfo.empty(),
+        MiniAppInfo.forUrl(),
         miniAppMessageBridge,
         miniAppNavigator,
         hostAppUserAgentInfo,
