@@ -11,6 +11,7 @@
 - **Feature:** `rakuten.miniapp.device.LOCATION` permission as "Location" in custom permissions settings screen is visible now.
 - **Feature:** Support loading miniapp by url. This enables developers to test while their miniapps are still in development.
 - **Change:** Added `getContacts()` implementation for sending the list of contact IDs.
+- **Change:** Disable Google backup.
 
 ### 2.6.0 (2020-11-27)
 **SDK**
