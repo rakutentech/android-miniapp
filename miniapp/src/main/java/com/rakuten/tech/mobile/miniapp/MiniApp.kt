@@ -34,6 +34,7 @@ abstract class MiniApp internal constructor() {
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.
+     * @param appUrlParameters the parameters will be appended with the appUrl.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
@@ -45,6 +46,7 @@ abstract class MiniApp internal constructor() {
     @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
+        appUrlParameters: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay
@@ -54,6 +56,7 @@ abstract class MiniApp internal constructor() {
      * This should only be used in "Preview Mode".
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appInfo metadata of a mini app.
+     * @param appUrlParameters the parameters will be appended with the appUrl.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
@@ -65,6 +68,7 @@ abstract class MiniApp internal constructor() {
     @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appInfo: MiniAppInfo,
+        appUrlParameters: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay

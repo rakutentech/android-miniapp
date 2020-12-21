@@ -132,6 +132,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 this@MiniAppDisplayActivity,
                 appInfo,
                 appId!!,
+                AppSettings.instance.urlParameters,
                 miniAppMessageBridge,
                 miniAppNavigator
             )

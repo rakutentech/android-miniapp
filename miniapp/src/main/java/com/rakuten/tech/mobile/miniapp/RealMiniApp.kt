@@ -39,12 +39,13 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
+        appUrlParameters: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId, appUrlParameters)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
@@ -57,12 +58,13 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appInfo: MiniAppInfo,
+        appUrlParameters: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo, appUrlParameters)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
