@@ -7,7 +7,7 @@
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_user_details">User Details</string>
-    <string name="lb_miniapp_url_parameters">MiniApp URL Parameters</string>
+    <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>

@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.TEST_MA_URL
@@ -48,7 +48,8 @@ class DisplayerSpec {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
-            miniAppCustomPermissionCache = mock()
+            miniAppCustomPermissionCache = mock(),
+            queryParams = TEST_URL_PARAMS
         )
 
     private fun getMiniAppDisplayUrl(): MiniAppDisplay =
@@ -56,6 +57,7 @@ class DisplayerSpec {
             appUrl = TEST_MA_URL,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
-            miniAppCustomPermissionCache = mock()
+            miniAppCustomPermissionCache = mock(),
+            queryParams = TEST_URL_PARAMS
         )
 }

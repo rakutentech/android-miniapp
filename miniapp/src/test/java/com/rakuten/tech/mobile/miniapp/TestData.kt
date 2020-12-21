@@ -45,3 +45,5 @@ internal val TEST_MA = MiniAppInfo(
     icon = TEST_MA_ICON,
     version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
 )
+
+internal const val TEST_URL_PARAMS = "?param1=value1&param2=value2"

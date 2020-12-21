@@ -63,7 +63,8 @@ open class BaseWebViewSpec {
                 miniAppNavigator = miniAppNavigator,
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
-                miniAppCustomPermissionCache = miniAppCustomPermissionCache
+                miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                queryParams = TEST_URL_PARAMS
             )
             webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
         }
@@ -83,7 +84,8 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 miniAppNavigator = miniAppNavigator,
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
-                miniAppCustomPermissionCache = miniAppCustomPermissionCache
+                miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                queryParams = TEST_URL_PARAMS
         )
     }
 
@@ -103,8 +105,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should have corrected load url format`() {
-        miniAppWebView.getLoadUrl() shouldEqual "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"
+    fun `should start with corrected load url format`() {
+        miniAppWebView.getLoadUrl() shouldEqual "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html$TEST_URL_PARAMS"
     }
 
     @Test
@@ -154,7 +156,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppNavigator = miniAppNavigator,
             hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient,
-            miniAppCustomPermissionCache = mock()
+            miniAppCustomPermissionCache = mock(),
+            queryParams = TEST_URL_PARAMS
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -203,11 +206,12 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppNavigator,
             TEST_HA_NAME,
             mock(),
-            mock()
+            mock(),
+            TEST_URL_PARAMS
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, TEST_HA_NAME, mock(), mock())
+            miniAppNavigator, TEST_HA_NAME, mock(), mock(), TEST_URL_PARAMS)
         miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
     }
 
@@ -222,7 +226,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         miniAppWebView.externalResultHandler.emitResult(intent)
 
         miniAppWebView.getLoadUrl() shouldBeEqualTo
-                "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html"
+                "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html$TEST_URL_PARAMS"
     }
 
     @Test
@@ -313,7 +317,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             miniAppNavigator = null,
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient,
-            miniAppCustomPermissionCache = miniAppCustomPermissionCache
+            miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+            queryParams = TEST_URL_PARAMS
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader? = (displayer.webViewClient as MiniAppWebViewClient).loader
