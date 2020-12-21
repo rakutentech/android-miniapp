@@ -35,6 +35,23 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         }
     }
 
+    fun appendParametersToUrl(url: String, queryParams: String): String {
+        return if (queryParams.isEmpty()) url
+        else "$url${resolveParameters(queryParams)}"
+    }
+
+    private fun resolveParameters(queryParams: String): String {
+        // regex for the expected format of query parameters
+        // e.g. https://mscheme.XXXX/miniapp/index.html?param1=value1&param2=value2
+        val regex = Regex("^\\?([\\w-]+(=[\\w-]*)?(&[\\w-]+(=[\\w-]*)?)*)?\$")
+        val qusMark = "?"
+        val input =
+            if (queryParams.contains(qusMark) && queryParams.startsWith(qusMark)) queryParams
+            else qusMark + queryParams
+
+        return if (regex.matches(input)) input else ""
+    }
+
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = url.toUri()
         context.startActivity(it)

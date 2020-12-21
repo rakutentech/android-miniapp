@@ -39,44 +39,47 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        appUrlParameters: String,
+        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId, appUrlParameters)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }
 
     override suspend fun create(
         appInfo: MiniAppInfo,
-        appUrlParameters: String,
+        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo, appUrlParameters)
+            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }
 
     override suspend fun createWithUrl(
         appUrl: String,
+        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?
     ): MiniAppDisplay = when {
@@ -87,7 +90,8 @@ internal class RealMiniApp(
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }
