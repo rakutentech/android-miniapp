@@ -7,7 +7,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import java.util.UUID
 
 internal class MiniAppHttpWebView(
     context: Context,
@@ -25,7 +24,7 @@ internal class MiniAppHttpWebView(
 ) : MiniAppWebView(
     context,
     "",
-    MiniAppInfo.empty(),
+    miniAppInfo,
     miniAppMessageBridge,
     miniAppNavigator,
     hostAppUserAgentInfo,
@@ -34,7 +33,6 @@ internal class MiniAppHttpWebView(
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)
-        miniAppId = UUID.randomUUID().toString() // some id is needed to handle custom permissions
         commonInit()
     }
 
