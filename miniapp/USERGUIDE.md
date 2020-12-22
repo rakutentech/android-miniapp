@@ -627,6 +627,80 @@ dependency {
 ```
 </details>
 
+<details><summary markdown="span"><b>How can I use this SDK in a Java project?</b>
+</summary>
+
+We don't support usage of the Mini App SDK in a Java project. This is because this SDK uses Kotlin specific features such as `suspend` functions and `Coroutines`.
+
+However, it is possible to use this SDK in a Java project if you wrap the calls to `suspend` functions into something that Java can use such as a `Future` or a normal callback interface.
+
+To do this, you will need to integrate Kotlin and Kotlin Coroutines into your project:
+
+```groovy
+// In your top level "build.gradle" file:
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50"
+    }
+}
+
+// In your project "myApp/build.gradle" file
+apply plugin: 'kotlin-android'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.0" // Needed if you want to use CoroutineScope.future
+}
+```
+
+Then, you will need to create wrapper functions for the Mini App SDK functionality which you wish to use.
+
+If your minimum Android API level is 24 or higher, then you can use Java [`CompletableFuture`](https://developer.android.com/reference/java/util/concurrent/CompletableFuture):
+
+```kotlin
+// MiniAppAsync.kt
+
+private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+fun createMiniAppAsync(
+    appId: String,
+    miniAppMessageBridge: MiniAppMessageBridge,
+    miniAppNavigator: MiniAppNavigator?
+): CompletableFuture<MiniAppDisplay> = coroutineScope.future {
+    MiniApp.instance().create(appId, miniAppMessageBridge, miniAppNavigator)
+}
+```
+
+If your minimum Android API level is lower than 24, then you can use a normal Java callback interface:
+
+```kotlin
+// MiniAppAsync.kt
+
+interface MiniAppCallback<T> {
+    fun onSuccess(result: T)
+    fun onError(error: MiniAppSdkException)
+}
+
+val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+fun createMiniAppAsync(
+    appId: String,
+    miniAppMessageBridge: MiniAppMessageBridge,
+    miniAppNavigator: MiniAppNavigator?,
+    callback: MiniAppCallback<MiniAppDisplay>
+) {
+    coroutineScope.launch {
+        try {
+            val display = MiniApp.instance().create(appId, miniAppMessageBridge, miniAppNavigator)
+            callback.onSuccess(display)
+        } catch (error: MiniAppSdkException) {
+            callback.onError(error)
+        }
+    }
+}
+```
+</detail>
+
 ## Changelog
 
 See the full [CHANGELOG](https://github.com/rakutentech/android-miniapp/blob/master/CHANGELOG.md).
