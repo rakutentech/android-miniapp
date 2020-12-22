@@ -266,36 +266,38 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
     override fun getUserName(
-        onSuccess: (name: String) -> Unit,
-        onError: (message: String) -> Unit
+        callback: (result: Result<String?>) -> Unit
     ) {
         val name: String = ""
         // Check if there is any valid username in HostApp
         // .. .. ..
-        if (name is valid)
-            onSuccess(name) // allow miniapp to get the name.
-        else
-            onError(message) // reject miniapp to get the name with message explanation.
+        val result: Result<String> = run {
+            if (name is valid) success(name) // allow miniapp to get the name.
+            else failure(Exception("User name is not found.")) // reject miniapp to get the name with message explanation.
+        }
+
+        callback.invoke(result) // invoke the Result callback
     }
 
     override fun getProfilePhoto(
-        onSuccess: (photoUrl: String) -> Unit,
-        onError: (message: String) -> Unit
+            callback: (result: Result<String?>) -> Unit
     ) {
         val photoUrl: String = ""
         // Check if there is any valid photo url in HostApp
         // .. .. ..
-        if (photoUrl is valid)
-            onSuccess(photoUrl) // allow miniapp to get the photo url.
-        else
-            onError(message) // reject miniapp to get the photo url with message explanation.
+        val result: Result<String> = run {
+            if (photoUrl is valid) success(name) // allow miniapp to get the photo url.
+            else failure(Exception("User name is not found.")) // reject miniapp to get the photo url with message explanation.
+        }
+
+        callback.invoke(result) // invoke the Result callback
     }
 
     override fun getAccessToken(
         miniAppId: String,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
-    ){
+    ) {
         var allowToken: Boolean = false
         // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..

@@ -30,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.lang.Exception
 import java.util.ArrayList
 
 @Suppress("LongMethod", "LargeClass")
@@ -93,6 +94,13 @@ class UserInfoBridgeDispatcherSpec {
         return if (hasUserName) {
             object : UserInfoBridgeDispatcher() {
                 override fun getUserName(): String = ""
+
+                override fun getUserName(callback: (result: Result<String?>) -> Unit) {
+                    val result: Result<String> = run {
+                        Result.success(TEST_USER_NAME)
+                    }
+                    callback.invoke(result)
+                }
             }
         } else {
             object : UserInfoBridgeDispatcher() {}
@@ -153,6 +161,13 @@ class UserInfoBridgeDispatcherSpec {
         return if (hasProfilePhoto) {
             object : UserInfoBridgeDispatcher() {
                 override fun getProfilePhoto(): String = ""
+
+                override fun getProfilePhoto(callback: (result: Result<String?>) -> Unit) {
+                    val result: Result<String> = run {
+                        Result.success(TEST_PROFILE_PHOTO)
+                    }
+                    callback.invoke(result)
+                }
             }
         } else {
             object : UserInfoBridgeDispatcher() {}
@@ -206,7 +221,6 @@ class UserInfoBridgeDispatcherSpec {
 
         verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
-
     /** end region */
 
     /** start region: access token */

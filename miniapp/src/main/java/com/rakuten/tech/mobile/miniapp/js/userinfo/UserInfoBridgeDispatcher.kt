@@ -31,11 +31,10 @@ abstract class UserInfoBridgeDispatcher {
 
     /**
      * Get user name from host app.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     * You can send user name or throw an [Exception] from this method by passing a [Result].
      */
     open fun getUserName(
-        onSuccess: (name: String) -> Unit,
-        onError: (message: String) -> Unit
+        callback: (result: Result<String?>) -> Unit
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
     }
@@ -53,11 +52,10 @@ abstract class UserInfoBridgeDispatcher {
 
     /**
      * Get profile photo url from host app.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     * You can send profile photo url or throw an [Exception] from this method by passing a [Result].
      */
     open fun getProfilePhoto(
-        onSuccess: (photoUrl: String) -> Unit,
-        onError: (message: String) -> Unit
+        callback: (result: Result<String?>) -> Unit
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
     }
@@ -100,15 +98,19 @@ abstract class UserInfoBridgeDispatcher {
         ) {
             try {
                 // asynchronously retrieve user name
-                val successCallback = { name: String ->
-                    bridgeExecutor.postValue(callbackId, name)
+                val resultCallback = { result: Result<String?> ->
+                    if (result.isSuccess) bridgeExecutor.postValue(
+                        callbackId,
+                        result.getOrNull().toString()
+                    )
+                    else if (result.isFailure) bridgeExecutor.postError(
+                        callbackId,
+                        "$ERR_GET_USER_NAME ${result.exceptionOrNull()?.message}"
+                    )
                 }
-                val errorCallback = { message: String ->
-                    bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $message")
-                }
-                getUserName(successCallback, errorCallback)
+                getUserName(resultCallback)
             } catch (e: Exception) {
-                if (e.message.toString().contains(NO_IMPL)) getUserNameSynchronously(callbackId)
+                if (e.message.toString().contains(NO_IMPL)) getUserNameSync(callbackId)
                 else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
             }
         } else
@@ -118,7 +120,7 @@ abstract class UserInfoBridgeDispatcher {
             )
     }
 
-    private fun getUserNameSynchronously(callbackId: String) {
+    private fun getUserNameSync(callbackId: String) {
         try {
             val name = getUserName()
             if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
@@ -139,15 +141,19 @@ abstract class UserInfoBridgeDispatcher {
         ) {
             try {
                 // asynchronously retrieve profile photo url
-                val successCallback = { photoUrl: String ->
-                    bridgeExecutor.postValue(callbackId, photoUrl)
+                val resultCallback = { result: Result<String?> ->
+                    if (result.isSuccess) bridgeExecutor.postValue(
+                        callbackId,
+                        result.getOrNull().toString()
+                    )
+                    else if (result.isFailure) bridgeExecutor.postError(
+                        callbackId,
+                        "$ERR_GET_PROFILE_PHOTO ${result.exceptionOrNull()?.message}"
+                    )
                 }
-                val errorCallback = { message: String ->
-                    bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $message")
-                }
-                getProfilePhoto(successCallback, errorCallback)
+                getProfilePhoto(resultCallback)
             } catch (e: Exception) {
-                if (e.message.toString().contains(NO_IMPL)) getProfilePhotoSynchronously(callbackId)
+                if (e.message.toString().contains(NO_IMPL)) getProfilePhotoSync(callbackId)
                 else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
             }
         } else
@@ -157,7 +163,7 @@ abstract class UserInfoBridgeDispatcher {
             )
     }
 
-    private fun getProfilePhotoSynchronously(callbackId: String) {
+    private fun getProfilePhotoSync(callbackId: String) {
         try {
             val photoUrl = getProfilePhoto()
             if (photoUrl.isNotEmpty()) bridgeExecutor.postValue(callbackId, photoUrl)

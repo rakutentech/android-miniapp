@@ -2,8 +2,8 @@
 
 ### 2.X.X (Next release)
 **SDK**
-- **Feature:** Added `getUserName(onSuccess: (name: String) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving user name.
-- **Feature:** Added `getProfilePhoto(onSuccess: (photoUrl: String) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving profile photo url.
+- **Feature:** Added `getUserName(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving user name.
+- **Feature:** Added `getProfilePhoto(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving profile photo url.
 - **Deprecated:** `fun getUserName(): String` and `fun getProfilePhoto(): String` interfaces in `UserInfoBridgeDispatcher`, you can implement the new interfaces instead.
 
 **Sample App**

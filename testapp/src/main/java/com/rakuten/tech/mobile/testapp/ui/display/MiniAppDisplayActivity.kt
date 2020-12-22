@@ -29,7 +29,10 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivit
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.lang.Exception
 import java.util.ArrayList
+import kotlin.Result.Companion.failure
+import kotlin.Result.Companion.success
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -160,22 +163,24 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
-            override fun getUserName(
-                onSuccess: (name: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val name = AppSettings.instance.profileName
-                if (name.isNotEmpty()) onSuccess(name)
-                else onError("User name is not found.")
+            override fun getUserName(callback: (result: Result<String?>) -> Unit) {
+                val result: Result<String> = run {
+                    val name = AppSettings.instance.profileName
+                    if (name.isNotEmpty()) success(name)
+                    else failure(Exception("User name is not found."))
+                }
+
+                callback.invoke(result)
             }
 
-            override fun getProfilePhoto(
-                onSuccess: (photoUrl: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val photoUrl = AppSettings.instance.profilePictureUrlBase64
-                if (photoUrl.isNotEmpty()) onSuccess(photoUrl)
-                else onError("Profile photo is not found.")
+            override fun getProfilePhoto(callback: (result: Result<String?>) -> Unit) {
+                val result: Result<String> = run {
+                    val photoUrl = AppSettings.instance.profilePictureUrlBase64
+                    if (photoUrl.isNotEmpty()) success(photoUrl)
+                    else failure(Exception("Profile photo is not found."))
+                }
+
+                callback.invoke(result)
             }
 
             override fun getAccessToken(
