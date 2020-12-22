@@ -1,14 +1,17 @@
 ## CHANGELOG
 
-2.X.X (In progress)
+2.7.0 (2020-12-18)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
 - **Feature:** Added `getContacts()` interface in `UserInfoBridgeDispatcher` for receiving list of contact IDs.
+- **Feature:** Support loading miniapp by url. This feature is only for QA purpose to let developers have a quick look at their miniapps.
 - **Change:** Remove `app_name` property.
 
 **Sample App**
 - **Feature:** `rakuten.miniapp.device.LOCATION` permission as "Location" in custom permissions settings screen is visible now.
+- **Feature:** Support loading miniapp by url. This enables developers to test while their miniapps are still in development.
 - **Change:** Added `getContacts()` implementation for sending the list of contact IDs.
+- **Change:** Disable Google backup.
 
 ### 2.6.0 (2020-11-27)
 **SDK**
