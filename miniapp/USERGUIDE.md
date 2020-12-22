@@ -265,14 +265,6 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
-    // note: it has been deprecated now.
-    override fun getUserName(): String {
-        var name: String = ""
-        // Implementation details to get user name
-        // .. .. ..
-        return name
-    }
-
     override fun getUserName(
         onSuccess: (name: String) -> Unit,
         onError: (message: String) -> Unit
@@ -284,14 +276,6 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
             onSuccess(name) // allow miniapp to get the name.
         else
             onError(message) // reject miniapp to get the name with message explanation.
-    }
-
-    // note: it has been deprecated now
-    override fun getProfilePhoto(): String {
-        var profilePhotoUrl: String = ""
-        // Implementation details to get profile photo url
-        // .. .. ..
-        return profilePhotoUrl
     }
 
     override fun getProfilePhoto(
