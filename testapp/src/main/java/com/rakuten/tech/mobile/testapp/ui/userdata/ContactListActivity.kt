@@ -104,12 +104,10 @@ class ContactListActivity : BaseActivity() {
         if (!isFirstLaunch && settings.isContactsSaved) {
             if (settings.contactNames.isEmpty()) {
                 renderAdapter(arrayListOf())
-                checkEmpty()
             } else renderAdapter(settings.contactNames)
         } else {
             val randomList = createRandomUUIDList()
             renderAdapter(randomList)
-            settings.contactNames = randomList
         }
     }
 
@@ -132,26 +130,39 @@ class ContactListActivity : BaseActivity() {
             @SuppressLint("SyntheticAccessor")
             override fun onChanged() {
                 super.onChanged()
-                checkEmpty()
+                observeUIState()
             }
 
             @SuppressLint("SyntheticAccessor")
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                checkEmpty()
+                observeUIState()
             }
 
             @SuppressLint("SyntheticAccessor")
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                checkEmpty()
+                observeUIState()
             }
         })
+        observeUIState()
     }
 
-    private fun checkEmpty() {
-        binding.viewEmptyContact.visibility =
-            if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+    private fun observeUIState() {
+        when {
+            adapter.itemCount == 0 -> {
+                binding.viewEmptyContact.visibility = View.VISIBLE
+                binding.statusNoContact.visibility = View.GONE
+            }
+            adapter.itemCount != 0 && !settings.isContactsSaved -> {
+                binding.viewEmptyContact.visibility = View.GONE
+                binding.statusNoContact.visibility = View.VISIBLE
+            }
+            else -> {
+                binding.viewEmptyContact.visibility = View.GONE
+                binding.statusNoContact.visibility = View.GONE
+            }
+        }
     }
 
     companion object {
