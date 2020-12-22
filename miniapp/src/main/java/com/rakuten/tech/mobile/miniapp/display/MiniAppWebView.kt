@@ -51,7 +51,7 @@ internal open class MiniAppWebView(
     }
 
     init {
-        if (this::class.java.simpleName == "MiniAppWebView")
+        if (this::class == MiniAppWebView::class)
             commonInit()
     }
 
