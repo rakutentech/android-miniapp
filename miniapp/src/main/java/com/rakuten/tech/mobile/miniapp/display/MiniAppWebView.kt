@@ -38,7 +38,7 @@ internal open class MiniAppWebView(
     val queryParams: String
 ) : WebView(context), WebViewListener {
 
-    protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
+    var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
     protected var miniAppId = miniAppInfo.id
 
     @VisibleForTesting

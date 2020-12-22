@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 
 internal class MiniAppScheme private constructor(miniAppId: String) {
@@ -40,16 +41,11 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         else "$url${resolveParameters(queryParams)}"
     }
 
-    private fun resolveParameters(queryParams: String): String {
-        // regex for the expected format of query parameters
-        // e.g. https://mscheme.XXXX/miniapp/index.html?param1=value1&param2=value2
-        val regex = Regex("^\\?([\\w-]+(=[\\w-]*)?(&[\\w-]+(=[\\w-]*)?)*)?\$")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun resolveParameters(queryParams: String): String {
         val qusMark = "?"
-        val input =
-            if (queryParams.contains(qusMark) && queryParams.startsWith(qusMark)) queryParams
-            else qusMark + queryParams
-
-        return if (regex.matches(input)) input else ""
+        return if (queryParams.contains(qusMark) && queryParams.startsWith(qusMark)) queryParams
+        else qusMark + queryParams
     }
 
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
