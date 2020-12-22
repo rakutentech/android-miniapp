@@ -51,7 +51,8 @@ internal open class MiniAppWebView(
     }
 
     init {
-        commonInit()
+        if (this::class.java.simpleName == "MiniAppWebView")
+            commonInit()
     }
 
     @Suppress("LongMethod")

@@ -21,6 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import java.util.UUID
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -44,6 +45,27 @@ class RealMiniAppDisplaySpec {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock()
             )
+        }
+    }
+
+    @Test
+    fun `should pass MiniAppInfo forUrl through the constructor`() {
+        val realDisplay = RealMiniAppDisplay(
+            context = context,
+            appUrl = "",
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = mock(),
+            hostAppUserAgentInfo = TEST_HA_NAME,
+            miniAppCustomPermissionCache = mock()
+        )
+
+        realDisplay.miniAppInfo.apply {
+            id shouldNotBe ""
+            id.length shouldBe UUID.randomUUID().toString().length
+            displayName shouldBe ""
+            icon shouldBe ""
+            version.versionId shouldBe ""
+            version.versionTag shouldBe ""
         }
     }
 
