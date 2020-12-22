@@ -9,6 +9,10 @@
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName` and `getProfilePhoto` using new interfaces.
 
+### 2.7.1 (2020-12-23)
+**SDK**
+- **Fix:** MiniApp view did not display due to obfuscation code guard.
+
 ### 2.7.0 (2020-12-18)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
