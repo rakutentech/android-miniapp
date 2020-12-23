@@ -55,7 +55,6 @@ android {
     ]
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
-    def analyticsPkg = 'com.rakuten.tech.mobile.miniapp'
 
     buildTypes {
         debug {
@@ -63,7 +62,6 @@ android {
             versionNameSuffix '-DEBUG'
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
-            resValue "string", "analytics_pkg", analyticsPkg
             debuggable true
             minifyEnabled false
 
@@ -72,7 +70,6 @@ android {
         release {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
-            resValue "string", "analytics_pkg", analyticsPkg
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
