@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.rakuten.tech.mobile.miniapp.*
@@ -133,6 +134,7 @@ class UserInfoBridgeDispatcherSpec {
         ).thenReturn(false)
 
         userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.getUserNameSync(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -143,6 +145,7 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.getUserNameSync(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postValue(userNameCallbackObj.id, "")
     }
@@ -154,8 +157,9 @@ class UserInfoBridgeDispatcherSpec {
         whenever(userInfoBridgeDispatcher.getUserName()).thenReturn(TEST_USER_NAME)
 
         userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
+        userInfoBridgeDispatcher.getUserNameSync(userNameCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        verify(bridgeExecutor, times(2)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
     /** end region */
 
@@ -203,6 +207,7 @@ class UserInfoBridgeDispatcherSpec {
         ).thenReturn(false)
 
         userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -213,6 +218,7 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, "")
     }
@@ -224,8 +230,9 @@ class UserInfoBridgeDispatcherSpec {
         whenever(userInfoBridgeDispatcher.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
 
         userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
+        userInfoBridgeDispatcher.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
+        verify(bridgeExecutor, times(2)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
     /** end region */
 
@@ -272,8 +279,9 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
+        userInfoBridgeDispatcher.getAccessTokenWithoutResult(tokenCallbackObj.id)
 
-        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+        verify(bridgeExecutor, times(2)).postError(tokenCallbackObj.id, errMsg)
     }
 
     @Test
@@ -282,8 +290,9 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
+        userInfoBridgeDispatcher.getAccessTokenWithoutResult(tokenCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+        verify(bridgeExecutor, times(2)).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
     /** end region */
 
@@ -332,6 +341,7 @@ class UserInfoBridgeDispatcherSpec {
         ).thenReturn(false)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
         verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
     }
@@ -343,8 +353,9 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
-        verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
+        verify(bridgeExecutor, times(2)).postError(contactsCallbackObj.id, errMsg)
     }
 
     @Test
@@ -353,8 +364,9 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
+        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
+        verify(bridgeExecutor, times(2)).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
     }
     /** end region */
 

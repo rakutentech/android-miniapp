@@ -266,28 +266,28 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
     override fun getUserName(
-        callback: (result: Result<String?>) -> Unit
+        callback: (userName: Result<String?>) -> Unit
     ) {
         val name: String = ""
         // Check if there is any valid username in HostApp
         // .. .. ..
         val result: Result<String> = run {
             if (name is valid) success(name) // allow miniapp to get the name.
-            else failure(Exception("User name is not found.")) // reject miniapp to get the name with message explanation.
+            else failure(Exception(message)) // reject miniapp to get the name with message explanation.
         }
 
         callback.invoke(result) // invoke the Result callback
     }
 
     override fun getProfilePhoto(
-            callback: (result: Result<String?>) -> Unit
+        callback: (profilePhoto: Result<String?>) -> Unit
     ) {
         val photoUrl: String = ""
         // Check if there is any valid photo url in HostApp
         // .. .. ..
         val result: Result<String> = run {
-            if (photoUrl is valid) success(name) // allow miniapp to get the photo url.
-            else failure(Exception("User name is not found.")) // reject miniapp to get the photo url with message explanation.
+            if (photoUrl is valid) success(photoUrl) // allow miniapp to get the photo url.
+            else failure(Exception(message)) // reject miniapp to get the photo url with message explanation.
         }
 
         callback.invoke(result) // invoke the Result callback
@@ -295,28 +295,30 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
     override fun getAccessToken(
         miniAppId: String,
-        onSuccess: (tokenData: TokenData) -> Unit,
-        onError: (message: String) -> Unit
+        callback: (accessToken: Result<TokenData?>) -> Unit
     ) {
         var allowToken: Boolean = false
         // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..
-        if (allowToken)
-            onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
-        else
-            onError(message)    // reject miniapp to get token and with message explanation.
+        val result: Result<TokenData> = run {
+            if (allowToken) success(data)
+            else failure(Exception(message))
+        }
+
+        callback.invoke(result)
     }
 
      override fun getContacts(
-        onSuccess: (contacts: ArrayList<Contact>) -> Unit,
-        onError: (message: String) -> Unit
+        callback: (contacts: Result<ArrayList<Contact>?>) -> Unit
     ) {
-        // Check if there is any contact id in HostApp
+        // Check if there is any contact in HostApp
         // .. .. ..
-        if (hasContact)
-            onSuccess(contacts) // allow miniapp to get the contacts.
-        else
-            onError(message) // reject miniapp to get the contacts with message explanation.
+        val result: Result<ArrayList<Contact>> = run {
+            if (hasContact) success(contacts) // allow miniapp to get the contacts.
+            else failure(Exception(message)) // reject miniapp to get the contacts with message explanation.
+        }
+
+        callback.invoke(result) // invoke the Result callback
     }
 }
 

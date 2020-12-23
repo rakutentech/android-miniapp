@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -163,7 +162,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
-            override fun getUserName(callback: (result: Result<String?>) -> Unit) {
+            override fun getUserName(callback: (userName: Result<String?>) -> Unit) {
                 val result: Result<String> = run {
                     val name = AppSettings.instance.profileName
                     if (name.isNotEmpty()) success(name)
@@ -173,7 +172,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 callback.invoke(result)
             }
 
-            override fun getProfilePhoto(callback: (result: Result<String?>) -> Unit) {
+            override fun getProfilePhoto(callback: (profilePhoto: Result<String?>) -> Unit) {
                 val result: Result<String> = run {
                     val photoUrl = AppSettings.instance.profilePictureUrlBase64
                     if (photoUrl.isNotEmpty()) success(photoUrl)
@@ -185,35 +184,30 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             override fun getAccessToken(
                 miniAppId: String,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (message: String) -> Unit
+                callback: (accessToken: Result<TokenData?>) -> Unit
             ) {
-                AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    .setMessage("Allow $miniAppId to get access token?")
-                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
-                        onSuccess(AppSettings.instance.tokenData)
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("No") { dialog, _ ->
-                        onError("$miniAppId not allowed to get access token")
-                        dialog.dismiss()
-                    }
-                    .create()
-                    .show()
+                val result: Result<TokenData> = run {
+                    val data = AppSettings.instance.tokenData
+                    if (data.token.isNotEmpty()) {
+                        success(data)
+                    } else failure(Exception("$miniAppId not allowed to get access token"))
+                }
+                callback.invoke(result)
             }
 
-            override fun getContacts(
-                onSuccess: (contacts: ArrayList<Contact>) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val hasContact = AppSettings.instance.isContactsSaved
-                if (hasContact) {
-                    val contacts: ArrayList<Contact> = arrayListOf()
-                    AppSettings.instance.contactNames.forEach {
-                        contacts.add(Contact(it))
-                    }
-                    onSuccess(contacts)
-                } else onError("There is no contact found in HostApp.")
+            override fun getContacts(callback: (contacts: Result<ArrayList<Contact>?>) -> Unit) {
+                val result: Result<ArrayList<Contact>> = run {
+                    val hasContact = AppSettings.instance.isContactsSaved
+                    if (hasContact) {
+                        val contacts: ArrayList<Contact> = arrayListOf()
+                        AppSettings.instance.contactNames.forEach {
+                            contacts.add(Contact(it))
+                        }
+                        success(contacts)
+                    } else failure(Exception("There is no contact found in HostApp."))
+                }
+
+                callback.invoke(result)
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)

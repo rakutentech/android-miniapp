@@ -5,9 +5,11 @@
 - **Feature:** Added `getUserName(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving user name.
 - **Feature:** Added `getProfilePhoto(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving profile photo url.
 - **Deprecated:** `fun getUserName(): String` and `fun getProfilePhoto(): String` interfaces in `UserInfoBridgeDispatcher`, you can implement the new interfaces instead.
+- **Deprecated:** `fun getContacts(onSuccess: (contacts: ArrayList<Contact>) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher`, you can implement the new interface instead.
+- **Deprecated:** `fun getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher`, you can implement the new interface instead.
 
 **Sample App**
-- **Change:** Replaced the implementation of `getUserName` and `getProfilePhoto` using new interfaces.
+- **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` using new interfaces.
 
 ### 2.7.1 (2020-12-23)
 **SDK**
