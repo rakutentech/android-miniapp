@@ -2,11 +2,8 @@
 
 ### 2.X.X (In progress)
 **SDK**
-- **Feature:** Added `getUserName(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving user name.
-- **Feature:** Added `getProfilePhoto(callback: (result: Result<String?>) -> Unit)` interface in `UserInfoBridgeDispatcher` for receiving profile photo url.
-- **Deprecated:** `fun getUserName(): String` and `fun getProfilePhoto(): String` interfaces in `UserInfoBridgeDispatcher`, you can implement the new interfaces instead.
-- **Deprecated:** `fun getContacts(onSuccess: (contacts: ArrayList<Contact>) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher`, you can implement the new interface instead.
-- **Deprecated:** `fun getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)` interface in `UserInfoBridgeDispatcher`, you can implement the new interface instead.
+- **Feature:** Added `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` new interfaces for invoking data using [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)
+- **Deprecated:** Old `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` interfaces.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` using new interfaces.
