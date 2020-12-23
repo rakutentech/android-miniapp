@@ -2,7 +2,7 @@
 
 ### 2.X.X (In progress)
 **SDK**
-- **Feature:** Added `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` new interfaces for invoking data using [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/)
+- **Feature:** Added `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` new interfaces for invoking data using [Result](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-result/).
 - **Deprecated:** Old `getUserName`, `getProfilePhoto`, `getContacts` and `getAccessToken` interfaces.
 
 **Sample App**
