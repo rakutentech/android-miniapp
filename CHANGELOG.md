@@ -1,10 +1,17 @@
 ## CHANGELOG
 
-2.7.1 (2020-12-23)
+### 2.X.X (In progress)
+**SDK**
+- **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
+
+**Sample App**
+- **Feature:** Added input option in settings screen to keep query parameters to be passed using `MiniApp.create` and `MiniApp.createWithUrl`.
+
+### 2.7.1 (2020-12-23)
 **SDK**
 - **Fix:** MiniApp view did not display due to obfuscation code guard.
 
-2.7.0 (2020-12-18)
+### 2.7.0 (2020-12-18)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
 - **Feature:** Added `getContacts()` interface in `UserInfoBridgeDispatcher` for receiving list of contact IDs.
