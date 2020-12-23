@@ -11,7 +11,7 @@ import java.util.ArrayList
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
-@Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass")
+@Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass", "LargeClass")
 abstract class UserInfoBridgeDispatcher {
 
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -118,7 +118,8 @@ abstract class UserInfoBridgeDispatcher {
         this.miniAppId = miniAppId
     }
 
-    /** region: user name */
+    /** region: user name. */
+    @Suppress("ComplexMethod")
     internal fun onGetUserName(callbackId: String) {
         if (customPermissionCache.hasPermission(
                 miniAppId,
@@ -164,7 +165,8 @@ abstract class UserInfoBridgeDispatcher {
     }
     /** end region */
 
-    /** region: profile photo */
+    /** region: profile photo. */
+    @Suppress("ComplexMethod")
     internal fun onGetProfilePhoto(callbackId: String) {
         if (customPermissionCache.hasPermission(
                 miniAppId,
@@ -210,7 +212,7 @@ abstract class UserInfoBridgeDispatcher {
     }
     /** end region */
 
-    /** region: access token */
+    /** region: access token. */
     internal fun onGetAccessToken(callbackId: String) {
         try {
             // retrieve access token using Result
@@ -247,7 +249,8 @@ abstract class UserInfoBridgeDispatcher {
     }
     /** end region */
 
-    /** region: contacts */
+    /** region: contacts. */
+    @Suppress("ComplexMethod")
     internal fun onGetContacts(callbackId: String) = try {
         if (customPermissionCache.hasPermission(
                 miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
@@ -294,7 +297,7 @@ abstract class UserInfoBridgeDispatcher {
             bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS ${e.message}")
         }
     }
-    /** end region */
+    /** end region. */
 
     @VisibleForTesting
     internal companion object {
