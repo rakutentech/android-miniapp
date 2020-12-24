@@ -78,21 +78,34 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
-            miniAppSdkConfig = MiniAppSdkConfig(
-                baseUrl = manifestConfig.baseUrl(),
-                rasProjectId = backwardCompatibleHostId,
-                rasAppId = manifestConfig.rasAppId(),
-                subscriptionKey = manifestConfig.subscriptionKey(),
-                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-                isPreviewMode = manifestConfig.isPreviewMode(),
-                isTestMode = manifestConfig.isTestMode()
-            )
+            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig, backwardCompatibleHostId)
         )
 
-        MiniAppAnalytics.init(rasProjectId = backwardCompatibleHostId)
-        MiniAppAnalytics.instance?.sendAnalytics(eType = Etype.APPEAR, actype = Actype.HOST_LAUNCH, miniAppInfo = null)
+        executeMiniAppAnalytics(backwardCompatibleHostId)
 
         return true
+    }
+
+    private fun createMiniAppSdkConfig(
+        manifestConfig: AppManifestConfig,
+        backwardCompatibleHostId: String
+    ): MiniAppSdkConfig = MiniAppSdkConfig(
+        baseUrl = manifestConfig.baseUrl(),
+        rasProjectId = backwardCompatibleHostId,
+        rasAppId = manifestConfig.rasAppId(),
+        subscriptionKey = manifestConfig.subscriptionKey(),
+        hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+        isPreviewMode = manifestConfig.isPreviewMode(),
+        isTestMode = manifestConfig.isTestMode()
+    )
+
+    private fun executeMiniAppAnalytics(backwardCompatibleHostId: String) {
+        MiniAppAnalytics.init(rasProjectId = backwardCompatibleHostId)
+        MiniAppAnalytics.instance?.sendAnalytics(
+            eType = Etype.APPEAR,
+            actype = Actype.HOST_LAUNCH,
+            miniAppInfo = null
+        )
     }
 
     @VisibleForTesting

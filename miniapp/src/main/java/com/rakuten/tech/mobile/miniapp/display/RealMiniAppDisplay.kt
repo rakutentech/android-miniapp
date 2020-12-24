@@ -63,13 +63,21 @@ internal class RealMiniAppDisplay(
     // not rendered successfully in the mini app e.g. select tags
     override suspend fun getMiniAppView(activityContext: Context): View? =
         if (isContextValid(activityContext)) {
-            getMiniAppAnalytics()?.sendAnalytics(eType = Etype.CLICK, actype = Actype.OPEN, miniAppInfo = miniAppInfo)
+            getMiniAppAnalytics()?.sendAnalytics(
+                eType = Etype.CLICK,
+                actype = Actype.OPEN,
+                miniAppInfo = miniAppInfo
+            )
             provideMiniAppWebView(activityContext)
         } else throw sdkExceptionForNoActivityContext()
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
-        getMiniAppAnalytics()?.sendAnalytics(eType = Etype.CLICK, actype = Actype.CLOSE, miniAppInfo = miniAppInfo)
+        getMiniAppAnalytics()?.sendAnalytics(
+            eType = Etype.CLICK,
+            actype = Actype.CLOSE,
+            miniAppInfo = miniAppInfo
+        )
         miniAppWebView?.destroyView()
         miniAppWebView = null
     }

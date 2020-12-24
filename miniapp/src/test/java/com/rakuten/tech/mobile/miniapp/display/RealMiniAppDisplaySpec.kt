@@ -114,8 +114,16 @@ class RealMiniAppDisplaySpec {
         When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
         displayer.getMiniAppView(context)
 
-        verify(miniAppAnalytics, times(0)).sendAnalytics(eType = Etype.APPEAR, actype = Actype.HOST_LAUNCH, miniAppInfo = null)
-        verify(miniAppAnalytics).sendAnalytics(eType = Etype.CLICK, actype = Actype.OPEN, miniAppInfo = TEST_MA)
+        verify(miniAppAnalytics, times(0)).sendAnalytics(
+            eType = Etype.APPEAR,
+            actype = Actype.HOST_LAUNCH,
+            miniAppInfo = null
+        )
+        verify(miniAppAnalytics).sendAnalytics(
+            eType = Etype.CLICK,
+            actype = Actype.OPEN,
+            miniAppInfo = TEST_MA
+        )
     }
 
     @Test
