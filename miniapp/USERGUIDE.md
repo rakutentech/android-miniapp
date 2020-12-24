@@ -269,10 +269,10 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         onSuccess: (userName: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        val name: String = ""
+        val name: String?
         // Check if there is any valid username in HostApp
         // .. .. ..
-        if (name is valid)
+        if (isNameValid) // Check if name is valid
             onSuccess(name) // allow miniapp to get user name.
         else
             onError(message) // reject miniapp to get user name with message explanation.
@@ -282,10 +282,10 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
         onSuccess: (profilePhoto: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        val photoUrl: String = ""
+        val photoUrl: String?
         // Check if there is any valid photo url in HostApp
         // .. .. ..
-        if (photoUrl is valid)
+        if (isPhotoUrlValid) // Check if photoUrl is valid
             onSuccess(photoUrl) // allow miniapp to get photo url.
         else
             onError(message) // reject miniapp to get photo url with message explanation.
