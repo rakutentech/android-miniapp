@@ -7,6 +7,7 @@
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
+- **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 
 ### 2.7.1 (2020-12-23)
 **SDK**

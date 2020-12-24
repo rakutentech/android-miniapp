@@ -40,6 +40,7 @@ android {
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
+            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             appName                 : defaultAppName + " DEBUG"
     ]
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
@@ -51,6 +52,7 @@ android {
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
+            appCenterSecret         : property("PROD_APPCENTER_SECRET") ?: "",
             appName                 : defaultAppName
     ]
 
@@ -62,6 +64,7 @@ android {
             versionNameSuffix '-DEBUG'
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
+            resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled false
 
@@ -70,6 +73,7 @@ android {
         release {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
+            resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -117,6 +121,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "com.google.android.gms:play-services-ads:$google_ads"
+    implementation "com.microsoft.appcenter:appcenter-crashes:$appCenterSdkVersion"
 
     testImplementation "junit:junit:$junit"
 }

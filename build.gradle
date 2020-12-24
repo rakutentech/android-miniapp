@@ -30,6 +30,7 @@ buildscript {
     ext.gson = '2.8.6'
     ext.google_ads = '19.4.0'
     ext.custom_tab = '1.2.0'
+    ext.appCenterSdkVersion = '4.0.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'
