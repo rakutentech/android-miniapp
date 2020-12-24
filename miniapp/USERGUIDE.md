@@ -264,44 +264,57 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 }
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
-    override fun getUserName(): String {
-        var name: String = ""
-        // Implementation details to get user name
+
+    override fun getUserName(
+        onSuccess: (userName: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        val name: String?
+        // Check if there is any valid username in HostApp
         // .. .. ..
-        return name
+        if (isNameValid) // Check if name is valid
+            onSuccess(name) // allow miniapp to get user name.
+        else
+            onError(message) // reject miniapp to get user name with message explanation.
     }
 
-    override fun getProfilePhoto(): String {
-        var profilePhotoUrl: String = ""
-        // Implementation details to get profile photo url
+    override fun getProfilePhoto(
+        onSuccess: (profilePhoto: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        val photoUrl: String?
+        // Check if there is any valid photo url in HostApp
         // .. .. ..
-        return profilePhotoUrl
+        if (isPhotoUrlValid) // Check if photoUrl is valid
+            onSuccess(photoUrl) // allow miniapp to get photo url.
+        else
+            onError(message) // reject miniapp to get photo url with message explanation.
     }
 
     override fun getAccessToken(
         miniAppId: String,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
-    ){
+    ) {
         var allowToken: Boolean = false
         // Check if you want to allow this Mini App ID to use the Access Token
         // .. .. ..
         if (allowToken)
             onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
         else
-            onError(message)    // reject miniapp to get token and with message explanation.
+            onError(message) // reject miniapp to get token with message explanation.
     }
 
-     override fun getContacts(
+    override fun getContacts(
         onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {
         // Check if there is any contact id in HostApp
         // .. .. ..
         if (hasContact)
-            onSuccess(contacts) // invoke the list of contact IDs
+            onSuccess(contacts) // allow miniapp to get contacts.
         else
-            onError("There is no contact found in HostApp.")
+            onError(message) // reject miniapp to get contacts with message explanation.
     }
 }
 

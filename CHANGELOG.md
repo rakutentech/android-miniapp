@@ -1,10 +1,18 @@
 ## CHANGELOG
 
-2.7.1 (2020-12-23)
+### 2.X.X (In progress)
+**SDK**
+- **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
+- **Deprecated:** Old `getUserName`, `getProfilePhoto` interfaces.
+
+**Sample App**
+- **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
+
+### 2.7.1 (2020-12-23)
 **SDK**
 - **Fix:** MiniApp view did not display due to obfuscation code guard.
 
-2.7.0 (2020-12-18)
+### 2.7.0 (2020-12-18)
 **SDK**
 - **Feature:** Added `rakuten.miniapp.device.LOCATION` custom permission.
 - **Feature:** Added `getContacts()` interface in `UserInfoBridgeDispatcher` for receiving list of contact IDs.
