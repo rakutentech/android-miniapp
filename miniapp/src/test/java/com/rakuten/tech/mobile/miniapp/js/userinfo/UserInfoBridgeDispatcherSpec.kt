@@ -99,12 +99,14 @@ class UserInfoBridgeDispatcherSpec {
 
                 override fun getUserName(): String = ""
 
-                override fun getUserName(callback: (result: Result<String?>) -> Unit) {
-                    val result: Result<String> = run {
-                        if (canGetName) Result.success(TEST_USER_NAME)
-                        else Result.success("")
-                    }
-                    callback.invoke(result)
+                override fun getUserName(
+                    onSuccess: (userName: String) -> Unit,
+                    onError: (message: String) -> Unit
+                ) {
+                    if (canGetName)
+                        onSuccess.invoke(TEST_USER_NAME)
+                    else
+                        onError.invoke(TEST_ERROR_MSG)
                 }
             }
         } else {
@@ -143,11 +145,12 @@ class UserInfoBridgeDispatcherSpec {
     fun `postError should be called when user name is empty`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true, false))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        val errMsg = "Cannot get user name: User name is not found."
 
         userInfoBridgeDispatcher.onGetUserName(userNameCallbackObj.id)
         userInfoBridgeDispatcher.getUserNameSync(userNameCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(userNameCallbackObj.id, "")
+        verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
@@ -172,12 +175,14 @@ class UserInfoBridgeDispatcherSpec {
             object : UserInfoBridgeDispatcher() {
                 override fun getProfilePhoto(): String = ""
 
-                override fun getProfilePhoto(callback: (result: Result<String?>) -> Unit) {
-                    val result: Result<String> = run {
-                        if (canGetPhoto) Result.success(TEST_PROFILE_PHOTO)
-                        else Result.success("")
-                    }
-                    callback.invoke(result)
+                override fun getProfilePhoto(
+                    onSuccess: (profilePhoto: String) -> Unit,
+                    onError: (message: String) -> Unit
+                ) {
+                    if (canGetPhoto)
+                        onSuccess.invoke(TEST_PROFILE_PHOTO)
+                    else
+                        onError.invoke(TEST_ERROR_MSG)
                 }
             }
         } else {
@@ -216,11 +221,12 @@ class UserInfoBridgeDispatcherSpec {
     fun `postError should be called when profile photo is empty`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true, false))
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+        val errMsg = "Cannot get profile photo: Profile photo is not found."
 
         userInfoBridgeDispatcher.onGetProfilePhoto(profilePhotoCallbackObj.id)
         userInfoBridgeDispatcher.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(profilePhotoCallbackObj.id, "")
+        verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
@@ -279,9 +285,8 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
-        userInfoBridgeDispatcher.getAccessTokenWithoutResult(tokenCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postError(tokenCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
     }
 
     @Test
@@ -290,9 +295,8 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetAccessToken(tokenCallbackObj.id)
-        userInfoBridgeDispatcher.getAccessTokenWithoutResult(tokenCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
     /** end region */
 
@@ -341,7 +345,6 @@ class UserInfoBridgeDispatcherSpec {
         ).thenReturn(false)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
-        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
         verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
     }
@@ -353,9 +356,8 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
-        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postError(contactsCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
     }
 
     @Test
@@ -364,9 +366,8 @@ class UserInfoBridgeDispatcherSpec {
         userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
 
         userInfoBridgeDispatcher.onGetContacts(contactsCallbackObj.id)
-        userInfoBridgeDispatcher.getContactsWithoutResult(contactsCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
+        verify(bridgeExecutor).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
     }
     /** end region */
 

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -28,10 +29,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivit
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.lang.Exception
 import java.util.ArrayList
-import kotlin.Result.Companion.failure
-import kotlin.Result.Companion.success
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -162,52 +160,55 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
-            override fun getUserName(callback: (userName: Result<String?>) -> Unit) {
-                val result: Result<String> = run {
-                    val name = AppSettings.instance.profileName
-                    if (name.isNotEmpty()) success(name)
-                    else failure(Exception("User name is not found."))
-                }
-
-                callback.invoke(result)
+            override fun getUserName(
+                onSuccess: (userName: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val name = AppSettings.instance.profileName
+                if (name.isNotEmpty()) onSuccess(name)
+                else onError("User name is not found.")
             }
 
-            override fun getProfilePhoto(callback: (profilePhoto: Result<String?>) -> Unit) {
-                val result: Result<String> = run {
-                    val photoUrl = AppSettings.instance.profilePictureUrlBase64
-                    if (photoUrl.isNotEmpty()) success(photoUrl)
-                    else failure(Exception("Profile photo is not found."))
-                }
-
-                callback.invoke(result)
+            override fun getProfilePhoto(
+                onSuccess: (profilePhoto: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val photo = AppSettings.instance.profilePictureUrlBase64
+                if (photo.isNotEmpty()) onSuccess(photo)
+                else onError("Profile photo is not found.")
             }
 
             override fun getAccessToken(
                 miniAppId: String,
-                callback: (accessToken: Result<TokenData?>) -> Unit
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (message: String) -> Unit
             ) {
-                val result: Result<TokenData> = run {
-                    val data = AppSettings.instance.tokenData
-                    if (data.token.isNotEmpty()) {
-                        success(data)
-                    } else failure(Exception("$miniAppId not allowed to get access token"))
-                }
-                callback.invoke(result)
+                AlertDialog.Builder(this@MiniAppDisplayActivity)
+                    .setMessage("Allow $miniAppId to get access token?")
+                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
+                        onSuccess(AppSettings.instance.tokenData)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        onError("$miniAppId not allowed to get access token")
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
             }
 
-            override fun getContacts(callback: (contacts: Result<ArrayList<Contact>?>) -> Unit) {
-                val result: Result<ArrayList<Contact>> = run {
-                    val hasContact = AppSettings.instance.isContactsSaved
-                    if (hasContact) {
-                        val contacts: ArrayList<Contact> = arrayListOf()
-                        AppSettings.instance.contactNames.forEach {
-                            contacts.add(Contact(it))
-                        }
-                        success(contacts)
-                    } else failure(Exception("There is no contact found in HostApp."))
-                }
-
-                callback.invoke(result)
+            override fun getContacts(
+                onSuccess: (contacts: ArrayList<Contact>) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val hasContact = AppSettings.instance.isContactsSaved
+                if (hasContact) {
+                    val contacts: ArrayList<Contact> = arrayListOf()
+                    AppSettings.instance.contactNames.forEach {
+                        contacts.add(Contact(it))
+                    }
+                    onSuccess(contacts)
+                } else onError("There is no contact found in HostApp.")
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
