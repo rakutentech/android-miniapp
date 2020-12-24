@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+2.X.X (In progress)
+**SDK**
+- **Feature:** Support analytics SDK with event tracking.
+
 2.7.1 (2020-12-23)
 **SDK**
 - **Fix:** MiniApp view did not display due to obfuscation code guard.

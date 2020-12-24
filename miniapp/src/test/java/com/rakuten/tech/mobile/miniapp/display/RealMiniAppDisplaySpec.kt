@@ -9,10 +9,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_PROJECT
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
-import com.rakuten.tech.mobile.miniapp.TestActivity
+import com.rakuten.tech.mobile.miniapp.analytics.Actype
+import com.rakuten.tech.mobile.miniapp.analytics.Etype
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -29,6 +32,7 @@ class RealMiniAppDisplaySpec {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
+    private lateinit var miniAppAnalytics: MiniAppAnalytics
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
@@ -45,6 +49,9 @@ class RealMiniAppDisplaySpec {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock()
             )
+
+            MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
+            miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
         }
     }
 
@@ -97,7 +104,27 @@ class RealMiniAppDisplaySpec {
     fun `should create MiniAppWebView when provide activity context`() = runBlockingTest {
         val miniAppWebView: MiniAppWebView = mock()
         realDisplay.miniAppWebView = miniAppWebView
+
         realDisplay.getMiniAppView(Activity()) shouldBe miniAppWebView
+    }
+
+    @Test
+    fun `should send analytics when open miniapp view`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
+        displayer.getMiniAppView(context)
+
+        verify(miniAppAnalytics, times(0)).sendAnalytics(eType = Etype.APPEAR, actype = Actype.HOST_LAUNCH, miniAppInfo = null)
+        verify(miniAppAnalytics).sendAnalytics(eType = Etype.CLICK, actype = Actype.OPEN, miniAppInfo = TEST_MA)
+    }
+
+    @Test
+    fun `should send analytics when close miniapp view`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
+        displayer.destroyView()
+
+        verify(miniAppAnalytics).sendAnalytics(eType = Etype.CLICK, actype = Actype.CLOSE, miniAppInfo = TEST_MA)
     }
 
     @Test

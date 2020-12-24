@@ -15,11 +15,11 @@
 
         <!-- Change init order for sdk-utils so it's initialized first -->
         <provider
-          android:name="com.rakuten.tech.mobile.sdkutils.SdkUtilsInitProvider"
-          android:authorities="${applicationId}.SdkUtilsInitProvider"
-          android:exported="false"
-          android:initOrder="100"
-          tools:replace="android:initOrder" />
+            android:name="com.rakuten.tech.mobile.sdkutils.SdkUtilsInitProvider"
+            android:authorities="${applicationId}.SdkUtilsInitProvider"
+            android:exported="false"
+            android:initOrder="100"
+            tools:replace="android:initOrder" />
 
         <meta-data  android:name="analytics.accountId"
             android:value="ACCOUNT_ID" />
