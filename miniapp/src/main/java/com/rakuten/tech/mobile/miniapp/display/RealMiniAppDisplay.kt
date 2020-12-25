@@ -63,6 +63,7 @@ internal class RealMiniAppDisplay(
     // not rendered successfully in the mini app e.g. select tags
     override suspend fun getMiniAppView(activityContext: Context): View? =
         if (isContextValid(activityContext)) {
+            // send analytics tracking when Host App displays a mini app.
             getMiniAppAnalytics()?.sendAnalytics(
                 eType = Etype.CLICK,
                 actype = Actype.OPEN,
@@ -73,6 +74,7 @@ internal class RealMiniAppDisplay(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
+        // send analytics tracking when mini app is closed.
         getMiniAppAnalytics()?.sendAnalytics(
             eType = Etype.CLICK,
             actype = Actype.CLOSE,

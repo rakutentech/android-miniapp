@@ -81,6 +81,7 @@ class MiniappSdkInitializer : ContentProvider() {
             miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig, backwardCompatibleHostId)
         )
 
+        // init and send analytics tracking when Host App is launched with miniapp sdk.
         executeMiniAppAnalytics(backwardCompatibleHostId)
 
         return true
