@@ -17,11 +17,7 @@ class SampleApplication : Application() {
         MiniAppListStore.init(this)
         // Enable AdMob
         MobileAds.initialize(this)
-
         // Enable microsoft.appcenter Crash class
-        AppCenter.start(
-            this, getString(R.string.appcenter_secret),
-            Crashes::class.java
-        )
+        AppCenter.start(this, getString(R.string.appcenter_secret), Crashes::class.java)
     }
 }
