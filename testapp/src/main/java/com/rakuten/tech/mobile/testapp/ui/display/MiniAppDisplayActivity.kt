@@ -161,9 +161,24 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge.allowScreenOrientation(true)
 
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
-            override fun getUserName(): String = AppSettings.instance.profileName
 
-            override fun getProfilePhoto(): String = AppSettings.instance.profilePictureUrlBase64
+            override fun getUserName(
+                onSuccess: (userName: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val name = AppSettings.instance.profileName
+                if (name.isNotEmpty()) onSuccess(name)
+                else onError("User name is not found.")
+            }
+
+            override fun getProfilePhoto(
+                onSuccess: (profilePhoto: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val photo = AppSettings.instance.profilePictureUrlBase64
+                if (photo.isNotEmpty()) onSuccess(photo)
+                else onError("Profile photo is not found.")
+            }
 
             override fun getAccessToken(
                 miniAppId: String,
