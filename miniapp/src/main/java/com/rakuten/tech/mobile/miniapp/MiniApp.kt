@@ -34,9 +34,9 @@ abstract class MiniApp internal constructor() {
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.
-     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -46,9 +46,9 @@ abstract class MiniApp internal constructor() {
     @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appId: String,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -56,9 +56,9 @@ abstract class MiniApp internal constructor() {
      * This should only be used in "Preview Mode".
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appInfo metadata of a mini app.
-     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -68,9 +68,9 @@ abstract class MiniApp internal constructor() {
     @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
     abstract suspend fun create(
         appInfo: MiniAppInfo,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -78,18 +78,18 @@ abstract class MiniApp internal constructor() {
      * Mini app is NOT downloaded and cached in local, its content are read directly from the url.
      * This should only be used for previewing a mini app from a local server.
      * @param appUrl a HTTP url containing Mini App content.
-     * @param queryParams the parameters will be appended with miniapp url scheme.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
     @Throws(MiniAppNotFoundException::class, MiniAppSdkException::class)
     abstract suspend fun createWithUrl(
         appUrl: String,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**

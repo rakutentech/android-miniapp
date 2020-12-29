@@ -124,18 +124,18 @@ class MiniAppDisplayActivity : BaseActivity() {
             viewModel.obtainMiniAppDisplayUrl(
                 this@MiniAppDisplayActivity,
                 appUrl,
-                AppSettings.instance.urlParameters,
                 miniAppMessageBridge,
-                miniAppNavigator
+                miniAppNavigator,
+                AppSettings.instance.urlParameters
             )
         } else {
             viewModel.obtainMiniAppDisplay(
                 this@MiniAppDisplayActivity,
                 appInfo,
                 appId!!,
-                AppSettings.instance.urlParameters,
                 miniAppMessageBridge,
-                miniAppNavigator
+                miniAppNavigator,
+                AppSettings.instance.urlParameters
             )
         }
     }

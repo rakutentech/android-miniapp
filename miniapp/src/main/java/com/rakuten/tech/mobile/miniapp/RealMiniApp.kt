@@ -39,9 +39,9 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appId: String,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -59,9 +59,9 @@ internal class RealMiniApp(
 
     override suspend fun create(
         appInfo: MiniAppInfo,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -79,9 +79,9 @@ internal class RealMiniApp(
 
     override suspend fun createWithUrl(
         appUrl: String,
-        queryParams: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {

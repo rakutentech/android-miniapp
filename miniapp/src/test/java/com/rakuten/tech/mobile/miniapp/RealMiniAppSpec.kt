@@ -61,13 +61,13 @@ class RealMiniAppSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when app id is blank`() = runBlockingTest {
-        realMiniApp.create(" ", TEST_URL_PARAMS, miniAppMessageBridge)
+        realMiniApp.create(" ", miniAppMessageBridge)
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when id of MiniAppInfo is blank`() = runBlockingTest {
         val testMiniAppInfo = TEST_MA.copy(id = "")
-        realMiniApp.create(testMiniAppInfo, TEST_URL_PARAMS, miniAppMessageBridge)
+        realMiniApp.create(testMiniAppInfo, miniAppMessageBridge)
     }
 
     @Test
@@ -75,13 +75,13 @@ class RealMiniAppSpec {
         runBlockingTest {
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA_ID, TEST_URL_PARAMS, miniAppMessageBridge)
+            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
             verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
             verify(displayer, times(1))
                 .createMiniAppDisplay(
                     getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, null, miniAppCustomPermissionCache, TEST_URL_PARAMS
+                    miniAppMessageBridge, null, miniAppCustomPermissionCache, ""
                 )
         }
 
@@ -90,7 +90,7 @@ class RealMiniAppSpec {
         runBlockingTest {
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA, TEST_URL_PARAMS, miniAppMessageBridge, miniAppNavigator)
+            realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
 
             verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA)
             verify(displayer, times(1))
@@ -100,7 +100,7 @@ class RealMiniAppSpec {
                     miniAppMessageBridge,
                     miniAppNavigator,
                     miniAppCustomPermissionCache,
-                    TEST_URL_PARAMS
+                    ""
                 )
         }
 
