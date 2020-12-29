@@ -27,7 +27,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.ME
 import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
@@ -156,7 +158,9 @@ class SettingsMenuActivity : BaseActivity() {
 
         launch {
             try {
-                MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                withContext(Dispatchers.IO) {
+                    MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                }
                 settings.isSettingSaved = true
                 runOnUiThread {
                     settingsProgressDialog.cancel()
