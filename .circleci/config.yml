@@ -81,3 +81,15 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - app-center/publish:
+          name: deploy-test-app-candidate
+          group: Release Candidate
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BUILD_URL
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: candidate
