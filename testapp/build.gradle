@@ -52,7 +52,7 @@ android {
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
-            appCenterSecret         : property("PROD_APPCENTER_SECRET") ?: "",
+            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             appName                 : defaultAppName
     ]
 
