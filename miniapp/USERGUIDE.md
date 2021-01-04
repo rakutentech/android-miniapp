@@ -601,7 +601,12 @@ class MiniAppActivity : Activity(), CoroutineScope {
     //...
         launch {
             val miniAppDisplay = withContext(Dispatchers.IO) {
-                MiniApp.instance().create("mini_app_id", miniAppMessageBridge, "param1=value1&param2=value2")
+                MiniApp.instance().create(
+                    appId = "mini_app_id",
+                    miniAppMessageBridge = miniAppMessageBridge,
+                    miniAppNavigator = miniAppNavigator,
+                    queryParams = "param1=value1&param2=value2"
+                )
             }
     //...
         }
