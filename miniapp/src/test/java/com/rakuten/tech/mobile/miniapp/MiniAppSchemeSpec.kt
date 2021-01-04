@@ -74,16 +74,14 @@ internal class MiniAppSchemeSpec {
         schemeWithAppId.appendParametersToUrl(
             expectedUrl,
             expectedQuery
-        ) shouldEqual expectedUrl + expectedQuery
+        ) shouldEqual "$expectedUrl?$expectedQuery"
     }
 
     /** end region */
 
     @Test
     fun `resolveParameters should append qus mark prior to the parameters`() {
-        val expectedQuery1 = "?param1=value1&param2=value2"
-        val expectedQuery2 = "param1=value1&param2=value2"
-        schemeWithAppId.resolveParameters(expectedQuery1) shouldEqual expectedQuery1
-        schemeWithAppId.resolveParameters(expectedQuery2) shouldEqual expectedQuery1
+        val query = "param1=value1&param2=value2"
+        schemeWithAppId.resolveParameters(query) shouldEqual "?$query"
     }
 }

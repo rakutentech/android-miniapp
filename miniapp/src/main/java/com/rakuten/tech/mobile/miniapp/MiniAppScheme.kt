@@ -42,11 +42,7 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun resolveParameters(queryParams: String): String {
-        val qusMark = "?"
-        return if (queryParams.contains(qusMark) && queryParams.startsWith(qusMark)) queryParams
-        else qusMark + queryParams
-    }
+    fun resolveParameters(queryParams: String): String = "?$queryParams"
 
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = url.toUri()
