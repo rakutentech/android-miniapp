@@ -39,14 +39,15 @@ class MiniAppDisplayViewModel constructor(
         appInfo: MiniAppInfo?,
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator
+        miniAppNavigator: MiniAppNavigator,
+        appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, appParameters)
             else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator)
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, appParameters)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
@@ -67,11 +68,13 @@ class MiniAppDisplayViewModel constructor(
         context: Context,
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator
+        miniAppNavigator: MiniAppNavigator,
+        appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator)
+            miniAppDisplay =
+                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, appParameters)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {

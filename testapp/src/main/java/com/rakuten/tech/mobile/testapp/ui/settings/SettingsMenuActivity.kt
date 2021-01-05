@@ -88,6 +88,7 @@ class SettingsMenuActivity : BaseActivity() {
         updateSettings(
             binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString(),
+            binding.editParametersUrl.text.toString(),
             binding.switchPreviewMode.isChecked
         )
     }
@@ -102,6 +103,7 @@ class SettingsMenuActivity : BaseActivity() {
         binding.textInfo.text = createBuildInfo()
         binding.editProjectId.setText(settings.projectId)
         binding.editSubscriptionKey.setText(settings.subscriptionKey)
+        binding.editParametersUrl.setText(settings.urlParameters)
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
@@ -146,12 +148,19 @@ class SettingsMenuActivity : BaseActivity() {
         }
     }
 
-    private fun updateSettings(projectId: String, subscriptionKey: String, isPreviewMode: Boolean) {
+    private fun updateSettings(
+        projectId: String,
+        subscriptionKey: String,
+        urlParameters: String,
+        isPreviewMode: Boolean
+    ) {
         val appIdHolder = settings.projectId
         val subscriptionKeyHolder = settings.subscriptionKey
+        val urlParametersHolder = settings.urlParameters
         val isPreviewModeHolder = settings.isPreviewMode
         settings.projectId = projectId
         settings.subscriptionKey = subscriptionKey
+        settings.urlParameters = urlParameters
         settings.isPreviewMode = isPreviewMode
 
         launch {
@@ -165,6 +174,7 @@ class SettingsMenuActivity : BaseActivity() {
             } catch (error: MiniAppSdkException) {
                 settings.projectId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
+                settings.urlParameters = urlParametersHolder
                 settings.isPreviewMode = isPreviewModeHolder
                 runOnUiThread {
                     settingsProgressDialog.cancel()
