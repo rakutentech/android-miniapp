@@ -33,9 +33,6 @@ android {
     }
 
     def defaultAppName = "Mini App Sample"
-    def commonManifestPlaceholders = [
-            appCenterSecret         : property("APPCENTER_SECRET") ?: ""
-    ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
@@ -43,12 +40,11 @@ android {
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
+            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             appName                 : defaultAppName + " DEBUG"
     ]
-    debugManifestPlaceholders += commonManifestPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
-
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
@@ -59,7 +55,6 @@ android {
             appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             appName                 : defaultAppName
     ]
-    prodManifestPlaceholders += commonManifestPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
 

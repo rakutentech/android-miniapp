@@ -9,7 +9,7 @@ import org.json.JSONObject
 @Suppress("EmptyCatchBlock", "SwallowedException")
 private inline fun <T> whenHasAnalytics(callback: () -> T) {
     try {
-        Class.forName("com.rakuten.tech.mobile.analytics")
+        Class.forName("com.rakuten.tech.mobile.analytics.Event")
         callback.invoke()
     } catch (e: ClassNotFoundException) {}
 }
@@ -39,6 +39,6 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
                 .put("mini_app_version_id", miniAppInfo.version.versionId)
         }
 
-        RatTracker.event("rat.${eType.value}", params).track()
+        RatTracker.event(eType.value, params).track()
     }
 }
