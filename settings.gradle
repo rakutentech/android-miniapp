@@ -1,1 +1,2 @@
+include ':analytics'
 include ':testapp', ':miniapp'

@@ -1,17 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
+import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import org.json.JSONObject
 
-/**
- * Check whether hostapp provides Analytics dependency.
- * The class name can be replaced with analytics package for real tracking.
- */
+/** Check whether hostapp provides Analytics dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
 private inline fun <T> whenHasAnalytics(callback: () -> T) {
     try {
-        // ToDo replace with analytics package.
-        Class.forName("com.rakuten.tech.mobile.miniapp.analytics.Event")
+        Class.forName("com.rakuten.tech.mobile.analytics")
         callback.invoke()
     } catch (e: ClassNotFoundException) {}
 }
@@ -37,7 +34,6 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
                 .put("mini_app_version_id", miniAppInfo.version.versionId)
         }
 
-        // ToDo replace the dummy Event.
-        Event("rat.${eType.value}", params).track()
+        RatTracker.event("rat.${eType.value}", params).track()
     }
 }

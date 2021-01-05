@@ -42,6 +42,7 @@ afterEvaluate {
 
 dependencies {
     compileOnly "javax.annotation:jsr250-api:$jsr250"
+    compileOnly project(':analytics')
 
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.webkit:webkit:$webkit"
