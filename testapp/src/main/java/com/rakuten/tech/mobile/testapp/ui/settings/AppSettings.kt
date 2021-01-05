@@ -83,6 +83,12 @@ class AppSettings private constructor(context: Context) {
     val isContactsSaved: Boolean
         get() = cache.isContactsSaved
 
+    var urlParameters: String
+        get() = cache.urlParameters ?: ""
+        set(urlParameters) {
+            cache.urlParameters = urlParameters
+        }
+
     val baseUrl = manifestConfig.baseUrl()
 
     val miniAppSettings: MiniAppSdkConfig
@@ -166,6 +172,10 @@ private class Settings(context: Context) {
     val isContactsSaved: Boolean
         get() = prefs.contains(CONTACT_NAMES)
 
+    var urlParameters: String?
+        get() = prefs.getString(URL_PARAMETERS, null)
+        set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
@@ -177,5 +187,6 @@ private class Settings(context: Context) {
         private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
         private const val CONTACT_NAMES = "contact_names"
         private const val TOKEN_DATA = "token_data"
+        private const val URL_PARAMETERS = "url_parameters"
     }
 }

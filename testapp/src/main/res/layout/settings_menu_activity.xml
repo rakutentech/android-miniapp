@@ -201,6 +201,30 @@
             android:layout_height="@dimen/horizontal_divider_height"
             android:background="@color/bg_section" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/small_4"
+          android:paddingBottom="@dimen/small_4"
+          android:paddingStart="@dimen/medium_16"
+          android:paddingEnd="@dimen/medium_16"
+          android:background="@color/bg_section"
+          android:text="@string/lb_miniapp_url_parameters" />
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/small_8">
+
+          <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/editParametersUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_miniapp_url_parameters"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
       </LinearLayout>
 
     </ScrollView>

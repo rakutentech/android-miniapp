@@ -589,6 +589,31 @@ downloadedMiniApps.forEach {
 }
 ```
 
+### Passing parameters to a miniapp
+
+For a mini app, you can pass query parameters as String using `MiniApp.create` to be appended with miniapp's url.
+For example: `https://mscheme.1234/miniapp/index.html?param1=value1&param2=value2`
+
+```kotlin
+class MiniAppActivity : Activity(), CoroutineScope {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+    //...
+        launch {
+            val miniAppDisplay = withContext(Dispatchers.IO) {
+                MiniApp.instance().create(
+                    appId = "mini_app_id",
+                    miniAppMessageBridge = miniAppMessageBridge,
+                    miniAppNavigator = miniAppNavigator,
+                    queryParams = "param1=value1&param2=value2"
+                )
+            }
+    //...
+        }
+    }
+}
+```
+
 ## Troubleshooting & FAQs
 
 <details><summary markdown="span"><b>Exception: "Network requests must not be performed on the main thread."</b>

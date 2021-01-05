@@ -40,7 +40,8 @@ internal class RealMiniApp(
     override suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -50,7 +51,8 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }
@@ -58,7 +60,8 @@ internal class RealMiniApp(
     override suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -68,7 +71,8 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }
@@ -76,7 +80,8 @@ internal class RealMiniApp(
     override suspend fun createWithUrl(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator?
+        miniAppNavigator: MiniAppNavigator?,
+        queryParams: String
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -85,7 +90,8 @@ internal class RealMiniApp(
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppCustomPermissionCache
+                miniAppCustomPermissionCache,
+                queryParams
             )
         }
     }

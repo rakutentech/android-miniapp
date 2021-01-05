@@ -26,7 +26,8 @@ internal class RealMiniAppDisplay(
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
-    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    val queryParams: String
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -40,7 +41,8 @@ internal class RealMiniAppDisplay(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         hostAppUserAgentInfo: String,
-        miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        queryParams: String
     ) : this(
         context,
         "",
@@ -48,7 +50,8 @@ internal class RealMiniAppDisplay(
         miniAppMessageBridge,
         miniAppNavigator,
         hostAppUserAgentInfo,
-        miniAppCustomPermissionCache
+        miniAppCustomPermissionCache,
+        queryParams
     ) {
         this.appUrl = appUrl
     }
@@ -100,7 +103,8 @@ internal class RealMiniAppDisplay(
                     miniAppMessageBridge = miniAppMessageBridge,
                     miniAppNavigator = miniAppNavigator,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
-                    miniAppCustomPermissionCache = miniAppCustomPermissionCache
+                    miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                    queryParams = queryParams
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -110,7 +114,8 @@ internal class RealMiniAppDisplay(
                     miniAppMessageBridge = miniAppMessageBridge,
                     miniAppNavigator = miniAppNavigator,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
-                    miniAppCustomPermissionCache = miniAppCustomPermissionCache
+                    miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                    queryParams = queryParams
                 )
             }
 

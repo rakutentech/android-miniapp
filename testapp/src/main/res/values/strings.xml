@@ -7,6 +7,7 @@
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_user_details">User Details</string>
+    <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
@@ -35,6 +36,7 @@
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
+    <string name="hint_miniapp_url_parameters">param1=value1&amp;param2=value2</string>
 
     <string name="error_empty">Required</string>
     <string name="error_invalid_input">Invalid Input</string>
