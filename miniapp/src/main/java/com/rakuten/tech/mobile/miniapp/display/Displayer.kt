@@ -14,7 +14,8 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
-        miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
         context = context,
         basePath = basePath,
@@ -22,20 +23,23 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
-        miniAppCustomPermissionCache = miniAppCustomPermissionCache
+        miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        queryParams = queryParams
     )
 
     fun createMiniAppDisplay(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
-        miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
         context = context,
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
-        miniAppCustomPermissionCache = miniAppCustomPermissionCache
+        miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        queryParams = queryParams
     )
 }

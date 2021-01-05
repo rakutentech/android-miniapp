@@ -20,7 +20,8 @@ internal class MiniAppHttpWebView(
         context,
         miniAppInfo,
         miniAppCustomPermissionCache
-    )
+    ),
+    queryParams: String
 ) : MiniAppWebView(
     context,
     "",
@@ -29,7 +30,8 @@ internal class MiniAppHttpWebView(
     miniAppNavigator,
     hostAppUserAgentInfo,
     miniAppCustomPermissionCache,
-    miniAppWebChromeClient
+    miniAppWebChromeClient,
+    queryParams
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)
