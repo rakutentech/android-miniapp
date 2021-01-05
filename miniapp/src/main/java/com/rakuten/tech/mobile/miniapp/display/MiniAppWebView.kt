@@ -34,7 +34,8 @@ internal open class MiniAppWebView(
         context,
         miniAppInfo,
         miniAppCustomPermissionCache
-    )
+    ),
+    val queryParams: String
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -154,7 +155,10 @@ internal open class MiniAppWebView(
         )
         .build()
 
-    internal open fun getLoadUrl(): String = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
+    internal open fun getLoadUrl(): String {
+        val parentUrl = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
+        return miniAppScheme.appendParametersToUrl(parentUrl, queryParams)
+    }
 
     protected open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
         context,

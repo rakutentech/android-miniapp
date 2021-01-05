@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 
 internal class MiniAppScheme private constructor(miniAppId: String) {
@@ -34,6 +35,14 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
             url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
         }
     }
+
+    fun appendParametersToUrl(url: String, queryParams: String): String {
+        return if (queryParams.isEmpty()) url
+        else "$url${resolveParameters(queryParams)}"
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun resolveParameters(queryParams: String): String = "?$queryParams"
 
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = url.toUri()

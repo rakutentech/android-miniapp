@@ -11,7 +11,10 @@ import java.util.ArrayList
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
-@Suppress("TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass", "LargeClass")
+@Suppress(
+    "TooGenericExceptionCaught", "LongMethod", "UnnecessaryAbstractClass",
+    "LargeClass", "TooManyFunctions"
+)
 abstract class UserInfoBridgeDispatcher {
 
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor

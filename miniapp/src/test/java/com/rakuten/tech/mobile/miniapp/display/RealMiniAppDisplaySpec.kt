@@ -47,7 +47,8 @@ class RealMiniAppDisplaySpec {
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = mock(),
                 hostAppUserAgentInfo = TEST_HA_NAME,
-                miniAppCustomPermissionCache = mock()
+                miniAppCustomPermissionCache = mock(),
+                queryParams = TEST_URL_PARAMS
             )
 
             MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
@@ -63,7 +64,8 @@ class RealMiniAppDisplaySpec {
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
             hostAppUserAgentInfo = TEST_HA_NAME,
-            miniAppCustomPermissionCache = mock()
+            miniAppCustomPermissionCache = mock(),
+            queryParams = TEST_URL_PARAMS
         )
 
         realDisplay.miniAppInfo.apply {
@@ -104,7 +106,6 @@ class RealMiniAppDisplaySpec {
     fun `should create MiniAppWebView when provide activity context`() = runBlockingTest {
         val miniAppWebView: MiniAppWebView = mock()
         realDisplay.miniAppWebView = miniAppWebView
-
         realDisplay.getMiniAppView(Activity()) shouldBe miniAppWebView
     }
 
