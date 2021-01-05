@@ -65,7 +65,6 @@ android {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
-            buildConfigField "String", "TEST_PRJ", '"' + property("HOST_PROJECT_ID") + '"'
             debuggable true
             minifyEnabled false
 
