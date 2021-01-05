@@ -34,9 +34,7 @@ android {
 
     def defaultAppName = "Mini App Sample"
     def commonManifestPlaceholders = [
-            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
-            analyticsAcc            : property("ANALYTICS_ACC") ?: 0,
-            analyticsAid            : property("ANALYTICS_AID") ?: 0,
+            appCenterSecret         : property("APPCENTER_SECRET") ?: ""
     ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",

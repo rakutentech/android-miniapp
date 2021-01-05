@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
 import com.rakuten.tech.mobile.analytics.RatTracker
+import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import org.json.JSONObject
 
@@ -26,6 +27,10 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
 
     fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) {
         val params = mutableMapOf<String, Any>()
+        // Send to this acc/aid
+        params["acc"] = BuildConfig.ANALYTICS_ACC
+        params["aid"] = BuildConfig.ANALYTICS_AID
+
         params["actype"] = actype.value
         if (miniAppInfo != null) {
             params["cp"] = JSONObject()
