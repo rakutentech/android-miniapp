@@ -78,6 +78,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
+    testImplementation project(':analytics')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
