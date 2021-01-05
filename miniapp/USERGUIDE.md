@@ -374,13 +374,15 @@ The below implementation will allow ads to be shown when mini apps trigger a req
 
 Configure the Android Ads SDK from [here](https://developers.google.com/admob/android/quick-start). Don't forget to [initialize the Ads SDK](https://developers.google.com/admob/android/quick-start#initialize_the_mobile_ads_sdk).
 
+**Note:** We only support AdMob usage on Android 7.0+. Some ads from AdMob have inconsistent behavior on Android 6.0 due to the older webview implementation on those devices.
+
 #### AdMob
 **API Docs:** [AdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.ads/-ad-mob-displayer/)
 
 Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
 ```kotlin
 miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
-``` 
+```
 
 #### Custom Ads Provider
 **API Docs:** [MiniAppAdDisplayer](com.rakuten.tech.mobile.miniapp.ads/-mini-app-ad-displayer/)
