@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     def numProperty = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : 0)
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "0")
     }
 
     defaultConfig {
