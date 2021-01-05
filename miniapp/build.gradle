@@ -4,15 +4,17 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    def property = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
-    }
+    def property = { key -> return System.getenv(key) ?: project."$key" }
+    def projectId = property("HOST_PROJECT_ID") ?: "test-host-project-id"
 
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
-        buildConfigField "String", "ANALYTICS_ACC", '"' + property("ANALYTICS_ACC") + '"'
-        buildConfigField "String", "ANALYTICS_AID", '"' + property("ANALYTICS_AID") + '"'
+        resValue "string", "test_prj", projectId
+        buildConfigField "String", "TEST_PRJ", '"' + projectId + '"'
+        resValue "string", "test_prj", property("ANALYTICS_ACC")
+        buildConfigField "int", "ANALYTICS_ACC", '"' + property("ANALYTICS_ACC") + '"'
+        buildConfigField "int", "ANALYTICS_AID", '"' + property("ANALYTICS_AID") + '"'
     }
 
     compileOptions {
