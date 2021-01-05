@@ -11,8 +11,8 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
-        buildConfigField "int", "ANALYTICS_ACC", property("ANALYTICS_ACC") ?: 0
-        buildConfigField "int", "ANALYTICS_AID", property("ANALYTICS_AID") ?: 0
+        buildConfigField "String", "ANALYTICS_ACC", property("ANALYTICS_ACC") ?: ""
+        buildConfigField "String", "ANALYTICS_AID", property("ANALYTICS_AID") ?: ""
     }
 
     compileOptions {
