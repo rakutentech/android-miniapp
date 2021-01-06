@@ -37,7 +37,7 @@ open class BridgeCommon {
                 miniAppPermissionType: MiniAppPermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) {
-                onRequestPermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
+                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
             }
 
             override fun shareContent(
@@ -57,7 +57,7 @@ open class BridgeCommon {
             miniAppPermissionType: MiniAppPermissionType,
             callback: (isGranted: Boolean) -> Unit
         ) {
-            onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+            onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
         }
     }
 
@@ -87,7 +87,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
-        param = Gson().toJson(Permission(MiniAppPermissionType.LOCATION.type)),
+        param = Gson().toJson(DevicePermission(MiniAppPermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
@@ -126,7 +126,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor, times(1))
-            .postValue(permissionCallbackObj.id, MiniAppPermissionResult.getValue(isPermissionGranted).type)
+            .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(isPermissionGranted).type)
     }
 
     @Test
@@ -134,7 +134,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor, times(1))
-            .postError(permissionCallbackObj.id, MiniAppPermissionResult.getValue(false).type)
+            .postError(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(false).type)
     }
 
     @Test

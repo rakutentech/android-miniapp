@@ -201,7 +201,8 @@ There are some methods have a default implementation but the host app can overri
 | Method                       | Default  |
 |------------------------------|----------|
 | getUniqueId                  | 🚫       |
-| requestPermission            | 🚫       |
+| requestPermission            | ✅       |
+| requestDevicePermission      | ✅       |
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 
@@ -233,6 +234,16 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
 
     override fun requestPermission(
         miniAppPermissionType: MiniAppPermissionType,
+        callback: (isGranted: Boolean) -> Unit
+    ) {
+        // Implementation details to request device permission for location
+        // .. .. ..
+
+        callback.invoke(true)
+    }
+
+    override fun requestDevicePermission(
+        miniAppPermissionType: MiniAppDevicePermissionType,
         callback: (isGranted: Boolean) -> Unit
     ) {
         // Implementation details to request device permission for location
@@ -331,10 +342,12 @@ Your App should provide an ID to the mini app which is unique to each user or de
 ### Device Permission Requests
 
 **API Docs:** [MiniAppMessageBridge.requestPermission](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-permission.html)
+**API Docs:** [MiniAppMessageBridge.requestDevicePermission](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-permission.html)
 
 The mini app is able to request some device permissions. Your App should be able to handle requests from the mini app for the following device permissions by ensuring that the Android permission dialog is displayed. Alternatively, if your App is not able to request certain device permissions, you can just deny that permission to all mini apps.
 
-- Location (`MiniAppPermissionType.LOCATION`)
+- Location (`MiniAppPermissionType.LOCATION`) (`MiniAppPermissionType` has been deprecated)
+- Location (`MiniAppDevicePermissionType.LOCATION`)
 
 ### Custom Permission Requests
 **API Docs:** [MiniAppMessageBridge.requestCustomPermissions](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
