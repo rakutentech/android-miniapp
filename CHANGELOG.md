@@ -6,7 +6,7 @@
 - **Deprecated:** Old `getUserName`, `getProfilePhoto` interfaces.
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
 - **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
-- **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and it's no longer mandatory to implement to declare `MiniAppMessageBridge` object.
+- **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and it's no longer mandatory to implement when declaring `MiniAppMessageBridge` object.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
