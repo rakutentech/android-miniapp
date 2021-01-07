@@ -10,6 +10,7 @@
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
 - **Feature:** Added input option in settings screen to keep query parameters to be passed using `MiniApp.create` and `MiniApp.createWithUrl`.
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
+- **Fix:** Correct the group and order display of miniapp list.
 
 ### 2.7.1 (2020-12-23)
 **SDK**
