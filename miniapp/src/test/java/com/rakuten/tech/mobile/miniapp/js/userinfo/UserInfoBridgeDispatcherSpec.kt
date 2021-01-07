@@ -380,7 +380,14 @@ class UserInfoBridgeDispatcherSpec {
                 miniAppPermissionType: MiniAppPermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) {
-                onRequestPermissionsResult(TEST_CALLBACK_ID, false)
+                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
+            }
+
+            override fun requestDevicePermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
             }
         }
 }

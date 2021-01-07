@@ -13,10 +13,13 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
 @Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
@@ -251,6 +254,7 @@ abstract class MiniAppMessageBridge {
     }
 
     @VisibleForTesting
+    @Suppress("FunctionMaxLength")
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestDevicePermissionsResult(callbackId: String, isGranted: Boolean) {
         if (isGranted)
@@ -272,19 +276,17 @@ abstract class MiniAppMessageBridge {
 }
 
 internal object ErrorBridgeMessage {
+    private const val METHOD_NOT_IMPLEMENTED = " method has not been implemented by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_PERMISSION = "Cannot request permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_PERMISSION =
-        "The `MiniAppMessageBridge.requestPermission`" +
-                " method has not been implemented by the Host App."
+        "The `MiniAppMessageBridge.requestPermission`$METHOD_NOT_IMPLEMENTED"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =
-        "The `MiniAppMessageBridge.requestDevicePermission`" +
-                " method has not been implemented by the Host App."
+        "The `MiniAppMessageBridge.requestDevicePermission`$METHOD_NOT_IMPLEMENTED"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
-        "The `MiniAppMessageBridge.requestCustomPermissions`" +
-                " method has not been implemented by the Host App."
+        "The `MiniAppMessageBridge.requestCustomPermissions`$METHOD_NOT_IMPLEMENTED"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
