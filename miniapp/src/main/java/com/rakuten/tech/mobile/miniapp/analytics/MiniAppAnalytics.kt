@@ -32,13 +32,15 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
         params["aid"] = BuildConfig.ANALYTICS_AID
 
         params["actype"] = actype.value
+
+        val cp = JSONObject()
+            .put("mini_app_project_id", rasProjectId)
+            .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
         if (miniAppInfo != null) {
-            params["cp"] = JSONObject()
-                .put("mini_app_project_id", rasProjectId)
-                .put("mini_app_id", miniAppInfo.id)
-                .put("mini_app_version_id", miniAppInfo.version.versionId)
-                .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
+            cp.put("mini_app_id", miniAppInfo.id)
+              .put("mini_app_version_id", miniAppInfo.version.versionId)
         }
+        params["cp"] = cp
 
         RatTracker.event(eType.value, params).track()
     }
