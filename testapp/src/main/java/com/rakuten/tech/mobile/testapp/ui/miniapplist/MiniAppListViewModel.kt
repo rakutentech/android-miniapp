@@ -31,7 +31,7 @@ class MiniAppListViewModel constructor(
     fun getMiniAppList() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val miniAppsList = miniapp.listMiniApp()
-            _miniAppListData.postValue(miniAppsList)
+            _miniAppListData.postValue(miniAppsList.sortedBy { it.id })
         } catch (error: MiniAppSdkException) {
             _errorData.postValue(error.message)
         }
