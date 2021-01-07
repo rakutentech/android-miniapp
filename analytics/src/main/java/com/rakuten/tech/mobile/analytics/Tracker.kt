@@ -5,8 +5,7 @@ class Event(name: String, parameters: Map<String, Any>) {
     fun track() {}
 }
 
-class RatTracker {
-    companion object {
-        fun event(name: String, parameters: Map<String, Any>) = Event(name, parameters)
-    }
+object RatTracker {
+    @JvmStatic
+    fun event(name: String, parameters: Map<String, Any>) = Event(name, parameters)
 }
