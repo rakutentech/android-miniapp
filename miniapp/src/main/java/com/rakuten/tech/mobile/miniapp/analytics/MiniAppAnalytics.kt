@@ -37,6 +37,7 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
                 .put("mini_app_project_id", rasProjectId)
                 .put("mini_app_id", miniAppInfo.id)
                 .put("mini_app_version_id", miniAppInfo.version.versionId)
+                .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
         }
 
         RatTracker.event(eType.value, params).track()
