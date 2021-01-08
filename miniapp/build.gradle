@@ -4,10 +4,15 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    def numProperty = { key ->
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "0")
+    }
 
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
+        buildConfigField "int", "ANALYTICS_ACC", numProperty("ANALYTICS_ACC")
+        buildConfigField "int", "ANALYTICS_AID", numProperty("ANALYTICS_AID")
     }
 
     compileOptions {
@@ -42,6 +47,7 @@ afterEvaluate {
 
 dependencies {
     compileOnly "javax.annotation:jsr250-api:$jsr250"
+    compileOnly project(':analytics')
 
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.webkit:webkit:$webkit"
@@ -75,6 +81,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
+    testImplementation project(':analytics')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
