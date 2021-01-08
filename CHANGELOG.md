@@ -3,6 +3,7 @@
 ### 2.X.X (In progress)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
+- **Feature:** Support analytics SDK with event tracking.
 - **Deprecated:** Old `getUserName`, `getProfilePhoto` interfaces.
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
 

@@ -11,6 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.analytics.Actype
+import com.rakuten.tech.mobile.miniapp.analytics.Etype
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -34,6 +37,8 @@ internal class RealMiniAppDisplay(
         private set
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
+    @VisibleForTesting
+    internal fun getMiniAppAnalytics() = MiniAppAnalytics.instance
 
     constructor(
         context: Context,
@@ -61,11 +66,23 @@ internal class RealMiniAppDisplay(
     // not rendered successfully in the mini app e.g. select tags
     override suspend fun getMiniAppView(activityContext: Context): View? =
         if (isContextValid(activityContext)) {
+            // send analytics tracking when Host App displays a mini app.
+            getMiniAppAnalytics()?.sendAnalytics(
+                eType = Etype.CLICK,
+                actype = Actype.OPEN,
+                miniAppInfo = miniAppInfo
+            )
             provideMiniAppWebView(activityContext)
         } else throw sdkExceptionForNoActivityContext()
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
+        // send analytics tracking when mini app is closed.
+        getMiniAppAnalytics()?.sendAnalytics(
+            eType = Etype.CLICK,
+            actype = Actype.CLOSE,
+            miniAppInfo = miniAppInfo
+        )
         miniAppWebView?.destroyView()
         miniAppWebView = null
     }
