@@ -128,7 +128,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `postValue should be called when permission is granted`() {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_PERMISSION} null")
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
             activity = TestActivity(),

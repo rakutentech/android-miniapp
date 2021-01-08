@@ -4,15 +4,7 @@ import androidx.annotation.Keep
 
 /** Type of miniapp permission. **/
 @Deprecated("Use MiniAppDevicePermissionType instead")
-enum class MiniAppPermissionType(val type: String) {
-    UNKNOWN("unknown"),
-    LOCATION("location");
-
-    internal companion object {
-
-        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
-    }
-}
+typealias MiniAppPermissionType = MiniAppDevicePermissionType
 
 /** Type of miniapp device permission. **/
 enum class MiniAppDevicePermissionType(val type: String) {

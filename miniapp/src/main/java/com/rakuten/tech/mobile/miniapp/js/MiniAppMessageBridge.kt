@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -12,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.PermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -137,8 +139,7 @@ abstract class MiniAppMessageBridge {
 
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
-            ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
-            ActionType.REQUEST_DEVICE_PERMISSION.action -> onRequestDevicePermission(callbackObj)
+            ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
@@ -186,7 +187,10 @@ abstract class MiniAppMessageBridge {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
+            bridgeExecutor.postError(
+                callbackObj.id,
+                "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
+            )
         }
     }
 
@@ -204,7 +208,11 @@ abstract class MiniAppMessageBridge {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
+            if (e.message.toString().contains(NO_IMPL)) onRequestPermission(callbackObj)
+            else bridgeExecutor.postError(
+                callbackObj.id,
+                "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
+            )
         }
     }
 
@@ -276,17 +284,17 @@ abstract class MiniAppMessageBridge {
 }
 
 internal object ErrorBridgeMessage {
-    private const val METHOD_NOT_IMPLEMENTED = " method has not been implemented by the Host App."
+    const val NO_IMPL = "method has not been implemented by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
-    const val ERR_REQ_PERMISSION = "Cannot request permission:"
+    const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_PERMISSION =
-        "The `MiniAppMessageBridge.requestPermission`$METHOD_NOT_IMPLEMENTED"
+        "The `MiniAppMessageBridge.requestPermission` $NO_IMPL"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =
-        "The `MiniAppMessageBridge.requestDevicePermission`$METHOD_NOT_IMPLEMENTED"
+        "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
-        "The `MiniAppMessageBridge.requestCustomPermissions`$METHOD_NOT_IMPLEMENTED"
+        "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
