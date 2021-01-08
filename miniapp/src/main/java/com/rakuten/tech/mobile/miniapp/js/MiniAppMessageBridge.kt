@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -13,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.PermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -208,7 +207,7 @@ abstract class MiniAppMessageBridge {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            if (e.message.toString().contains(NO_IMPL)) onRequestPermission(callbackObj)
+            if (e.message.toString().contains(NO_IMPLEMENT_DEVICE_PERMISSION)) onRequestPermission(callbackObj)
             else bridgeExecutor.postError(
                 callbackObj.id,
                 "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"

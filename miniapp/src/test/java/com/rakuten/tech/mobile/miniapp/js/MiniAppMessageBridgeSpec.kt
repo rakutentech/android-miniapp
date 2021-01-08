@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import kotlin.test.assertEquals
 
 @Suppress("TooGenericExceptionThrown")
 open class BridgeCommon {
@@ -75,6 +76,25 @@ open class BridgeCommon {
         }
     }
 
+    protected fun createDevicePermissionBridge(isImplementation: Boolean): MiniAppMessageBridge {
+        if (isImplementation) {
+            return object : MiniAppMessageBridge() {
+                override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+                override fun requestPermission(
+                    miniAppPermissionType: MiniAppPermissionType,
+                    callback: (isGranted: Boolean) -> Unit
+                ) {
+                    onRequestDevicePermissionsResult(TEST_CALLBACK_ID, true)
+                }
+            }
+        } else {
+            return object : MiniAppMessageBridge() {
+                override fun getUniqueId() = TEST_CALLBACK_VALUE
+            }
+        }
+    }
+
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
             override fun runSuccessCallback(callbackId: String, value: String) {
@@ -101,7 +121,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
-        param = Gson().toJson(DevicePermission(MiniAppPermissionType.LOCATION.type)),
+        param = Gson().toJson(DevicePermission(MiniAppDevicePermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
@@ -124,8 +144,46 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
+    /** region: device permission */
     @Test
-    fun `postValue should be called when permission is granted`() {
+    fun `postError should be called when there is no device permission interface implementation`() {
+        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(false))
+        val errMsg = "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION}" +
+                " The `MiniAppMessageBridge.requestPermission` ${ErrorBridgeMessage.NO_IMPL}"
+        val webViewListener = createErrorWebViewListener("dummy message")
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(bridgeExecutor, times(1)).postError(permissionCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when device permission is granted in deprecated function`() {
+        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(true))
+        val webViewListener = createErrorWebViewListener("dummy message")
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(bridgeExecutor, times(1))
+            .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(true).type)
+    }
+
+    @Test
+    fun `postValue should be called when device permission is granted`() {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
         val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
@@ -144,12 +202,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `postError should be called when permission is denied`() {
+    fun `postError should be called when device permission is denied`() {
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor, times(1))
             .postError(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(false).type)
     }
+    /** end region */
 
     @Test
     fun `postValue should not be called when calling postError`() {
@@ -173,6 +232,22 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
         verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `all error bridge messages should be expected`() {
+        assertEquals("method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
+        assertEquals("No support from hostapp", ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP)
+        assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
+        assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
+        assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
+        assertEquals("The `MiniAppMessageBridge.requestPermission` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION)
+        assertEquals("The `MiniAppMessageBridge.requestDevicePermission` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION)
+        assertEquals("The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
+        assertEquals("Cannot share content:", ErrorBridgeMessage.ERR_SHARE_CONTENT)
+        assertEquals("Cannot load ad:", ErrorBridgeMessage.ERR_LOAD_AD)
+        assertEquals("Cannot show ad:", ErrorBridgeMessage.ERR_SHOW_AD)
+        assertEquals("Cannot request screen action:", ErrorBridgeMessage.ERR_SCREEN_ACTION)
     }
 }
 

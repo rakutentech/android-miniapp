@@ -201,8 +201,8 @@ There are some methods have a default implementation but the host app can overri
 | Method                       | Default  |
 |------------------------------|----------|
 | getUniqueId                  | 🚫       |
-| requestPermission            | ✅       |
-| requestDevicePermission      | ✅       |
+| requestPermission            | 🚫       |
+| requestDevicePermission      | 🚫       |
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 
@@ -230,16 +230,6 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // .. .. ..
 
         return id
-    }
-
-    override fun requestPermission(
-        miniAppPermissionType: MiniAppPermissionType,
-        callback: (isGranted: Boolean) -> Unit
-    ) {
-        // Implementation details to request device permission for location
-        // .. .. ..
-
-        callback.invoke(true)
     }
 
     override fun requestDevicePermission(
