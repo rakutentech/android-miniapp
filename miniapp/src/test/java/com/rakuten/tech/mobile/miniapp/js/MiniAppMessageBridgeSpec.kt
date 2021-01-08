@@ -241,9 +241,18 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
         assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
         assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
-        assertEquals("The `MiniAppMessageBridge.requestPermission` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION)
-        assertEquals("The `MiniAppMessageBridge.requestDevicePermission` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION)
-        assertEquals("The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
+        assertEquals(
+            "The `MiniAppMessageBridge.requestPermission` method has not been implemented by the Host App.",
+            ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION
+        )
+        assertEquals(
+            "The `MiniAppMessageBridge.requestDevicePermission` method has not been implemented by the Host App.",
+            ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
+        )
+        assertEquals(
+            "The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.",
+            ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
+        )
         assertEquals("Cannot share content:", ErrorBridgeMessage.ERR_SHARE_CONTENT)
         assertEquals("Cannot load ad:", ErrorBridgeMessage.ERR_LOAD_AD)
         assertEquals("Cannot show ad:", ErrorBridgeMessage.ERR_SHOW_AD)
