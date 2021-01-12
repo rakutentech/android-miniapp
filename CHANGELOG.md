@@ -6,12 +6,15 @@
 - **Feature:** Support analytics SDK with event tracking.
 - **Deprecated:** Old `getUserName`, `getProfilePhoto` interfaces.
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
+- **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
+- **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
 - **Feature:** Added input option in settings screen to keep query parameters to be passed using `MiniApp.create` and `MiniApp.createWithUrl`.
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
+- **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
 
 ### 2.7.1 (2020-12-23)
 **SDK**
