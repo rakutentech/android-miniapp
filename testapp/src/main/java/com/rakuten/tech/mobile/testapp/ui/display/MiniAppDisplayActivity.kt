@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
@@ -19,9 +20,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -141,6 +140,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     }
 
     private fun setupMiniAppMessageBridge() {
+        // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
             override fun getUniqueId() = AppSettings.instance.uniqueId
 
@@ -160,6 +160,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
         miniAppMessageBridge.allowScreenOrientation(true)
 
+        // setup UserInfoBridgeDispatcher
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
             override fun getUserName(
@@ -214,6 +215,24 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
+
+        // setup ChatMessageBridgeDispatcher
+        val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+
+            override fun sendMessageToContact(
+                message: MessageToContact,
+                onSuccess: (contactId: String?) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                Log.d("trace_contact",""+message.toString())
+
+                if (message.isEmpty) {
+                    onError("Message is empty!")
+                    return
+                }
+                onSuccess("democontactid")
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(
