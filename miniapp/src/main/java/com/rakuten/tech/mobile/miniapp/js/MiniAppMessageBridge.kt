@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
+import com.rakuten.tech.mobile.miniapp.js.userinfo.ChatMessageBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -34,6 +35,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
+    private lateinit var chatMessageBridgeDispatcher: ChatMessageBridgeDispatcher
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -65,6 +67,9 @@ abstract class MiniAppMessageBridge {
         if (this::userInfoBridgeDispatcher.isInitialized)
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
         else this.userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {}
+
+        if (this::chatMessageBridgeDispatcher.isInitialized)
+            this.chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -148,6 +153,9 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
             ActionType.GET_CONTACTS.action -> userInfoBridgeDispatcher.onGetContacts(callbackObj.id)
+            ActionType.SEND_MESSAGE_TO_CONTACT.action -> chatMessageBridgeDispatcher.onSendMessageToContact(
+                callbackObj.id, jsonStr
+            )
         }
     }
 
@@ -162,6 +170,16 @@ abstract class MiniAppMessageBridge {
         userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
             userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+    }
+
+    /**
+     * Set implemented chatMessageBridgeDispatcher.
+     * Can use the default provided class from sdk [ChatMessageBridgeDispatcher].
+     **/
+    fun setChatMessageBridgeDispatcher(bridgeDispatcher: ChatMessageBridgeDispatcher) {
+        chatMessageBridgeDispatcher = bridgeDispatcher
+        if (miniAppViewInitialized)
+            chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
