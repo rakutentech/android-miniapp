@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.js.userinfo.MessageToContact
 
 @Keep
 internal data class CallbackObj(
@@ -61,4 +62,13 @@ internal data class AdCallbackObj(val param: AdObj)
 // action response region
 internal const val SUCCESS = "success"
 internal const val CLOSED = "closed"
+// end region
+
+// send contact region
+@Keep
+internal data class SendContactCallbackObj(val param: MessageParam) {
+
+    @Keep
+    internal data class MessageParam(val messageToContact: MessageToContact)
+}
 // end region
