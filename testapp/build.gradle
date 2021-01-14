@@ -88,6 +88,14 @@ android {
 
             manifestPlaceholders = stagingManifestPlaceholders
         }
+        rc {
+            initWith release
+            applicationIdSuffix '.rc'
+            versionNameSuffix "-RC-build-$buildVersion"
+            matchingFallbacks = ['release', 'debug']
+
+            manifestPlaceholders = stagingManifestPlaceholders
+        }
     }
 
     dataBinding {

@@ -12,8 +12,8 @@ class MiniAppPermissionSpec {
 
     @Test
     fun `should get the correct value of permission result`() {
-        MiniAppPermissionResult.getValue(true) shouldBe MiniAppPermissionResult.ALLOWED
-        MiniAppPermissionResult.getValue(false) shouldBe MiniAppPermissionResult.DENIED
+        MiniAppDevicePermissionResult.getValue(true) shouldBe MiniAppDevicePermissionResult.ALLOWED
+        MiniAppDevicePermissionResult.getValue(false) shouldBe MiniAppDevicePermissionResult.DENIED
     }
 
     @Test
