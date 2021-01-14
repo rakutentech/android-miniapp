@@ -22,8 +22,8 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
@@ -144,15 +144,15 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge = object : MiniAppMessageBridge() {
             override fun getUniqueId() = AppSettings.instance.uniqueId
 
-            override fun requestPermission(
-                miniAppPermissionType: MiniAppPermissionType,
+            override fun requestDevicePermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) {
                 miniappPermissionCallback = callback
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
-                    AppPermission.getPermissionRequest(miniAppPermissionType),
-                    AppPermission.getRequestCode(miniAppPermissionType)
+                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
         }

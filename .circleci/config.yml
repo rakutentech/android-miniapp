@@ -83,7 +83,7 @@ workflows:
               ignore: /.*/
       - app-center/publish:
           name: deploy-test-app-candidate
-          group: "Release Candidate"
+          group: Release_Candidate
           file: apk/staging/testapp-staging.apk
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN

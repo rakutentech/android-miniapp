@@ -106,7 +106,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `should start with corrected load url format`() {
-        miniAppWebView.getLoadUrl() shouldEqual "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html?$TEST_URL_PARAMS"
+        miniAppWebView.getLoadUrl() shouldEqual
+                "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html?$TEST_URL_PARAMS"
     }
 
     @Test

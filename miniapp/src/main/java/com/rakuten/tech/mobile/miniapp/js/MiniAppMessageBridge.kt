@@ -7,16 +7,20 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.PermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 
 @Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
@@ -75,10 +79,21 @@ abstract class MiniAppMessageBridge {
     abstract fun getUniqueId(): String
 
     /** Post permission request from external. **/
-    abstract fun requestPermission(
+    @Deprecated("Use requestDevicePermission instead")
+    open fun requestPermission(
         miniAppPermissionType: MiniAppPermissionType,
         callback: (isGranted: Boolean) -> Unit
-    )
+    ) {
+        throw PermissionsNotImplementedException()
+    }
+
+    /** Post device permission request from external. **/
+    open fun requestDevicePermission(
+        miniAppPermissionType: MiniAppDevicePermissionType,
+        callback: (isGranted: Boolean) -> Unit
+    ) {
+        throw DevicePermissionsNotImplementedException()
+    }
 
     /**
      * Post custom permissions request.
@@ -123,7 +138,7 @@ abstract class MiniAppMessageBridge {
 
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
-            ActionType.REQUEST_PERMISSION.action -> onRequestPermission(callbackObj)
+            ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
@@ -159,19 +174,44 @@ abstract class MiniAppMessageBridge {
 
     private fun onRequestPermission(callbackObj: CallbackObj) {
         try {
-            val permissionParam = Gson().fromJson<Permission>(
+            val permissionParam = Gson().fromJson<DevicePermission>(
                 callbackObj.param.toString(),
-                object : TypeToken<Permission>() {}.type
+                object : TypeToken<DevicePermission>() {}.type
             )
 
             requestPermission(
                 MiniAppPermissionType.getValue(permissionParam.permission)
-            ) { isGranted -> onRequestPermissionsResult(
+            ) { isGranted -> onRequestDevicePermissionsResult(
                 callbackId = callbackObj.id,
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_REQ_PERMISSION} ${e.message}")
+            bridgeExecutor.postError(
+                callbackObj.id,
+                "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
+            )
+        }
+    }
+
+    private fun onRequestDevicePermission(callbackObj: CallbackObj) {
+        try {
+            val permissionParam = Gson().fromJson<DevicePermission>(
+                callbackObj.param.toString(),
+                object : TypeToken<DevicePermission>() {}.type
+            )
+
+            requestDevicePermission(
+                MiniAppDevicePermissionType.getValue(permissionParam.permission)
+            ) { isGranted -> onRequestDevicePermissionsResult(
+                callbackId = callbackObj.id,
+                isGranted = isGranted
+            ) }
+        } catch (e: Exception) {
+            if (e.message.toString().contains(NO_IMPLEMENT_DEVICE_PERMISSION)) onRequestPermission(callbackObj)
+            else bridgeExecutor.postError(
+                callbackObj.id,
+                "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
+            )
         }
     }
 
@@ -221,12 +261,13 @@ abstract class MiniAppMessageBridge {
     }
 
     @VisibleForTesting
+    @Suppress("FunctionMaxLength")
     /** Inform the permission request result to MiniApp. **/
-    internal fun onRequestPermissionsResult(callbackId: String, isGranted: Boolean) {
+    internal fun onRequestDevicePermissionsResult(callbackId: String, isGranted: Boolean) {
         if (isGranted)
-            bridgeExecutor.postValue(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postValue(callbackId, MiniAppDevicePermissionResult.getValue(isGranted).type)
         else
-            bridgeExecutor.postError(callbackId, MiniAppPermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postError(callbackId, MiniAppDevicePermissionResult.getValue(isGranted).type)
     }
 
     internal fun onWebViewDetach() {
@@ -242,13 +283,17 @@ abstract class MiniAppMessageBridge {
 }
 
 internal object ErrorBridgeMessage {
+    const val NO_IMPL = "method has not been implemented by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
-    const val ERR_REQ_PERMISSION = "Cannot request permission:"
+    const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
+    const val NO_IMPLEMENT_PERMISSION =
+        "The `MiniAppMessageBridge.requestPermission` $NO_IMPL"
+    const val NO_IMPLEMENT_DEVICE_PERMISSION =
+        "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
-        "The `MiniAppMessageBridge.requestCustomPermissions`" +
-                " method has not been implemented by the Host App."
+        "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"

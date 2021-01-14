@@ -3,7 +3,11 @@ package com.rakuten.tech.mobile.miniapp.permission
 import androidx.annotation.Keep
 
 /** Type of miniapp permission. **/
-enum class MiniAppPermissionType(val type: String) {
+@Deprecated("Use MiniAppDevicePermissionType instead")
+typealias MiniAppPermissionType = MiniAppDevicePermissionType
+
+/** Type of miniapp device permission. **/
+enum class MiniAppDevicePermissionType(val type: String) {
     UNKNOWN("unknown"),
     LOCATION("location");
 
@@ -28,7 +32,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
     }
 }
 
-internal enum class MiniAppPermissionResult(val type: String) {
+internal enum class MiniAppDevicePermissionResult(val type: String) {
     ALLOWED("Allowed"),
     DENIED("Denied");
 

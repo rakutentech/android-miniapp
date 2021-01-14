@@ -2,13 +2,13 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import android.net.Uri
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
 @RunWith(AndroidJUnit4::class)
 class MiniappSdkInitializerSpec {

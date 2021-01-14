@@ -8,6 +8,9 @@ import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig
 import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
+import com.rakuten.tech.mobile.miniapp.analytics.Actype
+import com.rakuten.tech.mobile.miniapp.analytics.Etype
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 
 /**
  * This initializes the SDK module automatically as the Content Providers are initialized
@@ -75,18 +78,35 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
-            miniAppSdkConfig = MiniAppSdkConfig(
-                baseUrl = manifestConfig.baseUrl(),
-                rasProjectId = backwardCompatibleHostId,
-                rasAppId = manifestConfig.rasAppId(),
-                subscriptionKey = manifestConfig.subscriptionKey(),
-                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-                isPreviewMode = manifestConfig.isPreviewMode(),
-                isTestMode = manifestConfig.isTestMode()
-            )
+            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig, backwardCompatibleHostId)
         )
 
+        // init and send analytics tracking when Host App is launched with miniapp sdk.
+        executeMiniAppAnalytics(backwardCompatibleHostId)
+
         return true
+    }
+
+    private fun createMiniAppSdkConfig(
+        manifestConfig: AppManifestConfig,
+        backwardCompatibleHostId: String
+    ): MiniAppSdkConfig = MiniAppSdkConfig(
+        baseUrl = manifestConfig.baseUrl(),
+        rasProjectId = backwardCompatibleHostId,
+        rasAppId = manifestConfig.rasAppId(),
+        subscriptionKey = manifestConfig.subscriptionKey(),
+        hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+        isPreviewMode = manifestConfig.isPreviewMode(),
+        isTestMode = manifestConfig.isTestMode()
+    )
+
+    private fun executeMiniAppAnalytics(backwardCompatibleHostId: String) {
+        MiniAppAnalytics.init(rasProjectId = backwardCompatibleHostId)
+        MiniAppAnalytics.instance?.sendAnalytics(
+            eType = Etype.APPEAR,
+            actype = Actype.HOST_LAUNCH,
+            miniAppInfo = null
+        )
     }
 
     @VisibleForTesting
