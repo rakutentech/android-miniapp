@@ -8,6 +8,8 @@
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
 - **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
 - **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
+- **Feature:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
+- **Feature:** Added `sendMessageToContact` interface in `ChatMessageBridgeDispatcher` for sending message to a single contact.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
@@ -15,6 +17,7 @@
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
+- **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
 
 ### 2.7.1 (2020-12-23)
 **SDK**

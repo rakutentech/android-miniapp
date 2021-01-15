@@ -8,19 +8,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.js.userinfo.MessageToContact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-class ContactSelectionWindow(private val activity: Activity) : CoroutineScope,
+class ContactSelectionWindow(private val activity: Activity) :
     ContactSelectionAdapter.ContactSelectionListener {
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     lateinit var contactSelectionAlertDialog: AlertDialog
 
@@ -28,24 +22,31 @@ class ContactSelectionWindow(private val activity: Activity) : CoroutineScope,
     private lateinit var contactSelectionLayout: View
 
     private val hasContact = AppSettings.instance.isContactsSaved
-    private var selectedContactId: String = ""
 
-    fun getSingleContactId(): String {
+    private lateinit var message: MessageToContact
+    private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
+    private lateinit var onErrorSingleContact: (message: String) -> Unit
+
+    fun openSingleContactSelection(
+        message: MessageToContact,
+        onSuccess: (contactId: String?) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
         if (!hasContact) {
-            showAlertDialog(activity, "There is no contact found in HostApp.")
-            return ""
+            showAlertDialog(activity, "There is no contact found saved in HostApp.")
+            return
         }
 
-        launch {
-            // initialize contact selection view
-            initDefaultWindow()
-            prepareDataForAdapter()
+        this.message = message
+        this.onSuccessSingleContact = onSuccess
+        this.onErrorSingleContact = onError
 
-            // preview dialog
-            contactSelectionAlertDialog.show()
-        }
+        // initialize contact selection view
+        initDefaultWindow()
+        prepareDataForAdapter()
 
-        return selectedContactId
+        // preview dialog
+        contactSelectionAlertDialog.show()
     }
 
     private fun initDefaultWindow() {
@@ -64,7 +65,6 @@ class ContactSelectionWindow(private val activity: Activity) : CoroutineScope,
         contactSelectionAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_ContactSelectionDialog).create()
         contactSelectionAlertDialog.setView(contactSelectionLayout)
-
         contactSelectionLayout.findViewById<ImageView>(R.id.contactCloseWindow).setOnClickListener {
             contactSelectionAlertDialog.dismiss()
         }
@@ -75,6 +75,16 @@ class ContactSelectionWindow(private val activity: Activity) : CoroutineScope,
     }
 
     override fun onContactSelect(contactId: String) {
-        selectedContactId = contactId
+        if (contactId.isEmpty()) {
+            onErrorSingleContact("There is no contact found in HostApp.")
+        } else {
+            onSuccessSingleContact(contactId)
+            showAlertDialog(
+                activity,
+                "The message: ${message.title} has been sent to contact id: $contactId"
+            )
+        }
+
+        contactSelectionAlertDialog.dismiss()
     }
 }

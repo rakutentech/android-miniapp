@@ -170,7 +170,7 @@ private class Settings(context: Context) {
             prefs.edit().putString(CONTACT_NAMES, Gson().toJson(contactNames)).apply()
 
     val isContactsSaved: Boolean
-        get() = prefs.contains(CONTACT_NAMES)
+        get() = prefs.contains(CONTACT_NAMES) && !contactNames.isNullOrEmpty()
 
     var urlParameters: String?
         get() = prefs.getString(URL_PARAMETERS, null)

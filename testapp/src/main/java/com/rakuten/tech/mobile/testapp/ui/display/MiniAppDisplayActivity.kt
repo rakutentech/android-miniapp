@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
@@ -26,7 +25,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ContactSelectionWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -227,17 +225,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onError: (message: String) -> Unit
             ) {
                 val contactSelectionWindow = ContactSelectionWindow(this@MiniAppDisplayActivity)
-                val singleContact = contactSelectionWindow.getSingleContactId()
-
-                if (singleContact.isEmpty()) {
-                    onError("There is no contact found in HostApp.")
-                } else {
-                    onSuccess(singleContact)
-                    showAlertDialog(
-                        this@MiniAppDisplayActivity,
-                        "The message has been sent to contact id: $singleContact"
-                    )
-                }
+                contactSelectionWindow.openSingleContactSelection(message, onSuccess, onError)
             }
         }
         miniAppMessageBridge.setChatMessageBridgeDispatcher(chatMessageBridgeDispatcher)

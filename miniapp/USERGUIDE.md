@@ -215,6 +215,12 @@ The `UserInfoBridgeDispatcher`:
 | getAccessToken               | 🚫       |
 | getContacts                  | 🚫       |
 
+The `ChatMessageBridgeDispatcher`:
+
+| Method                       | Default  |
+|------------------------------|----------|
+| sendMessageToContact         | 🚫       |
+
 The sections below explain each feature in more detail. 
 
 The following is a full code example of using `MiniAppMessageBridge`.
@@ -321,6 +327,29 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 
 // set UserInfoBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
+
+val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+
+    override fun sendMessageToContact(
+        message: MessageToContact,
+        onSuccess: (contactId: String?) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // Check if there is any contact id in HostApp
+        // .. .. ..
+        if (hasContact) {
+            // Show contact selection UI for picking a single contact.
+            // .. .. ..
+            onSuccess(contactId) // allow miniapp to invoke the contact id where message has been sent.
+            // Show a confirmation UI that the message has been sent to the contact id.
+        }
+        else
+            onError(message) // reject miniapp to send message with message explanation.
+    }
+}
+
+// set ChatMessageBridgeDispatcher object to miniAppMessageBridge
+miniAppMessageBridge.setChatMessageBridgeDispatcher(chatMessageBridgeDispatcher)
 ```
 </details>
 
@@ -366,7 +395,6 @@ The following user data types are supported. If your App does not support a cert
 - User name: string representing the user's name. See [UserInfoBridgeDispatcher.getUserName](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-user-name.html)
 - Profile photo: URL pointing to a photo. This can also be a Base64 data string. See [UserInfoBridgeDispatcher.getProfilePhoto](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-profile-photo.html)
 - Access Token (does not currenlty have a custom permission type): OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
-
 
 ### Ads Integration
 **API Docs:** [MiniAppMessageBridge.setAdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-ad-mob-displayer.html)
@@ -449,6 +477,12 @@ CoroutineScope(Dispatchers.IO).launch {
     }
 }
 ```
+
+### Send message to contacts
+
+**API Docs:** [MiniAppMessageBridge.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/)
+
+The mini app is able to send message to a single contact.
 
 ## Advanced Features
 
