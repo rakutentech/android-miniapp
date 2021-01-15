@@ -75,14 +75,18 @@ class ContactSelectionWindow(private val activity: Activity) :
     }
 
     override fun onContactSelect(contactId: String) {
-        if (contactId.isEmpty()) {
-            onErrorSingleContact("There is no contact found in HostApp.")
-        } else {
-            onSuccessSingleContact(contactId)
-            showAlertDialog(
-                activity,
-                "The message: ${message.title} has been sent to contact id: $contactId"
-            )
+        when {
+            message.isEmpty -> onErrorSingleContact("The message sent was empty.")
+            contactId.isEmpty() -> {
+                onErrorSingleContact("There is no contact found in HostApp.")
+            }
+            else -> {
+                onSuccessSingleContact(contactId)
+                showAlertDialog(
+                    activity,
+                    "The message: ${message.title} has been sent to contact id: $contactId"
+                )
+            }
         }
 
         contactSelectionAlertDialog.dismiss()

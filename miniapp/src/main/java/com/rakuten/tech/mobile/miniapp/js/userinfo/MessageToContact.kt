@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.annotation.Keep
 
+/** An object to prepare the message for sending to contacts. */
 @Keep
 data class MessageToContact(
     val image: String,
@@ -10,6 +11,7 @@ data class MessageToContact(
     val action: String,
     val title: String
 ) {
-    val isEmpty =
+    /** Returns true when all the properties are empty, otherwise returns true. */
+    val isEmpty: Boolean =
         image.isEmpty() && text.isEmpty() && caption.isEmpty() && action.isEmpty() && title.isEmpty()
 }

@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 /**
  * Functionality related to Chat/Messaging. These methods should be implemented by the Host App.
  */
+@Suppress("TooGenericExceptionCaught")
 abstract class ChatMessageBridgeDispatcher {
 
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
