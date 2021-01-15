@@ -19,7 +19,7 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.contactName.text = contactEntries[position]
+        holder.contactId.text = contactEntries[position]
         holder.contactRemoveButton.setOnClickListener { removeContactAt(position) }
     }
 
@@ -44,7 +44,7 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     override fun provideContactEntries() = contactEntries
 
     inner class ViewHolder(itemView: ItemListContactBinding) : RecyclerView.ViewHolder(itemView.root) {
-        val contactName: AppCompatTextView = itemView.textContact
+        val contactId: AppCompatTextView = itemView.textContact
         val contactRemoveButton: ImageView = itemView.buttonRemoveContact
     }
 }

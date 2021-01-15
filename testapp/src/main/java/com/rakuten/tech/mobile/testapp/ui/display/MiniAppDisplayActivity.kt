@@ -26,7 +26,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.chat.ContactSelectionWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.ArrayList
 
@@ -224,15 +226,21 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onSuccess: (contactId: String?) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                Log.d("trace_contact",""+message.toString())
+                val contactSelectionWindow = ContactSelectionWindow(this@MiniAppDisplayActivity)
+                val singleContact = contactSelectionWindow.getSingleContactId()
 
-                if (message.isEmpty) {
-                    onError("Message is empty!")
-                    return
+                if (singleContact.isEmpty()) {
+                    onError("There is no contact found in HostApp.")
+                } else {
+                    onSuccess(singleContact)
+                    showAlertDialog(
+                        this@MiniAppDisplayActivity,
+                        "The message has been sent to contact id: $singleContact"
+                    )
                 }
-                onSuccess("democontactid")
             }
         }
+        miniAppMessageBridge.setChatMessageBridgeDispatcher(chatMessageBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(
