@@ -8,8 +8,7 @@
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
 - **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
 - **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
-- **Feature:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
-- **Feature:** Added `sendMessageToContact` interface in `ChatMessageBridgeDispatcher` for sending message to a single contact.
+- **Feature:** Added `sendMessageToContact` interface in `ChatMessageBridgeDispatcher` for sending message to a single contact. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
