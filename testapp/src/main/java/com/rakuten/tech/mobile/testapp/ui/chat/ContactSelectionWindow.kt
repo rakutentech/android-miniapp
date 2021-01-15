@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rakuten.tech.mobile.miniapp.js.userinfo.MessageToContact
+import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -82,6 +82,7 @@ class ContactSelectionWindow(private val activity: Activity) :
             }
             else -> {
                 onSuccessSingleContact(contactId)
+                // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
                 showAlertDialog(
                     activity,
                     "The message: ${message.title} has been sent to contact id: $contactId"

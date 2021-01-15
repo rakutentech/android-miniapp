@@ -1,8 +1,6 @@
-package com.rakuten.tech.mobile.miniapp.js.userinfo
+package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
-import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 

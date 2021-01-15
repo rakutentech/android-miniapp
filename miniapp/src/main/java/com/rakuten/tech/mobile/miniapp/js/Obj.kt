@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
-import com.rakuten.tech.mobile.miniapp.js.userinfo.MessageToContact
 
 @Keep
 internal data class CallbackObj(

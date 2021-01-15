@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.userinfo
+package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
 
