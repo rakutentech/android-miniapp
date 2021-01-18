@@ -338,10 +338,9 @@ val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
         // Check if there is any contact id in HostApp
         // .. .. ..
         if (hasContact) {
-            // Show contact selection UI for picking a single contact.
+            // You can show a contact selection UI for picking a single contact.
             // .. .. ..
             onSuccess(contactId) // allow miniapp to invoke the contact id where message has been sent.
-            // Show a confirmation UI that the message has been sent to the contact id.
         }
         else
             onError(message) // reject miniapp to send message with message explanation.

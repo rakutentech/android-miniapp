@@ -67,8 +67,7 @@ abstract class MiniAppMessageBridge {
             this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
         else this.userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {}
 
-        if (this::chatMessageBridgeDispatcher.isInitialized)
-            this.chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+        initChatDispatcher()
 
         miniAppViewInitialized = true
     }
@@ -169,6 +168,19 @@ abstract class MiniAppMessageBridge {
         userInfoBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
             userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+    }
+
+    @Suppress("EmptyFunctionBlock")
+    private fun initChatDispatcher() {
+        if (this::chatMessageBridgeDispatcher.isInitialized)
+            this.chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+        else this.chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+            override fun sendMessageToContact(
+                message: MessageToContact,
+                onSuccess: (contactId: String?) -> Unit,
+                onError: (message: String) -> Unit
+            ) {}
+        }
     }
 
     /**
