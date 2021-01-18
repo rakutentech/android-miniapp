@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="match_parent"
+  android:padding="@dimen/small_8"
+  xmlns:tools="http://schemas.android.com/tools">
 
   <RelativeLayout
     android:id="@+id/firstTimeTopView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/small_8"
     android:background="@color/window_top_bar"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -33,5 +34,39 @@
       android:textStyle="bold" />
 
   </RelativeLayout>
+
+  <TextView
+    android:id="@+id/firstTimeMiniAppInfo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/small_4"
+    android:padding="@dimen/small_4"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/firstTimeTopView"
+    tools:text="Dummy MiniApp Info" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/small_8"
+    android:padding="@dimen/small_4"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/firstTimeMiniAppInfo">
+
+    <Button
+      android:id="@+id/firstTimeAccept"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="ACCEPT" />
+
+    <Button
+      android:id="@+id/firstTimeCancel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/medium_16"
+      android:text="Cancel" />
+  </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
