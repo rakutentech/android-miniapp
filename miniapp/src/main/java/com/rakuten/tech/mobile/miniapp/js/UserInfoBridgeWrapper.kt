@@ -9,13 +9,12 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.util.ArrayList
 
-@Suppress("LongMethod", "LargeClass", "TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught")
 internal class UserInfoBridgeWrapper {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
     private var isMiniAppComponentReady = false
-
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
     private var isReady = false
 
@@ -42,97 +41,62 @@ internal class UserInfoBridgeWrapper {
     }
 
     internal fun onGetUserName(callbackId: String) {
-        if (isReady && customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.USER_NAME)) {
+        if (isReady) {
             try {
-                // asynchronously retrieve user name
-                val successCallback = { userName: String ->
-                    bridgeExecutor.postValue(callbackId, userName)
-                }
-                val errorCallback = { message: String ->
-                    bridgeExecutor.postError(
-                        callbackId,
-                        "$ERR_GET_USER_NAME $message"
-                    )
-                }
+                if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.USER_NAME)) {
+                    // asynchronously retrieve user name
+                    val successCallback = { userName: String -> bridgeExecutor.postValue(callbackId, userName) }
+                    val errorCallback = { message: String ->
+                        bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $message")
+                    }
 
-                userInfoBridgeDispatcher.getUserName(successCallback, errorCallback)
+                    userInfoBridgeDispatcher.getUserName(successCallback, errorCallback)
+                } else
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION")
             } catch (e: Exception) {
-                if (e.message.toString()
-                        .contains(UserInfoBridgeDispatcher.NO_IMPL)
-                ) getUserNameSync(callbackId)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_USER_NAME ${e.message}"
-                )
+                if (e.message.toString().contains(UserInfoBridgeDispatcher.NO_IMPL))getUserNameSync(callbackId)
+                else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
             }
-        } else
-            bridgeExecutor.postError(
-                callbackId,
-                "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION"
-            )
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun getUserNameSync(callbackId: String) {
-        if (isReady) {
-            try {
-                val name = userInfoBridgeDispatcher.getUserName()
-                if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_USER_NAME User name is not found."
-                )
-            } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
-            }
-        }
+    internal fun getUserNameSync(callbackId: String) = try {
+        val name = userInfoBridgeDispatcher.getUserName()
+        if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
+        else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME User name is not found.")
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
     }
 
     internal fun onGetProfilePhoto(callbackId: String) {
-        if (isReady && customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.PROFILE_PHOTO)) {
+        if (isReady) {
             try {
-                // asynchronously retrieve profile photo url
-                val successCallback = { photoUrl: String ->
-                    bridgeExecutor.postValue(callbackId, photoUrl)
-                }
-                val errorCallback = { message: String ->
-                    bridgeExecutor.postError(
-                        callbackId,
-                        "$ERR_GET_PROFILE_PHOTO $message"
-                    )
-                }
+                if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.PROFILE_PHOTO)) {
 
-                userInfoBridgeDispatcher.getProfilePhoto(successCallback, errorCallback)
+                    // asynchronously retrieve profile photo url
+                    val successCallback = { photoUrl: String -> bridgeExecutor.postValue(callbackId, photoUrl) }
+                    val errorCallback = { message: String ->
+                        bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $message")
+                    }
+
+                    userInfoBridgeDispatcher.getProfilePhoto(successCallback, errorCallback)
+                } else
+                bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
             } catch (e: Exception) {
-                if (e.message.toString()
-                        .contains(UserInfoBridgeDispatcher.NO_IMPL)
-                ) getProfilePhotoSync(callbackId)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_PROFILE_PHOTO ${e.message}"
-                )
+                if (e.message.toString().contains(UserInfoBridgeDispatcher.NO_IMPL)) getProfilePhotoSync(callbackId)
+                else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
             }
-        } else
-            bridgeExecutor.postError(
-                callbackId,
-                "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION"
-            )
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal fun getProfilePhotoSync(callbackId: String) {
-        if (isReady) {
-            try {
-                val photoUrl = userInfoBridgeDispatcher.getProfilePhoto()
-                if (photoUrl.isNotEmpty()) bridgeExecutor.postValue(callbackId, photoUrl)
-                else bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_PROFILE_PHOTO Profile photo is not found."
-                )
-            } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
-            }
-        }
+    internal fun getProfilePhotoSync(callbackId: String) = try {
+        val photoUrl = userInfoBridgeDispatcher.getProfilePhoto()
+        if (photoUrl.isNotEmpty()) bridgeExecutor.postValue(callbackId, photoUrl)
+        else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO Profile photo is not found.")
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
     }
 
     internal fun onGetAccessToken(callbackId: String) {
@@ -142,18 +106,12 @@ internal class UserInfoBridgeWrapper {
                     bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
                 }
                 val errorCallback = { message: String ->
-                    bridgeExecutor.postError(
-                        callbackId,
-                        "$ERR_GET_ACCESS_TOKEN $message"
-                    )
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
                 }
 
                 userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
             } catch (e: Exception) {
-                bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_ACCESS_TOKEN ${e.message}"
-                )
+                bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
             }
         }
     }
@@ -161,32 +119,20 @@ internal class UserInfoBridgeWrapper {
     internal fun onGetContacts(callbackId: String) {
         if (isReady) {
             try {
-                if (customPermissionCache.hasPermission(
-                        miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
-                    )
-                ) {
+                if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.CONTACT_LIST)) {
                     val successCallback = { contacts: ArrayList<Contact> ->
                         bridgeExecutor.postValue(callbackId, Gson().toJson(contacts))
                     }
                     val errorCallback = { message: String ->
-                        bridgeExecutor.postError(
-                            callbackId,
-                            "$ERR_GET_CONTACTS $message"
-                        )
+                        bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $message")
                     }
 
                     userInfoBridgeDispatcher.getContacts(successCallback, errorCallback)
                 } else {
-                    bridgeExecutor.postError(
-                        callbackId,
-                        "$ERR_GET_CONTACTS $ERR_GET_CONTACTS_NO_PERMISSION"
-                    )
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS $ERR_GET_CONTACTS_NO_PERMISSION")
                 }
             } catch (e: Exception) {
-                bridgeExecutor.postError(
-                    callbackId,
-                    "$ERR_GET_CONTACTS ${e.message}"
-                )
+                bridgeExecutor.postError(callbackId, "$ERR_GET_CONTACTS ${e.message}")
             }
         }
     }
