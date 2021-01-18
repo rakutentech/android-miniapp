@@ -108,6 +108,7 @@ open class BridgeCommon {
 }
 
 @RunWith(AndroidJUnit4::class)
+@Suppress("LongMethod")
 class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)

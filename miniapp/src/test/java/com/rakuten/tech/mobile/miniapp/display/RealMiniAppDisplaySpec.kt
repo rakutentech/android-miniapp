@@ -28,6 +28,7 @@ import java.util.UUID
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
+@Suppress("LongMethod")
 class RealMiniAppDisplaySpec {
     private lateinit var context: Context
     private lateinit var basePath: String
