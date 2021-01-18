@@ -29,8 +29,9 @@
       android:layout_height="wrap_content"
       android:layout_alignParentStart="true"
       android:padding="@dimen/small_8"
-      android:background="@color/colorCustomPermissionTop"
-      android:text="@string/chat_contact_selection_tutorial" />
+      android:text="@string/chat_contact_selection_tutorial"
+      android:textSize="@dimen/text_large_16"
+      android:textStyle="bold" />
 
   </RelativeLayout>
 
