@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
@@ -54,7 +55,7 @@ internal class UserInfoBridgeWrapper {
                 } else
                     bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION")
             } catch (e: Exception) {
-                if (e.message.toString().contains(UserInfoBridgeDispatcher.NO_IMPL))getUserNameSync(callbackId)
+                if (e.message.toString().contains(NO_IMPL))getUserNameSync(callbackId)
                 else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
             }
         }
@@ -84,7 +85,7 @@ internal class UserInfoBridgeWrapper {
                 } else
                 bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
             } catch (e: Exception) {
-                if (e.message.toString().contains(UserInfoBridgeDispatcher.NO_IMPL)) getProfilePhotoSync(callbackId)
+                if (e.message.toString().contains(NO_IMPL)) getProfilePhotoSync(callbackId)
                 else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
             }
         }
