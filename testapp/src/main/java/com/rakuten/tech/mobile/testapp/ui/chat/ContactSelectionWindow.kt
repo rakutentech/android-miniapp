@@ -63,7 +63,7 @@ class ContactSelectionWindow(private val activity: Activity) :
         recyclerView.adapter = contactSelectionAdapter
 
         contactSelectionAlertDialog =
-            AlertDialog.Builder(activity, R.style.AppTheme_ContactSelectionDialog).create()
+            AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
         contactSelectionAlertDialog.setView(contactSelectionLayout)
         contactSelectionLayout.findViewById<ImageView>(R.id.contactCloseWindow).setOnClickListener {
             contactSelectionAlertDialog.dismiss()

@@ -27,7 +27,7 @@
         <item name="actionMenuTextColor">@color/text_enable_state</item>
     </style>
 
-    <style name="AppTheme.ContactSelectionDialog" parent="Theme.AppCompat.Dialog">
+    <style name="AppTheme.DefaultWindow" parent="Theme.AppCompat.Dialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/white</item>
     </style>
