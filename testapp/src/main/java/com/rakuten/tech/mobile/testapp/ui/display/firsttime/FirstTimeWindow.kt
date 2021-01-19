@@ -3,15 +3,18 @@ package com.rakuten.tech.mobile.testapp.ui.display.firsttime
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
 class FirstTimeWindow(
@@ -55,6 +58,14 @@ class FirstTimeWindow(
         firstTimeAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
         firstTimeAlertDialog.setView(firstTimeLayout)
+
+        setIcon(
+            activity,
+            Uri.parse(miniAppInfo?.icon),
+            firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
+        )
+        firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppInfo).text =
+            miniAppInfo?.displayName + "\n\n" + miniAppInfo?.version
 
         // set action listeners
         firstTimeLayout.findViewById<ImageView>(R.id.firstTimeCloseWindow).setOnClickListener {

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:padding="@dimen/small_8"
-  xmlns:tools="http://schemas.android.com/tools">
+  android:layout_height="match_parent">
 
   <RelativeLayout
     android:id="@+id/firstTimeTopView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="@dimen/small_8"
     android:background="@color/window_top_bar"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -25,48 +25,75 @@
 
     <TextView
       android:id="@+id/firstTimeTutorial"
+      android:textStyle="bold"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentStart="true"
       android:padding="@dimen/small_8"
       android:text="@string/miniapp_first_time_tutorial"
-      android:textSize="@dimen/text_large_16"
-      android:textStyle="bold" />
+      android:textSize="@dimen/text_large_16" />
 
   </RelativeLayout>
 
-  <TextView
-    android:id="@+id/firstTimeMiniAppInfo"
+  <ScrollView
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/small_4"
-    android:padding="@dimen/small_4"
+    android:layout_height="0dp"
+    android:fillViewport="true"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/firstTimeTopView"
-    tools:text="Dummy MiniApp Info" />
+    app:layout_constraintTop_toBottomOf="@+id/firstTimeTopView">
 
-  <LinearLayout
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <ImageView
+        android:id="@+id/firstTimeAppIcon"
+        android:layout_width="@dimen/miniapp_icon_size"
+        android:layout_height="@dimen/miniapp_icon_size"
+        android:layout_marginTop="@dimen/small_8"
+        android:layout_marginStart="@dimen/small_8"
+        android:src="@drawable/ic_default" />
+
+      <TextView
+        android:id="@+id/firstTimeMiniAppInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:paddingStart="@dimen/medium_16"
+        android:paddingEnd="@dimen/medium_16"
+        android:gravity="center"
+        tools:text="Dummy MiniApp Info" />
+    </LinearLayout>
+
+  </ScrollView>
+
+  <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/small_8"
-    android:padding="@dimen/small_4"
+    android:padding="@dimen/small_8"
+    android:background="@color/colorAccent"
     android:gravity="center_horizontal"
-    android:orientation="horizontal"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/firstTimeMiniAppInfo">
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
 
     <Button
       android:id="@+id/firstTimeAccept"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="ACCEPT" />
+      android:layout_alignParentStart="true"
+      android:text="@string/action_first_time_accept" />
 
     <Button
       android:id="@+id/firstTimeCancel"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="@dimen/medium_16"
-      android:text="Cancel" />
-  </LinearLayout>
+      android:layout_alignParentEnd="true"
+      android:text="@string/action_first_time_cancel" />
+  </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
