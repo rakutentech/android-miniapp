@@ -1,99 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <RelativeLayout
-    android:id="@+id/firstTimeTopView"
+  <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/small_8"
-    android:background="@color/window_top_bar"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+    android:layout_height="match_parent"
+    android:layout_alignParentStart="true"
+    android:orientation="vertical">
 
-    <ImageView
-      android:id="@+id/firstTimeCloseWindow"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentEnd="true"
-      android:padding="@dimen/small_8"
-      android:src="@drawable/ic_close_24px" />
-
-    <TextView
-      android:id="@+id/firstTimeTutorial"
-      android:textStyle="bold"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:padding="@dimen/small_8"
-      android:text="@string/miniapp_first_time_tutorial"
-      android:textSize="@dimen/text_large_16" />
-
-  </RelativeLayout>
-
-  <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:fillViewport="true"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/firstTimeTopView">
-
-    <LinearLayout
+    <RelativeLayout
+      android:id="@+id/firstTimeTopView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:gravity="center"
-      android:orientation="vertical">
+      android:padding="@dimen/small_8"
+      android:background="@color/window_top_bar">
 
       <ImageView
-        android:id="@+id/firstTimeAppIcon"
-        android:layout_width="@dimen/miniapp_icon_size"
-        android:layout_height="@dimen/miniapp_icon_size"
-        android:layout_marginTop="@dimen/small_8"
-        android:layout_marginStart="@dimen/small_8"
-        android:src="@drawable/ic_default" />
+        android:id="@+id/firstTimeCloseWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:padding="@dimen/small_8"
+        android:src="@drawable/ic_close_24px" />
 
       <TextView
-        android:id="@+id/firstTimeMiniAppInfo"
-        android:layout_width="match_parent"
+        android:id="@+id/firstTimeTutorial"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_8"
-        android:paddingStart="@dimen/medium_16"
-        android:paddingEnd="@dimen/medium_16"
-        android:gravity="center"
-        tools:text="Dummy MiniApp Info" />
-    </LinearLayout>
+        android:layout_alignParentStart="true"
+        android:padding="@dimen/small_8"
+        android:text="@string/miniapp_first_time_tutorial"
+        android:textSize="@dimen/text_large_16" />
 
-  </ScrollView>
+    </RelativeLayout>
 
-  <RelativeLayout
+    <ImageView
+      android:id="@+id/firstTimeAppIcon"
+      android:layout_width="@dimen/miniapp_icon_size"
+      android:layout_height="@dimen/miniapp_icon_size"
+      android:layout_marginTop="@dimen/small_8"
+      android:layout_marginStart="@dimen/small_8"
+      android:layout_gravity="center_horizontal"
+      android:src="@drawable/ic_default" />
+
+    <TextView
+      android:id="@+id/firstTimeMiniAppInfo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_8"
+      android:layout_gravity="center_horizontal"
+      android:paddingStart="@dimen/medium_16"
+      android:paddingEnd="@dimen/medium_16"
+      tools:text="Dummy MiniApp Info" />
+  </LinearLayout>
+
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/small_8"
+    android:layout_alignParentBottom="true"
     android:padding="@dimen/small_8"
-    android:background="@color/colorAccent"
     android:gravity="center_horizontal"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent">
+    android:orientation="vertical">
 
     <Button
       android:id="@+id/firstTimeAccept"
-      android:layout_width="wrap_content"
+      style="?android:attr/borderlessButtonStyle"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:text="@string/action_first_time_accept" />
+      android:background="@color/colorAccent"
+      android:text="@string/action_first_time_accept"
+      android:textColor="@android:color/white" />
 
     <Button
       android:id="@+id/firstTimeCancel"
-      android:layout_width="wrap_content"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/medium_16"
-      android:layout_alignParentEnd="true"
+      android:layout_marginTop="@dimen/small_8"
+      android:layout_marginStart="@dimen/large_32"
+      android:layout_marginEnd="@dimen/large_32"
       android:text="@string/action_first_time_cancel" />
-  </RelativeLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+  </LinearLayout>
+</RelativeLayout>

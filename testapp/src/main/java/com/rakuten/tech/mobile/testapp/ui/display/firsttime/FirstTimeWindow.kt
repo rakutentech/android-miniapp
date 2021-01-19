@@ -52,20 +52,29 @@ class FirstTimeWindow(
     }
 
     private fun initDefaultWindow() {
-        // set ui
+        // set ui components
         val layoutInflater = LayoutInflater.from(activity)
         firstTimeLayout = layoutInflater.inflate(R.layout.window_first_time_miniapp, null)
         firstTimeAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
         firstTimeAlertDialog.setView(firstTimeLayout)
 
-        setIcon(
-            activity,
-            Uri.parse(miniAppInfo?.icon),
-            firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
-        )
-        firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppInfo).text =
-            miniAppInfo?.displayName + "\n\n" + miniAppInfo?.version
+        // set data to ui
+        val infoView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppInfo)
+        if (miniAppInfo != null) {
+            setIcon(
+                activity,
+                Uri.parse(miniAppInfo?.icon),
+                firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
+            )
+
+            infoView.text = StringBuilder("Name: " + miniAppInfo?.displayName)
+                .append("\n\n")
+                .append("Version: " + miniAppInfo?.version?.versionTag)
+                .append("\n\n").toString()
+        } else {
+            infoView.text = "No info found for this miniapp!"
+        }
 
         // set action listeners
         firstTimeLayout.findViewById<ImageView>(R.id.firstTimeCloseWindow).setOnClickListener {
@@ -84,10 +93,6 @@ class FirstTimeWindow(
     }
 
     private fun doesDataExist() = prefs.contains(miniAppId)
-
-    private fun isAlreadyDownloaded(appId: String): Boolean {
-        return false
-    }
 
     private fun isFirstTime(): Boolean {
         try {
