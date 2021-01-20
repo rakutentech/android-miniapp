@@ -8,6 +8,7 @@
 - **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
 - **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
 - **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
+- **Fix:** Dialog cancel event when touch outside area.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
