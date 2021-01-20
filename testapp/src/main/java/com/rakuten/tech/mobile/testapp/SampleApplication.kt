@@ -18,8 +18,8 @@ class SampleApplication : Application() {
         MiniAppListStore.init(this)
         // Enable AdMob
         MobileAds.initialize(this)
-        // Enable microsoft.appcenter Crash class for staging and release builds
-        if (!BuildConfig.DEBUG)
+        // Enable microsoft.appcenter Crash class for staging, rc and release builds
+        if (BuildConfig.ENABLE_APPCENTER_CRASHLYTICS)
             AppCenter.start(this, getString(R.string.appcenter_secret), Crashes::class.java)
     }
 }
