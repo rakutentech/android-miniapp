@@ -4,6 +4,7 @@ ignore:
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/permission/ui/MiniAppCustomPermissionAdapter.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/permission/ui/MiniAppCustomPermissionWindow.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/analytics/MiniAppAnalytics.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/display/WebViewDialog.kt"
 coverage:
   status:
     patch: off
