@@ -31,6 +31,7 @@ buildscript {
     ext.google_ads = '19.4.0'
     ext.custom_tab = '1.2.0'
     ext.appCenterSdkVersion = '4.0.0'
+    ext.analytics_sdk= '7.0.0'
 
 //  Build Config.
     apply from: 'config/index.gradle'
@@ -57,10 +58,21 @@ plugins {
 }
 
 allprojects {
+    def property = { key ->
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+    }
+
     repositories {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url { "https://maven.pkg.github.com/rakutentech/android-analytics" }
+            credentials {
+                username = property("GITHUB_USERNAME")
+                password = property("GITHUB_ACCESS_TOKEN")
+            }
+        }
     }
 
     gradle.projectsEvaluated {
