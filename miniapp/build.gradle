@@ -88,6 +88,9 @@ dependencies {
     if (property("GITHUB_USERNAME") != null) {
         compileOnly "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
         testImplementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    } else {
+        compileOnly project(':analytics')
+        testImplementation project(':analytics')
     }
 }
 

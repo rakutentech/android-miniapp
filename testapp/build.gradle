@@ -132,6 +132,8 @@ dependencies {
     implementation "com.google.code.gson:gson:$gson"
     if (property("GITHUB_USERNAME") != null) {
         implementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    } else {
+        implementation project(':analytics')
     }
 
     implementation "com.github.bumptech.glide:glide:$glide"
