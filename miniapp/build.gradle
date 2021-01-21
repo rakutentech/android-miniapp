@@ -46,6 +46,10 @@ afterEvaluate {
 }
 
 dependencies {
+    def property = { key ->
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+    }
+
     compileOnly "javax.annotation:jsr250-api:$jsr250"
 
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
@@ -68,7 +72,6 @@ dependencies {
     kapt "com.rakuten.tech.mobile:manifest-config-processor:$manifest_config"
     implementation "com.rakuten.tech.mobile:manifest-config-annotations:$manifest_config"
     implementation "com.rakuten.tech.mobile.sdkutils:sdk-utils:$sdk_utils"
-    compileOnly "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
@@ -81,7 +84,11 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
-    testImplementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+
+    if (property("GITHUB_USERNAME") != null) {
+        compileOnly "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+        testImplementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    }
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
