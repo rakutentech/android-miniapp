@@ -15,6 +15,7 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 }
 
 /** Only init when analytics dependency is provided. */
+@Suppress("EmptyCatchBlock", "SwallowedException", "TooGenericExceptionCaught")
 internal class MiniAppAnalytics(val rasProjectId: String) {
 
     companion object {
@@ -25,7 +26,7 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
         }
     }
 
-    fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) {
+    fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
         val params = mutableMapOf<String, Any>()
         // Send to this acc/aid
         params["acc"] = BuildConfig.ANALYTICS_ACC
@@ -43,5 +44,5 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
         params["cp"] = cp
 
         RatTracker.event(eType.value, params).track()
-    }
+    } catch (e: Exception) {}
 }
