@@ -3,10 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+def property = { key ->
+    return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+}
+
 android {
-    def property = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
-    }
 
     defaultConfig {
         versionCode 1
@@ -129,7 +130,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson"
-    implementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    if (property("GITHUB_USERNAME") != null) {
+        implementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    }
 
     implementation "com.github.bumptech.glide:glide:$glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
