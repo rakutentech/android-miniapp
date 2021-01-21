@@ -67,15 +67,15 @@ allprojects {
         jcenter()
         mavenCentral()
         // check whether can get env var
-//        if (property("GITHUB_USERNAME") != null) {
-//            maven {
-//                url { "https://maven.pkg.github.com/rakutentech/android-analytics" }
-//                credentials {
-//                    username = property("GITHUB_USERNAME")
-//                    password = property("GITHUB_ACCESS_TOKEN")
-//                }
-//            }
-//        }
+        if (property("GITHUB_USERNAME") != null) {
+            maven {
+                url { "https://maven.pkg.github.com/rakutentech/android-analytics" }
+                credentials {
+                    username = property("GITHUB_USERNAME")
+                    password = property("GITHUB_ACCESS_TOKEN")
+                }
+            }
+        }
     }
 
     gradle.projectsEvaluated {
