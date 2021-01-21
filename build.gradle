@@ -59,18 +59,21 @@ plugins {
 
 allprojects {
     def property = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "")
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
     }
 
     repositories {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url { "https://maven.pkg.github.com/rakutentech/android-analytics" }
-            credentials {
-                username = property("GITHUB_USERNAME")
-                password = property("GITHUB_ACCESS_TOKEN")
+        // check whether can get env var
+        if (property("GITHUB_USERNAME") != null) {
+            maven {
+                url { "https://maven.pkg.github.com/rakutentech/android-analytics" }
+                credentials {
+                    username = property("GITHUB_USERNAME")
+                    password = property("GITHUB_ACCESS_TOKEN")
+                }
             }
         }
     }
