@@ -59,7 +59,7 @@ plugins {
 
 allprojects {
     def property = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "")
     }
 
     repositories {
