@@ -10,7 +10,7 @@ internal data class CallbackObj(
 )
 
 @Keep
-internal data class Permission(val permission: String)
+internal data class DevicePermission(val permission: String)
 
 @Keep
 internal data class Screen(val action: String)

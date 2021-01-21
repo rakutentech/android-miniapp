@@ -67,6 +67,7 @@ android {
             resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled false
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'false'
 
             manifestPlaceholders = debugManifestPlaceholders
         }
@@ -76,6 +77,7 @@ android {
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled true
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             manifestPlaceholders = prodManifestPlaceholders
@@ -84,6 +86,16 @@ android {
             initWith release
             applicationIdSuffix '.staging'
             versionNameSuffix "-STG-build-$buildVersion"
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
+            matchingFallbacks = ['release', 'debug']
+
+            manifestPlaceholders = stagingManifestPlaceholders
+        }
+        rc {
+            initWith release
+            applicationIdSuffix '.rc'
+            versionNameSuffix "-RC-build-$buildVersion"
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             matchingFallbacks = ['release', 'debug']
 
             manifestPlaceholders = stagingManifestPlaceholders

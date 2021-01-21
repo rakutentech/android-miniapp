@@ -84,7 +84,7 @@ workflows:
       - app-center/publish:
           name: deploy-test-app-candidate
           group: Release_Candidate
-          file: apk/staging/testapp-staging.apk
+          file: apk/rc/testapp-rc.apk
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
           notes: $CIRCLE_BUILD_URL
