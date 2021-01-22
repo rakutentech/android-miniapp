@@ -77,6 +77,12 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${adMobAppId}" />
+        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATAccountId"
+            android:value="${ratAcc}" />
+        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATApplicationId"
+            android:value="${ratAid}" />
+        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
+            android:value="${ratEndpoint}" />
     </application>
 
 </manifest>

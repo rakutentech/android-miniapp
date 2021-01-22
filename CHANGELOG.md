@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 2.X.X (In progress)
+### 2.8.0 (2020-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support analytics SDK with event tracking.
