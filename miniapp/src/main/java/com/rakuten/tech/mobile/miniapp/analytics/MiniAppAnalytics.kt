@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
+import android.util.Log
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -15,7 +16,7 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 }
 
 /** Only init when analytics dependency is provided. */
-@Suppress("EmptyCatchBlock", "SwallowedException", "TooGenericExceptionCaught")
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class MiniAppAnalytics(val rasProjectId: String) {
 
     companion object {
@@ -44,5 +45,7 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
         params["cp"] = cp
 
         RatTracker.event(eType.value, params).track()
-    } catch (e: Exception) {}
+    } catch (e: Exception) {
+        Log.e("MiniAppAnalytics", e.message.orEmpty())
+    }
 }
