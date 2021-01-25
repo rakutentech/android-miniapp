@@ -38,7 +38,6 @@ android {
             appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             ratAcc                  : property("ANALYTICS_ACC") ?: "0",
             ratAid                  : property("ANALYTICS_AID") ?: "0",
-            ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
     ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
@@ -47,7 +46,8 @@ android {
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
-            appName                 : defaultAppName + " DEBUG"
+            appName                 : defaultAppName + " DEBUG",
+            ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/"
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -58,7 +58,8 @@ android {
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
-            appName                 : defaultAppName
+            appName                 : defaultAppName,
+            ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/"
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
