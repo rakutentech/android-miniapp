@@ -10,8 +10,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
@@ -96,14 +94,7 @@ class FirstTimeWindow(
 
     private fun isFirstTime(): Boolean {
         try {
-            if (doesDataExist()) {
-                val firstTimeLaunch: FirstTimeLaunch = Gson().fromJson(
-                    prefs.getString(miniAppId, ""),
-                    object : TypeToken<FirstTimeLaunch>() {}.type
-                )
-
-                return firstTimeLaunch.isFirstTime
-            }
+            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_FIRST_TIME)
         } catch (e: Exception) {
             return true
         }
@@ -111,9 +102,7 @@ class FirstTimeWindow(
     }
 
     private fun storeFirstTime(isFirstTime: Boolean) {
-        val firstTimeLaunch = FirstTimeLaunch(miniAppId, isFirstTime)
-        val jsonToStore: String = Gson().toJson(firstTimeLaunch)
-        prefs.edit()?.putString(miniAppId, jsonToStore)?.apply()
+        prefs.edit()?.putBoolean(miniAppId, isFirstTime)?.apply()
     }
 
     interface FirstTimeLaunchListener {
