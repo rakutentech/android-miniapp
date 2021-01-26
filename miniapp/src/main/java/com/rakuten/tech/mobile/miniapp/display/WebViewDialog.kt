@@ -30,7 +30,10 @@ internal fun onShowDialog(
         onOkBuild(dialogBuilder, result)
 
     dialogBuilder.create()
-    dialogBuilder.show()
+    dialogBuilder.show().setOnCancelListener {
+        result?.cancel()
+        it.dismiss()
+    }
 
     return true
 }

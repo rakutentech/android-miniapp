@@ -3,10 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+def property = { key ->
+    return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
+}
+
 android {
-    def property = { key ->
-        return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
-    }
 
     defaultConfig {
         versionCode 1
@@ -33,6 +34,11 @@ android {
     }
 
     def defaultAppName = "Mini App Sample"
+    def commonPlaceholders = [
+            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
+            ratAcc                  : property("ANALYTICS_ACC") ?: "0",
+            ratAid                  : property("ANALYTICS_AID") ?: "0",
+    ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
@@ -40,9 +46,9 @@ android {
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
-            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
-            appName                 : defaultAppName + " DEBUG"
-    ]
+            appName                 : defaultAppName + " DEBUG",
+            ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/"
+    ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
     def prodManifestPlaceholders = [
@@ -52,9 +58,9 @@ android {
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
-            appCenterSecret         : property("APPCENTER_SECRET") ?: "",
-            appName                 : defaultAppName
-    ]
+            appName                 : defaultAppName,
+            ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/"
+    ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
 
@@ -67,6 +73,7 @@ android {
             resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled false
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'false'
 
             manifestPlaceholders = debugManifestPlaceholders
         }
@@ -76,6 +83,7 @@ android {
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled true
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             manifestPlaceholders = prodManifestPlaceholders
@@ -84,6 +92,7 @@ android {
             initWith release
             applicationIdSuffix '.staging'
             versionNameSuffix "-STG-build-$buildVersion"
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             matchingFallbacks = ['release', 'debug']
 
             manifestPlaceholders = stagingManifestPlaceholders
@@ -92,6 +101,7 @@ android {
             initWith release
             applicationIdSuffix '.rc'
             versionNameSuffix "-RC-build-$buildVersion"
+            buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             matchingFallbacks = ['release', 'debug']
 
             manifestPlaceholders = stagingManifestPlaceholders
@@ -121,6 +131,11 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson"
+    if (property("GITHUB_USERNAME") != null) {
+        implementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+    } else {
+        implementation project(':analytics')
+    }
 
     implementation "com.github.bumptech.glide:glide:$glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
