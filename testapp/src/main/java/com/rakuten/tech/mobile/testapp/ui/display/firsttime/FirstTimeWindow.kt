@@ -67,9 +67,8 @@ class FirstTimeWindow(
             )
 
             infoView.text = StringBuilder("Name: " + miniAppInfo?.displayName)
-                .append("\n\n")
-                .append("Version: " + miniAppInfo?.version?.versionTag)
-                .append("\n\n").toString()
+                .append("\n")
+                .append("Version: " + miniAppInfo?.version?.versionTag).toString()
         } else {
             infoView.text = "No info found for this miniapp!"
         }
@@ -84,7 +83,7 @@ class FirstTimeWindow(
             firstTimeLaunchListener.onFirstTimeAccept(true, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
-        firstTimeLayout.findViewById<Button>(R.id.firstTimeCancel).setOnClickListener {
+        firstTimeLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
             firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
@@ -101,9 +100,8 @@ class FirstTimeWindow(
         return true
     }
 
-    private fun storeFirstTime(isFirstTime: Boolean) {
+    private fun storeFirstTime(isFirstTime: Boolean) =
         prefs.edit()?.putBoolean(miniAppId, isFirstTime)?.apply()
-    }
 
     interface FirstTimeLaunchListener {
         fun onFirstTimeAccept(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String)

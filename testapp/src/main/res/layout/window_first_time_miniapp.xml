@@ -39,10 +39,9 @@
 
     <ImageView
       android:id="@+id/firstTimeAppIcon"
-      android:layout_width="@dimen/miniapp_icon_size"
-      android:layout_height="@dimen/miniapp_icon_size"
+      android:layout_width="@dimen/miniapp_logo_size"
+      android:layout_height="@dimen/miniapp_logo_size"
       android:layout_marginTop="@dimen/small_8"
-      android:layout_marginStart="@dimen/small_8"
       android:layout_gravity="center_horizontal"
       android:src="@drawable/ic_default" />
 
@@ -54,6 +53,7 @@
       android:layout_gravity="center_horizontal"
       android:paddingStart="@dimen/medium_16"
       android:paddingEnd="@dimen/medium_16"
+      android:textAlignment="center"
       tools:text="Dummy MiniApp Info" />
   </LinearLayout>
 
@@ -73,16 +73,22 @@
       android:layout_height="wrap_content"
       android:background="@color/colorAccent"
       android:text="@string/action_first_time_accept"
-      android:textColor="@android:color/white" />
+      android:textAllCaps="false"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/text_large_16" />
 
-    <Button
+    <TextView
       android:id="@+id/firstTimeCancel"
       android:textStyle="bold"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/small_8"
+      android:layout_marginTop="@dimen/small_4"
       android:layout_marginStart="@dimen/large_32"
       android:layout_marginEnd="@dimen/large_32"
-      android:text="@string/action_first_time_cancel" />
+      android:padding="@dimen/small_8"
+      android:gravity="center"
+      android:text="@string/action_first_time_cancel"
+      android:textColor="@color/colorPrimary"
+      android:textSize="@dimen/text_large_16" />
   </LinearLayout>
 </RelativeLayout>
