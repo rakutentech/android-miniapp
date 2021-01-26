@@ -133,8 +133,7 @@ class MiniAppDisplayActivity : BaseActivity(), FirstTimeWindow.FirstTimeLaunchLi
             )
         } else {
             val firstTimeWindow = FirstTimeWindow(this@MiniAppDisplayActivity, this)
-            if (appInfo != null) firstTimeWindow.initiate(appInfo, "")
-            else firstTimeWindow.initiate(null, appId!!)
+            firstTimeWindow.initiate(appInfo, appId!!)
         }
     }
 
