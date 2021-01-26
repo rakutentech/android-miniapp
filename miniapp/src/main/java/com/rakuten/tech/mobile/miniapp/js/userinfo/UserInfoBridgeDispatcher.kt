@@ -7,7 +7,8 @@ import java.util.ArrayList
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
-interface UserInfoBridgeDispatcher {
+@Suppress("UnnecessaryAbstractClass")
+abstract class UserInfoBridgeDispatcher {
     /**
      * Get user name from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
@@ -16,13 +17,13 @@ interface UserInfoBridgeDispatcher {
         "This function has been deprecated.",
         ReplaceWith("getUserName(onSuccess: (name: String) -> Unit, onError: (message: String) -> Unit)")
     )
-    fun getUserName(): String = throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
+    open fun getUserName(): String = throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
 
     /**
      * Get user name from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    fun getUserName(
+    open fun getUserName(
         onSuccess: (userName: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
@@ -37,13 +38,14 @@ interface UserInfoBridgeDispatcher {
         "This function has been deprecated.",
         ReplaceWith("getProfilePhoto(onSuccess: (photoUrl: String) -> Unit, onError: (message: String) -> Unit)")
     )
-    fun getProfilePhoto(): String = throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
+    open fun getProfilePhoto(): String =
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
 
     /**
      * Get profile photo url from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    fun getProfilePhoto(
+    open fun getProfilePhoto(
         onSuccess: (profilePhoto: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
@@ -51,7 +53,7 @@ interface UserInfoBridgeDispatcher {
     }
 
     /** Get access token from host app. **/
-    fun getAccessToken(
+    open fun getAccessToken(
         miniAppId: String,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
@@ -63,7 +65,7 @@ interface UserInfoBridgeDispatcher {
      * Get contacts from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    fun getContacts(
+    open fun getContacts(
         onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {

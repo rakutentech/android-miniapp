@@ -89,7 +89,7 @@ class UserInfoBridgeWrapperSpec {
         canGetName: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasUserName) {
-            object : UserInfoBridgeDispatcher {
+            object : UserInfoBridgeDispatcher() {
 
                 override fun getUserName(): String = ""
 
@@ -104,7 +104,7 @@ class UserInfoBridgeWrapperSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher {}
+            object : UserInfoBridgeDispatcher() {}
         }
     }
 
@@ -123,8 +123,7 @@ class UserInfoBridgeWrapperSpec {
     fun `postError should be called when there is no get user name retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_USER_NAME The `UserInfoBridgeDispatcher.getUserName`" +
-                " method has not been implemented by the Host App."
+        val errMsg = "$ERR_GET_USER_NAME The `UserInfoBridgeDispatcher.getUserName` ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
@@ -179,7 +178,7 @@ class UserInfoBridgeWrapperSpec {
         canGetPhoto: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasProfilePhoto) {
-            object : UserInfoBridgeDispatcher {
+            object : UserInfoBridgeDispatcher() {
                 override fun getProfilePhoto(): String = ""
 
                 override fun getProfilePhoto(
@@ -193,7 +192,7 @@ class UserInfoBridgeWrapperSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher {}
+            object : UserInfoBridgeDispatcher() {}
         }
     }
 
@@ -201,8 +200,8 @@ class UserInfoBridgeWrapperSpec {
     fun `postError should be called when there is no get profile photo retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_PROFILE_PHOTO The `UserInfoBridgeDispatcher.getProfilePhoto`" +
-                " method has not been implemented by the Host App."
+        val errMsg = "$ERR_GET_PROFILE_PHOTO The `UserInfoBridgeDispatcher.getProfilePhoto` " +
+                ErrorBridgeMessage.NO_IMPL
         miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
@@ -258,7 +257,7 @@ class UserInfoBridgeWrapperSpec {
         canGetToken: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasAccessToken) {
-            object : UserInfoBridgeDispatcher {
+            object : UserInfoBridgeDispatcher() {
                 override fun getAccessToken(
                     miniAppId: String,
                     onSuccess: (tokenData: TokenData) -> Unit,
@@ -271,7 +270,7 @@ class UserInfoBridgeWrapperSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher {}
+            object : UserInfoBridgeDispatcher() {}
         }
     }
 
@@ -279,8 +278,7 @@ class UserInfoBridgeWrapperSpec {
     fun `postError should be called when there is no access token retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken`" +
-                " method has not been implemented by the Host App."
+        val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken` ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(tokenCallbackObj))
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
@@ -315,7 +313,7 @@ class UserInfoBridgeWrapperSpec {
         canGetContacts: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasGetContacts) {
-            object : UserInfoBridgeDispatcher {
+            object : UserInfoBridgeDispatcher() {
                 override fun getContacts(
                     onSuccess: (contacts: ArrayList<Contact>) -> Unit,
                     onError: (message: String) -> Unit
@@ -327,7 +325,7 @@ class UserInfoBridgeWrapperSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher {}
+            object : UserInfoBridgeDispatcher() {}
         }
     }
 
@@ -335,8 +333,7 @@ class UserInfoBridgeWrapperSpec {
     fun `postError should be called when there is no get contacts retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createContactsImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_CONTACTS The `UserInfoBridgeDispatcher.getContacts`" +
-                " method has not been implemented by the Host App."
+        val errMsg = "$ERR_GET_CONTACTS The `UserInfoBridgeDispatcher.getContacts` ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(contactsCallbackObj))
 
         verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)

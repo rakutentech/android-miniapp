@@ -277,7 +277,7 @@ abstract class MiniAppMessageBridge {
 }
 
 internal object ErrorBridgeMessage {
-    const val NO_IMPL = "method has not been implemented by the Host App."
+    const val NO_IMPL = "has not been implemented by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
