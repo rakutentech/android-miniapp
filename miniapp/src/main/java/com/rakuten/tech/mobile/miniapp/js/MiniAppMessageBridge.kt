@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
@@ -33,7 +34,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
-    private val userInfoBridgeWrapper = UserInfoBridgeWrapper()
+    private val userInfoBridgeWrapper = UserInfoBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher

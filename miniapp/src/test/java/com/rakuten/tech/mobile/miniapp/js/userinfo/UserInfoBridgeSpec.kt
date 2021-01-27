@@ -13,10 +13,10 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
-import com.rakuten.tech.mobile.miniapp.js.UserInfoBridgeWrapper.Companion.ERR_GET_ACCESS_TOKEN
-import com.rakuten.tech.mobile.miniapp.js.UserInfoBridgeWrapper.Companion.ERR_GET_CONTACTS
-import com.rakuten.tech.mobile.miniapp.js.UserInfoBridgeWrapper.Companion.ERR_GET_PROFILE_PHOTO
-import com.rakuten.tech.mobile.miniapp.js.UserInfoBridgeWrapper.Companion.ERR_GET_USER_NAME
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_ACCESS_TOKEN
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_PROFILE_PHOTO
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -29,7 +29,7 @@ import java.util.ArrayList
 
 @Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
-class UserInfoBridgeWrapperSpec {
+class UserInfoBridgeSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val userNameCallbackObj = CallbackObj(
         action = ActionType.GET_USER_NAME.action,
@@ -108,8 +108,9 @@ class UserInfoBridgeWrapperSpec {
         }
     }
 
-    private fun createUserInfoBridgeWrapper(userInfoBridgeDispatcher: UserInfoBridgeDispatcher): UserInfoBridgeWrapper {
-        val userInfoBridgeWrapper = UserInfoBridgeWrapper()
+    private fun createUserInfoBridgeWrapper(userInfoBridgeDispatcher: UserInfoBridgeDispatcher): UserInfoBridge {
+        val userInfoBridgeWrapper =
+            UserInfoBridge()
         userInfoBridgeWrapper.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,

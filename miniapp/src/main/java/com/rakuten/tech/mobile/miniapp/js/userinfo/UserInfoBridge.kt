@@ -1,17 +1,15 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.util.ArrayList
 
 @Suppress("TooGenericExceptionCaught")
-internal class UserInfoBridgeWrapper {
+internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
