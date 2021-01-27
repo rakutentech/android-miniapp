@@ -36,7 +36,7 @@
     <string name="action_contacts">Contacts</string>
     <string name="action_custom_permissions">Permissions</string>
     <string name="action_first_time_accept">Accept</string>
-    <string name="action_first_time_cancel">Cancel &amp; Close</string>
+    <string name="action_first_time_cancel">Cancel</string>
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
