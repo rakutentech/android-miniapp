@@ -24,6 +24,8 @@
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
 
+    <string name="miniapp_first_time_tutorial">Would you like to download this miniapp?</string>
+
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From ID or URL</string>
     <string name="action_go_input_preview_mode">Display Miniapp From URL</string>
@@ -33,6 +35,8 @@
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
     <string name="action_custom_permissions">Permissions</string>
+    <string name="action_first_time_accept">Accept</string>
+    <string name="action_first_time_cancel">Cancel</string>
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
