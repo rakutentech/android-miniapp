@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display.firsttime
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,7 +8,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -49,6 +49,7 @@ class FirstTimeWindow(
         firstTimeAlertDialog.show()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initDefaultWindow() {
         // set ui components
         val layoutInflater = LayoutInflater.from(activity)
@@ -58,7 +59,8 @@ class FirstTimeWindow(
         firstTimeAlertDialog.setView(firstTimeLayout)
 
         // set data to ui
-        val infoView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppInfo)
+        val nameView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppName)
+        val versionView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppVersion)
         if (miniAppInfo != null) {
             setIcon(
                 activity,
@@ -66,24 +68,19 @@ class FirstTimeWindow(
                 firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
             )
 
-            infoView.text = StringBuilder("Name: " + miniAppInfo?.displayName)
-                .append("\n")
-                .append("Version: " + miniAppInfo?.version?.versionTag).toString()
+            nameView.text = miniAppInfo?.displayName.toString()
+            versionView.text = "Version: " + miniAppInfo?.version?.versionTag.toString()
         } else {
-            infoView.text = "No info found for this miniapp!"
+            nameView.text = "No info found for this miniapp!"
         }
 
         // set action listeners
-        firstTimeLayout.findViewById<ImageView>(R.id.firstTimeCloseWindow).setOnClickListener {
-            firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
-            firstTimeAlertDialog.dismiss()
-        }
         firstTimeLayout.findViewById<Button>(R.id.firstTimeAccept).setOnClickListener {
             storeFirstTime(false) // set false when accept
             firstTimeLaunchListener.onFirstTimeAccept(true, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
-        firstTimeLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
+        firstTimeLayout.findViewById<Button>(R.id.firstTimeCancel).setOnClickListener {
             firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
