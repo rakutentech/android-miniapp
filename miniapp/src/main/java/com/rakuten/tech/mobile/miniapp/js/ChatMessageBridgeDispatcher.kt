@@ -1,8 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
 /**
  * Functionality related to Chat/Messaging. These methods should be implemented by the Host App.
@@ -11,7 +9,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 abstract class ChatMessageBridgeDispatcher {
 
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
-    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
 
     /**
@@ -30,19 +27,14 @@ abstract class ChatMessageBridgeDispatcher {
 
     internal fun init(
         bridgeExecutor: MiniAppBridgeExecutor,
-        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String
     ) {
         this.bridgeExecutor = bridgeExecutor
-        this.customPermissionCache = miniAppCustomPermissionCache
         this.miniAppId = miniAppId
     }
 
     internal fun onSendMessageToContact(callbackId: String, jsonStr: String) = try {
-        if (customPermissionCache.hasPermission(
-                miniAppId, MiniAppCustomPermissionType.CONTACT_LIST
-            )
-        ) {
+        {
             val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
             val messageToContact = callbackObj.param.messageToContact
             val successCallback = { contactId: String? ->
@@ -53,11 +45,6 @@ abstract class ChatMessageBridgeDispatcher {
             }
 
             sendMessageToContact(messageToContact, successCallback, errorCallback)
-        } else {
-            bridgeExecutor.postError(
-                callbackId,
-                "$ERR_SEND_MESSAGE $ERR_CONTACT_NO_PERMISSION"
-            )
         }
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
@@ -65,7 +52,5 @@ abstract class ChatMessageBridgeDispatcher {
 
     internal companion object {
         const val ERR_SEND_MESSAGE = "Cannot send message:"
-        const val ERR_CONTACT_NO_PERMISSION =
-            "Permission has not been accepted yet for sending message to contact."
     }
 }

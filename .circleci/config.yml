@@ -73,7 +73,7 @@ workflows:
           file: apk/release/testapp-release.apk
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          notes: Production build for Android SDK $CIRCLE_TAG
+          notes: $CIRCLE_TAG
           requires:
             - android-sdk/publish
           filters:

@@ -21,7 +21,6 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ActionType
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher.Companion.ERR_CONTACT_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher.Companion.ERR_SEND_MESSAGE
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -73,32 +72,18 @@ class ChatMessageBridgeDispatcherSpec {
     }
 
     private fun createChatMessageBridgeDispatcher(
-        hasContactListPermission: Boolean,
         canSendMessage: Boolean
-    ): ChatMessageBridgeDispatcher {
-        if (hasContactListPermission)
-            return object : ChatMessageBridgeDispatcher() {
+    ): ChatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
 
-                override fun sendMessageToContact(
-                    message: MessageToContact,
-                    onSuccess: (contactId: String?) -> Unit,
-                    onError: (message: String) -> Unit
-                ) {
-                    if (canSendMessage)
-                        onSuccess.invoke(TEST_CONTACT_ID)
-                    else
-                        onError.invoke(TEST_ERROR_MSG)
-                }
-            }
-        else return object : ChatMessageBridgeDispatcher() {
-
-            override fun sendMessageToContact(
-                message: MessageToContact,
-                onSuccess: (contactId: String?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
+        override fun sendMessageToContact(
+            message: MessageToContact,
+            onSuccess: (contactId: String?) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (canSendMessage)
+                onSuccess.invoke(TEST_CONTACT_ID)
+            else
                 onError.invoke(TEST_ERROR_MSG)
-            }
         }
     }
 
@@ -117,30 +102,10 @@ class ChatMessageBridgeDispatcherSpec {
     )
 
     @Test
-    fun `postError should be called when contact list permission hasn't been allowed`() {
+    fun `postError should be called when hostapp can't send message`() {
         val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false, false))
-        chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
-        val errMsg = "$ERR_SEND_MESSAGE $ERR_CONTACT_NO_PERMISSION"
-        whenever(
-            customPermissionCache.hasPermission(
-                miniAppInfo.id, MiniAppCustomPermissionType.CONTACT_LIST
-            )
-        ).thenReturn(false)
-
-        chatMessageBridgeDispatcher.onSendMessageToContact(
-            sendMessageCallbackObj.id,
-            sendingMessageJsonStr
-        )
-
-        verify(bridgeExecutor).postError(sendMessageCallbackObj.id, errMsg)
-    }
-
-    @Test
-    fun `postError should be called when contact list permission has been allowed but can't send message`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(true, false))
-        chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        chatMessageBridgeDispatcher.init(bridgeExecutor, TEST_MA_ID)
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 
         chatMessageBridgeDispatcher.onSendMessageToContact(
@@ -152,10 +117,10 @@ class ChatMessageBridgeDispatcherSpec {
     }
 
     @Test
-    fun `postValue should be called when contact list permission has been allowed and can send message`() {
+    fun `postValue should be called when hostapp can send message`() {
         val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(true, true))
-        chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, TEST_MA_ID)
+            Mockito.spy(createChatMessageBridgeDispatcher(true))
+        chatMessageBridgeDispatcher.init(bridgeExecutor, TEST_MA_ID)
 
         chatMessageBridgeDispatcher.onSendMessageToContact(
             sendMessageCallbackObj.id,

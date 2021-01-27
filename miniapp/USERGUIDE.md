@@ -651,6 +651,14 @@ class MiniAppActivity : Activity(), CoroutineScope {
 }
 ```
 
+### Analytics events
+
+When [Analytics SDK](https://github.com/rakutentech/android-analytics) is integrated, MiniApp SDK sends analytics data from your app when some events are triggered:
+
+- HostApp starts with MiniApp SDK.
+- When miniapp is launched.
+- When miniapp is closed.
+
 ## Troubleshooting & FAQs
 
 <details><summary markdown="span"><b>Exception: "Network requests must not be performed on the main thread."</b>

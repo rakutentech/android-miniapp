@@ -173,7 +173,7 @@ abstract class MiniAppMessageBridge {
     @Suppress("EmptyFunctionBlock")
     private fun initChatDispatcher() {
         if (this::chatMessageBridgeDispatcher.isInitialized)
-            this.chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+            this.chatMessageBridgeDispatcher.init(bridgeExecutor, miniAppId)
         else this.chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
             override fun sendMessageToContact(
                 message: MessageToContact,
@@ -190,7 +190,7 @@ abstract class MiniAppMessageBridge {
     fun setChatMessageBridgeDispatcher(bridgeDispatcher: ChatMessageBridgeDispatcher) {
         chatMessageBridgeDispatcher = bridgeDispatcher
         if (miniAppViewInitialized)
-            chatMessageBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
+            chatMessageBridgeDispatcher.init(bridgeExecutor, miniAppId)
     }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
