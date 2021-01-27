@@ -120,6 +120,14 @@ class UserInfoBridgeWrapperSpec {
     }
 
     @Test
+    fun `postError should be called when there is no UserInfoBridgeDispatcher`() {
+        val errMsg = "The `UserInfoBridgeDispatcher` ${ErrorBridgeMessage.NO_IMPL}"
+        miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
+
+        verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postError should be called when there is no get user name retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
