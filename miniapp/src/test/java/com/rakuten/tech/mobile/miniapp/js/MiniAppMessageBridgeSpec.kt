@@ -108,6 +108,7 @@ open class BridgeCommon {
 }
 
 @RunWith(AndroidJUnit4::class)
+@Suppress("LongMethod")
 class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)
@@ -236,21 +237,21 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `all error bridge messages should be expected`() {
-        assertEquals("method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
+        assertEquals("has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
         assertEquals("No support from hostapp", ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP)
         assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
         assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
         assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
         assertEquals(
-            "The `MiniAppMessageBridge.requestPermission` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestPermission` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION
         )
         assertEquals(
-            "The `MiniAppMessageBridge.requestDevicePermission` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestDevicePermission` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
         )
         assertEquals(
-            "The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestCustomPermissions` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
         )
         assertEquals("Cannot share content:", ErrorBridgeMessage.ERR_SHARE_CONTENT)
