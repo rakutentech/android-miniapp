@@ -1,13 +1,11 @@
 package com.rakuten.tech.mobile.testapp.ui.display.firsttime
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -15,16 +13,13 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
-class FirstTimeWindow(
-    private val activity: Activity,
-    private val firstTimeLaunchListener: FirstTimeLaunchListener
-) {
+class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
     private lateinit var firstTimeAlertDialog: AlertDialog
     private lateinit var firstTimeLayout: View
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
 
-    private var prefs: SharedPreferences = activity.getSharedPreferences(
+    private var prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
     )
 
@@ -40,7 +35,7 @@ class FirstTimeWindow(
             storeFirstTime(DEFAULT_FIRST_TIME) // should be false only after accept.
             launchScreen()
         } else {
-            firstTimeLaunchListener.onFirstTimeAccept(true, miniAppInfo, miniAppId)
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true, miniAppInfo, miniAppId)
         }
     }
 
@@ -52,10 +47,9 @@ class FirstTimeWindow(
     @SuppressLint("SetTextI18n")
     private fun initDefaultWindow() {
         // set ui components
-        val layoutInflater = LayoutInflater.from(activity)
-        firstTimeLayout = layoutInflater.inflate(R.layout.window_first_time_miniapp, null)
-        firstTimeAlertDialog =
-            AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
+        val layoutInflater = LayoutInflater.from(context)
+        firstTimeLayout = layoutInflater.inflate(R.layout.window_preload_miniapp, null)
+        firstTimeAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
         firstTimeAlertDialog.setView(firstTimeLayout)
 
         // set data to ui
@@ -63,7 +57,7 @@ class FirstTimeWindow(
         val versionView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppVersion)
         if (miniAppInfo != null) {
             setIcon(
-                activity,
+                context,
                 Uri.parse(miniAppInfo?.icon),
                 firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
             )
@@ -75,13 +69,13 @@ class FirstTimeWindow(
         }
 
         // set action listeners
-        firstTimeLayout.findViewById<Button>(R.id.firstTimeAccept).setOnClickListener {
+        firstTimeLayout.findViewById<TextView>(R.id.firstTimeAccept).setOnClickListener {
             storeFirstTime(false) // set false when accept
-            firstTimeLaunchListener.onFirstTimeAccept(true, miniAppInfo, miniAppId)
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
-        firstTimeLayout.findViewById<Button>(R.id.firstTimeCancel).setOnClickListener {
-            firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
+        firstTimeLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
         }
     }
@@ -100,8 +94,8 @@ class FirstTimeWindow(
     private fun storeFirstTime(isFirstTime: Boolean) =
         prefs.edit()?.putBoolean(miniAppId, isFirstTime)?.apply()
 
-    interface FirstTimeLaunchListener {
-        fun onFirstTimeAccept(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String)
+    interface PreloadMiniAppLaunchListener {
+        fun onPreloadMiniAppResponse(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String)
     }
 
     private companion object {
