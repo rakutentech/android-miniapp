@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -83,6 +84,13 @@ class FirstTimeWindow(
         firstTimeLayout.findViewById<Button>(R.id.firstTimeCancel).setOnClickListener {
             firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
             firstTimeAlertDialog.dismiss()
+        }
+        firstTimeAlertDialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                firstTimeLaunchListener.onFirstTimeAccept(false, miniAppInfo, miniAppId)
+                firstTimeAlertDialog.dismiss()
+                true
+            } else false
         }
     }
 
