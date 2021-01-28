@@ -123,7 +123,12 @@ class UserInfoBridgeSpec {
     @Test
     fun `postError should be called when there is no UserInfoBridgeDispatcher`() {
         val errMsg = "The `UserInfoBridgeDispatcher` ${ErrorBridgeMessage.NO_IMPL}"
+        // not set UserInfoBridgeDispatcher.
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
+        // not call init for MiniAppMessageBridge.
+        val miniAppBridgeSecond = Mockito.spy(createMessageBridge())
+        miniAppBridgeSecond.setUserInfoBridgeDispatcher(createUserNameImpl(false, false))
+        miniAppBridgeSecond.postMessage(Gson().toJson(userNameCallbackObj))
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
