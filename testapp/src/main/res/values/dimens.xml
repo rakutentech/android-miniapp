@@ -11,6 +11,7 @@
     <dimen name="tiny_2dp">2dp</dimen>
     <dimen name="small_4">4dp</dimen>
     <dimen name="small_8">8dp</dimen>
+    <dimen name="small_10">10dp</dimen>
     <dimen name="small_12">12dp</dimen>
     <dimen name="medium_16">16dp</dimen>
     <dimen name="large_24">24dp</dimen>

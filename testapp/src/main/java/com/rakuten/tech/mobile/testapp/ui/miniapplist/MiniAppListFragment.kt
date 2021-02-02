@@ -24,15 +24,15 @@ import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
+import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
 
 import kotlin.collections.ArrayList
 
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
-    SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     companion object {
         val TAG = MiniAppListFragment::class.java.canonicalName
@@ -43,8 +43,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private lateinit var searchView: SearchView
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(context!!, this) }
 
     private var fetchedMiniAppList: List<MiniAppInfo> = listOf()
+    private var selectedMiniAppInfo: MiniAppInfo? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,11 +64,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
         miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
-        if (AppSettings.instance.isPreviewMode) {
-            binding.btnInput.text = getString(R.string.action_go_input_preview_mode)
-        } else {
-            binding.btnInput.text = getString(R.string.action_go_input)
-        }
         return binding.root
     }
 
@@ -126,9 +123,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
-            activity?.let {
-                MiniAppDisplayActivity.start(it, miniAppInfo)
-            }
+            selectedMiniAppInfo = miniAppInfo
+            activity?.let { preloadMiniAppWindow.initiate(miniAppInfo, miniAppInfo.id) }
         }
     }
 
@@ -182,6 +178,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         binding.swipeRefreshLayout.isEnabled = newText.isNullOrEmpty()
 
         return true
+    }
+
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
+        if (isAccepted)
+            selectedMiniAppInfo?.let { MiniAppDisplayActivity.start(context!!, it) }
     }
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {

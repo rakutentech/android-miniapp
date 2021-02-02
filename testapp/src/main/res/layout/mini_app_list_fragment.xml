@@ -41,11 +41,12 @@
           android:visibility="gone"
           tools:visibility="visible" />
 
-        <Button
+        <TextView
             android:id="@+id/btnInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{() -> fragment.switchToInput()}"
+            android:foreground="?selectableItemBackground"
             android:background="@color/colorAccent"
             style="?android:attr/borderlessButtonStyle"
             android:textColor="@android:color/white"
