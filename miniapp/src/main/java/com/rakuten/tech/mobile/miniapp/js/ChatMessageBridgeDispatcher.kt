@@ -33,8 +33,8 @@ abstract class ChatMessageBridgeDispatcher {
         this.miniAppId = miniAppId
     }
 
-    internal fun onSendMessageToContact(callbackId: String, jsonStr: String) = try {
-        {
+    internal fun onSendMessageToContact(callbackId: String, jsonStr: String) {
+        try {
             val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
             val messageToContact = callbackObj.param.messageToContact
             val successCallback = { contactId: String? ->
@@ -45,9 +45,9 @@ abstract class ChatMessageBridgeDispatcher {
             }
 
             sendMessageToContact(messageToContact, successCallback, errorCallback)
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
         }
-    } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
     }
 
     internal companion object {

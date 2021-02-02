@@ -1,5 +1,13 @@
 ## CHANGELOG
 
+### X.X.X (In progress)
+**SDK**
+- **Feature:** Added `sendMessageToContact` interface in `ChatMessageBridgeDispatcher` for sending message to a single contact. HostApp can get the message using `MessageToContact` object.
+
+**Sample App**
+- **Feature:** Added first-time launching screen before downloading any miniapp.
+- **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
+
 ### 2.8.0 (2020-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
@@ -9,7 +17,6 @@
 - **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
 - **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
 - **Fix:** Dialog cancel event when touch outside area.
-- **Feature:** Added `sendMessageToContact` interface in `ChatMessageBridgeDispatcher` for sending message to a single contact. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.

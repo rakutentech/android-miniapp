@@ -27,12 +27,15 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
+import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.display.firsttime.FirstTimeWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ContactSelectionWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.ArrayList
 
-class MiniAppDisplayActivity : BaseActivity() {
+class MiniAppDisplayActivity : BaseActivity(), FirstTimeWindow.FirstTimeLaunchListener {
 
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
@@ -86,7 +89,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appUrl = intent.getStringExtra(appUrlTag)
-        var appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
+        val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
@@ -130,14 +133,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 AppSettings.instance.urlParameters
             )
         } else {
-            viewModel.obtainMiniAppDisplay(
-                this@MiniAppDisplayActivity,
-                appInfo,
-                appId!!,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                AppSettings.instance.urlParameters
-            )
+            val firstTimeWindow = FirstTimeWindow(this@MiniAppDisplayActivity, this)
+            firstTimeWindow.initiate(appInfo, appId!!)
         }
     }
 
@@ -261,5 +258,18 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (!viewModel.canGoBackwards()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onFirstTimeAccept(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String) {
+        if (isAccepted)
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                appInfo,
+                miniAppId,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                AppSettings.instance.urlParameters
+            )
+        else raceExecutor.run { launchActivity<MiniAppListActivity>() }
     }
 }
