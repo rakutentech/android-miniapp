@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     private lateinit var binding: MiniAppInputActivityBinding
-    private val firstTimeWindow by lazy { PreloadMiniAppWindow(this, this) }
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
 
     sealed class InputDisplay(val input: String) {
         class AppId(input: String): InputDisplay(input)
@@ -48,7 +48,7 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         })
 
         binding.btnDisplayAppId.setOnClickListener {
-            raceExecutor.run { display() }
+            raceExecutor.run { displayMiniApp() }
         }
         binding.btnDisplayList.setOnClickListener {
             raceExecutor.run { launchActivity<MiniAppListActivity>() }
@@ -89,9 +89,9 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         binding.btnDisplayAppId.isEnabled = true
     }
 
-    private fun display() = when(display) {
-        is InputDisplay.AppId -> firstTimeWindow.initiate(null, display.input)
-        is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input)
+    private fun displayMiniApp() = when(display) {
+        is InputDisplay.AppId -> preloadMiniAppWindow.initiate(null, display.input.trim())
+        is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
         is InputDisplay.None -> {}
     }
 
@@ -102,8 +102,8 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         return true
     }
 
-    override fun onPreloadMiniAppResponse(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String) {
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
         if (isAccepted)
-            MiniAppDisplayActivity.start(this, miniAppId)
+            MiniAppDisplayActivity.start(this, display.input)
     }
 }

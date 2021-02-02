@@ -13,9 +13,11 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
+private const val DEFAULT_ACCEPTANCE = false
+
 class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
-    private lateinit var firstTimeAlertDialog: AlertDialog
-    private lateinit var firstTimeLayout: View
+    private lateinit var preloadMiniAppAlertDialog: AlertDialog
+    private lateinit var preloadMiniAppLayout: View
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
 
@@ -29,37 +31,37 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             this.miniAppId = miniAppInfo!!.id
         } else this.miniAppId = miniAppId
 
-        if (isFirstTime()) {
+        if (!isAccepted()) {
             launchScreen()
         } else if (!doesDataExist()) {
-            storeFirstTime(DEFAULT_FIRST_TIME) // should be false only after accept.
+            storeAcceptance(DEFAULT_ACCEPTANCE) // should be false only after accept.
             launchScreen()
         } else {
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true, miniAppInfo, miniAppId)
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
         }
     }
 
     private fun launchScreen() {
         initDefaultWindow()
-        firstTimeAlertDialog.show()
+        preloadMiniAppAlertDialog.show()
     }
 
     @SuppressLint("SetTextI18n")
     private fun initDefaultWindow() {
         // set ui components
         val layoutInflater = LayoutInflater.from(context)
-        firstTimeLayout = layoutInflater.inflate(R.layout.window_preload_miniapp, null)
-        firstTimeAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
-        firstTimeAlertDialog.setView(firstTimeLayout)
+        preloadMiniAppLayout = layoutInflater.inflate(R.layout.window_preload_miniapp, null)
+        preloadMiniAppAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
+        preloadMiniAppAlertDialog.setView(preloadMiniAppLayout)
 
         // set data to ui
-        val nameView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppName)
-        val versionView = firstTimeLayout.findViewById<TextView>(R.id.firstTimeMiniAppVersion)
+        val nameView = preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeMiniAppName)
+        val versionView = preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeMiniAppVersion)
         if (miniAppInfo != null) {
             setIcon(
                 context,
                 Uri.parse(miniAppInfo?.icon),
-                firstTimeLayout.findViewById(R.id.firstTimeAppIcon)
+                preloadMiniAppLayout.findViewById(R.id.firstTimeAppIcon)
             )
 
             nameView.text = miniAppInfo?.displayName.toString()
@@ -69,36 +71,31 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         }
 
         // set action listeners
-        firstTimeLayout.findViewById<TextView>(R.id.firstTimeAccept).setOnClickListener {
-            storeFirstTime(false) // set false when accept
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true, miniAppInfo, miniAppId)
-            firstTimeAlertDialog.dismiss()
+        preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeAccept).setOnClickListener {
+            storeAcceptance(true) // set false when accept
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
+            preloadMiniAppAlertDialog.dismiss()
         }
-        firstTimeLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false, miniAppInfo, miniAppId)
-            firstTimeAlertDialog.dismiss()
+        preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
+            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
+            preloadMiniAppAlertDialog.dismiss()
         }
     }
 
     private fun doesDataExist() = prefs.contains(miniAppId)
 
-    private fun isFirstTime(): Boolean {
+    private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_FIRST_TIME)
+            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
         } catch (e: Exception) {
-            return true
+            return false
         }
-        return true
+        return false
     }
 
-    private fun storeFirstTime(isFirstTime: Boolean) =
-        prefs.edit()?.putBoolean(miniAppId, isFirstTime)?.apply()
+    private fun storeAcceptance(isAccepted: Boolean) = prefs.edit()?.putBoolean(miniAppId, isAccepted)?.apply()
 
     interface PreloadMiniAppLaunchListener {
-        fun onPreloadMiniAppResponse(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String)
-    }
-
-    private companion object {
-        const val DEFAULT_FIRST_TIME = true
+        fun onPreloadMiniAppResponse(isAccepted: Boolean)
     }
 }

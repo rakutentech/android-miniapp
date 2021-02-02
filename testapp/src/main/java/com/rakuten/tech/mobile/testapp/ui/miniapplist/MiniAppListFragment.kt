@@ -26,7 +26,6 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
 
@@ -44,9 +43,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private lateinit var searchView: SearchView
-    private val firstTimeWindow by lazy { PreloadMiniAppWindow(context!!, this) }
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(context!!, this) }
 
     private var fetchedMiniAppList: List<MiniAppInfo> = listOf()
+    private var selectedMiniAppInfo: MiniAppInfo? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -123,7 +123,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
-            activity?.let { firstTimeWindow.initiate(miniAppInfo, miniAppInfo.id) }
+            selectedMiniAppInfo = miniAppInfo
+            activity?.let { preloadMiniAppWindow.initiate(miniAppInfo, miniAppInfo.id) }
         }
     }
 
@@ -179,9 +180,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         return true
     }
 
-    override fun onPreloadMiniAppResponse(isAccepted: Boolean, appInfo: MiniAppInfo?, miniAppId: String) {
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
         if (isAccepted)
-            MiniAppDisplayActivity.start(context!!, appInfo!!)
+            selectedMiniAppInfo?.let { MiniAppDisplayActivity.start(context!!, it) }
     }
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
