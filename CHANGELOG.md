@@ -24,7 +24,6 @@
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
-- **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
 
 ### 2.7.1 (2020-12-23)
 **SDK**
