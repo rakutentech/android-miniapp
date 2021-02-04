@@ -395,13 +395,6 @@ class UserInfoBridgeSpec {
 
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-            override fun requestPermission(
-                miniAppPermissionType: MiniAppPermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
-            }
-
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit

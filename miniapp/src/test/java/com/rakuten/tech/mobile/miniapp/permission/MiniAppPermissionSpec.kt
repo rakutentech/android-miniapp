@@ -6,11 +6,6 @@ import org.junit.Test
 class MiniAppPermissionSpec {
 
     @Test
-    fun `should get default permission type when there is no permission type match`() {
-        MiniAppPermissionType.getValue("") shouldBe MiniAppPermissionType.UNKNOWN
-    }
-
-    @Test
     fun `should get the correct value of permission result`() {
         MiniAppDevicePermissionResult.getValue(true) shouldBe MiniAppDevicePermissionResult.ALLOWED
         MiniAppDevicePermissionResult.getValue(false) shouldBe MiniAppDevicePermissionResult.DENIED
