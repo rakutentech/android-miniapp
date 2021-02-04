@@ -114,6 +114,24 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     /** region: device permission */
     @Test
+    fun `postError should be called when device permission granted is false`() {
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+        val errMsg = "Denied"
+        val webViewListener = createErrorWebViewListener("dummy message")
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+
+        miniAppBridge.postMessage(permissionJsonStr)
+
+        verify(bridgeExecutor, times(1)).postError(permissionCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postValue should be called when device permission is granted`() {
         val isPermissionGranted = true
         val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
