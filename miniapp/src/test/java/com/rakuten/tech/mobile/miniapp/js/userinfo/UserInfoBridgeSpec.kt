@@ -156,7 +156,7 @@ class UserInfoBridgeSpec {
     }
 
     @Test
-    fun `postError should be called when get username failed`() {
+    fun `postError should be called when onGetUserName failed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
@@ -227,7 +227,7 @@ class UserInfoBridgeSpec {
     }
 
     @Test
-    fun `postError should be called when get profile photo failed`() {
+    fun `postError should be called when onGetProfilePhoto failed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
