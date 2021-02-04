@@ -90,9 +90,6 @@ class UserInfoBridgeSpec {
     ): UserInfoBridgeDispatcher {
         return if (hasUserName) {
             object : UserInfoBridgeDispatcher() {
-
-                override fun getUserName(): String = ""
-
                 override fun getUserName(
                     onSuccess: (userName: String) -> Unit,
                     onError: (message: String) -> Unit
@@ -154,20 +151,18 @@ class UserInfoBridgeSpec {
         ).thenReturn(false)
 
         userInfoBridgeWrapper.onGetUserName(userNameCallbackObj.id)
-        userInfoBridgeWrapper.getUserNameSync(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
 
     @Test
-    fun `postError should be called when user name is empty`() {
+    fun `postError should be called when get username failed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        val errMsg = "Cannot get user name: User name is not found."
+        val errMsg = "Cannot get user name: error_message"
 
         userInfoBridgeWrapper.onGetUserName(userNameCallbackObj.id)
-        userInfoBridgeWrapper.getUserNameSync(userNameCallbackObj.id)
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
     }
@@ -177,12 +172,9 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        whenever(userInfoBridgeDispatcher.getUserName()).thenReturn(TEST_USER_NAME)
-
         userInfoBridgeWrapper.onGetUserName(userNameCallbackObj.id)
-        userInfoBridgeWrapper.getUserNameSync(userNameCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        verify(bridgeExecutor, times(1)).postValue(userNameCallbackObj.id, TEST_USER_NAME)
     }
     /** end region */
 
@@ -193,8 +185,6 @@ class UserInfoBridgeSpec {
     ): UserInfoBridgeDispatcher {
         return if (hasProfilePhoto) {
             object : UserInfoBridgeDispatcher() {
-                override fun getProfilePhoto(): String = ""
-
                 override fun getProfilePhoto(
                     onSuccess: (profilePhoto: String) -> Unit,
                     onError: (message: String) -> Unit
@@ -232,20 +222,18 @@ class UserInfoBridgeSpec {
         ).thenReturn(false)
 
         userInfoBridgeWrapper.onGetProfilePhoto(profilePhotoCallbackObj.id)
-        userInfoBridgeWrapper.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
 
     @Test
-    fun `postError should be called when profile photo is empty`() {
+    fun `postError should be called when get profile photo failed`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        val errMsg = "Cannot get profile photo: Profile photo is not found."
+        val errMsg = "Cannot get profile photo: error_message"
 
         userInfoBridgeWrapper.onGetProfilePhoto(profilePhotoCallbackObj.id)
-        userInfoBridgeWrapper.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
         verify(bridgeExecutor).postError(profilePhotoCallbackObj.id, errMsg)
     }
@@ -255,12 +243,9 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        whenever(userInfoBridgeDispatcher.getProfilePhoto()).thenReturn(TEST_PROFILE_PHOTO)
-
         userInfoBridgeWrapper.onGetProfilePhoto(profilePhotoCallbackObj.id)
-        userInfoBridgeWrapper.getProfilePhotoSync(profilePhotoCallbackObj.id)
 
-        verify(bridgeExecutor, times(2)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
+        verify(bridgeExecutor, times(1)).postValue(profilePhotoCallbackObj.id, TEST_PROFILE_PHOTO)
     }
     /** end region */
 

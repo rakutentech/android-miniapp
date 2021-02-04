@@ -53,18 +53,8 @@ internal class UserInfoBridge {
             } else
                 bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $ERR_USER_NAME_NO_PERMISSION")
         } catch (e: Exception) {
-            if (e.message.toString().contains(NO_IMPL))getUserNameSync(callbackId)
-            else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
+            bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
         }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getUserNameSync(callbackId: String) = try {
-        val name = userInfoBridgeDispatcher.getUserName()
-        if (name.isNotEmpty()) bridgeExecutor.postValue(callbackId, name)
-        else bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME User name is not found.")
-    } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME ${e.message}")
     }
 
     fun onGetProfilePhoto(callbackId: String) = whenReady(callbackId) {
@@ -81,18 +71,8 @@ internal class UserInfoBridge {
             } else
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
         } catch (e: Exception) {
-            if (e.message.toString().contains(NO_IMPL)) getProfilePhotoSync(callbackId)
-            else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
+            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getProfilePhotoSync(callbackId: String) = try {
-        val photoUrl = userInfoBridgeDispatcher.getProfilePhoto()
-        if (photoUrl.isNotEmpty()) bridgeExecutor.postValue(callbackId, photoUrl)
-        else bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO Profile photo is not found.")
-    } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
     }
 
     internal fun onGetAccessToken(callbackId: String) = whenReady(callbackId) {
