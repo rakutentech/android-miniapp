@@ -21,7 +21,8 @@ class ContactSelectionWindow(private val activity: Activity) :
     private lateinit var contactSelectionAdapter: ContactSelectionAdapter
     private lateinit var contactSelectionLayout: View
 
-    private val hasContact = AppSettings.instance.isContactsSaved
+    private val hasContact =
+        AppSettings.instance.isContactsSaved && !AppSettings.instance.contactNames.isNullOrEmpty()
 
     private lateinit var message: MessageToContact
     private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
@@ -85,7 +86,7 @@ class ContactSelectionWindow(private val activity: Activity) :
                 // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
                 showAlertDialog(
                     activity,
-                    "The message: ${message.title} has been sent to contact id: $contactId"
+                    "The message has been sent to contact id: $contactId"
                 )
             }
         }
