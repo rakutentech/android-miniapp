@@ -215,7 +215,7 @@ The `UserInfoBridgeDispatcher`:
 | getAccessToken               | 🚫       |
 | getContacts                  | 🚫       |
 
-The `ChatMessageBridgeDispatcher`:
+The `ChatBridgeDispatcher`:
 
 | Method                       | Default  |
 |------------------------------|----------|
@@ -328,7 +328,7 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
 // set UserInfoBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
-val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
     override fun sendMessageToContact(
         message: MessageToContact,
@@ -347,8 +347,8 @@ val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
     }
 }
 
-// set ChatMessageBridgeDispatcher object to miniAppMessageBridge
-miniAppMessageBridge.setChatMessageBridgeDispatcher(chatMessageBridgeDispatcher)
+// set ChatBridgeDispatcher object to miniAppMessageBridge
+miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 ```
 </details>
 

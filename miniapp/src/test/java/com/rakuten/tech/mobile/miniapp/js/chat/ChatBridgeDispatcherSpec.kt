@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.userinfo
+package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -20,12 +20,11 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ActionType
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
-import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher.Companion.ERR_SEND_MESSAGE
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge.Companion.ERR_SEND_MESSAGE
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.When
@@ -35,7 +34,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
-class ChatMessageBridgeDispatcherSpec {
+class ChatBridgeDispatcherSpec {
 
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val sendMessageCallbackObj = CallbackObj(
@@ -73,7 +72,7 @@ class ChatMessageBridgeDispatcherSpec {
 
     private fun createChatMessageBridgeDispatcher(
         canSendMessage: Boolean
-    ): ChatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+    ): ChatBridgeDispatcher = object : ChatBridgeDispatcher {
 
         override fun sendMessageToContact(
             message: MessageToContact,
@@ -85,6 +84,16 @@ class ChatMessageBridgeDispatcherSpec {
             else
                 onError.invoke(TEST_ERROR_MSG)
         }
+    }
+
+    private fun createChatBridge(chatBridgeDispatcher: ChatBridgeDispatcher): ChatBridge {
+        val chatBridge = ChatBridge()
+        chatBridge.setMiniAppComponents(
+            bridgeExecutor,
+            TEST_MA.id
+        )
+        chatBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+        return chatBridge
     }
 
     private fun createMessageBridge(): MiniAppMessageBridge =
@@ -105,10 +114,10 @@ class ChatMessageBridgeDispatcherSpec {
     fun `postError should be called when hostapp can't send message`() {
         val chatMessageBridgeDispatcher =
             Mockito.spy(createChatMessageBridgeDispatcher(false))
-        chatMessageBridgeDispatcher.init(bridgeExecutor, TEST_MA_ID)
+        val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher))
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 
-        chatMessageBridgeDispatcher.onSendMessageToContact(
+        chatBridge.onSendMessageToContact(
             sendMessageCallbackObj.id,
             sendingMessageJsonStr
         )
@@ -120,9 +129,9 @@ class ChatMessageBridgeDispatcherSpec {
     fun `postValue should be called when hostapp can send message`() {
         val chatMessageBridgeDispatcher =
             Mockito.spy(createChatMessageBridgeDispatcher(true))
-        chatMessageBridgeDispatcher.init(bridgeExecutor, TEST_MA_ID)
+        val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher))
 
-        chatMessageBridgeDispatcher.onSendMessageToContact(
+        chatBridge.onSendMessageToContact(
             sendMessageCallbackObj.id,
             sendingMessageJsonStr
         )

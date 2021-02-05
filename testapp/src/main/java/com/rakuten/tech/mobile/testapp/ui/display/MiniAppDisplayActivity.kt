@@ -17,10 +17,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
-import com.rakuten.tech.mobile.miniapp.js.ChatMessageBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -218,8 +218,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
-        // setup ChatMessageBridgeDispatcher
-        val chatMessageBridgeDispatcher = object : ChatMessageBridgeDispatcher() {
+        // setup ChatBridgeDispatcher
+        val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
             override fun sendMessageToContact(
                 message: MessageToContact,
@@ -230,7 +230,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 contactSelectionWindow.openSingleContactSelection(message, onSuccess, onError)
             }
         }
-        miniAppMessageBridge.setChatMessageBridgeDispatcher(chatMessageBridgeDispatcher)
+        miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(
