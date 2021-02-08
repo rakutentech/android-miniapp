@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -39,9 +40,7 @@ internal class MiniAppDownloader(
     }
 
     suspend fun getMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> = try {
-        //onGetMiniApp(miniAppInfo)
-        fetchMetadata(miniAppInfo.id, miniAppInfo.version.versionId)
-        Pair("", MiniAppInfo.forUrl())
+        onGetMiniApp(miniAppInfo)
     } catch (netError: MiniAppNetException) {
         onNetworkError(miniAppInfo)
     }
@@ -125,10 +124,35 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
-    suspend fun fetchMetadata(
-        appId: String,
-        versionId: String
-    ) = apiClient.fetchManifest(appId, versionId)
+    // TODO: replace with fetchMetadata
+    fun fetchMockMetadata(appId: String, versionId: String): MiniAppManifest {
+        val keyMap = mutableMapOf<String, String>()
+        keyMap["exampleKey"] = "test"
+        return MiniAppManifest(
+            listOf(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionType.PROFILE_PHOTO),
+            listOf(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionType.LOCATION),
+            keyMap
+        )
+    }
+
+    // TODO: replace with fetchMetadata
+    fun fetchMockPreviousMetadata(appId: String, versionId: String): MiniAppManifest {
+        val keyMap = mutableMapOf<String, String>()
+        keyMap["exampleKey"] = "test-previous"
+        return MiniAppManifest(
+            listOf(MiniAppCustomPermissionType.USER_NAME),
+            listOf(MiniAppCustomPermissionType.CONTACT_LIST),
+            keyMap
+        )
+    }
+
+    // TODO: fetch api data
+    suspend fun fetchMetadata(appId: String, versionId: String) =
+        apiClient.fetchManifest(appId, versionId)
+
+    // TODO
+    suspend fun fetchPreviousMetadata(appId: String, versionId: String) =
+        apiClient.fetchManifest(appId, versionId)
 
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
