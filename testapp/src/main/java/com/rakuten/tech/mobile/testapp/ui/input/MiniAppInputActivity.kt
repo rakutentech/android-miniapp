@@ -6,14 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.webkit.URLUtil
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.display.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
@@ -22,7 +21,12 @@ import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     private lateinit var binding: MiniAppInputActivityBinding
-    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
+    private val preloadMiniAppWindow by lazy {
+        PreloadMiniAppWindow(
+            this,
+            this
+        )
+    }
 
     sealed class InputDisplay(val input: String) {
         class AppId(input: String): InputDisplay(input)

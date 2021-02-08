@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.display.firsttime
+package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,14 +8,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
+import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsAdapter
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.lang.Exception
 
 private const val DEFAULT_ACCEPTANCE = false
 
-class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
+class PreloadMiniAppWindow(
+    private val context: Context,
+    private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener
+) {
+    private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
     private lateinit var preloadMiniAppLayout: View
     private var miniAppInfo: MiniAppInfo? = null
@@ -55,13 +67,13 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         preloadMiniAppAlertDialog.setView(preloadMiniAppLayout)
 
         // set data to ui
-        val nameView = preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeMiniAppName)
-        val versionView = preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeMiniAppVersion)
+        val nameView = preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppName)
+        val versionView = preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppVersion)
         if (miniAppInfo != null) {
             setIcon(
                 context,
                 Uri.parse(miniAppInfo?.icon),
-                preloadMiniAppLayout.findViewById(R.id.firstTimeAppIcon)
+                preloadMiniAppLayout.findViewById(R.id.preloadAppIcon)
             )
 
             nameView.text = miniAppInfo?.displayName.toString()
@@ -70,13 +82,44 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             nameView.text = "No info found for this miniapp!"
         }
 
+        // set manifest/metadata to UI: permissions
+        val permissionAdapter = MiniAppPermissionSettingsAdapter()
+        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).layoutManager =
+            LinearLayoutManager(context)
+        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).adapter =
+            permissionAdapter
+        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission)
+            .addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            )
+        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
+
+        // TODO: required permission must be allowed by default
+        miniApp.getManifest(miniAppId, "").requiredPermissions?.forEach {
+            namesForAdapter.add(it)
+            resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+        }
+
+        // TODO: optional permission may be allowed/denied
+        miniApp.getManifest(miniAppId, "").optionalPermissions?.forEach {
+            namesForAdapter.add(it)
+            resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
+        }
+
+        permissionAdapter.addPermissionList(
+            namesForAdapter,
+            resultsForAdapter,
+            arrayListOf() // TODO: put reason here
+        )
+
         // set action listeners
-        preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeAccept).setOnClickListener {
+        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {
             storeAcceptance(true) // set false when accept
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
         }
-        preloadMiniAppLayout.findViewById<TextView>(R.id.firstTimeCancel).setOnClickListener {
+        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadCancel).setOnClickListener {
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
             preloadMiniAppAlertDialog.dismiss()
         }
@@ -86,7 +129,9 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
     private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
+            if (doesDataExist()) return prefs.getBoolean(miniAppId,
+                DEFAULT_ACCEPTANCE
+            )
         } catch (e: Exception) {
             return false
         }
