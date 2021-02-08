@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
@@ -25,6 +26,7 @@ internal class ApiClient @VisibleForTesting constructor(
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
+    private val metadataApi: MetadataApi = retrofit.create(MetadataApi::class.java),
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
@@ -79,6 +81,17 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchManifest(miniAppId: String, versionId: String): MetadataEntity {
+        val request = metadataApi.fetchMetadata(
+            hostAppId = hostProjectId,
+            miniAppId = miniAppId,
+            versionId = versionId,
+            testPath = testPath
+        )
+        return requestExecutor.executeRequest(request)
+    }
+
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
         return requestExecutor.executeRequest(request)
@@ -95,6 +108,9 @@ internal class RetrofitRequestExecutor(
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
+
+        Log.d("AAAA",""+response.raw())
+
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful

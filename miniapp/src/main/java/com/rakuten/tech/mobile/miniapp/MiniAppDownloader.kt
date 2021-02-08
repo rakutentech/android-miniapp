@@ -39,7 +39,9 @@ internal class MiniAppDownloader(
     }
 
     suspend fun getMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> = try {
-        onGetMiniApp(miniAppInfo)
+        //onGetMiniApp(miniAppInfo)
+        fetchMetadata(miniAppInfo.id, miniAppInfo.version.versionId)
+        Pair("", MiniAppInfo.forUrl())
     } catch (netError: MiniAppNetException) {
         onNetworkError(miniAppInfo)
     }
@@ -122,6 +124,11 @@ internal class MiniAppDownloader(
         appId: String,
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
+
+    suspend fun fetchMetadata(
+        appId: String,
+        versionId: String
+    ) = apiClient.fetchManifest(appId, versionId)
 
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
