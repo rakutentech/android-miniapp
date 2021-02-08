@@ -21,12 +21,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     private lateinit var binding: MiniAppInputActivityBinding
-    private val preloadMiniAppWindow by lazy {
-        PreloadMiniAppWindow(
-            this,
-            this
-        )
-    }
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
 
     sealed class InputDisplay(val input: String) {
         class AppId(input: String): InputDisplay(input)

@@ -23,10 +23,7 @@ import java.lang.Exception
 
 private const val DEFAULT_ACCEPTANCE = false
 
-class PreloadMiniAppWindow(
-    private val context: Context,
-    private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener
-) {
+class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
     private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
     private lateinit var preloadMiniAppLayout: View
@@ -107,6 +104,9 @@ class PreloadMiniAppWindow(
             resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
         }
 
+        // TODO: cleanup ui with mentioning required and optional permissions
+        // TODO: set custom permission while accepting to download
+
         permissionAdapter.addPermissionList(
             namesForAdapter,
             resultsForAdapter,
@@ -129,9 +129,7 @@ class PreloadMiniAppWindow(
 
     private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId,
-                DEFAULT_ACCEPTANCE
-            )
+            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
         } catch (e: Exception) {
             return false
         }

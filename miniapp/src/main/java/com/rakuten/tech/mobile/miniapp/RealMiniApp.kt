@@ -19,6 +19,7 @@ internal class RealMiniApp(
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
+    // TODO: update to ensure manifest is fetched from api
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppInfoFetcher.getInfo(appId)
