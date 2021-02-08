@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 3.x.x (In progress)
+- **Change:** Support Android 7 - API 24 as minimum version.
+
 ### 2.8.0 (2020-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
