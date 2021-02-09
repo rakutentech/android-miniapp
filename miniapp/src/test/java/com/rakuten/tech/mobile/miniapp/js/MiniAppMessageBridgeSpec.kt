@@ -34,13 +34,6 @@ open class BridgeCommon {
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-            override fun requestPermission(
-                miniAppPermissionType: MiniAppPermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
-            }
-
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
@@ -61,37 +54,11 @@ open class BridgeCommon {
     protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
         override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-        override fun requestPermission(
-            miniAppPermissionType: MiniAppPermissionType,
-            callback: (isGranted: Boolean) -> Unit
-        ) {
-            onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
-        }
-
         override fun requestDevicePermission(
             miniAppPermissionType: MiniAppDevicePermissionType,
             callback: (isGranted: Boolean) -> Unit
         ) {
             onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
-        }
-    }
-
-    protected fun createDevicePermissionBridge(isImplementation: Boolean): MiniAppMessageBridge {
-        if (isImplementation) {
-            return object : MiniAppMessageBridge() {
-                override fun getUniqueId() = TEST_CALLBACK_VALUE
-
-                override fun requestPermission(
-                    miniAppPermissionType: MiniAppPermissionType,
-                    callback: (isGranted: Boolean) -> Unit
-                ) {
-                    onRequestDevicePermissionsResult(TEST_CALLBACK_ID, true)
-                }
-            }
-        } else {
-            return object : MiniAppMessageBridge() {
-                override fun getUniqueId() = TEST_CALLBACK_VALUE
-            }
         }
     }
 
@@ -147,10 +114,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     /** region: device permission */
     @Test
-    fun `postError should be called when there is no device permission interface implementation`() {
-        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(false))
-        val errMsg = "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION}" +
-                " The `MiniAppMessageBridge.requestPermission` ${ErrorBridgeMessage.NO_IMPL}"
+    fun `postError should be called when device permission granted is false`() {
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+        val errMsg = "Denied"
         val webViewListener = createErrorWebViewListener("dummy message")
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
@@ -163,24 +129,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor, times(1)).postError(permissionCallbackObj.id, errMsg)
-    }
-
-    @Test
-    fun `postValue should be called when device permission is granted in deprecated function`() {
-        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(true))
-        val webViewListener = createErrorWebViewListener("dummy message")
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            miniAppId = TEST_MA_ID
-        )
-
-        miniAppBridge.postMessage(permissionJsonStr)
-
-        verify(bridgeExecutor, times(1))
-            .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(true).type)
     }
 
     @Test

@@ -9,15 +9,6 @@ import java.util.ArrayList
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class UserInfoBridgeDispatcher {
-    /**
-     * Get user name from host app.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
-     */
-    @Deprecated(
-        "This function has been deprecated.",
-        ReplaceWith("getUserName(onSuccess: (name: String) -> Unit, onError: (message: String) -> Unit)")
-    )
-    open fun getUserName(): String = throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
 
     /**
      * Get user name from host app.
@@ -29,17 +20,6 @@ abstract class UserInfoBridgeDispatcher {
     ) {
         throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
     }
-
-    /**
-     * Get profile photo url from host app.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
-     */
-    @Deprecated(
-        "This function has been deprecated.",
-        ReplaceWith("getProfilePhoto(onSuccess: (photoUrl: String) -> Unit, onError: (message: String) -> Unit)")
-    )
-    open fun getProfilePhoto(): String =
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
 
     /**
      * Get profile photo url from host app.
