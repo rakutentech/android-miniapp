@@ -135,10 +135,8 @@ class RealMiniAppSpec {
         val miniApp = Mockito.spy(realMiniApp)
         val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
-            isTestMode = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             isPreviewMode = true,
-            rasAppId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
