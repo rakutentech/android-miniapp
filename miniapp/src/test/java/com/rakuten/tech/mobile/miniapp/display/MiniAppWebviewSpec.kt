@@ -297,13 +297,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
-            webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_PHONE_URI)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_PHONE_URI.toUri()))
 
         verify(miniAppScheme, times(1)).openPhoneDialer(context, TEST_PHONE_URI)
     }
@@ -326,11 +321,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator!!,
             externalResultHandler, miniAppScheme))
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
         miniAppNavigator shouldNotBe null
         verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
@@ -343,11 +334,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
         verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
     }

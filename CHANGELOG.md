@@ -4,6 +4,20 @@
 **Sample App**
 - **Feature:** Added first-time launching screen before downloading any miniapp.
 
+### 3.X.X (In progress)
+
+- **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
+
+Before v3.0.0  |  Replace with v3.0.0
+------------- | -------------
+`isTestMode`  | `isPreviewMode`
+`rasAppId`  | `rasProjectId`
+`MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission`
+`getUserName(): String` | `getUserName(onSuccess: (userName: String) -> Unit, onError: (message: String) -> Unit)`
+`getProfilePhoto(): String` | `getProfilePhoto(onSuccess: (profilePhoto: String) -> Unit, onError: (message: String) -> Unit)`
+
+- **Change:** Support Android 7 - API 24 as minimum version.
+
 ### 2.8.0 (2020-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.

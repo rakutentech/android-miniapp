@@ -15,7 +15,7 @@ Mini App SDK also facilitates communication between a mini app and the host app 
 
 ## Requirements
 
-- **Minimum Android Version**: This SDK supports Android 6.0+ (API level 23+).
+- **Minimum Android Version**: This SDK supports Android 7.0+ (API level 24+).
 - **Base URL, App ID, Subscription Key**: We don't currently provide a public API for use with this SDK. You must provide a URL for your API as well as an App ID and Subscription Key for the API.
 
 ## Getting Started
@@ -43,7 +43,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ✅         | false     |
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
