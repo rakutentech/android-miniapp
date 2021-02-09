@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### X.X.X (In progress)
+**Sample App**
+- **Feature:** Added first-time launching screen before downloading any miniapp.
+
 ### 2.8.0 (2020-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
@@ -16,7 +20,6 @@
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
-- **Feature:** Added first-time launching screen before downloading any miniapp.
 
 ### 2.7.1 (2020-12-23)
 **SDK**
