@@ -134,11 +134,6 @@ abstract class MiniApp internal constructor() {
     abstract fun getManifest(appId: String, versionId: String): MiniAppManifest
 
     /**
-     * TODO
-     */
-    abstract fun getPreviousManifest(appId: String, versionId: String): MiniAppManifest
-
-    /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)

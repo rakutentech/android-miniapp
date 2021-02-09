@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.permission
+package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
+import com.rakuten.tech.mobile.testapp.ui.permission.toReadableName
 
-class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
+class PreloadMiniAppPermissionAdapter : RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
-    // TODO: "required" permissions should be just listed with a label "Required"
-    // TODO: "optional" permissions should have a toggle switch to enable/disable the permission
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
     private var permissionDescriptions = ArrayList<String>()
     var permissionPairs =

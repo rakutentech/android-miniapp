@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.display
+package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,7 +17,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
-import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsAdapter
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.lang.Exception
 
@@ -80,7 +79,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         }
 
         // set manifest/metadata to UI: permissions
-        val permissionAdapter = MiniAppPermissionSettingsAdapter()
+        val permissionAdapter = PreloadMiniAppPermissionAdapter()
         preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).layoutManager =
             LinearLayoutManager(context)
         preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).adapter =
@@ -90,15 +89,15 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             )
         val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+
+        // TODO: support "required" and "optional" custom permissions
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
-        // TODO: required permission must be allowed by default
         miniApp.getManifest(miniAppId, "").requiredPermissions?.forEach {
             namesForAdapter.add(it)
             resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
         }
 
-        // TODO: optional permission may be allowed/denied
         miniApp.getManifest(miniAppId, "").optionalPermissions?.forEach {
             namesForAdapter.add(it)
             resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
@@ -129,7 +128,9 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
     private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
+            if (doesDataExist()) return prefs.getBoolean(miniAppId,
+                DEFAULT_ACCEPTANCE
+            )
         } catch (e: Exception) {
             return false
         }

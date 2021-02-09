@@ -135,23 +135,8 @@ internal class MiniAppDownloader(
         )
     }
 
-    // TODO: replace with fetchMetadata
-    fun fetchMockPreviousMetadata(appId: String, versionId: String): MiniAppManifest {
-        val keyMap = mutableMapOf<String, String>()
-        keyMap["exampleKey"] = "test-previous"
-        return MiniAppManifest(
-            listOf(MiniAppCustomPermissionType.USER_NAME),
-            listOf(MiniAppCustomPermissionType.CONTACT_LIST),
-            keyMap
-        )
-    }
-
     // TODO: fetch api data
     suspend fun fetchMetadata(appId: String, versionId: String) =
-        apiClient.fetchManifest(appId, versionId)
-
-    // TODO
-    suspend fun fetchPreviousMetadata(appId: String, versionId: String) =
         apiClient.fetchManifest(appId, versionId)
 
     @SuppressWarnings("LongMethod")

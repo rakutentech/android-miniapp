@@ -24,7 +24,7 @@ import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
@@ -43,7 +43,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private lateinit var searchView: SearchView
-    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(context!!,this) }
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(requireContext(),this) }
 
     private var fetchedMiniAppList: List<MiniAppInfo> = listOf()
     private var selectedMiniAppInfo: MiniAppInfo? = null

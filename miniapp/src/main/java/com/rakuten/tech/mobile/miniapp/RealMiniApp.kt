@@ -100,9 +100,6 @@ internal class RealMiniApp(
     override fun getManifest(appId: String, versionId: String): MiniAppManifest =
         miniAppDownloader.fetchMockMetadata(appId, versionId)
 
-    override fun getPreviousManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMockPreviousMetadata(appId, versionId)
-
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {
