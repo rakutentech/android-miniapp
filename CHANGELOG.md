@@ -13,8 +13,8 @@ Before v3.0.0  |  Replace with v3.0.0
 `isTestMode`  | `isPreviewMode`
 `rasAppId`  | `rasProjectId`
 `MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission`
-`getUserName(): String` | `getUserName(onSuccess: (userName: String) -> Unit, onError: (message: String) -> Unit)`
-`getProfilePhoto(): String` | `getProfilePhoto(onSuccess: (profilePhoto: String) -> Unit, onError: (message: String) -> Unit)`
+`getUserName(): String` | `getUserName(onSuccess, onError)`
+`getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
 
 - **Change:** Support Android 7 - API 24 as minimum version.
 
