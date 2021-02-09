@@ -1,12 +1,18 @@
 ## CHANGELOG
 
 ### 3.X.X (In progress)
+
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
+
 `isTestMode` -> `isPreviewMode`.
+
 `rasAppId` -> `rasProjectId`.
+
 `MiniAppMessageBridge.requestPermission` -> `MiniAppMessageBridge.requestDevicePermission`.
+
 Replace `getUserName`, `getProfilePhoto` with new prototypes.
 
+- **Change:** Support Android 7 - API 24 as minimum version.
 
 ### 2.8.0 (2020-01-25)
 **SDK**
