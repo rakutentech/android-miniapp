@@ -16,7 +16,7 @@ class MiniAppSpec {
         val miniAppSdkConfig: MiniAppSdkConfig = mock()
         val miniAppCompanion = MiniApp.Companion
 
-        miniAppCompanion.instance = miniApp
+        miniAppCompanion.miniAppInstance = miniApp
         miniAppCompanion.instance(miniAppSdkConfig)
 
         verify(miniApp, times(1)).updateConfiguration(miniAppSdkConfig)

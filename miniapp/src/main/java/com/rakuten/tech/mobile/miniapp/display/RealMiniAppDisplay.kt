@@ -23,7 +23,6 @@ import kotlinx.coroutines.withContext
 
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
-    val context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
@@ -41,7 +40,6 @@ internal class RealMiniAppDisplay(
     internal fun getMiniAppAnalytics() = MiniAppAnalytics.instance
 
     constructor(
-        context: Context,
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
@@ -49,7 +47,6 @@ internal class RealMiniAppDisplay(
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         queryParams: String
     ) : this(
-        context,
         "",
         MiniAppInfo.forUrl(),
         miniAppMessageBridge,

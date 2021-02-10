@@ -17,7 +17,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 /**
  * This represents the contract between the consuming application and the SDK
  * by which operations in the mini app ecosystem are exposed.
- * Should be accessed via [MiniApp.instance].
+ * Should be accessed via [MiniApp.miniAppInstance].
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class MiniApp internal constructor() {
@@ -135,8 +135,9 @@ abstract class MiniApp internal constructor() {
 
     companion object {
         @VisibleForTesting
-        internal lateinit var instance: MiniApp
+        internal lateinit var miniAppInstance: MiniApp
         private lateinit var defaultConfig: MiniAppSdkConfig
+        private var hostAppContext: Context? = null
 
         /**
          * Instance of [MiniApp] which uses the default config settings,
@@ -146,33 +147,43 @@ abstract class MiniApp internal constructor() {
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
-            instance.apply { updateConfiguration(settings) }
+        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp {
+            if (!::miniAppInstance.isInitialized)
+                initMiniAppInstance()
 
-        @Suppress("LongMethod")
+            miniAppInstance.updateConfiguration(settings)
+            return miniAppInstance
+        }
+
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
+            hostAppContext = context
             defaultConfig = miniAppSdkConfig
+        }
+
+        private fun initMiniAppInstance() {
             val apiClient = ApiClient(
-                baseUrl = miniAppSdkConfig.baseUrl,
-                rasProjectId = miniAppSdkConfig.rasProjectId,
-                subscriptionKey = miniAppSdkConfig.subscriptionKey,
-                isPreviewMode = miniAppSdkConfig.isPreviewMode
+                baseUrl = defaultConfig.baseUrl,
+                rasProjectId = defaultConfig.rasProjectId,
+                subscriptionKey = defaultConfig.subscriptionKey,
+                isPreviewMode = defaultConfig.isPreviewMode
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val miniAppStatus = MiniAppStatus(context)
-            val storage = MiniAppStorage(FileWriter(), context.filesDir)
-            val verifier = CachedMiniAppVerifier(context)
+            val miniAppStatus = MiniAppStatus(hostAppContext!!)
+            val storage = MiniAppStorage(FileWriter(), hostAppContext!!.filesDir)
+            val verifier = CachedMiniAppVerifier(hostAppContext!!)
 
-            instance = RealMiniApp(
+            miniAppInstance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
+                displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(hostAppContext!!)
             )
+
+            hostAppContext = null
         }
     }
 }
