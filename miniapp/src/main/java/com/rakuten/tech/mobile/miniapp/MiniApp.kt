@@ -137,6 +137,7 @@ abstract class MiniApp internal constructor() {
         @VisibleForTesting
         internal lateinit var miniAppInstance: MiniApp
         private lateinit var defaultConfig: MiniAppSdkConfig
+        //suppose to be application context and set null in the end so no memory leak.
         private var hostAppContext: Context? = null
 
         /**
