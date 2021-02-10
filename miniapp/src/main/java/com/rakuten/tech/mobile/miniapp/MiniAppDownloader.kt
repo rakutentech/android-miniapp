@@ -2,8 +2,10 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
@@ -125,7 +127,7 @@ internal class MiniAppDownloader(
     ) = apiClient.fetchFileList(appId, versionId)
 
     // TODO: replace with fetchMetadata
-    fun fetchMockMetadata(appId: String, versionId: String): MiniAppManifest {
+    suspend fun fetchMockMetadata(appId: String, versionId: String): MiniAppManifest {
         val keyMap = mutableMapOf<String, String>()
         keyMap["exampleKey"] = "test"
         return MiniAppManifest(
@@ -136,8 +138,24 @@ internal class MiniAppDownloader(
     }
 
     // TODO: fetch api data
-    suspend fun fetchMetadata(appId: String, versionId: String) =
-        apiClient.fetchManifest(appId, versionId)
+    suspend fun fetchMetadata(appId: String, versionId: String): MiniAppManifest {
+        val manifestResponse = apiClient.fetchManifest(appId, versionId)
+        return prepareManifest(manifestResponse)
+    }
+
+    private fun prepareManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+        val requiredPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        val optionalPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        metadataEntity.manifest.requiredPermissions?.forEach {
+            requiredPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
+        }
+        metadataEntity.manifest.optionalPermissions?.forEach {
+            optionalPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
+        }
+
+        // TODO: key mapping
+        return MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+    }
 
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(

@@ -109,7 +109,7 @@ internal class RetrofitRequestExecutor(
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
 
-        Log.d("AAAA",""+response.raw())
+        Log.d("AAAA",""+response.body())
 
         when {
             response.isSuccessful -> {

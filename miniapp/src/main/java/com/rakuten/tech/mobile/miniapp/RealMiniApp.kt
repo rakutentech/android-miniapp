@@ -97,7 +97,7 @@ internal class RealMiniApp(
         }
     }
 
-    override fun getManifest(appId: String, versionId: String): MiniAppManifest =
+    override suspend fun getManifest(appId: String, versionId: String): MiniAppManifest =
         miniAppDownloader.fetchMockMetadata(appId, versionId)
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {

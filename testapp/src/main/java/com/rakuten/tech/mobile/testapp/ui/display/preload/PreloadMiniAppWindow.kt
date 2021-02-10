@@ -18,6 +18,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 private const val DEFAULT_ACCEPTANCE = false
@@ -93,14 +96,16 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         // TODO: support "required" and "optional" custom permissions
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
-        miniApp.getManifest(miniAppId, "").requiredPermissions?.forEach {
-            namesForAdapter.add(it)
-            resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
-        }
+        GlobalScope.launch(Dispatchers.IO) {
+            miniApp.getManifest(miniAppId, "").requiredPermissions?.forEach {
+                namesForAdapter.add(it)
+                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+            }
 
-        miniApp.getManifest(miniAppId, "").optionalPermissions?.forEach {
-            namesForAdapter.add(it)
-            resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
+            miniApp.getManifest(miniAppId, "").optionalPermissions?.forEach {
+                namesForAdapter.add(it)
+                resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
+            }
         }
 
         // TODO: cleanup ui with mentioning required and optional permissions
