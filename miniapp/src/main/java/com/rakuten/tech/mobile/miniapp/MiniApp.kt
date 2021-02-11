@@ -9,15 +9,11 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
-import com.rakuten.tech.mobile.miniapp.storage.FileWriter
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 /**
  * This represents the contract between the consuming application and the SDK
  * by which operations in the mini app ecosystem are exposed.
- * Should be accessed via [MiniApp.miniAppInstance].
+ * Should be accessed via [MiniApp.instance].
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class MiniApp internal constructor() {
@@ -135,10 +131,8 @@ abstract class MiniApp internal constructor() {
 
     companion object {
         @VisibleForTesting
-        internal lateinit var miniAppInstance: MiniApp
+        internal lateinit var instance: MiniApp
         private lateinit var defaultConfig: MiniAppSdkConfig
-        //suppose to be application context and set null in the end so no memory leak.
-        private var hostAppContext: Context? = null
 
         /**
          * Instance of [MiniApp] which uses the default config settings,
@@ -148,43 +142,28 @@ abstract class MiniApp internal constructor() {
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp {
-            if (!::miniAppInstance.isInitialized)
-                initMiniAppInstance()
-
-            miniAppInstance.updateConfiguration(settings)
-            return miniAppInstance
-        }
+        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
+            instance.apply { updateConfiguration(settings) }
 
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
-            hostAppContext = context
             defaultConfig = miniAppSdkConfig
-        }
-
-        private fun initMiniAppInstance() {
             val apiClient = ApiClient(
-                baseUrl = defaultConfig.baseUrl,
-                rasProjectId = defaultConfig.rasProjectId,
-                subscriptionKey = defaultConfig.subscriptionKey,
-                isPreviewMode = defaultConfig.isPreviewMode
+                baseUrl = miniAppSdkConfig.baseUrl,
+                rasProjectId = miniAppSdkConfig.rasProjectId,
+                subscriptionKey = miniAppSdkConfig.subscriptionKey,
+                isPreviewMode = miniAppSdkConfig.isPreviewMode
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val miniAppStatus = MiniAppStatus(hostAppContext!!)
-            val storage = MiniAppStorage(FileWriter(), hostAppContext!!.filesDir)
-            val verifier = CachedMiniAppVerifier(hostAppContext!!)
-
-            miniAppInstance = RealMiniApp(
+            instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
+                miniAppDownloader = MiniAppDownloader(context, apiClient),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(hostAppContext!!)
+                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )
-
-            hostAppContext = null
         }
     }
 }

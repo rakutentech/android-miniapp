@@ -1,13 +1,12 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppLocal
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,21 +20,17 @@ import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
-    private val storage: MiniAppStorage,
+    context: Context,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus,
-    private val verifier: CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
-
-    @Suppress("MagicNumber")
-    private val validHTTPResponseCodes = 100..399
-
+    private val miniAppLocal = MiniAppLocal(context)
+    
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
         onGetMiniApp(miniAppInfo)
     } catch (netError: MiniAppNetException) {
-        onNetworkError(miniAppStatus.getDownloadedMiniApp(appId))
+        onNetworkError(miniAppLocal.getMiniAppStatus().getDownloadedMiniApp(appId))
     }
 
     suspend fun getMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> = try {
@@ -49,6 +44,7 @@ internal class MiniAppDownloader(
         var connection: HttpURLConnection? = null
         try {
             connection = URL(url).openConnection() as HttpURLConnection
+            val validHTTPResponseCodes = 100..399
             val code = connection.responseCode
             if (code !in validHTTPResponseCodes) {
                 throw MiniAppSdkException("Invalid URL error")
@@ -67,7 +63,7 @@ internal class MiniAppDownloader(
 
         return if (downloadedVersionPath == null) {
             val versionPath = startDownload(miniAppInfo)
-            verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
+            miniAppLocal.getVerifier().storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
             storeDownloadedMiniApp(miniAppInfo)
 
             Pair(versionPath, miniAppInfo)
@@ -88,23 +84,23 @@ internal class MiniAppDownloader(
     }
 
     private fun storeDownloadedMiniApp(miniAppInfo: MiniAppInfo) {
-        miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, true)
-        miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
+        miniAppLocal.getMiniAppStatus().setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, true)
+        miniAppLocal.getMiniAppStatus().saveDownloadedMiniApp(miniAppInfo)
     }
 
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
-        val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+        val versionPath = miniAppLocal.getMiniAppStorage().getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
-        if (miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
-            return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
+        if (miniAppLocal.getMiniAppStatus().isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
+            return if (miniAppLocal.getVerifier().verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
             else {
                 Log.e(
                     TAG, "Failed to verify the hash of the cached files. " +
                             "The files will be deleted and the Mini App re-downloaded."
                 )
-                storage.removeApp(miniAppInfo.id)
-                miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
+                miniAppLocal.getMiniAppStorage().removeApp(miniAppInfo.id)
+                miniAppLocal.getMiniAppStatus().setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
                 null
             }
         }
@@ -130,16 +126,16 @@ internal class MiniAppDownloader(
     ): String {
         val appId = miniAppInfo.id
         val versionId = miniAppInfo.version.versionId
-        val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+        val baseSavePath = miniAppLocal.getMiniAppStorage().getMiniAppVersionPath(appId, versionId)
         when {
             isManifestValid(manifest) -> {
                 for (file in manifest.files) {
                     val response = apiClient.downloadFile(file)
-                    storage.saveFile(file, baseSavePath, response.byteStream())
+                    miniAppLocal.getMiniAppStorage().saveFile(file, baseSavePath, response.byteStream())
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
-                        launch(Job()) { storage.removeVersions(appId, versionId) }
+                        launch(Job()) { miniAppLocal.getMiniAppStorage().removeVersions(appId, versionId) }
                     }
                 }
                 return baseSavePath
@@ -150,7 +146,7 @@ internal class MiniAppDownloader(
     }
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> =
-        miniAppStatus.getDownloadedMiniAppList()
+        miniAppLocal.getMiniAppStatus().getDownloadedMiniAppList()
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
