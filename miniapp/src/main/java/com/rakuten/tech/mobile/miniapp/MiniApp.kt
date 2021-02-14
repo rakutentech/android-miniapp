@@ -133,7 +133,8 @@ abstract class MiniApp internal constructor() {
      * @param versionId of mini app.
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
-    abstract suspend fun getManifest(appId: String, versionId: String): MiniAppManifest
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.

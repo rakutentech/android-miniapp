@@ -3,9 +3,8 @@ package com.rakuten.tech.mobile.miniapp
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
-import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.api.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -274,6 +273,26 @@ class MiniAppDownloaderSpec {
 
         downloader.getMiniApp(testMiniApp)
     }
+
+    @Test
+    fun `metadata permissions values should be fetched from api correctly`() =
+        runBlockingTest {
+            val requiredPermissions = listOf(MiniAppCustomPermissionType.USER_NAME)
+            val optionalPermissions = listOf(MiniAppCustomPermissionType.PROFILE_PHOTO)
+            val requiredPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
+            val optionalPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+            val manifest = MiniAppManifest(requiredPermissions, optionalPermissions, mapOf())
+            val metadataEntity = MetadataEntity(
+                MetadataResponse(
+                    listOf(requiredPermissionObj),
+                    listOf(optionalPermissionObj)
+                )
+            )
+
+            // TODO: verify actual and expected values are same
+        }
 
     @Test
     fun `getDownloadedMiniAppList should get values from miniAppStatus`() {

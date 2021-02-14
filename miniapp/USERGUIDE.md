@@ -445,7 +445,19 @@ CoroutineScope(Dispatchers.IO).launch {
     try {
         val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID")
     } catch(e: MiniAppSdkException) {
-        Log.e("MiniApp", "There was an error retrieving the Mini App info", e)
+        Log.e("MiniApp", "There was an error when retrieving the Mini App info", e)
+    }
+}
+```
+
+## Fetching Mini App Meta data
+**API Docs:** [MiniApp.getMiniAppManifest](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-mini-app-manifest.html)
+```kotlin
+CoroutineScope(Dispatchers.IO).launch {
+    try {
+        val miniAppInfo = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+    } catch(e: MiniAppSdkException) {
+        Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)
     }
 }
 ```

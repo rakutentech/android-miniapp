@@ -96,8 +96,8 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMetadata(appId, versionId)
+    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
+        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)

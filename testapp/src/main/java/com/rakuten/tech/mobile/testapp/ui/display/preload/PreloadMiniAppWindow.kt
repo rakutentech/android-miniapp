@@ -91,34 +91,29 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             .addItemDecoration(
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             )
-        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
 
-        // TODO: support "required" and "optional" custom permissions
+        // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
+        // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
+        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
         GlobalScope.launch(Dispatchers.IO) {
-            miniApp.getManifest(miniAppId, "").requiredPermissions?.forEach {
+            miniApp.getMiniAppManifest(miniAppId, "").requiredPermissions?.forEach {
                 namesForAdapter.add(it)
                 resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
             }
 
-            miniApp.getManifest(miniAppId, "").optionalPermissions?.forEach {
+            miniApp.getMiniAppManifest(miniAppId, "").optionalPermissions?.forEach {
                 namesForAdapter.add(it)
                 resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
             }
         }
 
-        // TODO: cleanup ui with mentioning required and optional permissions
-        // TODO: set custom permission while accepting to download
-
-        permissionAdapter.addPermissionList(
-            namesForAdapter,
-            resultsForAdapter,
-            arrayListOf() // TODO: put reason here
-        )
+        permissionAdapter.addManifestPermissionList(namesForAdapter, resultsForAdapter)
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {
+            // TODO: MiniApp.setCustomPermissions
             storeAcceptance(true) // set false when accept
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
@@ -133,9 +128,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
     private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId,
-                DEFAULT_ACCEPTANCE
-            )
+            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
         } catch (e: Exception) {
             return false
         }

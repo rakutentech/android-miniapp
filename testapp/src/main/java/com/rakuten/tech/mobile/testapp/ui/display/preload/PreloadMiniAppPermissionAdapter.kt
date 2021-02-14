@@ -1,78 +1,73 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermissionBinding
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListManifestPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.permission.toReadableName
 
-class PreloadMiniAppPermissionAdapter : RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
+class PreloadMiniAppPermissionAdapter :
+    RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
 
-    private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
-    private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
-    private var permissionDescriptions = ArrayList<String>()
-    var permissionPairs =
+    private var manifestPermissionNames = ArrayList<MiniAppCustomPermissionType>()
+    private var manifestPermissionResults = ArrayList<MiniAppCustomPermissionResult>()
+    var manifestPermissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemListCustomPermissionBinding.inflate(layoutInflater, parent, false)
+        val binding = ItemListManifestPermissionBinding.inflate(layoutInflater, parent, false)
 
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = toReadableName(permissionNames[position])
+        holder.permissionName.text = toReadableName(manifestPermissionNames[position])
         holder.permissionSwitch.isChecked =
-            permissionResultToChecked(permissionToggles[position])
+            permissionResultToChecked(manifestPermissionResults[position])
+
+        // TODO: "required" permissions should be just listed with a label "Required"
+        // TODO: "optional" permissions should have a toggle switch to enable/disable the permission
+        holder.permissionStatus.text = "(Status: N/A)"
 
         holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
-            permissionPairs.removeAt(position)
-            permissionPairs.add(
+            manifestPermissionPairs.removeAt(position)
+            manifestPermissionPairs.add(
                 position,
                 Pair(
-                    permissionNames[position],
+                    manifestPermissionNames[position],
                     permissionResultToText(holder.permissionSwitch.isChecked)
                 )
             )
         }
-
-        if (permissionDescriptions.isNotEmpty())
-            holder.permissionDescription.text = permissionDescriptions[position]
-
-        if (holder.permissionDescription.text.isEmpty())
-            holder.permissionDescription.visibility = View.GONE
-        else holder.permissionDescription.visibility = View.VISIBLE
     }
 
-    override fun getItemCount(): Int = permissionNames.size
+    override fun getItemCount(): Int = manifestPermissionNames.size
 
-    fun addPermissionList(
+    fun addManifestPermissionList(
         names: ArrayList<MiniAppCustomPermissionType>,
-        results: ArrayList<MiniAppCustomPermissionResult>,
-        description: ArrayList<String>
+        results: ArrayList<MiniAppCustomPermissionResult>
     ) {
-        permissionNames = names
-        permissionToggles = results
-        permissionNames.forEachIndexed { position, _ ->
-            permissionPairs.add(
+        manifestPermissionNames = names
+        manifestPermissionResults = results
+        manifestPermissionNames.forEachIndexed { position, _ ->
+            manifestPermissionPairs.add(
                 position,
-                Pair(permissionNames[position], permissionToggles[position])
+                Pair(manifestPermissionNames[position], manifestPermissionResults[position])
             )
         }
-        permissionDescriptions = description
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(itemView: ItemListCustomPermissionBinding) : RecyclerView.ViewHolder(itemView.root) {
-        val permissionName: TextView = itemView.permissionText
-        val permissionDescription: TextView = itemView.permissionDescription
-        val permissionSwitch: SwitchCompat = itemView.permissionSwitch
+    inner class ViewHolder(itemView: ItemListManifestPermissionBinding) :
+        RecyclerView.ViewHolder(itemView.root) {
+        val permissionName: TextView = itemView.manifestPermissionName
+        val permissionSwitch: SwitchCompat = itemView.manifestPermissionSwitch
+        val permissionStatus: TextView = itemView.manifestPermissionStatus
     }
 
     private fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {

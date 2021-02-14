@@ -80,7 +80,7 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchManifest(miniAppId: String, versionId: String): MetadataEntity {
+    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String): MetadataEntity {
         val request = metadataApi.fetchMetadata(
             hostAppId = hostProjectId,
             miniAppId = miniAppId,
@@ -90,7 +90,7 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
-    // TODO: Use fetchManifest, and remove this function
+    // TODO: Use fetchMiniAppManifest, and remove this function
     fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
         return MetadataEntity(
             MetadataResponse(

@@ -125,13 +125,14 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
-    suspend fun fetchMetadata(appId: String, versionId: String): MiniAppManifest {
-        // TODO: fetchManifest(appId, versionId)
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+        // TODO: fetchMiniAppManifest(appId, versionId)
         val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
-        return prepareMetadataManifest(manifestResponse)
+        return prepareMiniAppManifest(manifestResponse)
     }
 
-    private fun prepareMetadataManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+    @VisibleForTesting
+    fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
         val requiredPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val optionalPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         metadataEntity.metadata.requiredPermissions?.forEach {
