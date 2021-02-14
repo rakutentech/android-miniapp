@@ -19,7 +19,6 @@ internal class RealMiniApp(
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
-    // TODO: update to ensure manifest is fetched from api
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppInfoFetcher.getInfo(appId)
@@ -98,7 +97,7 @@ internal class RealMiniApp(
     }
 
     override suspend fun getManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMockMetadata(appId, versionId)
+        miniAppDownloader.fetchMetadata(appId, versionId)
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)

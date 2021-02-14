@@ -1,6 +1,9 @@
 ## CHANGELOG
 
 ### X.X.X (In progress)
+**SDK**
+- **Feature:** Added `MiniApp.getManifest` interface to retrieve the meta-data of a MiniApp.
+
 **Sample App**
 - **Feature:** Added first-time launching screen before downloading any miniapp.
 

@@ -16,19 +16,21 @@ internal interface MetadataApi {
     ): Call<MetadataEntity>
 }
 
+@Keep
 internal data class MetadataEntity(
-    @SerializedName("metadata") val manifest: MiniAppManifestResponse
+    @SerializedName("metadata") val metadata: MetadataResponse
 )
 
-internal data class MiniAppManifestResponse(
+@Keep
+internal data class MetadataResponse(
     // List of permissions requested by Mini App in their manifest
     @SerializedName("reqPermissions") val requiredPermissions: List<MetadataPermissionObj>?,
     @SerializedName("optPermissions") val optionalPermissions: List<MetadataPermissionObj>?
-    // exampleHostAppMetaData
+    // TODO: exampleHostAppMetaData (Need to retrieve dynamically)
 )
 
 @Keep
 internal data class MetadataPermissionObj(
     val name: String,
-    val reason: String
+    val reason: String?
 )

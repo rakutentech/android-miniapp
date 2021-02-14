@@ -3,11 +3,9 @@ package com.rakuten.tech.mobile.miniapp.api
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -90,6 +88,19 @@ internal class ApiClient @VisibleForTesting constructor(
             testPath = testPath
         )
         return requestExecutor.executeRequest(request)
+    }
+
+    // TODO: Use fetchManifest, and remove this function
+    fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
+        return MetadataEntity(
+            MetadataResponse(
+                listOf(
+                    MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"),
+                    MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+                ),
+                null
+            )
+        )
     }
 
     suspend fun downloadFile(@Url url: String): ResponseBody {

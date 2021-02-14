@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
@@ -126,34 +125,23 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
-    // TODO: replace with fetchMetadata
-    suspend fun fetchMockMetadata(appId: String, versionId: String): MiniAppManifest {
-        val keyMap = mutableMapOf<String, String>()
-        keyMap["exampleKey"] = "test"
-        return MiniAppManifest(
-            listOf(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionType.PROFILE_PHOTO),
-            listOf(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionType.LOCATION),
-            keyMap
-        )
-    }
-
-    // TODO: fetch api data
     suspend fun fetchMetadata(appId: String, versionId: String): MiniAppManifest {
-        val manifestResponse = apiClient.fetchManifest(appId, versionId)
-        return prepareManifest(manifestResponse)
+        // TODO: fetchManifest(appId, versionId)
+        val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
+        return prepareMetadataManifest(manifestResponse)
     }
 
-    private fun prepareManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+    private fun prepareMetadataManifest(metadataEntity: MetadataEntity): MiniAppManifest {
         val requiredPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val optionalPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-        metadataEntity.manifest.requiredPermissions?.forEach {
+        metadataEntity.metadata.requiredPermissions?.forEach {
             requiredPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
         }
-        metadataEntity.manifest.optionalPermissions?.forEach {
+        metadataEntity.metadata.optionalPermissions?.forEach {
             optionalPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
         }
 
-        // TODO: key mapping
+        // TODO: dynamically key mapping
         return MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
     }
 

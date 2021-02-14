@@ -129,7 +129,9 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
-     * TODO
+     * @param appId mini app id.
+     * @param versionId of mini app.
+     * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
     abstract suspend fun getManifest(appId: String, versionId: String): MiniAppManifest
 
