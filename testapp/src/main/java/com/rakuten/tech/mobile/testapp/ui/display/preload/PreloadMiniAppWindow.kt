@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,6 +34,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
     private lateinit var preloadMiniAppLayout: View
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
+    private var miniAppVersionId: String = ""
 
     private var prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
@@ -40,6 +44,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         if (appInfo != null) {
             this.miniAppInfo = appInfo
             this.miniAppId = miniAppInfo!!.id
+            this.miniAppVersionId = miniAppInfo!!.version.versionId
         } else this.miniAppId = miniAppId
 
         if (!isAccepted()) {
@@ -98,14 +103,18 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
         GlobalScope.launch(Dispatchers.IO) {
-            miniApp.getMiniAppManifest(miniAppId, "").requiredPermissions?.forEach {
-                namesForAdapter.add(it)
-                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
-            }
+            try {
+                miniApp.getMiniAppManifest(miniAppId, miniAppVersionId).requiredPermissions?.forEach {
+                    namesForAdapter.add(it)
+                    resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+                }
 
-            miniApp.getMiniAppManifest(miniAppId, "").optionalPermissions?.forEach {
-                namesForAdapter.add(it)
-                resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
+                miniApp.getMiniAppManifest(miniAppId, miniAppVersionId).optionalPermissions?.forEach {
+                    namesForAdapter.add(it)
+                    resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 

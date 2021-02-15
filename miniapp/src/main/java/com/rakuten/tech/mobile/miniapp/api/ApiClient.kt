@@ -1,11 +1,12 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -91,6 +92,8 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     // TODO: Use fetchMiniAppManifest, and remove this function
+    @Suppress("ForbiddenComment")
+    @Throws(MiniAppSdkException::class)
     fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
         return MetadataEntity(
             MetadataResponse(
@@ -119,9 +122,6 @@ internal class RetrofitRequestExecutor(
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
-
-        Log.d("AAAA",""+response.body())
-
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful

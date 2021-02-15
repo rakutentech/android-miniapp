@@ -125,10 +125,14 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
+    @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
         // TODO: fetchMiniAppManifest(appId, versionId)
-        val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
-        return prepareMiniAppManifest(manifestResponse)
+        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        else {
+            val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
+            return prepareMiniAppManifest(manifestResponse)
+        }
     }
 
     @VisibleForTesting
@@ -141,8 +145,6 @@ internal class MiniAppDownloader(
         metadataEntity.metadata.optionalPermissions?.forEach {
             optionalPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
         }
-
-        // TODO: dynamically key mapping
         return MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
     }
 

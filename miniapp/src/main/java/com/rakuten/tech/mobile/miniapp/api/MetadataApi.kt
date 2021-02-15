@@ -26,7 +26,6 @@ data class MetadataResponse(
     // List of permissions requested by Mini App in their manifest
     @SerializedName("reqPermissions") val requiredPermissions: List<MetadataPermissionObj>?,
     @SerializedName("optPermissions") val optionalPermissions: List<MetadataPermissionObj>?
-    // TODO: exampleHostAppMetaData (Need to retrieve dynamically)
 )
 
 @Keep

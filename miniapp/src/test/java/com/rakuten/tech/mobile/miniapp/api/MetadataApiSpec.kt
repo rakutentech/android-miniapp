@@ -41,7 +41,7 @@ open class MetadataApiSpec private constructor(
     ): MockResponse = MockResponse().setBody(
         Gson().toJson(
             hashMapOf(
-                "manifest" to metadata
+                "metadata" to metadata
             )
         )
     )
@@ -50,14 +50,14 @@ open class MetadataApiSpec private constructor(
 class MetadataApiRequestSpec : MetadataApiSpec() {
 
     @Test
-    fun `should fetch files information of a mini app using the 'metadata' endpoint`() {
+    fun `should fetch metadata of a mini app using the 'metadata' endpoint`() {
         executeMetadataCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!
         requestUrl.encodedPath shouldEndWith "metadata"
     }
 
     @Test
-    fun `should fetch files information of a specific mini app version`() {
+    fun `should fetch metadata of a specific mini app version`() {
         executeMetadataCallByRetrofit()
         mockServer.takeRequest().path!! shouldContain
                 "miniapp/$TEST_ID_MINIAPP/version/$TEST_ID_MINIAPP_VERSION/"
@@ -104,7 +104,7 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
     }
 
     @Test
-    fun `should parse the 'metadata' from response`() {
+    fun `should parse the metadata from response`() {
         metadataEntity.metadata shouldEqual metadataResponse
     }
 }

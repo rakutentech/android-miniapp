@@ -275,15 +275,12 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `metadata permissions values should be fetched from api correctly`() =
+    fun `metadata manifest should be fetched from api correctly`() =
         runBlockingTest {
-            val requiredPermissions = listOf(MiniAppCustomPermissionType.USER_NAME)
-            val optionalPermissions = listOf(MiniAppCustomPermissionType.PROFILE_PHOTO)
             val requiredPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
             val optionalPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
-            val manifest = MiniAppManifest(requiredPermissions, optionalPermissions, mapOf())
             val metadataEntity = MetadataEntity(
                 MetadataResponse(
                     listOf(requiredPermissionObj),
@@ -291,7 +288,74 @@ class MiniAppDownloaderSpec {
                 )
             )
 
-            // TODO: verify actual and expected values are same
+            When calling apiClient.fetchMockManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
+
+            downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+            verify(apiClient).fetchMockManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            )
+        }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when cannot get metadata for invalid version id`() =
+        runBlockingTest {
+            val requiredPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
+            val optionalPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+            val metadataEntity = MetadataEntity(
+                MetadataResponse(
+                    listOf(requiredPermissionObj),
+                    listOf(optionalPermissionObj)
+                )
+            )
+
+            When calling apiClient.fetchMockManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
+
+            downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, "")
+        }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when cannot get metadata from server`() = runBlockingTest {
+        When calling apiClient.fetchMockManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) doThrow
+                MiniAppSdkException(TEST_ERROR_MSG)
+
+        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+    }
+
+    @Test
+    fun `metadata permissions values should be prepared correctly`() =
+        runBlockingTest {
+            val requiredPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
+            val optionalPermissionObj =
+                MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+            val metadataEntity = MetadataEntity(
+                MetadataResponse(
+                    listOf(requiredPermissionObj),
+                    listOf(optionalPermissionObj)
+                )
+            )
+
+            When calling apiClient.fetchMockManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
+
+            val actual = downloader.prepareMiniAppManifest(metadataEntity)
+            val requiredPermissions = listOf(MiniAppCustomPermissionType.USER_NAME)
+            val optionalPermissions = listOf(MiniAppCustomPermissionType.PROFILE_PHOTO)
+            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+
+            assertEquals(expected, actual)
         }
 
     @Test
