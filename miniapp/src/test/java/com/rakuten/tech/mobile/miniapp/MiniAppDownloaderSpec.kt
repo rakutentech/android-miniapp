@@ -21,7 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "LongMethod")
 @ExperimentalCoroutinesApi
 class MiniAppDownloaderSpec {
 
