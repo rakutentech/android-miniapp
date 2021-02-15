@@ -55,6 +55,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
+                        interstitialAdMap.remove(adUnitId)
                         onFailed.invoke(adError.message)
                     }
                 }
@@ -92,7 +93,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
                 val ad = RewardedAd(context, adUnitId)
                 rewardedAdMap[adUnitId] = ad
 
-                val adLoadCallback = createRewardedAdLoadCallback(onLoaded, onFailed)
+                val adLoadCallback = createRewardedAdLoadCallback(adUnitId, onLoaded, onFailed)
 
                 ad.loadAd(AdRequest.Builder().build(), adLoadCallback)
             }
@@ -118,6 +119,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
 
     @VisibleForTesting
     internal fun createRewardedAdLoadCallback(
+        adUnitId: String,
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
     ): RewardedAdLoadCallback = object : RewardedAdLoadCallback() {
@@ -127,6 +129,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         }
 
         override fun onRewardedAdFailedToLoad(adError: LoadAdError) {
+            rewardedAdMap.remove(adUnitId)
             onFailed.invoke(adError.message)
         }
     }

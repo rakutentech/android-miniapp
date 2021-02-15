@@ -88,7 +88,7 @@ class AdMobDisplayerSpec {
 
     @Test
     fun `should invoke sdk callbacks without error`() {
-        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(spy(), spy())
+        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
         val rewardedAdShowCallback = adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, spy(), spy())
         val rewardItem = object : RewardItem {
             override fun getType(): String = ""
