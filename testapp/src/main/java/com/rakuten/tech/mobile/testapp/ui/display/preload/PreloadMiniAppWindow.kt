@@ -108,7 +108,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                     }
 
                     miniAppManifest.observe(lifecycleOwner,
-                        Observer { (requiredPermissions, optionalPermissions) ->
+                        Observer { (requiredPermissions, optionalPermissions, metadata) ->
                             // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
                             // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
                             val namesForAdapter: ArrayList<MiniAppCustomPermissionType> =
@@ -132,6 +132,9 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                                 resultsForAdapter,
                                 reasonsForAdapter
                             )
+
+                            preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
+                                "Metadata Key: " + metadata?.randomKey.toString()
                         })
 
                     manifestErrorData.observe(lifecycleOwner, Observer {

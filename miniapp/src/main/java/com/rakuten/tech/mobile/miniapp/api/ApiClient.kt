@@ -3,10 +3,11 @@ package com.rakuten.tech.mobile.miniapp.api
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -91,7 +92,6 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
-    // TODO: Use fetchMiniAppManifest, and remove this function
     @Throws(MiniAppSdkException::class)
     fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
         return MetadataEntity(
@@ -100,7 +100,8 @@ internal class ApiClient @VisibleForTesting constructor(
                     MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"),
                     MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
                 ),
-                null
+                null,
+                MiniAppManifest.CustomMetaData("randomTestKey")
             )
         )
     }

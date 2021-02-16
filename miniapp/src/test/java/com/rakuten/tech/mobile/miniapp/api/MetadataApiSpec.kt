@@ -25,7 +25,8 @@ open class MetadataApiSpec private constructor(
         listOf(MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"))
     val optionalPermissionObj =
         listOf(MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason"))
-    val metadataResponse = MetadataResponse(requiredPermissionObj, optionalPermissionObj)
+    val manifestKey = MiniAppManifest.CustomMetaData("randomTestKey")
+    val metadataResponse = MetadataResponse(requiredPermissionObj, optionalPermissionObj, manifestKey)
 
     @Before
     fun baseSetup() {

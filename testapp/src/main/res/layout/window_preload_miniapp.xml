@@ -64,6 +64,16 @@
                   android:paddingEnd="@dimen/medium_16"
                   android:textAlignment="center"
                   tools:text="Dummy MiniApp Version" />
+
+                <TextView
+                  android:id="@+id/preloadMiniAppMetaData"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center_horizontal"
+                  android:paddingStart="@dimen/medium_16"
+                  android:paddingEnd="@dimen/medium_16"
+                  android:textAlignment="center"
+                  tools:text="Dummy MiniApp Metadata" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

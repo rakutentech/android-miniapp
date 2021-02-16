@@ -127,7 +127,6 @@ internal class MiniAppDownloader(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        // TODO: fetchMiniAppManifest(appId, versionId)
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
             val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
@@ -145,7 +144,8 @@ internal class MiniAppDownloader(
             Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
         } ?: emptyList()
 
-        return MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+        val customMetadata = metadataEntity.metadata.customMetaData
+        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
     }
 
     @SuppressWarnings("LongMethod")
