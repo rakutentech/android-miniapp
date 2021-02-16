@@ -4,34 +4,30 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.lang.Exception
 
 private const val DEFAULT_ACCEPTANCE = false
 
 class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
-    private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
     private lateinit var preloadMiniAppLayout: View
+    private lateinit var viewModel: PreloadMiniAppViewModel
+    private lateinit var lifecycleOwner: LifecycleOwner
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
     private var miniAppVersionId: String = ""
@@ -40,7 +36,9 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
     )
 
-    fun initiate(appInfo: MiniAppInfo?, miniAppId: String) {
+    fun initiate(appInfo: MiniAppInfo?, miniAppId: String, lifecycleOwner: LifecycleOwner) {
+        this.lifecycleOwner = lifecycleOwner
+
         if (appInfo != null) {
             this.miniAppInfo = appInfo
             this.miniAppId = miniAppInfo!!.id
@@ -100,25 +98,32 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
         // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
         val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        val reasonsForAdapter: ArrayList<String> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                miniApp.getMiniAppManifest(miniAppId, miniAppVersionId).requiredPermissions?.forEach {
-                    namesForAdapter.add(it)
-                    resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+        viewModel =
+            ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
+                .apply {
+                    miniAppManifest.observe(lifecycleOwner,
+
+                        Observer { (requiredPermissions, optionalPermissions) ->
+                            requiredPermissions.forEach {
+                                namesForAdapter.add(it.first)
+                                reasonsForAdapter.add(it.second)
+                                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+                            }
+                            optionalPermissions.forEach {
+                                namesForAdapter.add(it.first)
+                                reasonsForAdapter.add(it.second)
+                                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+                            }
+                            permissionAdapter.addManifestPermissionList(namesForAdapter, resultsForAdapter, reasonsForAdapter)
+                        })
+
+                    errorData.observe(lifecycleOwner, Observer {})
                 }
 
-                miniApp.getMiniAppManifest(miniAppId, miniAppVersionId).optionalPermissions?.forEach {
-                    namesForAdapter.add(it)
-                    resultsForAdapter.add(MiniAppCustomPermissionResult.DENIED)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        permissionAdapter.addManifestPermissionList(namesForAdapter, resultsForAdapter)
+        viewModel.getMiniAppManifest(miniAppId, miniAppVersionId)
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {

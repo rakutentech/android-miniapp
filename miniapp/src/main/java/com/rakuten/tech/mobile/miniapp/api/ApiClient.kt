@@ -83,7 +83,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String): MetadataEntity {
         val request = metadataApi.fetchMetadata(
-            hostAppId = hostProjectId,
+            hostId = hostProjectId,
             miniAppId = miniAppId,
             versionId = versionId,
             testPath = testPath
@@ -92,7 +92,6 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     // TODO: Use fetchMiniAppManifest, and remove this function
-    @Suppress("ForbiddenComment")
     @Throws(MiniAppSdkException::class)
     fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
         return MetadataEntity(

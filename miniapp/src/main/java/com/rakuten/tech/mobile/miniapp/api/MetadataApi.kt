@@ -33,5 +33,5 @@ data class MetadataResponse(
 @Keep
 data class MetadataPermissionObj(
     val name: String,
-    val reason: String?
+    val reason: String = ""
 )

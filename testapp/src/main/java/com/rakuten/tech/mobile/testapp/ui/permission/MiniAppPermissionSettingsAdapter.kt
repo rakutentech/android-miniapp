@@ -13,8 +13,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListCustomPermiss
 class MiniAppPermissionSettingsAdapter : RecyclerView.Adapter<MiniAppPermissionSettingsAdapter.ViewHolder?>() {
 
     private var permissionNames = ArrayList<MiniAppCustomPermissionType>()
-    // TODO: "required" permissions should be just listed with a label "Required"
-    // TODO: "optional" permissions should have a toggle switch to enable/disable the permission
     private var permissionToggles = ArrayList<MiniAppCustomPermissionResult>()
     private var permissionDescriptions = ArrayList<String>()
     var permissionPairs =

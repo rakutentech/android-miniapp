@@ -137,14 +137,14 @@ internal class MiniAppDownloader(
 
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
-        val requiredPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-        val optionalPermissions: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-        metadataEntity.metadata.requiredPermissions?.forEach {
-            requiredPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
-        }
-        metadataEntity.metadata.optionalPermissions?.forEach {
-            optionalPermissions.add(MiniAppCustomPermissionType.getValue(it.name))
-        }
+        val requiredPermissions = metadataEntity.metadata.requiredPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
+        val optionalPermissions = metadataEntity.metadata.optionalPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
         return MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
     }
 

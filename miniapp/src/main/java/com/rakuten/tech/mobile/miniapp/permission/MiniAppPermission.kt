@@ -22,9 +22,11 @@ enum class MiniAppCustomPermissionType(val type: String) {
     LOCATION("rakuten.miniapp.device.LOCATION"),
     UNKNOWN("UNKNOWN");
 
-    internal companion object {
+    companion object {
 
-        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
+        /** get the value of custom permission per type. **/
+        fun getValue(type: String): MiniAppCustomPermissionType =
+            values().find { it.type == type } ?: UNKNOWN
     }
 }
 

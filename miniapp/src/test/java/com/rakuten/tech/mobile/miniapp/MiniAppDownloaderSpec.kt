@@ -335,9 +335,9 @@ class MiniAppDownloaderSpec {
     fun `metadata permissions values should be prepared correctly`() =
         runBlockingTest {
             val requiredPermissionObj =
-                MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
+                MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason for user name")
             val optionalPermissionObj =
-                MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+                MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason for profile photo")
             val metadataEntity = MetadataEntity(
                 MetadataResponse(
                     listOf(requiredPermissionObj),
@@ -351,8 +351,10 @@ class MiniAppDownloaderSpec {
             ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity)
-            val requiredPermissions = listOf(MiniAppCustomPermissionType.USER_NAME)
-            val optionalPermissions = listOf(MiniAppCustomPermissionType.PROFILE_PHOTO)
+            val requiredPermissions =
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
+            val optionalPermissions =
+                listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
             val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
 
             assertEquals(expected, actual)
