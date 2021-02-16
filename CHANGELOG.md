@@ -1,17 +1,10 @@
 ## CHANGELOG
 
-### X.X.X (In progress)
-**SDK**
-- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
-
-**Sample App**
-- **Feature:** Added first-time launching screen before downloading any miniapp.
-
 ### 3.X.X (In progress)
-
+**SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
-Before v3.0.0  |  Replace with v3.0.0
+Before v3.0.0  |  v3.0.0
 ------------- | -------------
 `isTestMode`  | `isPreviewMode`
 `rasAppId`  | `rasProjectId`
@@ -20,6 +13,10 @@ Before v3.0.0  |  Replace with v3.0.0
 `getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
 
 - **Change:** Support Android 7 - API 24 as minimum version.
+- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
+
+**Sample App**
+- **Feature:** Added first-time launching screen before downloading any miniapp.
 
 ### 2.8.0 (2020-01-25)
 **SDK**

@@ -7,9 +7,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal interface MetadataApi {
-    @GET("host/{hostappId}/miniapp/{miniappId}/version/{versionId}/{testPath}/metadata")
+    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/metadata")
     fun fetchMetadata(
-        @Path("hostappId") hostAppId: String,
+        @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
         @Path("testPath") testPath: String = ""

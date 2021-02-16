@@ -68,7 +68,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
         mockServer.enqueue(createResponse())
         retrofit.create(MetadataApi::class.java)
             .fetchMetadata(
-                hostAppId = TEST_HA_ID_PROJECT,
+                hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
                 testPath = "test"
@@ -80,7 +80,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
         mockServer.enqueue(createResponse())
         retrofit.create(MetadataApi::class.java)
             .fetchMetadata(
-                hostAppId = TEST_HA_ID_PROJECT,
+                hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
             ).execute()
@@ -96,7 +96,7 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
         mockServer.enqueue(createResponse())
         metadataEntity = retrofit.create(MetadataApi::class.java)
             .fetchMetadata(
-                hostAppId = TEST_HA_ID_PROJECT,
+                hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
             )
