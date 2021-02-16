@@ -7,6 +7,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -30,7 +31,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
     private lateinit var lifecycleOwner: LifecycleOwner
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
-    private var miniAppVersionId: String = ""
+    private var versionId: String = ""
 
     private var prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
@@ -42,7 +43,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         if (appInfo != null) {
             this.miniAppInfo = appInfo
             this.miniAppId = miniAppInfo!!.id
-            this.miniAppVersionId = miniAppInfo!!.version.versionId
+            this.versionId = miniAppInfo!!.version.versionId
         } else this.miniAppId = miniAppId
 
         if (!isAccepted()) {
@@ -95,18 +96,27 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             )
 
-        // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
-        // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
-        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-        val reasonsForAdapter: ArrayList<String> = arrayListOf()
-        val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
-
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
                 .apply {
-                    miniAppManifest.observe(lifecycleOwner,
+                    // observe version id when it's empty
+                    if (versionId.isEmpty()) {
+                        miniAppVersionId.observe(lifecycleOwner, Observer { versionId = it })
+                        versionIdErrorData.observe(lifecycleOwner, Observer {
+                            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                        })
+                    }
 
+                    miniAppManifest.observe(lifecycleOwner,
                         Observer { (requiredPermissions, optionalPermissions) ->
+                            // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
+                            // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
+                            val namesForAdapter: ArrayList<MiniAppCustomPermissionType> =
+                                arrayListOf()
+                            val reasonsForAdapter: ArrayList<String> = arrayListOf()
+                            val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> =
+                                arrayListOf()
+
                             requiredPermissions.forEach {
                                 namesForAdapter.add(it.first)
                                 reasonsForAdapter.add(it.second)
@@ -117,13 +127,23 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                                 reasonsForAdapter.add(it.second)
                                 resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
                             }
-                            permissionAdapter.addManifestPermissionList(namesForAdapter, resultsForAdapter, reasonsForAdapter)
+                            permissionAdapter.addManifestPermissionList(
+                                namesForAdapter,
+                                resultsForAdapter,
+                                reasonsForAdapter
+                            )
                         })
 
-                    errorData.observe(lifecycleOwner, Observer {})
+                    manifestErrorData.observe(lifecycleOwner, Observer {
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    })
                 }
 
-        viewModel.getMiniAppManifest(miniAppId, miniAppVersionId)
+        // retrieve version id when it's empty
+        if (versionId.isEmpty())
+            viewModel.getMiniAppVersionId(miniAppId)
+
+        viewModel.getMiniAppManifest(miniAppId, versionId)
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {

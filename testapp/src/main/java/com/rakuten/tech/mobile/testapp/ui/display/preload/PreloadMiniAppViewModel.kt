@@ -1,9 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -18,21 +15,35 @@ class PreloadMiniAppViewModel constructor(
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
-
-    private val _errorData = MutableLiveData<String>()
+    private val _miniAppVersionId = MutableLiveData<String>()
+    private val _manifestErrorData = MutableLiveData<String>()
+    private val _versionIdErrorData = MutableLiveData<String>()
 
     val miniAppManifest: LiveData<MiniAppManifest>
         get() = _miniAppManifest
-
-    val errorData: LiveData<String>
-        get() = _errorData
+    val miniAppVersionId: LiveData<String>
+        get() = _miniAppVersionId
+    val manifestErrorData: LiveData<String>
+        get() = _manifestErrorData
+    val versionIdErrorData: LiveData<String>
+        get() = _versionIdErrorData
 
     fun getMiniAppManifest(miniAppId: String, versionId: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _miniAppManifest.postValue(miniApp.getMiniAppManifest(miniAppId, versionId))
             } catch (error: MiniAppSdkException) {
-                _errorData.postValue(error.message)
+                _manifestErrorData.postValue(error.message)
+            }
+        }
+
+    fun getMiniAppVersionId(miniAppId: String) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val miniAppInfo = miniApp.fetchInfo(miniAppId)
+                _miniAppVersionId.postValue(miniAppInfo.version.versionId)
+            } catch (error: MiniAppSdkException) {
+                _versionIdErrorData.postValue(error.message)
             }
         }
 }
