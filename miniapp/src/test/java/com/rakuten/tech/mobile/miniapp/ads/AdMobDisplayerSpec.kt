@@ -88,7 +88,7 @@ class AdMobDisplayerSpec {
 
     @Test
     fun `should invoke sdk callbacks without error`() {
-        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(spy(), spy())
+        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
         val rewardedAdShowCallback = adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, spy(), spy())
         val rewardItem = object : RewardItem {
             override fun getType(): String = ""
@@ -122,5 +122,19 @@ class AdMobDisplayerSpec {
         adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
         adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+    }
+
+    @Test
+    fun `should not have ad in queue when it loads failed`() {
+        val map = HashMap<String, RewardedAd>()
+        val ad = Mockito.spy(RewardedAd(context, TEST_AD_UNIT_ID))
+        map[TEST_AD_UNIT_ID] = ad
+        adDisplayer.initAdMap(interstitialAdMap = mutableMapOf(), rewardedAdMap = map)
+
+        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
+        rewardedAdLoadCallback.onRewardedAdLoaded()
+        rewardedAdLoadCallback.onRewardedAdFailedToLoad(LoadAdError(0, "", "", null, null))
+
+        adDisplayer.rewardedAdMap.containsKey(TEST_AD_UNIT_ID) shouldBe false
     }
 }
