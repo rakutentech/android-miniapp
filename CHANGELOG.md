@@ -13,6 +13,7 @@
 Replace `getUserName`, `getProfilePhoto` with new prototypes.
 
 - **Change:** Support Android 7 - API 24 as minimum version.
+- **Fix:** Load ad error when do re-try loading.
 
 ### 2.8.0 (2020-01-25)
 **SDK**
