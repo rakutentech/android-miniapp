@@ -25,7 +25,8 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
-    private val rewardedAdMap = HashMap<String, RewardedAd>()
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    internal val rewardedAdMap = HashMap<String, RewardedAd>()
 
     @VisibleForTesting
     internal fun initAdMap(

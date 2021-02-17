@@ -241,10 +241,14 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     @Test
     fun `should send response with escaped backtick characters`() {
         val spyMiniAppWebView = spy(miniAppWebView)
-        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
 
+        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
             argWhere { it.contains("""`\`test response\``""") }, any())
+
+        spyMiniAppWebView.runErrorCallback("test_id", "`error response`")
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""`\`error response\``""") }, any())
     }
 }
 
