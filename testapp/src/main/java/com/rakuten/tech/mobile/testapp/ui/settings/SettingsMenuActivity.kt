@@ -10,13 +10,12 @@ import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
+import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -28,6 +27,7 @@ import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.coroutines.launch
+import java.net.URL
 import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
@@ -166,12 +166,14 @@ class SettingsMenuActivity : BaseActivity() {
         launch {
             try {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                URL("https://www.example.com$urlParameters").toURI()
+
                 settings.isSettingSaved = true
                 runOnUiThread {
                     settingsProgressDialog.cancel()
                     navigateToPreviousScreen()
                 }
-            } catch (error: MiniAppSdkException) {
+            } catch (error: Exception) {
                 settings.projectId = appIdHolder
                 settings.subscriptionKey = subscriptionKeyHolder
                 settings.urlParameters = urlParametersHolder
