@@ -134,7 +134,7 @@ internal open class MiniAppWebView(
     override fun runErrorCallback(callbackId: String, errorMessage: String) {
         post {
             evaluateJavascript(
-                "MiniAppBridge.execErrorCallback(\"$callbackId\", \"$errorMessage\")"
+                "MiniAppBridge.execErrorCallback(`$callbackId`, `${errorMessage.replace("`", "\\`")}`)"
             ) {}
         }
     }
