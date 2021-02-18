@@ -7,14 +7,13 @@ import java.util.ArrayList
 /**
  * A class to provide the interfaces for getting user info e.g. user-name, profile-photo etc.
  */
-@Suppress("UnnecessaryAbstractClass")
-abstract class UserInfoBridgeDispatcher {
+interface UserInfoBridgeDispatcher {
 
     /**
      * Get user name from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    open fun getUserName(
+    fun getUserName(
         onSuccess: (userName: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
@@ -25,7 +24,7 @@ abstract class UserInfoBridgeDispatcher {
      * Get profile photo url from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    open fun getProfilePhoto(
+    fun getProfilePhoto(
         onSuccess: (profilePhoto: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
@@ -33,7 +32,7 @@ abstract class UserInfoBridgeDispatcher {
     }
 
     /** Get access token from host app. **/
-    open fun getAccessToken(
+    fun getAccessToken(
         miniAppId: String,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
@@ -45,7 +44,7 @@ abstract class UserInfoBridgeDispatcher {
      * Get contacts from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    open fun getContacts(
+    fun getContacts(
         onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {
