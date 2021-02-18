@@ -15,8 +15,8 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
+import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -28,6 +28,7 @@ import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
 import kotlinx.coroutines.launch
+import java.net.URL
 import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
@@ -166,21 +167,50 @@ class SettingsMenuActivity : BaseActivity() {
         launch {
             try {
                 MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                URL("https://www.test-param.com?$urlParameters").toURI()
+
                 settings.isSettingSaved = true
                 runOnUiThread {
                     settingsProgressDialog.cancel()
                     navigateToPreviousScreen()
                 }
             } catch (error: MiniAppSdkException) {
-                settings.projectId = appIdHolder
-                settings.subscriptionKey = subscriptionKeyHolder
-                settings.urlParameters = urlParametersHolder
-                settings.isPreviewMode = isPreviewModeHolder
-                runOnUiThread {
-                    settingsProgressDialog.cancel()
-                    showAlertDialog(this@SettingsMenuActivity, error.message.toString())
-                }
+                onUpdateError(
+                    appIdHolder,
+                    subscriptionKeyHolder,
+                    urlParametersHolder,
+                    isPreviewModeHolder,
+                    "MiniApp SDK",
+                    error.message.toString()
+                )
+            } catch (error: Exception) {
+                onUpdateError(
+                    appIdHolder,
+                    subscriptionKeyHolder,
+                    urlParametersHolder,
+                    isPreviewModeHolder,
+            "URL parameter",
+                    error.message.toString()
+                )
             }
+        }
+    }
+
+    private fun onUpdateError(
+            appIdHolder: String,
+            subscriptionKeyHolder: String,
+            urlParametersHolder: String,
+            isPreviewModeHolder: Boolean,
+            errTitle: String,
+            errMsg: String
+    ) {
+        settings.projectId = appIdHolder
+        settings.subscriptionKey = subscriptionKeyHolder
+        settings.urlParameters = urlParametersHolder
+        settings.isPreviewMode = isPreviewModeHolder
+        runOnUiThread {
+            settingsProgressDialog.cancel()
+            showAlertDialog(this@SettingsMenuActivity, errTitle, errMsg)
         }
     }
 
