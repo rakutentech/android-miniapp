@@ -264,7 +264,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
     }
 }
 
-val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
+val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
     override fun getUserName(
         onSuccess: (userName: String) -> Unit,
