@@ -42,7 +42,6 @@ class RealMiniAppDisplaySpec {
             context = activity
             basePath = context.filesDir.path
             realDisplay = RealMiniAppDisplay(
-                context,
                 basePath = basePath,
                 miniAppInfo = TEST_MA,
                 miniAppMessageBridge = miniAppMessageBridge,
@@ -60,7 +59,6 @@ class RealMiniAppDisplaySpec {
     @Test
     fun `should pass MiniAppInfo forUrl through the constructor`() {
         val realDisplay = RealMiniAppDisplay(
-            context = context,
             appUrl = "",
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
@@ -92,11 +90,9 @@ class RealMiniAppDisplaySpec {
     @Test
     fun `should provide the exact context to MiniAppWebView`() = runBlockingTest {
         val displayer = Mockito.spy(realDisplay)
-        val testContext = displayer.context
-        When calling displayer.isContextValid(testContext) itReturns true
-        val miniAppWebView = displayer.getMiniAppView(testContext) as MiniAppWebView
+        val miniAppWebView = displayer.getMiniAppView(context) as MiniAppWebView
 
-        miniAppWebView.context shouldBe testContext
+        miniAppWebView.context shouldBe context
     }
 
     @Test(expected = MiniAppSdkException::class)
