@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -28,7 +27,7 @@ data class MetadataResponse(
     // List of permissions requested by Mini App in their manifest
     @SerializedName("reqPermissions") val requiredPermissions: List<MetadataPermissionObj>?,
     @SerializedName("optPermissions") val optionalPermissions: List<MetadataPermissionObj>?,
-    @SerializedName("customMetaData") val customMetaData: MiniAppManifest.CustomMetaData?
+    @SerializedName("customMetaData") val customMetaData: Map<String, String>
 )
 
 /** Metadata permission object includes name and reason. */

@@ -15,12 +15,15 @@ class PreloadMiniAppViewModel constructor(
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
+    private val _miniAppManifestMetadata = MutableLiveData<String>()
     private val _miniAppVersionId = MutableLiveData<String>()
     private val _manifestErrorData = MutableLiveData<String>()
     private val _versionIdErrorData = MutableLiveData<String>()
 
     val miniAppManifest: LiveData<MiniAppManifest>
         get() = _miniAppManifest
+    val miniAppManifestMetadata: LiveData<String>
+        get() = _miniAppManifestMetadata
     val miniAppVersionId: LiveData<String>
         get() = _miniAppVersionId
     val manifestErrorData: LiveData<String>
@@ -28,10 +31,12 @@ class PreloadMiniAppViewModel constructor(
     val versionIdErrorData: LiveData<String>
         get() = _versionIdErrorData
 
-    fun getMiniAppManifest(miniAppId: String, versionId: String) =
+    fun getMiniAppManifest(miniAppId: String, versionId: String, metadataKey: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val manifest = miniApp.getMiniAppManifest(miniAppId, versionId)
                 _miniAppManifest.postValue(miniApp.getMiniAppManifest(miniAppId, versionId))
+                _miniAppManifestMetadata.postValue(manifest.getMetadataValue(metadataKey))
             } catch (error: MiniAppSdkException) {
                 _manifestErrorData.postValue(error.message)
             }

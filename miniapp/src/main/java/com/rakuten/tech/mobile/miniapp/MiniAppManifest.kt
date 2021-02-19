@@ -12,11 +12,8 @@ data class MiniAppManifest(
     val requiredPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
     val optionalPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
     // custom metadata set by Mini App in their manifest
-    val customMetaData: CustomMetaData?
+    private val customMetaData: Map<String, String>
 ) {
-    /** Metadata custom key object. */
-    @Keep
-    data class CustomMetaData(
-        val randomKey: String
-    )
+    // get metadata value of "customMetaData" per key set by Host App
+    fun getMetadataValue(key: String) = customMetaData[key]
 }
