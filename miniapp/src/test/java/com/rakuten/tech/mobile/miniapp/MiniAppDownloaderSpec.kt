@@ -289,14 +289,14 @@ class MiniAppDownloaderSpec {
                 )
             )
 
-            When calling apiClient.fetchMockManifest(
+            When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns metadataEntity
 
             downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            verify(apiClient).fetchMockManifest(
+            verify(apiClient).fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -317,7 +317,7 @@ class MiniAppDownloaderSpec {
                 )
             )
 
-            When calling apiClient.fetchMockManifest(
+            When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns metadataEntity
@@ -327,7 +327,7 @@ class MiniAppDownloaderSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when cannot get metadata from server`() = runBlockingTest {
-        When calling apiClient.fetchMockManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) doThrow
+        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) doThrow
                 MiniAppSdkException(TEST_ERROR_MSG)
 
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
@@ -348,7 +348,7 @@ class MiniAppDownloaderSpec {
                 )
             )
 
-            When calling apiClient.fetchMockManifest(
+            When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns metadataEntity

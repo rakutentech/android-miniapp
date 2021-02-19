@@ -1,10 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
@@ -93,20 +91,6 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
-    @Throws(MiniAppSdkException::class)
-    fun fetchMockManifest(miniAppId: String, versionId: String): MetadataEntity {
-        return MetadataEntity(
-            MetadataResponse(
-                listOf(
-                    MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"),
-                    MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
-                ),
-                null,
-                MiniAppManifest.CustomMetaData("randomTestKey")
-            )
-        )
-    }
-
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
         return requestExecutor.executeRequest(request)
@@ -123,8 +107,6 @@ internal class RetrofitRequestExecutor(
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
-
-        Log.d("AAAA",""+response.raw())
 
         when {
             response.isSuccessful -> {
