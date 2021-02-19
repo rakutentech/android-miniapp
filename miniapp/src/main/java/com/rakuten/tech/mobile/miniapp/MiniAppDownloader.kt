@@ -129,7 +129,7 @@ internal class MiniAppDownloader(
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            val manifestResponse = apiClient.fetchMockManifest(appId, versionId)
+            val manifestResponse = apiClient.fetchMiniAppManifest(appId, versionId)
             return prepareMiniAppManifest(manifestResponse)
         }
     }
