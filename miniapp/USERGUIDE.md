@@ -452,10 +452,49 @@ CoroutineScope(Dispatchers.IO).launch {
 
 ## Fetching Mini App Meta data
 **API Docs:** [MiniApp.getMiniAppManifest](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-mini-app-manifest.html)
+
+MiniApp developers need to add the following metadata attributes in manifest.json.
+
+```json
+{
+   ...
+   "metadata":{
+      "reqPermissions":[
+         {
+            "name":"rakuten.miniapp.user.USER_NAME",
+            "reason":"Describe your reason here."
+         },
+         {
+            "name":"rakuten.miniapp.user.PROFILE_PHOTO",
+            "reason":"Describe your reason here."
+         }
+      ],
+      "optPermissions":[
+         {
+            "name":"rakuten.miniapp.user.CONTACT_LIST",
+            "reason":"Describe your reason here."
+         },
+         {
+            "name":"rakuten.miniapp.device.LOCATION",
+            "reason":"Describe your reason here."
+         }
+      ],
+      "customMetaData":{
+         "hostAppRandomTestKey":"metadata value"
+      }
+   }
+}
+```
+
+In Host App, we can get the manifest information as following:
+
 ```kotlin
 CoroutineScope(Dispatchers.IO).launch {
     try {
-        val miniAppInfo = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+
+        // Host App can set it's own metadata key in manifest.json
+        miniAppManifest.getMetadataValue("hostAppRandomTestKey")
     } catch(e: MiniAppSdkException) {
         Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)
     }

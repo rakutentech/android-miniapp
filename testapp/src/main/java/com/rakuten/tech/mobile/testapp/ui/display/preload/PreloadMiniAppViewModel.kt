@@ -34,9 +34,9 @@ class PreloadMiniAppViewModel constructor(
     fun getMiniAppManifest(miniAppId: String, versionId: String, metadataKey: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val manifest = miniApp.getMiniAppManifest(miniAppId, versionId)
+                val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
                 _miniAppManifest.postValue(miniApp.getMiniAppManifest(miniAppId, versionId))
-                _miniAppManifestMetadata.postValue(manifest.getMetadataValue(metadataKey))
+                _miniAppManifestMetadata.postValue(miniAppManifest.getMetadataValue(metadataKey))
             } catch (error: MiniAppSdkException) {
                 _manifestErrorData.postValue(error.message)
             }
