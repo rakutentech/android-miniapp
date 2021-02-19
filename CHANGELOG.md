@@ -13,6 +13,7 @@ Before v3.0.0  |  v3.0.0
 `getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
 
 - **Change:** Support Android 7 - API 24 as minimum version.
+- **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
 - **Fix:** Load ad error when do re-try loading.
 - **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
 

@@ -43,7 +43,7 @@ class DisplayerSpec {
     }
 
     private fun getMiniAppDisplay(): MiniAppDisplay =
-        Displayer(context, TEST_HA_NAME).createMiniAppDisplay(
+        Displayer(TEST_HA_NAME).createMiniAppDisplay(
             basePath = context.filesDir.path,
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
@@ -52,12 +52,11 @@ class DisplayerSpec {
             queryParams = TEST_URL_PARAMS
         )
 
-    private fun getMiniAppDisplayUrl(): MiniAppDisplay =
-        Displayer(context, TEST_HA_NAME).createMiniAppDisplay(
-            appUrl = TEST_MA_URL,
-            miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = mock(),
-            miniAppCustomPermissionCache = mock(),
-            queryParams = TEST_URL_PARAMS
-        )
+    private fun getMiniAppDisplayUrl(): MiniAppDisplay = Displayer(TEST_HA_NAME).createMiniAppDisplay(
+        appUrl = TEST_MA_URL,
+        miniAppMessageBridge = miniAppMessageBridge,
+        miniAppNavigator = mock(),
+        miniAppCustomPermissionCache = mock(),
+        queryParams = TEST_URL_PARAMS
+    )
 }
