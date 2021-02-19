@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
@@ -109,29 +108,27 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
                     miniAppManifest.observe(lifecycleOwner,
                         Observer { (requiredPermissions, optionalPermissions, metadata) ->
-                            // TODO: inflate UI from MiniApp.getRequiredCustomPermissions
-                            // TODO: inflate UI from MiniApp.getOptionalCustomPermissions
-                            val namesForAdapter: ArrayList<MiniAppCustomPermissionType> =
-                                arrayListOf()
-                            val reasonsForAdapter: ArrayList<String> = arrayListOf()
-                            val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> =
-                                arrayListOf()
+                            val manifestPermissions = ArrayList<PreloadManifestPermission>()
 
                             requiredPermissions.forEach {
-                                namesForAdapter.add(it.first)
-                                reasonsForAdapter.add(it.second)
-                                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+                                val permission = PreloadManifestPermission(
+                                    it.first,
+                                    true,
+                                    MiniAppCustomPermissionResult.ALLOWED,
+                                    it.second
+                                )
+                                manifestPermissions.add(permission)
                             }
                             optionalPermissions.forEach {
-                                namesForAdapter.add(it.first)
-                                reasonsForAdapter.add(it.second)
-                                resultsForAdapter.add(MiniAppCustomPermissionResult.ALLOWED)
+                                val permission = PreloadManifestPermission(
+                                    it.first,
+                                    false,
+                                    MiniAppCustomPermissionResult.DENIED,
+                                    it.second
+                                )
+                                manifestPermissions.add(permission)
                             }
-                            permissionAdapter.addManifestPermissionList(
-                                namesForAdapter,
-                                resultsForAdapter,
-                                reasonsForAdapter
-                            )
+                            permissionAdapter.addManifestPermissionList(manifestPermissions)
 
                             preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
                                 "Metadata Key: " + metadata?.randomKey.toString()
