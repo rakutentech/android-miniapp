@@ -457,31 +457,30 @@ MiniApp developers need to add the following metadata attributes in manifest.jso
 
 ```json
 {
-   ...
-   "metadata":{
-      "reqPermissions":[
-         {
-            "name":"rakuten.miniapp.user.USER_NAME",
-            "reason":"Describe your reason here."
-         },
-         {
-            "name":"rakuten.miniapp.user.PROFILE_PHOTO",
-            "reason":"Describe your reason here."
-         }
-      ],
-      "optPermissions":[
-         {
-            "name":"rakuten.miniapp.user.CONTACT_LIST",
-            "reason":"Describe your reason here."
-         },
-         {
-            "name":"rakuten.miniapp.device.LOCATION",
-            "reason":"Describe your reason here."
-         }
-      ],
-      "customMetaData":{
-         "hostAppRandomTestKey":"metadata value"
+   "reqPermissions":[
+      {
+         "name":"rakuten.miniapp.user.USER_NAME",
+         "reason":"Describe your reason here."
+      },
+      {
+         "name":"rakuten.miniapp.user.PROFILE_PHOTO",
+         "reason":"Describe your reason here."
       }
+   ],
+   "optPermissions":[
+      {
+         "name":"rakuten.miniapp.user.CONTACT_LIST",
+         "reason":"Describe your reason here."
+      },
+      {
+         "name":"rakuten.miniapp.device.LOCATION",
+         "reason":"Describe your reason here."
+      }
+   ],
+
+   // Host App can require Mini Apps to set meta data here e.g. the first time launch screen options.
+   "customMetaData":{
+      "hostAppRandomTestKey":"metadata value"
    }
 }
 ```
@@ -493,8 +492,8 @@ CoroutineScope(Dispatchers.IO).launch {
     try {
         val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
 
-        // Host App can set it's own metadata key in manifest.json
-        miniAppManifest.getMetadataValue("hostAppRandomTestKey")
+        // Host App can set it's own metadata key in manifest.json to retrieve the value
+        miniAppManifest.customMetaData["hostAppRandomTestKey"]
     } catch(e: MiniAppSdkException) {
         Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)
     }

@@ -136,16 +136,20 @@ internal class MiniAppDownloader(
 
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
-        val requiredPermissions = metadataEntity.metadata.requiredPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
-        } ?: emptyList()
+        try {
+            val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
+                Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+            } ?: emptyList()
 
-        val optionalPermissions = metadataEntity.metadata.optionalPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
-        } ?: emptyList()
+            val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
+                Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+            } ?: emptyList()
 
-        val customMetadata = metadataEntity.metadata.customMetaData
-        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+            val customMetadata = metadataEntity.metadata?.customMetaData!!
+            return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+        } catch (exception: NullPointerException) {
+            throw MiniAppSdkException("Metadata isn't found in manifest.json for this Mini App.")
+        }
     }
 
     @SuppressWarnings("LongMethod")
