@@ -297,7 +297,7 @@ class MiniAppDownloaderSpec {
             TEST_ID_MINIAPP_VERSION
         ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
 
-        val mockResponseBody: ResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
+        val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
     }
 
