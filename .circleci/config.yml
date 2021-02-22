@@ -93,3 +93,15 @@ workflows:
           filters:
             branches:
               only: candidate
+      - app-center/publish:
+          name: deploy-test-app-feature
+          group: Feature
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BRANCH
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: /^feature\/.*/

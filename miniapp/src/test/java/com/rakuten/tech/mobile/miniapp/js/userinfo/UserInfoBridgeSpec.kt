@@ -89,7 +89,7 @@ class UserInfoBridgeSpec {
         canGetName: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasUserName) {
-            object : UserInfoBridgeDispatcher() {
+            object : UserInfoBridgeDispatcher {
                 override fun getUserName(
                     onSuccess: (userName: String) -> Unit,
                     onError: (message: String) -> Unit
@@ -101,7 +101,7 @@ class UserInfoBridgeSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher() {}
+            object : UserInfoBridgeDispatcher {}
         }
     }
 
@@ -184,7 +184,7 @@ class UserInfoBridgeSpec {
         canGetPhoto: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasProfilePhoto) {
-            object : UserInfoBridgeDispatcher() {
+            object : UserInfoBridgeDispatcher {
                 override fun getProfilePhoto(
                     onSuccess: (profilePhoto: String) -> Unit,
                     onError: (message: String) -> Unit
@@ -196,7 +196,7 @@ class UserInfoBridgeSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher() {}
+            object : UserInfoBridgeDispatcher {}
         }
     }
 
@@ -256,7 +256,7 @@ class UserInfoBridgeSpec {
         canGetToken: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasAccessToken) {
-            object : UserInfoBridgeDispatcher() {
+            object : UserInfoBridgeDispatcher {
                 override fun getAccessToken(
                     miniAppId: String,
                     onSuccess: (tokenData: TokenData) -> Unit,
@@ -269,7 +269,7 @@ class UserInfoBridgeSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher() {}
+            object : UserInfoBridgeDispatcher {}
         }
     }
 
@@ -312,7 +312,7 @@ class UserInfoBridgeSpec {
         canGetContacts: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasGetContacts) {
-            object : UserInfoBridgeDispatcher() {
+            object : UserInfoBridgeDispatcher {
                 override fun getContacts(
                     onSuccess: (contacts: ArrayList<Contact>) -> Unit,
                     onError: (message: String) -> Unit
@@ -324,7 +324,7 @@ class UserInfoBridgeSpec {
                 }
             }
         } else {
-            object : UserInfoBridgeDispatcher() {}
+            object : UserInfoBridgeDispatcher {}
         }
     }
 
