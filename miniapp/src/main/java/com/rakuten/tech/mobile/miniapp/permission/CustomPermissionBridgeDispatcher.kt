@@ -14,28 +14,18 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppId: String
+    private val miniAppId: String,
+    jsonStr: String
 ) {
-
-    private var callbackObj: CustomPermissionCallbackObj? = null
-    private var permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
-
-    /**
-     * assign values to callbackObj and permissionsWithDescription properties using jsonStr data.
-     * @param [jsonStr] json string for custom permissions dispatched from MiniAppMessageBridge.
-     */
-    fun initCallBackObject(jsonStr: String) {
-        try {
-            callbackObj = Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
-            val permissionObjList = arrayListOf<CustomPermissionObj>()
-            callbackObj?.param?.permissions?.forEach {
-                permissionObjList.add(CustomPermissionObj(it.name, it.description))
-            }
-            permissionsWithDescription = preparePermissionsWithDescription(permissionObjList)
-        } catch (e: Exception) {
-            e.message?.let { postCustomPermissionError(it) }
-        }
+    private var callbackObj: CustomPermissionCallbackObj? = try {
+        Gson().fromJson(jsonStr, CustomPermissionCallbackObj::class.java)
+    } catch (e: Exception) {
+        e.message?.let { postCustomPermissionError(it) }
+        null
     }
+    private var permissionsWithDescription = preparePermissionsWithDescription(
+        callbackObj?.param?.permissions ?: emptyList()
+    )
 
     /**
      * Prepares a list of custom permissions Pair with names and description.
@@ -45,7 +35,7 @@ internal class CustomPermissionBridgeDispatcher(
     @Suppress("FunctionMaxLength")
     @VisibleForTesting
     fun preparePermissionsWithDescription(
-        permissionObjList: ArrayList<CustomPermissionObj>
+        permissionObjList: List<CustomPermissionObj>
     ): List<Pair<MiniAppCustomPermissionType, String>> {
         val permissionsWithDescription =
             arrayListOf<Pair<MiniAppCustomPermissionType, String>>()
