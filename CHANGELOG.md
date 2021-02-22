@@ -15,6 +15,7 @@ Replace `getUserName`, `getProfilePhoto` with new prototypes.
 - **Change:** Support Android 7 - API 24 as minimum version.
 - **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
 - **Fix:** Load ad error when do re-try loading.
+- **Fix:** Failure when simultaneous custom permission requests are received.
 
 ### 2.8.0 (2020-01-25)
 **SDK**
