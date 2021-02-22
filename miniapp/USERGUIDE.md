@@ -453,7 +453,7 @@ CoroutineScope(Dispatchers.IO).launch {
 ## Fetching Mini App Meta data
 **API Docs:** [MiniApp.getMiniAppManifest](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-mini-app-manifest.html)
 
-MiniApp developers need to add the following metadata attributes in manifest.json.
+MiniApp developers need to add the following attributes in manifest.json. Host App can require Mini Apps to set meta data here using "customMetaData", such as the first time launch screen options.
 
 ```json
 {
@@ -477,8 +477,6 @@ MiniApp developers need to add the following metadata attributes in manifest.jso
          "reason":"Describe your reason here."
       }
    ],
-
-   // Host App can require Mini Apps to set meta data here e.g. the first time launch screen options.
    "customMetaData":{
       "hostAppRandomTestKey":"metadata value"
    }
