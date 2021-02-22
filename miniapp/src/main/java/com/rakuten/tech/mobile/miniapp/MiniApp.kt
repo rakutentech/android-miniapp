@@ -9,6 +9,10 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
+import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -160,7 +164,12 @@ abstract class MiniApp internal constructor() {
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(context, apiClient),
+                miniAppDownloader = MiniAppDownloader(
+                    apiClient = apiClient,
+                    initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
+                    initStatus = { MiniAppStatus(context) },
+                    initVerifier = { CachedMiniAppVerifier(context) }
+                ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )

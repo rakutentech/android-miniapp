@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.mock
@@ -20,16 +18,13 @@ import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Suppress("LargeClass")
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 class MiniAppDownloaderSpec {
-    private val context: Context = mock()
     private val apiClient: ApiClient = mock()
     private val storage: MiniAppStorage = mock()
     private val miniAppStatus: MiniAppStatus = mock()
@@ -43,7 +38,13 @@ class MiniAppDownloaderSpec {
 
     @Before
     fun setup() {
-        downloader = MiniAppDownloader(context, mock(), dispatcher)
+        downloader = MiniAppDownloader(
+            apiClient = apiClient,
+            initStorage = { storage },
+            initStatus = { miniAppStatus },
+            initVerifier = { verifier },
+            coroutineDispatcher = dispatcher
+        )
         downloader.updateApiClient(apiClient)
 
         When calling verifier.verify(any(), any()) itReturns true
@@ -296,7 +297,7 @@ class MiniAppDownloaderSpec {
             TEST_ID_MINIAPP_VERSION
         ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
 
-        val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
+        val mockResponseBody: ResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
     }
 
