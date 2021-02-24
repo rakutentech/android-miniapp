@@ -12,11 +12,13 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.RequiredStatusType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActivity() {
 
@@ -53,9 +55,11 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
         val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
-        miniapp.getCustomPermissions(miniAppId, RequiredStatusType.OPTIONAL).pairValues.forEach {
-            namesForAdapter.add(it.first)
-            resultsForAdapter.add(it.second)
+        GlobalScope.launch(Dispatchers.IO) {
+            miniapp.getCustomPermissions(miniAppId).pairValues.forEach {
+                namesForAdapter.add(it.first)
+                resultsForAdapter.add(it.second)
+            }
         }
 
         permissionSettingsAdapter.addPermissionList(
