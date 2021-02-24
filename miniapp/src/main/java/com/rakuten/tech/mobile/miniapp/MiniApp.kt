@@ -19,7 +19,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("UnnecessaryAbstractClass", "LongMethod")
 abstract class MiniApp internal constructor() {
 
     /**

@@ -8,7 +8,11 @@ import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
 import java.net.ConnectException
@@ -40,7 +44,7 @@ internal class MiniAppDownloader(
         onNetworkError(miniAppInfo)
     }
 
-    @Suppress("ThrowsCount")
+    @Suppress("ThrowsCount", "MagicNumber")
     fun validateHttpAppUrl(url: String) {
         var connection: HttpURLConnection? = null
         try {
