@@ -22,9 +22,9 @@ import java.net.URL
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
-    private val initStorage: () -> MiniAppStorage,
-    private val initStatus: () -> MiniAppStatus,
-    private val initVerifier: () -> CachedMiniAppVerifier,
+    initStorage: () -> MiniAppStorage,
+    initStatus: () -> MiniAppStatus,
+    initVerifier: () -> CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
