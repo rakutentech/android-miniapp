@@ -35,31 +35,12 @@ class CustomPermissionBridgeDispatcherSpec {
         ),
         id = TEST_CALLBACK_ID
     )
-    private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
 
     @Before
     fun setUp() {
         doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(miniAppId)
-        customPermissionBridgeDispatcher = spy(
-            CustomPermissionBridgeDispatcher(
-                bridgeExecutor,
-                miniAppCustomPermissionCache,
-                miniAppId
-            )
-        )
-
-        customPermissionBridgeDispatcher.initCallBackObject(customPermissionJsonStr)
-    }
-
-    @Test
-    fun `preparePermissionsWithDescription should be invoked when initializing properties`() {
-        val permissionObjList = arrayListOf<CustomPermissionObj>()
-        customPermissionCallbackObj.param?.permissions?.forEach {
-            permissionObjList.add(CustomPermissionObj(it.name, it.description))
-        }
-
-        verify(customPermissionBridgeDispatcher).preparePermissionsWithDescription(permissionObjList)
+        customPermissionBridgeDispatcher = createCustomPermissionBridgeDispatcher()
     }
 
     @Test
@@ -83,9 +64,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
 
-        assertEquals(emptyList(), customPermissionBridgeDispatcher.filterDeniedPermissions())
+        assertEquals(emptyList(), dispatcher.filterDeniedPermissions())
     }
 
     @Test
@@ -116,9 +97,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
 
-        val actual = customPermissionBridgeDispatcher.createJsonResponse()
+        val actual = dispatcher.createJsonResponse()
         val expected = "Cannot request custom permissions: {}"
 
         assertEquals(expected, actual)
@@ -141,13 +122,9 @@ class CustomPermissionBridgeDispatcherSpec {
             ),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(
-            Gson().toJson(
-                unknownPermissionCallbackObj
-            )
-        )
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(unknownPermissionCallbackObj))
 
-        val actual = customPermissionBridgeDispatcher.retrievePermissionsForJson()
+        val actual = dispatcher.retrievePermissionsForJson()
         val expected = listOf(
             Pair(
                 MiniAppCustomPermissionType.UNKNOWN,
@@ -175,6 +152,7 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `should create json response while sending result by HostApp`() {
+        val dispatcher = spy(createCustomPermissionBridgeDispatcher())
         val permissionsWithResult = listOf(
             Pair(
                 MiniAppCustomPermissionType.USER_NAME,
@@ -182,8 +160,8 @@ class CustomPermissionBridgeDispatcherSpec {
             )
         )
 
-        customPermissionBridgeDispatcher.sendHostAppCustomPermissions(permissionsWithResult)
-        verify(customPermissionBridgeDispatcher).createJsonResponse()
+        dispatcher.sendHostAppCustomPermissions(permissionsWithResult)
+        verify(dispatcher).createJsonResponse()
     }
 
     @Test
@@ -205,4 +183,14 @@ class CustomPermissionBridgeDispatcherSpec {
             "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} $errMessage"
         )
     }
+
+    private fun createCustomPermissionBridgeDispatcher(
+        miniAppId: String = this.miniAppId,
+        jsonStr: String = Gson().toJson(customPermissionCallbackObj)
+    ) = CustomPermissionBridgeDispatcher(
+        bridgeExecutor = bridgeExecutor,
+        customPermissionCache = miniAppCustomPermissionCache,
+        miniAppId = miniAppId,
+        jsonStr = jsonStr
+    )
 }
