@@ -31,6 +31,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
     private var versionId: String = ""
+    private val metadataKey = "randomTestKey" // HostApp can set it's own key
 
     private var prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
@@ -106,8 +107,13 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                         })
                     }
 
+                    miniAppManifestMetadata.observe(lifecycleOwner, Observer {
+                        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
+                            "Metadata value: " + it
+                    })
+
                     miniAppManifest.observe(lifecycleOwner,
-                        Observer { (requiredPermissions, optionalPermissions, metadata) ->
+                        Observer { (requiredPermissions, optionalPermissions) ->
                             val manifestPermissions = ArrayList<PreloadManifestPermission>()
 
                             requiredPermissions.forEach {
@@ -128,10 +134,8 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                                 )
                                 manifestPermissions.add(permission)
                             }
-                            permissionAdapter.addManifestPermissionList(manifestPermissions)
 
-                            preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
-                                "Metadata Key: " + metadata?.randomKey.toString()
+                            permissionAdapter.addManifestPermissionList(manifestPermissions)
                         })
 
                     manifestErrorData.observe(lifecycleOwner, Observer {
@@ -143,7 +147,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         if (versionId.isEmpty())
             viewModel.getMiniAppVersionId(miniAppId)
 
-        viewModel.getMiniAppManifest(miniAppId, versionId)
+        viewModel.getMiniAppManifest(miniAppId, versionId, metadataKey)
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {

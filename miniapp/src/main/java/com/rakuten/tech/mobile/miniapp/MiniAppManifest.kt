@@ -12,11 +12,5 @@ data class MiniAppManifest(
     val requiredPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
     val optionalPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
     // custom metadata set by Mini App in their manifest
-    val customMetaData: CustomMetaData?
-) {
-    /** Metadata custom key object. */
-    @Keep
-    data class CustomMetaData(
-        val randomKey: String
-    )
-}
+    val customMetaData: Map<String, String>
+)

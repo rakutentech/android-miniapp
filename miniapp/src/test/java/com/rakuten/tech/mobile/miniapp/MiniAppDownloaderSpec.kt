@@ -285,7 +285,7 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(
                     listOf(requiredPermissionObj),
                     listOf(optionalPermissionObj),
-                    MiniAppManifest.CustomMetaData("randomTestKey")
+                    hashMapOf()
                 )
             )
 
@@ -313,7 +313,7 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(
                     listOf(requiredPermissionObj),
                     listOf(optionalPermissionObj),
-                    MiniAppManifest.CustomMetaData("randomTestKey")
+                    hashMapOf()
                 )
             )
 
@@ -344,7 +344,7 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(
                     listOf(requiredPermissionObj),
                     listOf(optionalPermissionObj),
-                    MiniAppManifest.CustomMetaData("randomTestKey")
+                    hashMapOf()
                 )
             )
 
@@ -358,8 +358,7 @@ class MiniAppDownloaderSpec {
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
-            val manifestKey = MiniAppManifest.CustomMetaData("randomTestKey")
-            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, manifestKey)
+            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
 
             assertEquals(expected, actual)
         }

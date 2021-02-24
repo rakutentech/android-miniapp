@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.content.Context
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
@@ -8,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 
 @Suppress("LongParameterList")
-internal class Displayer(private val context: Context, private val hostAppUserAgentInfo: String) {
+internal class Displayer(private val hostAppUserAgentInfo: String) {
 
     fun createMiniAppDisplay(
         basePath: String,
@@ -18,7 +17,6 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
-        context = context,
         basePath = basePath,
         miniAppInfo = miniAppInfo,
         miniAppMessageBridge = miniAppMessageBridge,
@@ -35,7 +33,6 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
-        context = context,
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
