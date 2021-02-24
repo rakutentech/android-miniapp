@@ -27,8 +27,6 @@ abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
-    private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
-    private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private val userInfoBridgeWrapper = UserInfoBridge()
@@ -47,16 +45,6 @@ abstract class MiniAppMessageBridge {
         this.miniAppId = miniAppId
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
-        this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
-            bridgeExecutor,
-            customPermissionCache,
-            miniAppId
-        )
-        this.customPermissionWindow = MiniAppCustomPermissionWindow(
-            activity,
-            customPermissionBridgeDispatcher
-        )
-
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridgeWrapper.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
@@ -178,8 +166,16 @@ abstract class MiniAppMessageBridge {
 
     @Suppress("SwallowedException")
     private fun onRequestCustomPermissions(jsonStr: String) {
-        // initialize required properties using jsonStr before executing operations
-        customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
+        val customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
+            bridgeExecutor = bridgeExecutor,
+            customPermissionCache = customPermissionCache,
+            miniAppId = miniAppId,
+            jsonStr = jsonStr
+        )
+        val customPermissionWindow = MiniAppCustomPermissionWindow(
+            activity,
+            customPermissionBridgeDispatcher
+        )
 
         // check if there is any denied permission
         val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
