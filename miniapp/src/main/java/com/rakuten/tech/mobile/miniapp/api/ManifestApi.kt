@@ -7,9 +7,9 @@ import retrofit2.http.Path
 
 internal interface ManifestApi {
     // double slash is okay
-    @GET("host/{hostappId}/miniapp/{miniappId}/version/{versionId}/{testPath}/manifest")
+    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/manifest")
     fun fetchFileListFromManifest(
-        @Path("hostappId") hostAppId: String,
+        @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
         @Path("testPath") testPath: String = ""

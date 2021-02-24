@@ -8,15 +8,15 @@ import retrofit2.http.Query
 
 internal interface AppInfoApi {
 
-    @GET("host/{hostappId}/miniapps/{testPath}")
+    @GET("host/{hostId}/miniapps/{testPath}")
     fun list(
-        @Path("hostappId") hostAppId: String,
+        @Path("hostId") hostId: String,
         @Path("testPath") testPath: String = ""
     ): Call<List<MiniAppInfo>>
 
-    @GET("host/{hostappId}/miniapps/{testPath}")
+    @GET("host/{hostId}/miniapps/{testPath}")
     fun fetchInfo(
-        @Path("hostappId") hostAppId: String,
+        @Path("hostId") hostId: String,
         @Path("testPath") testPath: String = "",
         @Query("miniAppId") miniAppId: String
     ): Call<List<MiniAppInfo>>

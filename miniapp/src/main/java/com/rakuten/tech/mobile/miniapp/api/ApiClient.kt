@@ -21,7 +21,7 @@ import java.net.UnknownHostException
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     internal val isPreviewMode: Boolean,
-    private val hostProjectId: String,
+    private val hostId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
@@ -40,7 +40,7 @@ internal class ApiClient @VisibleForTesting constructor(
             subscriptionKey = subscriptionKey
         ),
         isPreviewMode = isPreviewMode,
-        hostProjectId = rasProjectId
+        hostId = rasProjectId
     )
 
     private val testPath = if (isPreviewMode) "preview" else ""
@@ -48,7 +48,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(
-            hostAppId = hostProjectId,
+            hostId = hostId,
             testPath = testPath)
         return requestExecutor.executeRequest(request)
     }
@@ -56,7 +56,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
         val request = appInfoApi.fetchInfo(
-            hostAppId = hostProjectId,
+            hostId = hostId,
             miniAppId = appId,
             testPath = testPath)
         val info = requestExecutor.executeRequest(request)
@@ -71,7 +71,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
         val request = manifestApi.fetchFileListFromManifest(
-            hostAppId = hostProjectId,
+            hostId = hostId,
             miniAppId = miniAppId,
             versionId = versionId,
             testPath = testPath
