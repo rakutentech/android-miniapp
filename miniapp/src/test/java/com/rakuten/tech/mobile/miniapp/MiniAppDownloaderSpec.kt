@@ -301,7 +301,8 @@ class MiniAppDownloaderSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is internal server error`() {
-        When calling downloader.validateHttpAppUrl(TEST_URL_HTTPS_1) itThrows IOException()
+        When calling downloader.validateHttpAppUrl(TEST_URL_HTTPS_1) itThrows IOException(
+            TEST_ERROR_MSG)
         downloader.validateHttpAppUrl(TEST_URL_HTTPS_1)
     }
 
