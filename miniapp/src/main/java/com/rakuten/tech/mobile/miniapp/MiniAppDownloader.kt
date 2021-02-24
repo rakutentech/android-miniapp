@@ -145,7 +145,7 @@ internal class MiniAppDownloader(
                 Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
             } ?: emptyList()
 
-            val customMetadata = metadataEntity.metadata?.customMetaData!!
+            val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
             return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
         } catch (exception: NullPointerException) {
             throw MiniAppSdkException("Metadata isn't found in manifest.json for this Mini App.")

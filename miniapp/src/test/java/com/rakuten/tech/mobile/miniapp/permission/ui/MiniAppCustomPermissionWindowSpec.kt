@@ -53,7 +53,7 @@ class MiniAppCustomPermissionWindowSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity {
             activity = it
             dispatcher =
-                CustomPermissionBridgeDispatcher(bridgeExecutor, permissionCache, miniAppId)
+                CustomPermissionBridgeDispatcher(bridgeExecutor, permissionCache, miniAppId, "")
             permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         }
     }
