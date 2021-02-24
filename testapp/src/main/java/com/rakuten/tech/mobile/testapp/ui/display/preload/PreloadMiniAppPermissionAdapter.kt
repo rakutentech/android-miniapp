@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListManifestPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.permission.toReadableName
 
@@ -14,7 +15,8 @@ class PreloadMiniAppPermissionAdapter :
     RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
 
     private var manifestPermissions = ArrayList<PreloadManifestPermission>()
-    var manifestPermissionsOutput = ArrayList<PreloadManifestPermission>()
+    var manifestPermissionPairs =
+        arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -40,14 +42,13 @@ class PreloadMiniAppPermissionAdapter :
         else holder.permissionReason.visibility = View.VISIBLE
 
         holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
-            manifestPermissionsOutput.removeAt(position)
-            val permission = PreloadManifestPermission(
-                manifestPermissions[position].type,
-                manifestPermissions[position].isRequired,
-                permissionResultToText(holder.permissionSwitch.isChecked),
-                manifestPermissions[position].reason
+            manifestPermissionPairs.removeAt(position)
+            manifestPermissionPairs.add(
+                position, Pair(
+                    manifestPermissions[position].type,
+                    permissionResultToText(holder.permissionSwitch.isChecked)
+                )
             )
-            manifestPermissionsOutput.add(position, permission)
         }
     }
 
@@ -55,8 +56,8 @@ class PreloadMiniAppPermissionAdapter :
 
     fun addManifestPermissionList(permissions: ArrayList<PreloadManifestPermission>) {
         manifestPermissions = permissions
-        manifestPermissions.forEachIndexed { position, permission ->
-            manifestPermissionsOutput.add(position, permission)
+        manifestPermissions.forEachIndexed { position, (type, _, result) ->
+            manifestPermissionPairs.add(position, Pair(type, result))
         }
         notifyDataSetChanged()
     }

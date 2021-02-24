@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
@@ -151,12 +153,13 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {
-            // TODO: MiniApp.setCustomPermissions
-            storeAcceptance(true) // set false when accept
+            storeAcceptance(true) // set true when accept
+            storeManifestPermission(true, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
         }
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadCancel).setOnClickListener {
+            storeManifestPermission(false, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
             preloadMiniAppAlertDialog.dismiss()
         }
@@ -171,6 +174,31 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             return false
         }
         return false
+    }
+
+    private fun storeManifestPermission(
+        isAccepted: Boolean,
+        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+    ) {
+        // store values in SDK cache
+        if (isAccepted) {
+            val permissionsWhenAccept = MiniAppCustomPermission(
+                miniAppId = miniAppId,
+                pairValues = permissions
+            )
+            viewModel.miniApp.setCustomPermissions(permissionsWhenAccept)
+        } else {
+            val deniedPermissions =
+                ArrayList<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+            permissions.forEach {
+                deniedPermissions.add(Pair(it.first, MiniAppCustomPermissionResult.DENIED))
+            }
+            val permissionsWhenDeny = MiniAppCustomPermission(
+                miniAppId = miniAppId,
+                pairValues = deniedPermissions
+            )
+            viewModel.miniApp.setCustomPermissions(permissionsWhenDeny)
+        }
     }
 
     private fun storeAcceptance(isAccepted: Boolean) = prefs.edit()?.putBoolean(miniAppId, isAccepted)?.apply()

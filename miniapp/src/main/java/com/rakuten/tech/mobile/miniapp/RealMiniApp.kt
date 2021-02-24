@@ -6,7 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 
 @Suppress("TooManyFunctions")
@@ -25,8 +25,13 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
-    override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
-        miniAppCustomPermissionCache.readPermissions(miniAppId)
+    override fun getCustomPermissions(
+        miniAppId: String,
+        requiredStatusType: RequiredStatusType
+    ): MiniAppCustomPermission {
+
+        return miniAppCustomPermissionCache.readPermissions(miniAppId)
+    }
 
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
@@ -47,6 +52,8 @@ internal class RealMiniApp(
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
+            val miniAppManifest =
+                miniAppDownloader.fetchMiniAppManifest(appId, "")
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
@@ -67,6 +74,28 @@ internal class RealMiniApp(
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
+
+            val miniAppManifest =
+                miniAppDownloader.fetchMiniAppManifest(appInfo.id, appInfo.version.versionId)
+            val requiredPermissions = ArrayList<MiniAppCustomPermissionType>()
+            miniAppManifest.requiredPermissions.forEach { requiredPermissions.add(it.first) }
+
+            val cachedPermissions = miniAppCustomPermissionCache.readPermissions(appInfo.id).pairValues
+
+            val filteredPair =
+                mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+
+            requiredPermissions.forEach { manifestRequiredPermission ->
+                cachedPermissions.find {
+                    it.first == manifestRequiredPermission
+                }?.let { filteredPair.add(it) }
+            }
+
+            filteredPair.forEach {
+                if (it.second != MiniAppCustomPermissionResult.ALLOWED)
+                    throw MiniAppSdkException("Required permission is not granted yet")
+            }
+
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,

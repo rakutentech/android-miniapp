@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PreloadMiniAppViewModel constructor(
-    private val miniApp: MiniApp
+    internal val miniApp: MiniApp
 ) : ViewModel() {
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))

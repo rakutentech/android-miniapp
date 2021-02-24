@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.RequiredStatusType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
@@ -106,10 +107,12 @@ abstract class MiniApp internal constructor() {
     /**
      * Get custom permissions with grant results per MiniApp from this SDK.
      * @param miniAppId mini app id as the key to retrieve data from cache.
+     * @param requiredStatusType mini app custom permission status.
      * @return [MiniAppCustomPermission] an object contains the grant results per mini app.
      */
     abstract fun getCustomPermissions(
-        miniAppId: String
+        miniAppId: String,
+        requiredStatusType: RequiredStatusType
     ): MiniAppCustomPermission
 
     /**
