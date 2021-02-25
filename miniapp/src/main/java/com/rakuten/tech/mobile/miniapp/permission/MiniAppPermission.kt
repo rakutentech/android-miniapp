@@ -45,3 +45,11 @@ enum class MiniAppCustomPermissionResult {
     DENIED,
     PERMISSION_NOT_AVAILABLE;
 }
+
+/** Status of miniapp custom permission. **/
+@Keep
+enum class RequiredStatusType {
+    REQUIRED,
+    OPTIONAL,
+    ALL
+}

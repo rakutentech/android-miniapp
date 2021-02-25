@@ -11,6 +11,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -108,7 +109,7 @@ abstract class MiniApp internal constructor() {
      * @param miniAppId mini app id as the key to retrieve data from cache.
      * @return [MiniAppCustomPermission] an object contains the grant results per mini app.
      */
-    abstract suspend fun getCustomPermissions(
+    abstract fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission
 
@@ -179,7 +180,8 @@ abstract class MiniApp internal constructor() {
                     initVerifier = { CachedMiniAppVerifier(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context),
+                miniAppManifestCache = MiniAppManifestCache(context)
             )
         }
     }

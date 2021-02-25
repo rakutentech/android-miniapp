@@ -191,7 +191,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             val deniedPermissions =
                 ArrayList<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
             permissions.forEach {
-                deniedPermissions.add(Pair(it.first, MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE))
+                deniedPermissions.add(Pair(it.first, MiniAppCustomPermissionResult.DENIED))
             }
             val permissionsWhenDeny = MiniAppCustomPermission(
                 miniAppId = miniAppId,

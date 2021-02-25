@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -8,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 
 @Suppress("TooManyFunctions")
 internal class RealMiniApp(
@@ -15,7 +17,8 @@ internal class RealMiniApp(
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
-    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    private val miniAppManifestCache: MiniAppManifestCache
 ) : MiniApp() {
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
@@ -25,16 +28,39 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
-    override suspend fun getCustomPermissions(
+    override fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission {
-        val permissions = getManifestCustomPermissions(miniAppId, fetchInfo(miniAppId).version.versionId)
-        val miniAppCustomPermission = MiniAppCustomPermission(miniAppId, permissions)
-        return miniAppCustomPermission
+        // return only manifest permissions
+        val manifestPermissions = getCachedRequiredPermissions(miniAppId) +
+            getCachedOptionalPermissions(miniAppId)
+        return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
-    override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
-        miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
+    override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
+        // store only manifest permission
+        val manifestPermissions =
+            arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+
+        miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).requiredPermissions.forEach { (first) ->
+            miniAppCustomPermission.pairValues.find {
+                it.first == first
+            }?.let { manifestPermissions.add(it) }
+        }
+
+        miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).optionalPermissions.forEach { (first) ->
+            miniAppCustomPermission.pairValues.find {
+                it.first == first
+            }?.let { manifestPermissions.add(it) }
+        }
+
+        Log.d("AAAAA11", ""+miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).requiredPermissions.toString())
+        Log.d("AAAAA12", ""+miniAppCustomPermission.toString())
+        Log.d("AAAAA13", ""+manifestPermissions.toString())
+
+        val manifestCustomPermission = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
+        miniAppCustomPermissionCache.storePermissions(manifestCustomPermission)
+    }
 
     @Suppress("FunctionMaxLength")
     override fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>> {
@@ -51,8 +77,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         isRequiredPermissionDenied(
-            appId,
-            ""
+            appId
         ) -> throw MiniAppSdkException("Required permissions are not granted yet for this miniapp.")
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
@@ -75,8 +100,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         isRequiredPermissionDenied(
-            appInfo.id,
-            appInfo.version.versionId
+            appInfo.id
         ) -> throw MiniAppSdkException("Required permissions are not granted yet for this miniapp.")
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
@@ -110,8 +134,12 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+        // store manifest value in cache after fetching from api
+        val manifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+        miniAppManifestCache.storeMiniAppManifest(appId, manifest)
+        return manifest
+    }
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
@@ -126,47 +154,47 @@ internal class RealMiniApp(
         }
     }
 
-    private suspend fun isRequiredPermissionDenied(appId: String, versionId: String): Boolean {
-        getRequiredCustomPermissions(appId, versionId).find {
+    private fun isRequiredPermissionDenied(appId: String): Boolean {
+        getCachedRequiredPermissions(appId).find {
             it.second != MiniAppCustomPermissionResult.ALLOWED
         }?.let { return true }
         return false
     }
 
-    private suspend fun getRequiredCustomPermissions(
-        appId: String,
-        versionId: String
+    private fun getCachedRequiredPermissions(
+        appId: String
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        val requiredPermissions =
+            arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+
+        val manifest = miniAppManifestCache.readMiniAppManifest(appId)
+        // TODO: check if it throws error for empty version id
+        manifest.requiredPermissions.forEach { (first) ->
+            miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
+                it.first == first
+            }?.let { requiredPermissions.add(it) }
+        }
+
+        Log.d("AAAAA2", ""+requiredPermissions.toString())
+
+        return requiredPermissions
+    }
+
+    private fun getCachedOptionalPermissions(
+        appId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         val requiredPermissions =
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
         // TODO: check if it throws error for empty version id
-        // TODO: fetchCachedManifest
-        getMiniAppManifest(appId, versionId).requiredPermissions.forEach { (first) ->
+        val manifest = miniAppManifestCache.readMiniAppManifest(appId)
+        manifest.optionalPermissions.forEach { (first) ->
             miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
                 it.first == first
             }?.let { requiredPermissions.add(it) }
         }
 
         return requiredPermissions
-    }
-
-    private suspend fun getManifestCustomPermissions(
-        appId: String,
-        versionId: String
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val manifestPermissions = ArrayList<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-        manifestPermissions.addAll(getRequiredCustomPermissions(appId, versionId))
-
-        // TODO: check if it throws error for empty version id
-        // TODO: fetchCachedManifest
-        getMiniAppManifest(appId, versionId).optionalPermissions.forEach { (first) ->
-            miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
-                it.first == first
-            }?.let { manifestPermissions.add(it) }
-        }
-
-        return manifestPermissions
     }
 
     @VisibleForTesting
