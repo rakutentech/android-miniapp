@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 
+@Suppress("TooManyFunctions")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
@@ -95,6 +96,9 @@ internal class RealMiniApp(
             )
         }
     }
+
+    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
+        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)

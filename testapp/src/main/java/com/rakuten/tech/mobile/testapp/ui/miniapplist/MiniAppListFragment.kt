@@ -24,7 +24,7 @@ import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
@@ -124,7 +124,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
             selectedMiniAppInfo = miniAppInfo
-            activity?.let { preloadMiniAppWindow.initiate(miniAppInfo, miniAppInfo.id) }
+            activity?.let { preloadMiniAppWindow.initiate(miniAppInfo, miniAppInfo.id, this) }
         }
     }
 

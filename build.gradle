@@ -18,7 +18,7 @@ buildscript {
     ext.kotlin_version = '1.3.50'
     ext.material = '1.3.0'
     ext.mockito = '3.3.3'
-    ext.mockwebserver = '4.7.2'
+    ext.okhttp = '4.9.0'
     ext.manifest_config = '0.1.0'
     ext.nhrm_mockito_kotlin = '2.2.0'
     ext.sdk_utils = '0.1.1'

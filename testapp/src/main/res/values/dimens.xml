@@ -16,6 +16,7 @@
     <dimen name="medium_16">16dp</dimen>
     <dimen name="large_24">24dp</dimen>
     <dimen name="large_32">32dp</dimen>
+    <dimen name="large_52">52dp</dimen>
 
     <dimen name="text_large_18">18sp</dimen>
     <dimen name="text_large_16">16sp</dimen>

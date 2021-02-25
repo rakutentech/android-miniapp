@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -21,15 +23,15 @@ import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
-    private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus,
-    private val verifier: CachedMiniAppVerifier,
+    initStorage: () -> MiniAppStorage,
+    initStatus: () -> MiniAppStatus,
+    initVerifier: () -> CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
-
-    @Suppress("MagicNumber")
-    private val validHTTPResponseCodes = 100..399
+    private val storage: MiniAppStorage by lazy { initStorage() }
+    private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
+    private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -44,11 +46,12 @@ internal class MiniAppDownloader(
         onNetworkError(miniAppInfo)
     }
 
-    @Suppress("ThrowsCount")
+    @Suppress("ThrowsCount", "MagicNumber")
     fun validateHttpAppUrl(url: String) {
         var connection: HttpURLConnection? = null
         try {
             connection = URL(url).openConnection() as HttpURLConnection
+            val validHTTPResponseCodes = 100..399
             val code = connection.responseCode
             if (code !in validHTTPResponseCodes) {
                 throw MiniAppSdkException("Invalid URL error")
@@ -122,6 +125,29 @@ internal class MiniAppDownloader(
         appId: String,
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        else {
+            val manifestResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+            return prepareMiniAppManifest(manifestResponse)
+        }
+    }
+
+    @VisibleForTesting
+    fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+        val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
+        val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
+        val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
+        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+    }
 
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
