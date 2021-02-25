@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.IOException
 import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
@@ -24,7 +25,6 @@ import kotlin.test.assertTrue
 @Suppress("LargeClass", "LongMethod")
 @ExperimentalCoroutinesApi
 class MiniAppDownloaderSpec {
-
     private val apiClient: ApiClient = mock()
     private val storage: MiniAppStorage = mock()
     private val miniAppStatus: MiniAppStatus = mock()
@@ -38,7 +38,13 @@ class MiniAppDownloaderSpec {
 
     @Before
     fun setup() {
-        downloader = MiniAppDownloader(storage, mock(), miniAppStatus, verifier, dispatcher)
+        downloader = MiniAppDownloader(
+            apiClient = apiClient,
+            initStorage = { storage },
+            initStatus = { miniAppStatus },
+            initVerifier = { verifier },
+            coroutineDispatcher = dispatcher
+        )
         downloader.updateApiClient(apiClient)
 
         When calling verifier.verify(any(), any()) itReturns true
@@ -369,6 +375,22 @@ class MiniAppDownloaderSpec {
         val expected = miniAppStatus.getDownloadedMiniAppList()
 
         assertEquals(expected, actual)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw error when download with invalid url`() {
+        downloader.validateHttpAppUrl("invalid_url")
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw error when cannot connect to server`() {
+        downloader.validateHttpAppUrl(TEST_URL_HTTPS_1)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when there is internal server error`() {
+        When calling downloader.validateHttpAppUrl(TEST_URL_HTTPS_1) itThrows IOException()
+        downloader.validateHttpAppUrl(TEST_URL_HTTPS_1)
     }
 
     private suspend fun setupValidManifestResponse(
