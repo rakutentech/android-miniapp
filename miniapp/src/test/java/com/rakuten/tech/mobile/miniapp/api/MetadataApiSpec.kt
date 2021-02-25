@@ -41,7 +41,7 @@ open class MetadataApiSpec private constructor(
     ): MockResponse = MockResponse().setBody(
         Gson().toJson(
             hashMapOf(
-                "metadata" to metadata
+                "bundleManifest" to metadata
             )
         )
     )

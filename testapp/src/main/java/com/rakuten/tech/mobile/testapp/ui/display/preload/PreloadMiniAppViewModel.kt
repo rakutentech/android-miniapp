@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import androidx.lifecycle.*
+import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -35,8 +36,9 @@ class PreloadMiniAppViewModel constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
-                _miniAppManifest.postValue(miniApp.getMiniAppManifest(miniAppId, versionId))
-                _miniAppManifestMetadata.postValue(miniAppManifest.customMetaData[metadataKey])
+                _miniAppManifest.postValue(miniAppManifest)
+                val metadata = GsonBuilder().setPrettyPrinting().create().toJson(miniAppManifest.customMetaData)
+                _miniAppManifestMetadata.postValue(metadata)
             } catch (error: MiniAppSdkException) {
                 _manifestErrorData.postValue(error.message)
             }
