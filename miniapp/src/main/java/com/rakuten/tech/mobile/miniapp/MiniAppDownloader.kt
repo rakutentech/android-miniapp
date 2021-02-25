@@ -21,15 +21,15 @@ import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
-    private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus,
-    private val verifier: CachedMiniAppVerifier,
+    initStorage: () -> MiniAppStorage,
+    initStatus: () -> MiniAppStatus,
+    initVerifier: () -> CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
-
-    @Suppress("MagicNumber")
-    private val validHTTPResponseCodes = 100..399
+    private val storage: MiniAppStorage by lazy { initStorage() }
+    private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
+    private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -44,11 +44,12 @@ internal class MiniAppDownloader(
         onNetworkError(miniAppInfo)
     }
 
-    @Suppress("ThrowsCount")
+    @Suppress("ThrowsCount", "MagicNumber")
     fun validateHttpAppUrl(url: String) {
         var connection: HttpURLConnection? = null
         try {
             connection = URL(url).openConnection() as HttpURLConnection
+            val validHTTPResponseCodes = 100..399
             val code = connection.responseCode
             if (code !in validHTTPResponseCodes) {
                 throw MiniAppSdkException("Invalid URL error")

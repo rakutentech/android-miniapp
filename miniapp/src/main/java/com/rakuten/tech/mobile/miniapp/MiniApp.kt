@@ -19,7 +19,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("UnnecessaryAbstractClass", "LongMethod")
 abstract class MiniApp internal constructor() {
 
     /**
@@ -149,7 +149,6 @@ abstract class MiniApp internal constructor() {
         fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
             instance.apply { updateConfiguration(settings) }
 
-        @Suppress("LongMethod")
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
             defaultConfig = miniAppSdkConfig
             val apiClient = ApiClient(
@@ -162,14 +161,15 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val miniAppStatus = MiniAppStatus(context)
-            val storage = MiniAppStorage(FileWriter(), context.filesDir)
-            val verifier = CachedMiniAppVerifier(context)
-
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
+                miniAppDownloader = MiniAppDownloader(
+                    apiClient = apiClient,
+                    initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
+                    initStatus = { MiniAppStatus(context) },
+                    initVerifier = { CachedMiniAppVerifier(context) }
+                ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )
