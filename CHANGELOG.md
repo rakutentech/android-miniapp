@@ -1,21 +1,25 @@
 ## CHANGELOG
 
 ### 3.X.X (In progress)
-
+**SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
-`isTestMode` -> `isPreviewMode`.
-
-`rasAppId` -> `rasProjectId`.
-
-`MiniAppMessageBridge.requestPermission` -> `MiniAppMessageBridge.requestDevicePermission`.
-
-Replace `getUserName`, `getProfilePhoto` with new prototypes.
+Before v3.0.0  |  v3.0.0
+------------- | -------------
+`isTestMode`  | `isPreviewMode`
+`rasAppId`  | `rasProjectId`
+`MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission`
+`getUserName(): String` | `getUserName(onSuccess, onError)`
+`getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
 
 - **Change:** Support Android 7 - API 24 as minimum version.
 - **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
+- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
+
+**Sample App**
+- **Feature:** Added first-time launching screen before downloading any miniapp.
 
 ### 2.8.0 (2020-01-25)
 **SDK**
@@ -33,7 +37,6 @@ Replace `getUserName`, `getProfilePhoto` with new prototypes.
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
-- **Feature:** Added first-time launching screen before downloading any miniapp.
 
 ### 2.7.1 (2020-12-23)
 **SDK**

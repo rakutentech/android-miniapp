@@ -21,6 +21,7 @@ open class ApiClientSpec {
     private val mockRequestExecutor: RetrofitRequestExecutor = mock()
     private val mockAppInfoApi: AppInfoApi = mock()
     private val mockManifestApi: ManifestApi = mock()
+    private val mockMetadataApi: MetadataApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
 
     private val miniAppInfo = MiniAppInfo(
@@ -125,6 +126,7 @@ open class ApiClientSpec {
     fun `should throw exception when call a request failed`() = runBlockingTest {
         When calling mockRetrofitClient.create(AppInfoApi::class.java) itReturns mockAppInfoApi
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
+        When calling mockRetrofitClient.create(MetadataApi::class.java) itReturns mockMetadataApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
         ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
@@ -155,6 +157,7 @@ open class ApiClientSpec {
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
+        metadataApi: MetadataApi = mockMetadataApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
@@ -163,6 +166,7 @@ open class ApiClientSpec {
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,
+        metadataApi = metadataApi,
         downloadApi = downloadApi
     )
 }

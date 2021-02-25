@@ -6,14 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.webkit.URLUtil
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
@@ -90,7 +89,7 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
     }
 
     private fun displayMiniApp() = when(display) {
-        is InputDisplay.AppId -> preloadMiniAppWindow.initiate(null, display.input.trim())
+        is InputDisplay.AppId -> preloadMiniAppWindow.initiate(null, display.input.trim(), this)
         is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
         is InputDisplay.None -> {}
     }

@@ -24,7 +24,7 @@
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
 
-    <string name="miniapp_first_time_tutorial">Would you like to download this miniapp?</string>
+    <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
 
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From Input</string>

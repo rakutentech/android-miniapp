@@ -215,4 +215,11 @@ class RealMiniAppSpec {
 
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun `manifest should be fetched from MiniAppDownloader`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+            verify(miniAppDownloader).fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        }
 }

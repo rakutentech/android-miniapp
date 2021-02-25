@@ -2,11 +2,11 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -25,6 +25,7 @@ internal class ApiClient @VisibleForTesting constructor(
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
+    private val metadataApi: MetadataApi = retrofit.create(MetadataApi::class.java),
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
@@ -79,6 +80,17 @@ internal class ApiClient @VisibleForTesting constructor(
         return requestExecutor.executeRequest(request)
     }
 
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String): MetadataEntity {
+        val request = metadataApi.fetchMetadata(
+            hostId = hostProjectId,
+            miniAppId = miniAppId,
+            versionId = versionId,
+            testPath = testPath
+        )
+        return requestExecutor.executeRequest(request)
+    }
+
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
         return requestExecutor.executeRequest(request)
@@ -95,6 +107,7 @@ internal class RetrofitRequestExecutor(
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
+
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful

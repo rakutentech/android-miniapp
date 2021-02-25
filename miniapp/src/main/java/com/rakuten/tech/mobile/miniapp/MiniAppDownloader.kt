@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -123,6 +125,29 @@ internal class MiniAppDownloader(
         appId: String,
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        else {
+            val manifestResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+            return prepareMiniAppManifest(manifestResponse)
+        }
+    }
+
+    @VisibleForTesting
+    fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+        val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
+        val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
+            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+        } ?: emptyList()
+
+        val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
+        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+    }
 
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
