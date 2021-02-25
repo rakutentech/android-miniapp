@@ -110,7 +110,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
                     miniAppManifestMetadata.observe(lifecycleOwner, Observer {
                         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
-                            "Metadata value: " + it
+                            "Custom MetaData: " + it
                     })
 
                     miniAppManifest.observe(lifecycleOwner,
