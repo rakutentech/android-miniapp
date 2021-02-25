@@ -18,7 +18,7 @@ internal interface MetadataApi {
 
 @Keep
 internal data class MetadataEntity(
-    @SerializedName("metadata") val metadata: MetadataResponse?
+    @SerializedName("bundleManifest") val metadata: MetadataResponse?
 )
 
 /** Metadata response object includes required and optional permissions. */
