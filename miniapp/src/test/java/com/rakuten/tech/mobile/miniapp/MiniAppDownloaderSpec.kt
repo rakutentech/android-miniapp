@@ -340,7 +340,7 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `metadata permissions values should be prepared correctly`() =
+    fun `prepareMiniAppManifest should return values correctly`() =
         runBlockingTest {
             val requiredPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason for user name")
@@ -365,6 +365,22 @@ class MiniAppDownloaderSpec {
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
             val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+
+            assertEquals(expected, actual)
+        }
+
+    @Test
+    fun `prepareMiniAppManifest should return empty values correctly`() =
+        runBlockingTest {
+            val metadataEntity = MetadataEntity(MetadataResponse(null, null, null))
+
+            When calling apiClient.fetchMiniAppManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
+
+            val actual = downloader.prepareMiniAppManifest(metadataEntity)
+            val expected = MiniAppManifest(emptyList(), emptyList(), emptyMap())
 
             assertEquals(expected, actual)
         }

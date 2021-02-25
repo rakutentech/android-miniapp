@@ -147,12 +147,13 @@ class RealMiniAppSpec {
     }
 
     @Test
-    fun `should invoke readPermissions from cache when getCustomPermissions is calling`() {
-        val miniAppId = "miniAppId"
-        realMiniApp.getCustomPermissions(miniAppId)
+    fun `should invoke readPermissions from cache when getCustomPermissions is calling`() =
+        runBlockingTest {
+            val miniAppId = "miniAppId"
+            realMiniApp.getCustomPermissions(miniAppId)
 
-        verify(miniAppCustomPermissionCache).readPermissions(miniAppId)
-    }
+            verify(miniAppCustomPermissionCache).readPermissions(miniAppId)
+        }
 
     @Test
     fun `should invoke storePermissions from cache when setCustomPermissions is calling`() {
