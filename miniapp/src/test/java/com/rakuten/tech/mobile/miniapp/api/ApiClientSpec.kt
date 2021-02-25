@@ -153,7 +153,7 @@ open class ApiClientSpec {
 
     private fun createApiClient(
         retrofit: Retrofit = mockRetrofitClient,
-        hostProjectId: String = TEST_HA_ID_PROJECT,
+        hostId: String = TEST_HA_ID_PROJECT,
         requestExecutor: RetrofitRequestExecutor = mockRequestExecutor,
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
@@ -162,7 +162,7 @@ open class ApiClientSpec {
     ) = ApiClient(
         retrofit = retrofit,
         isPreviewMode = false,
-        hostProjectId = hostProjectId,
+        hostId = hostId,
         requestExecutor = requestExecutor,
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,
