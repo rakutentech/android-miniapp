@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -31,14 +30,14 @@ internal class RealMiniApp(
     override fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission {
-        // return only manifest permissions
+        // return only the permissions listed in the Mini App's manifest.
         val manifestPermissions = getCachedRequiredPermissions(miniAppId) +
             getCachedOptionalPermissions(miniAppId)
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
-        // store only manifest permission
+        // store only the permissions listed in the Mini App's manifest.
         val manifestPermissions =
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -53,10 +52,6 @@ internal class RealMiniApp(
                 it.first == first
             }?.let { manifestPermissions.add(it) }
         }
-
-        Log.d("AAAAA11", ""+miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).requiredPermissions.toString())
-        Log.d("AAAAA12", ""+miniAppCustomPermission.toString())
-        Log.d("AAAAA13", ""+manifestPermissions.toString())
 
         val manifestCustomPermission = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
         miniAppCustomPermissionCache.storePermissions(manifestCustomPermission)
@@ -78,7 +73,7 @@ internal class RealMiniApp(
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         isRequiredPermissionDenied(
             appId
-        ) -> throw MiniAppSdkException("Required permissions are not granted yet for this miniapp.")
+        ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
             displayer.createMiniAppDisplay(
@@ -101,7 +96,7 @@ internal class RealMiniApp(
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         isRequiredPermissionDenied(
             appInfo.id
-        ) -> throw MiniAppSdkException("Required permissions are not granted yet for this miniapp.")
+        ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             displayer.createMiniAppDisplay(
@@ -175,15 +170,13 @@ internal class RealMiniApp(
             }?.let { requiredPermissions.add(it) }
         }
 
-        Log.d("AAAAA2", ""+requiredPermissions.toString())
-
         return requiredPermissions
     }
 
     private fun getCachedOptionalPermissions(
         appId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val requiredPermissions =
+        val optionalPermissions =
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
         // TODO: check if it throws error for empty version id
@@ -191,10 +184,10 @@ internal class RealMiniApp(
         manifest.optionalPermissions.forEach { (first) ->
             miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
                 it.first == first
-            }?.let { requiredPermissions.add(it) }
+            }?.let { optionalPermissions.add(it) }
         }
 
-        return requiredPermissions
+        return optionalPermissions
     }
 
     @VisibleForTesting
@@ -204,4 +197,8 @@ internal class RealMiniApp(
         subscriptionKey = newConfig.subscriptionKey,
         isPreviewMode = newConfig.isPreviewMode
     )
+
+    private companion object {
+        const val ERR_REQUIRED_PERMISSION_DENIED = "Required permissions are not granted yet for this miniapp."
+    }
 }

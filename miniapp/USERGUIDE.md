@@ -92,7 +92,8 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 ### #3 Create and display a Mini App
 **API Docs:** [MiniApp.create](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html), [MiniAppDisplay](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/), [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
-`MiniApp.create` is used to create a `View` for displaying a specific mini app. You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
+`MiniApp.create` is used to create a `View` for displaying a specific mini app. Before calling `MiniApp.create`, the Host App should first get the manifest using `MiniApp.getMiniAppManifest`, show permission prompt to user, then set the result with `MiniApp.setCustomPermissions`.
+You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
 
 - Check what is the latest, published version of the mini app.
 - Check if the latest version of the mini app has been downloaded.
@@ -100,7 +101,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
     - If no, download the latest version and then return the downloaded version.
 - If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
 
-After calling `MiniApp.create`, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
+After calling `MiniApp.create` and all the "required" manifest permission has been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
 
 The following is a simplified example:
 
