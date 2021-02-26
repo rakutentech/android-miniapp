@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -31,13 +32,15 @@ class RealMiniAppSpec {
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
+    private val manifestCache: MiniAppManifestCache = mock()
     private val realMiniApp =
         RealMiniApp(
             apiClientRepository,
             miniAppDownloader,
             displayer,
             miniAppInfoFetcher,
-            miniAppCustomPermissionCache
+            miniAppCustomPermissionCache,
+            manifestCache
         )
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
     private val miniAppNavigator: MiniAppNavigator = mock()
