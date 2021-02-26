@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -19,15 +20,8 @@ internal class CachedMiniAppVerifier
     private val prefs: SharedPreferences,
     private val coroutineDispatcher: CoroutineDispatcher
 ) {
-
     constructor(context: Context) : this(
-        prefs = EncryptedSharedPreferences.create(
-            "com.rakuten.tech.mobile.miniapp.cache.hash",
-            MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        ),
+        prefs = initEncryptedSharedPreference(context),
         coroutineDispatcher = Dispatchers.IO
     )
 
@@ -76,4 +70,18 @@ internal class CachedMiniAppVerifier
         private val TAG = this::class.simpleName
         private const val BUFFER_SIZE = 8192
     }
+}
+
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
+private fun initEncryptedSharedPreference(context: Context) = try {
+    EncryptedSharedPreferences.create(
+        "com.rakuten.tech.mobile.miniapp.cache.hash",
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+} catch (e: Exception) {
+    throw MiniAppSdkException("Something wrong with device keystore." +
+            "MiniApp SDK cannot proceed due to local security validation. " + e.message)
 }

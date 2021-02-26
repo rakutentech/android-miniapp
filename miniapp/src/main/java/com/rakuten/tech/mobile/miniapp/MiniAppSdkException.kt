@@ -29,12 +29,6 @@ class MiniAppNotFoundException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
- * Exception which is thrown when HostApp doesn't implement requestPermission interface.
- */
-internal class PermissionsNotImplementedException :
-    MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION)
-
-/**
  * Exception which is thrown when HostApp doesn't implement requestDevicePermission interface.
  */
 internal class DevicePermissionsNotImplementedException :
