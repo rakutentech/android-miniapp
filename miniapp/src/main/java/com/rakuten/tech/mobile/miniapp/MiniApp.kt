@@ -130,12 +130,20 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
+     * Get the manifest information e.g. required and optional permissions.
      * @param appId mini app id.
      * @param versionId of mini app.
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest
+
+    /**
+     * Get the currently downloaded manifest information e.g. required and optional permissions.
+     * @param appId mini app id.
+     * @return MiniAppManifest an object contains manifest information of a miniapp.
+     */
+    abstract suspend fun getCurrentManifest(appId: String): MiniAppManifest
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.

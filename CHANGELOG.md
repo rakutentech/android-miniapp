@@ -18,10 +18,11 @@ Before v3.0.0  |  v3.0.0
 - **Change:** Update `MiniApp.getCustomPermissions` & `MiniApp.setCustomPermissions` to return and store only the permissions listed in the Mini App's manifest.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
-- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
+- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the manifest of a MiniApp.
+- **Feature:** Added `MiniApp.getCurrentManifest` interface to retrieve currently downloaded manifest of a MiniApp.
 
 **Sample App**
-- **Feature:** Added first-time launching screen before downloading any miniapp.
+- **Feature:** Added first-time launching screen to show the manifest information before downloading/launching a MiniApp.
 
 ### 2.8.0 (2020-01-25)
 **SDK**

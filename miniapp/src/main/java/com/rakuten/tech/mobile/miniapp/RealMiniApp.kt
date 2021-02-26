@@ -136,6 +136,10 @@ internal class RealMiniApp(
         return manifest
     }
 
+    override suspend fun getCurrentManifest(appId: String): MiniAppManifest {
+        return miniAppManifestCache.readMiniAppManifest(appId)
+    }
+
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {

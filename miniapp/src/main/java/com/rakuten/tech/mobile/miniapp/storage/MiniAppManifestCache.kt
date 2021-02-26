@@ -13,6 +13,7 @@ import java.lang.Exception
  * A caching class to read and store the [MiniAppManifest] per MiniApp
  * using [SharedPreferences].
  */
+// TODO: unit testcases
 internal class MiniAppManifestCache(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache", Context.MODE_PRIVATE

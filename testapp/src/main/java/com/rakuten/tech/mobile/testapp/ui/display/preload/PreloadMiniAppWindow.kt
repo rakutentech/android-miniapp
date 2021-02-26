@@ -23,7 +23,10 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
-private const val DEFAULT_ACCEPTANCE = false
+// MINI-2505 TODO: detect changes e.g. new permissions or metadata key
+// MINI-2505 TODO: detect changes e.g. "optional" to "required" or vice versa
+// MINI-2505 TODO: detect changes e.g. Value changed for any of the keys other than "permission".
+// MINI-2505 TODO: update to display this screen again when there is any change has been detected using `MiniApp.getCurrentManifest`
 
 class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
@@ -33,7 +36,6 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
     private var versionId: String = ""
-    private val metadataKey = "randomTestKey" // HostApp can set it's own key
 
     private var prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
@@ -82,9 +84,9 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
             )
 
             nameView.text = miniAppInfo?.displayName.toString()
-            versionView.text = "Version: " + miniAppInfo?.version?.versionTag.toString()
+            versionView.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
-            nameView.text = "No info found for this miniapp!"
+            nameView.text = ERR_NO_INFO
         }
 
         // set manifest/metadata to UI: permissions
@@ -111,7 +113,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
                     miniAppManifestMetadata.observe(lifecycleOwner, Observer {
                         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
-                            "Custom MetaData: " + it
+                            LABEL_CUSTOM_METADATA + it
                     })
 
                     miniAppManifest.observe(lifecycleOwner,
@@ -149,7 +151,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         if (versionId.isEmpty())
             viewModel.getMiniAppVersionId(miniAppId)
 
-        viewModel.getMiniAppManifest(miniAppId, versionId, metadataKey)
+        viewModel.getMiniAppManifest(miniAppId, versionId, KEY_METADATA)
 
         // set action listeners
         preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {
@@ -205,5 +207,13 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
 
     interface PreloadMiniAppLaunchListener {
         fun onPreloadMiniAppResponse(isAccepted: Boolean)
+    }
+
+    private companion object {
+        const val DEFAULT_ACCEPTANCE = false
+        const val LABEL_VERSION = "Version: "
+        const val LABEL_CUSTOM_METADATA = "Custom MetaData: "
+        const val ERR_NO_INFO = "No info found for this miniapp!"
+        const val KEY_METADATA = "randomTestKey" // HostApp can set it's own key
     }
 }
