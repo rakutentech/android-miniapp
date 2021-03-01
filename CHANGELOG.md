@@ -17,7 +17,7 @@
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
 
-### 2.7.2 (2021-03-04)
+### 2.7.2 (2021-03-03)
 - **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
 
 2.7.1 (2020-12-23)
