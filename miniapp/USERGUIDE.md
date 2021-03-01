@@ -695,6 +695,15 @@ CoroutineScope(Dispatchers.Main).launch {
 ```
 </details>
 
+<details><summary markdown="span"><b>Exception: MiniAppVerificationException</b>
+
+</summary>
+
+This exception will be thrown when the SDK cannot verify the security check on local storage using keystore which means that users are not allowed to use miniapp.
+Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning. 
+
+</details>
+
 <details><summary markdown="span"><b>How do I use snapshot versions of this SDK?</b>
 </summary>
 
