@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -76,7 +76,7 @@ class CachedMiniAppVerifierSpec {
         verifier.verify(id, folder) shouldBe false
     }
 
-    @Test(expected = MiniAppSdkException::class)
+    @Test(expected = MiniAppVerificationException::class)
     fun `should throw exception when there is problem with device keystore`() {
         // cannot retrieve key store from test context.
         CachedMiniAppVerifier(context)

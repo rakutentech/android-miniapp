@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -82,6 +82,5 @@ private fun initEncryptedSharedPreference(context: Context) = try {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 } catch (e: Exception) {
-    throw MiniAppSdkException("Something wrong with device keystore." +
-            "MiniApp SDK cannot proceed due to local security validation. " + e.message)
+    throw MiniAppVerificationException(e.message)
 }

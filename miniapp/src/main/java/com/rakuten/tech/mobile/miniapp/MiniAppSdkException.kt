@@ -29,6 +29,12 @@ class MiniAppNotFoundException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
+ * Exception which is thrown when cannot verify device keystore.
+ */
+class MiniAppVerificationException(message: String?) :
+    MiniAppSdkException("MiniApp SDK cannot proceed due to security validation: $message")
+
+/**
  * Exception which is thrown when HostApp doesn't implement requestDevicePermission interface.
  */
 internal class DevicePermissionsNotImplementedException :
