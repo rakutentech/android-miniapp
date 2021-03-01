@@ -54,6 +54,7 @@ dependencies {
 
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
 
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
@@ -73,7 +74,7 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 }
 
