@@ -36,7 +36,6 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -57,7 +56,6 @@ abstract class MiniApp internal constructor() {
      * @param appInfo metadata of a mini app.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -78,7 +76,6 @@ abstract class MiniApp internal constructor() {
      * @param appUrl a HTTP url containing Mini App content.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
