@@ -47,8 +47,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null,
-        queryParams: String = ""
+        miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay
 
     /**
@@ -69,8 +68,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null,
-        queryParams: String = ""
+        miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay
 
     /**
@@ -88,8 +86,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun createWithUrl(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null,
-        queryParams: String = ""
+        miniAppNavigator: MiniAppNavigator? = null
     ): MiniAppDisplay
 
     /**
