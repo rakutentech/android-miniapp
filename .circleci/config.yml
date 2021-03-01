@@ -73,7 +73,7 @@ workflows:
           file: apk/release/testapp-release.apk
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          notes: Production build for Android SDK $CIRCLE_TAG
+          notes: $CIRCLE_TAG
           requires:
             - android-sdk/publish
           filters:
@@ -81,3 +81,27 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - app-center/publish:
+          name: deploy-test-app-candidate
+          group: Release_Candidate
+          file: apk/rc/testapp-rc.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BUILD_URL
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: candidate
+      - app-center/publish:
+          name: deploy-test-app-feature
+          group: Feature
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BRANCH
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: /^feature\/.*/
