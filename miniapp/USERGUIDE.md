@@ -700,8 +700,6 @@ This exception will be thrown when the SDK cannot verify the security check on l
 Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning. 
 </summary>
 
-Some of the suspending functions in this SDK will perform network requests (`MiniApp.create`, `MiniApp.fetchInfo`, `MiniApp.listMiniApp`). Network requests should not be performed on the main thread, so the above exception will occur if your Coroutine is running in the `Dispatchers.Main` CoroutineContext. To avoid this exception, please use the `Dispatchers.IO` or `Dispatchers.Default` context instead. You can use [`withContext`](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-context.html) to make sure your code is running in the appropriate CoroutineContext.
-
 </details>
 
 <details><summary markdown="span"><b>How do I use snapshot versions of this SDK?</b>
