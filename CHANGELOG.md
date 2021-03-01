@@ -1,7 +1,26 @@
 ## CHANGELOG
 
-2.7.1 (2020-12-23)
+### 2.8.0 (2020-01-25)
 **SDK**
+- **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
+- **Feature:** Support analytics SDK with event tracking.
+- **Deprecated:** Old `getUserName`, `getProfilePhoto` interfaces.
+- **Feature:** Added `queryParams: String` using `MiniApp.create` and `MiniApp.createWithUrl` for appending it with the miniapp's url.
+- **Feature:** Added `MiniAppMessageBridge.requestDevicePermission` for requesting device permission e.g. Location
+- **Change:** Deprecated `MiniAppMessageBridge.requestPermission` and changed to be optional to implement.
+- **Fix:** Dialog cancel event when touch outside area.
+
+**Sample App**
+- **Change:** Replaced the implementation of `getUserName`, `getProfilePhoto` using new interfaces.
+- **Feature:** Added input option in settings screen to keep query parameters to be passed using `MiniApp.create` and `MiniApp.createWithUrl`.
+- **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
+- **Fix:** Correct the group and order display of miniapp list.
+- **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
+
+### 2.7.2 (2021-03-03)
+- **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
+
+2.7.1 (2020-12-23)
 - **Fix:** MiniApp view did not display due to obfuscation code guard.
 
 2.7.0 (2020-12-18)
