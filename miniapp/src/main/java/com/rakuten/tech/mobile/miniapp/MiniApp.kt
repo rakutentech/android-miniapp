@@ -36,6 +36,7 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -46,7 +47,8 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -56,6 +58,7 @@ abstract class MiniApp internal constructor() {
      * @param appInfo metadata of a mini app.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -66,7 +69,8 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -76,6 +80,7 @@ abstract class MiniApp internal constructor() {
      * @param appUrl a HTTP url containing Mini App content.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
@@ -83,7 +88,8 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun createWithUrl(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator? = null
+        miniAppNavigator: MiniAppNavigator? = null,
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -143,7 +149,6 @@ abstract class MiniApp internal constructor() {
         fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
             instance.apply { updateConfiguration(settings) }
 
-        @Suppress("LongMethod")
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
             defaultConfig = miniAppSdkConfig
             val apiClient = ApiClient(
@@ -156,14 +161,15 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val miniAppStatus = MiniAppStatus(context)
-            val storage = MiniAppStorage(FileWriter(), context.filesDir)
-            val verifier = CachedMiniAppVerifier(context)
-
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
+                miniAppDownloader = MiniAppDownloader(
+                    apiClient = apiClient,
+                    initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
+                    initStatus = { MiniAppStatus(context) },
+                    initVerifier = { CachedMiniAppVerifier(context) }
+                ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
             )

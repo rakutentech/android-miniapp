@@ -25,7 +25,6 @@ import kotlin.test.assertTrue
 @Suppress("LargeClass")
 @ExperimentalCoroutinesApi
 class MiniAppDownloaderSpec {
-
     private val apiClient: ApiClient = mock()
     private val storage: MiniAppStorage = mock()
     private val miniAppStatus: MiniAppStatus = mock()
@@ -39,7 +38,13 @@ class MiniAppDownloaderSpec {
 
     @Before
     fun setup() {
-        downloader = MiniAppDownloader(storage, mock(), miniAppStatus, verifier, dispatcher)
+        downloader = MiniAppDownloader(
+            apiClient = apiClient,
+            initStorage = { storage },
+            initStatus = { miniAppStatus },
+            initVerifier = { verifier },
+            coroutineDispatcher = dispatcher
+        )
         downloader.updateApiClient(apiClient)
 
         When calling verifier.verify(any(), any()) itReturns true
@@ -292,7 +297,7 @@ class MiniAppDownloaderSpec {
             TEST_ID_MINIAPP_VERSION
         ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
 
-        val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
+        val mockResponseBody: ResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
     }
 

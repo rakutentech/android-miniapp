@@ -8,11 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
 import java.net.ConnectException
@@ -21,15 +17,15 @@ import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions")
 internal class MiniAppDownloader(
-    private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus,
-    private val verifier: CachedMiniAppVerifier,
+    private val initStorage: () -> MiniAppStorage,
+    private val initStatus: () -> MiniAppStatus,
+    private val initVerifier: () -> CachedMiniAppVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
-
-    @Suppress("MagicNumber")
-    private val validHTTPResponseCodes = 100..399
+    private val storage: MiniAppStorage by lazy { initStorage() }
+    private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
+    private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -49,6 +45,7 @@ internal class MiniAppDownloader(
         var connection: HttpURLConnection? = null
         try {
             connection = URL(url).openConnection() as HttpURLConnection
+            val validHTTPResponseCodes = 100..399
             val code = connection.responseCode
             if (code !in validHTTPResponseCodes) {
                 throw MiniAppSdkException("Invalid URL error")
