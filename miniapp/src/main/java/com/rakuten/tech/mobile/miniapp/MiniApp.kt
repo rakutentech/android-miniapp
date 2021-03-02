@@ -143,7 +143,7 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
-    abstract suspend fun getCurrentManifest(appId: String): MiniAppManifest
+    abstract fun getCurrentManifest(appId: String): MiniAppManifest?
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
@@ -178,6 +178,7 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
+            val customPermissionCache = MiniAppCustomPermissionCache(context)
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
@@ -188,8 +189,8 @@ abstract class MiniApp internal constructor() {
                     initVerifier = { CachedMiniAppVerifier(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context),
-                miniAppManifestCache = MiniAppManifestCache(context)
+                miniAppCustomPermissionCache = customPermissionCache,
+                miniAppManifestCache = MiniAppManifestCache(context, customPermissionCache)
             )
         }
     }

@@ -31,30 +31,24 @@ internal class RealMiniApp(
         miniAppId: String
     ): MiniAppCustomPermission {
         // return only the permissions listed in the Mini App's manifest.
-        val manifestPermissions = getCachedRequiredPermissions(miniAppId) +
-            getCachedOptionalPermissions(miniAppId)
+        val manifestPermissions = miniAppManifestCache.getCachedAllPermissions(miniAppId)
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
     override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         // store only the permissions listed in the Mini App's manifest.
+        val miniAppId = miniAppCustomPermission.miniAppId
         val manifestPermissions =
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
-        miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).requiredPermissions.forEach { (first) ->
+        miniAppManifestCache.getCachedAllPermissions(miniAppId).forEach { (first) ->
             miniAppCustomPermission.pairValues.find {
                 it.first == first
             }?.let { manifestPermissions.add(it) }
         }
 
-        miniAppManifestCache.readMiniAppManifest(miniAppCustomPermission.miniAppId).optionalPermissions.forEach { (first) ->
-            miniAppCustomPermission.pairValues.find {
-                it.first == first
-            }?.let { manifestPermissions.add(it) }
-        }
-
-        val manifestCustomPermission = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
-        miniAppCustomPermissionCache.storePermissions(manifestCustomPermission)
+        val permissionsToStore = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
+        miniAppCustomPermissionCache.storePermissions(permissionsToStore)
     }
 
     @Suppress("FunctionMaxLength")
@@ -71,7 +65,7 @@ internal class RealMiniApp(
         queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        isRequiredPermissionDenied(
+        miniAppManifestCache.isRequiredPermissionDenied(
             appId
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
@@ -94,7 +88,7 @@ internal class RealMiniApp(
         queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
-        isRequiredPermissionDenied(
+        miniAppManifestCache.isRequiredPermissionDenied(
             appInfo.id
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
@@ -136,7 +130,7 @@ internal class RealMiniApp(
         return manifest
     }
 
-    override suspend fun getCurrentManifest(appId: String): MiniAppManifest {
+    override fun getCurrentManifest(appId: String): MiniAppManifest? {
         return miniAppManifestCache.readMiniAppManifest(appId)
     }
 
@@ -151,47 +145,6 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
-    }
-
-    private fun isRequiredPermissionDenied(appId: String): Boolean {
-        getCachedRequiredPermissions(appId).find {
-            it.second != MiniAppCustomPermissionResult.ALLOWED
-        }?.let { return true }
-        return false
-    }
-
-    private fun getCachedRequiredPermissions(
-        appId: String
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val requiredPermissions =
-            arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        val manifest = miniAppManifestCache.readMiniAppManifest(appId)
-        // TODO: check if it throws error for empty version id
-        manifest.requiredPermissions.forEach { (first) ->
-            miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
-                it.first == first
-            }?.let { requiredPermissions.add(it) }
-        }
-
-        return requiredPermissions
-    }
-
-    private fun getCachedOptionalPermissions(
-        appId: String
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val optionalPermissions =
-            arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        // TODO: check if it throws error for empty version id
-        val manifest = miniAppManifestCache.readMiniAppManifest(appId)
-        manifest.optionalPermissions.forEach { (first) ->
-            miniAppCustomPermissionCache.readPermissions(appId).pairValues.find {
-                it.first == first
-            }?.let { optionalPermissions.add(it) }
-        }
-
-        return optionalPermissions
     }
 
     @VisibleForTesting

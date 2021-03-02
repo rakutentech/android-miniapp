@@ -1,12 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.VisibleForTesting
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.lang.Exception
 
 /**
@@ -14,13 +16,13 @@ import java.lang.Exception
  * using [SharedPreferences].
  */
 // TODO: unit testcases
-internal class MiniAppManifestCache(context: Context) {
+internal class MiniAppManifestCache(
+    context: Context,
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache", Context.MODE_PRIVATE
     )
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun doesDataExist(miniAppId: String) = prefs.contains(miniAppId)
 
     /**
      * Reads the grant results from SharedPreferences.
@@ -28,24 +30,13 @@ internal class MiniAppManifestCache(context: Context) {
      * @return [MiniAppManifest] an object to contain the manifest per MiniApp.
      * if data has been stored in cache, otherwise empty value.
      */
-    @SuppressLint("RestrictedApi")
-    fun readMiniAppManifest(miniAppId: String): MiniAppManifest {
-        val empty = MiniAppManifest(emptyList(), emptyList(), emptyMap())
-        return if (doesDataExist(miniAppId)) {
-            try {
-                val cachedManifest: MiniAppManifest = Gson().fromJson(
-                    prefs.getString(miniAppId, ""),
-                    object : TypeToken<MiniAppManifest>() {}.type
-                )
-                cachedManifest
-            } catch (e: Exception) {
-                // if there is any exception, return the empty value
-                empty
-            }
-        } else {
-            // if value hasn't been found in SharedPreferences, save the empty value
-            storeMiniAppManifest(miniAppId, empty)
-            empty
+    fun readMiniAppManifest(miniAppId: String): MiniAppManifest? {
+        val manifestJsonStr = prefs.getString(miniAppId, null) ?: return null
+        return try {
+            Gson().fromJson(manifestJsonStr, object : TypeToken<MiniAppManifest>() {}.type)
+        } catch (e: Exception) {
+            Log.e(this::class.java.canonicalName, e.message.toString())
+            null
         }
     }
 
@@ -60,5 +51,35 @@ internal class MiniAppManifestCache(context: Context) {
     ) {
         val jsonToStore: String = Gson().toJson(miniAppManifest)
         prefs.edit().putString(miniAppId, jsonToStore).apply()
+    }
+
+    fun getCachedAllPermissions(appId: String) = getCachedRequiredPermissions(appId) +
+            getCachedOptionalPermissions(appId)
+
+    fun isRequiredPermissionDenied(appId: String): Boolean {
+        getCachedRequiredPermissions(appId).find {
+            it.second != MiniAppCustomPermissionResult.ALLOWED
+        }?.let { return true }
+        return false
+    }
+
+    private fun getCachedRequiredPermissions(
+        appId: String
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        val manifest = readMiniAppManifest(appId)
+        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(appId).pairValues
+        return manifest?.requiredPermissions?.mapNotNull { (first) ->
+            cachedPermissions.find { it.first == first }
+        }!!
+    }
+
+    private fun getCachedOptionalPermissions(
+        appId: String
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        val manifest = readMiniAppManifest(appId)
+        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(appId).pairValues
+        return manifest?.optionalPermissions?.mapNotNull { (first) ->
+            cachedPermissions.find { it.first == first }
+        }!!
     }
 }
