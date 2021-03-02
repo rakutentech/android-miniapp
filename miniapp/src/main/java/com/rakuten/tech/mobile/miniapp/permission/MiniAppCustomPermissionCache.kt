@@ -169,6 +169,10 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                     MiniAppCustomPermissionResult.DENIED
                 ),
                 Pair(
+                    MiniAppCustomPermissionType.ACCESS_TOKEN,
+                    MiniAppCustomPermissionResult.DENIED
+                ),
+                Pair(
                     MiniAppCustomPermissionType.LOCATION,
                     MiniAppCustomPermissionResult.DENIED
                 )

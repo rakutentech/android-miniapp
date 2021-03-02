@@ -69,7 +69,7 @@ internal class UserInfoBridge {
 
                 userInfoBridgeDispatcher.getProfilePhoto(successCallback, errorCallback)
             } else
-            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
+                bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
@@ -77,14 +77,17 @@ internal class UserInfoBridge {
 
     internal fun onGetAccessToken(callbackId: String) = whenReady(callbackId) {
         try {
-            val successCallback = { accessToken: TokenData ->
-                bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
-            }
-            val errorCallback = { message: String ->
-                bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
-            }
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.ACCESS_TOKEN)) {
+                val successCallback = { accessToken: TokenData ->
+                    bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
+                }
+                val errorCallback = { message: String ->
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
+                }
 
-            userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+                userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+            } else
+                bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION")
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
         }
@@ -118,6 +121,8 @@ internal class UserInfoBridge {
         const val ERR_PROFILE_PHOTO_NO_PERMISSION =
             "Permission has not been accepted yet for getting profile photo."
         const val ERR_GET_ACCESS_TOKEN = "Cannot get access token:"
+        const val ERR_ACCESS_TOKEN_NO_PERMISSION =
+            "Permission has not been accepted yet for getting access token."
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
         const val ERR_GET_CONTACTS_NO_PERMISSION =
             "Permission has not been accepted yet for getting contacts."
