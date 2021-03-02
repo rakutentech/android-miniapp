@@ -216,17 +216,7 @@ class MiniAppCustomPermissionCacheSpec {
     fun `check the size of the default denied list`() {
         val actual = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID).pairValues
 
-        actual.size shouldBe 4
-    }
-
-    @Test
-    fun `check MiniAppCustomPermissionType of the default denied list`() {
-        val actual = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
-
-        actual.pairValues[0].first shouldEqual MiniAppCustomPermissionType.USER_NAME
-        actual.pairValues[1].first shouldEqual MiniAppCustomPermissionType.PROFILE_PHOTO
-        actual.pairValues[2].first shouldEqual MiniAppCustomPermissionType.CONTACT_LIST
-        actual.pairValues[3].first shouldEqual MiniAppCustomPermissionType.LOCATION
+        actual.size shouldBe MiniAppCustomPermissionType.values().size - 1
     }
 
     @Test
