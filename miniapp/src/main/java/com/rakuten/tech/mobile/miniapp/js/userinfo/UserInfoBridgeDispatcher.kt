@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
 import java.util.ArrayList
 
 /**
@@ -34,6 +35,7 @@ interface UserInfoBridgeDispatcher {
     /** Get access token from host app. **/
     fun getAccessToken(
         miniAppId: String,
+        accessTokenPermission: AccessTokenPermission,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {

@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
@@ -182,16 +183,19 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             override fun getAccessToken(
                 miniAppId: String,
+                accessTokenPermission: AccessTokenPermission,
                 onSuccess: (tokenData: TokenData) -> Unit,
                 onError: (message: String) -> Unit
             ) {
                 AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    .setMessage("Allow $miniAppId to get access token?")
+                    .setTitle("Access token for $miniAppId ?")
+                    .setMessage("Audience: ${accessTokenPermission.audience}" + System.lineSeparator() +
+                    "Scope: ${accessTokenPermission.scopes.joinToString()}")
                     .setPositiveButton(android.R.string.yes) { dialog, _ ->
                         onSuccess(AppSettings.instance.tokenData)
                         dialog.dismiss()
                     }
-                    .setNegativeButton("No") { dialog, _ ->
+                    .setNegativeButton(android.R.string.no) { dialog, _ ->
                         onError("$miniAppId not allowed to get access token")
                         dialog.dismiss()
                     }

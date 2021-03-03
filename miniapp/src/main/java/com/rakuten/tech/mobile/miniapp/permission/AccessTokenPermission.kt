@@ -10,6 +10,6 @@ import androidx.annotation.Keep
 @Keep
 data class AccessTokenPermission(val audience: String, val scopes: List<String>) {
 
-    fun contains(accessTokenPermission: AccessTokenPermission): Boolean =
-        this.audience == accessTokenPermission.audience && this.scopes.containsAll(accessTokenPermission.scopes)
+//    fun contains(accessTokenPermission: AccessTokenPermission): Boolean =
+//        this.audience == accessTokenPermission.audience && this.scopes.containsAll(accessTokenPermission.scopes)
 }

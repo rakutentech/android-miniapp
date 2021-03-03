@@ -43,11 +43,6 @@ class UserInfoBridgeSpec {
         param = null,
         id = TEST_CALLBACK_ID
     )
-    private val tokenCallbackObj = CallbackObj(
-        action = ActionType.GET_ACCESS_TOKEN.action,
-        param = null,
-        id = TEST_CALLBACK_ID
-    )
     private val contactsCallbackObj = CallbackObj(
         action = ActionType.GET_CONTACTS.action,
         param = null,
@@ -256,6 +251,16 @@ class UserInfoBridgeSpec {
 
     /** start region: access token */
     private val testToken = TokenData("test_token", 0)
+    private val testAccessTokenPermission = AccessTokenPermission(
+            audience = "API-C",
+            scopes = mutableListOf("point", "user_info")
+    )
+    private val tokenCallbackObj = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = Gson().toJson(testAccessTokenPermission),
+            id = TEST_CALLBACK_ID
+    )
+
     private fun createAccessTokenImpl(
         hasAccessToken: Boolean,
         canGetToken: Boolean
@@ -264,6 +269,7 @@ class UserInfoBridgeSpec {
             object : UserInfoBridgeDispatcher {
                 override fun getAccessToken(
                     miniAppId: String,
+                    accessTokenPermission: AccessTokenPermission,
                     onSuccess: (tokenData: TokenData) -> Unit,
                     onError: (message: String) -> Unit
                 ) {
@@ -294,7 +300,12 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id)
+        val tokenCallbackObj = CallbackObj(
+                action = ActionType.GET_ACCESS_TOKEN.action,
+                param = null,
+                id = TEST_CALLBACK_ID
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
     }
@@ -309,7 +320,7 @@ class UserInfoBridgeSpec {
             miniAppInfo.id, MiniAppCustomPermissionType.ACCESS_TOKEN)
         ).thenReturn(false)
 
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id)
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
     }
@@ -319,7 +330,7 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id)
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
         verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
