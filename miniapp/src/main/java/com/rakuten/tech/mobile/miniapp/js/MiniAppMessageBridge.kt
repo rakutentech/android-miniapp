@@ -29,7 +29,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
-    private val userInfoBridgeWrapper = UserInfoBridge()
+    private val userInfoBridge = UserInfoBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -47,7 +47,7 @@ abstract class MiniAppMessageBridge {
         this.customPermissionCache = customPermissionCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-        userInfoBridgeWrapper.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
+        userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -117,11 +117,11 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> userInfoBridgeWrapper.onGetUserName(callbackObj.id)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeWrapper.onGetProfilePhoto(callbackObj.id)
-            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeWrapper.onGetAccessToken(callbackObj.id)
+            ActionType.GET_USER_NAME.action -> userInfoBridge.onGetUserName(callbackObj.id)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridge.onGetProfilePhoto(callbackObj.id)
+            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridge.onGetAccessToken(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
-            ActionType.GET_CONTACTS.action -> userInfoBridgeWrapper.onGetContacts(callbackObj.id)
+            ActionType.GET_CONTACTS.action -> userInfoBridge.onGetContacts(callbackObj.id)
         }
     }
 
@@ -133,7 +133,7 @@ abstract class MiniAppMessageBridge {
      * Can use the default provided class from sdk [UserInfoBridgeDispatcher].
      **/
     fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) =
-        userInfoBridgeWrapper.setUserInfoBridgeDispatcher(bridgeDispatcher)
+        userInfoBridge.setUserInfoBridgeDispatcher(bridgeDispatcher)
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
         try {

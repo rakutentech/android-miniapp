@@ -13,8 +13,10 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_ACCESS_TOKEN
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_PROFILE_PHOTO
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -80,6 +82,9 @@ class UserInfoBridgeSpec {
         ).thenReturn(true)
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.CONTACT_LIST)
+        ).thenReturn(true)
+        whenever(customPermissionCache.hasPermission(
+            miniAppInfo.id, MiniAppCustomPermissionType.ACCESS_TOKEN)
         ).thenReturn(true)
     }
 
@@ -295,6 +300,21 @@ class UserInfoBridgeSpec {
     }
 
     @Test
+    fun `postError should be called when access token permission hasn't been allowed`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+
+        val errMsg = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION"
+        whenever(customPermissionCache.hasPermission(
+            miniAppInfo.id, MiniAppCustomPermissionType.ACCESS_TOKEN)
+        ).thenReturn(false)
+
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id)
+
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+    }
+
+    @Test
     fun `postValue should be called when retrieve access token successfully`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
@@ -343,7 +363,7 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createContactsImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        val errMsg = "$ERR_GET_CONTACTS Permission has not been accepted yet for getting contacts."
+        val errMsg = "$ERR_GET_CONTACTS $ERR_GET_CONTACTS_NO_PERMISSION"
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.CONTACT_LIST)
         ).thenReturn(false)
