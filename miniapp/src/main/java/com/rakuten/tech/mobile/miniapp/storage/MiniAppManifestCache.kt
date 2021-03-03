@@ -56,7 +56,12 @@ internal class MiniAppManifestCache(
     fun getCachedAllPermissions(appId: String) = getCachedRequiredPermissions(appId) +
             getCachedOptionalPermissions(appId)
 
-    fun isRequiredPermissionDenied(appId: String): Boolean {
+    fun isRequiredPermissionDenied(appId: String, temporaryManifest: MiniAppManifest?): Boolean {
+        // store manifest value in cache before checking the required permission status
+        if (temporaryManifest != null) {
+            storeMiniAppManifest(appId, temporaryManifest)
+        }
+
         getCachedRequiredPermissions(appId).find {
             it.second != MiniAppCustomPermissionResult.ALLOWED
         }?.let { return true }

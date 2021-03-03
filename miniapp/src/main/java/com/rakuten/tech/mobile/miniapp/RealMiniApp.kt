@@ -20,6 +20,8 @@ internal class RealMiniApp(
     private val miniAppManifestCache: MiniAppManifestCache
 ) : MiniApp() {
 
+    private var temporaryManifest: MiniAppManifest? = null
+
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
@@ -66,7 +68,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         miniAppManifestCache.isRequiredPermissionDenied(
-            appId
+            appId, temporaryManifest
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
@@ -89,7 +91,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         miniAppManifestCache.isRequiredPermissionDenied(
-            appInfo.id
+            appInfo.id, temporaryManifest
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
@@ -124,10 +126,8 @@ internal class RealMiniApp(
     }
 
     override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        // store manifest value in cache after fetching from api
-        val manifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
-        miniAppManifestCache.storeMiniAppManifest(appId, manifest)
-        return manifest
+        temporaryManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+        return temporaryManifest as MiniAppManifest
     }
 
     override fun getCurrentManifest(appId: String): MiniAppManifest? {
