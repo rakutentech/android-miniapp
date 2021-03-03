@@ -15,4 +15,5 @@
 | [MiniAppHasNoPublishedVersionException](-mini-app-has-no-published-version-exception/index.md) | Exception which is thrown when the server returns no published versions for the provided mini app ID.`class MiniAppHasNoPublishedVersionException : `[`MiniAppSdkException`](-mini-app-sdk-exception/index.md) |
 | [MiniAppNotFoundException](-mini-app-not-found-exception/index.md) | Exception which is thrown when the provided project ID does not have any mini app exist on the server.`class MiniAppNotFoundException : `[`MiniAppSdkException`](-mini-app-sdk-exception/index.md) |
 | [MiniAppSdkException](-mini-app-sdk-exception/index.md) | A custom exception class which treats the purpose of providing error information to the consumer app in an unified way.`open class MiniAppSdkException : `[`Exception`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html) |
+| [MiniAppVerificationException](-mini-app-verification-exception/index.md) | Exception which is thrown when cannot verify device keystore.`class MiniAppVerificationException : `[`MiniAppSdkException`](-mini-app-sdk-exception/index.md) |
 

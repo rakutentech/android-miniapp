@@ -146,6 +146,13 @@ error information to the consumer app in an unified way.
 
 |
 
+##### [com.rakuten.tech.mobile.miniapp.MiniAppVerificationException](../com.rakuten.tech.mobile.miniapp/-mini-app-verification-exception/index.md)
+
+Exception which is thrown when cannot verify device keystore.
+
+
+|
+
 ##### [com.rakuten.tech.mobile.miniapp.ads.Reward](../com.rakuten.tech.mobile.miniapp.ads/-reward/index.md)
 
 Earn the reward from rewarded ad of AdMob.

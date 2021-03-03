@@ -15,4 +15,5 @@ error information to the consumer app in an unified way.
 
 | [MiniAppHasNoPublishedVersionException](../-mini-app-has-no-published-version-exception/index.md) | Exception which is thrown when the server returns no published versions for the provided mini app ID.`class MiniAppHasNoPublishedVersionException : `[`MiniAppSdkException`](./index.md) |
 | [MiniAppNotFoundException](../-mini-app-not-found-exception/index.md) | Exception which is thrown when the provided project ID does not have any mini app exist on the server.`class MiniAppNotFoundException : `[`MiniAppSdkException`](./index.md) |
+| [MiniAppVerificationException](../-mini-app-verification-exception/index.md) | Exception which is thrown when cannot verify device keystore.`class MiniAppVerificationException : `[`MiniAppSdkException`](./index.md) |
 
