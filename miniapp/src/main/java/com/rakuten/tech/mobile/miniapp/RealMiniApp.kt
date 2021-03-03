@@ -6,7 +6,9 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 
@@ -20,7 +22,8 @@ internal class RealMiniApp(
     private val miniAppManifestCache: MiniAppManifestCache
 ) : MiniApp() {
 
-    private var temporaryManifest: MiniAppManifest? = null
+    @VisibleForTesting
+    var temporaryManifest: MiniAppManifest? = null
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -43,10 +46,23 @@ internal class RealMiniApp(
         val manifestPermissions =
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
-        miniAppManifestCache.getCachedAllPermissions(miniAppId).forEach { (first) ->
-            miniAppCustomPermission.pairValues.find {
-                it.first == first
-            }?.let { manifestPermissions.add(it) }
+        if (temporaryManifest == null) {
+            miniAppManifestCache.getCachedAllPermissions(miniAppId).forEach { (first) ->
+                miniAppCustomPermission.pairValues.find {
+                    it.first == first
+                }?.let { manifestPermissions.add(it) }
+            }
+        } else {
+            temporaryManifest?.requiredPermissions?.forEach { (first) ->
+                miniAppCustomPermission.pairValues.find {
+                    it.first == first
+                }?.let { manifestPermissions.add(it) }
+            }
+            temporaryManifest?.optionalPermissions?.forEach { (first) ->
+                miniAppCustomPermission.pairValues.find {
+                    it.first == first
+                }?.let { manifestPermissions.add(it) }
+            }
         }
 
         val permissionsToStore = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
@@ -130,7 +146,7 @@ internal class RealMiniApp(
         return temporaryManifest as MiniAppManifest
     }
 
-    override fun getCurrentManifest(appId: String): MiniAppManifest? {
+    override fun getDownloadedManifest(appId: String): MiniAppManifest? {
         return miniAppManifestCache.readMiniAppManifest(appId)
     }
 

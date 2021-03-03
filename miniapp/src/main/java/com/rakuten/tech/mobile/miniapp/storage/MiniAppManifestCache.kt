@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
@@ -12,10 +13,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.lang.Exception
 
 /**
- * A caching class to read and store the [MiniAppManifest] per MiniApp
- * using [SharedPreferences].
+ * A caching class to read and store the [MiniAppManifest] per MiniApp using [SharedPreferences].
  */
-// TODO: unit testcases
+@Suppress("TooGenericExceptionCaught")
 internal class MiniAppManifestCache(
     context: Context,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
@@ -68,7 +68,8 @@ internal class MiniAppManifestCache(
         return false
     }
 
-    private fun getCachedRequiredPermissions(
+    @VisibleForTesting
+    fun getCachedRequiredPermissions(
         appId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         val manifest = readMiniAppManifest(appId)
@@ -78,7 +79,8 @@ internal class MiniAppManifestCache(
         }!!
     }
 
-    private fun getCachedOptionalPermissions(
+    @VisibleForTesting
+    fun getCachedOptionalPermissions(
         appId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         val manifest = readMiniAppManifest(appId)

@@ -20,8 +20,7 @@ Before v3.0.0  |  v3.0.0
 - **Fix:** Failure when simultaneous custom permission requests are received.
 - **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
 - **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the manifest of a MiniApp.
-- **Feature:** Added `MiniApp.getCurrentManifest` interface to retrieve currently downloaded manifest of a MiniApp.
-- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the meta-data of a MiniApp.
+- **Feature:** Added `MiniApp.getDownloadedManifest` interface to retrieve currently downloaded manifest of a MiniApp.
 
 **Sample App**
 - **Feature:** Added first-time launching screen to show the manifest information before downloading/launching a MiniApp.

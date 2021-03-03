@@ -23,11 +23,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
-// MINI-2505 TODO: detect changes e.g. new permissions or metadata key
-// MINI-2505 TODO: detect changes e.g. "optional" to "required" or vice versa
-// MINI-2505 TODO: detect changes e.g. Value changed for any of the keys other than "permission".
-// MINI-2505 TODO: update to display this screen again when there is any change has been detected using `MiniApp.getCurrentManifest`
-
 class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
     private lateinit var preloadMiniAppLayout: View

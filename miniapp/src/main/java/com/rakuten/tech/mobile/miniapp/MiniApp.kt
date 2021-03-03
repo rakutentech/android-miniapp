@@ -20,7 +20,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass", "LongMethod")
+@Suppress("UnnecessaryAbstractClass", "LongMethod", "TooManyFunctions")
 abstract class MiniApp internal constructor() {
 
     /**
@@ -114,7 +114,8 @@ abstract class MiniApp internal constructor() {
     ): MiniAppCustomPermission
 
     /**
-     * Store only the custom permissions listed in the Mini App's manifest with grant results per MiniApp inside this SDK.
+     * Store only the custom permissions listed in the Mini App's manifest with grant results
+     * per MiniApp inside this SDK.
      * @param miniAppCustomPermission the supplied custom permissions to be stored in cache.
      */
     abstract fun setCustomPermissions(
@@ -143,7 +144,7 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
-    abstract fun getCurrentManifest(appId: String): MiniAppManifest?
+    abstract fun getDownloadedManifest(appId: String): MiniAppManifest?
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
