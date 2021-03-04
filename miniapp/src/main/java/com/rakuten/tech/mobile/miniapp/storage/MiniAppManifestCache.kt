@@ -53,15 +53,24 @@ internal class MiniAppManifestCache(
         prefs.edit().putString(miniAppId, jsonToStore).apply()
     }
 
-    fun getCachedAllPermissions(appId: String) = getCachedRequiredPermissions(appId) +
-            getCachedOptionalPermissions(appId)
+    /**
+     * Returns the list of all manifest permissions e.g. required and optional.
+     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
+     */
+    fun getCachedAllPermissions(miniAppId: String) = getCachedRequiredPermissions(miniAppId) +
+            getCachedOptionalPermissions(miniAppId)
 
-    fun isRequiredPermissionDenied(appId: String, manifest: MiniAppManifest?): Boolean {
+    /**
+     * Returns true if the required permissions are denied, otherwise false.
+     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
+     * @param [manifest] the manifest includes the required permissions.
+     */
+    fun isRequiredPermissionDenied(miniAppId: String, manifest: MiniAppManifest?): Boolean {
         // store manifest value in cache before checking the required permission status
         if (manifest != null) {
-            storeMiniAppManifest(appId, manifest)
+            storeMiniAppManifest(miniAppId, manifest)
 
-            getCachedRequiredPermissions(appId).find {
+            getCachedRequiredPermissions(miniAppId).find {
                 it.second != MiniAppCustomPermissionResult.ALLOWED
             }?.let { return true }
         }
@@ -70,10 +79,10 @@ internal class MiniAppManifestCache(
 
     @VisibleForTesting
     fun getCachedRequiredPermissions(
-        appId: String
+        miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val manifest = readMiniAppManifest(appId)
-        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(appId).pairValues
+        val manifest = readMiniAppManifest(miniAppId)
+        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
         return manifest?.requiredPermissions?.mapNotNull { (first) ->
             cachedPermissions.find { it.first == first }
         }!!
@@ -81,10 +90,10 @@ internal class MiniAppManifestCache(
 
     @VisibleForTesting
     fun getCachedOptionalPermissions(
-        appId: String
+        miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val manifest = readMiniAppManifest(appId)
-        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(appId).pairValues
+        val manifest = readMiniAppManifest(miniAppId)
+        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
         return manifest?.optionalPermissions?.mapNotNull { (first) ->
             cachedPermissions.find { it.first == first }
         }!!
