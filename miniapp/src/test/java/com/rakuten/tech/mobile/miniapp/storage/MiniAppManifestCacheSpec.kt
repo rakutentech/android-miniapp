@@ -16,6 +16,8 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class MiniAppManifestCacheSpec {
 
@@ -66,10 +68,7 @@ class MiniAppManifestCacheSpec {
 
     @Test
     fun `getCachedAllPermission will invoke cached required and optional permissions`() {
-        val customPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-        )
+        val customPermission = createCustomPermission(false)
         doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
         doReturn(demoManifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
 
@@ -79,12 +78,10 @@ class MiniAppManifestCacheSpec {
         verify(manifestCache).getCachedOptionalPermissions(TEST_MA_ID)
     }
 
+    /** region: isRequiredPermissionDenied */
     @Test
     fun `isRequiredPermissionDenied will invoke storeMiniAppManifest`() {
-        val customPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
-        )
+        val customPermission = createCustomPermission(false)
         doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
         doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
 
@@ -94,11 +91,38 @@ class MiniAppManifestCacheSpec {
     }
 
     @Test
+    fun `isRequiredPermissionDenied will be false when provided manifest is null`() {
+        assertFalse(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, null))
+    }
+
+    @Test
+    fun `isRequiredPermissionDenied will be true when provided manifest has denied permission`() {
+        val customPermission = createCustomPermission(false)
+        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+        doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
+
+        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
+        verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
+        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
+        assertTrue(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest))
+    }
+
+    @Test
+    fun `isRequiredPermissionDenied will be false when provided manifest has allowed permission`() {
+        val customPermission = createCustomPermission(true)
+        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+        doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
+
+        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
+        verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
+        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
+        assertFalse(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest))
+    }
+    /** end region */
+
+    @Test
     fun `getCachedRequiredPermissions will return expected values`() {
-        val customPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-        )
+        val customPermission = createCustomPermission(false)
         doReturn(demoManifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
         doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
 
@@ -111,7 +135,9 @@ class MiniAppManifestCacheSpec {
     fun `getCachedOptionalPermissions will return expected values`() {
         val customPermission = MiniAppCustomPermission(
             TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED))
+            listOf(
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED)
+            )
         )
 
         val manifest = MiniAppManifest(
@@ -125,5 +151,20 @@ class MiniAppManifestCacheSpec {
         val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
         verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
         assertEquals(actual, customPermission.pairValues)
+    }
+
+    private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {
+        val list = arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+        if (isAllowed) list.add(
+            Pair(
+                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
+            )
+        )
+        else list.add(
+            Pair(
+                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED
+            )
+        )
+        return MiniAppCustomPermission(TEST_MA_ID, list)
     }
 }

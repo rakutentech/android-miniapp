@@ -73,6 +73,51 @@ class RealMiniAppSpec {
         realMiniApp.create(testMiniAppInfo, miniAppMessageBridge)
     }
 
+    @Test(expected = MiniAppSdkException::class)
+    fun `should check to call isRequiredPermissionDenied when create miniapp`() = runBlockingTest {
+        val demoManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            mapOf()
+        )
+        realMiniApp.create(" ", miniAppMessageBridge)
+        verify(manifestCache).isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when required permissions are not granted`() = runBlockingTest {
+        val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+        val demoManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            mapOf()
+        )
+        realMiniApp.temporaryManifest = demoManifest
+        val permissionList = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
+        When calling manifestCache.getCachedRequiredPermissions(TEST_MA_ID) itReturns permissionList
+        When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+        When calling manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) itReturns true
+
+        realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
+    }
+
+    @Test
+    fun `should not throw exception when required permissions are granted`() = runBlockingTest {
+        val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+        val demoManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            mapOf()
+        )
+        realMiniApp.temporaryManifest = demoManifest
+        val permissionList = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
+        When calling manifestCache.getCachedRequiredPermissions(TEST_MA_ID) itReturns permissionList
+        When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+        When calling manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) itReturns false
+
+        realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
+    }
+
     @Test
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {

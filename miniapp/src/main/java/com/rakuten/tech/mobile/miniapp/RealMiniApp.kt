@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LongMethod", "ExpressionBodySyntax")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
