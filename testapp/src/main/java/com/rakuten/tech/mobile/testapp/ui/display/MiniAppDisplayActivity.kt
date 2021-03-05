@@ -184,20 +184,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppId: String,
                 onSuccess: (tokenData: TokenData) -> Unit,
                 onError: (message: String) -> Unit
-            ) {
-                AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    .setMessage("Allow $miniAppId to get access token?")
-                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
-                        onSuccess(AppSettings.instance.tokenData)
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("No") { dialog, _ ->
-                        onError("$miniAppId not allowed to get access token")
-                        dialog.dismiss()
-                    }
-                    .create()
-                    .show()
-            }
+            ) = onSuccess(AppSettings.instance.tokenData)
 
             override fun getContacts(
                 onSuccess: (contacts: ArrayList<Contact>) -> Unit,
