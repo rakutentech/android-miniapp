@@ -190,8 +190,8 @@ abstract class MiniApp internal constructor() {
                     initVerifier = { CachedMiniAppVerifier(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = customPermissionCache,
-                miniAppManifestCache = MiniAppManifestCache(context, customPermissionCache)
+                initCustomPermissionCache = { customPermissionCache },
+                initManifestCache = { MiniAppManifestCache(context, customPermissionCache) }
             )
         }
     }

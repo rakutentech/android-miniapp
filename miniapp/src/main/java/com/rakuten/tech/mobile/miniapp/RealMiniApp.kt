@@ -18,9 +18,12 @@ internal class RealMiniApp(
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
-    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppManifestCache: MiniAppManifestCache
+    initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
+    initManifestCache: () -> MiniAppManifestCache
 ) : MiniApp() {
+
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
+    private val miniAppManifestCache: MiniAppManifestCache by lazy { initManifestCache() }
 
     @VisibleForTesting
     var temporaryManifest: MiniAppManifest? = null

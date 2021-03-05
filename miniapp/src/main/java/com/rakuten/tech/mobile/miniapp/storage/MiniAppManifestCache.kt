@@ -10,7 +10,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import java.lang.Exception
+import kotlin.Exception
 
 /**
  * A caching class to read and store the [MiniAppManifest] per MiniApp using [SharedPreferences].
@@ -81,21 +81,29 @@ internal class MiniAppManifestCache(
     fun getCachedRequiredPermissions(
         miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val manifest = readMiniAppManifest(miniAppId)
-        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
-        return manifest?.requiredPermissions?.mapNotNull { (first) ->
-            cachedPermissions.find { it.first == first }
-        }!!
+        return try {
+            val manifest = readMiniAppManifest(miniAppId)
+            val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
+            manifest?.requiredPermissions?.mapNotNull { (first) ->
+                cachedPermissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     @VisibleForTesting
     fun getCachedOptionalPermissions(
         miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        val manifest = readMiniAppManifest(miniAppId)
-        val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
-        return manifest?.optionalPermissions?.mapNotNull { (first) ->
-            cachedPermissions.find { it.first == first }
-        }!!
+        return try {
+            val manifest = readMiniAppManifest(miniAppId)
+            val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
+            manifest?.optionalPermissions?.mapNotNull { (first) ->
+                cachedPermissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }

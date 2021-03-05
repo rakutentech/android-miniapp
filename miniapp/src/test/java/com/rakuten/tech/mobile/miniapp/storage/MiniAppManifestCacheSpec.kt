@@ -132,6 +132,13 @@ class MiniAppManifestCacheSpec {
     }
 
     @Test
+    fun `getCachedRequiredPermissions will return empty when cache has null value`() {
+        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
+        val actual = manifestCache.getCachedRequiredPermissions(TEST_MA_ID)
+        assertEquals(emptyList(), actual)
+    }
+
+    @Test
     fun `getCachedOptionalPermissions will return expected values`() {
         val customPermission = MiniAppCustomPermission(
             TEST_MA_ID,
@@ -151,6 +158,20 @@ class MiniAppManifestCacheSpec {
         val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
         verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
         assertEquals(actual, customPermission.pairValues)
+    }
+
+    @Test
+    fun `getCachedOptionalPermissions will return empty when cache has null value`() {
+        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
+        val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
+        assertEquals(emptyList(), actual)
+    }
+
+    @Test
+    fun `getCachedAllPermissions will return empty when cache has null value`() {
+        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
+        val actual = manifestCache.getCachedAllPermissions(TEST_MA_ID)
+        assertEquals(emptyList(), actual)
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {
