@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -99,7 +100,14 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
         }
 
-        userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
+        try {
+            userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
+        } catch (e: MiniAppSdkException) {
+            if (e.message == "The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+                userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+            else
+                throw e
+        }
     }
 
     private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenPermission>(

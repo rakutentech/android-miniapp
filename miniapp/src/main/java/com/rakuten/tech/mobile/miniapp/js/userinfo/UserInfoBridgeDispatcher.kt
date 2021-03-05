@@ -33,6 +33,19 @@ interface UserInfoBridgeDispatcher {
     }
 
     /** Get access token from host app. **/
+    @Deprecated("This function has been deprecated.")
+    fun getAccessToken(
+        miniAppId: String,
+        onSuccess: (tokenData: TokenData) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+    }
+
+    /**
+     * Get access token from host app.
+     * @param accessTokenPermission contains audience and scope for permission validation.
+     **/
     fun getAccessToken(
         miniAppId: String,
         accessTokenPermission: AccessTokenPermission,

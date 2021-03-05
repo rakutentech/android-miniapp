@@ -334,6 +334,24 @@ class UserInfoBridgeSpec {
 
         verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
+
+    @Test
+    fun `will call deprecated function to get token when still using old implementation`() {
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
+            override fun getAccessToken(
+                miniAppId: String,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess.invoke(testToken)
+            }
+        })
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+
+        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+    }
     /** end region */
 
     /** start region: get contacts */
