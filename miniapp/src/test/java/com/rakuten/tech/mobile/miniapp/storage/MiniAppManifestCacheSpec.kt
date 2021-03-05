@@ -15,9 +15,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class MiniAppManifestCacheSpec {
 
@@ -92,7 +89,7 @@ class MiniAppManifestCacheSpec {
 
     @Test
     fun `isRequiredPermissionDenied will be false when provided manifest is null`() {
-        assertFalse(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, null))
+        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, null) shouldEqual false
     }
 
     @Test
@@ -104,7 +101,7 @@ class MiniAppManifestCacheSpec {
         manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
         verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
         verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-        assertTrue(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest))
+        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) shouldEqual true
     }
 
     @Test
@@ -116,7 +113,7 @@ class MiniAppManifestCacheSpec {
         manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
         verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
         verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-        assertFalse(manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest))
+        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) shouldEqual false
     }
     /** end region */
 
@@ -128,14 +125,14 @@ class MiniAppManifestCacheSpec {
 
         val actual = manifestCache.getCachedRequiredPermissions(TEST_MA_ID)
         verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        assertEquals(actual, customPermission.pairValues)
+        actual shouldEqual customPermission.pairValues
     }
 
     @Test
     fun `getCachedRequiredPermissions will return empty when cache has null value`() {
         doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
         val actual = manifestCache.getCachedRequiredPermissions(TEST_MA_ID)
-        assertEquals(emptyList(), actual)
+        actual shouldEqual emptyList()
     }
 
     @Test
@@ -157,21 +154,21 @@ class MiniAppManifestCacheSpec {
 
         val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
         verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        assertEquals(actual, customPermission.pairValues)
+        actual shouldEqual customPermission.pairValues
     }
 
     @Test
     fun `getCachedOptionalPermissions will return empty when cache has null value`() {
         doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
         val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
-        assertEquals(emptyList(), actual)
+        actual shouldEqual emptyList()
     }
 
     @Test
     fun `getCachedAllPermissions will return empty when cache has null value`() {
         doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
         val actual = manifestCache.getCachedAllPermissions(TEST_MA_ID)
-        assertEquals(emptyList(), actual)
+        actual shouldEqual emptyList()
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {

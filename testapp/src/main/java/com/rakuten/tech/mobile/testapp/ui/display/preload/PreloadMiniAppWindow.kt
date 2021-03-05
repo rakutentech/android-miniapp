@@ -5,27 +5,29 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.setIcon
 import java.lang.Exception
 
-class PreloadMiniAppWindow(private val context: Context, private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener) {
+class PreloadMiniAppWindow(
+    private val context: Context,
+    private val preloadMiniAppLaunchListener: PreloadMiniAppLaunchListener
+) {
     private lateinit var preloadMiniAppAlertDialog: AlertDialog
-    private lateinit var preloadMiniAppLayout: View
+    private lateinit var binding: WindowPreloadMiniappBinding
     private lateinit var viewModel: PreloadMiniAppViewModel
     private lateinit var lifecycleOwner: LifecycleOwner
     private var miniAppInfo: MiniAppInfo? = null
@@ -64,36 +66,40 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
     private fun initDefaultWindow() {
         // set ui components
         val layoutInflater = LayoutInflater.from(context)
-        preloadMiniAppLayout = layoutInflater.inflate(R.layout.window_preload_miniapp, null)
+        binding = DataBindingUtil.inflate(
+            layoutInflater,
+            R.layout.window_preload_miniapp,
+            null,
+            false
+        )
         preloadMiniAppAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
-        preloadMiniAppAlertDialog.setView(preloadMiniAppLayout)
+        preloadMiniAppAlertDialog.setView(binding.root)
 
         // set data to ui
-        val nameView = preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppName)
-        val versionView = preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppVersion)
         if (miniAppInfo != null) {
             setIcon(
                 context,
                 Uri.parse(miniAppInfo?.icon),
-                preloadMiniAppLayout.findViewById(R.id.preloadAppIcon)
+                binding.preloadAppIcon
             )
 
-            nameView.text = miniAppInfo?.displayName.toString()
-            versionView.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
+            binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
+            binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
-            nameView.text = ERR_NO_INFO
+            binding.preloadMiniAppName.text = ERR_NO_INFO
         }
 
         // set manifest/metadata to UI: permissions
         val permissionAdapter = PreloadMiniAppPermissionAdapter()
-        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).layoutManager =
-            LinearLayoutManager(context)
-        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission).adapter =
-            permissionAdapter
-        preloadMiniAppLayout.findViewById<RecyclerView>(R.id.listPreloadPermission)
-            .addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        binding.listPreloadPermission.layoutManager = LinearLayoutManager(context)
+        binding.listPreloadPermission.isNestedScrollingEnabled = false
+        binding.listPreloadPermission.adapter = permissionAdapter
+        binding.listPreloadPermission.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
             )
+        )
 
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
@@ -107,8 +113,7 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
                     }
 
                     miniAppManifestMetadata.observe(lifecycleOwner, Observer {
-                        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadMiniAppMetaData).text =
-                            LABEL_CUSTOM_METADATA + it
+                        binding.preloadMiniAppMetaData.text = LABEL_CUSTOM_METADATA + it
                     })
 
                     miniAppManifest.observe(lifecycleOwner,
@@ -149,13 +154,13 @@ class PreloadMiniAppWindow(private val context: Context, private val preloadMini
         viewModel.getMiniAppManifest(miniAppId, versionId, KEY_METADATA)
 
         // set action listeners
-        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadAccept).setOnClickListener {
+        binding.preloadAccept.setOnClickListener {
             storeAcceptance(true) // set true when accept
             storeManifestPermission(true, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
         }
-        preloadMiniAppLayout.findViewById<TextView>(R.id.preloadCancel).setOnClickListener {
+        binding.preloadCancel.setOnClickListener {
             storeManifestPermission(false, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
             preloadMiniAppAlertDialog.dismiss()

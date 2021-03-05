@@ -1,124 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
       android:id="@+id/topView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_margin="@dimen/small_8"
+      android:layout_alignParentTop="true"
       android:padding="@dimen/small_4"
       android:background="@color/window_top_bar"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toTopOf="@+id/lnAction"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
+      android:orientation="vertical">
 
-        <TextView
-          android:id="@+id/preloadTutorial"
-          android:textStyle="bold"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:padding="@dimen/small_8"
-          android:background="@color/window_top_bar"
-          android:text="@string/miniapp_preload_tutorial"
-          android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16" />
+      <TextView
+        android:id="@+id/preloadTutorial"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_8"
+        android:background="@color/window_top_bar"
+        android:text="@string/miniapp_preload_tutorial"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16" />
 
-        <ImageView
-          android:id="@+id/preloadAppIcon"
-          android:layout_width="@dimen/miniapp_logo_size"
-          android:layout_height="@dimen/miniapp_logo_size"
-          android:layout_marginTop="@dimen/small_8"
-          android:layout_gravity="center_horizontal"
-          android:src="@drawable/ic_default" />
+      <ImageView
+        android:id="@+id/preloadAppIcon"
+        android:layout_width="@dimen/miniapp_logo_size"
+        android:layout_height="@dimen/miniapp_logo_size"
+        android:layout_marginTop="@dimen/small_8"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_default" />
 
-        <TextView
-          android:id="@+id/preloadMiniAppName"
-          android:textStyle="bold"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/small_8"
-          android:layout_gravity="center_horizontal"
-          android:paddingStart="@dimen/medium_16"
-          android:paddingEnd="@dimen/medium_16"
-          android:textAlignment="center"
-          android:textColor="@android:color/black"
-          tools:text="Dummy MiniApp Name" />
+      <TextView
+        android:id="@+id/preloadMiniAppName"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:layout_gravity="center_horizontal"
+        android:paddingStart="@dimen/medium_16"
+        android:paddingEnd="@dimen/medium_16"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        tools:text="Dummy MiniApp Name" />
 
-        <TextView
-          android:id="@+id/preloadMiniAppVersion"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/tiny_2dp"
-          android:layout_gravity="center_horizontal"
-          android:paddingStart="@dimen/medium_16"
-          android:paddingEnd="@dimen/medium_16"
-          android:textAlignment="center"
-          tools:text="Dummy MiniApp Version" />
+      <TextView
+        android:id="@+id/preloadMiniAppVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tiny_2dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingStart="@dimen/medium_16"
+        android:paddingEnd="@dimen/medium_16"
+        android:textAlignment="center"
+        tools:text="Dummy MiniApp Version" />
 
-        <TextView
-          android:id="@+id/preloadMiniAppMetaData"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_horizontal"
-          android:paddingStart="@dimen/medium_16"
-          android:paddingEnd="@dimen/medium_16"
-          android:textAlignment="center"
-          tools:text="Dummy MiniApp Metadata" />
-
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:layout_marginTop="@dimen/small_8"
-          android:background="@color/bg_section" />
-
-        <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/listPreloadPermission"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:scrollbars="vertical"
-          app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-          tools:listitem="@layout/item_list_custom_permission" />
+      <TextView
+        android:id="@+id/preloadMiniAppMetaData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_4"
+        android:layout_gravity="center_horizontal"
+        android:paddingStart="@dimen/medium_16"
+        android:paddingEnd="@dimen/medium_16"
+        android:textAlignment="center"
+        tools:text="Dummy MiniApp Metadata" />
     </LinearLayout>
 
     <LinearLayout
       android:id="@+id/lnAction"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
       android:padding="@dimen/activity_vertical_margin"
       android:background="@android:color/white"
       android:gravity="center_horizontal"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent">
+      android:orientation="vertical">
 
-        <TextView
-          android:id="@+id/preloadAccept"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:padding="@dimen/small_12"
-          android:background="@drawable/bg_miniapp_preload_accept"
-          android:gravity="center"
-          android:text="@string/action_first_time_accept"
-          android:textColor="@android:color/white"
-          android:textSize="@dimen/text_large_16" />
+      <TextView
+        android:id="@+id/preloadAccept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_12"
+        android:background="@drawable/bg_miniapp_preload_accept"
+        android:gravity="center"
+        android:text="@string/action_first_time_accept"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_large_16" />
 
-        <TextView
-          android:id="@+id/preloadCancel"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/small_8"
-          android:padding="@dimen/small_12"
-          android:background="@drawable/bg_miniapp_preload_cancel"
-          android:gravity="center"
-          android:text="@string/action_first_time_cancel"
-          android:textColor="@color/colorPrimary"
-          android:textSize="@dimen/text_large_16" />
+      <TextView
+        android:id="@+id/preloadCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:padding="@dimen/small_12"
+        android:background="@drawable/bg_miniapp_preload_cancel"
+        android:gravity="center"
+        android:text="@string/action_first_time_cancel"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_large_16" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/listPreloadPermission"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_above="@id/lnAction"
+      android:layout_below="@id/topView"
+      tools:listitem="@layout/item_list_custom_permission" />
+  </RelativeLayout>
+</layout>
