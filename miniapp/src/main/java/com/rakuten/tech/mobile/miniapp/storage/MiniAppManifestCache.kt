@@ -63,17 +63,11 @@ internal class MiniAppManifestCache(
     /**
      * Returns true if the required permissions are denied, otherwise false.
      * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
-     * @param [manifest] the manifest includes the required permissions.
      */
-    fun isRequiredPermissionDenied(miniAppId: String, manifest: MiniAppManifest?): Boolean {
-        // store manifest value in cache before checking the required permission status
-        if (manifest != null) {
-            storeMiniAppManifest(miniAppId, manifest)
-
-            getCachedRequiredPermissions(miniAppId).find {
-                it.second != MiniAppCustomPermissionResult.ALLOWED
-            }?.let { return true }
-        }
+    fun isRequiredPermissionDenied(miniAppId: String): Boolean {
+        getCachedRequiredPermissions(miniAppId).find {
+            it.second != MiniAppCustomPermissionResult.ALLOWED
+        }?.let { return true }
         return false
     }
 

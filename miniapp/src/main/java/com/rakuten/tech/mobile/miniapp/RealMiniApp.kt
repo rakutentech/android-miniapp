@@ -7,8 +7,6 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
 
@@ -25,9 +23,6 @@ internal class RealMiniApp(
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val miniAppManifestCache: MiniAppManifestCache by lazy { initManifestCache() }
 
-    @VisibleForTesting
-    var temporaryManifest: MiniAppManifest? = null
-
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
@@ -43,34 +38,8 @@ internal class RealMiniApp(
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
-    override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
-        // store only the permissions listed in the Mini App's manifest.
-        val miniAppId = miniAppCustomPermission.miniAppId
-        val manifestPermissions =
-            arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
-
-        if (temporaryManifest == null) {
-            miniAppManifestCache.getCachedAllPermissions(miniAppId).forEach { (first) ->
-                miniAppCustomPermission.pairValues.find {
-                    it.first == first
-                }?.let { manifestPermissions.add(it) }
-            }
-        } else {
-            temporaryManifest?.requiredPermissions?.forEach { (first) ->
-                miniAppCustomPermission.pairValues.find {
-                    it.first == first
-                }?.let { manifestPermissions.add(it) }
-            }
-            temporaryManifest?.optionalPermissions?.forEach { (first) ->
-                miniAppCustomPermission.pairValues.find {
-                    it.first == first
-                }?.let { manifestPermissions.add(it) }
-            }
-        }
-
-        val permissionsToStore = MiniAppCustomPermission(miniAppCustomPermission.miniAppId, manifestPermissions)
-        miniAppCustomPermissionCache.storePermissions(permissionsToStore)
-    }
+    override fun setCustomPermissions(miniAppCustomPermission: MiniAppCustomPermission) =
+        miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
     @Suppress("FunctionMaxLength")
     override fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>> {
@@ -87,7 +56,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         miniAppManifestCache.isRequiredPermissionDenied(
-            appId, temporaryManifest
+            appId
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
@@ -110,7 +79,7 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         miniAppManifestCache.isRequiredPermissionDenied(
-            appInfo.id, temporaryManifest
+            appInfo.id
         ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
@@ -145,8 +114,10 @@ internal class RealMiniApp(
     }
 
     override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        temporaryManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
-        return temporaryManifest as MiniAppManifest
+        val latestManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+        // store the latest manifest value in cache after fetched from api
+        miniAppManifestCache.storeMiniAppManifest(appId, latestManifest)
+        return latestManifest
     }
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? {
