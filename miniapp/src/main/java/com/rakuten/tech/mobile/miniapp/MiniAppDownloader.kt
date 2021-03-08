@@ -145,8 +145,9 @@ internal class MiniAppDownloader(
             Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
         } ?: emptyList()
 
+        val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
-        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+        return MiniAppManifest(requiredPermissions, optionalPermissions, accessTokenPermission, customMetadata)
     }
 
     @SuppressWarnings("LongMethod")
