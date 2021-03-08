@@ -34,7 +34,7 @@ internal class RealMiniApp(
         miniAppId: String
     ): MiniAppCustomPermission {
         // return only the permissions listed in the Mini App's manifest.
-        val manifestPermissions = miniAppManifestCache.getCachedAllPermissions(miniAppId)
+        val manifestPermissions = miniAppManifestCache.getDownloadedAllPermissions(miniAppId)
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
@@ -116,12 +116,12 @@ internal class RealMiniApp(
     override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
         val latestManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
         // store the latest manifest value in cache after fetched from api
-        miniAppManifestCache.storeMiniAppManifest(appId, latestManifest)
+        miniAppManifestCache.storeApiManifest(appId, latestManifest)
         return latestManifest
     }
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? {
-        return miniAppManifestCache.readMiniAppManifest(appId)
+        return miniAppManifestCache.readDownloadedManifest(appId)
     }
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
