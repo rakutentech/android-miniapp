@@ -16,14 +16,10 @@ import kotlin.Exception
  * A caching class to read and store the [MiniAppManifest] per MiniApp using [SharedPreferences].
  */
 @Suppress("TooGenericExceptionCaught")
-internal class MiniAppManifestCache(
+internal class DownloadedManifestCache(
     context: Context,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 ) {
-    private val prefsApi: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.manifest.cache.api", Context.MODE_PRIVATE
-    )
-
     private val prefsDownloaded: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )
@@ -44,17 +40,7 @@ internal class MiniAppManifestCache(
         }
     }
 
-    private fun readApiManifest(miniAppId: String): MiniAppManifest? {
-        val manifestJsonStr = prefsApi.getString(miniAppId, null) ?: return null
-        return try {
-            Gson().fromJson(manifestJsonStr, object : TypeToken<MiniAppManifest>() {}.type)
-        } catch (e: Exception) {
-            Log.e(this::class.java.canonicalName, e.message.toString())
-            null
-        }
-    }
-
-    private fun storeDownloadedManifest(
+    fun storeDownloadedManifest(
         miniAppId: String,
         miniAppManifest: MiniAppManifest
     ) {
@@ -63,46 +49,28 @@ internal class MiniAppManifestCache(
     }
 
     /**
-     * Stores [MiniAppManifest] to SharedPreferences.
-     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
-     * @param [miniAppManifest] an object to contain the manifest values per MiniApp.
-     */
-    fun storeApiManifest(
-        miniAppId: String,
-        miniAppManifest: MiniAppManifest
-    ) {
-        val jsonToStore: String = Gson().toJson(miniAppManifest)
-        prefsApi.edit().putString(miniAppId, jsonToStore).apply()
-    }
-
-    /**
      * Returns the list of all manifest permissions e.g. required and optional.
      * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      */
-    fun getDownloadedAllPermissions(miniAppId: String) = getDownloadedRequiredPermissions(miniAppId) +
-                getDownloadedOptionalPermissions(miniAppId)
+    fun getAllPermissions(miniAppId: String) = getRequiredPermissions(miniAppId) +
+            getOptionalPermissions(miniAppId)
 
     /**
      * Returns true if the required permissions are denied, otherwise false.
      * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      */
     fun isRequiredPermissionDenied(miniAppId: String): Boolean {
-        val apiManifest = readApiManifest(miniAppId)
-        if (apiManifest != null) {
-            storeDownloadedManifest(miniAppId, apiManifest) // it overrides old manifest if any
-
-            getDownloadedRequiredPermissions(miniAppId).find {
-                it.second != MiniAppCustomPermissionResult.ALLOWED
-            }?.let {
-                return true // MiniApp.create is about to execute successfully
-            }
+        getRequiredPermissions(miniAppId).find {
+            it.second != MiniAppCustomPermissionResult.ALLOWED
+        }?.let {
+            return true
         }
 
         return false
     }
 
     @VisibleForTesting
-    fun getDownloadedRequiredPermissions(
+    fun getRequiredPermissions(
         miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
@@ -117,7 +85,7 @@ internal class MiniAppManifestCache(
     }
 
     @VisibleForTesting
-    fun getDownloadedOptionalPermissions(
+    fun getOptionalPermissions(
         miniAppId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {

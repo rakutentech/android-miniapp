@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
+import com.rakuten.tech.mobile.miniapp.storage.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,11 +28,13 @@ internal class MiniAppDownloader(
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
+    initManifestApiCache: () -> ManifestApiCache,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
     private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
     private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
+    private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -128,10 +131,16 @@ internal class MiniAppDownloader(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            val manifestResponse = apiClient.fetchMiniAppManifest(appId, versionId)
-            return prepareMiniAppManifest(manifestResponse)
+            // every version should have it's own manifest information or null
+            val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+            if (cachedLatestManifest != null) cachedLatestManifest
+            else {
+                val latestManifest = prepareMiniAppManifest(apiClient.fetchMiniAppManifest(appId, versionId))
+                manifestApiCache.storeManifest(appId, versionId, latestManifest)
+                latestManifest
+            }
         }
     }
 
@@ -146,7 +155,11 @@ internal class MiniAppDownloader(
         } ?: emptyList()
 
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
-        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+        return MiniAppManifest(
+            requiredPermissions,
+            optionalPermissions,
+            customMetadata
+        )
     }
 
     @SuppressWarnings("LongMethod")

@@ -364,7 +364,12 @@ class MiniAppDownloaderSpec {
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
-            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+            val expected =
+                MiniAppManifest(
+                    requiredPermissions,
+                    optionalPermissions,
+                    hashMapOf()
+                )
 
             assertEquals(expected, actual)
         }
@@ -380,7 +385,12 @@ class MiniAppDownloaderSpec {
             ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity)
-            val expected = MiniAppManifest(emptyList(), emptyList(), emptyMap())
+            val expected =
+                MiniAppManifest(
+                    emptyList(),
+                    emptyList(),
+                    emptyMap()
+                )
 
             assertEquals(expected, actual)
         }

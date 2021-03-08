@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress("TooManyFunctions", "LongMethod", "ExpressionBodySyntax")
 internal class RealMiniApp(
@@ -17,11 +17,11 @@ internal class RealMiniApp(
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
-    initManifestCache: () -> MiniAppManifestCache
+    initDownloadedManifestCache: () -> DownloadedManifestCache
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
-    private val miniAppManifestCache: MiniAppManifestCache by lazy { initManifestCache() }
+    private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -34,7 +34,7 @@ internal class RealMiniApp(
         miniAppId: String
     ): MiniAppCustomPermission {
         // return only the permissions listed in the Mini App's manifest.
-        val manifestPermissions = miniAppManifestCache.getDownloadedAllPermissions(miniAppId)
+        val manifestPermissions = downloadedManifestCache.getAllPermissions(miniAppId)
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
@@ -55,12 +55,13 @@ internal class RealMiniApp(
         queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        miniAppManifestCache.isRequiredPermissionDenied(
-            appId
-        ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
-            displayer.createMiniAppDisplay(
+            val manifest = getMiniAppManifest(appId, fetchInfo(appId).version.versionId)
+            downloadedManifestCache.storeDownloadedManifest(appId, manifest) // store per miniapp id
+            if (downloadedManifestCache.isRequiredPermissionDenied(appId))
+                throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
+            else displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
@@ -78,12 +79,13 @@ internal class RealMiniApp(
         queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
-        miniAppManifestCache.isRequiredPermissionDenied(
-            appInfo.id
-        ) -> throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
-            displayer.createMiniAppDisplay(
+            val manifest = getMiniAppManifest(appInfo.id, appInfo.version.versionId)
+            downloadedManifestCache.storeDownloadedManifest(appInfo.id, manifest) // store per miniapp id
+            if (downloadedManifestCache.isRequiredPermissionDenied(appInfo.id))
+                throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
+            else displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
@@ -113,15 +115,11 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        val latestManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId)
-        // store the latest manifest value in cache after fetched from api
-        miniAppManifestCache.storeApiManifest(appId, latestManifest)
-        return latestManifest
-    }
+    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
+        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? {
-        return miniAppManifestCache.readDownloadedManifest(appId)
+        return downloadedManifestCache.readDownloadedManifest(appId)
     }
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {

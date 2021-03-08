@@ -9,7 +9,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -32,7 +32,7 @@ class RealMiniAppSpec {
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
-    private val manifestCache: MiniAppManifestCache = mock()
+    private val manifestCache: DownloadedManifestCache = mock()
     private val realMiniApp =
         RealMiniApp(
             apiClientRepository,
@@ -75,11 +75,12 @@ class RealMiniAppSpec {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should check to call isRequiredPermissionDenied when create miniapp`() = runBlockingTest {
-        val demoManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-            listOf(),
-            mapOf()
-        )
+        val demoManifest =
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+                listOf(),
+                mapOf()
+            )
         realMiniApp.create(" ", miniAppMessageBridge)
         verify(manifestCache).isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
     }
@@ -87,11 +88,12 @@ class RealMiniAppSpec {
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when required permissions are not granted`() = runBlockingTest {
         val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-        val demoManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-            listOf(),
-            mapOf()
-        )
+        val demoManifest =
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+                listOf(),
+                mapOf()
+            )
         realMiniApp.temporaryManifest = demoManifest
         val permissionList = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
         When calling manifestCache.getCachedRequiredPermissions(TEST_MA_ID) itReturns permissionList
@@ -104,11 +106,12 @@ class RealMiniAppSpec {
     @Test
     fun `should not throw exception when required permissions are granted`() = runBlockingTest {
         val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-        val demoManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-            listOf(),
-            mapOf()
-        )
+        val demoManifest =
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+                listOf(),
+                mapOf()
+            )
         realMiniApp.temporaryManifest = demoManifest
         val permissionList = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
         When calling manifestCache.getCachedRequiredPermissions(TEST_MA_ID) itReturns permissionList
@@ -221,11 +224,12 @@ class RealMiniAppSpec {
             TEST_MA_ID,
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
         )
-        val miniAppManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-            listOf(),
-            mapOf()
-        )
+        val miniAppManifest =
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+                listOf(),
+                mapOf()
+            )
         realMiniApp.temporaryManifest = miniAppManifest
         When calling manifestCache.getCachedAllPermissions(TEST_MA_ID) itReturns miniAppCustomPermission.pairValues
         realMiniApp.setCustomPermissions(miniAppCustomPermission)
@@ -286,7 +290,12 @@ class RealMiniAppSpec {
     @Test
     fun `api manifest should be fetched from MiniAppDownloader`() =
         runBlockingTest {
-            val miniAppManifest = MiniAppManifest(listOf(), listOf(), emptyMap())
+            val miniAppManifest =
+                MiniAppManifest(
+                    listOf(),
+                    listOf(),
+                    emptyMap()
+                )
             When calling miniAppDownloader.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION

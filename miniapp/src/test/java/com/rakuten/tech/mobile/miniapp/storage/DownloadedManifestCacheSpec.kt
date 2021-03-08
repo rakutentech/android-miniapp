@@ -16,18 +16,19 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
-class MiniAppManifestCacheSpec {
+class DownloadedManifestCacheSpec {
 
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
-    private lateinit var manifestCache: MiniAppManifestCache
+    private lateinit var manifestCache: DownloadedManifestCache
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
     private val mockContext: Context = mock()
-    private val demoManifest = MiniAppManifest(
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-        listOf(),
-        mapOf()
-    )
+    private val demoManifest =
+        MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            mapOf()
+        )
 
     @Before
     fun setUp() {
@@ -38,7 +39,12 @@ class MiniAppManifestCacheSpec {
         Mockito.`when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
 
         miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(mockContext))
-        manifestCache = spy(MiniAppManifestCache(mockContext, miniAppCustomPermissionCache))
+        manifestCache = spy(
+            DownloadedManifestCache(
+                mockContext,
+                miniAppCustomPermissionCache
+            )
+        )
     }
 
     /** region: readMiniAppManifest */

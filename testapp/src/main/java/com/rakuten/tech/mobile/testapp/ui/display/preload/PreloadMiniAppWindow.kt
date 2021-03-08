@@ -47,18 +47,15 @@ class PreloadMiniAppWindow(
             this.versionId = miniAppInfo!!.version.versionId
         } else this.miniAppId = miniAppId
 
-        if (!isAccepted()) {
+        initDefaultWindow()
+
+        if (!doesDataExist()) {
+            storeAcceptance(DEFAULT_ACCEPTANCE) // should be true only after accept.
             launchScreen()
-        } else if (!doesDataExist()) {
-            storeAcceptance(DEFAULT_ACCEPTANCE) // should be false only after accept.
-            launchScreen()
-        } else {
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
         }
     }
 
     private fun launchScreen() {
-        initDefaultWindow()
         preloadMiniAppAlertDialog.show()
     }
 
@@ -117,29 +114,35 @@ class PreloadMiniAppWindow(
                     })
 
                     miniAppManifest.observe(lifecycleOwner,
-                        Observer { (requiredPermissions, optionalPermissions) ->
+                        Observer { apiManifest ->
                             val manifestPermissions = ArrayList<PreloadManifestPermission>()
 
-                            requiredPermissions.forEach {
-                                val permission = PreloadManifestPermission(
-                                    it.first,
-                                    true,
-                                    MiniAppCustomPermissionResult.ALLOWED,
-                                    it.second
-                                )
-                                manifestPermissions.add(permission)
-                            }
-                            optionalPermissions.forEach {
-                                val permission = PreloadManifestPermission(
-                                    it.first,
-                                    false,
-                                    MiniAppCustomPermissionResult.DENIED,
-                                    it.second
-                                )
-                                manifestPermissions.add(permission)
-                            }
+                            val cachedPermissions = viewModel.miniApp.getDownloadedManifest(miniAppId)
+                            if (apiManifest == cachedPermissions) {
+                                preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
+                            } else {
+                                apiManifest.requiredPermissions.forEach {
+                                    val permission = PreloadManifestPermission(
+                                        it.first,
+                                        true,
+                                        MiniAppCustomPermissionResult.ALLOWED,
+                                        it.second
+                                    )
+                                    manifestPermissions.add(permission)
+                                }
+                                apiManifest.optionalPermissions.forEach {
+                                    val permission = PreloadManifestPermission(
+                                        it.first,
+                                        false,
+                                        MiniAppCustomPermissionResult.DENIED,
+                                        it.second
+                                    )
+                                    manifestPermissions.add(permission)
+                                }
 
-                            permissionAdapter.addManifestPermissionList(manifestPermissions)
+                                permissionAdapter.addManifestPermissionList(manifestPermissions)
+                                launchScreen()
+                            }
                         })
 
                     manifestErrorData.observe(lifecycleOwner, Observer {
