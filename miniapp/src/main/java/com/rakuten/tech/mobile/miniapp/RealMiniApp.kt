@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress("TooManyFunctions", "LongMethod", "ExpressionBodySyntax")
@@ -30,11 +31,14 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
-    override fun getCustomPermissions(
+    override suspend fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission {
         // return only the permissions listed in the Mini App's manifest.
-        val manifestPermissions = downloadedManifestCache.getAllPermissions(miniAppId)
+        val versionId = fetchInfo(miniAppId).version.versionId
+        val customPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId)
+        val manifestPermissions =
+            downloadedManifestCache.getAllPermissions(customPermissions, versionId)
         return MiniAppCustomPermission(miniAppId, manifestPermissions)
     }
 
@@ -56,14 +60,11 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            // download the miniapp
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
-            // store manifest
-            updateManifestFromApi(appId, fetchInfo(appId).version.versionId)
-            // check required permissions before displaying the miniapp
-            if (downloadedManifestCache.isRequiredPermissionDenied(appId))
-                throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
-            else displayer.createMiniAppDisplay(
+            val versionId = fetchInfo(appId).version.versionId
+            checkWithManifest(appId, versionId)
+
+            displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
@@ -82,14 +83,10 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            // download the miniapp
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
-            // store manifest
-            updateManifestFromApi(appInfo.id, appInfo.version.versionId)
-            // check required permissions before displaying the miniapp
-            if (downloadedManifestCache.isRequiredPermissionDenied(appInfo.id))
-                throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
-            else displayer.createMiniAppDisplay(
+            checkWithManifest(appInfo.id, appInfo.version.versionId)
+
+            displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
@@ -123,7 +120,10 @@ internal class RealMiniApp(
         miniAppDownloader.fetchMiniAppManifest(appId, versionId)
 
     override suspend fun getDownloadedManifest(appId: String): MiniAppManifest? =
-        downloadedManifestCache.readDownloadedManifest(appId)
+        downloadedManifestCache.readDownloadedManifest(
+            appId,
+            fetchInfo(appId).version.versionId
+        )?.miniAppManifest
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
@@ -138,14 +138,25 @@ internal class RealMiniApp(
         }
     }
 
-    private suspend fun updateManifestFromApi(appId: String, versionId: String) {
-        val apiManifest = getMiniAppManifest(appId, versionId)
-        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        if (cachedManifest != apiManifest)
-            downloadedManifestCache.storeDownloadedManifest(appId, apiManifest) // store per miniapp id
+    private suspend fun checkWithManifest(appId: String, versionId: String) {
+        updateManifestFromApi(appId, versionId)
 
-        val manifestPermissions = downloadedManifestCache.getAllPermissions(appId)
-        miniAppCustomPermissionCache.updatePermissionsWithManifest(appId, manifestPermissions)
+        if (downloadedManifestCache.isRequiredPermissionDenied(
+                getCustomPermissions(appId),
+                versionId
+            )
+        ) throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
+    }
+
+    private suspend fun updateManifestFromApi(appId: String, versionId: String) {
+        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId, versionId)
+        if (cachedManifest?.versionId != versionId) {
+            val apiManifest = getMiniAppManifest(appId, versionId)
+            downloadedManifestCache.storeDownloadedManifest(appId, CachedManifest(versionId, apiManifest))
+            val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
+            val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions, versionId)
+            miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
+        }
     }
 
     @VisibleForTesting

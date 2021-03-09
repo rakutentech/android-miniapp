@@ -117,23 +117,21 @@ class PreloadMiniAppWindow(
                     })
 
                     miniAppManifest.observe(lifecycleOwner,
-                        Observer { apiManifest ->
+                        Observer { (requiredPermissions, optionalPermissions) ->
                             val manifestPermissions = ArrayList<PreloadManifestPermission>()
 
-                            apiManifest.requiredPermissions.forEach {
+                            requiredPermissions.forEach {
                                 val permission = PreloadManifestPermission(
                                     it.first,
                                     true,
-                                    MiniAppCustomPermissionResult.ALLOWED,
                                     it.second
                                 )
                                 manifestPermissions.add(permission)
                             }
-                            apiManifest.optionalPermissions.forEach {
+                            optionalPermissions.forEach {
                                 val permission = PreloadManifestPermission(
                                     it.first,
                                     false,
-                                    MiniAppCustomPermissionResult.DENIED,
                                     it.second
                                 )
                                 manifestPermissions.add(permission)

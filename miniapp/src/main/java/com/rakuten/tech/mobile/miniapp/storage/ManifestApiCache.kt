@@ -35,7 +35,7 @@ internal class ManifestApiCache(
         miniAppManifest: MiniAppManifest
     ) {
         val jsonToStore: String = Gson().toJson(miniAppManifest)
-        prefs.edit().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
+        prefs.edit().clear().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
     }
 
     private fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"

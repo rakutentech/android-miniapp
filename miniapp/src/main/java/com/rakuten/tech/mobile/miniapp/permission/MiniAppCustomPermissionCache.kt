@@ -93,29 +93,15 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
-    fun updatePermissionsWithManifest(
+    fun removePermissionsNotMatching(
         miniAppId: String,
-        manifestPermissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ) {
         val cachedPermissions = readPermissions(miniAppId).pairValues.toMutableList()
-        val changedPermissions = (manifestPermissions + cachedPermissions).groupBy { it.first.type }
-            .filter { it.value.size == 1 }
-            .flatMap { it.value }
-
-        if (changedPermissions.isNotEmpty()) {
-            if (cachedPermissions.size < manifestPermissions.size) {
-                val filteredValue =
-                    MiniAppCustomPermission(miniAppId, cachedPermissions + changedPermissions)
-                applyStoringPermissions(filteredValue)
-            } else {
-                cachedPermissions.removeAll { (first) ->
-                    first.type in changedPermissions.groupBy { it.first.type }
-                }
-
-                val filteredValue = MiniAppCustomPermission(miniAppId, cachedPermissions)
-                applyStoringPermissions(filteredValue)
-            }
+        val newPermissions = cachedPermissions.mapNotNull { (first) ->
+            permissions.find { it.first == first }
         }
+        applyStoringPermissions(MiniAppCustomPermission(miniAppId, newPermissions))
     }
 
     /**

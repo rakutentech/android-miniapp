@@ -110,7 +110,7 @@ abstract class MiniApp internal constructor() {
      * @param miniAppId mini app id as the key to retrieve data from cache.
      * @return [MiniAppCustomPermission] an object contains the grant results per mini app.
      */
-    abstract fun getCustomPermissions(
+    abstract suspend fun getCustomPermissions(
         miniAppId: String
     ): MiniAppCustomPermission
 
@@ -180,7 +180,6 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val customPermissionCache = MiniAppCustomPermissionCache(context)
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
@@ -192,8 +191,8 @@ abstract class MiniApp internal constructor() {
                     initManifestApiCache = { ManifestApiCache(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                initCustomPermissionCache = { customPermissionCache },
-                initDownloadedManifestCache = { DownloadedManifestCache(context, customPermissionCache) }
+                initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
+                initDownloadedManifestCache = { DownloadedManifestCache(context) }
             )
         }
     }

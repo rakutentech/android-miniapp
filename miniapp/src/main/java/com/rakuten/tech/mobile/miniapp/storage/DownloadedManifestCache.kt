@@ -6,34 +6,34 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlin.Exception
 
 /**
- * A caching class to read and store the [MiniAppManifest] per MiniApp using [SharedPreferences].
+ * A caching class to read and store the [CachedManifest] per MiniApp using [SharedPreferences].
  */
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 internal class DownloadedManifestCache(
-    context: Context,
-    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    context: Context
 ) {
-    private val prefsDownloaded: SharedPreferences = context.getSharedPreferences(
+    private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )
 
     /**
-     * Reads the grant results from SharedPreferences.
-     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
-     * @return [MiniAppManifest] an object to contain the manifest per MiniApp.
-     * if data has been stored in cache, otherwise empty value.
+     * Reads the downloaded manifest from SharedPreferences.
+     * @param [miniAppId] the first half of key provided to find the stored manifest per MiniApp.
+     * @param [versionId] the second half of key provided to find the stored manifest per MiniApp.
+     * @return [CachedManifest] an object to contain MiniAppManifest per versionId.
+     * if data has been stored in cache, otherwise null.
      */
-    fun readDownloadedManifest(miniAppId: String): MiniAppManifest? {
-        val manifestJsonStr = prefsDownloaded.getString(miniAppId, null) ?: return null
+    fun readDownloadedManifest(miniAppId: String, versionId: String): CachedManifest? {
+        val manifestJsonStr =
+            prefs.getString(primaryKey(miniAppId, versionId), null) ?: return null
         return try {
-            Gson().fromJson(manifestJsonStr, object : TypeToken<MiniAppManifest>() {}.type)
+            Gson().fromJson(manifestJsonStr, object : TypeToken<CachedManifest>() {}.type)
         } catch (e: Exception) {
             Log.e(this::class.java.canonicalName, e.message.toString())
             null
@@ -42,25 +42,31 @@ internal class DownloadedManifestCache(
 
     fun storeDownloadedManifest(
         miniAppId: String,
-        miniAppManifest: MiniAppManifest
+        cachedManifest: CachedManifest
     ) {
-        val jsonToStore: String = Gson().toJson(miniAppManifest)
-        prefsDownloaded.edit().putString(miniAppId, jsonToStore).apply()
+        val jsonToStore: String = Gson().toJson(cachedManifest)
+        prefs.edit().putString(primaryKey(miniAppId, cachedManifest.versionId), jsonToStore).apply()
     }
 
     /**
      * Returns the list of all manifest permissions e.g. required and optional.
-     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      */
-    fun getAllPermissions(miniAppId: String) = getRequiredPermissions(miniAppId) +
-            getOptionalPermissions(miniAppId)
+    fun getAllPermissions(
+        cachedPermissions: MiniAppCustomPermission,
+        versionId: String
+    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
+        return getRequiredPermissions(cachedPermissions, versionId) +
+                getOptionalPermissions(cachedPermissions, versionId)
+    }
 
     /**
      * Returns true if the required permissions are denied, otherwise false.
-     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      */
-    fun isRequiredPermissionDenied(miniAppId: String): Boolean {
-        getRequiredPermissions(miniAppId).find {
+    fun isRequiredPermissionDenied(
+        cachedPermissions: MiniAppCustomPermission,
+        versionId: String
+    ): Boolean {
+        getRequiredPermissions(cachedPermissions, versionId).find {
             it.second != MiniAppCustomPermissionResult.ALLOWED
         }?.let {
             return true
@@ -71,31 +77,32 @@ internal class DownloadedManifestCache(
 
     @VisibleForTesting
     fun getRequiredPermissions(
-        miniAppId: String
+        cachedPermissions: MiniAppCustomPermission,
+        versionId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
-            val manifest = readDownloadedManifest(miniAppId)
-            val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
-            manifest?.requiredPermissions?.mapNotNull { (first) ->
-                cachedPermissions.find { it.first == first }
+            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId, versionId)
+            cachedManifest?.miniAppManifest?.requiredPermissions?.mapNotNull { (first) ->
+                cachedPermissions.pairValues.find { it.first == first }
             }!!
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    @VisibleForTesting
-    fun getOptionalPermissions(
-        miniAppId: String
+    private fun getOptionalPermissions(
+        cachedPermissions: MiniAppCustomPermission,
+        versionId: String
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
-            val manifest = readDownloadedManifest(miniAppId)
-            val cachedPermissions = miniAppCustomPermissionCache.readPermissions(miniAppId).pairValues
-            manifest?.optionalPermissions?.mapNotNull { (first) ->
-                cachedPermissions.find { it.first == first }
+            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId, versionId)
+            cachedManifest?.miniAppManifest?.optionalPermissions?.mapNotNull { (first) ->
+                cachedPermissions.pairValues.find { it.first == first }
             }!!
         } catch (e: Exception) {
             emptyList()
         }
     }
+
+    private fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
 }

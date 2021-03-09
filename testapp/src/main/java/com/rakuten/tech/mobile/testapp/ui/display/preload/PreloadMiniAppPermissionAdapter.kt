@@ -33,7 +33,7 @@ class PreloadMiniAppPermissionAdapter :
             if (manifestPermissions[position].isRequired) View.VISIBLE else View.GONE
 
         holder.permissionSwitch.isChecked =
-            permissionResultToChecked(manifestPermissions[position].result)
+            permissionResultToChecked(MiniAppCustomPermissionResult.ALLOWED)
         if (manifestPermissions[position].reason.isNotEmpty())
             holder.permissionReason.text = manifestPermissions[position].reason
 
@@ -56,8 +56,8 @@ class PreloadMiniAppPermissionAdapter :
 
     fun addManifestPermissionList(permissions: ArrayList<PreloadManifestPermission>) {
         manifestPermissions = permissions
-        manifestPermissions.forEachIndexed { position, (type, _, result) ->
-            manifestPermissionPairs.add(position, Pair(type, result))
+        manifestPermissions.forEachIndexed { position, (type, _) ->
+            manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
         }
         notifyDataSetChanged()
     }

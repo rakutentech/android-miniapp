@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.shouldEqual
@@ -18,7 +18,6 @@ import org.mockito.Mockito
 
 class DownloadedManifestCacheSpec {
 
-    private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private lateinit var manifestCache: DownloadedManifestCache
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
@@ -37,144 +36,47 @@ class DownloadedManifestCacheSpec {
             .thenReturn(mockSharedPrefs)
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
         Mockito.`when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
-
-        miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(mockContext))
-        manifestCache = spy(
-            DownloadedManifestCache(
-                mockContext,
-                miniAppCustomPermissionCache
-            )
-        )
+        manifestCache = spy(DownloadedManifestCache(mockContext))
     }
 
-    /** region: readMiniAppManifest */
     @Test
-    fun `readMiniAppManifest should return null when it hasn't stored any data yet`() {
-        val actual = manifestCache.readMiniAppManifest(TEST_MA_ID)
+    fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
+        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         val expected = null
         actual shouldEqual expected
     }
 
     @Test
-    fun `readMiniAppManifest should return expected value when it has stored any data`() {
-        doReturn(demoManifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        val actual = manifestCache.readMiniAppManifest(TEST_MA_ID)
-        actual shouldEqual demoManifest
-    }
-    /** end region */
-
-    @Test
-    fun `storeMiniAppManifest will invoke putString while storing manifest`() {
-        manifestCache.storeMiniAppManifest(TEST_MA_ID, demoManifest)
+    fun `storeDownloadedManifest will invoke putString while storing manifest`() {
+        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
+        manifestCache.storeDownloadedManifest(TEST_MA_ID, cachedManifest)
         verify(mockEditor).putString(anyString(), anyString())
-    }
-
-    @Test
-    fun `getCachedAllPermission will invoke cached required and optional permissions`() {
-        val customPermission = createCustomPermission(false)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-        doReturn(demoManifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-
-        manifestCache.getCachedAllPermissions(TEST_MA_ID)
-
-        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-        verify(manifestCache).getCachedOptionalPermissions(TEST_MA_ID)
     }
 
     /** region: isRequiredPermissionDenied */
     @Test
-    fun `isRequiredPermissionDenied will invoke storeMiniAppManifest`() {
-        val customPermission = createCustomPermission(false)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-        doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
-        verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
-        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-    }
-
-    @Test
-    fun `isRequiredPermissionDenied will be false when provided manifest is null`() {
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, null) shouldEqual false
-    }
-
-    @Test
     fun `isRequiredPermissionDenied will be true when provided manifest has denied permission`() {
         val customPermission = createCustomPermission(false)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-        doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
-        verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
-        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) shouldEqual true
+        doReturn(customPermission.pairValues).whenever(manifestCache)
+            .getRequiredPermissions(customPermission, TEST_MA_ID)
+        manifestCache.isRequiredPermissionDenied(customPermission, TEST_MA_ID) shouldEqual true
     }
 
     @Test
     fun `isRequiredPermissionDenied will be false when provided manifest has allowed permission`() {
         val customPermission = createCustomPermission(true)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-        doReturn(customPermission.pairValues).whenever(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest)
-        verify(manifestCache).storeMiniAppManifest(TEST_MA_ID, demoManifest)
-        verify(manifestCache).getCachedRequiredPermissions(TEST_MA_ID)
-        manifestCache.isRequiredPermissionDenied(TEST_MA_ID, demoManifest) shouldEqual false
+        doReturn(customPermission.pairValues).whenever(manifestCache)
+            .getRequiredPermissions(customPermission, TEST_MA_ID)
+        manifestCache.isRequiredPermissionDenied(customPermission, TEST_MA_ID) shouldEqual false
     }
     /** end region */
 
     @Test
-    fun `getCachedRequiredPermissions will return expected values`() {
-        val customPermission = createCustomPermission(false)
-        doReturn(demoManifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-
-        val actual = manifestCache.getCachedRequiredPermissions(TEST_MA_ID)
-        verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        actual shouldEqual customPermission.pairValues
-    }
-
-    @Test
-    fun `getCachedRequiredPermissions will return empty when cache has null value`() {
-        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        val actual = manifestCache.getCachedRequiredPermissions(TEST_MA_ID)
-        actual shouldEqual emptyList()
-    }
-
-    @Test
-    fun `getCachedOptionalPermissions will return expected values`() {
-        val customPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED)
-            )
-        )
-
-        val manifest = MiniAppManifest(
-            listOf(),
-            listOf(Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")),
-            mapOf()
-        )
-        doReturn(manifest).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        doReturn(customPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-
-        val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
-        verify(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        actual shouldEqual customPermission.pairValues
-    }
-
-    @Test
-    fun `getCachedOptionalPermissions will return empty when cache has null value`() {
-        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        val actual = manifestCache.getCachedOptionalPermissions(TEST_MA_ID)
-        actual shouldEqual emptyList()
-    }
-
-    @Test
-    fun `getCachedAllPermissions will return empty when cache has null value`() {
-        doReturn(null).whenever(manifestCache).readMiniAppManifest(TEST_MA_ID)
-        val actual = manifestCache.getCachedAllPermissions(TEST_MA_ID)
-        actual shouldEqual emptyList()
+    fun `readDownloadedManifest will return expected values`() {
+        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
+        doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        actual shouldEqual cachedManifest
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {

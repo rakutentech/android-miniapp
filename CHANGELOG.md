@@ -16,6 +16,7 @@ Before v3.0.0  |  v3.0.0
 - **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
 - **Change:** Update `MiniApp.create` to check the required permissions in Mini App's manifest have been granted or not before creating the Mini App.
 - **Change:** Update `MiniApp.getCustomPermissions` & `MiniApp.setCustomPermissions` to return and store only the permissions listed in the Mini App's manifest.
+- **Change:** Make `MiniApp.getCustomPermissions` suspended for the HostApp.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
 - **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).

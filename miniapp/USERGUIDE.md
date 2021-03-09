@@ -620,7 +620,11 @@ MiniApp Android SDK supports list of Custom Permissions (`MiniAppCustomPermissio
 Custom permissions and its status can be retrieved using the following interface. `getCustomPermissions` will return `MiniAppCustomPermission` that contains the meta-info as a `Pair` of 
 name and grant result (`ALLOWED` or `DENIED`). The custom permissions are stored per each miniAppId.
 ```kotlin
-val permissions = miniapp.getCustomPermissions(miniAppId)
+launch {
+       withContext(Dispatchers.IO) {
+          val permissions = miniapp.getCustomPermissions(miniAppId)
+     }
+  }
 ```
 
 #### Store the Mini App Custom Permissions
