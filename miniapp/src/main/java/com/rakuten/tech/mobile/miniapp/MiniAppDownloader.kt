@@ -137,7 +137,8 @@ internal class MiniAppDownloader(
             val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
             if (cachedLatestManifest != null) cachedLatestManifest
             else {
-                val latestManifest = prepareMiniAppManifest(apiClient.fetchMiniAppManifest(appId, versionId))
+                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                val latestManifest = prepareMiniAppManifest(apiResponse)
                 manifestApiCache.storeManifest(appId, versionId, latestManifest)
                 latestManifest
             }

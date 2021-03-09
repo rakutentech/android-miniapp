@@ -38,5 +38,5 @@ internal class ManifestApiCache(
         prefs.edit().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
     }
 
-    private fun primaryKey(miniAppId: String, versionId: String) = miniAppId + versionId
+    private fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
 }
