@@ -59,23 +59,18 @@ internal class RealMiniApp(
             // download the miniapp
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
             // store manifest
-            setManifestFromApi(appId, fetchInfo(appId).version.versionId)
+            updateManifestFromApi(appId, fetchInfo(appId).version.versionId)
             // check required permissions before displaying the miniapp
             if (downloadedManifestCache.isRequiredPermissionDenied(appId))
                 throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
-            else {
-                val manifestPermissions = downloadedManifestCache.getAllPermissions(appId)
-                miniAppCustomPermissionCache.updateManifestPermissions(appId, manifestPermissions)
-
-                displayer.createMiniAppDisplay(
-                    basePath,
-                    miniAppInfo,
-                    miniAppMessageBridge,
-                    miniAppNavigator,
-                    miniAppCustomPermissionCache,
-                    queryParams
-                )
-            }
+            else displayer.createMiniAppDisplay(
+                basePath,
+                miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache,
+                queryParams
+            )
         }
     }
 
@@ -90,23 +85,18 @@ internal class RealMiniApp(
             // download the miniapp
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             // store manifest
-            setManifestFromApi(appInfo.id, appInfo.version.versionId)
+            updateManifestFromApi(appInfo.id, appInfo.version.versionId)
             // check required permissions before displaying the miniapp
             if (downloadedManifestCache.isRequiredPermissionDenied(appInfo.id))
                 throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
-            else {
-                val manifestPermissions = downloadedManifestCache.getAllPermissions(appInfo.id)
-                miniAppCustomPermissionCache.updateManifestPermissions(appInfo.id, manifestPermissions)
-
-                displayer.createMiniAppDisplay(
-                    basePath,
-                    miniAppInfo,
-                    miniAppMessageBridge,
-                    miniAppNavigator,
-                    miniAppCustomPermissionCache,
-                    queryParams
-                )
-            }
+            else displayer.createMiniAppDisplay(
+                basePath,
+                miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppCustomPermissionCache,
+                queryParams
+            )
         }
     }
 
@@ -129,14 +119,6 @@ internal class RealMiniApp(
         }
     }
 
-    private suspend fun setManifestFromApi(appId: String, versionId: String) {
-        val apiManifest = getMiniAppManifest(appId, versionId)
-        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-
-        if (cachedManifest != apiManifest)
-            downloadedManifestCache.storeDownloadedManifest(appId, apiManifest) // store per miniapp id
-    }
-
     override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
         miniAppDownloader.fetchMiniAppManifest(appId, versionId)
 
@@ -156,6 +138,16 @@ internal class RealMiniApp(
         }
     }
 
+    private suspend fun updateManifestFromApi(appId: String, versionId: String) {
+        val apiManifest = getMiniAppManifest(appId, versionId)
+        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
+        if (cachedManifest != apiManifest)
+            downloadedManifestCache.storeDownloadedManifest(appId, apiManifest) // store per miniapp id
+
+        val manifestPermissions = downloadedManifestCache.getAllPermissions(appId)
+        miniAppCustomPermissionCache.updatePermissionsWithManifest(appId, manifestPermissions)
+    }
+
     @VisibleForTesting
     internal fun createApiClient(newConfig: MiniAppSdkConfig) = ApiClient(
         baseUrl = newConfig.baseUrl,
@@ -165,6 +157,6 @@ internal class RealMiniApp(
     )
 
     private companion object {
-        const val ERR_REQUIRED_PERMISSION_DENIED = "Required permissions are not granted yet for this miniapp."
+        const val ERR_REQUIRED_PERMISSION_DENIED = "Mini App has not been granted all of the required permissions."
     }
 }

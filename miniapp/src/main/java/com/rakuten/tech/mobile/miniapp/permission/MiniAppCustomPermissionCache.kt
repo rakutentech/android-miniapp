@@ -93,7 +93,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
-    fun updateManifestPermissions(
+    fun updatePermissionsWithManifest(
         miniAppId: String,
         manifestPermissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ) {
