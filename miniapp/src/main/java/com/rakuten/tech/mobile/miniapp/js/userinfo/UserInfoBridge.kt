@@ -2,8 +2,12 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.util.ArrayList
@@ -75,23 +79,41 @@ internal class UserInfoBridge {
         }
     }
 
-    internal fun onGetAccessToken(callbackId: String) = whenReady(callbackId) {
+    internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
         try {
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.ACCESS_TOKEN)) {
-                val successCallback = { accessToken: TokenData ->
-                    bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
-                }
-                val errorCallback = { message: String ->
-                    bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
-                }
-
-                userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+                onHasAccessTokenPermission(callbackObj)
             } else
-                bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION")
+                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION")
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
+            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN ${e.message}")
         }
     }
+
+    private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
+        val tokenPermission = parseAccessTokenPermission(callbackObj)
+
+        val successCallback = { accessToken: TokenData ->
+            bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
+        }
+
+        try {
+            userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
+        } catch (e: MiniAppSdkException) {
+            if (e.message == "The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+                userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+            else
+                throw e
+        }
+    }
+
+    private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenPermission>(
+            callbackObj.param.toString(),
+            object : TypeToken<AccessTokenPermission>() {}.type
+    ) ?: AccessTokenPermission("", emptyList())
 
     fun onGetContacts(callbackId: String) = whenReady(callbackId) {
         try {
