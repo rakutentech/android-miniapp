@@ -148,15 +148,24 @@ internal class MiniAppDownloader(
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
         val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+            Pair(MiniAppCustomPermissionType.getValue(it.name ?: ""), it.reason ?: "")
         } ?: emptyList()
 
         val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
+            Pair(MiniAppCustomPermissionType.getValue(it.name ?: ""), it.reason ?: "")
         } ?: emptyList()
 
+        val requiredFilteredValues = requiredPermissions.toMutableList()
+        requiredFilteredValues.removeAll { (first) ->
+            first.type == MiniAppCustomPermissionType.UNKNOWN.type
+        }
+        val optionalFilteredValues = optionalPermissions.toMutableList()
+        optionalFilteredValues.removeAll { (first) ->
+            first.type == MiniAppCustomPermissionType.UNKNOWN.type
+        }
+
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
-        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+        return MiniAppManifest(requiredFilteredValues, optionalFilteredValues, customMetadata)
     }
 
     @SuppressWarnings("LongMethod")

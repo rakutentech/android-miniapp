@@ -7,5 +7,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 data class PreloadManifestPermission(
     val type: MiniAppCustomPermissionType,
     val isRequired: Boolean,
-    val reason: String
+    val reason: String,
+    val shouldDisplay: Boolean
 )
