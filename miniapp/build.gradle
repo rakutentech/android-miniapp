@@ -70,9 +70,9 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.browser:browser:$custom_tab"
 
-    kapt "com.rakuten.tech.mobile:manifest-config-processor:$manifest_config"
-    implementation "com.rakuten.tech.mobile:manifest-config-annotations:$manifest_config"
-    implementation "com.rakuten.tech.mobile.sdkutils:sdk-utils:$sdk_utils"
+    kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
+    implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
+    implementation "io.github.rakutentech.sdkutils:sdk-utils:$sdk_utils"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
@@ -87,8 +87,14 @@ dependencies {
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 
     if (property("GITHUB_USERNAME") != null) {
-        compileOnly "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
-        testImplementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+        compileOnly ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+        }
+        testImplementation ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+        }
     } else {
         compileOnly project(':analytics')
         testImplementation project(':analytics')
@@ -125,10 +131,9 @@ afterEvaluate {
 }
 def isSnapshot = project.version.contains('-')
 if (isSnapshot) {
-    apply from: '../config/publish/artifactory.gradle'
-} else {
-    apply from: '../config/publish/bintray.gradle'
+    ext["MAVEN_CENTRAL_IS_SNAPSHOT"] = true
 }
+apply from: '../config/publish/maven-central.gradle'
 
 project.ext.docPublishing = [
         repoUri: 'git@github.com:rakutentech/android-miniapp.git'
