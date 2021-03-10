@@ -80,20 +80,28 @@ internal class MiniAppCustomPermissionCache(context: Context) {
      * Stores the grant results to SharedPreferences.
      * @param [miniAppCustomPermission] an object to contain the results per MiniApp.
      */
-    @SuppressLint("RestrictedApi")
     fun storePermissions(
         miniAppCustomPermission: MiniAppCustomPermission
     ) {
         val supplied = miniAppCustomPermission.pairValues.toMutableList()
-
         // Remove any unknown permission parameter from HostApp.
         supplied.removeAll { (first) ->
             first.type == MiniAppCustomPermissionType.UNKNOWN.type
         }
-
         val miniAppId = miniAppCustomPermission.miniAppId
         val allPermissions = prepareAllPermissionsToStore(miniAppId, supplied)
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
+    }
+
+    fun removePermissionsNotMatching(
+        miniAppId: String,
+        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+    ) {
+        val cachedPermissions = readPermissions(miniAppId).pairValues.toMutableList()
+        val newPermissions = cachedPermissions.mapNotNull { (first) ->
+            permissions.find { it.first == first }
+        }
+        applyStoringPermissions(MiniAppCustomPermission(miniAppId, newPermissions))
     }
 
     /**
@@ -104,7 +112,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         prefs.edit().remove(miniAppId).apply()
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))
         prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
@@ -117,7 +125,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    @VisibleForTesting
     fun prepareAllPermissionsToStore(
         miniAppId: String,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
