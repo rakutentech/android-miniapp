@@ -15,7 +15,7 @@ Before v3.0.0  |  v3.0.0
 - **Change:** Support Android 7 - API 24 as minimum version.
 - **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
 - **Change:** Update `MiniApp.create` to check the required permissions in Mini App's manifest have been granted or not before creating the Mini App.
-- **Change:** Make `MiniApp.getCustomPermissions` suspended for the coroutine & update it to return only the permissions listed in the Mini App's manifest.
+- **Change:** Update `MiniApp.getCustomPermissions` to return only the permissions listed in the Mini App's manifest.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
 - **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).

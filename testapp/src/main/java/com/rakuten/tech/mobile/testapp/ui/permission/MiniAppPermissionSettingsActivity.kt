@@ -6,23 +6,24 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class MiniAppPermissionSettingsActivity : BaseActivity() {
+class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActivity() {
+
+    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var permissionSettingsAdapter: MiniAppPermissionSettingsAdapter
     private lateinit var miniAppId: String
     private lateinit var binding: ListCustomPermissionBinding
-    private lateinit var viewModel: PermissionSettingsViewModel
 
     companion object {
         const val REQ_CODE_PERMISSIONS_UPDATE = 10101
@@ -48,28 +49,19 @@ class MiniAppPermissionSettingsActivity : BaseActivity() {
         miniAppId = intent.getStringExtra(miniAppIdTag) ?: ""
 
         initAdapter()
-        viewModel =
-            ViewModelProvider.NewInstanceFactory().create(PermissionSettingsViewModel::class.java)
-                .apply {
-                    val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
-                    val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
+        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
+        val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
-                    miniAppCustomPermission.observe(this@MiniAppPermissionSettingsActivity,
-                        Observer { perm ->
-                            perm.pairValues.forEach {
-                                namesForAdapter.add(it.first)
-                                resultsForAdapter.add(it.second)
-                            }
-                            permissionSettingsAdapter.addPermissionList(
-                                namesForAdapter,
-                                resultsForAdapter,
-                                arrayListOf()
-                            )
-                        }
-                    )
-                }
+        miniapp.getCustomPermissions(miniAppId).pairValues.forEach {
+            namesForAdapter.add(it.first)
+            resultsForAdapter.add(it.second)
+        }
 
-        viewModel.getCustomPermission(miniAppId)
+        permissionSettingsAdapter.addPermissionList(
+            namesForAdapter,
+            resultsForAdapter,
+            arrayListOf()
+        )
     }
 
     private fun initAdapter() {
@@ -106,7 +98,7 @@ class MiniAppPermissionSettingsActivity : BaseActivity() {
             miniAppId = miniAppId,
             pairValues = permissionSettingsAdapter.permissionPairs
         )
-        viewModel.miniApp.setCustomPermissions(miniAppCustomPermission)
+        miniapp.setCustomPermissions(miniAppCustomPermission)
 
         // echo a result that permissions has been saved
         setResult(REQ_CODE_PERMISSIONS_UPDATE, Intent())

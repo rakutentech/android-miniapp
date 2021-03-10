@@ -20,7 +20,6 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.lang.NullPointerException
 import kotlin.test.assertEquals
 
 @Suppress("LargeClass")
@@ -98,13 +97,12 @@ class RealMiniAppSpec {
                 mapOf()
             )
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
-        When calling manifestCache.readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns cachedManifest
+        When calling manifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
         realMiniApp.create(" ", miniAppMessageBridge)
-        verify(manifestCache).isRequiredPermissionDenied(deniedPermission, TEST_MA_ID)
+        verify(manifestCache).isRequiredPermissionDenied(deniedPermission)
     }
 
-    // TODO: Need to fix
-    @Test(expected = NullPointerException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
@@ -119,7 +117,6 @@ class RealMiniAppSpec {
                 )
         }
 
-    // TODO: Need to fix
     @Test(expected = IllegalArgumentException::class)
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {

@@ -24,14 +24,13 @@ internal class DownloadedManifestCache(
 
     /**
      * Reads the downloaded manifest from SharedPreferences.
-     * @param [miniAppId] the first half of key provided to find the stored manifest per MiniApp.
-     * @param [versionId] the second half of key provided to find the stored manifest per MiniApp.
+     * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      * @return [CachedManifest] an object to contain MiniAppManifest per versionId,
      * if data has been stored in cache, otherwise null.
      */
-    fun readDownloadedManifest(miniAppId: String, versionId: String): CachedManifest? {
+    fun readDownloadedManifest(miniAppId: String): CachedManifest? {
         val manifestJsonStr =
-            prefs.getString(primaryKey(miniAppId, versionId), null) ?: return null
+            prefs.getString(miniAppId, null) ?: return null
         return try {
             Gson().fromJson(manifestJsonStr, object : TypeToken<CachedManifest>() {}.type)
         } catch (e: Exception) {
@@ -45,28 +44,22 @@ internal class DownloadedManifestCache(
         cachedManifest: CachedManifest
     ) {
         val jsonToStore: String = Gson().toJson(cachedManifest)
-        prefs.edit().putString(primaryKey(miniAppId, cachedManifest.versionId), jsonToStore).apply()
+        prefs.edit().putString(miniAppId, jsonToStore).apply()
     }
 
     /**
      * Returns the list of all manifest permissions e.g. required and optional.
      */
-    fun getAllPermissions(
-        cachedPermissions: MiniAppCustomPermission,
-        versionId: String
-    ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        return getRequiredPermissions(cachedPermissions, versionId) +
-                getOptionalPermissions(cachedPermissions, versionId)
-    }
+    fun getAllPermissions(cachedPermissions: MiniAppCustomPermission) =
+        getRequiredPermissions(cachedPermissions) + getOptionalPermissions(cachedPermissions)
 
     /**
      * Returns true if the required permissions are denied, otherwise false.
      */
     fun isRequiredPermissionDenied(
-        cachedPermissions: MiniAppCustomPermission,
-        versionId: String
+        cachedPermissions: MiniAppCustomPermission
     ): Boolean {
-        getRequiredPermissions(cachedPermissions, versionId).find {
+        getRequiredPermissions(cachedPermissions).find {
             it.second != MiniAppCustomPermissionResult.ALLOWED
         }?.let {
             return true
@@ -77,11 +70,10 @@ internal class DownloadedManifestCache(
 
     @VisibleForTesting
     fun getRequiredPermissions(
-        cachedPermissions: MiniAppCustomPermission,
-        versionId: String
+        cachedPermissions: MiniAppCustomPermission
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
-            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId, versionId)
+            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId)
             cachedManifest?.miniAppManifest?.requiredPermissions?.mapNotNull { (first) ->
                 cachedPermissions.pairValues.find { it.first == first }
             }!!
@@ -91,11 +83,10 @@ internal class DownloadedManifestCache(
     }
 
     private fun getOptionalPermissions(
-        cachedPermissions: MiniAppCustomPermission,
-        versionId: String
+        cachedPermissions: MiniAppCustomPermission
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
-            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId, versionId)
+            val cachedManifest = readDownloadedManifest(cachedPermissions.miniAppId)
             cachedManifest?.miniAppManifest?.optionalPermissions?.mapNotNull { (first) ->
                 cachedPermissions.pairValues.find { it.first == first }
             }!!
@@ -103,6 +94,4 @@ internal class DownloadedManifestCache(
             emptyList()
         }
     }
-
-    private fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
 }

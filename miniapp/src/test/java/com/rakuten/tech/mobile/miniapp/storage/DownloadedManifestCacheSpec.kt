@@ -41,7 +41,7 @@ class DownloadedManifestCacheSpec {
 
     @Test
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
-        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID)
         val expected = null
         actual shouldEqual expected
     }
@@ -58,24 +58,24 @@ class DownloadedManifestCacheSpec {
     fun `isRequiredPermissionDenied will be true when provided manifest has denied permission`() {
         val customPermission = createCustomPermission(false)
         doReturn(customPermission.pairValues).whenever(manifestCache)
-            .getRequiredPermissions(customPermission, TEST_MA_ID)
-        manifestCache.isRequiredPermissionDenied(customPermission, TEST_MA_ID) shouldEqual true
+            .getRequiredPermissions(customPermission)
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual true
     }
 
     @Test
     fun `isRequiredPermissionDenied will be false when provided manifest has allowed permission`() {
         val customPermission = createCustomPermission(true)
         doReturn(customPermission.pairValues).whenever(manifestCache)
-            .getRequiredPermissions(customPermission, TEST_MA_ID)
-        manifestCache.isRequiredPermissionDenied(customPermission, TEST_MA_ID) shouldEqual false
+            .getRequiredPermissions(customPermission)
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual false
     }
     /** end region */
 
     @Test
     fun `readDownloadedManifest will return expected values`() {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
-        doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
+        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID)
         actual shouldEqual cachedManifest
     }
 

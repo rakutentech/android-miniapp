@@ -140,7 +140,7 @@ class PreloadMiniAppWindow(
         if (versionId.isEmpty())
             viewModel.getMiniAppVersionId(miniAppId)
 
-        viewModel.getMiniAppManifest(miniAppId, versionId, KEY_METADATA)
+        viewModel.getMiniAppManifest(miniAppId, versionId)
 
         // set action listeners
         binding.preloadAccept.setOnClickListener {
@@ -186,6 +186,5 @@ class PreloadMiniAppWindow(
         const val LABEL_VERSION = "Version: "
         const val LABEL_CUSTOM_METADATA = "Custom MetaData: "
         const val ERR_NO_INFO = "No info found for this miniapp!"
-        const val KEY_METADATA = "randomTestKey" // HostApp can set it's own key
     }
 }

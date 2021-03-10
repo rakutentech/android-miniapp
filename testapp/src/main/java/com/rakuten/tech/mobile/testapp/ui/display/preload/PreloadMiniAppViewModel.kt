@@ -32,7 +32,7 @@ class PreloadMiniAppViewModel constructor(
     val versionIdErrorData: LiveData<String>
         get() = _versionIdErrorData
 
-    fun getMiniAppManifest(miniAppId: String, versionId: String, metadataKey: String) =
+    fun getMiniAppManifest(miniAppId: String, versionId: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
