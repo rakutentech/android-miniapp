@@ -196,3 +196,6 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/macos,gradle,eclipse,android
+
+# PGP signing key
+*.gpg

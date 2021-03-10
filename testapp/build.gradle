@@ -148,3 +148,9 @@ dependencies {
 
     testImplementation "junit:junit:$junit"
 }
+
+// Some of our dependencies also use manifest-config-processor, but they use the old `com.rakutentech.mobile` version
+configurations.all {
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+}
