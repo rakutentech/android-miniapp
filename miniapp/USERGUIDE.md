@@ -101,7 +101,7 @@ You must provide the mini app ID which you wish to create (you can get the mini 
     - If no, download the latest version and then return the downloaded version.
 - If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
 
-After calling `MiniApp.create` and all the "required" manifest permission has been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
+After calling `MiniApp.create` and all the "required" manifest permissions have been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
 
 The following is a simplified example:
 

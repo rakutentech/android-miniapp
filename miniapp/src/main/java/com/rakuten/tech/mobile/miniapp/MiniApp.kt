@@ -106,7 +106,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**
-     * Get only the custom permissions listed in the Mini App's manifest with grant results per MiniApp from this SDK.
+     * Get custom permissions with grant results per MiniApp from this SDK.
      * @param miniAppId mini app id as the key to retrieve data from cache.
      * @return [MiniAppCustomPermission] an object contains the grant results per mini app.
      */
@@ -187,11 +187,7 @@ abstract class MiniApp internal constructor() {
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
                     initVerifier = { CachedMiniAppVerifier(context) },
-                    initManifestApiCache = {
-                        ManifestApiCache(
-                            context
-                        )
-                    }
+                    initManifestApiCache = { ManifestApiCache(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },

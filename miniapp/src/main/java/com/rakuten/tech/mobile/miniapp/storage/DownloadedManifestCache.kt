@@ -39,6 +39,11 @@ internal class DownloadedManifestCache(
         }
     }
 
+    /**
+     * Stores the downloaded manifest to SharedPreferences.
+     * @param [miniAppId] the key provided to store manifest per MiniApp id.
+     * @return [CachedManifest] an object to contain MiniAppManifest per versionId.
+     */
     fun storeDownloadedManifest(
         miniAppId: String,
         cachedManifest: CachedManifest

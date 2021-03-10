@@ -353,7 +353,10 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj), hashMapOf())
             )
 
-            When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns metadataEntity
+            When calling apiClient.fetchMiniAppManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity)
             val requiredPermissions =
@@ -370,7 +373,10 @@ class MiniAppDownloaderSpec {
         runBlockingTest {
             val metadataEntity = MetadataEntity(MetadataResponse(null, null, null))
 
-            When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION) itReturns metadataEntity
+            When calling apiClient.fetchMiniAppManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity)
             val expected = MiniAppManifest(emptyList(), emptyList(), emptyMap())
