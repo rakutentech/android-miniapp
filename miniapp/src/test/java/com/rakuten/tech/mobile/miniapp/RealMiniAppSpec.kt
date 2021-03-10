@@ -103,6 +103,7 @@ class RealMiniAppSpec {
         verify(manifestCache).isRequiredPermissionDenied(deniedPermission, TEST_MA_ID)
     }
 
+    // TODO: Need to fix
     @Test(expected = NullPointerException::class)
     fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
         runBlockingTest {
@@ -118,6 +119,7 @@ class RealMiniAppSpec {
                 )
         }
 
+    // TODO: Need to fix
     @Test(expected = IllegalArgumentException::class)
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {

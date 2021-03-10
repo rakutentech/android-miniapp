@@ -49,8 +49,8 @@ class PreloadMiniAppWindow(
 
         if (!isAccepted()) {
             launchScreen()
-        } else if (!doesDataExist()) {
-            storeAcceptance(DEFAULT_ACCEPTANCE) // should be false only after accept.
+        } else if (!prefs.contains(miniAppId)) {
+            storeAcceptance(DEFAULT_ACCEPTANCE) // should be true only after accept.
             launchScreen()
         } else {
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
@@ -67,10 +67,7 @@ class PreloadMiniAppWindow(
         // set ui components
         val layoutInflater = LayoutInflater.from(context)
         binding = DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.window_preload_miniapp,
-            null,
-            false
+            layoutInflater, R.layout.window_preload_miniapp, null, false
         )
         preloadMiniAppAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
         preloadMiniAppAlertDialog.setView(binding.root)
@@ -78,11 +75,8 @@ class PreloadMiniAppWindow(
         // set data to ui
         if (miniAppInfo != null) {
             setIcon(
-                context,
-                Uri.parse(miniAppInfo?.icon),
-                binding.preloadAppIcon
+                context, Uri.parse(miniAppInfo?.icon), binding.preloadAppIcon
             )
-
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
             binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
@@ -95,10 +89,7 @@ class PreloadMiniAppWindow(
         binding.listPreloadPermission.isNestedScrollingEnabled = false
         binding.listPreloadPermission.adapter = permissionAdapter
         binding.listPreloadPermission.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
 
         viewModel =
@@ -154,22 +145,19 @@ class PreloadMiniAppWindow(
         // set action listeners
         binding.preloadAccept.setOnClickListener {
             storeAcceptance(true) // set true when accept
-            storeManifestPermission(true, permissionAdapter.manifestPermissionPairs)
+            storeManifestPermission(permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
         }
         binding.preloadCancel.setOnClickListener {
-            storeManifestPermission(false, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
             preloadMiniAppAlertDialog.dismiss()
         }
     }
 
-    private fun doesDataExist() = prefs.contains(miniAppId)
-
     private fun isAccepted(): Boolean {
         try {
-            if (doesDataExist()) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
+            if (prefs.contains(miniAppId)) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
         } catch (e: Exception) {
             return false
         }
@@ -177,17 +165,14 @@ class PreloadMiniAppWindow(
     }
 
     private fun storeManifestPermission(
-        isAccepted: Boolean,
         permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ) {
         // store values in SDK cache
-        if (isAccepted) {
-            val permissionsWhenAccept = MiniAppCustomPermission(
-                miniAppId = miniAppId,
-                pairValues = permissions
-            )
-            viewModel.miniApp.setCustomPermissions(permissionsWhenAccept)
-        }
+        val permissionsWhenAccept = MiniAppCustomPermission(
+            miniAppId = miniAppId,
+            pairValues = permissions
+        )
+        viewModel.miniApp.setCustomPermissions(permissionsWhenAccept)
     }
 
     private fun storeAcceptance(isAccepted: Boolean) = prefs.edit()?.putBoolean(miniAppId, isAccepted)?.apply()

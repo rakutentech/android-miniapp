@@ -26,7 +26,7 @@ internal class DownloadedManifestCache(
      * Reads the downloaded manifest from SharedPreferences.
      * @param [miniAppId] the first half of key provided to find the stored manifest per MiniApp.
      * @param [versionId] the second half of key provided to find the stored manifest per MiniApp.
-     * @return [CachedManifest] an object to contain MiniAppManifest per versionId.
+     * @return [CachedManifest] an object to contain MiniAppManifest per versionId,
      * if data has been stored in cache, otherwise null.
      */
     fun readDownloadedManifest(miniAppId: String, versionId: String): CachedManifest? {

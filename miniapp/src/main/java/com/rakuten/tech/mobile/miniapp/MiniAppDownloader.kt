@@ -156,11 +156,7 @@ internal class MiniAppDownloader(
         } ?: emptyList()
 
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
-        return MiniAppManifest(
-            requiredPermissions,
-            optionalPermissions,
-            customMetadata
-        )
+        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
     }
 
     @SuppressWarnings("LongMethod")

@@ -47,10 +47,10 @@ class MiniAppPermissionSettingsActivity : BaseActivity() {
 
         miniAppId = intent.getStringExtra(miniAppIdTag) ?: ""
 
+        initAdapter()
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PermissionSettingsViewModel::class.java)
                 .apply {
-                    initAdapter()
                     val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
                     val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 

@@ -25,7 +25,8 @@ class PermissionSettingsViewModel constructor(
     fun getCustomPermission(miniAppId: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _miniAppCustomPermission.postValue(miniApp.getCustomPermissions(miniAppId))
+                val permissions = miniApp.getCustomPermissions(miniAppId)
+                _miniAppCustomPermission.postValue(permissions)
             } catch (error: MiniAppSdkException) {
                 _errorData.postValue(error.message)
             }

@@ -115,8 +115,7 @@ abstract class MiniApp internal constructor() {
     ): MiniAppCustomPermission
 
     /**
-     * Store only the custom permissions listed in the Mini App's manifest with grant results
-     * per MiniApp inside this SDK.
+     * Store custom permissions with grant results per MiniApp inside this SDK.
      * @param miniAppCustomPermission the supplied custom permissions to be stored in cache.
      */
     abstract fun setCustomPermissions(
