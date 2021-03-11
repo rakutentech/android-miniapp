@@ -104,6 +104,10 @@ class PreloadMiniAppWindow(
                             else
                                 onShowManifest(apiManifest)
                         })
+
+                    manifestErrorData.observe(lifecycleOwner, Observer {
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    })
                 }
 
         // retrieve version id when it's empty
