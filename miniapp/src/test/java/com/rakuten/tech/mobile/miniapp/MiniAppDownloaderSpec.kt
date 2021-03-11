@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +30,7 @@ class MiniAppDownloaderSpec {
     private val storage: MiniAppStorage = mock()
     private val miniAppStatus: MiniAppStatus = mock()
     private val verifier: CachedMiniAppVerifier = mock()
+    private val miniApiCache: ManifestApiCache = mock()
     private lateinit var downloader: MiniAppDownloader
     private val dispatcher = TestCoroutineDispatcher()
     private val testMiniApp = TEST_MA.copy(
@@ -43,6 +45,7 @@ class MiniAppDownloaderSpec {
             initStorage = { storage },
             initStatus = { miniAppStatus },
             initVerifier = { verifier },
+            initManifestApiCache = { miniApiCache },
             coroutineDispatcher = dispatcher
         )
         downloader.updateApiClient(apiClient)
@@ -340,18 +343,14 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `metadata permissions values should be prepared correctly`() =
+    fun `prepareMiniAppManifest should return values correctly`() =
         runBlockingTest {
             val requiredPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason for user name")
             val optionalPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason for profile photo")
             val metadataEntity = MetadataEntity(
-                MetadataResponse(
-                    listOf(requiredPermissionObj),
-                    listOf(optionalPermissionObj),
-                    hashMapOf()
-                )
+                MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj), hashMapOf())
             )
 
             When calling apiClient.fetchMiniAppManifest(
@@ -365,6 +364,22 @@ class MiniAppDownloaderSpec {
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
             val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+
+            assertEquals(expected, actual)
+        }
+
+    @Test
+    fun `prepareMiniAppManifest should return empty values correctly`() =
+        runBlockingTest {
+            val metadataEntity = MetadataEntity(MetadataResponse(null, null, null))
+
+            When calling apiClient.fetchMiniAppManifest(
+                TEST_ID_MINIAPP,
+                TEST_ID_MINIAPP_VERSION
+            ) itReturns metadataEntity
+
+            val actual = downloader.prepareMiniAppManifest(metadataEntity)
+            val expected = MiniAppManifest(emptyList(), emptyList(), emptyMap())
 
             assertEquals(expected, actual)
         }

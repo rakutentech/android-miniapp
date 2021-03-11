@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PreloadMiniAppViewModel constructor(
-    private val miniApp: MiniApp
+    internal val miniApp: MiniApp
 ) : ViewModel() {
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
@@ -32,7 +32,7 @@ class PreloadMiniAppViewModel constructor(
     val versionIdErrorData: LiveData<String>
         get() = _versionIdErrorData
 
-    fun getMiniAppManifest(miniAppId: String, versionId: String, metadataKey: String) =
+    fun getMiniAppManifest(miniAppId: String, versionId: String) =
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)

@@ -11,6 +11,8 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -19,7 +21,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass", "LongMethod")
+@Suppress("UnnecessaryAbstractClass", "LongMethod", "TooManyFunctions")
 abstract class MiniApp internal constructor() {
 
     /**
@@ -129,12 +131,20 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
+     * Get the manifest information e.g. required and optional permissions.
      * @param appId mini app id.
      * @param versionId of mini app.
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest
+
+    /**
+     * Get the currently downloaded manifest information e.g. required and optional permissions.
+     * @param appId mini app id.
+     * @return MiniAppManifest an object contains manifest information of a miniapp.
+     */
+    abstract fun getDownloadedManifest(appId: String): MiniAppManifest?
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
@@ -176,10 +186,12 @@ abstract class MiniApp internal constructor() {
                     apiClient = apiClient,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
-                    initVerifier = { CachedMiniAppVerifier(context) }
+                    initVerifier = { CachedMiniAppVerifier(context) },
+                    initManifestApiCache = { ManifestApiCache(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+                initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
+                initDownloadedManifestCache = { DownloadedManifestCache(context) }
             )
         }
     }
