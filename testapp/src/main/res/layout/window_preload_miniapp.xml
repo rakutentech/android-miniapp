@@ -65,7 +65,10 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
-      android:padding="@dimen/small_8"
+      android:paddingTop="@dimen/small_8"
+      android:paddingBottom="@dimen/small_8"
+      android:paddingLeft="@dimen/medium_16"
+      android:paddingRight="@dimen/medium_16"
       android:background="@android:color/white"
       android:gravity="center_horizontal"
       android:orientation="vertical">
