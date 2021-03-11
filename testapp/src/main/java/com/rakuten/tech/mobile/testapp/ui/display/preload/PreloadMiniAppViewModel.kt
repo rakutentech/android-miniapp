@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class PreloadMiniAppViewModel constructor(
             try {
                 val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
                 _miniAppManifest.postValue(miniAppManifest)
-            } catch (error: MiniAppSdkException) {
+            } catch (error: RequiredPermissionsNotGrantedException) {
                 _manifestErrorData.postValue(error.message)
             }
         }
