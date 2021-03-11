@@ -60,13 +60,11 @@ class PreloadMiniAppPermissionAdapter :
         manifestPermissions.forEachIndexed { position, (type, _) ->
             manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
         }
-
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: ItemListManifestPermissionBinding) :
         RecyclerView.ViewHolder(itemView.root) {
-        val root: View = itemView.root
         val permissionName: TextView = itemView.manifestPermissionName
         val permissionStatus: TextView = itemView.manifestPermissionStatus
         val permissionSwitch: SwitchCompat = itemView.manifestPermissionSwitch

@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -80,6 +81,9 @@ class PreloadMiniAppWindow(
         binding.listPreloadPermission.layoutManager = LinearLayoutManager(context)
         binding.listPreloadPermission.isNestedScrollingEnabled = false
         binding.listPreloadPermission.adapter = permissionAdapter
+        binding.listPreloadPermission.addItemDecoration(
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        )
 
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
