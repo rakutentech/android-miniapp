@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -93,11 +92,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         viewModel = ViewModelProvider.NewInstanceFactory()
             .create(MiniAppDisplayViewModel::class.java).apply {
 
-                setHostLifeCycle(lifecycle)
                 miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                     if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                         WebView.setWebContentsDebuggingEnabled(true)
                     //action: display webview
+                    addLifeCycleObserver(lifecycle)
                     setContentView(it)
                 })
 
