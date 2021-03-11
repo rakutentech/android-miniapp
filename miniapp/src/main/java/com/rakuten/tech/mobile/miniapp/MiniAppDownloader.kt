@@ -155,7 +155,9 @@ internal class MiniAppDownloader(
         return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
     }
 
-    private fun listOfPermissions(permissions: List<MetadataPermissionObj>): List<Pair<MiniAppCustomPermissionType, String>> {
+    private fun listOfPermissions(
+        permissions: List<MetadataPermissionObj>
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
         val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
         permissions.forEach {
             val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
