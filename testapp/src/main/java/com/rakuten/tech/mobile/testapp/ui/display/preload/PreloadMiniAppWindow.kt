@@ -99,7 +99,7 @@ class PreloadMiniAppWindow(
                     miniAppManifest.observe(lifecycleOwner,
                         Observer { apiManifest ->
                             val downloadedManifest = viewModel.miniApp.getDownloadedManifest(miniAppId)
-                            if (downloadedManifest == apiManifest)
+                            if ((downloadedManifest == apiManifest) && isAcceptedRequiredPermissions(apiManifest))
                                 onStoreAcceptance()
                             else
                                 onShowManifest(apiManifest)
@@ -127,6 +127,20 @@ class PreloadMiniAppWindow(
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
             preloadMiniAppAlertDialog.dismiss()
         }
+    }
+
+    private fun isAcceptedRequiredPermissions(manifest: MiniAppManifest): Boolean {
+        // verify if user has been denied any required permission
+        val cachedPermissions = viewModel.miniApp.getCustomPermissions(miniAppId).pairValues
+        val notGrantedPairs =
+            mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+        manifest.requiredPermissions.forEach { (first) ->
+            cachedPermissions.find {
+                it.first == first && it.second == MiniAppCustomPermissionResult.DENIED
+            }?.let { notGrantedPairs.add(it) }
+        }
+
+        return notGrantedPairs.isEmpty()
     }
 
     private fun onShowManifest(manifest: MiniAppManifest) {

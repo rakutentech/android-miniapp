@@ -58,17 +58,6 @@
         android:paddingEnd="@dimen/medium_16"
         android:textAlignment="center"
         tools:text="Dummy MiniApp Version" />
-
-      <TextView
-        android:id="@+id/preloadMiniAppMetaData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/small_4"
-        android:layout_gravity="center_horizontal"
-        android:paddingStart="@dimen/medium_16"
-        android:paddingEnd="@dimen/medium_16"
-        android:textAlignment="center"
-        tools:text="Dummy MiniApp Metadata" />
     </LinearLayout>
 
     <LinearLayout
@@ -76,15 +65,27 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
-      android:padding="@dimen/activity_vertical_margin"
+      android:padding="@dimen/small_8"
       android:background="@android:color/white"
       android:gravity="center_horizontal"
       android:orientation="vertical">
 
       <TextView
+        android:id="@+id/preloadMiniAppMetaData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_8"
+        android:background="@drawable/bg_metadata"
+        android:gravity="center"
+        android:text="@string/action_first_time_accept"
+        android:textColor="@android:color/black"
+        tools:text="Dummy MiniApp Metadata" />
+
+      <TextView
         android:id="@+id/preloadAccept"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
         android:padding="@dimen/small_12"
         android:background="@drawable/bg_miniapp_preload_accept"
         android:gravity="center"
