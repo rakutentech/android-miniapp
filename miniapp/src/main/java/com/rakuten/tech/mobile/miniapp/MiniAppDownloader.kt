@@ -2,13 +2,14 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.CoroutineDispatcher
@@ -147,25 +148,21 @@ internal class MiniAppDownloader(
 
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
-        val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name ?: ""), it.reason ?: "")
-        } ?: emptyList()
-
-        val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name ?: ""), it.reason ?: "")
-        } ?: emptyList()
-
-        val requiredFilteredValues = requiredPermissions.toMutableList()
-        requiredFilteredValues.removeAll { (first) ->
-            first.type == MiniAppCustomPermissionType.UNKNOWN.type
-        }
-        val optionalFilteredValues = optionalPermissions.toMutableList()
-        optionalFilteredValues.removeAll { (first) ->
-            first.type == MiniAppCustomPermissionType.UNKNOWN.type
-        }
-
+        val requiredPermissions = getList(metadataEntity.metadata?.requiredPermissions ?: emptyList())
+        val optionalPermissions = getList(metadataEntity.metadata?.optionalPermissions ?: emptyList())
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
-        return MiniAppManifest(requiredFilteredValues, optionalFilteredValues, customMetadata)
+
+        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+    }
+
+    private fun getList(permissions: List<MetadataPermissionObj>): List<Pair<MiniAppCustomPermissionType, String>> {
+        val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
+        permissions.forEach {
+            val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
+            if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
+               pairs.add(Pair(permissionType, it.reason ?: ""))
+        }
+        return pairs
     }
 
     @SuppressWarnings("LongMethod")
