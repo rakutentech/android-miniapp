@@ -26,10 +26,6 @@ class PreloadMiniAppPermissionAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (!manifestPermissions[position].shouldDisplay) {
-            holder.root.visibility = View.GONE
-        }
-
         holder.permissionName.text = toReadableName(manifestPermissions[position].type)
         holder.permissionSwitch.visibility =
             if (manifestPermissions[position].isRequired) View.GONE else View.VISIBLE
@@ -59,6 +55,7 @@ class PreloadMiniAppPermissionAdapter :
     override fun getItemCount(): Int = manifestPermissions.size
 
     fun addManifestPermissionList(permissions: MutableList<PreloadManifestPermission>) {
+        manifestPermissionPairs.clear()
         manifestPermissions = permissions
         manifestPermissions.forEachIndexed { position, (type, _) ->
             manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
