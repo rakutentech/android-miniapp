@@ -86,7 +86,7 @@ class PreloadMiniAppWindow(
                         })
                     }
 
-                    requiredShowManifest.observe(lifecycleOwner, Observer { apiManifest ->
+                    miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
                         if (apiManifest != null)
                             onShowManifest(apiManifest)
                         else

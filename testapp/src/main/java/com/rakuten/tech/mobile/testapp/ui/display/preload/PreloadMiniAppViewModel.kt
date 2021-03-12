@@ -17,13 +17,13 @@ class PreloadMiniAppViewModel constructor(
 
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
-    private val _requiredShowManifest= MutableLiveData<MiniAppManifest>()
+    private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
     private val _miniAppVersionId = MutableLiveData<String>()
     private val _manifestErrorData = MutableLiveData<String>()
     private val _versionIdErrorData = MutableLiveData<String>()
 
-    val requiredShowManifest: LiveData<MiniAppManifest>
-        get() = _requiredShowManifest
+    val miniAppManifest: LiveData<MiniAppManifest>
+        get() = _miniAppManifest
     val miniAppVersionId: LiveData<String>
         get() = _miniAppVersionId
     val manifestErrorData: LiveData<String>
@@ -36,9 +36,9 @@ class PreloadMiniAppViewModel constructor(
             val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
             val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
             if ((downloadedManifest == miniAppManifest) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest))
-                _requiredShowManifest.postValue(null)
+                _miniAppManifest.postValue(null)
             else
-                _requiredShowManifest.postValue(miniAppManifest)
+                _miniAppManifest.postValue(miniAppManifest)
         } catch (error: MiniAppSdkException) {
             _manifestErrorData.postValue(error.message)
         }
