@@ -132,7 +132,7 @@ class RealMiniAppSpec {
                     miniAppMessageBridge,
                     miniAppNavigator,
                     miniAppCustomPermissionCache,
-                    downloadedManifestCache ,
+                    downloadedManifestCache,
                     ""
                 )
         }

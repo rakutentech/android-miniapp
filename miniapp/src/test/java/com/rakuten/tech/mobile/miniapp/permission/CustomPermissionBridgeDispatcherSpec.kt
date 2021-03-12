@@ -37,15 +37,18 @@ class CustomPermissionBridgeDispatcherSpec {
         ),
         id = TEST_CALLBACK_ID
     )
+    private val permissions: List<Pair<MiniAppCustomPermissionType, String>> =
+        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, ""))
 
     @Before
     fun setUp() {
         doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(miniAppId)
         customPermissionBridgeDispatcher = createCustomPermissionBridgeDispatcher()
+        customPermissionBridgeDispatcher.permissionsWithDescription = permissions
     }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `preparePermissionsWithDescription should return a list of pair with name and description`() {
         val description = "dummy description"
         val customPermissionObj = CustomPermissionObj(
@@ -79,6 +82,7 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
+        customPermissionBridgeDispatcher.permissionsWithDescription = permissions
         customPermissionBridgeDispatcher.filterDeniedPermissions()
         verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
     }
@@ -115,7 +119,7 @@ class CustomPermissionBridgeDispatcherSpec {
         assertEquals(expected, actual)
     }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `retrievePermissionsForJson should return correct values based on unknown custom permissions`() {
         val unknownPermissionCallbackObj = CustomPermissionCallbackObj(
             action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,

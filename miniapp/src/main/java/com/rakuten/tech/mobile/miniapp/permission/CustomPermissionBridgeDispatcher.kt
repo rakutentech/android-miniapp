@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 /**
  * A class to dispatch the bridge operations involved with custom permissions in this SDK.
  */
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,
@@ -26,7 +26,9 @@ internal class CustomPermissionBridgeDispatcher(
         e.message?.let { postCustomPermissionError(it) }
         null
     }
-    private var permissionsWithDescription = preparePermissionsWithDescription(
+
+    @VisibleForTesting
+    var permissionsWithDescription = preparePermissionsWithDescription(
         callbackObj?.param?.permissions ?: emptyList()
     )
 

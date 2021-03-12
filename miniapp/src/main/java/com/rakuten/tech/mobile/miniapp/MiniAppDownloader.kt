@@ -23,7 +23,7 @@ import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
-@Suppress("SwallowedException", "TooManyFunctions", "LargeClass")
+@Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
     initStorage: () -> MiniAppStorage,

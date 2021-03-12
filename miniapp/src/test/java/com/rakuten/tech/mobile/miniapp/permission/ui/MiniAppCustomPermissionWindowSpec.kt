@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 
+@Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
 class MiniAppCustomPermissionWindowSpec {
     private lateinit var permissionCache: MiniAppCustomPermissionCache
