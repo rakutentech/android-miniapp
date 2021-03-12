@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass", "ComplexMethod")
 /** Bridge interface for communicating with mini app. **/
@@ -27,6 +28,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    private lateinit var downloadedManifestCache: DownloadedManifestCache
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private val userInfoBridgeWrapper = UserInfoBridge()
@@ -39,12 +41,14 @@ abstract class MiniAppMessageBridge {
         activity: Activity,
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
+        this.downloadedManifestCache = downloadedManifestCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridgeWrapper.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
@@ -169,6 +173,7 @@ abstract class MiniAppMessageBridge {
         val customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
             bridgeExecutor = bridgeExecutor,
             customPermissionCache = customPermissionCache,
+            downloadedManifestCache = downloadedManifestCache,
             miniAppId = miniAppId,
             jsonStr = jsonStr
         )

@@ -6,6 +6,8 @@ import com.rakuten.tech.mobile.miniapp.js.CustomPermissionCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 /**
  * A class to dispatch the bridge operations involved with custom permissions in this SDK.
@@ -14,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,
+    private val downloadedManifestCache: DownloadedManifestCache,
     private val miniAppId: String,
     jsonStr: String
 ) {
@@ -44,7 +47,36 @@ internal class CustomPermissionBridgeDispatcher(
                 permissionsWithDescription.add(Pair(type, it.description))
             }
         }
-        return permissionsWithDescription
+
+        val cachedManifest = downloadedManifestCache.readDownloadedManifest(miniAppId)
+        return getRequiredPermissions(permissionsWithDescription, cachedManifest) +
+                getOptionalPermissions(permissionsWithDescription, cachedManifest)
+    }
+
+    private fun getRequiredPermissions(
+        permissions: ArrayList<Pair<MiniAppCustomPermissionType, String>>,
+        cachedManifest: CachedManifest?
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        return try {
+            cachedManifest?.miniAppManifest?.requiredPermissions?.mapNotNull { (first) ->
+                permissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun getOptionalPermissions(
+        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+        cachedManifest: CachedManifest?
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        return try {
+            cachedManifest?.miniAppManifest?.optionalPermissions?.mapNotNull { (first) ->
+                permissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     /**

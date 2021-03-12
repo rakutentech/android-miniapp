@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -18,6 +19,7 @@ class CustomPermissionBridgeDispatcherSpec {
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private var miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
+    private var downloadedManifestCache: DownloadedManifestCache = mock()
     private val miniAppId: String = TEST_MA_ID
     private val miniAppCustomPermission = MiniAppCustomPermission(
         miniAppId,
@@ -190,6 +192,7 @@ class CustomPermissionBridgeDispatcherSpec {
     ) = CustomPermissionBridgeDispatcher(
         bridgeExecutor = bridgeExecutor,
         customPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
         miniAppId = miniAppId,
         jsonStr = jsonStr
     )

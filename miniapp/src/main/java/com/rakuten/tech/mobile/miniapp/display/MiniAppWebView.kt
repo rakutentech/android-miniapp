@@ -16,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -30,6 +31,7 @@ internal open class MiniAppWebView(
     var miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    val downloadedManifestCache: DownloadedManifestCache,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
         context,
         miniAppInfo,
@@ -69,6 +71,7 @@ internal open class MiniAppWebView(
             activity = context as Activity,
             webViewListener = this,
             customPermissionCache = miniAppCustomPermissionCache,
+            downloadedManifestCache = downloadedManifestCache,
             miniAppId = miniAppId
         )
 
