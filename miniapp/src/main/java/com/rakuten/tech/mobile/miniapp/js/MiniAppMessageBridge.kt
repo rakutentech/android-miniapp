@@ -184,7 +184,6 @@ abstract class MiniAppMessageBridge {
 
         // check if there is any denied permission
         val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
-
         if (deniedPermissions.isNotEmpty()) {
             try {
                 requestCustomPermissions(

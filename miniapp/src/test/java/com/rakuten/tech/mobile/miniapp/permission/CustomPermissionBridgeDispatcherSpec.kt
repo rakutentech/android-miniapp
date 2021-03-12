@@ -51,7 +51,7 @@ class CustomPermissionBridgeDispatcherSpec {
         doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(miniAppId)
         customPermissionBridgeDispatcher = spy(createCustomPermissionBridgeDispatcher())
-        customPermissionBridgeDispatcher.permissionsWithDescription = permissions
+        customPermissionBridgeDispatcher.permissionsAsManifest = permissions
     }
 
     @Test
@@ -101,7 +101,7 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
-        customPermissionBridgeDispatcher.permissionsWithDescription = permissions
+        customPermissionBridgeDispatcher.permissionsAsManifest = permissions
         customPermissionBridgeDispatcher.filterDeniedPermissions()
         verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
     }
