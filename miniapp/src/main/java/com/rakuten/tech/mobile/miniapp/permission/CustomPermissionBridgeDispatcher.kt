@@ -55,7 +55,8 @@ internal class CustomPermissionBridgeDispatcher(
                 getOptionalPermissions(permissionsWithDescription, cachedManifest)
     }
 
-    private fun getRequiredPermissions(
+    @VisibleForTesting
+    fun getRequiredPermissions(
         permissions: ArrayList<Pair<MiniAppCustomPermissionType, String>>,
         cachedManifest: CachedManifest?
     ): List<Pair<MiniAppCustomPermissionType, String>> {
@@ -68,7 +69,8 @@ internal class CustomPermissionBridgeDispatcher(
         }
     }
 
-    private fun getOptionalPermissions(
+    @VisibleForTesting
+    fun getOptionalPermissions(
         permissions: List<Pair<MiniAppCustomPermissionType, String>>,
         cachedManifest: CachedManifest?
     ): List<Pair<MiniAppCustomPermissionType, String>> {
