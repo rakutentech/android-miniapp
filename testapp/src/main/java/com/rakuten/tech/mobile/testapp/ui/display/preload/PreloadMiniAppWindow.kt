@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -13,14 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.setIcon
-import java.lang.Exception
 
 class PreloadMiniAppWindow(
     private val context: Context,
@@ -33,10 +30,7 @@ class PreloadMiniAppWindow(
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
     private var versionId: String = ""
-
-    private var prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.sample.first_time.launch", Context.MODE_PRIVATE
-    )
+    private val permissionAdapter = PreloadMiniAppPermissionAdapter()
 
     fun initiate(appInfo: MiniAppInfo?, miniAppId: String, lifecycleOwner: LifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner
@@ -47,18 +41,10 @@ class PreloadMiniAppWindow(
             this.versionId = miniAppInfo!!.version.versionId
         } else this.miniAppId = miniAppId
 
-        if (!isAccepted()) {
-            launchScreen()
-        } else if (!prefs.contains(miniAppId)) {
-            storeAcceptance(DEFAULT_ACCEPTANCE) // should be true only after accept.
-            launchScreen()
-        } else {
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
-        }
+        initDefaultWindow()
     }
 
     private fun launchScreen() {
-        initDefaultWindow()
         preloadMiniAppAlertDialog.show()
     }
 
@@ -74,9 +60,7 @@ class PreloadMiniAppWindow(
 
         // set data to ui
         if (miniAppInfo != null) {
-            setIcon(
-                context, Uri.parse(miniAppInfo?.icon), binding.preloadAppIcon
-            )
+            setIcon(context, Uri.parse(miniAppInfo?.icon), binding.preloadAppIcon)
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
             binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
@@ -84,7 +68,6 @@ class PreloadMiniAppWindow(
         }
 
         // set manifest/metadata to UI: permissions
-        val permissionAdapter = PreloadMiniAppPermissionAdapter()
         binding.listPreloadPermission.layoutManager = LinearLayoutManager(context)
         binding.listPreloadPermission.isNestedScrollingEnabled = false
         binding.listPreloadPermission.adapter = permissionAdapter
@@ -103,33 +86,12 @@ class PreloadMiniAppWindow(
                         })
                     }
 
-                    miniAppManifestMetadata.observe(lifecycleOwner, Observer {
-                        binding.preloadMiniAppMetaData.text = LABEL_CUSTOM_METADATA + it
+                    miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
+                        if (apiManifest != null)
+                            onShowManifest(apiManifest)
+                        else
+                            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
                     })
-
-                    miniAppManifest.observe(lifecycleOwner,
-                        Observer { (requiredPermissions, optionalPermissions) ->
-                            val manifestPermissions = ArrayList<PreloadManifestPermission>()
-
-                            requiredPermissions.forEach {
-                                val permission = PreloadManifestPermission(
-                                    it.first,
-                                    true,
-                                    it.second
-                                )
-                                manifestPermissions.add(permission)
-                            }
-                            optionalPermissions.forEach {
-                                val permission = PreloadManifestPermission(
-                                    it.first,
-                                    false,
-                                    it.second
-                                )
-                                manifestPermissions.add(permission)
-                            }
-
-                            permissionAdapter.addManifestPermissionList(manifestPermissions)
-                        })
 
                     manifestErrorData.observe(lifecycleOwner, Observer {
                         Toast.makeText(context, it, Toast.LENGTH_LONG).show()
@@ -140,12 +102,11 @@ class PreloadMiniAppWindow(
         if (versionId.isEmpty())
             viewModel.getMiniAppVersionId(miniAppId)
 
-        viewModel.getMiniAppManifest(miniAppId, versionId)
+        viewModel.checkMiniAppManifest(miniAppId, versionId)
 
         // set action listeners
         binding.preloadAccept.setOnClickListener {
-            storeAcceptance(true) // set true when accept
-            storeManifestPermission(permissionAdapter.manifestPermissionPairs)
+            viewModel.storeManifestPermission(miniAppId, permissionAdapter.manifestPermissionPairs)
             preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
             preloadMiniAppAlertDialog.dismiss()
         }
@@ -155,34 +116,34 @@ class PreloadMiniAppWindow(
         }
     }
 
-    private fun isAccepted(): Boolean {
-        try {
-            if (prefs.contains(miniAppId)) return prefs.getBoolean(miniAppId, DEFAULT_ACCEPTANCE)
-        } catch (e: Exception) {
-            return false
+    private fun onShowManifest(manifest: MiniAppManifest) {
+        // show latest manifest from api
+        val manifestPermissions = ArrayList<PreloadManifestPermission>()
+
+        manifest.requiredPermissions.forEach {
+            val permission = PreloadManifestPermission(it.first, true, it.second)
+            manifestPermissions.add(permission)
         }
-        return false
+        manifest.optionalPermissions.forEach {
+            val permission = PreloadManifestPermission(it.first, false, it.second)
+            manifestPermissions.add(permission)
+        }
+
+        permissionAdapter.addManifestPermissionList(manifestPermissions)
+        binding.preloadMiniAppMetaData.text =
+            LABEL_CUSTOM_METADATA + toPrettyMetadata(manifest.customMetaData)
+
+        launchScreen()
     }
 
-    private fun storeManifestPermission(
-        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
-    ) {
-        // store values in SDK cache
-        val permissionsWhenAccept = MiniAppCustomPermission(
-            miniAppId = miniAppId,
-            pairValues = permissions
-        )
-        viewModel.miniApp.setCustomPermissions(permissionsWhenAccept)
-    }
-
-    private fun storeAcceptance(isAccepted: Boolean) = prefs.edit()?.putBoolean(miniAppId, isAccepted)?.apply()
+    private fun toPrettyMetadata(metadata: Map<String, String>) =
+        GsonBuilder().setPrettyPrinting().create().toJson(metadata)
 
     interface PreloadMiniAppLaunchListener {
         fun onPreloadMiniAppResponse(isAccepted: Boolean)
     }
 
     private companion object {
-        const val DEFAULT_ACCEPTANCE = false
         const val LABEL_VERSION = "Version: "
         const val LABEL_CUSTOM_METADATA = "Custom MetaData: "
         const val ERR_NO_INFO = "No info found for this miniapp!"

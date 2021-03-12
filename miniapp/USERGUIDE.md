@@ -93,6 +93,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 **API Docs:** [MiniApp.create](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html), [MiniAppDisplay](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/), [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
 `MiniApp.create` is used to create a `View` for displaying a specific mini app. Before calling `MiniApp.create`, the Host App should first get the manifest using `MiniApp.getMiniAppManifest`, show permission prompt to user, then set the result with `MiniApp.setCustomPermissions`.
+If Host App wants to launch/download the miniapp without granting the required permissions, the SDK will throw `RequiredPermissionsNotGrantedException` to notify Host App.
 You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
 
 - Check what is the latest, published version of the mini app.
@@ -498,6 +499,16 @@ CoroutineScope(Dispatchers.IO).launch {
     }
 }
 ```
+
+## Getting downloaded Mini App Meta data
+
+In Host App, we can get the downloaded manifest information as following:
+
+```kotlin
+  val downloadedManifest = MiniApp.instance().getDownloadedManifest("MINI_APP_ID")
+```
+
+HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
 
 ## Advanced Features
 

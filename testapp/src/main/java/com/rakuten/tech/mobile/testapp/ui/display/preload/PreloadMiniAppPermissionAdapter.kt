@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.testapp.ui.permission.toReadableName
 class PreloadMiniAppPermissionAdapter :
     RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
 
-    private var manifestPermissions = ArrayList<PreloadManifestPermission>()
+    private var manifestPermissions = mutableListOf<PreloadManifestPermission>()
     var manifestPermissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -54,7 +54,8 @@ class PreloadMiniAppPermissionAdapter :
 
     override fun getItemCount(): Int = manifestPermissions.size
 
-    fun addManifestPermissionList(permissions: ArrayList<PreloadManifestPermission>) {
+    fun addManifestPermissionList(permissions: MutableList<PreloadManifestPermission>) {
+        manifestPermissionPairs.clear()
         manifestPermissions = permissions
         manifestPermissions.forEachIndexed { position, (type, _) ->
             manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
