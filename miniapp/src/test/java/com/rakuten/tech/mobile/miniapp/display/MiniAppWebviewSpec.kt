@@ -102,7 +102,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
-        miniAppWebView.url shouldContain miniAppWebView.miniAppInfo.id
+        miniAppWebView.url!! shouldContain miniAppWebView.miniAppInfo.id
     }
 
     @Test
@@ -171,7 +171,6 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         displayer.destroyView()
 
         verify(displayer).stopLoading()
-        displayer.webViewClient shouldBe null
 
         verify(displayer).destroy()
     }
@@ -216,7 +215,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
             miniAppNavigator, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
-        miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
+        miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
     @Test

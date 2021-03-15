@@ -108,7 +108,6 @@ internal open class MiniAppWebView(
 
     fun destroyView() {
         stopLoading()
-        webViewClient = null
         destroy()
     }
 

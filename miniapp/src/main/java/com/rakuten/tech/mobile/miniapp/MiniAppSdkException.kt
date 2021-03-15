@@ -51,7 +51,8 @@ internal class CustomPermissionsNotImplementedException :
  */
 @Suppress("MaxLineLength")
 class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
-    MiniAppSdkException("Mini App has not been granted all of the required permissions for the provided Mini App Id: $appId and the version id: $versionId")
+    MiniAppSdkException("Mini App has not been granted all of the required permissions " +
+            "for the provided Mini App Id: $appId and the version id: $versionId")
 
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 

@@ -36,7 +36,7 @@ class WebViewActivity : BaseActivity() {
         val miniAppExternalUrlLoader = if (appUrl.isNotBlank()) {
             MiniAppExternalUrlLoader.loaderWithUrl(appUrl, this)
         } else {
-            MiniAppExternalUrlLoader.loaderWithId(intent.getStringExtra(miniAppIdTag), this)
+            MiniAppExternalUrlLoader.loaderWithId(intent.getStringExtra(miniAppIdTag) ?: "", this)
         }
 
         val webViewClient = SampleWebViewClient(miniAppExternalUrlLoader)
