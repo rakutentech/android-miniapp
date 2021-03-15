@@ -53,7 +53,6 @@ class MiniAppCustomPermissionCacheSpec {
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
         val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
 
-        verify(miniAppCustomPermissionCache).applyStoringPermissions(expected)
         actual shouldEqual expected
     }
 
@@ -100,7 +99,7 @@ class MiniAppCustomPermissionCacheSpec {
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
         verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, list)
-        verify(miniAppCustomPermissionCache, times(2)).applyStoringPermissions(miniAppCustomPermission)
+        verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
     }
 
     @Test

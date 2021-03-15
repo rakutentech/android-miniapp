@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.testapp.ui.permission
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -58,8 +57,6 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
             namesForAdapter.add(it.first)
             resultsForAdapter.add(it.second)
         }
-
-        Log.d("AAAAA2",""+miniapp.getCustomPermissions(miniAppId).pairValues)
 
         permissionSettingsAdapter.addPermissionList(
             namesForAdapter,
