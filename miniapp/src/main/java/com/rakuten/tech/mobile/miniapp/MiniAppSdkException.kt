@@ -29,10 +29,10 @@ class MiniAppNotFoundException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
- * Exception which is thrown when HostApp doesn't implement requestPermission interface.
+ * Exception which is thrown when cannot verify device keystore.
  */
-internal class PermissionsNotImplementedException :
-    MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION)
+class MiniAppVerificationException(message: String?) :
+    MiniAppSdkException("MiniApp SDK cannot proceed due to security validation: $message")
 
 /**
  * Exception which is thrown when HostApp doesn't implement requestDevicePermission interface.
@@ -45,6 +45,14 @@ internal class DevicePermissionsNotImplementedException :
  */
 internal class CustomPermissionsNotImplementedException :
     MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
+
+/**
+ * Exception which is thrown when the required permissions of the manifest are not granted.
+ */
+@Suppress("MaxLineLength")
+class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
+    MiniAppSdkException("Mini App has not been granted all of the required permissions " +
+            "for the provided Mini App Id: $appId and the version id: $versionId")
 
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 

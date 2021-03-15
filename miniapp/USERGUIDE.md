@@ -15,7 +15,7 @@ Mini App SDK also facilitates communication between a mini app and the host app 
 
 ## Requirements
 
-- **Minimum Android Version**: This SDK supports Android 6.0+ (API level 23+).
+- **Minimum Android Version**: This SDK supports Android 7.0+ (API level 24+).
 - **Base URL, App ID, Subscription Key**: We don't currently provide a public API for use with this SDK. You must provide a URL for your API as well as an App ID and Subscription Key for the API.
 
 ## Getting Started
@@ -28,11 +28,11 @@ Add the following to your `build.gradle` file:
 
 ```groovy
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:${version}'
+    implementation 'io.github.rakutentech.miniapp:miniapp:${version}'
 }
 ```
 
@@ -43,7 +43,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ❌         | 🚫        |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ✅         | false     |
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
@@ -92,7 +92,9 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 ### #3 Create and display a Mini App
 **API Docs:** [MiniApp.create](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html), [MiniAppDisplay](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/), [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
-`MiniApp.create` is used to create a `View` for displaying a specific mini app. You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
+`MiniApp.create` is used to create a `View` for displaying a specific mini app. Before calling `MiniApp.create`, the Host App should first get the manifest using `MiniApp.getMiniAppManifest`, show permission prompt to user, then set the result with `MiniApp.setCustomPermissions`.
+If Host App wants to launch/download the miniapp without granting the required permissions, the SDK will throw `RequiredPermissionsNotGrantedException` to notify Host App.
+You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
 
 - Check what is the latest, published version of the mini app.
 - Check if the latest version of the mini app has been downloaded.
@@ -100,7 +102,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
     - If no, download the latest version and then return the downloaded version.
 - If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
 
-After calling `MiniApp.create`, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
+After calling `MiniApp.create` and all the "required" manifest permissions have been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
 
 The following is a simplified example:
 
@@ -264,7 +266,7 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
     }
 }
 
-val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {
+val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
     override fun getUserName(
         onSuccess: (userName: String) -> Unit,
@@ -445,10 +447,68 @@ CoroutineScope(Dispatchers.IO).launch {
     try {
         val miniAppInfo = MiniApp.instance().fetchInfo("MINI_APP_ID")
     } catch(e: MiniAppSdkException) {
-        Log.e("MiniApp", "There was an error retrieving the Mini App info", e)
+        Log.e("MiniApp", "There was an error when retrieving the Mini App info", e)
     }
 }
 ```
+
+## Fetching Mini App Meta data
+**API Docs:** [MiniApp.getMiniAppManifest](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-mini-app-manifest.html)
+
+MiniApp developers need to add the following attributes in manifest.json. Host App can require Mini Apps to set meta data here using "customMetaData", such as the first time launch screen options.
+
+```json
+{
+   "reqPermissions":[
+      {
+         "name":"rakuten.miniapp.user.USER_NAME",
+         "reason":"Describe your reason here."
+      },
+      {
+         "name":"rakuten.miniapp.user.PROFILE_PHOTO",
+         "reason":"Describe your reason here."
+      }
+   ],
+   "optPermissions":[
+      {
+         "name":"rakuten.miniapp.user.CONTACT_LIST",
+         "reason":"Describe your reason here."
+      },
+      {
+         "name":"rakuten.miniapp.device.LOCATION",
+         "reason":"Describe your reason here."
+      }
+   ],
+   "customMetaData":{
+      "hostAppRandomTestKey":"metadata value"
+   }
+}
+```
+
+In Host App, we can get the manifest information as following:
+
+```kotlin
+CoroutineScope(Dispatchers.IO).launch {
+    try {
+        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+
+        // Host App can set it's own metadata key in manifest.json to retrieve the value
+        miniAppManifest.customMetaData["hostAppRandomTestKey"]
+    } catch(e: MiniAppSdkException) {
+        Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)
+    }
+}
+```
+
+## Getting downloaded Mini App Meta data
+
+In Host App, we can get the downloaded manifest information as following:
+
+```kotlin
+  val downloadedManifest = MiniApp.instance().getDownloadedManifest("MINI_APP_ID")
+```
+
+HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
 
 ## Advanced Features
 
@@ -646,6 +706,34 @@ CoroutineScope(Dispatchers.Main).launch {
 ```
 </details>
 
+<details><summary markdown="span"><b>Exception: MiniAppVerificationException</b>
+</summary>
+
+This exception will be thrown when the SDK cannot verify the security check on local storage using keystore which means that users are not allowed to use miniapp.
+Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning. 
+
+</details>
+
+<details><summary markdown="span"><b>Build Error: `java.lang.RuntimeException: Duplicate class com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig`</b>
+</summary>
+
+This build error could occur if you are using older versions of other libraries from `com.rakuten.tech.mobile`.
+Some of the dependencies in this SDK have changed to a new Group ID of `io.github.rakutentech` (due to the [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)).
+This means that if you have another library in your project which depends on the older dependencies using the Gropu ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
+
+To avoid this, please add the following to your `build.gradle` in order to exclude the old `com.rakuten.tech.mobile` dependencies from your project.
+
+```groovy
+configurations.all {
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+    exclude group: 'com.rakuten.tech.mobile.sdkutils', module: 'sdk-utils'
+}
+
+```
+
+</details>
+
 <details><summary markdown="span"><b>How do I use snapshot versions of this SDK?</b>
 </summary>
 
@@ -653,11 +741,11 @@ We may periodically publish snapshot versions for testing pre-release features. 
 
 ```
 repositories {
-    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:X.X.X-SNAPSHOT'
+    implementation 'io.github.rakutentech.miniapp:miniapp:X.X.X-SNAPSHOT'
 }
 ```
 </details>

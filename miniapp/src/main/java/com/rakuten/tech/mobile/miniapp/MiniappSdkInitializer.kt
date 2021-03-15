@@ -37,25 +37,12 @@ class MiniappSdkInitializer : ContentProvider() {
         fun isPreviewMode(): Boolean
 
         /**
-         * Whether the sdk is running in Testing mode.
-         **/
-        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsTestMode")
-        fun isTestMode(): Boolean
-
-        /**
          * This user agent specific info will be appended to the default user-agent.
          * It should be meaningful e.g. host-app-name/version.
          * @see [link][https://developer.chrome.com/multidevice/user-agent] for more information.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo")
         fun hostAppUserAgentInfo(): String
-
-        /**
-         * App Id assigned to host App.
-         **/
-        @Deprecated("Use rasProjectId()")
-        @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
-        fun rasAppId(): String
 
         /**
          * Project Id assigned to host App.
@@ -73,35 +60,28 @@ class MiniappSdkInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
         val context = context ?: return false
         val manifestConfig = createAppManifestConfig(context)
-        val backwardCompatibleHostId = if (manifestConfig.rasProjectId().isEmpty())
-            manifestConfig.rasAppId() else manifestConfig.rasProjectId()
 
         MiniApp.init(
             context = context,
-            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig, backwardCompatibleHostId)
+            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig)
         )
 
         // init and send analytics tracking when Host App is launched with miniapp sdk.
-        executeMiniAppAnalytics(backwardCompatibleHostId)
+        executeMiniAppAnalytics(manifestConfig.rasProjectId())
 
         return true
     }
 
-    private fun createMiniAppSdkConfig(
-        manifestConfig: AppManifestConfig,
-        backwardCompatibleHostId: String
-    ): MiniAppSdkConfig = MiniAppSdkConfig(
+    private fun createMiniAppSdkConfig(manifestConfig: AppManifestConfig) = MiniAppSdkConfig(
         baseUrl = manifestConfig.baseUrl(),
-        rasProjectId = backwardCompatibleHostId,
-        rasAppId = manifestConfig.rasAppId(),
+        rasProjectId = manifestConfig.rasProjectId(),
         subscriptionKey = manifestConfig.subscriptionKey(),
         hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-        isPreviewMode = manifestConfig.isPreviewMode(),
-        isTestMode = manifestConfig.isTestMode()
+        isPreviewMode = manifestConfig.isPreviewMode()
     )
 
-    private fun executeMiniAppAnalytics(backwardCompatibleHostId: String) {
-        MiniAppAnalytics.init(rasProjectId = backwardCompatibleHostId)
+    private fun executeMiniAppAnalytics(rasProjId: String) {
+        MiniAppAnalytics.init(rasProjectId = rasProjId)
         MiniAppAnalytics.instance?.sendAnalytics(
             eType = Etype.APPEAR,
             actype = Actype.HOST_LAUNCH,

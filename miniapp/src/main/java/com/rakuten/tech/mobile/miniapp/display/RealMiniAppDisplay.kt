@@ -18,18 +18,19 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
-    val context: Context,
     val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
     val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    val downloadedManifestCache: DownloadedManifestCache,
     val queryParams: String
 ) : MiniAppDisplay {
 
@@ -41,21 +42,21 @@ internal class RealMiniAppDisplay(
     internal fun getMiniAppAnalytics() = MiniAppAnalytics.instance
 
     constructor(
-        context: Context,
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         hostAppUserAgentInfo: String,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
     ) : this(
-        context,
         "",
         MiniAppInfo.forUrl(),
         miniAppMessageBridge,
         miniAppNavigator,
         hostAppUserAgentInfo,
         miniAppCustomPermissionCache,
+        downloadedManifestCache,
         queryParams
     ) {
         this.appUrl = appUrl
@@ -121,6 +122,7 @@ internal class RealMiniAppDisplay(
                     miniAppNavigator = miniAppNavigator,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                    downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams
                 )
             } else {
@@ -132,6 +134,7 @@ internal class RealMiniAppDisplay(
                     miniAppNavigator = miniAppNavigator,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                    downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams
                 )
             }

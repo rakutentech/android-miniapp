@@ -1,7 +1,7 @@
 <resources>
     <string name="lb_version">Version</string>
     <string name="lb_description">Description</string>
-    <string name="lb_app_id">App ID</string>
+    <string name="lb_app_id_or_url">URL or App Id</string>
     <string name="lb_app_url">URL</string>
     <string name="lb_app_settings">App Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
@@ -24,11 +24,11 @@
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
 
-    <string name="miniapp_first_time_tutorial">Would you like to download this miniapp?</string>
+    <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
+    <string name="miniapp_preload_perm_status_required">(Required)</string>
 
     <string name="action_display">Display</string>
-    <string name="action_go_input">Display Miniapp From ID or URL</string>
-    <string name="action_go_input_preview_mode">Display Miniapp From URL</string>
+    <string name="action_go_input">Display Miniapp From Input</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
@@ -46,6 +46,7 @@
     <string name="error_invalid_input">Invalid Input</string>
 
     <string name="message_empty_miniapps">There is no Mini App found!</string>
+    <string name="message_empty_permissions">There is no permission found!</string>
 
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>

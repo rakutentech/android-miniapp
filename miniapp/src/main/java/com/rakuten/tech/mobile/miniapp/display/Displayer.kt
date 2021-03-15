@@ -1,13 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.content.Context
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-internal class Displayer(private val context: Context, private val hostAppUserAgentInfo: String) {
+@Suppress("LongParameterList")
+internal class Displayer(private val hostAppUserAgentInfo: String) {
 
     fun createMiniAppDisplay(
         basePath: String,
@@ -15,15 +16,16 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
-        context = context,
         basePath = basePath,
         miniAppInfo = miniAppInfo,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams
     )
 
@@ -32,14 +34,15 @@ internal class Displayer(private val context: Context, private val hostAppUserAg
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
-        context = context,
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams
     )
 }

@@ -2,7 +2,7 @@
 buildscript {
     ext.androidBuildTool = '29.0.2'
     ext.androidx_appcompat = '1.2.0'
-    ext.androidx_constraintLayout = '1.1.3'
+    ext.androidx_constraintLayout = '2.0.4'
     ext.androidx_coreKtx = '1.3.0'
     ext.androidx_lifecycle = '2.2.0'
     ext.androidx_crypto = '1.0.0-rc03'
@@ -16,12 +16,12 @@ buildscript {
     ext.kluent_android = '1.48'
     ext.kotlin_coroutines = '1.3.3'
     ext.kotlin_version = '1.3.50'
-    ext.material = '1.1.0-rc02'
+    ext.material = '1.3.0'
     ext.mockito = '3.3.3'
-    ext.mockwebserver = '4.7.2'
-    ext.manifest_config = '0.1.0'
+    ext.okhttp = '4.9.0'
+    ext.manifest_config = '0.2.0'
     ext.nhrm_mockito_kotlin = '2.2.0'
-    ext.sdk_utils = '0.1.1'
+    ext.sdk_utils = '0.2.0'
     ext.retrofit = '2.9.0'
     ext.robolectric = '4.3.1'
     ext.webkit = '1.1.0'
@@ -35,7 +35,7 @@ buildscript {
 
 //  Build Config.
     apply from: 'config/index.gradle'
-    CONFIG.versions.android.sdk.min = 23
+    CONFIG.versions.android.sdk.min = 24
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
@@ -46,6 +46,7 @@ buildscript {
 
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
 }
@@ -64,8 +65,8 @@ allprojects {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
+        jcenter()
         // check whether can get env var
         if (property("GITHUB_USERNAME") != null) {
             maven {

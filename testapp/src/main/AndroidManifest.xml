@@ -36,6 +36,8 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
+            android:theme="@style/MaterialAppTheme"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/lb_display_input" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"

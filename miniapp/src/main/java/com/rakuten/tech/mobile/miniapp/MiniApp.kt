@@ -11,6 +11,8 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -19,7 +21,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("UnnecessaryAbstractClass", "LongMethod", "TooManyFunctions")
 abstract class MiniApp internal constructor() {
 
     /**
@@ -42,8 +44,14 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
      * downloading or creating the view.
+     * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -64,8 +72,14 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
      * downloading or creating the view.
+     * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -129,6 +143,22 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
+     * Get the manifest information e.g. required and optional permissions.
+     * @param appId mini app id.
+     * @param versionId of mini app.
+     * @return MiniAppManifest an object contains manifest information of a miniapp.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest
+
+    /**
+     * Get the currently downloaded manifest information e.g. required and optional permissions.
+     * @param appId mini app id.
+     * @return MiniAppManifest an object contains manifest information of a miniapp.
+     */
+    abstract fun getDownloadedManifest(appId: String): MiniAppManifest?
+
+    /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
@@ -149,7 +179,6 @@ abstract class MiniApp internal constructor() {
         fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
             instance.apply { updateConfiguration(settings) }
 
-        @Suppress("LongMethod")
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
             defaultConfig = miniAppSdkConfig
             val apiClient = ApiClient(
@@ -162,16 +191,19 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val miniAppStatus = MiniAppStatus(context)
-            val storage = MiniAppStorage(FileWriter(), context.filesDir)
-            val verifier = CachedMiniAppVerifier(context)
-
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
-                displayer = Displayer(context, defaultConfig.hostAppUserAgentInfo),
-                miniAppDownloader = MiniAppDownloader(storage, apiClient, miniAppStatus, verifier),
+                displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
+                miniAppDownloader = MiniAppDownloader(
+                    apiClient = apiClient,
+                    initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
+                    initStatus = { MiniAppStatus(context) },
+                    initVerifier = { CachedMiniAppVerifier(context) },
+                    initManifestApiCache = { ManifestApiCache(context) }
+                ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
-                miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+                initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
+                initDownloadedManifestCache = { DownloadedManifestCache(context) }
             )
         }
     }

@@ -8,32 +8,30 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.PermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-@Suppress("TooGenericExceptionCaught", "ComplexMethod", "LargeClass", "TooManyFunctions", "LongMethod")
+@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass", "ComplexMethod")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private var miniAppViewInitialized = false
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
-    private lateinit var customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
-    private lateinit var customPermissionWindow: MiniAppCustomPermissionWindow
+    private lateinit var downloadedManifestCache: DownloadedManifestCache
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
-    private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
+    private val userInfoBridgeWrapper = UserInfoBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -43,28 +41,17 @@ abstract class MiniAppMessageBridge {
         activity: Activity,
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
-        this.customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
-            bridgeExecutor,
-            customPermissionCache,
-            miniAppId
-        )
-        this.customPermissionWindow = MiniAppCustomPermissionWindow(
-            activity,
-            customPermissionBridgeDispatcher
-        )
-
+        this.downloadedManifestCache = downloadedManifestCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-
-        if (this::userInfoBridgeDispatcher.isInitialized)
-            this.userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
-        else this.userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher() {}
+        userInfoBridgeWrapper.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -77,15 +64,6 @@ abstract class MiniAppMessageBridge {
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
     abstract fun getUniqueId(): String
-
-    /** Post permission request from external. **/
-    @Deprecated("Use requestDevicePermission instead")
-    open fun requestPermission(
-        miniAppPermissionType: MiniAppPermissionType,
-        callback: (isGranted: Boolean) -> Unit
-    ) {
-        throw PermissionsNotImplementedException()
-    }
 
     /** Post device permission request from external. **/
     open fun requestDevicePermission(
@@ -143,11 +121,11 @@ abstract class MiniAppMessageBridge {
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
             ActionType.LOAD_AD.action -> adBridgeDispatcher.onLoadAd(callbackObj.id, jsonStr)
             ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
-            ActionType.GET_USER_NAME.action -> userInfoBridgeDispatcher.onGetUserName(callbackObj.id)
-            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeDispatcher.onGetProfilePhoto(callbackObj.id)
-            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeDispatcher.onGetAccessToken(callbackObj.id)
+            ActionType.GET_USER_NAME.action -> userInfoBridgeWrapper.onGetUserName(callbackObj.id)
+            ActionType.GET_PROFILE_PHOTO.action -> userInfoBridgeWrapper.onGetProfilePhoto(callbackObj.id)
+            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridgeWrapper.onGetAccessToken(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
-            ActionType.GET_CONTACTS.action -> userInfoBridgeDispatcher.onGetContacts(callbackObj.id)
+            ActionType.GET_CONTACTS.action -> userInfoBridgeWrapper.onGetContacts(callbackObj.id)
         }
     }
 
@@ -158,38 +136,14 @@ abstract class MiniAppMessageBridge {
      * Set implemented userInfoBridgeDispatcher.
      * Can use the default provided class from sdk [UserInfoBridgeDispatcher].
      **/
-    fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) {
-        userInfoBridgeDispatcher = bridgeDispatcher
-        if (miniAppViewInitialized)
-            userInfoBridgeDispatcher.init(bridgeExecutor, customPermissionCache, miniAppId)
-    }
+    fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) =
+        userInfoBridgeWrapper.setUserInfoBridgeDispatcher(bridgeDispatcher)
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
         try {
             bridgeExecutor.postValue(callbackObj.id, getUniqueId())
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
-        }
-    }
-
-    private fun onRequestPermission(callbackObj: CallbackObj) {
-        try {
-            val permissionParam = Gson().fromJson<DevicePermission>(
-                callbackObj.param.toString(),
-                object : TypeToken<DevicePermission>() {}.type
-            )
-
-            requestPermission(
-                MiniAppPermissionType.getValue(permissionParam.permission)
-            ) { isGranted -> onRequestDevicePermissionsResult(
-                callbackId = callbackObj.id,
-                isGranted = isGranted
-            ) }
-        } catch (e: Exception) {
-            bridgeExecutor.postError(
-                callbackObj.id,
-                "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
-            )
         }
     }
 
@@ -207,8 +161,7 @@ abstract class MiniAppMessageBridge {
                 isGranted = isGranted
             ) }
         } catch (e: Exception) {
-            if (e.message.toString().contains(NO_IMPLEMENT_DEVICE_PERMISSION)) onRequestPermission(callbackObj)
-            else bridgeExecutor.postError(
+            bridgeExecutor.postError(
                 callbackObj.id,
                 "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
             )
@@ -217,12 +170,20 @@ abstract class MiniAppMessageBridge {
 
     @Suppress("SwallowedException")
     private fun onRequestCustomPermissions(jsonStr: String) {
-        // initialize required properties using jsonStr before executing operations
-        customPermissionBridgeDispatcher.initCallBackObject(jsonStr)
+        val customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
+            bridgeExecutor = bridgeExecutor,
+            customPermissionCache = customPermissionCache,
+            downloadedManifestCache = downloadedManifestCache,
+            miniAppId = miniAppId,
+            jsonStr = jsonStr
+        )
+        val customPermissionWindow = MiniAppCustomPermissionWindow(
+            activity,
+            customPermissionBridgeDispatcher
+        )
 
         // check if there is any denied permission
         val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
-
         if (deniedPermissions.isNotEmpty()) {
             try {
                 requestCustomPermissions(
@@ -283,7 +244,7 @@ abstract class MiniAppMessageBridge {
 }
 
 internal object ErrorBridgeMessage {
-    const val NO_IMPL = "method has not been implemented by the Host App."
+    const val NO_IMPL = "has not been implemented by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"

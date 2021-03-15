@@ -11,10 +11,12 @@
     <dimen name="tiny_2dp">2dp</dimen>
     <dimen name="small_4">4dp</dimen>
     <dimen name="small_8">8dp</dimen>
+    <dimen name="small_10">10dp</dimen>
     <dimen name="small_12">12dp</dimen>
     <dimen name="medium_16">16dp</dimen>
     <dimen name="large_24">24dp</dimen>
     <dimen name="large_32">32dp</dimen>
+    <dimen name="large_52">52dp</dimen>
 
     <dimen name="text_large_18">18sp</dimen>
     <dimen name="text_large_16">16sp</dimen>

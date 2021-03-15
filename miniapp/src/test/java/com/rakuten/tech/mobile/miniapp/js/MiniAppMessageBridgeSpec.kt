@@ -34,13 +34,6 @@ open class BridgeCommon {
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-            override fun requestPermission(
-                miniAppPermissionType: MiniAppPermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
-            }
-
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
@@ -61,37 +54,11 @@ open class BridgeCommon {
     protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
         override fun getUniqueId() = TEST_CALLBACK_VALUE
 
-        override fun requestPermission(
-            miniAppPermissionType: MiniAppPermissionType,
-            callback: (isGranted: Boolean) -> Unit
-        ) {
-            onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
-        }
-
         override fun requestDevicePermission(
             miniAppPermissionType: MiniAppDevicePermissionType,
             callback: (isGranted: Boolean) -> Unit
         ) {
             onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
-        }
-    }
-
-    protected fun createDevicePermissionBridge(isImplementation: Boolean): MiniAppMessageBridge {
-        if (isImplementation) {
-            return object : MiniAppMessageBridge() {
-                override fun getUniqueId() = TEST_CALLBACK_VALUE
-
-                override fun requestPermission(
-                    miniAppPermissionType: MiniAppPermissionType,
-                    callback: (isGranted: Boolean) -> Unit
-                ) {
-                    onRequestDevicePermissionsResult(TEST_CALLBACK_ID, true)
-                }
-            }
-        } else {
-            return object : MiniAppMessageBridge() {
-                override fun getUniqueId() = TEST_CALLBACK_VALUE
-            }
         }
     }
 
@@ -108,6 +75,7 @@ open class BridgeCommon {
 }
 
 @RunWith(AndroidJUnit4::class)
+@Suppress("LongMethod")
 class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)
@@ -132,6 +100,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
     }
@@ -146,40 +115,22 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     /** region: device permission */
     @Test
-    fun `postError should be called when there is no device permission interface implementation`() {
-        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(false))
-        val errMsg = "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION}" +
-                " The `MiniAppMessageBridge.requestPermission` ${ErrorBridgeMessage.NO_IMPL}"
+    fun `postError should be called when device permission granted is false`() {
+        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+        val errMsg = "Denied"
         val webViewListener = createErrorWebViewListener("dummy message")
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
 
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor, times(1)).postError(permissionCallbackObj.id, errMsg)
-    }
-
-    @Test
-    fun `postValue should be called when device permission is granted in deprecated function`() {
-        val miniAppBridge = Mockito.spy(createDevicePermissionBridge(true))
-        val webViewListener = createErrorWebViewListener("dummy message")
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            miniAppId = TEST_MA_ID
-        )
-
-        miniAppBridge.postMessage(permissionJsonStr)
-
-        verify(bridgeExecutor, times(1))
-            .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(true).type)
     }
 
     @Test
@@ -192,6 +143,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
 
@@ -227,6 +179,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
@@ -236,21 +189,21 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `all error bridge messages should be expected`() {
-        assertEquals("method has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
+        assertEquals("has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
         assertEquals("No support from hostapp", ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP)
         assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
         assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
         assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
         assertEquals(
-            "The `MiniAppMessageBridge.requestPermission` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestPermission` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION
         )
         assertEquals(
-            "The `MiniAppMessageBridge.requestDevicePermission` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestDevicePermission` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
         )
         assertEquals(
-            "The `MiniAppMessageBridge.requestCustomPermissions` method has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestCustomPermissions` has not been implemented by the Host App.",
             ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
         )
         assertEquals("Cannot share content:", ErrorBridgeMessage.ERR_SHARE_CONTENT)
@@ -271,6 +224,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
     }
@@ -296,6 +250,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID
             )
             miniAppBridge.postMessage(shareContentJsonStr)
@@ -315,6 +270,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
         miniAppBridge.postMessage(shareContentJsonStr)
@@ -364,6 +320,7 @@ class AdBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
@@ -422,6 +379,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID
         )
     }
@@ -443,6 +401,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                 activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID
             )
             miniAppBridge.allowScreenOrientation(true)
