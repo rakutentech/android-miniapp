@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_PROFILE_PHOTO
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
@@ -52,6 +53,7 @@ class UserInfoBridgeSpec {
         id = TEST_CALLBACK_ID
     )
     private val customPermissionCache: MiniAppCustomPermissionCache = mock()
+    private val downloadedManifestCache: DownloadedManifestCache = mock()
     private val miniAppInfo = MiniAppInfo(
         id = TEST_MA_ID,
         displayName = TEST_MA_DISPLAY_NAME,
@@ -69,6 +71,7 @@ class UserInfoBridgeSpec {
             activity = TestActivity(),
             webViewListener = webViewListener,
             customPermissionCache = customPermissionCache,
+            downloadedManifestCache = downloadedManifestCache,
             miniAppId = TEST_MA.id
         )
 

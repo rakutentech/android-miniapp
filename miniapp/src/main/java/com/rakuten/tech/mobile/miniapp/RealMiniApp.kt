@@ -60,6 +60,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -81,6 +82,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -100,6 +102,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }

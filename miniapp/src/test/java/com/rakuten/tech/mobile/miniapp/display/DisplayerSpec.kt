@@ -49,6 +49,7 @@ class DisplayerSpec {
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
             miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         )
 
@@ -57,6 +58,7 @@ class DisplayerSpec {
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = mock(),
         miniAppCustomPermissionCache = mock(),
+        downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS
     )
 }

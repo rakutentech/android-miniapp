@@ -35,7 +35,8 @@ class PreloadMiniAppViewModel constructor(
         try {
             val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
             val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
-            if ((downloadedManifest == miniAppManifest) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest))
+            if (downloadedManifest != null && isManifestEqual(miniAppManifest, downloadedManifest) &&
+                isAcceptedRequiredPermissions(miniAppId, miniAppManifest))
                 _miniAppManifest.postValue(null)
             else
                 _miniAppManifest.postValue(miniAppManifest)
@@ -51,6 +52,17 @@ class PreloadMiniAppViewModel constructor(
         } catch (error: MiniAppSdkException) {
             _versionIdErrorData.postValue(error.message)
         }
+    }
+
+    private fun isManifestEqual(apiManifest: MiniAppManifest, downloadedManifest: MiniAppManifest): Boolean {
+        val changedRequiredPermissions = apiManifest.requiredPermissions.filterNot {
+            downloadedManifest.requiredPermissions.contains(it)
+        }
+        val changedOptionalPermissions = apiManifest.optionalPermissions.filterNot {
+            downloadedManifest.optionalPermissions.contains(it)
+        }
+        return changedRequiredPermissions.isEmpty() && changedOptionalPermissions.isEmpty() &&
+                apiManifest.customMetaData == downloadedManifest.customMetaData
     }
 
     fun storeManifestPermission(

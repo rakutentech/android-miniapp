@@ -49,6 +49,7 @@ internal class CustomPermissionsNotImplementedException :
 /**
  * Exception which is thrown when the required permissions of the manifest are not granted.
  */
+@Suppress("MaxLineLength")
 class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
     MiniAppSdkException("Mini App has not been granted all of the required permissions " +
             "for the provided Mini App Id: $appId and the version id: $versionId")

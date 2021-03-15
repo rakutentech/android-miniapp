@@ -5,6 +5,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress("LongParameterList")
 internal class Displayer(private val hostAppUserAgentInfo: String) {
@@ -15,6 +16,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
@@ -23,6 +25,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams
     )
 
@@ -31,6 +34,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
@@ -38,6 +42,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppNavigator = miniAppNavigator,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams
     )
 }
