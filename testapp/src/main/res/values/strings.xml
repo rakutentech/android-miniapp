@@ -46,6 +46,7 @@
     <string name="error_invalid_input">Invalid Input</string>
 
     <string name="message_empty_miniapps">There is no Mini App found!</string>
+    <string name="message_empty_permissions">There is no permission found!</string>
 
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>

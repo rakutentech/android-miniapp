@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.coroutines.launch
 
 class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActivity() {
 
@@ -26,6 +26,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     private lateinit var permissionSettingsAdapter: MiniAppPermissionSettingsAdapter
     private lateinit var miniAppId: String
     private lateinit var binding: ListCustomPermissionBinding
+    private val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
 
     companion object {
         const val REQ_CODE_PERMISSIONS_UPDATE = 10101
@@ -51,15 +52,12 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
         miniAppId = intent.getStringExtra(miniAppIdTag) ?: ""
 
         initAdapter()
-        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = arrayListOf()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = arrayListOf()
 
         miniapp.getCustomPermissions(miniAppId).pairValues.forEach {
             namesForAdapter.add(it.first)
             resultsForAdapter.add(it.second)
         }
-
-
 
         Log.d("AAAAA2",""+miniapp.getCustomPermissions(miniAppId).pairValues)
 
@@ -68,6 +66,9 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
             resultsForAdapter,
             arrayListOf()
         )
+
+        if (namesForAdapter.isEmpty()) binding.emptyView.visibility = View.VISIBLE
+        else binding.emptyView.visibility = View.GONE
     }
 
     private fun initAdapter() {
@@ -82,6 +83,11 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.settings_menu_save)?.isEnabled = namesForAdapter.isNotEmpty()
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
