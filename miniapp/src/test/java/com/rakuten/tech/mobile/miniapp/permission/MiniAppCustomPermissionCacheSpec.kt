@@ -30,59 +30,16 @@ class MiniAppCustomPermissionCacheSpec {
         miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(mockContext))
     }
 
-    @Test
-    fun `isDataExist should return false when miniAppId is not stored`() {
-        val actual = miniAppCustomPermissionCache.doesDataExist(TEST_MA_ID)
-
-        actual shouldEqual false
-    }
-
-    @Test
-    fun `isDataExist should return true when miniAppId is stored`() {
-        doReturn(true).whenever(mockSharedPrefs).contains(TEST_MA_ID)
-        val actual = miniAppCustomPermissionCache.doesDataExist(TEST_MA_ID)
-
-        actual shouldEqual true
-    }
-
     /**
      * region: readPermissions
      */
     @Test
-    fun `readPermissions should return default value when it hasn't stored any data yet`() {
+    fun `readPermissions should return empty value when it hasn't stored any data yet`() {
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
-        val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
-
-        verify(miniAppCustomPermissionCache).applyStoringPermissions(expected)
-        actual shouldEqual expected
-    }
-
-    @Test
-    fun `readPermissions should return actual value when it has stored data`() {
-        doReturn(true).whenever(miniAppCustomPermissionCache).doesDataExist(TEST_MA_ID)
-        val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
-        val expected = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
+        val expected = MiniAppCustomPermission(TEST_MA_ID, emptyList())
 
         actual shouldEqual expected
     }
-
-    @Test
-    fun `readPermissions will not apply data to be stored when exception`() {
-        val default = MiniAppCustomPermission(
-            TEST_MA_ID, listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
-            )
-        )
-
-        doReturn(true).whenever(miniAppCustomPermissionCache).doesDataExist(TEST_MA_ID)
-        doReturn(default).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
-
-        val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
-
-        verify(miniAppCustomPermissionCache, times(0)).applyStoringPermissions(default)
-        actual shouldEqual default
-    }
-
     /** end region */
 
     @Test
@@ -95,12 +52,11 @@ class MiniAppCustomPermissionCacheSpec {
     fun `storePermissions will invoke necessary functions to save value`() {
         val list = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
         val miniAppCustomPermission = MiniAppCustomPermission(TEST_MA_ID, list)
-        doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache).defaultDeniedList(TEST_MA_ID)
 
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
         verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, list)
-        verify(miniAppCustomPermissionCache, times(2)).applyStoringPermissions(miniAppCustomPermission)
+        verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
     }
 
     @Test
@@ -205,27 +161,6 @@ class MiniAppCustomPermissionCacheSpec {
         )
 
         actual shouldBe true
-    }
-    /** end region */
-
-    /**
-     * region: defaultDeniedList.
-     * Update the values in the following tests when adding or removing a custom permission.
-     */
-    @Test
-    fun `check the size of the default denied list`() {
-        val actual = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID).pairValues
-
-        actual.size shouldBe MiniAppCustomPermissionType.values().size - 1
-    }
-
-    @Test
-    fun `check MiniAppCustomPermissionResult of the default denied list`() {
-        val actual = miniAppCustomPermissionCache.defaultDeniedList(TEST_MA_ID)
-
-        actual.pairValues.forEach {
-            it.second shouldEqual MiniAppCustomPermissionResult.DENIED
-        }
     }
     /** end region */
 }

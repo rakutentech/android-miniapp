@@ -33,6 +33,7 @@ class RealMiniAppSpec {
     private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
+    private val downloadedManifestCache: DownloadedManifestCache = mock()
     private val manifestCache: DownloadedManifestCache = mock()
     private val realMiniApp =
         RealMiniApp(
@@ -113,7 +114,7 @@ class RealMiniAppSpec {
             verify(displayer, times(1))
                 .createMiniAppDisplay(
                     getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, null, miniAppCustomPermissionCache, ""
+                    miniAppMessageBridge, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
                 )
         }
 
@@ -131,6 +132,7 @@ class RealMiniAppSpec {
                     miniAppMessageBridge,
                     miniAppNavigator,
                     miniAppCustomPermissionCache,
+                    downloadedManifestCache,
                     ""
                 )
         }

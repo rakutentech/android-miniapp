@@ -63,6 +63,7 @@ open class BaseWebViewSpec {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS
             )
             webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
@@ -84,6 +85,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS
         )
     }
@@ -100,7 +102,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
-        miniAppWebView.url shouldContain miniAppWebView.miniAppInfo.id
+        miniAppWebView.url!! shouldContain miniAppWebView.miniAppInfo.id
     }
 
     @Test
@@ -157,6 +159,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
@@ -168,7 +171,6 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         displayer.destroyView()
 
         verify(displayer).stopLoading()
-        displayer.webViewClient shouldBe null
 
         verify(displayer).destroy()
     }
@@ -207,12 +209,13 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             TEST_HA_NAME,
             mock(),
             mock(),
+            mock(),
             TEST_URL_PARAMS
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, TEST_HA_NAME, mock(), mock(), TEST_URL_PARAMS)
-        miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
+            miniAppNavigator, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
+        miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
     @Test
@@ -317,6 +320,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)

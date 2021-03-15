@@ -60,6 +60,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -81,6 +82,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -100,6 +102,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -136,7 +139,7 @@ internal class RealMiniApp(
         miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
 
         if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
-            throw MiniAppSdkException(ERR_REQUIRED_PERMISSION_DENIED)
+            throw RequiredPermissionsNotGrantedException(appId, versionId)
     }
 
     @VisibleForTesting
@@ -146,8 +149,4 @@ internal class RealMiniApp(
         subscriptionKey = newConfig.subscriptionKey,
         isPreviewMode = newConfig.isPreviewMode
     )
-
-    private companion object {
-        const val ERR_REQUIRED_PERMISSION_DENIED = "Mini App has not been granted all of the required permissions."
-    }
 }

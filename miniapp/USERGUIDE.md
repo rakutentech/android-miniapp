@@ -28,11 +28,11 @@ Add the following to your `build.gradle` file:
 
 ```groovy
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:${version}'
+    implementation 'io.github.rakutentech.miniapp:miniapp:${version}'
 }
 ```
 
@@ -93,6 +93,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 **API Docs:** [MiniApp.create](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html), [MiniAppDisplay](api/com.rakuten.tech.mobile.miniapp/-mini-app-display/), [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
 
 `MiniApp.create` is used to create a `View` for displaying a specific mini app. Before calling `MiniApp.create`, the Host App should first get the manifest using `MiniApp.getMiniAppManifest`, show permission prompt to user, then set the result with `MiniApp.setCustomPermissions`.
+If Host App wants to launch/download the miniapp without granting the required permissions, the SDK will throw `RequiredPermissionsNotGrantedException` to notify Host App.
 You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). Calling `MiniApp.create` will do the following:
 
 - Check what is the latest, published version of the mini app.
@@ -500,6 +501,16 @@ CoroutineScope(Dispatchers.IO).launch {
 }
 ```
 
+## Getting downloaded Mini App Meta data
+
+In Host App, we can get the downloaded manifest information as following:
+
+```kotlin
+  val downloadedManifest = MiniApp.instance().getDownloadedManifest("MINI_APP_ID")
+```
+
+HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
+
 ## Advanced Features
 
 ### Clearing up mini app display
@@ -697,11 +708,30 @@ CoroutineScope(Dispatchers.Main).launch {
 </details>
 
 <details><summary markdown="span"><b>Exception: MiniAppVerificationException</b>
-
 </summary>
 
 This exception will be thrown when the SDK cannot verify the security check on local storage using keystore which means that users are not allowed to use miniapp.
 Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning. 
+
+</details>
+
+<details><summary markdown="span"><b>Build Error: `java.lang.RuntimeException: Duplicate class com.rakuten.tech.mobile.manifestconfig.annotations.ManifestConfig`</b>
+</summary>
+
+This build error could occur if you are using older versions of other libraries from `com.rakuten.tech.mobile`.
+Some of the dependencies in this SDK have changed to a new Group ID of `io.github.rakutentech` (due to the [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)).
+This means that if you have another library in your project which depends on the older dependencies using the Gropu ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
+
+To avoid this, please add the following to your `build.gradle` in order to exclude the old `com.rakuten.tech.mobile` dependencies from your project.
+
+```groovy
+configurations.all {
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+    exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+    exclude group: 'com.rakuten.tech.mobile.sdkutils', module: 'sdk-utils'
+}
+
+```
 
 </details>
 
@@ -712,11 +742,11 @@ We may periodically publish snapshot versions for testing pre-release features. 
 
 ```
 repositories {
-    maven { url 'http://oss.jfrog.org/artifactory/simple/libs-snapshot/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependency {
-    implementation 'com.rakuten.tech.mobile.miniapp:miniapp:X.X.X-SNAPSHOT'
+    implementation 'io.github.rakutentech.miniapp:miniapp:X.X.X-SNAPSHOT'
 }
 ```
 </details>

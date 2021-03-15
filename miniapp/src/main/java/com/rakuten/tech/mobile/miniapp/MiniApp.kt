@@ -44,8 +44,14 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
      * downloading or creating the view.
+     * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -66,8 +72,14 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when there is any other issue during fetching,
      * downloading or creating the view.
+     * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,

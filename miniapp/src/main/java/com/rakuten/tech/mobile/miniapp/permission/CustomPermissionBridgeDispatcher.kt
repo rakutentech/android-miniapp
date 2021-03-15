@@ -6,14 +6,17 @@ import com.rakuten.tech.mobile.miniapp.js.CustomPermissionCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 /**
  * A class to dispatch the bridge operations involved with custom permissions in this SDK.
  */
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,
+    private val downloadedManifestCache: DownloadedManifestCache,
     private val miniAppId: String,
     jsonStr: String
 ) {
@@ -23,7 +26,9 @@ internal class CustomPermissionBridgeDispatcher(
         e.message?.let { postCustomPermissionError(it) }
         null
     }
-    private var permissionsWithDescription = preparePermissionsWithDescription(
+
+    @VisibleForTesting
+    var permissionsAsManifest = preparePermissionsWithDescription(
         callbackObj?.param?.permissions ?: emptyList()
     )
 
@@ -44,7 +49,38 @@ internal class CustomPermissionBridgeDispatcher(
                 permissionsWithDescription.add(Pair(type, it.description))
             }
         }
-        return permissionsWithDescription
+
+        val cachedManifest = downloadedManifestCache.readDownloadedManifest(miniAppId)
+        return getRequiredPermissions(permissionsWithDescription, cachedManifest) +
+                getOptionalPermissions(permissionsWithDescription, cachedManifest)
+    }
+
+    @VisibleForTesting
+    fun getRequiredPermissions(
+        permissions: ArrayList<Pair<MiniAppCustomPermissionType, String>>,
+        cachedManifest: CachedManifest?
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        return try {
+            cachedManifest?.miniAppManifest?.requiredPermissions?.mapNotNull { (first) ->
+                permissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    @VisibleForTesting
+    fun getOptionalPermissions(
+        permissions: List<Pair<MiniAppCustomPermissionType, String>>,
+        cachedManifest: CachedManifest?
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        return try {
+            cachedManifest?.miniAppManifest?.optionalPermissions?.mapNotNull { (first) ->
+                permissions.find { it.first == first }
+            }!!
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     /**
@@ -52,9 +88,9 @@ internal class CustomPermissionBridgeDispatcher(
      * @return [List<Pair<MiniAppCustomPermissionType, String>>].
      */
     fun filterDeniedPermissions(): List<Pair<MiniAppCustomPermissionType, String>> {
-        if (permissionsWithDescription.isEmpty()) return emptyList()
+        if (permissionsAsManifest.isEmpty()) return emptyList()
 
-        return permissionsWithDescription.filter { (first) ->
+        return permissionsAsManifest.filter { (first) ->
             !customPermissionCache.hasPermission(miniAppId, first)
         }
     }
@@ -78,7 +114,6 @@ internal class CustomPermissionBridgeDispatcher(
                 )
             )
         }
-
         return Gson().toJson(responseObj).toString()
     }
 
@@ -89,13 +124,11 @@ internal class CustomPermissionBridgeDispatcher(
      */
     @VisibleForTesting
     fun retrievePermissionsForJson(): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        if (permissionsWithDescription.isEmpty()) return emptyList()
-
         val cachedPermissions = customPermissionCache.readPermissions(miniAppId).pairValues
         val filteredPair =
             mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
-        permissionsWithDescription.forEach { (first) ->
+        permissionsAsManifest.forEach { (first) ->
             cachedPermissions.find {
                 it.first == first
             }?.let { filteredPair.add(it) }
@@ -104,6 +137,19 @@ internal class CustomPermissionBridgeDispatcher(
             // sent from HostApp.
             if (first.type == MiniAppCustomPermissionType.UNKNOWN.type)
                 filteredPair.add(defaultUnknownPermissionPair)
+        }
+
+        // Add DENIED if there is any permission was excluded previously for the manifest check
+        val initialPermissions = arrayListOf<Pair<MiniAppCustomPermissionType, String>>()
+        callbackObj?.param?.permissions?.forEach {
+            MiniAppCustomPermissionType.getValue(it.name).let { type ->
+                initialPermissions.add(Pair(type, it.description))
+            }
+        }
+        initialPermissions.filterNot {
+            permissionsAsManifest.contains(it)
+        }.forEach {
+            filteredPair.add(Pair(it.first, MiniAppCustomPermissionResult.DENIED))
         }
 
         return filteredPair

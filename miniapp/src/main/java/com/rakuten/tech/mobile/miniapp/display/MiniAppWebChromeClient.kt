@@ -95,7 +95,9 @@ internal class MiniAppWebChromeClient(
 
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {
-        webView.evaluateJavascript(bridgeJs) {}
+        if (bridgeJs !== null) {
+            webView.evaluateJavascript(bridgeJs) {}
+        }
     }
 
     //region fullscreen video

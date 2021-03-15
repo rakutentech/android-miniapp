@@ -15,9 +15,7 @@ import kotlin.Exception
  * A caching class to read and store the [CachedManifest] per MiniApp using [SharedPreferences].
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
-internal class DownloadedManifestCache(
-    context: Context
-) {
+internal class DownloadedManifestCache(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )

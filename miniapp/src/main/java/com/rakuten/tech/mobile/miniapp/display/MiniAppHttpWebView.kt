@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 internal class MiniAppHttpWebView(
     context: Context,
@@ -16,6 +17,7 @@ internal class MiniAppHttpWebView(
     miniAppNavigator: MiniAppNavigator?,
     hostAppUserAgentInfo: String,
     miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    downloadedManifestCache: DownloadedManifestCache,
     miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
         context,
         miniAppInfo,
@@ -30,6 +32,7 @@ internal class MiniAppHttpWebView(
     miniAppNavigator,
     hostAppUserAgentInfo,
     miniAppCustomPermissionCache,
+    downloadedManifestCache,
     miniAppWebChromeClient,
     queryParams
 ) {
