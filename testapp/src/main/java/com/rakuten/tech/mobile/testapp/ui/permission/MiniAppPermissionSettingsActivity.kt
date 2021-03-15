@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.permission
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
@@ -16,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ListCustomPermissionBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.launch
 
 class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActivity() {
 
@@ -56,6 +58,10 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
             namesForAdapter.add(it.first)
             resultsForAdapter.add(it.second)
         }
+
+
+
+        Log.d("AAAAA2",""+miniapp.getCustomPermissions(miniAppId).pairValues)
 
         permissionSettingsAdapter.addPermissionList(
             namesForAdapter,

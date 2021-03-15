@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.permission
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -37,41 +38,12 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
-                val cachedPairs = cachedPermission.pairValues.toMutableList()
-
-                // detect any new change with comparing cached permissions and defaultDeniedList
-                // change means added new permission / removed existing permission from defaultDeniedList
-                val defaultPairs = defaultValue.pairValues
-                val changedPermissions = (defaultPairs + cachedPairs).groupBy { it.first.type }
-                    .filter { it.value.size == 1 }
-                    .flatMap { it.value }
-
-                return if (changedPermissions.isNotEmpty()) {
-                    if (cachedPairs.size < defaultPairs.size) {
-                        val filteredValue =
-                            MiniAppCustomPermission(miniAppId, cachedPairs + changedPermissions)
-                        applyStoringPermissions(filteredValue)
-                        filteredValue
-                    } else {
-                        cachedPairs.removeAll { (first) ->
-                            first.type in changedPermissions.groupBy { it.first.type }
-                        }
-                        val filteredValue = MiniAppCustomPermission(miniAppId, cachedPairs)
-                        applyStoringPermissions(filteredValue)
-                        filteredValue
-                    }
-                } else {
-                    val filteredValue = MiniAppCustomPermission(miniAppId, cachedPairs)
-                    applyStoringPermissions(filteredValue)
-                    filteredValue
-                }
+                cachedPermission
             } catch (e: Exception) {
                 // if there is any exception, just return the default value
                 defaultValue
             }
         } else {
-            // if value hasn't been found in SharedPreferences, save the value
-            applyStoringPermissions(defaultValue)
             defaultValue
         }
     }
@@ -101,6 +73,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         val newPermissions = cachedPermissions.mapNotNull { (first) ->
             permissions.find { it.first == first }
         }
+        Log.d("AAAAA",""+MiniAppCustomPermission(miniAppId, newPermissions))
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, newPermissions))
     }
 
@@ -115,7 +88,9 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
         val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))
+        Log.d("AAAAA1",""+jsonToStore)
         prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
+
     }
 
     // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
