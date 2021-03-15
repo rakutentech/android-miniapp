@@ -48,6 +48,7 @@ class RealMiniAppDisplaySpec {
                 miniAppNavigator = mock(),
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock(),
+                downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS
             )
 
@@ -64,6 +65,7 @@ class RealMiniAppDisplaySpec {
             miniAppNavigator = mock(),
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         )
 
