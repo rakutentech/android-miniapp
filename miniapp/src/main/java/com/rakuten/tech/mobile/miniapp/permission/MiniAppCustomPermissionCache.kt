@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
@@ -18,20 +17,14 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
     )
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun doesDataExist(miniAppId: String) = prefs.contains(miniAppId)
-
     /**
      * Reads the grant results from SharedPreferences.
      * @param [miniAppId] the key provided to find the stored results per MiniApp
      * @return [MiniAppCustomPermission] an object to contain the results per MiniApp
-     * if data has been stored in cache, otherwise default value.
+     * if data has been stored in cache, otherwise empty value.
      */
-    @SuppressLint("RestrictedApi")
-    @SuppressWarnings("NestedBlockDepth")
     fun readPermissions(miniAppId: String): MiniAppCustomPermission {
-        val defaultValue = defaultDeniedList(miniAppId)
-        return if (doesDataExist(miniAppId)) {
+        return if (prefs.contains(miniAppId)) {
             try {
                 val cachedPermission: MiniAppCustomPermission = Gson().fromJson(
                     prefs.getString(miniAppId, ""),
@@ -39,11 +32,10 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                 )
                 cachedPermission
             } catch (e: Exception) {
-                // if there is any exception, just return the default value
-                defaultValue
+                MiniAppCustomPermission(miniAppId, emptyList())
             }
         } else {
-            defaultValue
+            MiniAppCustomPermission(miniAppId, emptyList())
         }
     }
 
@@ -124,34 +116,5 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         }?.let { isPermissionGranted = true }
 
         return isPermissionGranted
-    }
-
-    /**
-     * Note: Update this default list when adding or removing a custom permission,
-     * [MiniAppCustomPermissionCache] should automatically handle the value.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun defaultDeniedList(miniAppId: String): MiniAppCustomPermission {
-        return MiniAppCustomPermission(
-            miniAppId,
-            listOf(
-                Pair(
-                    MiniAppCustomPermissionType.USER_NAME,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.PROFILE_PHOTO,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.CONTACT_LIST,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.LOCATION,
-                    MiniAppCustomPermissionResult.DENIED
-                )
-            )
-        )
     }
 }
