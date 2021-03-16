@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
 internal const val TEST_VALUE = "test_value"
@@ -12,6 +14,7 @@ internal const val TEST_URL_FILE = "file.storage/test/file.abc"
 internal const val TEST_URL_HTTPS_1 = "https://www.example.com/1"
 internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
 internal const val TEST_PHONE_URI = "tel:123456"
+internal const val TEST_URL_PARAMS = "param1=value1&param2=value2"
 
 internal const val TEST_MA_ID = "test_id"
 internal const val TEST_MA_URL = "https://miniapp"
@@ -46,4 +49,11 @@ internal val TEST_MA = MiniAppInfo(
     version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
 )
 
-internal const val TEST_URL_PARAMS = "param1=value1&param2=value2"
+//ACCESS_TOKEN_PERMISSIONS
+internal val TEST_ATP1 = AccessTokenPermission(
+    audience = "aud1", scopes = mutableListOf("scopeA", "scopeB")
+)
+internal val TEST_ATP2 = AccessTokenPermission(
+    audience = "aud2", scopes = mutableListOf("scopeB")
+)
+internal val TEST_ATP_LIST = mutableListOf<AccessTokenPermission>(TEST_ATP1, TEST_ATP2)

@@ -22,6 +22,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
@@ -181,6 +182,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             override fun getAccessToken(
                 miniAppId: String,
+                accessTokenPermission: AccessTokenPermission,
                 onSuccess: (tokenData: TokenData) -> Unit,
                 onError: (message: String) -> Unit
             ) = onSuccess(AppSettings.instance.tokenData)

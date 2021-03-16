@@ -294,6 +294,7 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(
                     listOf(requiredPermissionObj),
                     listOf(optionalPermissionObj),
+                    TEST_ATP_LIST,
                     hashMapOf()
                 )
             )
@@ -322,6 +323,7 @@ class MiniAppDownloaderSpec {
                 MetadataResponse(
                     listOf(requiredPermissionObj),
                     listOf(optionalPermissionObj),
+                    TEST_ATP_LIST,
                     hashMapOf()
                 )
             )
@@ -350,7 +352,7 @@ class MiniAppDownloaderSpec {
             val optionalPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason for profile photo")
             val metadataEntity = MetadataEntity(
-                MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj), hashMapOf())
+                MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf())
             )
 
             When calling apiClient.fetchMiniAppManifest(
@@ -363,7 +365,7 @@ class MiniAppDownloaderSpec {
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
-            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, hashMapOf())
+            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, TEST_ATP_LIST, hashMapOf())
 
             assertEquals(expected, actual)
         }
@@ -371,7 +373,8 @@ class MiniAppDownloaderSpec {
     @Test
     fun `prepareMiniAppManifest should return empty values correctly`() =
         runBlockingTest {
-            val metadataEntity = MetadataEntity(MetadataResponse(null, null, null))
+            val metadataEntity = MetadataEntity(MetadataResponse(
+                null, null, emptyList(), null))
 
             When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
@@ -379,7 +382,7 @@ class MiniAppDownloaderSpec {
             ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity)
-            val expected = MiniAppManifest(emptyList(), emptyList(), emptyMap())
+            val expected = MiniAppManifest(emptyList(), emptyList(), emptyList(), emptyMap())
 
             assertEquals(expected, actual)
         }

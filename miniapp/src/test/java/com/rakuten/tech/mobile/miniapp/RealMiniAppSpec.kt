@@ -95,6 +95,7 @@ class RealMiniAppSpec {
             MiniAppManifest(
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
                 listOf(),
+                TEST_ATP_LIST,
                 mapOf()
             )
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)

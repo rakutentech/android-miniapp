@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_ACCESS_TOKEN
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS
@@ -84,6 +85,7 @@ class UserInfoBridgeSpec {
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.ACCESS_TOKEN)
         ).thenReturn(true)
+        When calling downloadedManifestCache.getAccessTokenPermissions(TEST_MA_ID) itReturns TEST_ATP_LIST
     }
 
     /** start region: onGetUserName */
@@ -109,11 +111,11 @@ class UserInfoBridgeSpec {
     }
 
     private fun createUserInfoBridgeWrapper(userInfoBridgeDispatcher: UserInfoBridgeDispatcher): UserInfoBridge {
-        val userInfoBridgeWrapper =
-            UserInfoBridge()
+        val userInfoBridgeWrapper = UserInfoBridge()
         userInfoBridgeWrapper.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,
+            downloadedManifestCache,
             TEST_MA.id
         )
         userInfoBridgeWrapper.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
@@ -254,13 +256,9 @@ class UserInfoBridgeSpec {
 
     /** start region: access token */
     private val testToken = TokenData("test_token", 0)
-    private val testAccessTokenPermission = AccessTokenPermission(
-            audience = "API-C",
-            scopes = mutableListOf("point", "user_info")
-    )
     private val tokenCallbackObj = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(testAccessTokenPermission),
+            param = Gson().toJson(TEST_ATP1),
             id = TEST_CALLBACK_ID
     )
 
@@ -303,11 +301,6 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        val tokenCallbackObj = CallbackObj(
-                action = ActionType.GET_ACCESS_TOKEN.action,
-                param = null,
-                id = TEST_CALLBACK_ID
-        )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
@@ -329,13 +322,63 @@ class UserInfoBridgeSpec {
     }
 
     @Test
+    fun `postError should be called when the requested audience and scope not match the define in manifest`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        val errMsg = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
+
+        val tokenCallbackObj = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = null,
+            id = TEST_CALLBACK_ID
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+
+        val atp2 = AccessTokenPermission(audience = "aud", scopes = mutableListOf("scopeB"))
+        val tokenCallbackObj2 = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = Gson().toJson(atp2),
+            id = TEST_CALLBACK_ID + '2'
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
+        verify(bridgeExecutor).postError(tokenCallbackObj2.id, errMsg)
+
+        val atp3 = AccessTokenPermission(audience = "aud1", scopes = mutableListOf())
+        val tokenCallbackObj3 = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = Gson().toJson(atp3),
+            id = TEST_CALLBACK_ID + '3'
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj3)
+        verify(bridgeExecutor).postError(tokenCallbackObj3.id, errMsg)
+
+        val atp4 = AccessTokenPermission(audience = "aud2", scopes = mutableListOf("scopeA", "scopeB"))
+        val tokenCallbackObj4 = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = Gson().toJson(atp4),
+            id = TEST_CALLBACK_ID + '4'
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj4)
+        verify(bridgeExecutor).postError(tokenCallbackObj4.id, errMsg)
+    }
+
+    @Test
     fun `postValue should be called when retrieve access token successfully`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
-
         verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+
+        val atp2 = AccessTokenPermission(audience = "aud1", scopes = mutableListOf("scopeB"))
+        val tokenCallbackObj2 = CallbackObj(
+            action = ActionType.GET_ACCESS_TOKEN.action,
+            param = Gson().toJson(atp2),
+            id = TEST_CALLBACK_ID
+        )
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
+        verify(bridgeExecutor).postValue(tokenCallbackObj2.id, Gson().toJson(testToken))
     }
 
     @Test
