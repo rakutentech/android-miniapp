@@ -102,7 +102,6 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
     private fun initiatePreloadScreen(miniAppId: String) {
         val viewModel: MiniAppInputViewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
                 .apply {
-                    // observe version id
                     miniAppVersionId.observe(this@MiniAppInputActivity, Observer {
                         preloadMiniAppWindow.initiate(
                             null,

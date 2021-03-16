@@ -81,7 +81,6 @@ class PreloadMiniAppWindow(
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
                 .apply {
-                    // observe manifest
                     miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
                         if (apiManifest != null)
                             onShowManifest(apiManifest)
