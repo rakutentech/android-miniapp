@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -40,15 +41,15 @@ class MiniAppDisplayViewModel constructor(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
-        miniAppFileChooser: MiniAppFileChooser,
+        miniAppFilePicker: MiniAppFilePicker,
         appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFilePicker, appParameters)
             else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFilePicker, appParameters)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
@@ -70,13 +71,13 @@ class MiniAppDisplayViewModel constructor(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
-        miniAppFileChooser: MiniAppFileChooser,
+        miniAppFilePicker: MiniAppFilePicker,
         appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFilePicker, appParameters)
             hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {

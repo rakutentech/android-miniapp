@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -16,7 +16,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
-        miniAppFileChooser: MiniAppFileChooser?,
+        miniAppFilePicker: MiniAppFilePicker?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
@@ -25,7 +25,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppInfo = miniAppInfo,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
-        miniAppFileChooser = miniAppFileChooser,
+        miniAppFilePicker = miniAppFilePicker,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = downloadedManifestCache,
@@ -36,7 +36,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
-        miniAppFileChooser: MiniAppFileChooser?,
+        miniAppFilePicker: MiniAppFilePicker?,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String
@@ -44,7 +44,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = miniAppNavigator,
-        miniAppFileChooser = miniAppFileChooser,
+        miniAppFilePicker = miniAppFilePicker,
         hostAppUserAgentInfo = hostAppUserAgentInfo,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = downloadedManifestCache,

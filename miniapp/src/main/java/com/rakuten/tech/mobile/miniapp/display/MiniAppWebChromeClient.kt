@@ -1,34 +1,26 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Environment
-import android.os.Parcelable
-import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
-import androidx.core.app.ActivityCompat.startActivityForResult
-import com.rakuten.tech.mobile.miniapp.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.MiniAppFilePickingException
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
-import java.io.File
 
 internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppFileChooser: MiniAppFileChooser?
+    private val miniAppFilePicker: MiniAppFilePicker?
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -177,51 +169,14 @@ internal class MiniAppWebChromeClient(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: FileChooserParams?
     ): Boolean {
-
         try {
-            miniAppFileChooser?.getFile = filePathCallback
-
-            // using file chooser intent
-            val intent = fileChooserParams!!.createIntent()
-            //(context as Activity).startActivityForResult(intent, 1115)
-
-            // camera upload intent
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val externalDataDir =
-                Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DCIM
-                )
-            val cameraDataDir = File(
-                externalDataDir.absolutePath +
-                        File.separator + "browser-photos"
-            )
-            cameraDataDir.mkdirs()
-            val mCameraFilePath =
-                cameraDataDir.absolutePath + File.separator +
-                        System.currentTimeMillis() + ".jpg"
-
-            Log.d("AAAAAurl",""+ Uri.fromFile(File(mCameraFilePath)))
-
-            miniAppFileChooser?.cameraFilePath = Uri.fromFile(File(mCameraFilePath))
-
-            miniAppFileChooser?.getCameraFilePath { Uri.fromFile(File(mCameraFilePath)) }
-
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(File(mCameraFilePath)))
-
-            val i = Intent(Intent.ACTION_GET_CONTENT)
-            i.addCategory(Intent.CATEGORY_OPENABLE)
-            i.type = "image/*"
-
-            val chooserIntent = Intent.createChooser(i, "Image Chooser")
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf<Parcelable>(cameraIntent))
-
-            (context as Activity).startActivityForResult(chooserIntent, 1115)
-
-            Log.d("AAAAA sdk",""+filePathCallback)
-        } catch (e: java.lang.Exception) {
-
+            miniAppFilePicker?.requestFile(filePathCallback) { requestCode ->
+                val intent = fileChooserParams?.createIntent()
+                (context as Activity).startActivityForResult(intent, requestCode)
+            }
+        } catch (e: Exception) {
+            throw (MiniAppFilePickingException(e.message.toString()))
         }
-
         return true
     }
 }

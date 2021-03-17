@@ -19,7 +19,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -161,13 +160,9 @@ internal class MiniAppDownloader(
     ): List<Pair<MiniAppCustomPermissionType, String>> {
         val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
         permissions.forEach {
-            try {
-                val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
-                if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
-                    pairs.add(Pair(permissionType, it.reason ?: ""))
-            } catch (e: Exception) {
-                pairs.add(Pair(MiniAppCustomPermissionType.UNKNOWN, it.reason ?: ""))
-            }
+            val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
+            if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
+                pairs.add(Pair(permissionType, it.reason ?: ""))
         }
         return pairs
     }

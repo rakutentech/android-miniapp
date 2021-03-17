@@ -54,6 +54,11 @@ class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
     MiniAppSdkException("Mini App has not been granted all of the required permissions " +
             "for the provided Mini App Id: $appId and the version id: $versionId")
 
+/**
+ * Exception which is thrown when miniapp can't pick a file from the device.
+ */
+class MiniAppFilePickingException(message: String) : MiniAppSdkException("Cannot pick the file: $message")
+
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 
     constructor(e: Exception) : this("Found some problem, ${e.message}", e)
