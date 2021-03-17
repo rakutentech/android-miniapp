@@ -124,7 +124,14 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
             selectedMiniAppInfo = miniAppInfo
-            activity?.let { preloadMiniAppWindow.initiate(miniAppInfo, miniAppInfo.id, this) }
+            activity?.let {
+                preloadMiniAppWindow.initiate(
+                    miniAppInfo,
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId,
+                    this
+                )
+            }
         }
     }
 
