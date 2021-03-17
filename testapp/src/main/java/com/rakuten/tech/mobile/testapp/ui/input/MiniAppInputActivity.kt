@@ -92,9 +92,7 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
     }
 
     private fun displayMiniApp() = when(display) {
-        is InputDisplay.AppId -> {
-            initiatePreloadScreen(display.input.trim())
-        }
+        is InputDisplay.AppId -> initiatePreloadScreen(display.input.trim())
         is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
         is InputDisplay.None -> {}
     }
