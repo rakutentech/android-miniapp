@@ -11,25 +11,16 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PreloadMiniAppViewModel constructor(
-    private val miniApp: MiniApp
-) : ViewModel() {
-
+class PreloadMiniAppViewModel constructor(private val miniApp: MiniApp) : ViewModel() {
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
-    private val _miniAppVersionId = MutableLiveData<String>()
     private val _manifestErrorData = MutableLiveData<String>()
-    private val _versionIdErrorData = MutableLiveData<String>()
 
     val miniAppManifest: LiveData<MiniAppManifest>
         get() = _miniAppManifest
-    val miniAppVersionId: LiveData<String>
-        get() = _miniAppVersionId
     val manifestErrorData: LiveData<String>
         get() = _manifestErrorData
-    val versionIdErrorData: LiveData<String>
-        get() = _versionIdErrorData
 
     fun checkMiniAppManifest(miniAppId: String, versionId: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -45,22 +36,17 @@ class PreloadMiniAppViewModel constructor(
         }
     }
 
-    fun getMiniAppVersionId(miniAppId: String) = viewModelScope.launch(Dispatchers.IO) {
-        try {
-            val miniAppInfo = miniApp.fetchInfo(miniAppId)
-            _miniAppVersionId.postValue(miniAppInfo.version.versionId)
-        } catch (error: MiniAppSdkException) {
-            _versionIdErrorData.postValue(error.message)
-        }
-    }
-
     private fun isManifestEqual(apiManifest: MiniAppManifest, downloadedManifest: MiniAppManifest): Boolean {
-        val changedRequiredPermissions = apiManifest.requiredPermissions.filterNot {
-            downloadedManifest.requiredPermissions.contains(it)
-        }
-        val changedOptionalPermissions = apiManifest.optionalPermissions.filterNot {
-            downloadedManifest.optionalPermissions.contains(it)
-        }
+        val changedRequiredPermissions =
+            (apiManifest.requiredPermissions + downloadedManifest.requiredPermissions).groupBy { it.first.type }
+                .filter { it.value.size == 1 }
+                .flatMap { it.value }
+
+        val changedOptionalPermissions =
+            (apiManifest.optionalPermissions + downloadedManifest.optionalPermissions).groupBy { it.first.type }
+                .filter { it.value.size == 1 }
+                .flatMap { it.value }
+
         return changedRequiredPermissions.isEmpty() && changedOptionalPermissions.isEmpty() &&
                 apiManifest.customMetaData == downloadedManifest.customMetaData
     }
