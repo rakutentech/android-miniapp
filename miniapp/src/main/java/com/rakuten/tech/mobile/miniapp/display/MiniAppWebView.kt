@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import com.rakuten.tech.mobile.miniapp.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
@@ -29,13 +30,15 @@ internal open class MiniAppWebView(
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     var miniAppNavigator: MiniAppNavigator?,
+    private val miniAppFileChooser: MiniAppFileChooser?,
     val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     val downloadedManifestCache: DownloadedManifestCache,
     val miniAppWebChromeClient: MiniAppWebChromeClient = MiniAppWebChromeClient(
         context,
         miniAppInfo,
-        miniAppCustomPermissionCache
+        miniAppCustomPermissionCache,
+        miniAppFileChooser
     ),
     val queryParams: String
 ) : WebView(context), WebViewListener {

@@ -48,6 +48,7 @@ internal class RealMiniApp(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -59,6 +60,7 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
@@ -70,6 +72,7 @@ internal class RealMiniApp(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -81,6 +84,7 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
@@ -92,6 +96,7 @@ internal class RealMiniApp(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -101,6 +106,7 @@ internal class RealMiniApp(
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
