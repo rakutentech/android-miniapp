@@ -13,7 +13,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.util.ArrayList
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
@@ -99,6 +99,7 @@ internal class UserInfoBridge {
         if (doesMatchManifest(tokenPermission)) {
 
             val successCallback = { accessToken: TokenData ->
+                accessToken.accessTokenPermission = tokenPermission
                 bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
             }
             val errorCallback = { message: String ->
@@ -106,29 +107,27 @@ internal class UserInfoBridge {
             }
 
             try {
-                userInfoBridgeDispatcher.getAccessToken(
-                    miniAppId,
-                    tokenPermission,
-                    successCallback,
-                    errorCallback
-                )
+                userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
             } catch (e: MiniAppSdkException) {
                 if (e.message == "The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
-                    userInfoBridgeDispatcher.getAccessToken(
-                        miniAppId,
-                        successCallback,
-                        errorCallback
-                    )
+                    userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
                 else
                     throw e
             }
         } else
-            bridgeExecutor.postError(callbackObj.id,
-                "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
+            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
     }
 
-    private fun doesMatchManifest(tokenPermission: AccessTokenPermission) = tokenPermission.scopes.isNotEmpty() &&
-        downloadedManifestCache.getAccessTokenPermissions(miniAppId).contains(tokenPermission)
+    private fun doesMatchManifest(tokenPermission: AccessTokenPermission): Boolean {
+        if (tokenPermission.scopes.isNotEmpty()) {
+            val atpList = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
+            atpList.forEach {
+                if (it.audience == tokenPermission.audience && it.scopes.containsAll(tokenPermission.scopes))
+                    return true
+            }
+        }
+        return false
+    }
 
     private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenPermission>(
             callbackObj.param.toString(),

@@ -49,7 +49,7 @@ internal val TEST_MA = MiniAppInfo(
     version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
 )
 
-//ACCESS_TOKEN_PERMISSIONS
+// ACCESS_TOKEN_PERMISSIONS
 internal val TEST_ATP1 = AccessTokenPermission(
     audience = "aud1", scopes = mutableListOf("scopeA", "scopeB")
 )

@@ -8,5 +8,5 @@ import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
 data class TokenData(
     val token: String,
     val validUntil: Long,
-    val accessTokenPermission: AccessTokenPermission = AccessTokenPermission()
+    var accessTokenPermission: AccessTokenPermission = AccessTokenPermission()
 )

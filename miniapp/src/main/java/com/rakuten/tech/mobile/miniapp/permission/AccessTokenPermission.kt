@@ -12,5 +12,5 @@ data class AccessTokenPermission(
     val audience: String,
     val scopes: List<String>
 ) {
-    constructor(): this(audience = "", scopes = mutableListOf())
+    constructor() : this(audience = "", scopes = mutableListOf())
 }

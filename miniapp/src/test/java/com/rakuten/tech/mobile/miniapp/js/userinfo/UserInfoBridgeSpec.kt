@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_DISPLAY_NAME
@@ -22,9 +23,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -364,12 +363,9 @@ class UserInfoBridgeSpec {
     }
 
     @Test
-    fun `postValue should be called when retrieve access token successfully`() {
+    fun `should return the audience & scopes for miniapp`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
-
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
-        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
 
         val atp2 = AccessTokenPermission(audience = "aud1", scopes = mutableListOf("scopeB"))
         val tokenCallbackObj2 = CallbackObj(
@@ -378,7 +374,18 @@ class UserInfoBridgeSpec {
             id = TEST_CALLBACK_ID
         )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
+
         verify(bridgeExecutor).postValue(tokenCallbackObj2.id, Gson().toJson(testToken))
+        testToken.accessTokenPermission shouldEqual atp2
+    }
+
+    @Test
+    fun `postValue should be called when retrieve access token successfully`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
 
     @Test

@@ -352,7 +352,8 @@ class MiniAppDownloaderSpec {
             val optionalPermissionObj =
                 MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason for profile photo")
             val metadataEntity = MetadataEntity(
-                MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf())
+                MetadataResponse(listOf(requiredPermissionObj), listOf(optionalPermissionObj),
+                    TEST_ATP_LIST, hashMapOf())
             )
 
             When calling apiClient.fetchMiniAppManifest(

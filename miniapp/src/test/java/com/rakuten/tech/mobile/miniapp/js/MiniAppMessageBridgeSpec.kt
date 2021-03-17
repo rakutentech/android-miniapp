@@ -393,25 +393,24 @@ class ScreenBridgeSpec : BridgeCommon() {
     )
 
     @Test
-    fun `postValue should be called when screen action is executed successfully`() {
+    fun `postValue should be called when screen action is executed successfully`() =
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(
-                activity = activity,
-                webViewListener = webViewListener,
-                customPermissionCache = mock(),
-                downloadedManifestCache = mock(),
-                miniAppId = TEST_MA_ID
-            )
-            miniAppBridge.allowScreenOrientation(true)
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
-            miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
-            miniAppBridge.onWebViewDetach()
+        val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = activity,
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+        miniAppBridge.allowScreenOrientation(true)
+        miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
+        miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
+        miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_RELEASE))
+        miniAppBridge.onWebViewDetach()
 
-            verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
-        }
+        verify(bridgeExecutor, times(3)).postValue(TEST_CALLBACK_ID, SUCCESS)
     }
 
     @Test
