@@ -30,9 +30,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
-                cachedPermission
-//                val nonNullList = cachedPermission.pairValues.filterNot { it.first == null }
-//                cachedPermission.copy(pairValues = nonNullList)
+                val nonNullList = cachedPermission.pairValues.filterNot { it.first == null }
+                cachedPermission.copy(pairValues = nonNullList)
             } catch (e: Exception) {
                 MiniAppCustomPermission(miniAppId, emptyList())
             }
