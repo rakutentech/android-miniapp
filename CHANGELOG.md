@@ -4,7 +4,7 @@
 - **Deprecated:** `getAccessToken` with only miniapp id verfication.
 - **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
 
-### 3.X.X (In progress)
+### 3.0.0 (2021-03-18)
 **SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
@@ -30,7 +30,7 @@ Before v3.0.0  |  v3.0.0
 **Sample App**
 - **Feature:** Added first-time launching screen to show the manifest information before downloading/launching a MiniApp.
 
-### 2.8.0 (2020-01-25)
+### 2.8.0 (2021-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support analytics SDK with event tracking.
