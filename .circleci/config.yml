@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  android-sdk: rakutentech/android-sdk@0.2.0
+  android-sdk: rakutentech/android-sdk@0.2.1
   app-center: rakutentech/app-center@0.1.2
 
 commands:
@@ -62,6 +62,11 @@ workflows:
             - release-verification
           after-prepare-steps:
             - update-submodules
+            # Retrieve Base64 PGP Key and save to file
+            - run: |
+                if [[ "$RELEASE_PGP_KEY_BASE64" != "" ]]; then
+                  base64 -d \<<< "$RELEASE_PGP_KEY_BASE64" > ./maven-central-key.gpg
+                fi
           filters:
             tags:
               only: /^v.*/

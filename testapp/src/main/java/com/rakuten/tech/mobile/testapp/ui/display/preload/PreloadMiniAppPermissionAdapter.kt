@@ -14,9 +14,7 @@ import com.rakuten.tech.mobile.testapp.ui.permission.toReadableName
 class PreloadMiniAppPermissionAdapter :
     RecyclerView.Adapter<PreloadMiniAppPermissionAdapter.ViewHolder?>() {
 
-    private var manifestPermissionNames = ArrayList<MiniAppCustomPermissionType>()
-    private var manifestPermissionReasons = ArrayList<String>()
-    private var manifestPermissionResults = ArrayList<MiniAppCustomPermissionResult>()
+    private var manifestPermissions = mutableListOf<PreloadManifestPermission>()
     var manifestPermissionPairs =
         arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
 
@@ -28,53 +26,47 @@ class PreloadMiniAppPermissionAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = toReadableName(manifestPermissionNames[position])
+        holder.permissionName.text = toReadableName(manifestPermissions[position].type)
+        holder.permissionSwitch.visibility =
+            if (manifestPermissions[position].isRequired) View.GONE else View.VISIBLE
+        holder.permissionStatus.visibility =
+            if (manifestPermissions[position].isRequired) View.VISIBLE else View.GONE
+
         holder.permissionSwitch.isChecked =
-            permissionResultToChecked(manifestPermissionResults[position])
-        if (manifestPermissionReasons.isNotEmpty())
-            holder.permissionReason.text = manifestPermissionReasons[position]
+            permissionResultToChecked(MiniAppCustomPermissionResult.ALLOWED)
+        if (manifestPermissions[position].reason.isNotEmpty())
+            holder.permissionReason.text = manifestPermissions[position].reason
 
         if (holder.permissionReason.text.isEmpty())
             holder.permissionReason.visibility = View.GONE
         else holder.permissionReason.visibility = View.VISIBLE
 
-        // TODO: "required" permissions should be just listed with a label "Required"
-        // TODO: "optional" permissions should have a toggle switch to enable/disable the permission
-
         holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
             manifestPermissionPairs.removeAt(position)
             manifestPermissionPairs.add(
-                position,
-                Pair(
-                    manifestPermissionNames[position],
+                position, Pair(
+                    manifestPermissions[position].type,
                     permissionResultToText(holder.permissionSwitch.isChecked)
                 )
             )
         }
     }
 
-    override fun getItemCount(): Int = manifestPermissionNames.size
+    override fun getItemCount(): Int = manifestPermissions.size
 
-    fun addManifestPermissionList(
-        names: ArrayList<MiniAppCustomPermissionType>,
-        results: ArrayList<MiniAppCustomPermissionResult>,
-        reasons: ArrayList<String>
-    ) {
-        manifestPermissionNames = names
-        manifestPermissionResults = results
-        manifestPermissionNames.forEachIndexed { position, _ ->
-            manifestPermissionPairs.add(
-                position,
-                Pair(manifestPermissionNames[position], manifestPermissionResults[position])
-            )
+    fun addManifestPermissionList(permissions: MutableList<PreloadManifestPermission>) {
+        manifestPermissionPairs.clear()
+        manifestPermissions = permissions
+        manifestPermissions.forEachIndexed { position, (type, _) ->
+            manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
         }
-        manifestPermissionReasons = reasons
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: ItemListManifestPermissionBinding) :
         RecyclerView.ViewHolder(itemView.root) {
         val permissionName: TextView = itemView.manifestPermissionName
+        val permissionStatus: TextView = itemView.manifestPermissionStatus
         val permissionSwitch: SwitchCompat = itemView.manifestPermissionSwitch
         val permissionReason: TextView = itemView.permissionReason
     }

@@ -25,6 +25,7 @@
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
 
     <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
+    <string name="miniapp_preload_perm_status_required">(Required)</string>
 
     <string name="action_display">Display</string>
     <string name="action_go_input">Display Miniapp From Input</string>
@@ -45,6 +46,7 @@
     <string name="error_invalid_input">Invalid Input</string>
 
     <string name="message_empty_miniapps">There is no Mini App found!</string>
+    <string name="message_empty_permissions">There is no permission found!</string>
 
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 </resources>

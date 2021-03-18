@@ -46,6 +46,14 @@ internal class DevicePermissionsNotImplementedException :
 internal class CustomPermissionsNotImplementedException :
     MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
 
+/**
+ * Exception which is thrown when the required permissions of the manifest are not granted.
+ */
+@Suppress("MaxLineLength")
+class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
+    MiniAppSdkException("Mini App has not been granted all of the required permissions " +
+            "for the provided Mini App Id: $appId and the version id: $versionId")
+
 internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 
     constructor(e: Exception) : this("Found some problem, ${e.message}", e)

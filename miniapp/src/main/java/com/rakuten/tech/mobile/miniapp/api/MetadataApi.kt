@@ -33,6 +33,6 @@ data class MetadataResponse(
 /** Metadata permission object includes name and reason. */
 @Keep
 data class MetadataPermissionObj(
-    val name: String,
-    val reason: String = ""
+    val name: String?,
+    val reason: String?
 )

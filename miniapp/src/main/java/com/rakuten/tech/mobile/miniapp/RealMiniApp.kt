@@ -8,15 +8,21 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LongMethod")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
-    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
+    initDownloadedManifestCache: () -> DownloadedManifestCache
 ) : MiniApp() {
+
+    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
+    private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -47,12 +53,14 @@ internal class RealMiniApp(
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
+            verifyManifest(appId, miniAppInfo.version.versionId)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -67,12 +75,14 @@ internal class RealMiniApp(
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
+            verifyManifest(appInfo.id, appInfo.version.versionId)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -92,6 +102,7 @@ internal class RealMiniApp(
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppCustomPermissionCache,
+                downloadedManifestCache,
                 queryParams
             )
         }
@@ -99,6 +110,9 @@ internal class RealMiniApp(
 
     override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
         miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+
+    override fun getDownloadedManifest(appId: String): MiniAppManifest? =
+        downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
@@ -111,6 +125,21 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
+    }
+
+    private suspend fun verifyManifest(appId: String, versionId: String) {
+        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
+        if (cachedManifest?.versionId != versionId) {
+            val apiManifest = getMiniAppManifest(appId, versionId)
+            downloadedManifestCache.storeDownloadedManifest(appId, CachedManifest(versionId, apiManifest))
+        }
+
+        val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
+        val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
+        miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
+
+        if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
+            throw RequiredPermissionsNotGrantedException(appId, versionId)
     }
 
     @VisibleForTesting

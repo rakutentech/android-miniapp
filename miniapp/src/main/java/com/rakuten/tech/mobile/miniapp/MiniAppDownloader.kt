@@ -2,7 +2,9 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
@@ -21,17 +23,19 @@ import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
-@Suppress("SwallowedException", "TooManyFunctions")
+@Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
+    initManifestApiCache: () -> ManifestApiCache,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
     private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
     private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
+    private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -128,25 +132,39 @@ internal class MiniAppDownloader(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            val manifestResponse = apiClient.fetchMiniAppManifest(appId, versionId)
-            return prepareMiniAppManifest(manifestResponse)
+            // every version should have it's own manifest information or null
+            val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+            if (cachedLatestManifest != null) cachedLatestManifest
+            else {
+                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                val latestManifest = prepareMiniAppManifest(apiResponse)
+                manifestApiCache.storeManifest(appId, versionId, latestManifest)
+                latestManifest
+            }
         }
     }
 
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
-        val requiredPermissions = metadataEntity.metadata?.requiredPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
-        } ?: emptyList()
-
-        val optionalPermissions = metadataEntity.metadata?.optionalPermissions?.map {
-            Pair(MiniAppCustomPermissionType.getValue(it.name), it.reason)
-        } ?: emptyList()
-
+        val requiredPermissions = listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
+        val optionalPermissions = listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
+
         return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+    }
+
+    private fun listOfPermissions(
+        permissions: List<MetadataPermissionObj>
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
+        permissions.forEach {
+            val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
+            if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
+                pairs.add(Pair(permissionType, it.reason ?: ""))
+        }
+        return pairs
     }
 
     @SuppressWarnings("LongMethod")
