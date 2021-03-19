@@ -56,6 +56,11 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
     }
 
+    /**
+     * Remove permissions from cache which are not matched with the supplied [permissions].
+     * @param [miniAppId] the key provided to find the stored results per MiniApp.
+     * @param [permissions] the custom permissions to match with the cached permissions.
+     */
     fun removePermissionsNotMatching(
         miniAppId: String,
         permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
@@ -88,13 +93,18 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
     }
 
+    /**
+     * Prepare all the permissions supplied from HostApp including the permissions which was already
+     * cached. It removes the old cached results if HostApp supplies the new results.
+     * @param [miniAppId] the key provided to find the cached results per MiniApp.
+     * @param [supplied] the custom permissions sent by Host App.
+     */
     @VisibleForTesting
     fun prepareAllPermissionsToStore(
         miniAppId: String,
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
-        // retrieve permissions by comparing cached and supplied (from HostApp) permissions
-        // readPermissions already filters the changed permissions from defaultDeniedList
+        // retrieve all permissions by comparing cached and supplied (from HostApp) permissions
         val cached = readPermissions(miniAppId).pairValues
         val combined = (cached + supplied).toMutableList()
         combined.removeAll { (first) ->
