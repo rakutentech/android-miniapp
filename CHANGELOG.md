@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+### 3.0.1 (In progress)
+**SDK**
+- **Feature:** Added file picking capability in mini app webview, HostApp can use `MiniAppFilePicker` to pick a file from miniapp per request code.
+- **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFilePicker` object to pick a file from miniapp.
+
 ### 3.X.X (In progress)
 **SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:

@@ -16,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
 
+@Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
@@ -164,6 +165,7 @@ internal class MiniAppWebChromeClient(
             onHideCustomView()
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun onShowFileChooser(
         webView: WebView?,
         filePathCallback: ValueCallback<Array<Uri>>?,

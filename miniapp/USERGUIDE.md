@@ -622,6 +622,44 @@ mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
 
+### File picking
+**API Docs:** [MiniAppFilePicker](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-picker/)
+
+The mini app is able to pick a file which is requested using [input type="file"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file).
+HostApp can use `MiniAppFilePicker` object to pass through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFilePicker: MiniAppFilePicker)`.
+
+- Implement `MiniAppFilePicker` in Host App Activity.
+
+```kotlin
+var filePathHostCallback: ValueCallback<Array<Uri>>? = null
+val filePickingReqCode = REQUEST_CODE
+
+miniAppFilePicker = object : MiniAppFilePicker {
+    override fun requestFile(
+        filePathCallback: ValueCallback<Array<Uri>>?,
+        callback: (requestCode: Int) -> Unit
+    ) {
+        filePathHostCallback = filePathCallback
+        callback.invoke(filePickingReqCode)
+    }
+}
+```
+
+- Then, HostApp activity can use `filePathHostCallback` to receive the data per `filePickingReqCode` as following:
+
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
+        data?.let { intent ->
+            val result: Uri? = intent.data
+            filePathHostCallback?.onReceiveValue(arrayOf(result!!))
+        }
+    }
+}
+```
+
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
 

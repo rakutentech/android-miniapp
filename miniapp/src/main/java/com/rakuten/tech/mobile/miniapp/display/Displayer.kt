@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "LongMethod")
 internal class Displayer(private val hostAppUserAgentInfo: String) {
 
     fun createMiniAppDisplay(

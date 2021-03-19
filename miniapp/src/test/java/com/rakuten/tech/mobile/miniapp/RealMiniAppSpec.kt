@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -46,6 +47,7 @@ class RealMiniAppSpec {
         )
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
     private val miniAppNavigator: MiniAppNavigator = mock()
+    private val miniAppFilePicker: MiniAppFilePicker = mock()
     private val deniedPermission = MiniAppCustomPermission(
         TEST_MA_ID, listOf(
             Pair(
@@ -114,7 +116,7 @@ class RealMiniAppSpec {
             verify(displayer, times(1))
                 .createMiniAppDisplay(
                     getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
+                    miniAppMessageBridge, null, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
                 )
         }
 
@@ -131,6 +133,7 @@ class RealMiniAppSpec {
                     getMiniAppResult.second,
                     miniAppMessageBridge,
                     miniAppNavigator,
+                    miniAppFilePicker,
                     miniAppCustomPermissionCache,
                     downloadedManifestCache,
                     ""
