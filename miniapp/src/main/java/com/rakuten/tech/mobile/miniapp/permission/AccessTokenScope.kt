@@ -8,7 +8,7 @@ import androidx.annotation.Keep
  *  @property scopes List of areas that token can access.
  */
 @Keep
-data class AccessTokenPermission(
+data class AccessTokenScope(
     val audience: String,
     val scopes: List<String>
 ) {

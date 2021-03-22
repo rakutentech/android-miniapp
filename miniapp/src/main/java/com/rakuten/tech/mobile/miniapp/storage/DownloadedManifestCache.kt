@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -99,7 +99,7 @@ internal class DownloadedManifestCache(context: Context) {
         }
     }
 
-    fun getAccessTokenPermissions(miniAppId: String): List<AccessTokenPermission> {
+    fun getAccessTokenPermissions(miniAppId: String): List<AccessTokenScope> {
         val manifest: CachedManifest? = readDownloadedManifest(miniAppId)
         return manifest?.miniAppManifest?.accessTokenPermissions ?: emptyList()
     }

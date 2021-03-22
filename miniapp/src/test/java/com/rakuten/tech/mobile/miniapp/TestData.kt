@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
@@ -50,10 +50,10 @@ internal val TEST_MA = MiniAppInfo(
 )
 
 // ACCESS_TOKEN_PERMISSIONS
-internal val TEST_ATP1 = AccessTokenPermission(
+internal val TEST_ATP1 = AccessTokenScope(
     audience = "aud1", scopes = mutableListOf("scopeA", "scopeB")
 )
-internal val TEST_ATP2 = AccessTokenPermission(
+internal val TEST_ATP2 = AccessTokenScope(
     audience = "aud2", scopes = mutableListOf("scopeB")
 )
-internal val TEST_ATP_LIST = mutableListOf<AccessTokenPermission>(TEST_ATP1, TEST_ATP2)
+internal val TEST_ATP_LIST = mutableListOf<AccessTokenScope>(TEST_ATP1, TEST_ATP2)

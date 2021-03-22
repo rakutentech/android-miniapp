@@ -269,7 +269,7 @@ class UserInfoBridgeSpec {
             object : UserInfoBridgeDispatcher {
                 override fun getAccessToken(
                     miniAppId: String,
-                    accessTokenPermission: AccessTokenPermission,
+                    accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
                     onError: (message: String) -> Unit
                 ) {
@@ -334,7 +334,7 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
 
-        val atp2 = AccessTokenPermission(audience = "aud", scopes = mutableListOf("scopeB"))
+        val atp2 = AccessTokenScope(audience = "aud", scopes = mutableListOf("scopeB"))
         val tokenCallbackObj2 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp2),
@@ -343,7 +343,7 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
         verify(bridgeExecutor).postError(tokenCallbackObj2.id, errMsg)
 
-        val atp3 = AccessTokenPermission(audience = "aud1", scopes = mutableListOf())
+        val atp3 = AccessTokenScope(audience = "aud1", scopes = mutableListOf())
         val tokenCallbackObj3 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp3),
@@ -352,7 +352,7 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj3)
         verify(bridgeExecutor).postError(tokenCallbackObj3.id, errMsg)
 
-        val atp4 = AccessTokenPermission(audience = "aud2", scopes = mutableListOf("scopeA", "scopeB"))
+        val atp4 = AccessTokenScope(audience = "aud2", scopes = mutableListOf("scopeA", "scopeB"))
         val tokenCallbackObj4 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp4),
@@ -367,7 +367,7 @@ class UserInfoBridgeSpec {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, true))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
-        val atp2 = AccessTokenPermission(audience = "aud1", scopes = mutableListOf("scopeB"))
+        val atp2 = AccessTokenScope(audience = "aud1", scopes = mutableListOf("scopeB"))
         val tokenCallbackObj2 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp2),
@@ -376,7 +376,7 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
 
         verify(bridgeExecutor).postValue(tokenCallbackObj2.id, Gson().toJson(testToken))
-        testToken.accessTokenPermission shouldEqual atp2
+        testToken.accessTokenScope shouldEqual atp2
     }
 
     @Test

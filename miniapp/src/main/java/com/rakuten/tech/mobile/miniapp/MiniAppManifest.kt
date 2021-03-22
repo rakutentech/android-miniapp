@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.Keep
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
 /**
@@ -15,6 +15,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 data class MiniAppManifest(
     val requiredPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
     val optionalPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
-    val accessTokenPermissions: List<AccessTokenPermission>,
+    val accessTokenPermissions: List<AccessTokenScope>,
     val customMetaData: Map<String, String>
 )

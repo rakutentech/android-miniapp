@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.util.ArrayList
 
 /**
@@ -44,11 +44,11 @@ interface UserInfoBridgeDispatcher {
 
     /**
      * Get access token from host app.
-     * @param accessTokenPermission contains audience and scope for permission validation.
+     * @param accessTokenScope contains audience and scope for permission validation.
      **/
     fun getAccessToken(
         miniAppId: String,
-        accessTokenPermission: AccessTokenPermission,
+        accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {

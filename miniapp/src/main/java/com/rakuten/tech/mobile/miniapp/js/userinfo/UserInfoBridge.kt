@@ -7,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenPermission
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -99,7 +99,7 @@ internal class UserInfoBridge {
         if (doesMatchManifest(tokenPermission)) {
 
             val successCallback = { accessToken: TokenData ->
-                accessToken.accessTokenPermission = tokenPermission
+                accessToken.accessTokenScope = tokenPermission
                 bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
             }
             val errorCallback = { message: String ->
@@ -118,21 +118,21 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
     }
 
-    private fun doesMatchManifest(tokenPermission: AccessTokenPermission): Boolean {
-        if (tokenPermission.scopes.isNotEmpty()) {
+    private fun doesMatchManifest(tokenScope: AccessTokenScope): Boolean {
+        if (tokenScope.scopes.isNotEmpty()) {
             val atpList = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
             atpList.forEach {
-                if (it.audience == tokenPermission.audience && it.scopes.containsAll(tokenPermission.scopes))
+                if (it.audience == tokenScope.audience && it.scopes.containsAll(tokenScope.scopes))
                     return true
             }
         }
         return false
     }
 
-    private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenPermission>(
+    private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenScope>(
             callbackObj.param.toString(),
-            object : TypeToken<AccessTokenPermission>() {}.type
-    ) ?: AccessTokenPermission("", emptyList())
+            object : TypeToken<AccessTokenScope>() {}.type
+    ) ?: AccessTokenScope("", emptyList())
 
     fun onGetContacts(callbackId: String) = whenReady(callbackId) {
         try {
