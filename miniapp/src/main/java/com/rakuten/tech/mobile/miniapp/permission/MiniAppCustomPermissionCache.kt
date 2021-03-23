@@ -30,7 +30,8 @@ internal class MiniAppCustomPermissionCache(context: Context) {
                     prefs.getString(miniAppId, ""),
                     object : TypeToken<MiniAppCustomPermission>() {}.type
                 )
-                cachedPermission
+                val nonNullList = cachedPermission.pairValues.filterNot { it.first == null }
+                cachedPermission.copy(pairValues = nonNullList)
             } catch (e: Exception) {
                 MiniAppCustomPermission(miniAppId, emptyList())
             }
@@ -48,9 +49,7 @@ internal class MiniAppCustomPermissionCache(context: Context) {
     ) {
         val supplied = miniAppCustomPermission.pairValues.toMutableList()
         // Remove any unknown permission parameter from HostApp.
-        supplied.removeAll { (first) ->
-            first.type == MiniAppCustomPermissionType.UNKNOWN.type
-        }
+        supplied.removeAll { (first) -> first.type == MiniAppCustomPermissionType.UNKNOWN.type }
         val miniAppId = miniAppCustomPermission.miniAppId
         val allPermissions = prepareAllPermissionsToStore(miniAppId, supplied)
         applyStoringPermissions(MiniAppCustomPermission(miniAppId, allPermissions))
