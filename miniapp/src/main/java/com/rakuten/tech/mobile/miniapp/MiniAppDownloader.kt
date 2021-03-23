@@ -193,8 +193,7 @@ internal class MiniAppDownloader(
         }
     }
 
-    fun getDownloadedMiniAppList(): List<MiniAppInfo> =
-        miniAppStatus.getDownloadedMiniAppList()
+    fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting

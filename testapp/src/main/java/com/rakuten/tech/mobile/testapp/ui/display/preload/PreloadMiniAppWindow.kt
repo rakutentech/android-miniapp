@@ -32,16 +32,19 @@ class PreloadMiniAppWindow(
     private var versionId: String = ""
     private val permissionAdapter = PreloadMiniAppPermissionAdapter()
 
-    fun initiate(appInfo: MiniAppInfo?, miniAppId: String, lifecycleOwner: LifecycleOwner) {
+    fun initiate(appInfo: MiniAppInfo?, miniAppId: String, versionId: String, lifecycleOwner: LifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner
 
         if (appInfo != null) {
             this.miniAppInfo = appInfo
             this.miniAppId = miniAppInfo!!.id
             this.versionId = miniAppInfo!!.version.versionId
-        } else this.miniAppId = miniAppId
+        } else {
+            this.miniAppId = miniAppId
+            this.versionId = versionId
+        }
 
-        initDefaultWindow()
+        if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow()
     }
 
     private fun launchScreen() {
@@ -78,14 +81,6 @@ class PreloadMiniAppWindow(
         viewModel =
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
                 .apply {
-                    // observe version id when it's empty
-                    if (versionId.isEmpty()) {
-                        miniAppVersionId.observe(lifecycleOwner, Observer { versionId = it })
-                        versionIdErrorData.observe(lifecycleOwner, Observer {
-                            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                        })
-                    }
-
                     miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
                         if (apiManifest != null)
                             onShowManifest(apiManifest)
@@ -97,10 +92,6 @@ class PreloadMiniAppWindow(
                         Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                     })
                 }
-
-        // retrieve version id when it's empty
-        if (versionId.isEmpty())
-            viewModel.getMiniAppVersionId(miniAppId)
 
         viewModel.checkMiniAppManifest(miniAppId, versionId)
 
