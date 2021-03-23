@@ -626,13 +626,13 @@ Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to 
 **API Docs:** [MiniAppFilePicker](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-picker/)
 
 The mini app is able to pick a file which is requested using [input type="file"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file).
-HostApp can use `MiniAppFilePicker` object to pass through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFilePicker: MiniAppFilePicker)`.
+HostApp needs to use `MiniAppFilePicker` object to pass through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFilePicker: MiniAppFilePicker)`.
 
-- Implement `MiniAppFilePicker` in Host App Activity.
+- At first, HostApp should implement `MiniAppFilePicker` in the `Activity`.
 
 ```kotlin
 var filePathHostCallback: ValueCallback<Array<Uri>>? = null
-val filePickingReqCode = REQUEST_CODE
+val filePickingReqCode = REQUEST_CODE // define a request code in HostApp
 
 miniAppFilePicker = object : MiniAppFilePicker {
     override fun requestFile(
@@ -640,12 +640,12 @@ miniAppFilePicker = object : MiniAppFilePicker {
         callback: (requestCode: Int) -> Unit
     ) {
         filePathHostCallback = filePathCallback
-        callback.invoke(filePickingReqCode)
+        callback.invoke(filePickingReqCode) // invoke the request code what is defined by HostApp.
     }
 }
 ```
 
-- Then, HostApp activity can use `filePathHostCallback` to receive the data per `filePickingReqCode` as following:
+- Then, HostApp activity needs to use `filePathHostCallback` to receive the data per `filePickingReqCode` as following:
 
 ```kotlin
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

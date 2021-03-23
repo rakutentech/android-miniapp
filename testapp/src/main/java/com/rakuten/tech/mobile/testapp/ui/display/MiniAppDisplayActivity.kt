@@ -251,8 +251,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
         } else if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
-                if (filePathHostCallback == null) return
-
                 val result: Uri? = intent.data
                 filePathHostCallback?.onReceiveValue(arrayOf(result!!))
             }
