@@ -96,7 +96,7 @@ internal class UserInfoBridge {
 
     private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
-        if (doesMatchManifest(tokenPermission)) {
+        if (doesAccessTokenMatch(tokenPermission)) {
 
             val successCallback = { accessToken: TokenData ->
                 accessToken.accessTokenScope = tokenPermission
@@ -118,11 +118,10 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
     }
 
-    private fun doesMatchManifest(tokenScope: AccessTokenScope): Boolean {
+    private fun doesAccessTokenMatch(tokenScope: AccessTokenScope): Boolean {
         if (tokenScope.scopes.isNotEmpty()) {
-            val atpList = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
-            atpList.forEach {
-                if (it.audience == tokenScope.audience && it.scopes.containsAll(tokenScope.scopes))
+            for (atc in downloadedManifestCache.getAccessTokenPermissions(miniAppId)) {
+                if (atc.audience == tokenScope.audience && atc.scopes.containsAll(tokenScope.scopes))
                     return true
             }
         }
