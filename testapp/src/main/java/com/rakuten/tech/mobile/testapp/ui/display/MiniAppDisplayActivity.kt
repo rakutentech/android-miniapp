@@ -203,14 +203,10 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onSuccess: (contacts: ArrayList<Contact>) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                val hasContact = AppSettings.instance.isContactsSaved
-                if (hasContact) {
-                    val contacts: ArrayList<Contact> = arrayListOf()
-                    AppSettings.instance.contactNames.forEach {
-                        contacts.add(Contact(it))
-                    }
-                    onSuccess(contacts)
-                } else onError("There is no contact found in HostApp.")
+                if (AppSettings.instance.isContactsSaved)
+                    onSuccess(AppSettings.instance.contacts)
+                else
+                    onError("There is no contact found in HostApp.")
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
