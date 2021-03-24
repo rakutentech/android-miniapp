@@ -625,27 +625,17 @@ Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to 
 ### File picking
 **API Docs:** [MiniAppFilePicker](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-picker/)
 
-The mini app is able to pick a file which is requested using [input type="file"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file).
-HostApp needs to use `MiniAppFilePicker` object to pass through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFilePicker: MiniAppFilePicker)`.
+The mini app is able to pick the file which is requested using HTML forms with 'file' input type whenever users press a "Select file" button.
 
 - At first, HostApp should implement `MiniAppFilePicker` in the `Activity`.
 
 ```kotlin
-var filePathHostCallback: ValueCallback<Array<Uri>>? = null
 val filePickingReqCode = REQUEST_CODE // define a request code in HostApp
-
-miniAppFilePicker = object : MiniAppFilePicker {
-    override fun requestFile(
-        filePathCallback: ValueCallback<Array<Uri>>?,
-        callback: (requestCode: Int) -> Unit
-    ) {
-        filePathHostCallback = filePathCallback
-        callback.invoke(filePickingReqCode) // invoke the request code what is defined by HostApp.
-    }
-}
+val miniAppFilePicker = MiniAppFilePicker(requestCode = filePickingReqCode)
 ```
 
-- Then, HostApp activity needs to use `filePathHostCallback` to receive the data per `filePickingReqCode` as following:
+- HostApp needs to pass `MiniAppFilePicker` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFilePicker: MiniAppFilePicker)`.
+Then, HostApp activity can receive the files at `onActivityResult` as following:
 
 ```kotlin
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -654,10 +644,19 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
     if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
         data?.let { intent ->
             val result: Uri? = intent.data
-            filePathHostCallback?.onReceiveValue(arrayOf(result!!))
+            miniAppFilePicker.onReceivedFiles(arrayOf(result!!))
         }
     }
 }
+```
+
+Also, HostApp can pass the necessary parameters using `MiniAppFilePicker.onShowFileChooser` to choose a file as following:
+
+```kotlin
+val filePathCallback: ValueCallback<Array<Uri>>? = VALUE_HERE
+val fileChooserParams: WebChromeClient.FileChooserParams? = VALUE_HERE
+
+miniAppFilePicker.onShowFileChooser(filePathCallback, fileChooserParams, context)
 ```
 
 ### Custom Permissions

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.MiniAppFilePickingException
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.DialogType
@@ -165,20 +164,12 @@ internal class MiniAppWebChromeClient(
             onHideCustomView()
     }
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun onShowFileChooser(
         webView: WebView?,
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: FileChooserParams?
     ): Boolean {
-        try {
-            miniAppFilePicker?.requestFile(filePathCallback) { requestCode ->
-                val intent = fileChooserParams?.createIntent()
-                (context as Activity).startActivityForResult(intent, requestCode)
-            }
-        } catch (e: Exception) {
-            throw (MiniAppFilePickingException(e.message.toString()))
-        }
+        miniAppFilePicker?.onShowFileChooser(filePathCallback, fileChooserParams, context)
         return true
     }
 }

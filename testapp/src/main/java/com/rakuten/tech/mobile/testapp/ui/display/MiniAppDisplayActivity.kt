@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.webkit.ValueCallback
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -38,14 +37,13 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
-    private lateinit var miniAppFilePicker: MiniAppFilePicker
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
-    private var filePathHostCallback: ValueCallback<Array<Uri>>? = null
 
     private val externalWebViewReqCode = 100
     private val filePickingReqCode = 10101
+    private val miniAppFilePicker = MiniAppFilePicker(requestCode = filePickingReqCode)
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -124,17 +122,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                 sampleWebViewExternalResultHandler = externalResultHandler
                 WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
                     appId, appUrl, externalWebViewReqCode)
-            }
-        }
-
-        miniAppFilePicker = object : MiniAppFilePicker {
-
-            override fun requestFile(
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                callback: (requestCode: Int) -> Unit
-            ) {
-                filePathHostCallback = filePathCallback
-                callback.invoke(filePickingReqCode)
             }
         }
 
@@ -252,7 +239,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         } else if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val result: Uri? = intent.data
-                filePathHostCallback?.onReceiveValue(arrayOf(result!!))
+                miniAppFilePicker.onReceivedFiles(arrayOf(result!!))
             }
         }
     }
