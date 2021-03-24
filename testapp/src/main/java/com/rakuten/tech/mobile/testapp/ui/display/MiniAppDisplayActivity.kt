@@ -239,7 +239,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         } else if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val result: Uri? = intent.data
-                miniAppFilePicker.onReceivedFiles(arrayOf(result!!))
+                miniAppFilePicker.onReceivedFiles(arrayOf(result ?: return@let))
             }
         }
     }
