@@ -18,6 +18,11 @@ class MiniAppCustomPermissionCacheSpec {
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
     private val mockContext: Context = mock()
+    private val deniedPermissions =
+        listOf(
+            Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
+        )
+    private val miniAppCustomPermission = MiniAppCustomPermission(TEST_MA_ID, deniedPermissions)
 
     @Before
     fun setUp() {
@@ -43,6 +48,13 @@ class MiniAppCustomPermissionCacheSpec {
     /** end region */
 
     @Test
+    fun `removePermissionsNotMatching will invoke necessary function to save value`() {
+        doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+        miniAppCustomPermissionCache.removePermissionsNotMatching(TEST_MA_ID, deniedPermissions)
+        verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
+    }
+
+    @Test
     fun `removeId will remove all permission data from the store`() {
         miniAppCustomPermissionCache.removePermission(TEST_MA_ID)
         verify(mockEditor, times(1)).remove(TEST_MA_ID)
@@ -50,22 +62,14 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Test
     fun `storePermissions will invoke necessary functions to save value`() {
-        val list = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-        val miniAppCustomPermission = MiniAppCustomPermission(TEST_MA_ID, list)
-
         miniAppCustomPermissionCache.storePermissions(miniAppCustomPermission)
 
-        verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, list)
+        verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, deniedPermissions)
         verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
     }
 
     @Test
     fun `applyStoringPermissions will invoke putString while storing custom permissions`() {
-        val miniAppCustomPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-        )
-
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
 
         verify(mockEditor).putString(anyString(), anyString())
@@ -146,15 +150,11 @@ class MiniAppCustomPermissionCacheSpec {
         val allowedUserName = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
-                Pair(
-                    MiniAppCustomPermissionType.USER_NAME,
-                    MiniAppCustomPermissionResult.ALLOWED
-                )
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED)
             )
         )
 
         doReturn(allowedUserName).whenever(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
-
         val actual = miniAppCustomPermissionCache.hasPermission(
             TEST_MA_ID,
             MiniAppCustomPermissionType.USER_NAME
