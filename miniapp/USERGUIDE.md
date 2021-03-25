@@ -650,15 +650,6 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 }
 ```
 
-Also, HostApp can pass the necessary parameters using `MiniAppFileChooser.onShowFileChooser` to choose a file as following:
-
-```kotlin
-val filePathCallback: ValueCallback<Array<Uri>>? = VALUE_HERE
-val fileChooserParams: WebChromeClient.FileChooserParams? = VALUE_HERE
-
-miniAppFileChooser.onShowFileChooser(filePathCallback, fileChooserParams, context)
-```
-
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
 
