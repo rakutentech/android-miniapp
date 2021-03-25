@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
+import java.io.File
 
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
@@ -32,10 +33,11 @@ internal const val TEST_CALLBACK_VALUE = "test_callback_value"
 
 internal const val TEST_AD_UNIT_ID = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
 
-internal const val VALID_FILE_URL_PATH =
-    "https://www.example.com/"
-        .plus("map-published-v2/min-872f9172-804f-44e2-addd-ed612170dac9/")
-        .plus("ver-6181004c-a6aa-4eda-b145-a5ff73fc4ad0/a/b/index.html")
+private val FILE_SEPARATOR = File.separator
+internal val VALID_FILE_URL_PATH =
+    "https://www.example.com$FILE_SEPARATOR"
+        .plus("map-published-v2${FILE_SEPARATOR}min-872f9172-804f-44e2-addd-ed612170dac9$FILE_SEPARATOR")
+        .plus("ver-6181004c-a6aa-4eda-b145-a5ff73fc4ad0${FILE_SEPARATOR}a${FILE_SEPARATOR}b${FILE_SEPARATOR}index.html")
 internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf2601cb63a2/js"
 
 internal const val TEST_USER_NAME = "test_user_name"
