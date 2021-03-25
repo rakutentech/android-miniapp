@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
@@ -45,5 +46,6 @@ internal class ManifestApiCache(context: Context) {
         prefs.edit().clear().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
     }
 
-    private fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
+    @VisibleForTesting
+    fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
 }
