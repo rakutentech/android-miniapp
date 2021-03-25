@@ -127,7 +127,8 @@ internal class RealMiniApp(
         }
     }
 
-    private suspend fun verifyManifest(appId: String, versionId: String) {
+    @VisibleForTesting
+    suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
         if (cachedManifest?.versionId != versionId) {
             val apiManifest = getMiniAppManifest(appId, versionId)

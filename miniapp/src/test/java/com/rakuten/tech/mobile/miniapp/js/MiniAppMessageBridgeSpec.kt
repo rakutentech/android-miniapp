@@ -392,6 +392,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         )
     )
 
+    @Suppress("LongMethod")
     @Test
     fun `postValue should be called when screen action is executed successfully`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
