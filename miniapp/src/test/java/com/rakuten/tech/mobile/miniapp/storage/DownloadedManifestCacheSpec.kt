@@ -139,6 +139,7 @@ class DownloadedManifestCacheSpec {
             MiniAppManifest(
                 listOf(),
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+                TEST_ATP_LIST,
                 mapOf()
             )
         val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, expected)
