@@ -169,7 +169,7 @@ internal class MiniAppWebChromeClient(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: FileChooserParams?
     ): Boolean {
-        miniAppFilePicker?.onShowFileChooser(filePathCallback, fileChooserParams, context)
-        return true
+        return miniAppFilePicker?.onShowFileChooser(filePathCallback, fileChooserParams, context)
+            ?: false
     }
 }
