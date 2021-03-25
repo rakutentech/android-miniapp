@@ -6,9 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.GeolocationPermissions
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
+import android.webkit.*
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
@@ -481,6 +479,16 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         webChromeClient.onWebViewDetach()
 
         verify(webChromeClient).onHideCustomView()
+    }
+
+    @Test
+    fun `onShowFileChooser should invoke from miniapp file chooser`() {
+        val callback: ValueCallback<Array<Uri>>? = mock()
+        val fileChooserParams: WebChromeClient.FileChooserParams? = mock()
+        val webChromeClient =
+            Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), miniAppFileChooser))
+        webChromeClient.onShowFileChooser(miniAppWebView, callback, fileChooserParams)
+        verify(miniAppFileChooser).onShowFileChooser(callback, fileChooserParams, context)
     }
 }
 

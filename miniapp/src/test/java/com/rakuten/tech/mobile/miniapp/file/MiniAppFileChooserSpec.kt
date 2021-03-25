@@ -4,14 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.nhaarman.mockitokotlin2.mock
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +23,7 @@ class MiniAppFileChooserSpec {
     private lateinit var context: Context
     private val requestCode = 100
     private val callback: ValueCallback<Array<Uri>>? = mock()
-    private val fileChooserParams: WebChromeClient.FileChooserParams?? = mock()
+    private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
 
     @Before
@@ -42,6 +39,18 @@ class MiniAppFileChooserSpec {
     fun `onShowFileChooser should assign filePathCallback correctly`() {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         assertEquals(miniAppFileChooser.callback, callback)
+    }
+
+    @Test
+    fun `onShowFileChooser should create intent correctly`() {
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        verify(fileChooserParams)?.createIntent()
+    }
+
+    @Test
+    fun `onShowFileChooser should not create intent when null`() {
+        miniAppFileChooser.onShowFileChooser(callback, null, context)
+        verify(fileChooserParams, times(0))?.createIntent()
     }
 
     @Test
@@ -64,5 +73,11 @@ class MiniAppFileChooserSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(files)
         verify(callback)?.onReceiveValue(files)
+    }
+
+    @Test
+    fun `onReceivedFiles should not invoke onReceiveValue of file path callback is null`() {
+        miniAppFileChooser.onShowFileChooser(null, fileChooserParams, context)
+        verify(callback, times(0))?.onReceiveValue(arrayOf())
     }
 }
