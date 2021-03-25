@@ -18,79 +18,77 @@ import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 import kotlin.test.assertEquals
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "LongMethod")
 @ExperimentalCoroutinesApi
-class RealMiniAppSpec {
-
-    private var apiClient: ApiClient = mock()
+@Ignore
+open class BaseRealMiniAppSpec {
+    internal lateinit var realMiniApp: RealMiniApp
+    internal var apiClient: ApiClient = mock()
     private val apiClientRepository: ApiClientRepository = mock()
-    private val displayer: Displayer = mock()
-    private val miniAppDownloader: MiniAppDownloader = mock()
-    private val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
-    private val miniAppSdkConfig: MiniAppSdkConfig = mock()
-    private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
-    private val downloadedManifestCache: DownloadedManifestCache = mock()
-    private val manifestCache: DownloadedManifestCache = mock()
-    private val realMiniApp =
-        RealMiniApp(
-            apiClientRepository,
-            miniAppDownloader,
-            displayer,
-            miniAppInfoFetcher,
-            initCustomPermissionCache = { miniAppCustomPermissionCache },
-            initDownloadedManifestCache = { manifestCache }
-        )
-    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
-    private val miniAppNavigator: MiniAppNavigator = mock()
-    private val deniedPermission = MiniAppCustomPermission(
-        TEST_MA_ID, listOf(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED
-            )
-        )
-    )
-    private val allowedPermission = MiniAppCustomPermission(
-        TEST_MA_ID, listOf(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
-            )
-        )
-    )
+    internal val displayer: Displayer = mock()
+    internal val miniAppDownloader: MiniAppDownloader = mock()
+    internal val miniAppInfoFetcher: MiniAppInfoFetcher = mock()
+    val miniAppSdkConfig: MiniAppSdkConfig = mock()
+    internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
+    internal val downloadedManifestCache: DownloadedManifestCache = mock()
+    val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    val miniAppNavigator: MiniAppNavigator = mock()
 
     @Before
     fun setup() {
+        realMiniApp =
+            spy(RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher,
+                initCustomPermissionCache = { miniAppCustomPermissionCache },
+                initDownloadedManifestCache = { downloadedManifestCache }
+            ))
+
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
     }
 
-    @Test
-    fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {
-        realMiniApp.listMiniApp()
+    class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
-        verify(miniAppInfoFetcher, times(1)).fetchMiniAppList()
-    }
+        @Test
+        fun `should invoke from MiniAppInfoFetcher when calling list miniapp`() = runBlockingTest {
+            realMiniApp.listMiniApp()
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when app id is invalid`() = runBlockingTest {
-        realMiniApp.fetchInfo("")
-    }
+            verify(miniAppInfoFetcher).fetchMiniAppList()
+        }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when app id is blank`() = runBlockingTest {
-        realMiniApp.create(" ", miniAppMessageBridge)
-    }
+        /** region: RealMiniApp.fetchInfo */
+        @Test(expected = MiniAppSdkException::class)
+        fun `fetchInfo should throw exception when app id is invalid`() = runBlockingTest {
+            realMiniApp.fetchInfo("")
+        }
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should throw exception when id of MiniAppInfo is blank`() = runBlockingTest {
-        val testMiniAppInfo = TEST_MA.copy(id = "")
-        realMiniApp.create(testMiniAppInfo, miniAppMessageBridge)
-    }
+        @Test
+        fun `should invoke from MiniAppInfoFetcher when calling get miniapp info`() =
+            runBlockingTest {
+                realMiniApp.fetchInfo(TEST_MA_ID)
 
-    @Test(expected = MiniAppSdkException::class)
-    fun `should check to call isRequiredPermissionDenied when launch miniapp`() = runBlockingTest {
+                verify(miniAppInfoFetcher).getInfo(TEST_MA_ID)
+            }
+        /** end region */
+
+        /** region: RealMiniApp.create */
+        @Test(expected = MiniAppSdkException::class)
+        fun `should throw exception when app id is blank while miniapp creation`() =
+            runBlockingTest {
+                realMiniApp.create(" ", miniAppMessageBridge)
+            }
+
+        @Test(expected = MiniAppSdkException::class)
+        fun `should throw exception when id of MiniAppInfo is blank while miniapp creation`() =
+            runBlockingTest {
+                val testMiniAppInfo = TEST_MA.copy(id = "")
+                realMiniApp.create(testMiniAppInfo, miniAppMessageBridge)
+            }
+
+        private fun onGettingManifestWhileCreate() = runBlockingTest {
         val demoManifest =
             MiniAppManifest(
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
@@ -98,152 +96,239 @@ class RealMiniAppSpec {
                 TEST_ATP_LIST,
                 mapOf()
             )
-        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
-        When calling manifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
-        realMiniApp.create(" ", miniAppMessageBridge)
-        verify(manifestCache).isRequiredPermissionDenied(deniedPermission)
-    }
+            val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
+            When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `should invoke from MiniAppDownloader and Displayer when calling create miniapp`() =
-        runBlockingTest {
-            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-            When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
+        @Test
+        fun `should invoke MiniAppDownloader, Displayer and verifyManifest while miniapp creation`() =
+            runBlockingTest {
+                onGettingManifestWhileCreate()
+                val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+                When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+                realMiniApp.create(TEST_MA_ID, miniAppMessageBridge)
 
-            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA_ID)
-            verify(displayer, times(1))
-                .createMiniAppDisplay(
+                verify(miniAppDownloader).getMiniApp(TEST_MA_ID)
+                verify(realMiniApp).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+                verify(displayer).createMiniAppDisplay(
                     getMiniAppResult.first, getMiniAppResult.second,
                     miniAppMessageBridge, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
                 )
-        }
+            }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun `should create mini app display with correct passing external navigator`() =
-        runBlockingTest {
-            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-            When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
-            verify(miniAppDownloader, times(1)).getMiniApp(TEST_MA)
-            verify(displayer, times(1))
-                .createMiniAppDisplay(
-                    getMiniAppResult.first,
-                    getMiniAppResult.second,
-                    miniAppMessageBridge,
-                    miniAppNavigator,
-                    miniAppCustomPermissionCache,
-                    downloadedManifestCache,
-                    ""
+        @Test
+        fun `should create mini app display with correct passing external navigator`() =
+            runBlockingTest {
+                onGettingManifestWhileCreate()
+                val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+                When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
+                realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
+
+                verify(miniAppDownloader).getMiniApp(TEST_MA)
+                verify(displayer).createMiniAppDisplay(
+                    getMiniAppResult.first, getMiniAppResult.second,
+                    miniAppMessageBridge, miniAppNavigator, miniAppCustomPermissionCache, downloadedManifestCache, ""
                 )
+            }
+
+        @Test(expected = MiniAppSdkException::class)
+        fun `should throw exception when url is blank while miniapp creation`() =
+            runBlockingTest {
+                realMiniApp.createWithUrl(" ", miniAppMessageBridge)
+            }
+
+        @Test
+        fun `should invoke validateHttpAppUrl while miniapp creation with valid url`() =
+            runBlockingTest {
+                realMiniApp.createWithUrl(TEST_MA_URL, miniAppMessageBridge)
+
+                verify(miniAppDownloader).validateHttpAppUrl(TEST_MA_URL)
+                verify(displayer).createMiniAppDisplay(
+                    TEST_MA_URL, miniAppMessageBridge, null,
+                    miniAppCustomPermissionCache, downloadedManifestCache, ""
+                )
+            }
+
+        /** end region */
+
+        /** region: RealMiniApp.updateConfiguration */
+        @Test
+        fun `should update ApiClient when configuration updated`() {
+            realMiniApp.updateConfiguration(miniAppSdkConfig)
+
+            verify(miniAppDownloader).updateApiClient(apiClient)
+            verify(miniAppInfoFetcher).updateApiClient(apiClient)
         }
 
-    @Test
-    fun `should invoke from MiniAppInfoFetcher when calling get miniapp info`() = runBlockingTest {
-        realMiniApp.fetchInfo(TEST_MA_ID)
+        @Test
+        fun `should not create ApiClient for existing configuration`() {
+            val miniApp = Mockito.spy(realMiniApp)
 
-        verify(miniAppInfoFetcher, times(1))
-            .getInfo(TEST_MA_ID)
+            realMiniApp.updateConfiguration(miniAppSdkConfig)
+
+            verify(miniApp, times(0)).createApiClient(miniAppSdkConfig)
+        }
+
+        @Test
+        fun `should create a new ApiClient when there is no cache`() {
+            AppInfo.instance = mock()
+            val miniApp = Mockito.spy(realMiniApp)
+            val miniAppSdkConfig = MiniAppSdkConfig(
+                baseUrl = TEST_URL_HTTPS_2,
+                rasProjectId = TEST_HA_ID_PROJECT,
+                isPreviewMode = true,
+                subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+                hostAppUserAgentInfo = TEST_HA_NAME
+            )
+
+            miniApp.updateConfiguration(miniAppSdkConfig)
+
+            verify(miniApp).createApiClient(miniAppSdkConfig)
+        }
+        /** end region */
+
+        /** region: custom permissions setter / getter */
+        @Test
+        fun `getCustomPermissions should get data from custom permission cache`() {
+            realMiniApp.getCustomPermissions(TEST_MA_ID)
+
+            verify(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+        }
+
+        @Test
+        fun `setCustomPermissions should store data in custom permission cache`() {
+            val miniAppCustomPermission = MiniAppCustomPermission(
+                TEST_MA_ID,
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
+            )
+            realMiniApp.setCustomPermissions(miniAppCustomPermission)
+
+            verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+        }
+        /** end region */
+
+        /** region: RealMiniApp.listDownloadedWithCustomPermissions */
+        @Test
+        @Suppress("LongMethod")
+        fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions is calling`() {
+            realMiniApp.listDownloadedWithCustomPermissions()
+
+            verify(miniAppDownloader).getDownloadedMiniAppList()
+        }
+
+        @Test
+        @Suppress("LongMethod")
+        fun `should return the correct result when listDownloadedWithCustomPermissions is calling`() {
+            val miniAppInfo = MiniAppInfo(
+                "test_id",
+                "display_name",
+                "test_icon_url",
+                Version("test_version_tag", "test_version_id")
+            )
+            val downloadedList = listOf(miniAppInfo)
+            val miniAppCustomPermission = MiniAppCustomPermission(
+                "test_id",
+                listOf(
+                    Pair(
+                        MiniAppCustomPermissionType.USER_NAME,
+                        MiniAppCustomPermissionResult.DENIED
+                    ),
+                    Pair(
+                        MiniAppCustomPermissionType.PROFILE_PHOTO,
+                        MiniAppCustomPermissionResult.DENIED
+                    )
+                )
+            )
+
+            doReturn(downloadedList).whenever(miniAppDownloader).getDownloadedMiniAppList()
+
+            downloadedList.forEach {
+                doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
+                    .readPermissions(it.id)
+            }
+
+            val actual = realMiniApp.listDownloadedWithCustomPermissions()
+            val expected = listOf(Pair(miniAppInfo, miniAppCustomPermission))
+
+            assertEquals(expected, actual)
+        }
+        /** end region */
     }
 
-    @Test
-    fun `should update ApiClient when configuration updated`() {
-        realMiniApp.updateConfiguration(miniAppSdkConfig)
-
-        verify(miniAppDownloader, times(1)).updateApiClient(apiClient)
-        verify(miniAppInfoFetcher, times(1)).updateApiClient(apiClient)
-    }
-
-    @Test
-    fun `should not create ApiClient for existing configuration`() {
-        val miniApp = Mockito.spy(realMiniApp)
-
-        realMiniApp.updateConfiguration(miniAppSdkConfig)
-
-        verify(miniApp, times(0)).createApiClient(miniAppSdkConfig)
-    }
-
-    @Test
-    fun `should create a new ApiClient when there is no cache`() {
-        AppInfo.instance = mock()
-        val miniApp = Mockito.spy(realMiniApp)
-        val miniAppSdkConfig = MiniAppSdkConfig(
-            baseUrl = TEST_URL_HTTPS_2,
-            rasProjectId = TEST_HA_ID_PROJECT,
-            isPreviewMode = true,
-            subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppUserAgentInfo = TEST_HA_NAME
+    class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
+        private val demoManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), mapOf()
         )
-
-        miniApp.updateConfiguration(miniAppSdkConfig)
-
-        verify(miniApp, times(1)).createApiClient(miniAppSdkConfig)
-    }
-
-    @Test
-    fun `setCustomPermissions should store data when api is calling in miniapp instance`() {
-        val miniAppCustomPermission = MiniAppCustomPermission(
+        private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
+        private val deniedPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
         )
-        realMiniApp.setCustomPermissions(miniAppCustomPermission)
 
-        verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
-    }
+        @Before
+        fun before() {
+            When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        }
 
-    @Test
-    @Suppress("LongMethod")
-    fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions is calling`() {
-        realMiniApp.listDownloadedWithCustomPermissions()
+        /** region: RealMiniApp.listDownloadedWithCustomPermissions */
+        @Test(expected = RequiredPermissionsNotGrantedException::class)
+        fun `verifyManifest will throw exception when required permissions are denied`() =
+            runBlockingTest {
+                When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+                When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
 
-        verify(miniAppDownloader).getDownloadedMiniAppList()
-    }
+                realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            }
 
-    @Test
-    @Suppress("LongMethod")
-    fun `should return the correct result when listDownloadedWithCustomPermissions is calling`() {
-        val miniAppInfo = MiniAppInfo(
-            "test_id",
-            "display_name",
-            "test_icon_url",
-            Version("test_version_tag", "test_version_id")
-        )
-        val downloadedList = listOf(miniAppInfo)
-        val miniAppCustomPermission = MiniAppCustomPermission(
-            "test_id",
-            listOf(
-                Pair(
-                    MiniAppCustomPermissionType.USER_NAME,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.PROFILE_PHOTO,
-                    MiniAppCustomPermissionResult.DENIED
-                ),
-                Pair(
-                    MiniAppCustomPermissionType.CONTACT_LIST,
-                    MiniAppCustomPermissionResult.DENIED
+        @Test
+        fun `verifyManifest will execute successfully when required permissions are accepted`() =
+            runBlockingTest {
+                val allowedPermission = MiniAppCustomPermission(
+                    TEST_MA_ID,
+                    listOf(
+                        Pair(
+                            MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
+                        )
+                    )
                 )
-            )
-        )
+                When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns allowedPermission
+                When calling downloadedManifestCache.getAllPermissions(allowedPermission) itReturns allowedPermission.pairValues
 
-        doReturn(downloadedList).whenever(miniAppDownloader).getDownloadedMiniAppList()
+                realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
-        downloadedList.forEach {
-            doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
-                .readPermissions(it.id)
-        }
+                verify(downloadedManifestCache, times(0)).storeDownloadedManifest(
+                    TEST_MA_ID, cachedManifest
+                )
+                verify(miniAppCustomPermissionCache).removePermissionsNotMatching(
+                    TEST_MA_ID, allowedPermission.pairValues
+                )
+            }
 
-        val actual = realMiniApp.listDownloadedWithCustomPermissions()
-        val expected = listOf(Pair(miniAppInfo, miniAppCustomPermission))
+        @Test
+        fun `verifyManifest will store api manifest when version ids are different`() =
+            runBlockingTest {
+                val differentVersionId = "another_version_id"
+                val manifestToStore = CachedManifest(differentVersionId, demoManifest)
+                When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, differentVersionId) itReturns demoManifest
+                When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+                When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns deniedPermission.pairValues
 
-        assertEquals(expected, actual)
+                realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
+
+                verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
+                verify(miniAppCustomPermissionCache).removePermissionsNotMatching(
+                    TEST_MA_ID,
+                    deniedPermission.pairValues
+                )
+            }
+
+        /** end region */
+
+        @Test
+        fun `api manifest should be fetched from MiniAppDownloader`() =
+            runBlockingTest {
+                realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+                verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            }
     }
-
-    @Test
-    fun `api manifest should be fetched from MiniAppDownloader`() =
-        runBlockingTest {
-            realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-        }
 }

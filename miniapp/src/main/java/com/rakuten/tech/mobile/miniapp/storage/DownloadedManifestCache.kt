@@ -86,7 +86,8 @@ internal class DownloadedManifestCache(context: Context) {
         }
     }
 
-    private fun getOptionalPermissions(
+    @VisibleForTesting
+    fun getOptionalPermissions(
         cachedPermissions: MiniAppCustomPermission
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         return try {
