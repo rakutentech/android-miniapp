@@ -376,7 +376,7 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
 
         verify(bridgeExecutor).postValue(tokenCallbackObj2.id, Gson().toJson(testToken))
-        testToken.accessTokenScope shouldEqual atp2
+        testToken.scopes shouldEqual atp2
     }
 
     @Test

@@ -99,7 +99,7 @@ internal class UserInfoBridge {
         if (doesAccessTokenMatch(tokenPermission)) {
 
             val successCallback = { accessToken: TokenData ->
-                accessToken.accessTokenScope = tokenPermission
+                accessToken.scopes = tokenPermission
                 bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
             }
             val errorCallback = { message: String ->

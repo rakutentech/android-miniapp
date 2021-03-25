@@ -8,5 +8,5 @@ import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 data class TokenData(
     val token: String,
     val validUntil: Long,
-    var accessTokenScope: AccessTokenScope = AccessTokenScope()
+    var scopes: AccessTokenScope = AccessTokenScope()
 )
