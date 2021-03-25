@@ -50,7 +50,9 @@ class CustomPermissionBridgeDispatcherSpec {
         TEST_MA_VERSION_ID,
         MiniAppManifest(
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
-            emptyList(), TEST_ATP_LIST, emptyMap()
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
+            TEST_ATP_LIST,
+            emptyMap()
         )
     )
 
