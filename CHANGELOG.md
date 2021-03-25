@@ -1,6 +1,13 @@
 ## CHANGELOG
 
-### 3.0.0 (2021-03-18)
+### 3.1.0 (in progress)
+**SDK**
+- **Feature:** Added name and email as optional to Contact.
+
+**Sample App**
+- **Feature:** Input and display name, email of Contact.
+
+### 3.0.0 (2021-03-22)
 **SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
