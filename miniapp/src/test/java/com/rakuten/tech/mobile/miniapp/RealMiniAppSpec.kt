@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -39,7 +39,7 @@ open class BaseRealMiniAppSpec {
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
-    val miniAppFilePicker: MiniAppFilePicker = mock()
+    val miniAppFileChooser: MiniAppFileChooser = mock()
 
     @Before
     fun setup() {
@@ -120,12 +120,12 @@ open class BaseRealMiniAppSpec {
                 onGettingManifestWhileCreate()
                 val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
                 When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
-                realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator, miniAppFilePicker)
+                realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser)
 
                 verify(miniAppDownloader).getMiniApp(TEST_MA)
                 verify(displayer).createMiniAppDisplay(
                     getMiniAppResult.first, getMiniAppResult.second,
-                    miniAppMessageBridge, miniAppNavigator, miniAppFilePicker,
+                    miniAppMessageBridge, miniAppNavigator, miniAppFileChooser,
                     miniAppCustomPermissionCache, downloadedManifestCache, ""
                 )
             }

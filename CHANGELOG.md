@@ -2,8 +2,8 @@
 
 ### 3.0.1 (In progress)
 **SDK**
-- **Feature:** Added `MiniAppFilePicker` to pick a file which is requested using HTML forms with 'file' input type within a miniapp.
-- **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFilePicker` to pick a file within a miniapp.
+- **Feature:** Added `MiniAppFileChooser` to choose a file which is requested using HTML forms with 'file' input type within a miniapp.
+- **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFileChooser` to choose a file within a miniapp.
 
 ### 3.0.0 (2021-03-18)
 **SDK**

@@ -21,8 +21,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppFilePickerSpec {
-    private lateinit var miniAppFilePicker: MiniAppFilePicker
+class MiniAppFileChooserSpec {
+    private lateinit var miniAppFileChooser: MiniAppFileChooser
     private lateinit var context: Context
     private val requestCode = 100
     private val callback: ValueCallback<Array<Uri>>? = mock()
@@ -34,19 +34,19 @@ class MiniAppFilePickerSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             context = spy(activity)
             whenever(fileChooserParams?.createIntent()).thenReturn(intent)
-            miniAppFilePicker = MiniAppFilePicker(requestCode)
+            miniAppFileChooser = MiniAppFileChooser(requestCode)
         }
     }
 
     @Test
     fun `onShowFileChooser should assign filePathCallback correctly`() {
-        miniAppFilePicker.onShowFileChooser(callback, fileChooserParams, context)
-        assertEquals(miniAppFilePicker.callback, callback)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        assertEquals(miniAppFileChooser.callback, callback)
     }
 
     @Test
     fun `onShowFileChooser should startActivityForResult correctly`() {
-        val actual = miniAppFilePicker.onShowFileChooser(callback, fileChooserParams, context)
+        val actual = miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         verify(context as Activity).startActivityForResult(intent, requestCode)
         assertTrue(actual)
     }
@@ -54,15 +54,15 @@ class MiniAppFilePickerSpec {
     @Test
     fun `onShowFileChooser should return false when there is exception`() {
         val mockContext: Context = mock()
-        val actual = miniAppFilePicker.onShowFileChooser(mock(), mock(), mockContext)
+        val actual = miniAppFileChooser.onShowFileChooser(mock(), mock(), mockContext)
         assertFalse(actual)
     }
 
     @Test
     fun `onReceivedFiles should invoke onReceiveValue of file path callback correctly`() {
         val files: Array<Uri> = arrayOf()
-        miniAppFilePicker.onShowFileChooser(callback, fileChooserParams, context)
-        miniAppFilePicker.onReceivedFiles(files)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(files)
         verify(callback)?.onReceiveValue(files)
     }
 }

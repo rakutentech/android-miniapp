@@ -19,7 +19,7 @@ import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
@@ -42,7 +42,7 @@ open class BaseWebViewSpec {
     lateinit var webResourceRequest: WebResourceRequest
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
-    val miniAppFilePicker: MiniAppFilePicker = mock()
+    val miniAppFileChooser: MiniAppFileChooser = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
     lateinit var activityScenario: ActivityScenario<TestActivity>
@@ -59,7 +59,7 @@ open class BaseWebViewSpec {
                     context,
                     TEST_MA,
                     miniAppCustomPermissionCache,
-                    miniAppFilePicker
+                    miniAppFileChooser
                 )
             )
 
@@ -69,7 +69,7 @@ open class BaseWebViewSpec {
                 miniAppInfo = TEST_MA,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
-                miniAppFilePicker = miniAppFilePicker,
+                miniAppFileChooser = miniAppFileChooser,
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
@@ -92,7 +92,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 appUrl = TEST_MA_URL,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
-                miniAppFilePicker = miniAppFilePicker,
+                miniAppFileChooser = miniAppFileChooser,
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
@@ -167,7 +167,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = miniAppNavigator,
-            miniAppFilePicker = miniAppFilePicker,
+            miniAppFileChooser = miniAppFileChooser,
             hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = mock(),
@@ -218,7 +218,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             TEST_MA,
             miniAppMessageBridge,
             miniAppNavigator,
-            miniAppFilePicker,
+            miniAppFileChooser,
             TEST_HA_NAME,
             mock(),
             mock(),
@@ -227,7 +227,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, miniAppFilePicker, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
+            miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
         miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
@@ -330,7 +330,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = null,
-            miniAppFilePicker = null,
+            miniAppFileChooser = null,
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = miniAppCustomPermissionCache,

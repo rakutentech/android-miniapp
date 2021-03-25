@@ -16,9 +16,9 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -42,8 +42,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
-    private val filePickingReqCode = 10101
-    private val miniAppFilePicker = MiniAppFilePicker(requestCode = filePickingReqCode)
+    private val fileChoosingReqCode = 10101
+    private val miniAppFileChooser = MiniAppFileChooser(requestCode = fileChoosingReqCode)
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -131,7 +131,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppFilePicker,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
         } else
@@ -141,7 +141,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appId!!,
                 miniAppMessageBridge,
                 miniAppNavigator,
-                miniAppFilePicker,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
     }
@@ -236,10 +236,10 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
-        } else if (requestCode == filePickingReqCode && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val result: Uri? = intent.data
-                miniAppFilePicker.onReceivedFiles(arrayOf(result ?: return@let))
+                miniAppFileChooser.onReceivedFiles(arrayOf(result ?: return@let))
             }
         }
     }

@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -20,7 +20,7 @@ internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppFilePicker: MiniAppFilePicker?
+    private val miniAppFileChooser: MiniAppFileChooser?
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -169,7 +169,7 @@ internal class MiniAppWebChromeClient(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: FileChooserParams?
     ): Boolean {
-        return miniAppFilePicker?.onShowFileChooser(filePathCallback, fileChooserParams, context)
+        return miniAppFileChooser?.onShowFileChooser(filePathCallback, fileChooserParams, context)
             ?: false
     }
 }

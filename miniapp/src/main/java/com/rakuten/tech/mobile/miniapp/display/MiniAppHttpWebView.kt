@@ -2,9 +2,9 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -16,7 +16,7 @@ internal class MiniAppHttpWebView(
     val appUrl: String,
     miniAppMessageBridge: MiniAppMessageBridge,
     miniAppNavigator: MiniAppNavigator?,
-    miniAppFilePicker: MiniAppFilePicker?,
+    miniAppFileChooser: MiniAppFileChooser?,
     hostAppUserAgentInfo: String,
     miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     downloadedManifestCache: DownloadedManifestCache,
@@ -24,7 +24,7 @@ internal class MiniAppHttpWebView(
         context,
         miniAppInfo,
         miniAppCustomPermissionCache,
-        miniAppFilePicker
+        miniAppFileChooser
     ),
     queryParams: String
 ) : MiniAppWebView(
@@ -33,7 +33,7 @@ internal class MiniAppHttpWebView(
     miniAppInfo,
     miniAppMessageBridge,
     miniAppNavigator,
-    miniAppFilePicker,
+    miniAppFileChooser,
     hostAppUserAgentInfo,
     miniAppCustomPermissionCache,
     downloadedManifestCache,

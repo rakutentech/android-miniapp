@@ -12,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFilePicker
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -39,7 +39,7 @@ abstract class MiniApp internal constructor() {
      * @param appId mini app id.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param miniAppFilePicker allow host app to get the file path while picking file inside the webview.
+     * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
@@ -58,7 +58,7 @@ abstract class MiniApp internal constructor() {
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
-        miniAppFilePicker: MiniAppFilePicker? = null,
+        miniAppFileChooser: MiniAppFileChooser? = null,
         queryParams: String = ""
     ): MiniAppDisplay
 
@@ -69,7 +69,7 @@ abstract class MiniApp internal constructor() {
      * @param appInfo metadata of a mini app.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param miniAppFilePicker allow host app to get the file path while picking file inside the webview.
+     * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
@@ -88,7 +88,7 @@ abstract class MiniApp internal constructor() {
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
-        miniAppFilePicker: MiniAppFilePicker? = null,
+        miniAppFileChooser: MiniAppFileChooser? = null,
         queryParams: String = ""
     ): MiniAppDisplay
 
@@ -99,7 +99,7 @@ abstract class MiniApp internal constructor() {
      * @param appUrl a HTTP url containing Mini App content.
      * @param miniAppMessageBridge the interface for communicating between host app & mini app.
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
-     * @param miniAppFilePicker allow host app to get the file path while picking file inside the webview.
+     * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
      * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
@@ -109,7 +109,7 @@ abstract class MiniApp internal constructor() {
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
-        miniAppFilePicker: MiniAppFilePicker? = null,
+        miniAppFileChooser: MiniAppFileChooser? = null,
         queryParams: String = ""
     ): MiniAppDisplay
 

@@ -48,7 +48,7 @@ class DisplayerSpec {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
-            miniAppFilePicker = mock(),
+            miniAppFileChooser = mock(),
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
@@ -58,7 +58,7 @@ class DisplayerSpec {
         appUrl = TEST_MA_URL,
         miniAppMessageBridge = miniAppMessageBridge,
         miniAppNavigator = mock(),
-        miniAppFilePicker = mock(),
+        miniAppFileChooser = mock(),
         miniAppCustomPermissionCache = mock(),
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS
