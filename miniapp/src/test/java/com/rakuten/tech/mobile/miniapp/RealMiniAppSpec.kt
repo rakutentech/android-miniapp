@@ -120,7 +120,7 @@ open class BaseRealMiniAppSpec {
                 onGettingManifestWhileCreate()
                 val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
                 When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
-                realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
+                realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator, miniAppFilePicker)
 
                 verify(miniAppDownloader).getMiniApp(TEST_MA)
                 verify(displayer).createMiniAppDisplay(
@@ -208,8 +208,7 @@ open class BaseRealMiniAppSpec {
 
         /** region: RealMiniApp.listDownloadedWithCustomPermissions */
         @Test
-        @Suppress("LongMethod")
-        fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions is calling`() {
+        fun `should invoke getDownloadedMiniAppList when listDownloadedWithCustomPermissions is calling`() {
             realMiniApp.listDownloadedWithCustomPermissions()
 
             verify(miniAppDownloader).getDownloadedMiniAppList()
@@ -290,8 +289,10 @@ open class BaseRealMiniAppSpec {
                         )
                     )
                 )
-                When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns allowedPermission
-                When calling downloadedManifestCache.getAllPermissions(allowedPermission) itReturns allowedPermission.pairValues
+                When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns
+                        allowedPermission
+                When calling downloadedManifestCache.getAllPermissions(allowedPermission) itReturns
+                        allowedPermission.pairValues
 
                 realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
@@ -310,7 +311,8 @@ open class BaseRealMiniAppSpec {
                 val manifestToStore = CachedManifest(differentVersionId, demoManifest)
                 When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, differentVersionId) itReturns demoManifest
                 When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
-                When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns deniedPermission.pairValues
+                When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns
+                        deniedPermission.pairValues
 
                 realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 
