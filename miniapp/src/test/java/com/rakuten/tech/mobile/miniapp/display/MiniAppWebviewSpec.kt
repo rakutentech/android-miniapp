@@ -482,13 +482,6 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
         verify(webChromeClient).onHideCustomView()
     }
-
-    @Test(expected = MiniAppFilePickingException::class)
-    fun `should throw exception during error while invoking onShowFileChooser from filer picker`() {
-        val filePicker = Mockito.spy(MiniAppFilePicker(1111))
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), filePicker))
-        webChromeClient.onShowFileChooser(mock(), mock(), mock())
-    }
 }
 
 private fun getWebResReq(uriReq: Uri): WebResourceRequest {

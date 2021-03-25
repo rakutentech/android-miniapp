@@ -12,12 +12,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import com.rakuten.tech.mobile.miniapp.MiniAppFilePickingException
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class MiniAppFilePickerSpec {
@@ -45,15 +46,16 @@ class MiniAppFilePickerSpec {
 
     @Test
     fun `onShowFileChooser should startActivityForResult correctly`() {
-        miniAppFilePicker.onShowFileChooser(callback, fileChooserParams, context)
+        val actual = miniAppFilePicker.onShowFileChooser(callback, fileChooserParams, context)
         verify(context as Activity).startActivityForResult(intent, requestCode)
+        assertTrue(actual)
     }
 
-    @Test(expected = MiniAppFilePickingException::class)
-    fun `onShowFileChooser should throw exception when there is error`() {
+    @Test
+    fun `onShowFileChooser should return false when there is exception`() {
         val mockContext: Context = mock()
-        miniAppFilePicker.onShowFileChooser(mock(), mock(), mockContext)
-        verify(mockContext as Activity).startActivityForResult(mock(), requestCode)
+        val actual = miniAppFilePicker.onShowFileChooser(mock(), mock(), mockContext)
+        assertFalse(actual)
     }
 
     @Test

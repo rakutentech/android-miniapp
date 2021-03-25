@@ -3,9 +3,9 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import com.rakuten.tech.mobile.miniapp.MiniAppFilePickingException
 
 /**
  * The file picker of a miniapp which needs to be implemented by the HostApp.
@@ -34,7 +34,8 @@ open class MiniAppFilePicker(var requestCode: Int) {
             val intent = fileChooserParams?.createIntent()
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
-            throw (MiniAppFilePickingException(e.message.toString()))
+            Log.e(MiniAppFilePicker::class.java.simpleName, e.message.toString())
+            return false
         }
         return true
     }
