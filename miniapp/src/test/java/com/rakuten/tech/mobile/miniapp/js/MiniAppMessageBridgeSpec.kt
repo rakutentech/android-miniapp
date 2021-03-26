@@ -398,13 +398,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(
-                activity = activity,
-                webViewListener = webViewListener,
-                customPermissionCache = mock(),
-                downloadedManifestCache = mock(),
-                miniAppId = TEST_MA_ID
-            )
+            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID)
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))

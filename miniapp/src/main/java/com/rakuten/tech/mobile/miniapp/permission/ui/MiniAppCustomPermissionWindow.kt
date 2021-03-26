@@ -37,7 +37,6 @@ internal class MiniAppCustomPermissionWindow(
     private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
     private lateinit var customPermissionLayout: View
 
-    @SuppressWarnings("MagicNumber")
     fun displayPermissions(
         miniAppId: String,
         deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>

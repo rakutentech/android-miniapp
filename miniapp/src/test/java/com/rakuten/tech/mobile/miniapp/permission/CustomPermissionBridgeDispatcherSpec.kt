@@ -2,7 +2,8 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
@@ -50,6 +51,7 @@ class CustomPermissionBridgeDispatcherSpec {
         MiniAppManifest(
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
             listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
+            TEST_ATP_LIST,
             emptyMap()
         )
     )
@@ -172,7 +174,7 @@ class CustomPermissionBridgeDispatcherSpec {
         val manifest = CachedManifest(
             TEST_MA_VERSION_ID,
             MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), emptyMap()
+                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), TEST_ATP_LIST, emptyMap()
             )
         )
         When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns manifest

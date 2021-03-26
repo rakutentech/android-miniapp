@@ -2,16 +2,22 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.util.ArrayList
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
+    private lateinit var downloadedManifestCache: DownloadedManifestCache
     private lateinit var miniAppId: String
     private var isMiniAppComponentReady = false
     private lateinit var userInfoBridgeDispatcher: UserInfoBridgeDispatcher
@@ -19,10 +25,12 @@ internal class UserInfoBridge {
     fun setMiniAppComponents(
         bridgeExecutor: MiniAppBridgeExecutor,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String
     ) {
         this.bridgeExecutor = bridgeExecutor
         this.customPermissionCache = miniAppCustomPermissionCache
+        this.downloadedManifestCache = downloadedManifestCache
         this.miniAppId = miniAppId
         isMiniAppComponentReady = true
     }
@@ -69,26 +77,61 @@ internal class UserInfoBridge {
 
                 userInfoBridgeDispatcher.getProfilePhoto(successCallback, errorCallback)
             } else
-            bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
+                bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO $ERR_PROFILE_PHOTO_NO_PERMISSION")
         } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
     }
 
-    internal fun onGetAccessToken(callbackId: String) = whenReady(callbackId) {
+    internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
         try {
-            val successCallback = { accessToken: TokenData ->
-                bridgeExecutor.postValue(callbackId, Gson().toJson(accessToken))
-            }
-            val errorCallback = { message: String ->
-                bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN $message")
-            }
-
-            userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.ACCESS_TOKEN)) {
+                onHasAccessTokenPermission(callbackObj)
+            } else
+                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION")
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "$ERR_GET_ACCESS_TOKEN ${e.message}")
+            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN ${e.message}")
         }
     }
+
+    private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
+        val tokenPermission = parseAccessTokenPermission(callbackObj)
+        if (doesAccessTokenMatch(tokenPermission)) {
+
+            val successCallback = { accessToken: TokenData ->
+                accessToken.scopes = tokenPermission
+                bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
+            }
+            val errorCallback = { message: String ->
+                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
+            }
+
+            try {
+                userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
+            } catch (e: MiniAppSdkException) {
+                if (e.message == "The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+                    userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
+                else
+                    throw e
+            }
+        } else
+            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
+    }
+
+    private fun doesAccessTokenMatch(tokenScope: AccessTokenScope): Boolean {
+        if (tokenScope.scopes.isNotEmpty()) {
+            for (atc in downloadedManifestCache.getAccessTokenPermissions(miniAppId)) {
+                if (atc.audience == tokenScope.audience && atc.scopes.containsAll(tokenScope.scopes))
+                    return true
+            }
+        }
+        return false
+    }
+
+    private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenScope>(
+            callbackObj.param.toString(),
+            object : TypeToken<AccessTokenScope>() {}.type
+    ) ?: AccessTokenScope("", emptyList())
 
     fun onGetContacts(callbackId: String) = whenReady(callbackId) {
         try {
@@ -118,6 +161,9 @@ internal class UserInfoBridge {
         const val ERR_PROFILE_PHOTO_NO_PERMISSION =
             "Permission has not been accepted yet for getting profile photo."
         const val ERR_GET_ACCESS_TOKEN = "Cannot get access token:"
+        const val ERR_ACCESS_TOKEN_NO_PERMISSION =
+            "Permission has not been accepted yet for getting access token."
+        const val ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST = "Not match the audience and scope in manifest."
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
         const val ERR_GET_CONTACTS_NO_PERMISSION =
             "Permission has not been accepted yet for getting contacts."

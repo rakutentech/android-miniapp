@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -28,8 +29,10 @@ class DownloadedManifestCacheSpec {
         MiniAppManifest(
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
             listOf(),
+            TEST_ATP_LIST,
             mapOf()
         )
+    private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
 
     @Before
     fun setUp() {
@@ -39,11 +42,13 @@ class DownloadedManifestCacheSpec {
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
         Mockito.`when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
         manifestCache = spy(DownloadedManifestCache(mockContext))
+
+        doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
     }
 
     @Test
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
-        val actual = manifestCache.readDownloadedManifest(TEST_MA_ID)
+        val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
         val expected = null
         actual shouldEqual expected
     }
@@ -134,6 +139,7 @@ class DownloadedManifestCacheSpec {
             MiniAppManifest(
                 listOf(),
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+                TEST_ATP_LIST,
                 mapOf()
             )
         val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, expected)
@@ -153,6 +159,16 @@ class DownloadedManifestCacheSpec {
 
         val actual = manifestCache.getOptionalPermissions(cachedPermission)
         assertEquals(emptyList(), actual)
+    }
+
+    @Test
+    fun `should get access token permissions correctly`() {
+        manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
+    }
+
+    @Test
+    fun `should get empty list of AccessTokenPermission when no cache`() {
+        DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {

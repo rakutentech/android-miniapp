@@ -296,11 +296,12 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
     override fun getAccessToken(
         miniAppId: String,
+        accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {
         var allowToken: Boolean = false
-        // Check if you want to allow this Mini App ID to use the Access Token
+        // Check if you want to allow this Mini App ID to use the Access Token based on AccessTokenScope.
         // .. .. ..
         if (allowToken)
             onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
@@ -367,7 +368,7 @@ The following user data types are supported. If your App does not support a cert
 
 - User name: string representing the user's name. See [UserInfoBridgeDispatcher.getUserName](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-user-name.html)
 - Profile photo: URL pointing to a photo. This can also be a Base64 data string. See [UserInfoBridgeDispatcher.getProfilePhoto](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-profile-photo.html)
-- Access Token (does not currenlty have a custom permission type): OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
+- Access Token: OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app and [AccessTokenScope]((api/com.rakuten.tech.mobile.miniapp.permission/-access-token-scope)) which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
 
 
 ### Ads Integration
