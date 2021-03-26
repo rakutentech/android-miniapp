@@ -627,22 +627,7 @@ Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to 
 **API Docs:** [MiniAppFileChooser](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-chooser/)
 
 The mini app is able to choose the file which is requested using HTML forms with 'file' input type whenever users press a "Select file" button.
-HostApp can use `MiniAppFileChooser` to override `onShowFileChooser` to customize file choosing mode and other options.
-
-```kotlin
-val miniAppFileChooser = object : MiniAppFileChooser {
-
-        override fun onShowFileChooser(
-            filePathCallback: ValueCallback<Array<Uri>>?,
-            fileChooserParams: WebChromeClient.FileChooserParams?,
-            context: Context
-        ): Boolean {
-           // write own implementation here.
-        }
-    }
-```
-
-Also, HostApp can use a default class provided by the SDK.
+HostApp can use a default class provided by the SDK e.g. `MiniAppFileChooserDefault` to choose the files.
 - At first, HostApp needs to initiate `MiniAppFileChooserDefault` in the `Activity`.
 
 ```kotlin
@@ -663,6 +648,21 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
         }
     }
 }
+```
+
+Alternatively, HostApp can use `MiniAppFileChooser` interface to override `onShowFileChooser` for customizing file choosing mode and other options.
+
+```kotlin
+val miniAppFileChooser = object : MiniAppFileChooser {
+
+        override fun onShowFileChooser(
+            filePathCallback: ValueCallback<Array<Uri>>?,
+            fileChooserParams: WebChromeClient.FileChooserParams?,
+            context: Context
+        ): Boolean {
+           // write own implementation here.
+        }
+    }
 ```
 
 In both case, HostApp needs to pass `MiniAppFileChooser` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFileChooser: MiniAppFileChooser)`.
