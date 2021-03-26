@@ -51,7 +51,7 @@ abstract class MiniAppMessageBridge {
         this.downloadedManifestCache = downloadedManifestCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-        userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
+        userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
 
         miniAppViewInitialized = true
     }

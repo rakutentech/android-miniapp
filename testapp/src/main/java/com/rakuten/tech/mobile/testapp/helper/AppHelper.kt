@@ -68,6 +68,11 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     alertDialog.create().show()
 }
 
+fun ImageView.load(context: Context, res: String) = Glide.with(context)
+    .load(res)
+    .placeholder(R.drawable.ic_default)
+    .into(this)
+
 fun setIcon(context: Context, uri: Uri, view: ImageView) {
     Glide.with(context)
         .load(uri).apply(RequestOptions().circleCrop())

@@ -8,8 +8,9 @@ import androidx.annotation.Keep
  *  @property scopes List of areas that token can access.
  */
 @Keep
-data class AccessTokenPermission(val audience: String, val scopes: List<String>) {
-
-//    fun contains(accessTokenPermission: AccessTokenPermission): Boolean =
-//        this.audience == accessTokenPermission.audience && this.scopes.containsAll(accessTokenPermission.scopes)
+data class AccessTokenScope(
+    val audience: String,
+    val scopes: List<String>
+) {
+    constructor() : this(audience = "", scopes = mutableListOf())
 }

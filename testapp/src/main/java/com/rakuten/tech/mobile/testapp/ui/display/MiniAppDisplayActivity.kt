@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -23,6 +22,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
@@ -93,11 +93,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         viewModel = ViewModelProvider.NewInstanceFactory()
             .create(MiniAppDisplayViewModel::class.java).apply {
 
-                setHostLifeCycle(lifecycle)
                 miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                     if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                         WebView.setWebContentsDebuggingEnabled(true)
                     //action: display webview
+                    addLifeCycleObserver(lifecycle)
                     setContentView(it)
                 })
 
@@ -181,9 +181,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
 
             override fun getAccessToken(
-                miniAppId: String,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (message: String) -> Unit
+                    miniAppId: String,
+                    accessTokenScope: AccessTokenScope,
+                    onSuccess: (tokenData: TokenData) -> Unit,
+                    onError: (message: String) -> Unit
             ) = onSuccess(AppSettings.instance.tokenData)
 
             override fun getContacts(

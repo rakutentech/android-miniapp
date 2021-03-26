@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.1.X (In progress)
+### 3.1.0 (In progress)
 - **Deprecated:** `getAccessToken` with only miniapp id verfication.
 - **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
 
