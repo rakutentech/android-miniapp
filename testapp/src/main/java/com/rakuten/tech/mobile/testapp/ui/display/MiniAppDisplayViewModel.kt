@@ -22,7 +22,6 @@ class MiniAppDisplayViewModel constructor(
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var miniAppDisplay: MiniAppDisplay
-    private var hostLifeCycle: Lifecycle? = null
 
     private val _miniAppView = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
@@ -50,7 +49,6 @@ class MiniAppDisplayViewModel constructor(
                 miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             else
                 miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
-            hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -78,7 +76,6 @@ class MiniAppDisplayViewModel constructor(
             _isLoading.postValue(true)
             miniAppDisplay =
                 miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
-            hostLifeCycle?.addObserver(miniAppDisplay)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -88,8 +85,8 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    fun setHostLifeCycle(lifecycle: Lifecycle) {
-        this.hostLifeCycle = lifecycle
+    fun addLifeCycleObserver(lifecycle: Lifecycle) {
+        lifecycle.addObserver(miniAppDisplay)
     }
 
     fun canGoBackwards(): Boolean =

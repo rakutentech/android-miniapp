@@ -109,7 +109,7 @@ class MiniAppStorageSpec {
 
         val fileWriter = FileWriter(TestCoroutineDispatcher())
         zipFiles(containerPath, arrayOf(filePath, folderPath))
-        val inputStream = File("$containerPath/$zipFile").inputStream()
+        val inputStream = File("$containerPath${File.separator}$zipFile").inputStream()
 
         fileWriter.unzip(inputStream, containerPath)
     }
@@ -125,15 +125,15 @@ class MiniAppStorageSpec {
     @Suppress("NestedBlockDepth", "LongMethod")
     private fun zipFiles(outputPath: String, filePaths: Array<String>) {
         ZipOutputStream(BufferedOutputStream(
-            FileOutputStream("$outputPath/$zipFile"))).use { out ->
+            FileOutputStream("$outputPath${File.separator}$zipFile"))).use { out ->
             for (filePath in filePaths) {
                 val file = File(filePath)
                 if (file.isDirectory) {
-                    out.putNextEntry(ZipEntry(file.name + "/"))
+                    out.putNextEntry(ZipEntry(file.name + File.separator))
                 } else {
                     FileInputStream(filePath).use { fi ->
                         BufferedInputStream(fi).use { origin ->
-                            val entry = ZipEntry(filePath.substring(filePath.lastIndexOf("/")))
+                            val entry = ZipEntry(filePath.substring(filePath.lastIndexOf(File.separator)))
                             out.putNextEntry(entry)
                             origin.copyTo(out, 1024)
                         }

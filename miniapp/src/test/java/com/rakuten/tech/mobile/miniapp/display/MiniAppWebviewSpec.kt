@@ -25,6 +25,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,12 +44,10 @@ open class BaseWebViewSpec {
     val miniAppFileChooser: MiniAppFileChooser = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
-    lateinit var activityScenario: ActivityScenario<TestActivity>
+    var activityScenario = ActivityScenario.launch(TestActivity::class.java)
 
-    @Suppress("LongMethod")
     @Before
     open fun setup() {
-        activityScenario = ActivityScenario.launch(TestActivity::class.java)
         activityScenario.onActivity { activity ->
             context = activity
             basePath = context.filesDir.path
@@ -60,23 +59,28 @@ open class BaseWebViewSpec {
                     miniAppFileChooser
                 )
             )
-
-            miniAppWebView = MiniAppWebView(
-                context,
-                basePath = basePath,
-                miniAppInfo = TEST_MA,
-                miniAppMessageBridge = miniAppMessageBridge,
-                miniAppNavigator = miniAppNavigator,
-                miniAppFileChooser = miniAppFileChooser,
-                hostAppUserAgentInfo = TEST_HA_NAME,
-                miniAppWebChromeClient = webChromeClient,
-                miniAppCustomPermissionCache = miniAppCustomPermissionCache,
-                downloadedManifestCache = mock(),
-                queryParams = TEST_URL_PARAMS
-            )
+            miniAppWebView = createMiniAppWebView()
             webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
         }
     }
+
+    @After
+    fun finish() {
+        activityScenario.close()
+    }
+
+    private fun createMiniAppWebView() = MiniAppWebView(context,
+        basePath = basePath,
+        miniAppInfo = TEST_MA,
+        miniAppMessageBridge = miniAppMessageBridge,
+        miniAppNavigator = miniAppNavigator,
+        miniAppFileChooser = miniAppFileChooser,
+        hostAppUserAgentInfo = TEST_HA_NAME,
+        miniAppWebChromeClient = webChromeClient,
+        miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = mock(),
+        queryParams = TEST_URL_PARAMS
+    )
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -209,6 +213,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
             context,

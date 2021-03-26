@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -40,7 +41,7 @@ internal class ManifestApiCacheSpec {
     @Test
     fun `readManifest will return expected values`() {
         val cachedManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), mapOf()
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), TEST_ATP_LIST, mapOf()
         )
         doReturn(cachedManifest).whenever(manifestCache)
             .readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
@@ -51,7 +52,7 @@ internal class ManifestApiCacheSpec {
     @Test
     fun `storeManifes will invoke putString while storing the latest manifest`() {
         val newManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), mapOf()
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), TEST_ATP_LIST, mapOf()
         )
         Mockito.`when`(mockEditor.clear()).thenReturn(mockEditor)
         manifestCache.storeManifest(TEST_MA_ID, TEST_MA_VERSION_ID, newManifest)
