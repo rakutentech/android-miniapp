@@ -5,7 +5,12 @@ import android.content.Context
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.GeolocationPermissions
+import android.webkit.JsResult
+import android.webkit.JsPromptResult
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.ValueCallback
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo

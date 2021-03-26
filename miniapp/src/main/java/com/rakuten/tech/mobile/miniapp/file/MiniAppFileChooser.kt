@@ -13,7 +13,8 @@ import android.webkit.WebChromeClient
 interface MiniAppFileChooser {
 
     /**
-     * The file chooser of a miniapp with `onShowFileChooser` function.
+     * For choosing the files which has been invoked by [WebChromeClient.onShowFileChooser]
+     * inside the miniapp webview.
      * @param filePathCallback a callback to provide the array of file-paths to select.
      * @param fileChooserParams the parameters can be used to customize the options of file chooser.
      * @param context the Activity context can be used to start the intent to choose file.
