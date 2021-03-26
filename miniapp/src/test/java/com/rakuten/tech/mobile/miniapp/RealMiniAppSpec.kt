@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.nhaarman.mockitokotlin2.*
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -34,6 +35,7 @@ open class BaseRealMiniAppSpec {
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
+    val miniAppFileChooser: MiniAppFileChooser = mock()
 
     @Before
     fun setup() {
@@ -111,7 +113,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(realMiniApp).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
             verify(displayer).createMiniAppDisplay(
                 getMiniAppResult.first, getMiniAppResult.second,
-                miniAppMessageBridge, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
+                miniAppMessageBridge, null, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
             )
         }
 
@@ -121,12 +123,12 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppDownloader.getMiniApp(TEST_MA) itReturns getMiniAppResult
-            realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator)
+            realMiniApp.create(TEST_MA, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser)
 
             verify(miniAppDownloader).getMiniApp(TEST_MA)
             verify(displayer).createMiniAppDisplay(
                 getMiniAppResult.first, getMiniAppResult.second,
-                miniAppMessageBridge, miniAppNavigator, miniAppCustomPermissionCache, downloadedManifestCache, ""
+                miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, miniAppCustomPermissionCache, downloadedManifestCache, ""
             )
         }
 
@@ -143,7 +145,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
             verify(miniAppDownloader).validateHttpAppUrl(TEST_MA_URL)
             verify(displayer).createMiniAppDisplay(
-                TEST_MA_URL, miniAppMessageBridge, null,
+                TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, ""
             )
         }
@@ -291,21 +293,19 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         }
 
     @Test
-    fun `verifyManifest will store api manifest when version ids are different`() = runBlockingTest {
-        val differentVersionId = "another_version_id"
-        val manifestToStore = CachedManifest(differentVersionId, demoManifest)
-        When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, differentVersionId) itReturns demoManifest
-        When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
-        When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns deniedPermission.pairValues
+    fun `verifyManifest will store api manifest when version ids are different`() =
+        runBlockingTest {
+            val differentVersionId = "another_version_id"
+            val manifestToStore = CachedManifest(differentVersionId, demoManifest)
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, differentVersionId) itReturns demoManifest
+            When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns deniedPermission.pairValues
 
-        realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
+            realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 
-        verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
-        verify(miniAppCustomPermissionCache).removePermissionsNotMatching(
-            TEST_MA_ID,
-            deniedPermission.pairValues
-        )
-    }
+            verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
+            verify(miniAppCustomPermissionCache).removePermissionsNotMatching(TEST_MA_ID, deniedPermission.pairValues)
+        }
 
     /** end region */
 

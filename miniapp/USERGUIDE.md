@@ -623,6 +623,50 @@ mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
 
+### File choosing
+**API Docs:** [MiniAppFileChooser](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-chooser/)
+
+The mini app is able to choose the file which is requested using HTML forms with 'file' input type whenever users press a "Select file" button.
+HostApp can use a default class provided by the SDK e.g. `MiniAppFileChooserDefault` to choose the files.
+- At first, HostApp needs to initiate `MiniAppFileChooserDefault` in the `Activity`.
+
+```kotlin
+val fileChoosingReqCode = REQUEST_CODE // define a request code in HostApp
+val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+```
+
+- Then, HostApp activity can receive the files at `onActivityResult` as following:
+
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
+        data?.let { intent ->
+            val result: Uri? = intent.data
+            miniAppFileChooser.onReceivedFiles(arrayOf(result!!))
+        }
+    }
+}
+```
+
+Alternatively, HostApp can use `MiniAppFileChooser` interface to override `onShowFileChooser` for customizing file choosing mode and other options.
+
+```kotlin
+val miniAppFileChooser = object : MiniAppFileChooser {
+
+        override fun onShowFileChooser(
+            filePathCallback: ValueCallback<Array<Uri>>?,
+            fileChooserParams: WebChromeClient.FileChooserParams?,
+            context: Context
+        ): Boolean {
+           // write own implementation here.
+        }
+    }
+```
+
+In both case, HostApp needs to pass `MiniAppFileChooser` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFileChooser: MiniAppFileChooser)`.
+
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
 

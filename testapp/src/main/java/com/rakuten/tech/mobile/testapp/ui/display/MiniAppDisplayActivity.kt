@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -40,6 +42,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
+    private val fileChoosingReqCode = 10101
+    private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -127,6 +131,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
         } else
@@ -136,6 +141,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appId!!,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
     }
@@ -218,6 +224,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
+        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
+            data?.let { intent ->
+                val result: Uri? = intent.data
+                miniAppFileChooser.onReceivedFiles(arrayOf(result ?: return@let))
+            }
         }
     }
 
