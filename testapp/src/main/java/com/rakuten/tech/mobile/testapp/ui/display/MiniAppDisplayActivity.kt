@@ -18,7 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -43,7 +43,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
-    private val miniAppFileChooser = MiniAppFileChooser(requestCode = fileChoosingReqCode)
+    private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
 
     companion object {
         private val appIdTag = "app_id_tag"

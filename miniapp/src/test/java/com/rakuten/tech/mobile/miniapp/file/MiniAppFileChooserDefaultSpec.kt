@@ -18,8 +18,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppFileChooserSpec {
-    private lateinit var miniAppFileChooser: MiniAppFileChooser
+class MiniAppFileChooserDefaultSpec {
+    private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
     private lateinit var context: Context
     private val requestCode = 100
     private val callback: ValueCallback<Array<Uri>>? = mock()
@@ -31,7 +31,7 @@ class MiniAppFileChooserSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             context = spy(activity)
             whenever(fileChooserParams?.createIntent()).thenReturn(intent)
-            miniAppFileChooser = MiniAppFileChooser(requestCode)
+            miniAppFileChooser = MiniAppFileChooserDefault(requestCode)
         }
     }
 

@@ -8,23 +8,34 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 
 /**
- * The file chooser of a miniapp which needs to be implemented by the HostApp.
+ * The file chooser of a miniapp with `onShowFileChooser` function.
+ **/
+interface MiniAppFileChooser {
+
+    /**
+     * The file chooser of a miniapp with `onShowFileChooser` function.
+     * @param filePathCallback a callback to provide the array of file-paths to select.
+     * @param fileChooserParams the parameters can be used to customize the options of file chooser.
+     * @param context the Activity context can be used to start the intent to choose file.
+     **/
+    fun onShowFileChooser(
+        filePathCallback: ValueCallback<Array<Uri>>?,
+        fileChooserParams: WebChromeClient.FileChooserParams?,
+        context: Context
+    ): Boolean
+}
+
+/**
+ * The default file chooser of a miniapp.
  * @param requestCode of file choosing using an intent inside sdk, which will also be used
  * to retrieve the data by [Activity.onActivityResult] in the HostApp.
  **/
-open class MiniAppFileChooser(var requestCode: Int) {
+class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
 
-    /**
-     * HostApp can override [WebChromeClient.onShowFileChooser] to choose a file
-     * which is requested using HTML forms with 'file' input type.
-     * @param filePathCallback The callback to receive the Uris.
-     * @param fileChooserParams The file chooser parameters can be used to create an intent to choose file.
-     * @param context Activity's context from the HostApp.
-     */
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    fun onShowFileChooser(
+    override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
         context: Context
