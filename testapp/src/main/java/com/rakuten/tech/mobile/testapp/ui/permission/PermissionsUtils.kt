@@ -6,8 +6,9 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 fun toReadableName(type: MiniAppCustomPermissionType?): String {
     return when (type) {
         MiniAppCustomPermissionType.USER_NAME -> "User Name"
-        MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
         MiniAppCustomPermissionType.PROFILE_PHOTO -> "Profile Photo"
+        MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
+        MiniAppCustomPermissionType.ACCESS_TOKEN -> "Access Token"
         MiniAppCustomPermissionType.LOCATION -> "Device Location"
         else -> "Unknown"
     }

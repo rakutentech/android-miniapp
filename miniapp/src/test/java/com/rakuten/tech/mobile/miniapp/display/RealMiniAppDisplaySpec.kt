@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,21 +35,23 @@ class RealMiniAppDisplaySpec {
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
     private lateinit var miniAppAnalytics: MiniAppAnalytics
+    private val activityScenario = ActivityScenario.launch(TestActivity::class.java)
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
     fun setup() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+        activityScenario.onActivity { activity ->
             context = activity
             basePath = context.filesDir.path
             realDisplay = RealMiniAppDisplay(
-                context,
                 basePath = basePath,
                 miniAppInfo = TEST_MA,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = mock(),
+                miniAppFileChooser = mock(),
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock(),
+                downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS
             )
 
@@ -57,15 +60,21 @@ class RealMiniAppDisplaySpec {
         }
     }
 
+    @After
+    fun finish() {
+        activityScenario.close()
+    }
+
     @Test
     fun `should pass MiniAppInfo forUrl through the constructor`() {
         val realDisplay = RealMiniAppDisplay(
-            context = context,
             appUrl = "",
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = mock(),
+            miniAppFileChooser = mock(),
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         )
 
@@ -92,11 +101,9 @@ class RealMiniAppDisplaySpec {
     @Test
     fun `should provide the exact context to MiniAppWebView`() = runBlockingTest {
         val displayer = Mockito.spy(realDisplay)
-        val testContext = displayer.context
-        When calling displayer.isContextValid(testContext) itReturns true
-        val miniAppWebView = displayer.getMiniAppView(testContext) as MiniAppWebView
+        val miniAppWebView = displayer.getMiniAppView(context) as MiniAppWebView
 
-        miniAppWebView.context shouldBe testContext
+        miniAppWebView.context shouldBe context
     }
 
     @Test(expected = MiniAppSdkException::class)

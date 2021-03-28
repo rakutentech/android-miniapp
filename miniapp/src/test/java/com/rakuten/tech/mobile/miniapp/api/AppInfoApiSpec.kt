@@ -60,7 +60,7 @@ class AppInfoApiRequestSpec : AppInfoApiSpec() {
     private fun executeListingCallByRetrofit() {
         mockServer.enqueue(createResponse())
         retrofit.create(AppInfoApi::class.java)
-            .list(hostAppId = TEST_HA_ID_PROJECT)
+            .list(hostId = TEST_HA_ID_PROJECT)
             .execute()
     }
 }
@@ -74,7 +74,7 @@ class AppInfoApiResponseSpec : AppInfoApiSpec() {
         mockServer.enqueue(createResponse())
 
         miniAppInfo = retrofit.create(AppInfoApi::class.java)
-            .list(hostAppId = TEST_HA_ID_PROJECT)
+            .list(hostId = TEST_HA_ID_PROJECT)
             .execute().body()!![0]
     }
 

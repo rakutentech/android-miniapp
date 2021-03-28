@@ -38,7 +38,7 @@ fun parseStringToDate(format: String, str: String): Date {
     return Date()
 }
 
-fun showAlertDialog(activity: Activity, content: String) {
+fun showAlertDialog(activity: Activity, title: String = "Alert", content: String) {
     // prepare an EditText where the content can be copied by long press
     val editText = EditText(activity)
     editText.setText(content)
@@ -60,13 +60,18 @@ fun showAlertDialog(activity: Activity, content: String) {
 
     // show content using alert dialog
     val alertDialog = AlertDialog.Builder(activity)
-    alertDialog.setTitle("Alert")
+    alertDialog.setTitle(title)
     alertDialog.setView(container)
     alertDialog.setNegativeButton("Close") { dialog, _ ->
         dialog.dismiss()
     }
     alertDialog.create().show()
 }
+
+fun ImageView.load(context: Context, res: String) = Glide.with(context)
+    .load(res)
+    .placeholder(R.drawable.ic_default)
+    .into(this)
 
 fun setIcon(context: Context, uri: Uri, view: ImageView) {
     Glide.with(context)

@@ -63,15 +63,16 @@ dependencies {
 
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
 
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.browser:browser:$custom_tab"
 
-    kapt "com.rakuten.tech.mobile:manifest-config-processor:$manifest_config"
-    implementation "com.rakuten.tech.mobile:manifest-config-annotations:$manifest_config"
-    implementation "com.rakuten.tech.mobile.sdkutils:sdk-utils:$sdk_utils"
+    kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
+    implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
+    implementation "io.github.rakutentech.sdkutils:sdk-utils:$sdk_utils"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
@@ -82,12 +83,18 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$mockwebserver"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 
     if (property("GITHUB_USERNAME") != null) {
-        compileOnly "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
-        testImplementation "com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk"
+        compileOnly ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+        }
+        testImplementation ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
+            exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
+        }
     } else {
         compileOnly project(':analytics')
         testImplementation project(':analytics')
@@ -124,10 +131,9 @@ afterEvaluate {
 }
 def isSnapshot = project.version.contains('-')
 if (isSnapshot) {
-    apply from: '../config/publish/artifactory.gradle'
-} else {
-    apply from: '../config/publish/bintray.gradle'
+    ext["MAVEN_CENTRAL_IS_SNAPSHOT"] = true
 }
+apply from: '../config/publish/maven-central.gradle'
 
 project.ext.docPublishing = [
         repoUri: 'git@github.com:rakutentech/android-miniapp.git'

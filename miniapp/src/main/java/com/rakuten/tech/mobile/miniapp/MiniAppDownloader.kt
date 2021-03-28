@@ -2,9 +2,13 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -19,17 +23,19 @@ import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
-@Suppress("SwallowedException", "TooManyFunctions")
+@Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
-    private val storage: MiniAppStorage,
     private var apiClient: ApiClient,
-    private val miniAppStatus: MiniAppStatus,
-    private val verifier: CachedMiniAppVerifier,
+    initStorage: () -> MiniAppStorage,
+    initStatus: () -> MiniAppStatus,
+    initVerifier: () -> CachedMiniAppVerifier,
+    initManifestApiCache: () -> ManifestApiCache,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
-
-    @Suppress("MagicNumber")
-    private val validHTTPResponseCodes = 100..399
+    private val storage: MiniAppStorage by lazy { initStorage() }
+    private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
+    private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
+    private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -44,11 +50,12 @@ internal class MiniAppDownloader(
         onNetworkError(miniAppInfo)
     }
 
-    @Suppress("ThrowsCount")
+    @Suppress("ThrowsCount", "MagicNumber")
     fun validateHttpAppUrl(url: String) {
         var connection: HttpURLConnection? = null
         try {
             connection = URL(url).openConnection() as HttpURLConnection
+            val validHTTPResponseCodes = 100..399
             val code = connection.responseCode
             if (code !in validHTTPResponseCodes) {
                 throw MiniAppSdkException("Invalid URL error")
@@ -123,6 +130,45 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+        return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        else {
+            // every version should have it's own manifest information or null
+            val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+            if (cachedLatestManifest != null) cachedLatestManifest
+            else {
+                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                val latestManifest = prepareMiniAppManifest(apiResponse)
+                manifestApiCache.storeManifest(appId, versionId, latestManifest)
+                latestManifest
+            }
+        }
+    }
+
+    @VisibleForTesting
+    fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+        val requiredPermissions = listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
+        val optionalPermissions = listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
+        val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
+        val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
+
+        return MiniAppManifest(requiredPermissions, optionalPermissions, accessTokenPermission, customMetadata)
+    }
+
+    @VisibleForTesting
+    fun listOfPermissions(
+        permissions: List<MetadataPermissionObj>
+    ): List<Pair<MiniAppCustomPermissionType, String>> {
+        val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
+        permissions.forEach {
+            val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
+            if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
+                pairs.add(Pair(permissionType, it.reason ?: ""))
+        }
+        return pairs
+    }
+
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
@@ -149,8 +195,7 @@ internal class MiniAppDownloader(
         }
     }
 
-    fun getDownloadedMiniAppList(): List<MiniAppInfo> =
-        miniAppStatus.getDownloadedMiniAppList()
+    fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting

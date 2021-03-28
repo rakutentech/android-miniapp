@@ -4,12 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.AndroidRuntimeException
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.GeolocationPermissions
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
+import android.webkit.*
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
@@ -20,6 +17,7 @@ import com.nhaarman.mockitokotlin2.*
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
@@ -27,6 +25,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,33 +41,46 @@ open class BaseWebViewSpec {
     lateinit var webResourceRequest: WebResourceRequest
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
+    val miniAppFileChooser: MiniAppFileChooser = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal lateinit var webChromeClient: MiniAppWebChromeClient
-    lateinit var activityScenario: ActivityScenario<TestActivity>
+    var activityScenario = ActivityScenario.launch(TestActivity::class.java)
 
-    @Suppress("LongMethod")
     @Before
     open fun setup() {
-        activityScenario = ActivityScenario.launch(TestActivity::class.java)
         activityScenario.onActivity { activity ->
             context = activity
             basePath = context.filesDir.path
-            webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, miniAppCustomPermissionCache))
-
-            miniAppWebView = MiniAppWebView(
-                context,
-                basePath = basePath,
-                miniAppInfo = TEST_MA,
-                miniAppMessageBridge = miniAppMessageBridge,
-                miniAppNavigator = miniAppNavigator,
-                hostAppUserAgentInfo = TEST_HA_NAME,
-                miniAppWebChromeClient = webChromeClient,
-                miniAppCustomPermissionCache = miniAppCustomPermissionCache,
-                queryParams = TEST_URL_PARAMS
+            webChromeClient = Mockito.spy(
+                MiniAppWebChromeClient(
+                    context,
+                    TEST_MA,
+                    miniAppCustomPermissionCache,
+                    miniAppFileChooser
+                )
             )
+            miniAppWebView = createMiniAppWebView()
             webResourceRequest = getWebResReq(miniAppWebView.getLoadUrl().toUri())
         }
     }
+
+    @After
+    fun finish() {
+        activityScenario.close()
+    }
+
+    private fun createMiniAppWebView() = MiniAppWebView(context,
+        basePath = basePath,
+        miniAppInfo = TEST_MA,
+        miniAppMessageBridge = miniAppMessageBridge,
+        miniAppNavigator = miniAppNavigator,
+        miniAppFileChooser = miniAppFileChooser,
+        hostAppUserAgentInfo = TEST_HA_NAME,
+        miniAppWebChromeClient = webChromeClient,
+        miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = mock(),
+        queryParams = TEST_URL_PARAMS
+    )
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -82,9 +94,11 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 appUrl = TEST_MA_URL,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+                downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS
         )
     }
@@ -101,7 +115,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
-        miniAppWebView.url shouldContain miniAppWebView.miniAppInfo.id
+        miniAppWebView.url!! shouldContain miniAppWebView.miniAppInfo.id
     }
 
     @Test
@@ -155,9 +169,11 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = miniAppNavigator,
+            miniAppFileChooser = miniAppFileChooser,
             hostAppUserAgentInfo = "",
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
@@ -169,7 +185,6 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
         displayer.destroyView()
 
         verify(displayer).stopLoading()
-        displayer.webViewClient shouldBe null
 
         verify(displayer).destroy()
     }
@@ -198,6 +213,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `each mini app should have different domain`() {
         val miniAppWebViewForMiniapp1 = MiniAppWebView(
             context,
@@ -205,15 +221,17 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             TEST_MA,
             miniAppMessageBridge,
             miniAppNavigator,
+            miniAppFileChooser,
             TEST_HA_NAME,
+            mock(),
             mock(),
             mock(),
             TEST_URL_PARAMS
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, TEST_HA_NAME, mock(), mock(), TEST_URL_PARAMS)
-        miniAppWebViewForMiniapp1.url shouldNotBeEqualTo miniAppWebViewForMiniapp2.url
+            miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
+        miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
     @Test
@@ -242,10 +260,14 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     @Test
     fun `should send response with escaped backtick characters`() {
         val spyMiniAppWebView = spy(miniAppWebView)
-        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
 
+        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
             argWhere { it.contains("""`\`test response\``""") }, any())
+
+        spyMiniAppWebView.runErrorCallback("test_id", "`error response`")
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""`\`error response\``""") }, any())
     }
 }
 
@@ -297,13 +319,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(view = displayer, url = null)
-            webViewClient.shouldOverrideUrlLoading(displayer, miniAppWebView.getLoadUrl())
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_PHONE_URI)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_PHONE_URI.toUri()))
 
         verify(miniAppScheme, times(1)).openPhoneDialer(context, TEST_PHONE_URI)
     }
@@ -316,9 +333,11 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             miniAppInfo = TEST_MA,
             miniAppMessageBridge = miniAppMessageBridge,
             miniAppNavigator = null,
+            miniAppFileChooser = null,
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+            downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
@@ -326,11 +345,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator!!,
             externalResultHandler, miniAppScheme))
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
         miniAppNavigator shouldNotBe null
         verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
@@ -343,11 +358,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
-        try {
-            webViewClient.shouldOverrideUrlLoading(displayer, TEST_URL_HTTPS_1)
-        } catch (e: AndroidRuntimeException) {
-            // context here is not activity
-        }
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
         verify(miniAppNavigator).openExternalUrl(TEST_URL_HTTPS_1, externalResultHandler)
     }
@@ -397,7 +408,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock(), TEST_MA, mock())
+        val webClient = MiniAppWebChromeClient(mock(), TEST_MA, mock(), mock())
         webClient.bridgeJs shouldBe null
     }
 
@@ -448,7 +459,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     @Test
     fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
-        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
         webChromeClient.onShowCustomView(null, mock())
         webChromeClient.customView = mock()
         webChromeClient.onShowCustomView(mock(), mock())
@@ -458,7 +469,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should execute custom view flow without error`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
 
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.updateControls()
@@ -468,11 +479,21 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should exit fullscreen when destroy miniapp view`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock()))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.onWebViewDetach()
 
         verify(webChromeClient).onHideCustomView()
+    }
+
+    @Test
+    fun `onShowFileChooser should invoke from miniapp file chooser`() {
+        val callback: ValueCallback<Array<Uri>>? = mock()
+        val fileChooserParams: WebChromeClient.FileChooserParams? = mock()
+        val webChromeClient =
+            Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), miniAppFileChooser))
+        webChromeClient.onShowFileChooser(miniAppWebView, callback, fileChooserParams)
+        verify(miniAppFileChooser).onShowFileChooser(callback, fileChooserParams, context)
     }
 }
 

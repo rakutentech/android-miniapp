@@ -8,7 +8,39 @@
 - **Feature:** Added first-time launching screen before downloading any miniapp.
 - **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
 
-### 2.8.0 (2020-01-25)
+### 3.1.0 (In progress)
+- **Deprecated:** `getAccessToken` with only miniapp id verfication.
+- **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
+- **Feature:** Added `MiniAppFileChooser` to choose a file which is requested using HTML forms with 'file' input type within a miniapp, HostApp can also use `MiniAppFileChooserDefault` when there is nothing to customize during file choosing.
+- **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFileChooser` to choose a file within a miniapp.
+
+### 3.0.0 (2021-03-18)
+**SDK**
+- **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
+
+Before v3.0.0  |  v3.0.0
+------------- | -------------
+`isTestMode`  | `isPreviewMode`
+`rasAppId`  | `rasProjectId`
+`MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission`
+`getUserName(): String` | `getUserName(onSuccess, onError)`
+`getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
+
+- **Change:** Support Android 7 - API 24 as minimum version.
+- **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
+- **Change:** Update `MiniApp.create` to check the required permissions in Mini App's manifest have been granted or not before creating the Mini App.
+- **Change:** Maven Group ID changed to `io.github.rakutentech.miniapp`. You must update your dependency declaration to `io.github.rakutentech.miniapp:miniapp:3.0.0`.
+- **Change:** Migrated publishing to Maven Central due to Bintray/JCenter being [shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). You must add `mavenCentral()` to your `repositories`.
+- **Fix:** Load ad error when do re-try loading.
+- **Fix:** Failure when simultaneous custom permission requests are received.
+- **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
+- **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the manifest of a MiniApp.
+- **Feature:** Added `MiniApp.getDownloadedManifest` interface to retrieve currently downloaded manifest of a MiniApp.
+
+**Sample App**
+- **Feature:** Added first-time launching screen to show the manifest information before downloading/launching a MiniApp.
+
+### 2.8.0 (2021-01-25)
 **SDK**
 - **Feature:** Added `getUserName`, `getProfilePhoto` new interfaces for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support analytics SDK with event tracking.

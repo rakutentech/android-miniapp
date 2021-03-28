@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.webkit.URLUtil
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.firsttime.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
@@ -90,9 +92,27 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
     }
 
     private fun displayMiniApp() = when(display) {
-        is InputDisplay.AppId -> preloadMiniAppWindow.initiate(null, display.input.trim())
+        is InputDisplay.AppId -> initiatePreloadScreen(display.input.trim())
         is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
         is InputDisplay.None -> {}
+    }
+
+    private fun initiatePreloadScreen(miniAppId: String) {
+        val viewModel: MiniAppInputViewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
+                .apply {
+                    miniAppVersionId.observe(this@MiniAppInputActivity, Observer {
+                        preloadMiniAppWindow.initiate(
+                            null,
+                            miniAppId,
+                            it,
+                            this@MiniAppInputActivity
+                        )
+                    })
+                    versionIdErrorData.observe(this@MiniAppInputActivity, Observer {
+                        Toast.makeText(this@MiniAppInputActivity, it, Toast.LENGTH_LONG).show()
+                    })
+                }
+        viewModel.getMiniAppVersionId(miniAppId)
     }
 
     override fun navigateToScreen(): Boolean {

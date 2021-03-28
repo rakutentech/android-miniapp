@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.GeolocationPermissions
@@ -9,18 +10,22 @@ import android.webkit.JsResult
 import android.webkit.JsPromptResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.ValueCallback
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.DialogType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
 
+@Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
-    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    private val miniAppFileChooser: MiniAppFileChooser?
 ) : WebChromeClient() {
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
@@ -95,7 +100,9 @@ internal class MiniAppWebChromeClient(
 
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {
-        webView.evaluateJavascript(bridgeJs) {}
+        if (bridgeJs !== null) {
+            webView.evaluateJavascript(bridgeJs) {}
+        }
     }
 
     //region fullscreen video
@@ -160,5 +167,14 @@ internal class MiniAppWebChromeClient(
     fun onWebViewDetach() {
         if (customView != null)
             onHideCustomView()
+    }
+
+    override fun onShowFileChooser(
+        webView: WebView?,
+        filePathCallback: ValueCallback<Array<Uri>>?,
+        fileChooserParams: FileChooserParams?
+    ): Boolean {
+        return miniAppFileChooser?.onShowFileChooser(filePathCallback, fileChooserParams, context)
+            ?: false
     }
 }

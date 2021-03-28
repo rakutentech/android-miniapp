@@ -34,7 +34,7 @@ class ContactSelectionWindow(private val activity: Activity) :
         onError: (message: String) -> Unit
     ) {
         if (!hasContact) {
-            showAlertDialog(activity, "There is no contact found saved in HostApp.")
+            showAlertDialog(activity, "Contact", "There is no contact found saved in HostApp.")
             return
         }
 
@@ -86,6 +86,7 @@ class ContactSelectionWindow(private val activity: Activity) :
                 // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
                 showAlertDialog(
                     activity,
+                    "Contact",
                     "The message has been sent to contact id: $contactId"
                 )
             }

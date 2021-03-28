@@ -2,10 +2,18 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import org.amshove.kluent.When
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -18,6 +26,7 @@ class CustomPermissionBridgeDispatcherSpec {
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private var miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
+    private var downloadedManifestCache: DownloadedManifestCache = mock()
     private val miniAppId: String = TEST_MA_ID
     private val miniAppCustomPermission = MiniAppCustomPermission(
         miniAppId,
@@ -35,31 +44,24 @@ class CustomPermissionBridgeDispatcherSpec {
         ),
         id = TEST_CALLBACK_ID
     )
-    private val customPermissionJsonStr = Gson().toJson(customPermissionCallbackObj)
+    private val permissions: List<Pair<MiniAppCustomPermissionType, String>> =
+        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, ""))
+    private val cachedManifest = CachedManifest(
+        TEST_MA_VERSION_ID,
+        MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
+            TEST_ATP_LIST,
+            emptyMap()
+        )
+    )
 
     @Before
     fun setUp() {
         doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache)
             .readPermissions(miniAppId)
-        customPermissionBridgeDispatcher = spy(
-            CustomPermissionBridgeDispatcher(
-                bridgeExecutor,
-                miniAppCustomPermissionCache,
-                miniAppId
-            )
-        )
-
-        customPermissionBridgeDispatcher.initCallBackObject(customPermissionJsonStr)
-    }
-
-    @Test
-    fun `preparePermissionsWithDescription should be invoked when initializing properties`() {
-        val permissionObjList = arrayListOf<CustomPermissionObj>()
-        customPermissionCallbackObj.param?.permissions?.forEach {
-            permissionObjList.add(CustomPermissionObj(it.name, it.description))
-        }
-
-        verify(customPermissionBridgeDispatcher).preparePermissionsWithDescription(permissionObjList)
+        customPermissionBridgeDispatcher = spy(createCustomPermissionBridgeDispatcher())
+        customPermissionBridgeDispatcher.permissionsAsManifest = permissions
     }
 
     @Test
@@ -69,10 +71,37 @@ class CustomPermissionBridgeDispatcherSpec {
             "rakuten.miniapp.user.USER_NAME",
             description
         )
+        When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns cachedManifest
         val actual = customPermissionBridgeDispatcher.preparePermissionsWithDescription(
             arrayListOf(customPermissionObj)
         )
         val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, description))
+        assertEquals(expected, actual)
+        verify(customPermissionBridgeDispatcher).getRequiredPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
+        )
+        verify(customPermissionBridgeDispatcher).getOptionalPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
+        )
+    }
+
+    @Test
+    fun `getRequiredPermissions should return the correct values`() {
+        val description = "dummy description"
+        val actual = customPermissionBridgeDispatcher.getRequiredPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
+        )
+        val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, description))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `getOptionalPermissions should return the correct values`() {
+        val description = "dummy description"
+        val actual = customPermissionBridgeDispatcher.getOptionalPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.LOCATION, description)), cachedManifest
+        )
+        val expected = listOf(Pair(MiniAppCustomPermissionType.LOCATION, description))
         assertEquals(expected, actual)
     }
 
@@ -83,9 +112,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
 
-        assertEquals(emptyList(), customPermissionBridgeDispatcher.filterDeniedPermissions())
+        assertEquals(emptyList(), dispatcher.filterDeniedPermissions())
     }
 
     @Test
@@ -96,6 +125,7 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
+        customPermissionBridgeDispatcher.permissionsAsManifest = permissions
         customPermissionBridgeDispatcher.filterDeniedPermissions()
         verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
     }
@@ -116,9 +146,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
 
-        val actual = customPermissionBridgeDispatcher.createJsonResponse()
+        val actual = dispatcher.createJsonResponse()
         val expected = "Cannot request custom permissions: {}"
 
         assertEquals(expected, actual)
@@ -141,13 +171,16 @@ class CustomPermissionBridgeDispatcherSpec {
             ),
             id = TEST_CALLBACK_ID
         )
-        customPermissionBridgeDispatcher.initCallBackObject(
-            Gson().toJson(
-                unknownPermissionCallbackObj
+        val manifest = CachedManifest(
+            TEST_MA_VERSION_ID,
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), TEST_ATP_LIST, emptyMap()
             )
         )
+        When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns manifest
+        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(unknownPermissionCallbackObj))
 
-        val actual = customPermissionBridgeDispatcher.retrievePermissionsForJson()
+        val actual = dispatcher.retrievePermissionsForJson()
         val expected = listOf(
             Pair(
                 MiniAppCustomPermissionType.UNKNOWN,
@@ -175,6 +208,7 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `should create json response while sending result by HostApp`() {
+        val dispatcher = spy(createCustomPermissionBridgeDispatcher())
         val permissionsWithResult = listOf(
             Pair(
                 MiniAppCustomPermissionType.USER_NAME,
@@ -182,8 +216,8 @@ class CustomPermissionBridgeDispatcherSpec {
             )
         )
 
-        customPermissionBridgeDispatcher.sendHostAppCustomPermissions(permissionsWithResult)
-        verify(customPermissionBridgeDispatcher).createJsonResponse()
+        dispatcher.sendHostAppCustomPermissions(permissionsWithResult)
+        verify(dispatcher).createJsonResponse()
     }
 
     @Test
@@ -205,4 +239,15 @@ class CustomPermissionBridgeDispatcherSpec {
             "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} $errMessage"
         )
     }
+
+    private fun createCustomPermissionBridgeDispatcher(
+        miniAppId: String = this.miniAppId,
+        jsonStr: String = Gson().toJson(customPermissionCallbackObj)
+    ) = CustomPermissionBridgeDispatcher(
+        bridgeExecutor = bridgeExecutor,
+        customPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
+        miniAppId = miniAppId,
+        jsonStr = jsonStr
+    )
 }

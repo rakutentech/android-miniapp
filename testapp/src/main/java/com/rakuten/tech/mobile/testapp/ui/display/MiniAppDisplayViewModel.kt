@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -21,7 +22,6 @@ class MiniAppDisplayViewModel constructor(
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var miniAppDisplay: MiniAppDisplay
-    private var hostLifeCycle: Lifecycle? = null
 
     private val _miniAppView = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
@@ -40,15 +40,15 @@ class MiniAppDisplayViewModel constructor(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooser,
         appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, appParameters)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, appParameters)
-            hostLifeCycle?.addObserver(miniAppDisplay)
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -69,13 +69,13 @@ class MiniAppDisplayViewModel constructor(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooser,
         appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, appParameters)
-            hostLifeCycle?.addObserver(miniAppDisplay)
+                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -85,8 +85,8 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    fun setHostLifeCycle(lifecycle: Lifecycle) {
-        this.hostLifeCycle = lifecycle
+    fun addLifeCycleObserver(lifecycle: Lifecycle) {
+        lifecycle.addObserver(miniAppDisplay)
     }
 
     fun canGoBackwards(): Boolean =
