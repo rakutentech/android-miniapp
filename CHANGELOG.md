@@ -1,8 +1,12 @@
 ## CHANGELOG
 
-### 3.1.0 (in progress)
+### 3.1.0 (In progress)
 **SDK**
 - **Feature:** Added name and email as optional to Contact.
+- **Deprecated:** `getAccessToken` with only miniapp id verfication.
+- **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
+- **Feature:** Added `MiniAppFileChooser` to choose a file which is requested using HTML forms with 'file' input type within a miniapp, HostApp can also use `MiniAppFileChooserDefault` when there is nothing to customize during file choosing.
+- **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFileChooser` to choose a file within a miniapp.
 
 **Sample App**
 - **Feature:** Input and display name, email of Contact.

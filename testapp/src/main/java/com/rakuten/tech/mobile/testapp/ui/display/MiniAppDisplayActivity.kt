@@ -5,24 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
@@ -40,6 +42,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
+    private val fileChoosingReqCode = 10101
+    private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -93,11 +97,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         viewModel = ViewModelProvider.NewInstanceFactory()
             .create(MiniAppDisplayViewModel::class.java).apply {
 
-                setHostLifeCycle(lifecycle)
                 miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                     if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                         WebView.setWebContentsDebuggingEnabled(true)
                     //action: display webview
+                    addLifeCycleObserver(lifecycle)
                     setContentView(it)
                 })
 
@@ -127,6 +131,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
         } else
@@ -136,6 +141,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 appId!!,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
     }
@@ -181,23 +187,11 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
 
             override fun getAccessToken(
-                miniAppId: String,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    .setMessage("Allow $miniAppId to get access token?")
-                    .setPositiveButton(android.R.string.yes) { dialog, _ ->
-                        onSuccess(AppSettings.instance.tokenData)
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("No") { dialog, _ ->
-                        onError("$miniAppId not allowed to get access token")
-                        dialog.dismiss()
-                    }
-                    .create()
-                    .show()
-            }
+                    miniAppId: String,
+                    accessTokenScope: AccessTokenScope,
+                    onSuccess: (tokenData: TokenData) -> Unit,
+                    onError: (message: String) -> Unit
+            ) = onSuccess(AppSettings.instance.tokenData)
 
             override fun getContacts(
                 onSuccess: (contacts: ArrayList<Contact>) -> Unit,
@@ -226,6 +220,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
+        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
+            data?.let { intent ->
+                val result: Uri? = intent.data
+                miniAppFileChooser.onReceivedFiles(arrayOf(result ?: return@let))
+            }
         }
     }
 
