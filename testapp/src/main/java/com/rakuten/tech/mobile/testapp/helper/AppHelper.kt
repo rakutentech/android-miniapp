@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.text.InputType
+import android.util.Patterns
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -12,11 +13,11 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 fun isInputEmpty(input: AppCompatEditText): Boolean {
     return input.text.toString().isEmpty() || input.text.toString().isBlank()
@@ -79,3 +80,11 @@ fun setIcon(context: Context, uri: Uri, view: ImageView) {
         .placeholder(R.drawable.ic_default)
         .into(view)
 }
+
+fun defaultContact(id: String) = Contact(
+    id = id,
+    name = "default_name",
+    email = "default@email.com"
+)
+
+fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()

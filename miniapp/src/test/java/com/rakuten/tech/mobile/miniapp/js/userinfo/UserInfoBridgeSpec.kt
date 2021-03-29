@@ -408,7 +408,7 @@ class UserInfoBridgeSpec {
     /** end region */
 
     /** start region: get contacts */
-    private val contacts = arrayListOf(Contact(TEST_CONTACT_ID))
+    private val contacts = arrayListOf(TEST_CONTACT)
     private fun createContactsImpl(
         hasGetContacts: Boolean,
         canGetContacts: Boolean
