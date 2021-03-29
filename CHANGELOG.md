@@ -2,7 +2,7 @@
 
 ### 3.1.0 (In progress)
 **SDK**
-- **Feature:** Added name and email as optional to Contact.
+- **Feature:** Support name and email as optional in Contact.
 - **Deprecated:** `getAccessToken` with only miniapp id verfication.
 - **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
 - **Feature:** Added `MiniAppFileChooser` to choose a file which is requested using HTML forms with 'file' input type within a miniapp, HostApp can also use `MiniAppFileChooserDefault` when there is nothing to customize during file choosing.
