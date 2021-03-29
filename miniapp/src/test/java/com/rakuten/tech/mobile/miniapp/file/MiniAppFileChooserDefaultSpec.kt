@@ -8,7 +8,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.junit.Before
 import org.junit.Test
