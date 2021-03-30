@@ -5,7 +5,7 @@ import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class ChatBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String

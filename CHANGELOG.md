@@ -1,11 +1,10 @@
 ## CHANGELOG
 
-### X.X.X (In progress)
+### 3.X.X (In progress)
 **SDK**
 - **Feature:** Added `sendMessageToContact` interface in `ChatBridgeDispatcher` for sending message to a single contact. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
-- **Feature:** Added first-time launching screen before downloading any miniapp.
 - **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
 
 ### 3.1.0 (In progress)

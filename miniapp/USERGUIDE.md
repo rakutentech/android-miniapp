@@ -338,7 +338,7 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         onSuccess: (contactId: String?) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        // Check if there is any contact id in HostApp
+        // Check if there is any contact in HostApp
         // .. .. ..
         if (hasContact) {
             // You can show a contact selection UI for picking a single contact.

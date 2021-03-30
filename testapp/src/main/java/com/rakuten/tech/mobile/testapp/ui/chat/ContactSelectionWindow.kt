@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -22,7 +23,7 @@ class ContactSelectionWindow(private val activity: Activity) :
     private lateinit var contactSelectionLayout: View
 
     private val hasContact =
-        AppSettings.instance.isContactsSaved && !AppSettings.instance.contactNames.isNullOrEmpty()
+        AppSettings.instance.isContactsSaved && !AppSettings.instance.contacts.isNullOrEmpty()
 
     private lateinit var message: MessageToContact
     private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
@@ -34,7 +35,11 @@ class ContactSelectionWindow(private val activity: Activity) :
         onError: (message: String) -> Unit
     ) {
         if (!hasContact) {
-            showAlertDialog(activity, "Contact", "There is no contact found saved in HostApp.")
+            showAlertDialog(
+                activity,
+                "Warning",
+                "There is no contact found saved in HostApp."
+            )
             return
         }
 
@@ -72,22 +77,22 @@ class ContactSelectionWindow(private val activity: Activity) :
     }
 
     private fun prepareDataForAdapter() {
-        if (hasContact) contactSelectionAdapter.addContactList(AppSettings.instance.contactNames)
+        if (hasContact) contactSelectionAdapter.addContactList(AppSettings.instance.contacts)
     }
 
-    override fun onContactSelect(contactId: String) {
+    override fun onContactSelect(contact: Contact) {
         when {
             message.isEmpty -> onErrorSingleContact("The message sent was empty.")
-            contactId.isEmpty() -> {
+            contact.id.isEmpty() -> {
                 onErrorSingleContact("There is no contact found in HostApp.")
             }
             else -> {
-                onSuccessSingleContact(contactId)
+                onSuccessSingleContact(contact.id)
                 // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
                 showAlertDialog(
                     activity,
-                    "Contact",
-                    "The message has been sent to contact id: $contactId"
+                    "Success!",
+                    "The message has been sent to contact id: ${contact.id}"
                 )
             }
         }

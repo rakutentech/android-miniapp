@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactSelectionBinding
 
 internal class ContactSelectionAdapter(private val contactSelectionListener: ContactSelectionListener) :
     RecyclerView.Adapter<ContactSelectionAdapter.ViewHolder?>() {
-    private var contactEntries = ArrayList<String>()
+    private var contactEntries = ArrayList<Contact>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -17,7 +19,12 @@ internal class ContactSelectionAdapter(private val contactSelectionListener: Con
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.contactId.text = contactEntries[position]
+        holder.contactId.text =
+            holder.contactId.context.getString(
+                R.string.prefix_placeholder,
+                "Id: ",
+                contactEntries[position].id
+            )
         holder.contactId.setOnClickListener {
             contactSelectionListener.onContactSelect(contactEntries[position])
         }
@@ -25,7 +32,7 @@ internal class ContactSelectionAdapter(private val contactSelectionListener: Con
 
     override fun getItemCount(): Int = contactEntries.size
 
-    fun addContactList(contacts: ArrayList<String>) {
+    fun addContactList(contacts: ArrayList<Contact>) {
         contactEntries = contacts
         notifyDataSetChanged()
     }
@@ -36,6 +43,6 @@ internal class ContactSelectionAdapter(private val contactSelectionListener: Con
     }
 
     interface ContactSelectionListener {
-        fun onContactSelect(contactId: String)
+        fun onContactSelect(contact: Contact)
     }
 }

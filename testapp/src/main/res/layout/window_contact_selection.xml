@@ -21,7 +21,7 @@
       android:layout_height="wrap_content"
       android:layout_alignParentEnd="true"
       android:padding="@dimen/small_8"
-      android:src="@drawable/ic_close_24px" />
+      android:src="@drawable/ic_close_24dp" />
 
     <TextView
       android:id="@+id/contactSelectionTutorial"
