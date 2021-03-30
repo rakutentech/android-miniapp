@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Test

@@ -1,8 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.*
-import com.nhaarman.mockitokotlin2.mock
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
@@ -19,6 +17,7 @@ import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
