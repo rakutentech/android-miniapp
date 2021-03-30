@@ -19,10 +19,13 @@
 
     <string name="userdata_edit_photo">Edit Photo</string>
     <string name="userdata_hint_edit_name">Enter your name here</string>
-    <string name="userdata_hint_edit_contact">Write contact name here</string>
-    <string name="userdata_error_invalid_contact">Invalid Contact ID, please try again.</string>
+    <string name="userdata_error_invalid_contact_id">Invalid contact id, please try again.</string>
+    <string name="userdata_error_invalid_contact_email">Invalid contact email, please input the correct format or leave it blank.</string>
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
+    <string name="userdata_contact_id">Contact id</string>
+    <string name="userdata_contact_name">Contact name</string>
+    <string name="userdata_contact_email">Contact email</string>
 
     <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
     <string name="miniapp_preload_perm_status_required">(Required)</string>
@@ -51,4 +54,6 @@
     <string name="message_empty_permissions">There is no permission found!</string>
 
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
+
+    <string name="prefix_placeholder">%1$s %2$s</string>
 </resources>

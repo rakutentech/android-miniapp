@@ -9,12 +9,17 @@
 - **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
 
 ### 3.1.0 (In progress)
+**SDK**
+- **Feature:** Support name and email as optional in Contact.
 - **Deprecated:** `getAccessToken` with only miniapp id verfication.
 - **Feature:** Add a new `getAccessToken` function under custom permission and support audience/scope validation.
 - **Feature:** Added `MiniAppFileChooser` to choose a file which is requested using HTML forms with 'file' input type within a miniapp, HostApp can also use `MiniAppFileChooserDefault` when there is nothing to customize during file choosing.
 - **Change:** Updated `MiniApp.create` & `MiniApp.createWithUrl` to include `MiniAppFileChooser` to choose a file within a miniapp.
 
-### 3.0.0 (2021-03-18)
+**Sample App**
+- **Feature:** Input and display name, email of Contact.
+
+### 3.0.0 (2021-03-22)
 **SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
