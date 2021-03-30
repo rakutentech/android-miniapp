@@ -1,15 +1,17 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatTextView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBinding
 
 class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
     ContactAdapterPresenter {
-    private var contactEntries = ArrayList<String>()
+    private var contactEntries = ArrayList<Contact>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -19,18 +21,30 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.contactName.text = contactEntries[position]
+        val contact = contactEntries[position]
+        holder.contactId.text = contact.id
+        bindNonVisibleView("Name: ", contact.name, holder.contactName)
+        bindNonVisibleView("Email: ", contact.email, holder.contactEmail)
+
         holder.contactRemoveButton.setOnClickListener { removeContactAt(position) }
+    }
+
+    private fun bindNonVisibleView(prefix: String, text: String?, holderView: TextView) {
+        if (text != null) {
+            holderView.visibility = View.VISIBLE
+            holderView.text = holderView.context.getString(R.string.prefix_placeholder, prefix, text)
+        } else
+            holderView.visibility = View.GONE
     }
 
     override fun getItemCount(): Int = contactEntries.size
 
-    override fun addContact(position: Int, contact: String) {
+    override fun addContact(position: Int, contact: Contact) {
         contactEntries.add(position, contact)
         notifyItemInserted(position)
     }
 
-    override fun addContactList(contacts: ArrayList<String>) {
+    override fun addContactList(contacts: ArrayList<Contact>) {
         contactEntries = contacts
         notifyDataSetChanged()
     }
@@ -44,7 +58,9 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     override fun provideContactEntries() = contactEntries
 
     inner class ViewHolder(itemView: ItemListContactBinding) : RecyclerView.ViewHolder(itemView.root) {
-        val contactName: AppCompatTextView = itemView.textContact
-        val contactRemoveButton: ImageView = itemView.buttonRemoveContact
+        val contactId = itemView.tvId
+        val contactName = itemView.tvName
+        val contactEmail = itemView.tvEmail
+        val contactRemoveButton = itemView.buttonRemoveContact
     }
 }

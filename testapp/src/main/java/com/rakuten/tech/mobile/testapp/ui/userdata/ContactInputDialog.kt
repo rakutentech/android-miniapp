@@ -2,17 +2,18 @@ package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 
 class ContactInputDialog {
 
     class Builder {
         var alert: AlertDialog.Builder? = null
+        var positiveListener: View.OnClickListener? = null
+        var dialog: AlertDialog? = null
 
         fun build(context: Context?): Builder {
             alert = AlertDialog.Builder(context)
-            alert?.setTitle("Please enter the custom ID you would like to add in Contacts")
+            alert?.setTitle("Contact Input")
             setNegativeListener()
             return this
         }
@@ -22,8 +23,9 @@ class ContactInputDialog {
             return this
         }
 
-        fun setPositiveListener(listener: DialogInterface.OnClickListener): Builder {
-            alert?.setPositiveButton("Add", listener)
+        fun setPositiveListener(listener: View.OnClickListener): Builder {
+            positiveListener = listener
+            alert?.setPositiveButton("Add", null)
             return this
         }
 
@@ -33,10 +35,14 @@ class ContactInputDialog {
         }
 
         fun show() {
-            alert?.create()?.let {
-                if (!it.isShowing)
-                    it.show()
+            dialog = alert?.create()
+
+            dialog?.setOnShowListener {
+                dialog?.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener(positiveListener)
             }
+
+            if (dialog != null && !dialog!!.isShowing)
+                dialog!!.show()
         }
     }
 }

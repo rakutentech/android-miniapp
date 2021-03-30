@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.miniapp
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
 
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
 internal const val TEST_VALUE = "test_value"
@@ -42,7 +44,7 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
-internal const val TEST_CONTACT_ID = "test_contact_id"
+internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email")
 
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
