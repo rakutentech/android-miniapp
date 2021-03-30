@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Test
 

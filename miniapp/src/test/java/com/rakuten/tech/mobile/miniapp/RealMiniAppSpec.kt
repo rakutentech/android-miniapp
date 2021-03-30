@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser

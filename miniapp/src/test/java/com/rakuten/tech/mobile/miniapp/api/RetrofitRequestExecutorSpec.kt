@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import junit.framework.TestCase

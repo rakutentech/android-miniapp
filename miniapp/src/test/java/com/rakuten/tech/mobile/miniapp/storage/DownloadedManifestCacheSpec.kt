@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID

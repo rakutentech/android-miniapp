@@ -7,8 +7,8 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.amshove.kluent.*

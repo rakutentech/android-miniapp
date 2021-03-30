@@ -1,8 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE

@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
