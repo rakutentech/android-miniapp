@@ -2,7 +2,8 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
@@ -45,6 +46,15 @@ class CustomPermissionBridgeDispatcherSpec {
     )
     private val permissions: List<Pair<MiniAppCustomPermissionType, String>> =
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, ""))
+    private val cachedManifest = CachedManifest(
+        TEST_MA_VERSION_ID,
+        MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
+            listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
+            TEST_ATP_LIST,
+            emptyMap()
+        )
+    )
 
     @Before
     fun setUp() {
@@ -61,24 +71,38 @@ class CustomPermissionBridgeDispatcherSpec {
             "rakuten.miniapp.user.USER_NAME",
             description
         )
-        val manifest = CachedManifest(
-            TEST_MA_VERSION_ID,
-            MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")), emptyList(), emptyMap()
-            )
-        )
-        When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns manifest
+        When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns cachedManifest
         val actual = customPermissionBridgeDispatcher.preparePermissionsWithDescription(
             arrayListOf(customPermissionObj)
         )
         val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, description))
         assertEquals(expected, actual)
         verify(customPermissionBridgeDispatcher).getRequiredPermissions(
-            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), manifest
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
         )
         verify(customPermissionBridgeDispatcher).getOptionalPermissions(
-            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), manifest
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
         )
+    }
+
+    @Test
+    fun `getRequiredPermissions should return the correct values`() {
+        val description = "dummy description"
+        val actual = customPermissionBridgeDispatcher.getRequiredPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
+        )
+        val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, description))
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `getOptionalPermissions should return the correct values`() {
+        val description = "dummy description"
+        val actual = customPermissionBridgeDispatcher.getOptionalPermissions(
+            arrayListOf(Pair(MiniAppCustomPermissionType.LOCATION, description)), cachedManifest
+        )
+        val expected = listOf(Pair(MiniAppCustomPermissionType.LOCATION, description))
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -150,7 +174,7 @@ class CustomPermissionBridgeDispatcherSpec {
         val manifest = CachedManifest(
             TEST_MA_VERSION_ID,
             MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), emptyMap()
+                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), TEST_ATP_LIST, emptyMap()
             )
         )
         When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns manifest

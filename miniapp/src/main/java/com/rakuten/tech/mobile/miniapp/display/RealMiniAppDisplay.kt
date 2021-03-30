@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -24,10 +25,11 @@ import kotlinx.coroutines.withContext
 
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
-    val basePath: String,
+    private val basePath: String,
     val miniAppInfo: MiniAppInfo,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
+    private val miniAppFileChooser: MiniAppFileChooser?,
     val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     val downloadedManifestCache: DownloadedManifestCache,
@@ -45,6 +47,7 @@ internal class RealMiniAppDisplay(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         hostAppUserAgentInfo: String,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
@@ -54,6 +57,7 @@ internal class RealMiniAppDisplay(
         MiniAppInfo.forUrl(),
         miniAppMessageBridge,
         miniAppNavigator,
+        miniAppFileChooser,
         hostAppUserAgentInfo,
         miniAppCustomPermissionCache,
         downloadedManifestCache,
@@ -120,6 +124,7 @@ internal class RealMiniAppDisplay(
                     appUrl = appUrl!!,
                     miniAppMessageBridge = miniAppMessageBridge,
                     miniAppNavigator = miniAppNavigator,
+                    miniAppFileChooser = miniAppFileChooser,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
@@ -132,6 +137,7 @@ internal class RealMiniAppDisplay(
                     miniAppInfo = miniAppInfo,
                     miniAppMessageBridge = miniAppMessageBridge,
                     miniAppNavigator = miniAppNavigator,
+                    miniAppFileChooser = miniAppFileChooser,
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,

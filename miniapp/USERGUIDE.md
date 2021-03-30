@@ -296,11 +296,12 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
     override fun getAccessToken(
         miniAppId: String,
+        accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {
         var allowToken: Boolean = false
-        // Check if you want to allow this Mini App ID to use the Access Token
+        // Check if you want to allow this Mini App ID to use the Access Token based on AccessTokenScope.
         // .. .. ..
         if (allowToken)
             onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
@@ -367,7 +368,7 @@ The following user data types are supported. If your App does not support a cert
 
 - User name: string representing the user's name. See [UserInfoBridgeDispatcher.getUserName](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-user-name.html)
 - Profile photo: URL pointing to a photo. This can also be a Base64 data string. See [UserInfoBridgeDispatcher.getProfilePhoto](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-profile-photo.html)
-- Access Token (does not currenlty have a custom permission type): OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
+- Access Token: OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app and [AccessTokenScope]((api/com.rakuten.tech.mobile.miniapp.permission/-access-token-scope)) which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
 
 
 ### Ads Integration
@@ -621,6 +622,50 @@ Using `miniAppExternalUrlLoader.shouldClose(url)` which returns `Boolean` to che
 mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
+
+### File choosing
+**API Docs:** [MiniAppFileChooser](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-chooser/)
+
+The mini app is able to choose the file which is requested using HTML forms with 'file' input type whenever users press a "Select file" button.
+HostApp can use a default class provided by the SDK e.g. `MiniAppFileChooserDefault` to choose the files.
+- At first, HostApp needs to initiate `MiniAppFileChooserDefault` in the `Activity`.
+
+```kotlin
+val fileChoosingReqCode = REQUEST_CODE // define a request code in HostApp
+val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+```
+
+- Then, HostApp activity can receive the files at `onActivityResult` as following:
+
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
+        data?.let { intent ->
+            val result: Uri? = intent.data
+            miniAppFileChooser.onReceivedFiles(arrayOf(result!!))
+        }
+    }
+}
+```
+
+Alternatively, HostApp can use `MiniAppFileChooser` interface to override `onShowFileChooser` for customizing file choosing mode and other options.
+
+```kotlin
+val miniAppFileChooser = object : MiniAppFileChooser {
+
+        override fun onShowFileChooser(
+            filePathCallback: ValueCallback<Array<Uri>>?,
+            fileChooserParams: WebChromeClient.FileChooserParams?,
+            context: Context
+        ): Boolean {
+           // write own implementation here.
+        }
+    }
+```
+
+In both case, HostApp needs to pass `MiniAppFileChooser` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFileChooser: MiniAppFileChooser)`.
 
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)

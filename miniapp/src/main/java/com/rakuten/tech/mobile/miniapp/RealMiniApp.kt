@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -48,6 +49,7 @@ internal class RealMiniApp(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -59,6 +61,7 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
@@ -70,6 +73,7 @@ internal class RealMiniApp(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -81,6 +85,7 @@ internal class RealMiniApp(
                 miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
@@ -92,6 +97,7 @@ internal class RealMiniApp(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
+        miniAppFileChooser: MiniAppFileChooser?,
         queryParams: String
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
@@ -101,6 +107,7 @@ internal class RealMiniApp(
                 appUrl,
                 miniAppMessageBridge,
                 miniAppNavigator,
+                miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams
@@ -127,7 +134,8 @@ internal class RealMiniApp(
         }
     }
 
-    private suspend fun verifyManifest(appId: String, versionId: String) {
+    @VisibleForTesting
+    suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
         if (cachedManifest?.versionId != versionId) {
             val apiManifest = getMiniAppManifest(appId, versionId)

@@ -151,11 +151,13 @@ internal class MiniAppDownloader(
         val requiredPermissions = listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
         val optionalPermissions = listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
+        val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
 
-        return MiniAppManifest(requiredPermissions, optionalPermissions, customMetadata)
+        return MiniAppManifest(requiredPermissions, optionalPermissions, accessTokenPermission, customMetadata)
     }
 
-    private fun listOfPermissions(
+    @VisibleForTesting
+    fun listOfPermissions(
         permissions: List<MetadataPermissionObj>
     ): List<Pair<MiniAppCustomPermissionType, String>> {
         val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()

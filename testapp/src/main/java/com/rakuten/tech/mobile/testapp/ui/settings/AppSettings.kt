@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import java.util.Date
 import java.util.UUID
@@ -74,11 +75,9 @@ class AppSettings private constructor(context: Context) {
             cache.tokenData = tokenData
         }
 
-    var contactNames: ArrayList<String>
-        get() = cache.contactNames ?: arrayListOf()
-        set(contactNames) {
-            cache.contactNames = contactNames
-        }
+    var contacts: ArrayList<Contact>
+        get() = cache.contacts ?: arrayListOf()
+        set(contacts) { cache.contacts = contacts }
 
     val isContactsSaved: Boolean
         get() = cache.isContactsSaved
@@ -161,16 +160,15 @@ private class Settings(context: Context) {
         set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
             .apply()
 
-    var contactNames: ArrayList<String>?
+    var contacts: ArrayList<Contact>?
         get() = Gson().fromJson(
-            prefs.getString(CONTACT_NAMES, null),
-            object : TypeToken<ArrayList<String>>() {}.type
+            prefs.getString(CONTACTS, null),
+            object : TypeToken<ArrayList<Contact>>() {}.type
         )
-        set(contactNames) =
-            prefs.edit().putString(CONTACT_NAMES, Gson().toJson(contactNames)).apply()
+        set(contacts) = prefs.edit().putString(CONTACTS, Gson().toJson(contacts)).apply()
 
     val isContactsSaved: Boolean
-        get() = prefs.contains(CONTACT_NAMES)
+        get() = prefs.contains(CONTACTS)
 
     var urlParameters: String?
         get() = prefs.getString(URL_PARAMETERS, null)
@@ -185,7 +183,7 @@ private class Settings(context: Context) {
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
         private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
-        private const val CONTACT_NAMES = "contact_names"
+        private const val CONTACTS = "contacts"
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
     }

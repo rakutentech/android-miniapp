@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.adapter
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
@@ -13,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemFooterMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListMiniappBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemSectionMiniappBinding
-import com.rakuten.tech.mobile.testapp.helper.setIcon
+import com.rakuten.tech.mobile.testapp.helper.load
 import java.util.TreeSet
 
 class MiniAppListAdapter(
@@ -100,10 +99,8 @@ class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHo
             binding.miniapp = miniAppInfo
         else if (binding is ItemListMiniappBinding) {
             binding.miniapp = miniAppInfo
-            setIcon(binding.root.context, Uri.parse(miniAppInfo.icon), binding.ivAppIcon)
-
+            binding.ivAppIcon.load(binding.root.context, miniAppInfo.icon)
             binding.tvVersion.isSelected = true
-
             binding.itemRoot.setOnClickListener {
                 miniAppListener.onMiniAppItemClick(miniAppInfo)
             }
