@@ -1,22 +1,15 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
+import com.rakuten.tech.mobile.miniapp.*
 import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Converter
-import retrofit2.HttpException
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.http.Url
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlin.math.pow
 
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
@@ -50,7 +43,8 @@ internal class ApiClient @VisibleForTesting constructor(
     suspend fun list(): List<MiniAppInfo> {
         val request = appInfoApi.list(
             hostId = hostId,
-            testPath = testPath)
+            testPath = testPath
+        )
         return requestExecutor.executeRequest(request)
     }
 
@@ -59,7 +53,8 @@ internal class ApiClient @VisibleForTesting constructor(
         val request = appInfoApi.fetchInfo(
             hostId = hostId,
             miniAppId = appId,
-            testPath = testPath)
+            testPath = testPath
+        )
         val info = requestExecutor.executeRequest(request)
 
         if (info.isNotEmpty()) {
@@ -101,12 +96,32 @@ internal class RetrofitRequestExecutor(
     private val retrofit: Retrofit
 ) {
 
-    private inline fun <reified T : ErrorResponse> createErrorConvertor(retrofit: Retrofit) =
+    private var retryCount = 0
+
+    private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
+
+        // retry network request when there is 500 error code from the server
+        if (response.code() >= 500) {
+            if (retryCount++ < TOTAL_RETRIES) {
+                Log.v(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
+
+                // setting retrying policy about waiting time
+                val backOff = 2.0
+                val waitTime = 0.5 * backOff.pow(retryCount.toDouble())
+                try {
+                    Thread.sleep(waitTime.toLong())
+                } catch (interruptedException: InterruptedException) {
+                    Log.e(MINIAPP_NETWORK_RETRY, "intercept: ", interruptedException)
+                }
+                // recall the request
+                executeRequest(call.clone())
+            }
+        }
 
         when {
             response.isSuccessful -> {
@@ -132,13 +147,13 @@ internal class RetrofitRequestExecutor(
         when (response.code()) {
             401, 403 -> throw MiniAppSdkException(
                 convertAuthErrorToMsg(
-                    response, errorData, createErrorConvertor(retrofit)
+                    response, errorData, createErrorConverter(retrofit)
                 )
             )
             404 -> throw MiniAppNotFoundException(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
-                    response, errorData, createErrorConvertor(retrofit)
+                    response, errorData, createErrorConverter(retrofit)
                 )
             )
         }
@@ -195,3 +210,6 @@ internal class MiniAppHttpException(
      */
     override fun message() = "${super.message()}: $errorMessage"
 }
+
+private const val TOTAL_RETRIES = 5
+private const val MINIAPP_NETWORK_RETRY = "MINIAPP_NETWORK_RETRY"
