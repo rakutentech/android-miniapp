@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.file
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.webkit.ValueCallback
@@ -44,6 +45,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         try {
             this.callback = filePathCallback
             val intent = fileChooserParams?.createIntent()
+            if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
+                intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
             Log.e(MiniAppFileChooser::class.java.simpleName, e.message.toString())
@@ -57,7 +61,24 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * @param files The array of Uri to be invoked by a filePathCallback after successfully retrieved
      * by [Activity.onActivityResult] in the HostApp.
      */
-    fun onReceivedFiles(files: Array<Uri>) {
-        callback?.onReceiveValue(files)
+    fun onReceivedFiles(intent: Intent) {
+        val data = intent.data
+        val clipData = intent.clipData
+        when {
+            data != null -> {
+                callback?.onReceiveValue((arrayOf(data)))
+            }
+            clipData != null -> {
+                val uriList = mutableListOf<Uri>()
+                for(i in 0 until clipData.itemCount) {
+                    uriList.add(clipData.getItemAt(i).uri)
+                }
+
+                callback?.onReceiveValue((uriList.toTypedArray()))
+            }
+            else -> {
+                callback?.onReceiveValue(null)
+            }
+        }
     }
 }

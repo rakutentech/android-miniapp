@@ -222,8 +222,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
-                val result: Uri? = intent.data
-                miniAppFileChooser.onReceivedFiles(arrayOf(result ?: return@let))
+                miniAppFileChooser.onReceivedFiles(intent)
             }
         }
     }
