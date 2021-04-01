@@ -3,9 +3,18 @@ package com.rakuten.tech.mobile.miniapp.api
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import okhttp3.ResponseBody
-import retrofit2.*
+import retrofit2.Call
+import retrofit2.Converter
+import retrofit2.HttpException
+import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.http.Url
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -116,7 +125,7 @@ internal class RetrofitRequestExecutor(
                 try {
                     Thread.sleep(waitTime.toLong())
                 } catch (interruptedException: InterruptedException) {
-                    Log.e(MINIAPP_NETWORK_RETRY, "intercept: ", interruptedException)
+                    Log.e(MINIAPP_NETWORK_RETRY, "", interruptedException)
                 }
                 // recall the request
                 executeRequest(call.clone())

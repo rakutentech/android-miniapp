@@ -143,6 +143,18 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
             }
         }
 
+    @Test
+    fun `should append default message when server returns 500 response code`() =
+        runBlockingTest {
+            mockServer.enqueue(MockResponse().setResponseCode(500).setBody("{}"))
+
+            try {
+                createRequestExecutor().executeRequest(createApi().fetch())
+            } catch (exception: MiniAppNetException) {
+                exception.message.toString() shouldContain "Found some problem"
+            }
+        }
+
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is authentication errors`() = runBlockingTest {
         val executor = spyRetrofitExecutor()
