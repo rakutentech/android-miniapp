@@ -110,7 +110,14 @@ internal class RetrofitRequestExecutor(
     private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
-    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
+    @Suppress(
+        "TooGenericExceptionCaught",
+        "ThrowsCount",
+        "MagicNumber",
+        "LongMethod",
+        "NestedBlockDepth",
+        "ComplexMethod"
+    )
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
 
