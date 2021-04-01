@@ -60,6 +60,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * Receive the files from the HostApp.
      * @param intent The data after successfully retrieved by [Activity.onActivityResult] in the HostApp.
      */
+    @Suppress("OptionalWhenBraces", "LongMethod")
     fun onReceivedFiles(intent: Intent) {
         val data = intent.data
         val clipData = intent.clipData
