@@ -58,8 +58,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     /**
      * Receive the files from the HostApp.
-     * @param files The array of Uri to be invoked by a filePathCallback after successfully retrieved
-     * by [Activity.onActivityResult] in the HostApp.
+     * @param intent The data after successfully retrieved by [Activity.onActivityResult] in the HostApp.
      */
     fun onReceivedFiles(intent: Intent) {
         val data = intent.data
@@ -70,7 +69,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
             clipData != null -> {
                 val uriList = mutableListOf<Uri>()
-                for(i in 0 until clipData.itemCount) {
+                for (i in 0 until clipData.itemCount) {
                     uriList.add(clipData.getItemAt(i).uri)
                 }
 

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.file
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +11,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TestActivity
+import org.amshove.kluent.When
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,11 +72,32 @@ class MiniAppFileChooserDefaultSpec {
     }
 
     @Test
-    fun `onReceivedFiles should invoke onReceiveValue of file path callback correctly`() {
-        val files: Array<Uri> = arrayOf()
+    fun `onReceivedFiles should invoke value when intent data in intent after onShowFileChooser`() {
+        val intent: Intent = mock()
+        val uri: Uri = mock()
+        When calling intent.data itReturns uri
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
-        miniAppFileChooser.onReceivedFiles(files)
-        verify(callback)?.onReceiveValue(files)
+        miniAppFileChooser.onReceivedFiles(intent)
+        verify(callback)?.onReceiveValue(arrayOf(uri))
+    }
+
+    @Test
+    fun `onReceivedFiles should invoke value when clip data in intent after onShowFileChooser`() {
+        val intent: Intent = mock()
+        val clipData: ClipData = mock()
+        val uriList = mutableListOf<Uri>()
+        When calling intent.clipData itReturns clipData
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
+        verify(callback)?.onReceiveValue(uriList.toTypedArray())
+    }
+
+    @Test
+    fun `onReceivedFiles should invoke null when no data in intent after onShowFileChooser`() {
+        val intent: Intent = mock()
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
+        verify(callback)?.onReceiveValue(null)
     }
 
     @Test

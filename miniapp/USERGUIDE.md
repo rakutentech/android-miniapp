@@ -643,8 +643,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 
     if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
         data?.let { intent ->
-            val result: Uri? = intent.data
-            miniAppFileChooser.onReceivedFiles(arrayOf(result!!))
+            miniAppFileChooser.onReceivedFiles(intent)
         }
     }
 }
