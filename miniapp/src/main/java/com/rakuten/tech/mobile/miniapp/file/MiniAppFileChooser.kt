@@ -83,9 +83,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     }
 
     /**
-     * Can be used when HostApp wants to reset the file choosing operation.
+     * Can be used when HostApp wants to cancel the file choosing operation.
      */
-    fun reset() {
+    fun onCancel() {
         callback?.onReceiveValue(null)
     }
 }

@@ -219,7 +219,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (Activity.RESULT_OK != resultCode) {
-            miniAppFileChooser.reset()
+            miniAppFileChooser.onCancel()
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
