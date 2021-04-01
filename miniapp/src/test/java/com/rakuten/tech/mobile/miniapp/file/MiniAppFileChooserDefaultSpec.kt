@@ -105,4 +105,11 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(null, fileChooserParams, context)
         verify(callback, times(0))?.onReceiveValue(arrayOf())
     }
+
+    @Test
+    fun `reset should invoke null to file path callback`() {
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.reset()
+        verify(callback)?.onReceiveValue(null)
+    }
 }

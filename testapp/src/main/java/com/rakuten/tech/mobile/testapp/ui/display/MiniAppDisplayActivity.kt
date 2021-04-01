@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -218,6 +217,11 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (Activity.RESULT_OK != resultCode) {
+            miniAppFileChooser.reset()
+        }
+
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {

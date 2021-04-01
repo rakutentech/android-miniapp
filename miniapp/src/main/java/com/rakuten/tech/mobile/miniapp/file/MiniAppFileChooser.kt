@@ -80,4 +80,11 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
         }
     }
+
+    /**
+     * Reset the filePathCallback when HostApp wants to cancel the file choosing operation.
+     */
+    fun reset() {
+        callback?.onReceiveValue(null)
+    }
 }
