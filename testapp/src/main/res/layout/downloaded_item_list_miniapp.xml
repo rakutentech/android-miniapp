@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/downloaded_miniapp_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/small_8"
-    android:background="?selectableItemBackground"
-    android:orientation="horizontal">
+    android:background="?selectableItemBackground">
 
     <ImageView
       android:id="@+id/downloaded_miniapp_icon"
       android:layout_width="@dimen/miniapp_icon_size"
       android:layout_height="@dimen/miniapp_icon_size"
       android:layout_marginStart="@dimen/small_8"
+      android:layout_alignParentStart="true"
+      android:layout_centerInParent="true"
       tools:src="@drawable/ic_default" />
 
     <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="@dimen/small_8"
+      android:layout_centerInParent="true"
+      android:layout_toEndOf="@+id/downloaded_miniapp_icon"
       android:orientation="vertical">
 
       <TextView
@@ -35,9 +38,9 @@
         android:id="@+id/downloaded_miniapp_permissions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_4"
+        android:layout_marginTop="@dimen/tiny_2dp"
         android:textSize="@dimen/text_medium_14"
-        tools:text="Permissions Status" />
+        tools:text="Approved Permissions" />
     </LinearLayout>
-  </LinearLayout>
+  </RelativeLayout>
 </layout>
