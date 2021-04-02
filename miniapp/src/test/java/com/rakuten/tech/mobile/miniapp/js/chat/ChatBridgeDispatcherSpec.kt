@@ -84,7 +84,6 @@ class ChatBridgeDispatcherSpec {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
         }
 
-
     private val sendingMessageJsonStr = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
