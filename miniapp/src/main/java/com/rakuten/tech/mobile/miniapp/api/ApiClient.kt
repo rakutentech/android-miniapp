@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
+import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Converter
@@ -111,12 +112,8 @@ internal class RetrofitRequestExecutor(
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
     @Suppress(
-        "TooGenericExceptionCaught",
-        "ThrowsCount",
-        "MagicNumber",
-        "LongMethod",
-        "NestedBlockDepth",
-        "ComplexMethod"
+        "TooGenericExceptionCaught", "ThrowsCount", "MagicNumber",
+        "LongMethod", "NestedBlockDepth", "ComplexMethod"
     )
     suspend fun <T> executeRequest(call: Call<T>): T = try {
         val response = call.execute()
@@ -124,15 +121,15 @@ internal class RetrofitRequestExecutor(
         // retry network request when there is 500 error code from the server
         if (response.code() >= 500) {
             if (retryCount++ < TOTAL_RETRIES) {
-                Log.v(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
+                Log.d(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
 
                 // setting retrying policy about waiting time
                 val backOff = 2.0
                 val waitTime = 0.5 * backOff.pow(retryCount.toDouble())
                 try {
-                    Thread.sleep(waitTime.toLong())
+                    delay(waitTime.toLong())
                 } catch (interruptedException: InterruptedException) {
-                    Log.e(MINIAPP_NETWORK_RETRY, "", interruptedException)
+                    Log.d(MINIAPP_NETWORK_RETRY, "", interruptedException)
                 }
                 // recall the request
                 executeRequest(call.clone())
