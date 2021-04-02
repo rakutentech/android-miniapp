@@ -14,6 +14,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -62,6 +63,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         )
         binding.fragment = this
         binding.rvMiniAppList.layoutManager = LinearLayoutManager(this.context)
+        binding.rvMiniAppList.addItemDecoration(
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        )
         miniAppListAdapter = MiniAppListAdapter(ArrayList(), this)
         binding.rvMiniAppList.adapter = miniAppListAdapter
         return binding.root
