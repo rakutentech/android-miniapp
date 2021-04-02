@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID

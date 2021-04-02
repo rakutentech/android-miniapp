@@ -2,8 +2,8 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.*
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_DISPLAY_NAME

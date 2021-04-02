@@ -104,12 +104,19 @@ internal class MiniAppCustomPermissionCache(context: Context) {
         supplied: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
     ): List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>> {
         // retrieve all permissions by comparing cached and supplied (from HostApp) permissions
-        val cached = readPermissions(miniAppId).pairValues
-        val combined = (cached + supplied).toMutableList()
-        combined.removeAll { (first) ->
-            first.type in supplied.groupBy { it.first.type }
+        val set = mutableSetOf<MiniAppCustomPermissionType>()
+        val returnList = mutableListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
+
+        supplied.forEach {
+            set.add(it.first)
+            returnList.add(it)
         }
-        return combined + supplied
+        readPermissions(miniAppId).pairValues.forEach {
+            if (!set.contains(it.first))
+                returnList.add(it)
+        }
+
+        return returnList
     }
 
     /**

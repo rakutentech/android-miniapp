@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.widget.Switch
 import android.widget.TextView
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.junit.Before

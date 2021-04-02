@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
-import com.nhaarman.mockitokotlin2.*
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
@@ -127,8 +127,14 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
             verify(miniAppDownloader).getMiniApp(TEST_MA)
             verify(displayer).createMiniAppDisplay(
-                getMiniAppResult.first, getMiniAppResult.second,
-                miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, miniAppCustomPermissionCache, downloadedManifestCache, ""
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                ""
             )
         }
 
@@ -299,7 +305,8 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             val manifestToStore = CachedManifest(differentVersionId, demoManifest)
             When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, differentVersionId) itReturns demoManifest
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
-            When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns deniedPermission.pairValues
+            When calling downloadedManifestCache.getAllPermissions(deniedPermission) itReturns
+                    deniedPermission.pairValues
 
             realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 

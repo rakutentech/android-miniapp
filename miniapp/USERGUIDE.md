@@ -641,10 +641,14 @@ val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReq
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
 
+    // HostApp can cancel the file choosing operation when resultCode doesn't match
+    if (Activity.RESULT_OK != resultCode) {
+         miniAppFileChooser.onCancel()
+    }
+
     if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
         data?.let { intent ->
-            val result: Uri? = intent.data
-            miniAppFileChooser.onReceivedFiles(arrayOf(result!!))
+            miniAppFileChooser.onReceivedFiles(intent)
         }
     }
 }
