@@ -1,0 +1,92 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_8"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/message_generic"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8"
+      android:layout_marginBottom="@dimen/small_8"
+      android:textColor="@android:color/black"
+      android:textSize="@dimen/text_large_16" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="@dimen/medium_16"
+      android:padding="@dimen/small_8"
+      android:background="@color/bg_section">
+
+      <ImageView
+        android:id="@+id/message_image"
+        android:layout_width="@dimen/miniapp_logo_size"
+        android:layout_height="@dimen/miniapp_logo_size"
+        android:src="@drawable/ic_default"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+      <TextView
+        android:id="@+id/message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_image"
+        tools:text="Message Text" />
+
+      <TextView
+        android:id="@+id/message_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_text"
+        tools:text="Message Title" />
+
+      <TextView
+        android:id="@+id/message_caption"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_content_divider"
+        tools:text="Message Caption" />
+
+      <TextView
+        android:id="@+id/message_action"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_caption"
+        tools:text="Message Action" />
+
+      <View
+        android:id="@+id/message_content_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.9dp"
+        android:layout_marginTop="@dimen/small_4"
+        android:layout_marginBottom="@dimen/small_4"
+        android:background="@color/bg_section"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_title" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </LinearLayout>
+</layout>

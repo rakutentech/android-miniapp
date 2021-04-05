@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.DialogContactMessageContentBinding
+import com.rakuten.tech.mobile.testapp.helper.load
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
@@ -89,14 +91,30 @@ class ContactSelectionWindow(private val activity: Activity) :
             else -> {
                 onSuccessSingleContact(contact.id)
                 // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
-                showAlertDialog(
-                    activity,
-                    "Success!",
-                    "The message has been sent to contact id: ${contact.id}"
-                )
+                showMessageDialog(contact.id)
             }
         }
 
         contactSelectionAlertDialog.dismiss()
+    }
+
+    private fun showMessageDialog(contactId: String) {
+        // set message attributes to views
+        val layoutInflater = LayoutInflater.from(activity)
+        val mainContent = DialogContactMessageContentBinding.inflate(layoutInflater, null, false)
+
+        mainContent.messageText.text = this.message.text
+        mainContent.messageTitle.text = this.message.miniAppTitle
+        mainContent.messageCaption.text = this.message.caption
+        mainContent.messageAction.text = this.message.action
+        mainContent.messageGeneric.text = "The message has been sent to contact id: ${contactId}"
+
+        // set dialog
+        val alertDialog = android.app.AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow)
+        alertDialog.setView(mainContent.root)
+        alertDialog.setNegativeButton("Close") { dialog, _ ->
+            dialog.dismiss()
+        }
+        alertDialog.create().show()
     }
 }
