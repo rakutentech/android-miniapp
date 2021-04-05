@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.permission
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.DownloadedItemListMiniappBinding
-import com.rakuten.tech.mobile.testapp.helper.setIcon
+import com.rakuten.tech.mobile.testapp.helper.load
 
 class MiniAppDownloadedListAdapter(private val miniAppListener: MiniAppDownloadedListener) :
     RecyclerView.Adapter<MiniAppDownloadedListAdapter.ViewHolder?>() {
@@ -24,7 +23,7 @@ class MiniAppDownloadedListAdapter(private val miniAppListener: MiniAppDownloade
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        setIcon(holder.miniAppRoot.context, Uri.parse(miniApps[position].icon), holder.miniAppIcon)
+        holder.miniAppIcon.load(holder.miniAppRoot.context, miniApps[position].icon)
         holder.miniAppName.text = miniApps[position].displayName
         holder.miniAppPermissions.text = miniAppPermissions[position]
         holder.miniAppRoot.setOnClickListener {

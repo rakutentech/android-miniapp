@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.net.Uri
 import android.text.InputType
 import android.util.Patterns
 import android.view.ViewGroup
@@ -12,12 +11,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 fun isInputEmpty(input: AppCompatEditText): Boolean {
     return input.text.toString().isEmpty() || input.text.toString().isBlank()
@@ -73,13 +72,6 @@ fun ImageView.load(context: Context, res: String) = Glide.with(context)
     .load(res)
     .placeholder(R.drawable.ic_default)
     .into(this)
-
-fun setIcon(context: Context, uri: Uri, view: ImageView) {
-    Glide.with(context)
-        .load(uri).apply(RequestOptions().circleCrop())
-        .placeholder(R.drawable.ic_default)
-        .into(view)
-}
 
 fun defaultContact(id: String) = Contact(
     id = id,
