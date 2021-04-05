@@ -105,9 +105,6 @@ internal class ApiClient @VisibleForTesting constructor(
 internal class RetrofitRequestExecutor(
     private val retrofit: Retrofit
 ) {
-
-    private var retryCount = 0
-
     private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
@@ -115,24 +112,22 @@ internal class RetrofitRequestExecutor(
         "TooGenericExceptionCaught", "ThrowsCount", "MagicNumber",
         "LongMethod", "NestedBlockDepth", "ComplexMethod"
     )
-    suspend fun <T> executeRequest(call: Call<T>): T = try {
+    suspend fun <T> executeRequest(call: Call<T>, _retryCount: Int = 0): T = try {
         val response = call.execute()
 
         // retry network request when there is 500 error code from the server
+        var retryCount = _retryCount
         if (response.code() >= 500) {
             if (retryCount++ < TOTAL_RETRIES) {
+                retryCount++
                 Log.d(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
 
                 // setting retrying policy about waiting time
                 val backOff = 2.0
                 val waitTime = 0.5 * backOff.pow(retryCount.toDouble())
-                try {
-                    delay(waitTime.toLong())
-                } catch (interruptedException: InterruptedException) {
-                    Log.d(MINIAPP_NETWORK_RETRY, "", interruptedException)
-                }
+                delay(1000 * waitTime.toLong())
                 // recall the request
-                executeRequest(call.clone())
+                executeRequest(call.clone(), retryCount)
             }
         }
 
