@@ -1,43 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/downloaded_miniapp_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/small_8"
-    android:background="?selectableItemBackground"
-    android:orientation="horizontal">
+    android:padding="@dimen/small_4"
+    android:background="?selectableItemBackground">
 
     <ImageView
       android:id="@+id/downloaded_miniapp_icon"
       android:layout_width="@dimen/miniapp_icon_size"
       android:layout_height="@dimen/miniapp_icon_size"
       android:layout_marginStart="@dimen/small_8"
-      tools:src="@drawable/ic_default" />
+      android:src="@drawable/ic_default"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-      android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/text_root"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginStart="@dimen/small_8"
-      android:orientation="vertical">
+      android:layout_alignParentStart="true"
+      android:paddingBottom="@dimen/small_8"
+      android:paddingStart="@dimen/small_8"
+      android:paddingEnd="@dimen/small_8"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/downloaded_miniapp_icon"
+      app:layout_constraintTop_toTopOf="parent">
 
       <TextView
         android:id="@+id/downloaded_miniapp_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:singleLine="true"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/text_large_16"
+        android:textSize="@dimen/text_medium_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="MiniApp Name" />
 
       <TextView
         android:id="@+id/downloaded_miniapp_permissions"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_4"
+        android:alpha="0.6"
+        android:gravity="start"
+        android:textColor="@android:color/black"
         android:textSize="@dimen/text_medium_14"
-        tools:text="Permissions Status" />
-    </LinearLayout>
-  </LinearLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/downloaded_miniapp_name"
+        tools:text="Approved Permissions" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
