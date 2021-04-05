@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -17,7 +16,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
-import com.rakuten.tech.mobile.testapp.helper.setIcon
+import com.rakuten.tech.mobile.testapp.helper.load
 
 class PreloadMiniAppWindow(
     private val context: Context,
@@ -63,7 +62,7 @@ class PreloadMiniAppWindow(
 
         // set data to ui
         if (miniAppInfo != null) {
-            setIcon(context, Uri.parse(miniAppInfo?.icon), binding.preloadAppIcon)
+            miniAppInfo?.icon?.let { binding.preloadAppIcon.load(context, it) }
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
             binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
