@@ -60,6 +60,37 @@
         tools:text="Dummy MiniApp Version" />
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/lnAction"
+        android:layout_below="@id/topView">
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          android:gravity="center_horizontal"
+          android:orientation="vertical">
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/listPreloadPermission"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          tools:listitem="@layout/item_list_custom_permission" />
+
+      <TextView
+          android:id="@+id/preloadMiniAppMetaData"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="@dimen/small_8"
+          android:paddingBottom="@dimen/small_8"
+          android:paddingStart="@dimen/medium_16"
+          android:paddingEnd="@dimen/medium_16"
+          android:background="@color/window_top_bar"
+          android:textColor="@android:color/black" />
+      </LinearLayout>
+    </ScrollView>
+
     <LinearLayout
       android:id="@+id/lnAction"
       android:layout_width="match_parent"
@@ -72,17 +103,6 @@
       android:background="@android:color/white"
       android:gravity="center_horizontal"
       android:orientation="vertical">
-
-      <TextView
-        android:id="@+id/preloadMiniAppMetaData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/small_8"
-        android:background="@drawable/bg_metadata"
-        android:gravity="center"
-        android:text="@string/action_first_time_accept"
-        android:textColor="@android:color/black"
-        tools:text="Dummy MiniApp Metadata" />
 
       <TextView
         android:id="@+id/preloadAccept"
@@ -108,13 +128,5 @@
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_large_16" />
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/listPreloadPermission"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_above="@id/lnAction"
-      android:layout_below="@id/topView"
-      tools:listitem="@layout/item_list_custom_permission" />
   </RelativeLayout>
 </layout>
