@@ -8,22 +8,12 @@
     android:padding="@dimen/small_8"
     android:orientation="vertical">
 
-    <TextView
-      android:id="@+id/message_generic"
-      android:textStyle="bold"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/small_8"
-      android:layout_marginBottom="@dimen/small_8"
-      android:textColor="@android:color/black"
-      android:textSize="@dimen/text_large_16" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:layout_margin="@dimen/medium_16"
       android:padding="@dimen/small_8"
-      android:background="@color/bg_section">
+      android:background="@color/window_top_bar">
 
       <ImageView
         android:id="@+id/message_image"
@@ -88,5 +78,28 @@
         app:layout_constraintTop_toBottomOf="@+id/message_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+      android:id="@+id/message_generic"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/small_8"
+      android:layout_marginBottom="@dimen/small_8"
+      android:textColor="@android:color/black"
+      android:textSize="@dimen/text_large_16" />
+
+    <TextView
+      android:id="@+id/dialogDismiss"
+      android:layout_width="@dimen/miniapp_logo_size"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_8"
+      android:padding="@dimen/small_12"
+      android:background="@drawable/bg_miniapp_preload_cancel"
+      android:gravity="center"
+      android:layout_gravity="center"
+      android:text="@string/action_close"
+      android:textColor="@color/colorPrimary"
+      android:textSize="@dimen/text_large_16" />
   </LinearLayout>
 </layout>

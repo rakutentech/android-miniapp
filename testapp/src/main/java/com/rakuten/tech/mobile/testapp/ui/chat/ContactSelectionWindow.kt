@@ -2,27 +2,28 @@ package com.rakuten.tech.mobile.testapp.ui.chat
 
 import android.app.Activity
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.DialogContactMessageContentBinding
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowContactSelectionBinding
 import com.rakuten.tech.mobile.testapp.helper.load
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ContactSelectionWindow(private val activity: Activity) :
     ContactSelectionAdapter.ContactSelectionListener {
 
     lateinit var contactSelectionAlertDialog: AlertDialog
-
+    lateinit var messageSentAlertDialog: AlertDialog
+    private val layoutInflater = LayoutInflater.from(activity)
     private lateinit var contactSelectionAdapter: ContactSelectionAdapter
-    private lateinit var contactSelectionLayout: View
 
     private val hasContact =
         AppSettings.instance.isContactsSaved && !AppSettings.instance.contacts.isNullOrEmpty()
@@ -58,22 +59,19 @@ class ContactSelectionWindow(private val activity: Activity) :
     }
 
     private fun initDefaultWindow() {
-        val layoutInflater = LayoutInflater.from(activity)
-        contactSelectionLayout = layoutInflater.inflate(R.layout.window_contact_selection, null)
-        val recyclerView =
-            contactSelectionLayout.findViewById<RecyclerView>(R.id.listContactSelection)
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.addItemDecoration(
+        val contactView = WindowContactSelectionBinding.inflate(layoutInflater, null, false)
+        contactView.listContactSelection.layoutManager = LinearLayoutManager(activity)
+        contactView.listContactSelection.addItemDecoration(
             DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
         )
 
         contactSelectionAdapter = ContactSelectionAdapter(this)
-        recyclerView.adapter = contactSelectionAdapter
+        contactView.listContactSelection.adapter = contactSelectionAdapter
 
         contactSelectionAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
-        contactSelectionAlertDialog.setView(contactSelectionLayout)
-        contactSelectionLayout.findViewById<ImageView>(R.id.contactCloseWindow).setOnClickListener {
+        contactSelectionAlertDialog.setView(contactView.root)
+        contactView.contactCloseWindow.setOnClickListener {
             contactSelectionAlertDialog.dismiss()
         }
     }
@@ -100,21 +98,25 @@ class ContactSelectionWindow(private val activity: Activity) :
 
     private fun showMessageDialog(contactId: String) {
         // set message attributes to views
-        val layoutInflater = LayoutInflater.from(activity)
-        val mainContent = DialogContactMessageContentBinding.inflate(layoutInflater, null, false)
+        val messageView = DialogContactMessageContentBinding.inflate(layoutInflater, null, false)
 
-        mainContent.messageText.text = this.message.text
-        mainContent.messageTitle.text = this.message.miniAppTitle
-        mainContent.messageCaption.text = this.message.caption
-        mainContent.messageAction.text = this.message.action
-        mainContent.messageGeneric.text = "The message has been sent to contact id: ${contactId}"
+        GlobalScope.launch(Dispatchers.Main) {
+            message.apply {
+                messageView.messageImage.load(activity, image)
+                messageView.messageText.text = text
+                messageView.messageTitle.text = miniAppTitle
+                messageView.messageCaption.text = caption
+                messageView.messageAction.text = action
+            }
+            messageView.messageGeneric.text = "The message has been sent to contact id: ${contactId}"
 
-        // set dialog
-        val alertDialog = android.app.AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow)
-        alertDialog.setView(mainContent.root)
-        alertDialog.setNegativeButton("Close") { dialog, _ ->
-            dialog.dismiss()
+            // set dialog
+            messageSentAlertDialog = AlertDialog.Builder(activity).create()
+            messageSentAlertDialog.setView(messageView.root)
+            messageView.dialogDismiss.setOnClickListener {
+                messageSentAlertDialog.dismiss()
+            }
+            messageSentAlertDialog.show()
         }
-        alertDialog.create().show()
     }
 }
