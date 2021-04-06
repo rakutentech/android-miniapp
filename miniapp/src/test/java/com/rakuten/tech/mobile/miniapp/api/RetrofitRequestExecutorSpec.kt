@@ -15,6 +15,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.verify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,6 +81,8 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
         val executor = Mockito.spy(mockRequestExecutor)
         val request: Call<String> = SuccessfulResponseCall()
         executor.executeRequest(request)
+
+        verify(executor).executeWithRetry(request)
     }
 }
 

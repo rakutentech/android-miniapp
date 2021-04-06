@@ -107,27 +107,16 @@ internal class RetrofitRequestExecutor(
     private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
-    @Suppress(
-        "TooGenericExceptionCaught", "ThrowsCount", "LongMethod", "MagicNumber", "FunctionParameterNaming"
-    )
-    suspend fun <T> executeRequest(call: Call<T>, _retryCount: Int = 0): T = try {
-        val response = call.execute()
-
-        // retry network request when there is 500 error code from the server
-        var retryCount = _retryCount
-        if (response.code() >= 500 && retryCount++ < TOTAL_RETRIES) {
-            retryCount++
-            delay(getWaitingTime(retryCount))
-            // recall the request
-            executeRequest(call.clone(), retryCount)
-        }
+    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
+    suspend fun <T> executeRequest(call: Call<T>): T = try {
+        val response = executeWithRetry(call)
 
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
                 response.body() ?: throw sdkExceptionForInternalServerError()
             }
-            else -> throw exceptionForHttpError<T>(response)
+            else -> throw exceptionForHttpError(response)
         }
     } catch (error: Exception) {
         when (error) {
@@ -136,6 +125,23 @@ internal class RetrofitRequestExecutor(
             is MiniAppSdkException -> throw error
             else -> throw MiniAppSdkException(error) // when response is not Type T or malformed JSON is received
         }
+    }
+
+    @Suppress("MagicNumber", "FunctionParameterNaming")
+    @VisibleForTesting
+    suspend fun <T> executeWithRetry(call: Call<T>, _retryCount: Int = 0): Response<T> {
+        val response = call.execute()
+
+        // retry network request when there is 500 error code from the server
+        var retryCount = _retryCount
+        if (response.code() >= 500 && retryCount++ < TOTAL_RETRIES) {
+            retryCount++
+            delay(getWaitingTime(retryCount))
+            // recall the request
+            executeWithRetry(call.clone(), retryCount)
+        }
+
+        return response
     }
 
     @VisibleForTesting
