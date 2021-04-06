@@ -62,3 +62,12 @@ internal data class AdCallbackObj(val param: AdObj)
 internal const val SUCCESS = "success"
 internal const val CLOSED = "closed"
 // end region
+
+// send contact region
+@Keep
+internal data class SendContactCallbackObj(val param: MessageParam) {
+
+    @Keep
+    internal data class MessageParam(val messageToContact: MessageToContact)
+}
+// end region
