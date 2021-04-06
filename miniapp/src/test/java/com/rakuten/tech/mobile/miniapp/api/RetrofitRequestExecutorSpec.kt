@@ -15,8 +15,6 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

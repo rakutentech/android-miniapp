@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -109,22 +108,18 @@ internal class RetrofitRequestExecutor(
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
     @Suppress(
-        "TooGenericExceptionCaught", "ThrowsCount", "MagicNumber",
-        "LongMethod", "NestedBlockDepth", "ComplexMethod"
+        "TooGenericExceptionCaught", "ThrowsCount", "LongMethod", "MagicNumber", "FunctionParameterNaming"
     )
     suspend fun <T> executeRequest(call: Call<T>, _retryCount: Int = 0): T = try {
         val response = call.execute()
 
         // retry network request when there is 500 error code from the server
         var retryCount = _retryCount
-        if (response.code() >= 500) {
-            if (retryCount++ < TOTAL_RETRIES) {
-                retryCount++
-                Log.d(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
-                delay(getWaitingTime(retryCount))
-                // recall the request
-                executeRequest(call.clone(), retryCount)
-            }
+        if (response.code() >= 500 && retryCount++ < TOTAL_RETRIES) {
+            retryCount++
+            delay(getWaitingTime(retryCount))
+            // recall the request
+            executeRequest(call.clone(), retryCount)
         }
 
         when {
@@ -144,6 +139,7 @@ internal class RetrofitRequestExecutor(
     }
 
     @VisibleForTesting
+    @Suppress("MagicNumber")
     internal fun getWaitingTime(retryCount: Int): Long {
         // calculating waiting time to retry request when 500 response code
         val backOff = 2.0
@@ -224,4 +220,3 @@ internal class MiniAppHttpException(
 }
 
 private const val TOTAL_RETRIES = 5
-private const val MINIAPP_NETWORK_RETRY = "MINIAPP_NETWORK_RETRY"
