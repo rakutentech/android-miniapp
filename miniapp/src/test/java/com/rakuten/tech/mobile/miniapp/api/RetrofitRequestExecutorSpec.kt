@@ -15,6 +15,8 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -137,9 +139,8 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should append default message when server returns 500 response code`() =
         runBlockingTest {
-            mockServer.enqueue(MockResponse().setResponseCode(500).setBody("{}"))
-
             try {
+                mockServer.enqueue(MockResponse().setResponseCode(500))
                 createRequestExecutor().executeRequest(createApi().fetch())
                 advanceTimeBy(1000)
                 advanceTimeBy(2000)
@@ -147,6 +148,13 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
                 exception.message.toString() shouldContain "Found some problem, timeout"
             }
         }
+
+    @Test
+    fun `should return the correct value for waiting time`() {
+        val executor = spyRetrofitExecutor()
+        val actual = executor.getWaitingTime(4)
+        actual shouldEqual 8000
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is authentication errors`() = runBlockingTest {

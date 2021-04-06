@@ -121,11 +121,7 @@ internal class RetrofitRequestExecutor(
             if (retryCount++ < TOTAL_RETRIES) {
                 retryCount++
                 Log.d(MINIAPP_NETWORK_RETRY, "Retrying in $retryCount out of $TOTAL_RETRIES times.")
-
-                // setting retrying policy about waiting time
-                val backOff = 2.0
-                val waitTime = 0.5 * backOff.pow(retryCount.toDouble())
-                delay(1000 * waitTime.toLong())
+                delay(getWaitingTime(retryCount))
                 // recall the request
                 executeRequest(call.clone(), retryCount)
             }
@@ -145,6 +141,14 @@ internal class RetrofitRequestExecutor(
             is MiniAppSdkException -> throw error
             else -> throw MiniAppSdkException(error) // when response is not Type T or malformed JSON is received
         }
+    }
+
+    @VisibleForTesting
+    internal fun getWaitingTime(retryCount: Int): Long {
+        // calculating waiting time to retry request when 500 response code
+        val backOff = 2.0
+        val waitTime = 1000 * 0.5 * backOff.pow(retryCount.toDouble())
+        return waitTime.toLong()
     }
 
     @Throws(MiniAppSdkException::class, MiniAppNotFoundException::class)
