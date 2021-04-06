@@ -11,6 +11,8 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -32,6 +34,7 @@ abstract class MiniAppMessageBridge {
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private val userInfoBridge = UserInfoBridge()
+    private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -52,6 +55,7 @@ abstract class MiniAppMessageBridge {
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
+        chatBridge.setMiniAppComponents(bridgeExecutor, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -126,6 +130,9 @@ abstract class MiniAppMessageBridge {
             ActionType.GET_ACCESS_TOKEN.action -> userInfoBridge.onGetAccessToken(callbackObj)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
             ActionType.GET_CONTACTS.action -> userInfoBridge.onGetContacts(callbackObj.id)
+            ActionType.SEND_MESSAGE_TO_CONTACT.action -> chatBridge.onSendMessageToContact(
+                callbackObj.id, jsonStr
+            )
         }
     }
 
@@ -138,6 +145,13 @@ abstract class MiniAppMessageBridge {
      **/
     fun setUserInfoBridgeDispatcher(bridgeDispatcher: UserInfoBridgeDispatcher) =
         userInfoBridge.setUserInfoBridgeDispatcher(bridgeDispatcher)
+
+    /**
+     * Set implemented chatBridgeDispatcher.
+     * Can use the default provided class from sdk [ChatBridgeDispatcher].
+     **/
+    fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
+        chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
 
     private fun onGetUniqueId(callbackObj: CallbackObj) {
         try {
