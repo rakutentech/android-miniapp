@@ -37,7 +37,6 @@ Before v3.0.0  |  v3.0.0
 - **Change:** Migrated publishing to Maven Central due to Bintray/JCenter being [shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). You must add `mavenCentral()` to your `repositories`.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
-- **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
 - **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the manifest of a MiniApp.
 - **Feature:** Added `MiniApp.getDownloadedManifest` interface to retrieve currently downloaded manifest of a MiniApp.
 
