@@ -15,6 +15,7 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.verify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -70,8 +71,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
     fun `should return the body`() = runBlockingTest {
         mockServer.enqueue(createTestApiResponse(testValue = TEST_VALUE))
 
-        val response = createRequestExecutor()
-            .executeRequest(createApi().fetch())
+        val response = createRequestExecutor().executeRequest(createApi().fetch())
 
         response.testKey shouldEqual TEST_VALUE
     }
@@ -81,6 +81,8 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
         val executor = Mockito.spy(mockRequestExecutor)
         val request: Call<String> = SuccessfulResponseCall()
         executor.executeRequest(request)
+
+        verify(executor).executeWithRetry(request)
     }
 }
 
@@ -92,8 +94,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     fun `should throw exception when the response returned by server is not of type T`() =
         runBlockingTest {
             mockServer.enqueue(createInvalidTestApiResponse())
-            createRequestExecutor()
-                .executeRequest(createApi().fetch())
+            createRequestExecutor().executeRequest(createApi().fetch())
         }
 
     @Test
@@ -101,8 +102,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
-            createRequestExecutor()
-                .executeRequest(createApi().fetch())
+            createRequestExecutor().executeRequest(createApi().fetch())
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
@@ -115,8 +115,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
-            createRequestExecutor()
-                .executeRequest(createApi().fetch())
+            createRequestExecutor().executeRequest(createApi().fetch())
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
@@ -127,21 +126,36 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should append default message when server doesn't return error message`() =
         runBlockingTest {
-            mockServer.enqueue(
-                MockResponse()
-                    .setResponseCode(400)
-                    .setBody("{}")
-            )
+            mockServer.enqueue(MockResponse().setResponseCode(400).setBody("{}"))
 
             try {
-                createRequestExecutor()
-                    .executeRequest(createApi().fetch())
+                createRequestExecutor().executeRequest(createApi().fetch())
 
                 TestCase.fail("Should have thrown ErrorResponseException.")
             } catch (exception: MiniAppSdkException) {
                 exception.message.toString() shouldContain "No error message"
             }
         }
+
+    @Test
+    fun `should append default message when server returns 500 response code`() =
+        runBlockingTest {
+            try {
+                mockServer.enqueue(MockResponse().setResponseCode(500))
+                createRequestExecutor().executeRequest(createApi().fetch())
+                advanceTimeBy(1000)
+                advanceTimeBy(2000)
+            } catch (exception: MiniAppNetException) {
+                exception.message.toString() shouldContain "Found some problem, timeout"
+            }
+        }
+
+    @Test
+    fun `should return the correct value for waiting time`() {
+        val executor = spyRetrofitExecutor()
+        val actual = executor.getWaitingTime(4)
+        actual shouldEqual 8000
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when there is authentication errors`() = runBlockingTest {
@@ -173,12 +187,9 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
 
     @Test(expected = MiniAppNotFoundException::class)
     fun `should throw MiniAppNotFoundException when the server returns 404`() = runBlockingTest {
-        mockServer.enqueue(
-            MockResponse().setResponseCode(404)
-        )
+        mockServer.enqueue(MockResponse().setResponseCode(404))
 
-        createRequestExecutor()
-            .executeRequest(createApi().fetch())
+        createRequestExecutor().executeRequest(createApi().fetch())
     }
 
     private val standardErrorBody = { code: Int, message: String ->
