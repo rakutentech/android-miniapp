@@ -133,6 +133,9 @@ abstract class MiniAppMessageBridge {
             ActionType.SEND_MESSAGE_TO_CONTACT.action -> chatBridge.onSendMessageToContact(
                 callbackObj.id, jsonStr
             )
+            ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
+                callbackObj.id, jsonStr
+            )
         }
     }
 

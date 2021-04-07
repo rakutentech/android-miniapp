@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_8"
         android:padding="@dimen/small_12"
-        android:background="@drawable/bg_miniapp_preload_accept"
+        android:background="@drawable/bg_action_todo"
         android:gravity="center"
         android:text="@string/action_first_time_accept"
         android:textColor="@android:color/white"
@@ -122,9 +122,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_8"
         android:padding="@dimen/small_12"
-        android:background="@drawable/bg_miniapp_preload_cancel"
+        android:background="@drawable/bg_action_deny"
         android:gravity="center"
-        android:text="@string/action_first_time_cancel"
+        android:text="@string/action_cancel"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_large_16" />
     </LinearLayout>

@@ -63,9 +63,20 @@ class ChatBridgeDispatcherSpec {
             else
                 onError.invoke(TEST_ERROR_MSG)
         }
+
+        override fun sendMessageToMultipleContacts(
+            message: MessageToContact,
+            onSuccess: (contactIds: List<String>) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (canSendMessage)
+                onSuccess.invoke(listOf(TEST_CONTACT.id))
+            else
+                onError.invoke(TEST_ERROR_MSG)
+        }
     }
 
-    private val messageToContact = MessageToContact("", "", "", "", "")
+    private val messageToContact = MessageToContact("", "", "", "")
 
     private fun createChatBridge(
         chatBridgeDispatcher: ChatBridgeDispatcher,
@@ -92,6 +103,15 @@ class ChatBridgeDispatcherSpec {
         )
     )
 
+    private val chatBridgeOnSuccess =
+        Mockito.spy(
+            createChatBridge(
+                Mockito.spy(
+                    createChatMessageBridgeDispatcher(true)
+                ), true
+            )
+        )
+
     @Test
     fun `postError should be called when hostapp doesn't implement the chat dispatcher`() {
         val chatMessageBridgeDispatcher =
@@ -100,7 +120,8 @@ class ChatBridgeDispatcherSpec {
         val errMsg = "The `ChatBridgeDispatcher` has not been implemented by the Host App."
 
         chatBridge.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
-        verify(bridgeExecutor).postError(sendMessageCallbackObj.id, errMsg)
+        chatBridge.onSendMessageToMultipleContacts(sendMessageCallbackObj.id, sendingMessageJsonStr)
+        verify(bridgeExecutor, times(2)).postError(sendMessageCallbackObj.id, errMsg)
     }
 
     @Test
@@ -111,16 +132,24 @@ class ChatBridgeDispatcherSpec {
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 
         chatBridge.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
-        verify(bridgeExecutor).postError(sendMessageCallbackObj.id, errMsg)
+        chatBridge.onSendMessageToMultipleContacts(sendMessageCallbackObj.id, sendingMessageJsonStr)
+        verify(bridgeExecutor, times(2)).postError(sendMessageCallbackObj.id, errMsg)
     }
 
     @Test
-    fun `postValue should be called when hostapp can send message`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(true))
-        val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
-
-        chatBridge.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
+    fun `postValue should be called when hostapp can send message to single contact`() {
+        chatBridgeOnSuccess.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
         verify(bridgeExecutor).postValue(sendMessageCallbackObj.id, TEST_CONTACT.id)
+    }
+
+    @Test
+    fun `postValue should be called when hostapp can send message to multiple contacts`() {
+        chatBridgeOnSuccess.onSendMessageToMultipleContacts(
+            sendMessageCallbackObj.id, sendingMessageJsonStr
+        )
+        verify(bridgeExecutor).postValue(
+            sendMessageCallbackObj.id,
+            Gson().toJson(listOf(TEST_CONTACT.id)).toString()
+        )
     }
 }

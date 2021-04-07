@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/chatTopView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/small_4">
+
+      <TextView
+        android:id="@+id/chatTutorial"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/small_8"
+        android:background="@color/window_top_bar"
+        android:text="@string/chat_tutorial"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <ImageView
+        android:id="@+id/messageImage"
+        android:layout_width="@dimen/miniapp_logo_size"
+        android:layout_height="@dimen/miniapp_logo_size"
+        android:layout_marginTop="@dimen/small_8"
+        android:src="@drawable/ic_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatTutorial" />
+
+      <TextView
+        android:id="@+id/messageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_large_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageImage"
+        tools:text="Message Text" />
+
+      <TextView
+        android:id="@+id/miniAppTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageText"
+        tools:text="MiniApp Title" />
+
+      <TextView
+        android:id="@+id/messageCaption"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/miniAppTitle"
+        tools:text="Message Caption" />
+
+      <TextView
+        android:id="@+id/messageAction"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageCaption"
+        tools:text="Message Action" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/listContactSelection"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/small_4"
+      android:layout_above="@id/lnChatAction"
+      android:layout_below="@id/chatTopView"
+      tools:listitem="@layout/item_list_contact_selection" />
+
+    <LinearLayout
+      android:id="@+id/lnChatAction"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:paddingTop="@dimen/small_8"
+      android:paddingBottom="@dimen/medium_16"
+      android:paddingLeft="@dimen/medium_16"
+      android:paddingRight="@dimen/medium_16"
+      android:background="@android:color/white"
+      android:gravity="center_horizontal"
+      android:orientation="vertical">
+
+      <TextView
+        android:id="@+id/chatActionSend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:padding="@dimen/small_12"
+        android:background="@drawable/bg_action_todo"
+        android:gravity="center"
+        android:text="@string/action_message_send"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_large_16" />
+
+      <TextView
+        android:id="@+id/chatActionCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_8"
+        android:padding="@dimen/small_12"
+        android:background="@drawable/bg_action_deny"
+        android:gravity="center"
+        android:text="@string/action_cancel"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_large_16" />
+    </LinearLayout>
+  </RelativeLayout>
+</layout>

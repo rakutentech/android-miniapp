@@ -2,10 +2,10 @@
 
 ### 3.X.X (In progress)
 **SDK**
-- **Feature:** Added `sendMessageToContact` interface in `ChatBridgeDispatcher` for sending message to a single contact. HostApp can get the message using `MessageToContact` object.
+- **Feature:** Added `sendMessageToContact` and `sendMessageToMultipleContacts` interfaces in `ChatBridgeDispatcher` for sending message to single or multiple contacts. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
-- **Feature:** Added implementation of `ChatMessageBridgeDispatcher.sendMessageToContact` with a contact selection UI.
+- **Feature:** Added implementations of `ChatMessageBridgeDispatcher.sendMessageToContact` and `ChatMessageBridgeDispatcher.sendMessageToMultipleContacts` with a contact selection UI.
 
 ### 3.1.0 (2021-04-02)
 **SDK**

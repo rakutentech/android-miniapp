@@ -222,6 +222,7 @@ The `ChatBridgeDispatcher`:
 | Method                       | Default  |
 |------------------------------|----------|
 | sendMessageToContact         | 🚫       |
+| sendMessageToMultipleContacts| 🚫       |
 
 The sections below explain each feature in more detail.
 
@@ -344,6 +345,22 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
             // You can show a contact selection UI for picking a single contact.
             // .. .. ..
             onSuccess(contactId) // allow miniapp to invoke the contact id where message has been sent.
+        }
+        else
+            onError(message) // reject miniapp to send message with message explanation.
+    }
+
+    override fun sendMessageToMultipleContacts(
+        message: MessageToContact,
+        onSuccess: (contactIds: List<String>) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // Check if there is any contact in HostApp
+        // .. .. ..
+        if (hasContact) {
+            // You can show a contact selection UI for picking a single contact.
+            // .. .. ..
+            onSuccess(contactIds) // allow miniapp to invoke the contact ids where message has been sent.
         }
         else
             onError(message) // reject miniapp to send message with message explanation.
@@ -540,6 +557,7 @@ HostApp can compare between the `downloadedManifest` and the latest manifest by 
 
 ### Send message to contacts
 
+// TODO
 **API Docs:** [MiniAppMessageBridge.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/)
 
 The mini app is able to send message to a single contact.
