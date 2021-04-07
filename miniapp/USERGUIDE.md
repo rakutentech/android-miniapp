@@ -217,7 +217,13 @@ The `UserInfoBridgeDispatcher`:
 | getAccessToken               | 🚫       |
 | getContacts                  | 🚫       |
 
-The sections below explain each feature in more detail. 
+The `ChatBridgeDispatcher`:
+
+| Method                       | Default  |
+|------------------------------|----------|
+| sendMessageToContact         | 🚫       |
+
+The sections below explain each feature in more detail.
 
 The following is a full code example of using `MiniAppMessageBridge`.
 
@@ -324,6 +330,28 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
 // set UserInfoBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
+
+val chatBridgeDispatcher = object : ChatBridgeDispatcher {
+
+    override fun sendMessageToContact(
+        message: MessageToContact,
+        onSuccess: (contactId: String?) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // Check if there is any contact in HostApp
+        // .. .. ..
+        if (hasContact) {
+            // You can show a contact selection UI for picking a single contact.
+            // .. .. ..
+            onSuccess(contactId) // allow miniapp to invoke the contact id where message has been sent.
+        }
+        else
+            onError(message) // reject miniapp to send message with message explanation.
+    }
+}
+
+// set ChatBridgeDispatcher object to miniAppMessageBridge
+miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 ```
 </details>
 
@@ -369,7 +397,6 @@ The following user data types are supported. If your App does not support a cert
 - User name: string representing the user's name. See [UserInfoBridgeDispatcher.getUserName](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-user-name.html)
 - Profile photo: URL pointing to a photo. This can also be a Base64 data string. See [UserInfoBridgeDispatcher.getProfilePhoto](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-profile-photo.html)
 - Access Token: OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app and [AccessTokenScope]((api/com.rakuten.tech.mobile.miniapp.permission/-access-token-scope)) which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
-
 
 ### Ads Integration
 **API Docs:** [MiniAppMessageBridge.setAdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-ad-mob-displayer.html)
@@ -511,6 +538,12 @@ In Host App, we can get the downloaded manifest information as following:
 
 HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
 
+### Send message to contacts
+
+**API Docs:** [MiniAppMessageBridge.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/)
+
+The mini app is able to send message to a single contact.
+
 ## Advanced Features
 
 ### Clearing up mini app display
@@ -641,10 +674,14 @@ val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReq
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
 
+    // HostApp can cancel the file choosing operation when resultCode doesn't match
+    if (Activity.RESULT_OK != resultCode) {
+         miniAppFileChooser.onCancel()
+    }
+
     if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
         data?.let { intent ->
-            val result: Uri? = intent.data
-            miniAppFileChooser.onReceivedFiles(arrayOf(result!!))
+            miniAppFileChooser.onReceivedFiles(intent)
         }
     }
 }
@@ -755,7 +792,7 @@ CoroutineScope(Dispatchers.Main).launch {
 </summary>
 
 This exception will be thrown when the SDK cannot verify the security check on local storage using keystore which means that users are not allowed to use miniapp.
-Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning. 
+Some keystores within devices are tampered or OEM were shipped with broken keystore from the beginning.
 
 </details>
 

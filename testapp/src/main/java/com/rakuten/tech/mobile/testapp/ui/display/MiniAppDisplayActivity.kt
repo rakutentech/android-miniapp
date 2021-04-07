@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -18,10 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
+import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
@@ -30,6 +29,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.chat.ContactSelectionWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -147,6 +147,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     }
 
     private fun setupMiniAppMessageBridge() {
+        // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
             override fun getUniqueId() = AppSettings.instance.uniqueId
 
@@ -166,6 +167,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
         miniAppMessageBridge.allowScreenOrientation(true)
 
+        // setup UserInfoBridgeDispatcher
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
             override fun getUserName(
@@ -204,6 +206,20 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
+
+        // setup ChatBridgeDispatcher
+        val chatBridgeDispatcher = object : ChatBridgeDispatcher {
+
+            override fun sendMessageToContact(
+                message: MessageToContact,
+                onSuccess: (contactId: String?) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val contactSelectionWindow = ContactSelectionWindow(this@MiniAppDisplayActivity)
+                contactSelectionWindow.openSingleContactSelection(message, onSuccess, onError)
+            }
+        }
+        miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(
@@ -218,12 +234,16 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (Activity.RESULT_OK != resultCode) {
+            miniAppFileChooser.onCancel()
+        }
+
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
-                val result: Uri? = intent.data
-                miniAppFileChooser.onReceivedFiles(arrayOf(result ?: return@let))
+                miniAppFileChooser.onReceivedFiles(intent)
             }
         }
     }
