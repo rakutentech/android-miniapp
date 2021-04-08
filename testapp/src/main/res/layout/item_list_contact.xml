@@ -51,11 +51,29 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/buttonRemoveContact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_remove_24dp" />
+      android:id="@+id/buttonRemoveContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:src="@drawable/ic_remove_24dp" />
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+      android:id="@+id/multipleSelectContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:clickable="false"
+      android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatRadioButton
+      android:id="@+id/singleSelectContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:clickable="false"
+      android:visibility="gone" />
   </RelativeLayout>
 </layout>

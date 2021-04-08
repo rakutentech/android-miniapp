@@ -40,7 +40,6 @@ class MiniAppDisplayActivity : BaseActivity() {
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
-    private var miniAppTitle = ""
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
@@ -92,7 +91,6 @@ class MiniAppDisplayActivity : BaseActivity() {
         val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
-        miniAppTitle = appInfo?.displayName.toString()
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
@@ -218,7 +216,16 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onSuccess: (contactId: String?) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                chatWindow.openSingleContactSelection(miniAppTitle, message, onSuccess, onError)
+                chatWindow.openSingleContactSelection(message, onSuccess, onError)
+            }
+
+            override fun sendMessageToContactId(
+                contactId: String,
+                message: MessageToContact,
+                onSuccess: () -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                chatWindow.openSpecificContactIdSelection(contactId, message, onSuccess, onError)
             }
 
             override fun sendMessageToMultipleContacts(
@@ -226,7 +233,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onSuccess: (contactIds: List<String>) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                //chatWindow.openSingleContactSelection(miniAppTitle, message, onSuccess, onError)
+                chatWindow.openMultipleContactSelections(message, onSuccess, onError)
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)

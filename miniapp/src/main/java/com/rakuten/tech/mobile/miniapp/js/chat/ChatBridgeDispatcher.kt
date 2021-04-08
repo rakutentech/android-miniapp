@@ -20,6 +20,19 @@ interface ChatBridgeDispatcher {
     )
 
     /**
+     * Triggered when Mini App wants to send a message to a specific contact.
+     * Should send a message to the specified contactId without any prompt to the User.
+     * Should invoke [onSuccess] after message was successfully sent.
+     * Should invoke [onError] when there was an error.
+     */
+    abstract fun sendMessageToContactId(
+        contactId: String,
+        message: MessageToContact,
+        onSuccess: () -> Unit,
+        onError: (message: String) -> Unit
+    )
+
+    /**
      * Triggered when Mini App wants to send a message to multiple contacts.
      * Should open a contact chooser which allows the user to choose multiple contacts,
      * and should then send the message to all chosen contacts.

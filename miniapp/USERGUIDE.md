@@ -222,6 +222,7 @@ The `ChatBridgeDispatcher`:
 | Method                       | Default  |
 |------------------------------|----------|
 | sendMessageToContact         | 🚫       |
+| sendMessageToContactId       | 🚫       |
 | sendMessageToMultipleContacts| 🚫       |
 
 The sections below explain each feature in more detail.
@@ -348,6 +349,15 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         }
         else
             onError(message) // reject miniapp to send message with message explanation.
+    }
+
+    override fun sendMessageToContactId(
+        contactId: String,
+        message: MessageToContact,
+        onSuccess: () -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // TODO
     }
 
     override fun sendMessageToMultipleContacts(

@@ -64,6 +64,18 @@ class ChatBridgeDispatcherSpec {
                 onError.invoke(TEST_ERROR_MSG)
         }
 
+        override fun sendMessageToContactId(
+            contactId: String,
+            message: MessageToContact,
+            onSuccess: () -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (canSendMessage)
+                onSuccess.invoke()
+            else
+                onError.invoke(TEST_ERROR_MSG)
+        }
+
         override fun sendMessageToMultipleContacts(
             message: MessageToContact,
             onSuccess: (contactIds: List<String>) -> Unit,

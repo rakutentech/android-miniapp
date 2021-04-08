@@ -1,10 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
-import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
+import com.rakuten.tech.mobile.miniapp.js.SendContactIdCallbackObj
 
 @Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class ChatBridge {
@@ -44,6 +45,26 @@ internal class ChatBridge {
 
                 chatBridgeDispatcher.sendMessageToContact(
                     createMessage(jsonStr),
+                    successCallback,
+                    createErrorCallback(callbackId)
+                )
+            } catch (e: Exception) {
+                bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
+            }
+        }
+
+    internal fun onSendMessageToContactId(callbackId: String, jsonStr: String) =
+        whenReady(callbackId) {
+            try {
+                val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
+                val contactId = callbackObj.param.contactId
+                val successCallback = {
+                    bridgeExecutor.postValue(callbackId, contactId)
+                }
+
+                chatBridgeDispatcher.sendMessageToContactId(
+                    contactId,
+                    callbackObj.param.messageToContact,
                     successCallback,
                     createErrorCallback(callbackId)
                 )

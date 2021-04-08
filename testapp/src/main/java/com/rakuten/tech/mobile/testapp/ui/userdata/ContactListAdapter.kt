@@ -16,13 +16,12 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ItemListContactBinding.inflate(layoutInflater, parent, false)
-
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val contact = contactEntries[position]
-        holder.contactId.text = contact.id
+        bindNonVisibleView("Id: ", contact.id, holder.contactId)
         bindNonVisibleView("Name: ", contact.name, holder.contactName)
         bindNonVisibleView("Email: ", contact.email, holder.contactEmail)
 
