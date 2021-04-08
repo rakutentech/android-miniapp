@@ -25,7 +25,7 @@ interface ChatBridgeDispatcher {
      * Should invoke [onSuccess] after message was successfully sent.
      * Should invoke [onError] when there was an error.
      */
-    abstract fun sendMessageToContactId(
+    fun sendMessageToContactId(
         contactId: String,
         message: MessageToContact,
         onSuccess: () -> Unit,

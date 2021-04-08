@@ -1,13 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.SendContactIdCallbackObj
 
-@Suppress("TooGenericExceptionCaught", "LongMethod")
+@Suppress("TooGenericExceptionCaught", "LongMethod", "StringLiteralDuplication")
 internal class ChatBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
@@ -73,6 +73,7 @@ internal class ChatBridge {
             }
         }
 
+    @Suppress("FunctionMaxLength")
     internal fun onSendMessageToMultipleContacts(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {

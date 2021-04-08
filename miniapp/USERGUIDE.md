@@ -357,7 +357,13 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         onSuccess: () -> Unit,
         onError: (message: String) -> Unit
     ) {
-        // TODO
+        if (there is contact id) {
+            // You can show a UI with the message content and the contactId.
+            // .. .. ..
+            onSuccess.invoke() // allow miniapp to invoke after message has been sent.
+        }
+        else
+            onError(message) // reject miniapp to send message with message explanation.
     }
 
     override fun sendMessageToMultipleContacts(
