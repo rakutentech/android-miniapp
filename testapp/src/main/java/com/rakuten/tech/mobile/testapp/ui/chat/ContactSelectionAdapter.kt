@@ -50,17 +50,15 @@ internal class ContactSelectionAdapter :
                 selectedSingleView?.isChecked = true
                 singleContact = contactEntries[position]
             } else if (contactSelectionMode == "multiple") {
+                contactEntries[position].isSelected = !contactEntries[position].isSelected
 
+                if (contactEntries[position].isSelected) {
+                    multipleContacts.add(contactEntries[position])
+                } else {
+                    multipleContacts.remove(contactEntries[position])
+                }
+                holder.contactMultipleSelector.isChecked = contactEntries[position].isSelected
             }
-
-//            val isSingle = contactSelectionMode == "single" && entry.isSelected
-//            holder.contactSingleSelector.isChecked = isSingle
-//            if (isSingle) singleContact = entry
-//
-//            val isMultiple = contactSelectionMode == "multiple" && entry.isSelected
-//            holder.contactMultipleSelector.isChecked = isMultiple
-//            if (isMultiple) multipleContacts.add(entry)
-//            else multipleContacts.removeAt(position)
         }
     }
 
