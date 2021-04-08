@@ -96,6 +96,7 @@ internal class ChatBridge {
         return callbackObj.param.messageToContact
     }
 
+    // TODO: return null?
     private fun createErrorCallback(callbackId: String) = { errMessage: String ->
         bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE $errMessage")
     }
