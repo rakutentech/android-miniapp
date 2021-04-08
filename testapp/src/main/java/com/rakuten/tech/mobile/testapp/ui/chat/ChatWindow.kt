@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowChatBinding
 import com.rakuten.tech.mobile.testapp.helper.load
@@ -30,10 +31,11 @@ class ChatWindow(private val activity: Activity) {
         AppSettings.instance.isContactsSaved && !AppSettings.instance.contacts.isNullOrEmpty()
 
     private lateinit var message: MessageToContact
+    private var specificContactId: String? = null
     private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
     private lateinit var onSuccessMultipleContacts: (contactIds: List<String>) -> Unit
     private lateinit var onSuccessSpecificContactId: () -> Unit
-    private lateinit var onErrorSingleContact: (message: String) -> Unit
+    private lateinit var onErrorContact: (message: String) -> Unit
 
     fun openSingleContactSelection(
         message: MessageToContact,
@@ -43,9 +45,9 @@ class ChatWindow(private val activity: Activity) {
         checkContactAvailability()
         this.message = message
         this.onSuccessSingleContact = onSuccess
-        this.onErrorSingleContact = onError
+        this.onErrorContact = onError
 
-        initDefaultWindow(ContactSelectionMode.SINGLE)
+        prepareWindow(ContactSelectionMode.SINGLE)
         prepareDataForAdapter(ContactSelectionMode.SINGLE)
 
         // preview dialog
@@ -60,9 +62,9 @@ class ChatWindow(private val activity: Activity) {
         checkContactAvailability()
         this.message = message
         this.onSuccessMultipleContacts = onSuccess
-        this.onErrorSingleContact = onError
+        this.onErrorContact = onError
 
-        initDefaultWindow(ContactSelectionMode.MULTIPLE)
+        prepareWindow(ContactSelectionMode.MULTIPLE)
         prepareDataForAdapter(ContactSelectionMode.MULTIPLE)
 
         // preview dialog
@@ -76,11 +78,12 @@ class ChatWindow(private val activity: Activity) {
         onError: (message: String) -> Unit
     ) {
         checkContactAvailability()
+        this.specificContactId = contactId
         this.message = message
         this.onSuccessSpecificContactId = onSuccess
-        this.onErrorSingleContact = onError
+        this.onErrorContact = onError
 
-        initDefaultWindow(ContactSelectionMode.OTHER)
+        prepareWindow(ContactSelectionMode.OTHER)
         prepareDataForAdapter(ContactSelectionMode.OTHER)
 
         // preview dialog
@@ -96,7 +99,7 @@ class ChatWindow(private val activity: Activity) {
         }
     }
 
-    private fun initDefaultWindow(mode: ContactSelectionMode) {
+    private fun prepareWindow(mode: ContactSelectionMode) {
         val rootView = WindowChatBinding.inflate(layoutInflater, null, false)
 
         // set message content
@@ -114,9 +117,11 @@ class ChatWindow(private val activity: Activity) {
 
         // set list of contacts to select
         rootView.listContactSelection.layoutManager = LinearLayoutManager(activity)
-        rootView.listContactSelection.addItemDecoration(
-            DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        )
+
+        if (mode != ContactSelectionMode.OTHER)
+            rootView.listContactSelection.addItemDecoration(
+                DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+            )
 
         contactSelectionAdapter = ContactSelectionAdapter()
         rootView.listContactSelection.adapter = contactSelectionAdapter
@@ -125,21 +130,11 @@ class ChatWindow(private val activity: Activity) {
             AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
         contactSelectionAlertDialog.setView(rootView.root)
 
-        when (mode) {
-            ContactSelectionMode.SINGLE -> {
-                rootView.chatActionSend.setOnClickListener {
-                    onSingleMessageSend()
-                }
-            }
-            ContactSelectionMode.MULTIPLE -> {
-                rootView.chatActionSend.setOnClickListener {
-                    onMultipleMessageSend()
-                }
-            }
-            ContactSelectionMode.OTHER -> {
-                rootView.chatActionSend.setOnClickListener {
-                    onSuccessSpecificContactId
-                }
+        rootView.chatActionSend.setOnClickListener {
+            when (mode) {
+                ContactSelectionMode.SINGLE -> onSingleMessageSend()
+                ContactSelectionMode.MULTIPLE -> onMultipleMessageSend()
+                ContactSelectionMode.OTHER -> onSendToSpecificContactId()
             }
         }
         rootView.chatActionCancel.setOnClickListener {
@@ -148,32 +143,43 @@ class ChatWindow(private val activity: Activity) {
     }
 
     private fun prepareDataForAdapter(mode: ContactSelectionMode) {
-        if (hasContact) contactSelectionAdapter.addContactList(mode, AppSettings.instance.contacts)
+        val storedContacts = AppSettings.instance.contacts
+        if (hasContact) {
+            if (mode != ContactSelectionMode.OTHER)
+                contactSelectionAdapter.addContactList(mode, storedContacts)
+            else {
+                specificContactId?.let { contactId ->
+                    val contact: Contact? = storedContacts.find {
+                        it.id == contactId
+                    }
+                    contactSelectionAdapter.addContactList(
+                        mode,
+                        arrayListOf(contact ?: Contact(contactId, null, null))
+                    )
+                }
+            }
+        }
     }
 
     private fun onSingleMessageSend() {
         when {
-            message.isEmpty -> onErrorSingleContact("The message sent was empty.")
+            message.isEmpty -> onErrorContact("The message sent was empty.")
             contactSelectionAdapter.singleContact?.contact?.id?.isEmpty()!! -> {
-                onErrorSingleContact("There is no contact found in HostApp!")
+                onErrorContact("There is no contact found in HostApp!")
             }
             else -> {
                 val contactId = contactSelectionAdapter.singleContact?.contact?.id
                 onSuccessSingleContact(contactId)
-                // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
-                Toast.makeText(
-                    activity, "The message has been sent to contact id: ${contactId}", Toast.LENGTH_LONG
-                ).show()
-                contactSelectionAlertDialog.dismiss()
+                onMessageSent()
             }
         }
     }
 
     private fun onMultipleMessageSend() {
         when {
-            message.isEmpty -> onErrorSingleContact("The message sent was empty.")
+            message.isEmpty -> onErrorContact("The message sent was empty.")
             contactSelectionAdapter.multipleContacts.isEmpty() -> {
-                onErrorSingleContact("There is no contact found in HostApp!")
+                onErrorContact("There is no contact found in HostApp!")
             }
             else -> {
                 val contactIds = arrayListOf<String>()
@@ -182,17 +188,22 @@ class ChatWindow(private val activity: Activity) {
                 }
 
                 onSuccessMultipleContacts(contactIds)
-                // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
-                Toast.makeText(
-                    activity, "The message has been sent.", Toast.LENGTH_LONG
-                ).show()
-                contactSelectionAlertDialog.dismiss()
+                onMessageSent()
             }
         }
     }
 
     private fun onSendToSpecificContactId() {
-
+        when {
+            message.isEmpty -> onErrorContact("The message sent was empty.")
+            specificContactId.isNullOrEmpty() -> {
+                onErrorContact("There is no specific contact id found from MiniApp!")
+            }
+            else -> {
+                onSuccessSpecificContactId.invoke()
+                onMessageSent()
+            }
+        }
     }
 
     private fun openActionUrl(action: String) {
@@ -205,5 +216,13 @@ class ChatWindow(private val activity: Activity) {
                 activity, "The action data is not a valid url.", Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun onMessageSent() {
+        // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
+        Toast.makeText(
+            activity, "The message has been sent successfully!", Toast.LENGTH_LONG
+        ).show()
+        contactSelectionAlertDialog.dismiss()
     }
 }
