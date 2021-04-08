@@ -13,7 +13,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBindin
 internal class ContactSelectionAdapter :
     RecyclerView.Adapter<ContactSelectionAdapter.ViewHolder?>() {
     private var contactEntries = ArrayList<SelectableContact>()
-    private var contactSelectionMode = ""
+    private var contactSelectionMode: ContactSelectionMode? = null
     var singleContact: SelectableContact? = null
     var multipleContacts: ArrayList<SelectableContact> = arrayListOf()
     private var selectedSingleView: AppCompatRadioButton? = null
@@ -31,13 +31,14 @@ internal class ContactSelectionAdapter :
         bindView("Email: ", entry.contact.email, holder.contactEmail)
 
         holder.contactRemoveButton.visibility = View.GONE
-        if (contactSelectionMode == "single") holder.contactSingleSelector.visibility = View.VISIBLE
-        else if (contactSelectionMode == "multiple") holder.contactMultipleSelector.visibility =
+        if (contactSelectionMode == ContactSelectionMode.SINGLE) holder.contactSingleSelector.visibility =
+            View.VISIBLE
+        else if (contactSelectionMode == ContactSelectionMode.MULTIPLE) holder.contactMultipleSelector.visibility =
             View.VISIBLE
 
         holder.contactSingleSelector.isChecked = contactEntries[position].isSelected
         holder.contact.setOnClickListener {
-            if (contactSelectionMode == "single") {
+            if (contactSelectionMode == ContactSelectionMode.SINGLE) {
                 contactEntries.forEach {
                     it.isSelected = false
                 }
@@ -49,7 +50,7 @@ internal class ContactSelectionAdapter :
                 selectedSingleView = holder.contactSingleSelector
                 selectedSingleView?.isChecked = true
                 singleContact = contactEntries[position]
-            } else if (contactSelectionMode == "multiple") {
+            } else if (contactSelectionMode == ContactSelectionMode.MULTIPLE) {
                 contactEntries[position].isSelected = !contactEntries[position].isSelected
 
                 if (contactEntries[position].isSelected) {
@@ -72,7 +73,7 @@ internal class ContactSelectionAdapter :
 
     override fun getItemCount(): Int = contactEntries.size
 
-    fun addContactList(mode: String, contacts: ArrayList<Contact>) {
+    fun addContactList(mode: ContactSelectionMode, contacts: ArrayList<Contact>) {
         contactSelectionMode = mode
         contacts.forEach {
             contactEntries.add(SelectableContact(it))
@@ -90,4 +91,8 @@ internal class ContactSelectionAdapter :
         val contactSingleSelector = itemView.singleSelectContact
         val contactMultipleSelector = itemView.multipleSelectContact
     }
+}
+
+internal enum class ContactSelectionMode {
+    SINGLE, MULTIPLE, OTHER
 }

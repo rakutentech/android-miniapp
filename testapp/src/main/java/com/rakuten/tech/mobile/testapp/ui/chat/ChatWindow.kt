@@ -45,8 +45,8 @@ class ChatWindow(private val activity: Activity) {
         this.onSuccessSingleContact = onSuccess
         this.onErrorSingleContact = onError
 
-        initDefaultWindow("single")
-        prepareDataForAdapter("single")
+        initDefaultWindow(ContactSelectionMode.SINGLE)
+        prepareDataForAdapter(ContactSelectionMode.SINGLE)
 
         // preview dialog
         contactSelectionAlertDialog.show()
@@ -62,8 +62,8 @@ class ChatWindow(private val activity: Activity) {
         this.onSuccessMultipleContacts = onSuccess
         this.onErrorSingleContact = onError
 
-        initDefaultWindow("multiple")
-        prepareDataForAdapter("multiple")
+        initDefaultWindow(ContactSelectionMode.MULTIPLE)
+        prepareDataForAdapter(ContactSelectionMode.MULTIPLE)
 
         // preview dialog
         contactSelectionAlertDialog.show()
@@ -80,8 +80,8 @@ class ChatWindow(private val activity: Activity) {
         this.onSuccessSpecificContactId = onSuccess
         this.onErrorSingleContact = onError
 
-        initDefaultWindow("")
-        prepareDataForAdapter("")
+        initDefaultWindow(ContactSelectionMode.OTHER)
+        prepareDataForAdapter(ContactSelectionMode.OTHER)
 
         // preview dialog
         contactSelectionAlertDialog.show()
@@ -96,7 +96,7 @@ class ChatWindow(private val activity: Activity) {
         }
     }
 
-    private fun initDefaultWindow(mode: String) {
+    private fun initDefaultWindow(mode: ContactSelectionMode) {
         val rootView = WindowChatBinding.inflate(layoutInflater, null, false)
 
         // set message content
@@ -126,17 +126,17 @@ class ChatWindow(private val activity: Activity) {
         contactSelectionAlertDialog.setView(rootView.root)
 
         when (mode) {
-            "single" -> {
+            ContactSelectionMode.SINGLE -> {
                 rootView.chatActionSend.setOnClickListener {
                     onSingleMessageSend()
                 }
             }
-            "multiple" -> {
+            ContactSelectionMode.MULTIPLE -> {
                 rootView.chatActionSend.setOnClickListener {
                     onMultipleMessageSend()
                 }
             }
-            else -> {
+            ContactSelectionMode.OTHER -> {
                 rootView.chatActionSend.setOnClickListener {
                     onSuccessSpecificContactId
                 }
@@ -147,7 +147,7 @@ class ChatWindow(private val activity: Activity) {
         }
     }
 
-    private fun prepareDataForAdapter(mode: String) {
+    private fun prepareDataForAdapter(mode: ContactSelectionMode) {
         if (hasContact) contactSelectionAdapter.addContactList(mode, AppSettings.instance.contacts)
     }
 
