@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatRadioButton
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -15,6 +16,7 @@ internal class ContactSelectionAdapter :
     private var contactSelectionMode = ""
     var singleContact: SelectableContact? = null
     var multipleContacts: ArrayList<SelectableContact> = arrayListOf()
+    private var selectedSingleView: AppCompatRadioButton? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -33,7 +35,24 @@ internal class ContactSelectionAdapter :
         else if (contactSelectionMode == "multiple") holder.contactMultipleSelector.visibility =
             View.VISIBLE
 
-//        holder.contact.setOnClickListener {
+        holder.contactSingleSelector.isChecked = contactEntries[position].isSelected
+        holder.contact.setOnClickListener {
+            if (contactSelectionMode == "single") {
+                contactEntries.forEach {
+                    it.isSelected = false
+                }
+                contactEntries[position].isSelected = true
+
+                if (selectedSingleView != null && holder.contactSingleSelector != selectedSingleView)
+                    selectedSingleView?.isChecked = false
+
+                selectedSingleView = holder.contactSingleSelector
+                selectedSingleView?.isChecked = true
+                singleContact = contactEntries[position]
+            } else if (contactSelectionMode == "multiple") {
+
+            }
+
 //            val isSingle = contactSelectionMode == "single" && entry.isSelected
 //            holder.contactSingleSelector.isChecked = isSingle
 //            if (isSingle) singleContact = entry
@@ -42,7 +61,7 @@ internal class ContactSelectionAdapter :
 //            holder.contactMultipleSelector.isChecked = isMultiple
 //            if (isMultiple) multipleContacts.add(entry)
 //            else multipleContacts.removeAt(position)
-//        }
+        }
     }
 
     private fun bindView(prefix: String, text: String?, holderView: TextView) {
