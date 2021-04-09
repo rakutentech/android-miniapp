@@ -77,7 +77,6 @@ class ChatWindow(private val activity: Activity) {
         onSuccess: (contactId: String?) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        checkContactAvailability()
         this.specificContactId = contactId
         this.message = message
         this.onSuccessSpecificContactId = onSuccess
@@ -208,7 +207,7 @@ class ChatWindow(private val activity: Activity) {
         when {
             message.isEmpty -> onErrorContact("The message sent was empty.")
             specificContactId.isNullOrEmpty() -> {
-                onErrorContact("There is no specific contact id found from MiniApp!")
+                onErrorContact("Provided contact ID is invalid!")
             }
             else -> {
                 onSuccessSpecificContactId.invoke(specificContactId)
