@@ -72,11 +72,11 @@ class ChatBridgeDispatcherSpec {
         override fun sendMessageToContactId(
             contactId: String,
             message: MessageToContact,
-            onSuccess: () -> Unit,
+            onSuccess: (contactId: String?) -> Unit,
             onError: (message: String) -> Unit
         ) {
             if (canSendMessage)
-                onSuccess.invoke()
+                onSuccess.invoke(TEST_CONTACT.id)
             else
                 onError.invoke(TEST_ERROR_MSG)
         }

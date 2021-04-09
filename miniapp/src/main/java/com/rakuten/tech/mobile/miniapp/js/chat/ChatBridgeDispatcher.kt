@@ -28,7 +28,7 @@ interface ChatBridgeDispatcher {
     fun sendMessageToContactId(
         contactId: String,
         message: MessageToContact,
-        onSuccess: () -> Unit,
+        onSuccess: (contactId: String?) -> Unit,
         onError: (message: String) -> Unit
     )
 

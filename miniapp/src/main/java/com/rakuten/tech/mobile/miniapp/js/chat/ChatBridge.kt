@@ -39,10 +39,7 @@ internal class ChatBridge {
     internal fun onSendMessageToContact(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
-                val successCallback = { contactId: String? ->
-                    bridgeExecutor.postValue(callbackId, contactId.toString())
-                }
-
+                val successCallback = createSingleContactSuccess(callbackId)
                 chatBridgeDispatcher.sendMessageToContact(
                     createMessage(jsonStr),
                     successCallback,
@@ -57,13 +54,11 @@ internal class ChatBridge {
         whenReady(callbackId) {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
-                val contactId = callbackObj.param.contactId
-                val successCallback = {
-                    bridgeExecutor.postValue(callbackId, contactId)
-                }
+                val specificContactId = callbackObj.param.contactId
+                val successCallback = createSingleContactSuccess(callbackId)
 
                 chatBridgeDispatcher.sendMessageToContactId(
-                    contactId,
+                    specificContactId,
                     callbackObj.param.messageToContact,
                     successCallback,
                     createErrorCallback(callbackId)
@@ -96,7 +91,10 @@ internal class ChatBridge {
         return callbackObj.param.messageToContact
     }
 
-    // TODO: return null?
+    private fun createSingleContactSuccess(callbackId: String) = { contactId: String? ->
+        bridgeExecutor.postValue(callbackId, contactId.toString())
+    }
+
     private fun createErrorCallback(callbackId: String) = { errMessage: String ->
         bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE $errMessage")
     }

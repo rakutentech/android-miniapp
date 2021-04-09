@@ -34,7 +34,7 @@ class ChatWindow(private val activity: Activity) {
     private var specificContactId: String? = null
     private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
     private lateinit var onSuccessMultipleContacts: (contactIds: List<String>) -> Unit
-    private lateinit var onSuccessSpecificContactId: () -> Unit
+    private lateinit var onSuccessSpecificContactId: (contactId: String?) -> Unit
     private lateinit var onErrorContact: (message: String) -> Unit
 
     fun openSingleContactSelection(
@@ -74,7 +74,7 @@ class ChatWindow(private val activity: Activity) {
     fun openSpecificContactIdSelection(
         contactId: String?,
         message: MessageToContact,
-        onSuccess: () -> Unit,
+        onSuccess: (contactId: String?) -> Unit,
         onError: (message: String) -> Unit
     ) {
         checkContactAvailability()
@@ -138,6 +138,11 @@ class ChatWindow(private val activity: Activity) {
             }
         }
         rootView.chatActionCancel.setOnClickListener {
+            when (mode) {
+                ContactSelectionMode.SINGLE -> onSuccessSingleContact(null)
+                ContactSelectionMode.MULTIPLE -> onSuccessMultipleContacts(emptyList())
+                ContactSelectionMode.OTHER -> onSuccessSpecificContactId.invoke(null)
+            }
             contactSelectionAlertDialog.dismiss()
         }
     }
@@ -162,6 +167,12 @@ class ChatWindow(private val activity: Activity) {
     }
 
     private fun onSingleMessageSend() {
+        if (contactSelectionAdapter.singleContact == null) {
+            Toast.makeText(
+                activity, "Please select a single contact.", Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
         when {
             message.isEmpty -> onErrorContact("The message sent was empty.")
             contactSelectionAdapter.singleContact?.contact?.id?.isEmpty()!! -> {
@@ -200,7 +211,7 @@ class ChatWindow(private val activity: Activity) {
                 onErrorContact("There is no specific contact id found from MiniApp!")
             }
             else -> {
-                onSuccessSpecificContactId.invoke()
+                onSuccessSpecificContactId.invoke(specificContactId)
                 onMessageSent()
             }
         }

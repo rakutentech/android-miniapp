@@ -354,7 +354,7 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
     override fun sendMessageToContactId(
         contactId: String,
         message: MessageToContact,
-        onSuccess: () -> Unit,
+        onSuccess: (contactId: String?) -> Unit,
         onError: (message: String) -> Unit
     ) {
         if (there is contact id) {
@@ -570,13 +570,6 @@ In Host App, we can get the downloaded manifest information as following:
 ```
 
 HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
-
-### Send message to contacts
-
-// TODO
-**API Docs:** [MiniAppMessageBridge.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/)
-
-The mini app is able to send message to a single contact.
 
 ## Advanced Features
 
