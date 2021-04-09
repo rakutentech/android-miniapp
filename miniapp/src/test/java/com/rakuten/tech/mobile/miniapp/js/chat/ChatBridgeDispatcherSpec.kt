@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
+@Suppress("LargeClass")
 class ChatBridgeDispatcherSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val sendMessageCallbackObj = CallbackObj(
