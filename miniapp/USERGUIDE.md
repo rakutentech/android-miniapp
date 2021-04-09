@@ -866,6 +866,49 @@ dependency {
 ```
 </details>
 
+<details><summary markdown="span"><b>How do I deep link to mini apps?</b>
+</summary>
+
+If you want to have deep links direclty to your mini apps, then you must implement deep link handling within your App. This can be done using either a custom deep link scheme (such as `myAppName://miniapp`) or an [App Link](https://developer.android.com/training/app-links) (such as `https://www.example.com/miniapp`). See the following Android Developer resources for more information on how to implement deep linking capabilities:
+
+- [Create Deep Links to App Content](https://developer.android.com/training/app-links/deep-linking)
+- [Handling App Links](https://developer.android.com/training/app-links)
+- [Verify Android App Links](https://developer.android.com/training/app-links/verify-site-associations)
+
+After you have implemented deep linking capabilities in your App, then you can configure your deep link to open and launch a Mini App. Note that your deep link should contain information about which mini app ID to open. Also, you can pass query parameters and a URL fragment to the mini app. The recommended deep link format is similar to `https://www.example.com/miniapp/MINI_APP_ID?myParam=myValue#myFragment` where the `myParam=myValue#myFragment` portion is optional and will be passed directly to the mini app. 
+
+The following is an example which will parse the mini app ID and query string from a deep link intent:
+
+```kotlin
+// In your main Activity
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.main)
+
+    val action: String? = intent?.action
+    val uri: Uri? = intent?.data
+    
+    if (action == Intent.ACTION_VIEW && uri != null) {
+        handleDeepLink(uri)
+    }
+}
+
+fun handleDeepLink(uri: Uri) {
+    if (uri.path?.startsWith("/miniapp") == true && uri.lastPathSegment != null) {
+        val miniAppId = uri.lastPathSegment
+        val queryParams = uri.query ?: ""
+        val queryFragment = uri.fragment ?: ""
+        val query = "$queryParams#$queryFragment"
+
+        // Note that `MyMiniAppDisplayScreen` is just a placeholder example for your own class
+        // Inside this class you should call `MiniApp.create` in order to create and display the mini app
+        MyMiniAppDisplayScreen.launch(miniAppId, query)
+    }
+}
+```
+
+</details>
+
 <details><summary markdown="span"><b>How can I use this SDK in a Java project?</b>
 </summary>
 
