@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -67,7 +68,16 @@ abstract class MiniAppMessageBridge {
      * Get provided id of mini app for any purpose.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
-    abstract fun getUniqueId(): String
+    @Deprecated("This function has been deprecated.",
+            ReplaceWith("getUniqueId(onSuccess: (uniqueId: String) -> Unit," +
+                            "onError: (message: String) -> Unit)"
+            )
+    )
+    open fun getUniqueId(): String = throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+
+    /** Get provided id of mini app for any purpose. **/
+    open fun getUniqueId(onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit) =
+        onSuccess(getUniqueId())
 
     /** Post device permission request from external. **/
     open fun requestDevicePermission(
@@ -153,12 +163,15 @@ abstract class MiniAppMessageBridge {
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
 
-    private fun onGetUniqueId(callbackObj: CallbackObj) {
-        try {
-            bridgeExecutor.postValue(callbackObj.id, getUniqueId())
-        } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
+    private fun onGetUniqueId(callbackObj: CallbackObj) = try {
+        val successCallback = { uniqueId: String ->
+            bridgeExecutor.postValue(callbackObj.id, uniqueId)
         }
+        val errorCallback = { message: String -> throw MiniAppSdkException(message) }
+
+        getUniqueId(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
     }
 
     private fun onRequestDevicePermission(callbackObj: CallbackObj) {
@@ -217,22 +230,18 @@ abstract class MiniAppMessageBridge {
         }
     }
 
-    private fun onShareContent(callbackId: String, jsonStr: String) {
-        try {
-            val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
+    private fun onShareContent(callbackId: String, jsonStr: String) = try {
+        val callbackObj = Gson().fromJson(jsonStr, ShareInfoCallbackObj::class.java)
 
-            shareContent(
-                callbackObj.param.shareInfo.content
-            ) { isSuccess, message ->
-                if (isSuccess)
-                    bridgeExecutor.postValue(callbackId, message ?: SUCCESS)
-                else
-                    bridgeExecutor.postError(callbackId,
-                        message ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp.")
-            }
-        } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
+        shareContent(callbackObj.param.shareInfo.content) { isSuccess, message ->
+            if (isSuccess)
+                bridgeExecutor.postValue(callbackId, message ?: SUCCESS)
+            else
+                bridgeExecutor.postError(callbackId,
+                    message ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp.")
         }
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
     }
 
     @VisibleForTesting
