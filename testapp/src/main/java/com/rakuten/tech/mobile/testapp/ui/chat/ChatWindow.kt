@@ -33,7 +33,7 @@ class ChatWindow(private val activity: Activity) {
     private lateinit var message: MessageToContact
     private var specificContactId: String? = null
     private lateinit var onSuccessSingleContact: (contactId: String?) -> Unit
-    private lateinit var onSuccessMultipleContacts: (contactIds: List<String>) -> Unit
+    private lateinit var onSuccessMultipleContacts: (contactIds: List<String>?) -> Unit
     private lateinit var onSuccessSpecificContactId: (contactId: String?) -> Unit
     private lateinit var onErrorContact: (message: String) -> Unit
 
@@ -56,7 +56,7 @@ class ChatWindow(private val activity: Activity) {
 
     fun openMultipleContactSelections(
         message: MessageToContact,
-        onSuccess: (contactIds: List<String>) -> Unit,
+        onSuccess: (contactIds: List<String>?) -> Unit,
         onError: (message: String) -> Unit
     ) {
         checkContactAvailability()
@@ -139,7 +139,7 @@ class ChatWindow(private val activity: Activity) {
         rootView.chatActionCancel.setOnClickListener {
             when (mode) {
                 ContactSelectionMode.SINGLE -> onSuccessSingleContact(null)
-                ContactSelectionMode.MULTIPLE -> onSuccessMultipleContacts(emptyList())
+                ContactSelectionMode.MULTIPLE -> onSuccessMultipleContacts(null)
                 ContactSelectionMode.OTHER -> onSuccessSpecificContactId.invoke(null)
             }
             contactSelectionAlertDialog.dismiss()

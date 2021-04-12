@@ -42,7 +42,7 @@ interface ChatBridgeDispatcher {
      */
     fun sendMessageToMultipleContacts(
         message: MessageToContact,
-        onSuccess: (contactIds: List<String>) -> Unit,
+        onSuccess: (contactIds: List<String>?) -> Unit,
         onError: (message: String) -> Unit
     )
 }

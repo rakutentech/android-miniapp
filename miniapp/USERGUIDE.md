@@ -345,7 +345,9 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         if (hasContact) {
             // You can show a contact selection UI for picking a single contact.
             // .. .. ..
-            onSuccess(contactId) // allow miniapp to invoke the contact id where message has been sent.
+            // allow miniapp to invoke after message has been sent,
+            // user can invoke null when cancelling the operation.
+            onSuccess(contactId)
         }
         else
             onError(message) // reject miniapp to send message with message explanation.
@@ -360,7 +362,9 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         if (there is contact id) {
             // You can show a UI with the message content and the contactId.
             // .. .. ..
-            onSuccess.invoke() // allow miniapp to invoke after message has been sent.
+            // allow miniapp to invoke after message has been sent,
+            // user can invoke null when cancelling the operation.
+            onSuccess(contactId)
         }
         else
             onError(message) // reject miniapp to send message with message explanation.
@@ -368,7 +372,7 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
     override fun sendMessageToMultipleContacts(
         message: MessageToContact,
-        onSuccess: (contactIds: List<String>) -> Unit,
+        onSuccess: (contactIds: List<String>?) -> Unit,
         onError: (message: String) -> Unit
     ) {
         // Check if there is any contact in HostApp
@@ -377,7 +381,7 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
             // You can show a contact selection UI for picking a single contact.
             // .. .. ..
             // allow miniapp to invoke the contact ids where message has been sent,
-            // user can invoke an empty list when cancelling the operation, the SDK will convert it to null.
+            // user can invoke null when cancelling the operation.
             onSuccess(contactIds)
         }
         else
@@ -574,7 +578,15 @@ In Host App, we can get the downloaded manifest information as following:
 ## Send message to contacts
 **API Docs:** [ChatBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/)
 
-The mini app is able to send message to a single contact, multiple contacts or to a specific contact ID.
+Send a message to a single contact, multiple contacts or to a specific contact id by using the following three methods can be triggered by the Mini App, and here are the recommended behaviors for each one:
+| |[ChatBridgeDispatcher.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-contact.html)|[ChatBridgeDispatcher.sendMessageToContactId](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-contact-id.html)|[ChatBridgeDispatcher.sendMessageToMultipleContacts](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-multiple-contacts.html)|
+|---|---|---|---|
+|**Triggered when**|Mini App wants to send a message to a contact.|Triggered when Mini App wants to send a message to a specific contact.|Triggered when Mini App wants to send a message to multiple contacts. |
+| **Contact chooser needed** | single contact | None | multiple contacts |
+| **Action** | send the message to the chosen contact | send a message to the specific contact id without any prompt to the user | send the message to multiple chosen contacts |
+| **On success** | invoke onSuccess with the ID of the contact where the message was sent. | invoke onSuccess with the ID of the contact where the message was sent. | invoke onSuccess with a list of IDs of the contacts where the message was sent. |
+| **On cancellation** | invoke onSuccess null value. | invoke onSuccess null value. | invoke onSuccess null value. |
+| **On error** | invoke onError when there was an error. | invoke onError when there was an error. | invoke onError when there was an error. |
 
 ## Advanced Features
 

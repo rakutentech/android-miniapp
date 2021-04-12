@@ -72,9 +72,9 @@ internal class ChatBridge {
     internal fun onSendMessageToMultipleContacts(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
-                val successCallback = { contactIds: List<String> ->
-                    if (contactIds.isEmpty())
-                        bridgeExecutor.postValue(callbackId, "null")
+                val successCallback = { contactIds: List<String>? ->
+                    if (contactIds.isNullOrEmpty())
+                        bridgeExecutor.postValue(callbackId, NULL_RESPONSE)
                     else
                         bridgeExecutor.postValue(callbackId, Gson().toJson(contactIds).toString())
                 }
@@ -95,7 +95,10 @@ internal class ChatBridge {
     }
 
     private fun createSingleContactSuccess(callbackId: String) = { contactId: String? ->
-        bridgeExecutor.postValue(callbackId, contactId.toString())
+        if (contactId.isNullOrEmpty())
+            bridgeExecutor.postValue(callbackId, NULL_RESPONSE)
+        else
+            bridgeExecutor.postValue(callbackId, contactId.toString())
     }
 
     private fun createErrorCallback(callbackId: String) = { errMessage: String ->
@@ -104,5 +107,6 @@ internal class ChatBridge {
 
     internal companion object {
         const val ERR_SEND_MESSAGE = "Cannot send message:"
+        const val NULL_RESPONSE = "null"
     }
 }
