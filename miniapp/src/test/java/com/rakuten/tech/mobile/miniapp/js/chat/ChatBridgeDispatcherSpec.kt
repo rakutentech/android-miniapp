@@ -59,6 +59,7 @@ class ChatBridgeDispatcherSpec {
         canSendMessage: Boolean,
         isCancelSingleOp: Boolean = false,
         isCancelContactIdOp: Boolean = false,
+        isDifferentContactIdOp: Boolean = false,
         isCancelMultipleOp: Boolean = false
     ): ChatBridgeDispatcher = object : ChatBridgeDispatcher {
 
@@ -83,6 +84,7 @@ class ChatBridgeDispatcherSpec {
             when {
                 isCancelContactIdOp -> onSuccess.invoke(null)
                 canSendMessage -> onSuccess.invoke(TEST_CONTACT.id)
+                isDifferentContactIdOp -> onSuccess.invoke("different_contact_id")
                 else -> onError.invoke(TEST_ERROR_MSG)
             }
         }
@@ -253,7 +255,7 @@ class ChatBridgeDispatcherSpec {
     /** region: onSuccess with null when cancellation */
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to single contact`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false))
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
         verify(bridgeExecutor).postValue(singleChatCallbackObj.id, "null")
@@ -261,7 +263,7 @@ class ChatBridgeDispatcherSpec {
 
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to specific contact id`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false))
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
         verify(bridgeExecutor).postValue(specificIdCallbackObj.id, "null")
@@ -269,11 +271,19 @@ class ChatBridgeDispatcherSpec {
 
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to multiple contacts`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true))
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, multipleMessageJsonStr)
         verify(bridgeExecutor).postValue(multipleChatCallbackObj.id, "null")
     }
 
     /** end region */
+
+    @Test
+    fun `postValue should be called with null when hostapp wants to send a different specific contact id`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
+        verify(bridgeExecutor).postValue(specificIdCallbackObj.id, "null")
+    }
 }
