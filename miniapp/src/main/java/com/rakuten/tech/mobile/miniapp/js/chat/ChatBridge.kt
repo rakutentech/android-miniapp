@@ -73,7 +73,10 @@ internal class ChatBridge {
         whenReady(callbackId) {
             try {
                 val successCallback = { contactIds: List<String> ->
-                    bridgeExecutor.postValue(callbackId, Gson().toJson(contactIds).toString())
+                    if (contactIds.isEmpty())
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, Gson().toJson(contactIds).toString())
                 }
 
                 chatBridgeDispatcher.sendMessageToMultipleContacts(

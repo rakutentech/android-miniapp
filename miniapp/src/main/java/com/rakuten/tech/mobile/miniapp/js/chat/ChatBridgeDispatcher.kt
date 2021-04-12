@@ -37,7 +37,7 @@ interface ChatBridgeDispatcher {
      * Should open a contact chooser which allows the user to choose multiple contacts,
      * and should then send the message to all chosen contacts.
      * Should invoke [onSuccess] with a list of IDs of the contacts which were successfully sent the message.
-     * If the user cancelled sending the message, should invoked [onSuccess] with an empty list.
+     * If the user cancelled sending the message, should invoked [onSuccess] with null.
      * Should invoke [onError] when there was an error.
      */
     fun sendMessageToMultipleContacts(

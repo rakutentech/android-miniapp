@@ -376,7 +376,9 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
         if (hasContact) {
             // You can show a contact selection UI for picking a single contact.
             // .. .. ..
-            onSuccess(contactIds) // allow miniapp to invoke the contact ids where message has been sent.
+            // allow miniapp to invoke the contact ids where message has been sent,
+            // user can invoke an empty list when cancelling the operation, the SDK will convert it to null.
+            onSuccess(contactIds)
         }
         else
             onError(message) // reject miniapp to send message with message explanation.
@@ -569,7 +571,10 @@ In Host App, we can get the downloaded manifest information as following:
   val downloadedManifest = MiniApp.instance().getDownloadedManifest("MINI_APP_ID")
 ```
 
-HostApp can compare between the `downloadedManifest` and the latest manifest by `MiniApp.getMiniAppManifest` to detect any new changes.
+## Send message to contacts
+**API Docs:** [ChatBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/)
+
+The mini app is able to send message to a single contact, multiple contacts or to a specific contact ID.
 
 ## Advanced Features
 

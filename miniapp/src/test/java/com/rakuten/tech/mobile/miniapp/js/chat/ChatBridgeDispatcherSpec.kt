@@ -56,7 +56,8 @@ class ChatBridgeDispatcherSpec {
     }
 
     private fun createChatMessageBridgeDispatcher(
-        canSendMessage: Boolean
+        canSendMessage: Boolean,
+        isCancelMultiple: Boolean = false
     ): ChatBridgeDispatcher = object : ChatBridgeDispatcher {
 
         override fun sendMessageToContact(
@@ -87,10 +88,11 @@ class ChatBridgeDispatcherSpec {
             onSuccess: (contactIds: List<String>) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            if (canSendMessage)
-                onSuccess.invoke(listOf(TEST_CONTACT.id))
-            else
-                onError.invoke(TEST_ERROR_MSG)
+            when {
+                isCancelMultiple -> onSuccess.invoke(emptyList())
+                canSendMessage -> onSuccess.invoke(listOf(TEST_CONTACT.id))
+                else -> onError.invoke(TEST_ERROR_MSG)
+            }
         }
     }
 
@@ -233,5 +235,13 @@ class ChatBridgeDispatcherSpec {
             multipleCallbackObj.id,
             Gson().toJson(listOf(TEST_CONTACT.id)).toString()
         )
+    }
+
+    @Test
+    fun `postValue should be called when hostapp wants to cancel sending message to multiple contacts`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        chatBridge.onSendMessageToMultipleContacts(multipleCallbackObj.id, multipleMessageJsonStr)
+        verify(bridgeExecutor).postValue(multipleCallbackObj.id, "null")
     }
 }
