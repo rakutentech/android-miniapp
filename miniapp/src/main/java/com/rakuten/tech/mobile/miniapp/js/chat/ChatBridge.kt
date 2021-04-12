@@ -39,7 +39,12 @@ internal class ChatBridge {
     internal fun onSendMessageToContact(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
-                val successCallback = createSingleContactSuccess(callbackId)
+                val successCallback = { contactId: String? ->
+                    if (contactId.isNullOrEmpty())
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, contactId.toString())
+                }
                 chatBridgeDispatcher.sendMessageToContact(
                     createMessage(jsonStr),
                     successCallback,
@@ -55,7 +60,12 @@ internal class ChatBridge {
             try {
                 val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
                 val specificContactId = callbackObj.param.contactId
-                val successCallback = createSingleContactSuccess(callbackId)
+                val successCallback = { contactId: String? ->
+                    if (contactId.isNullOrEmpty() || contactId != specificContactId)
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, specificContactId)
+                }
 
                 chatBridgeDispatcher.sendMessageToContactId(
                     specificContactId,
@@ -92,13 +102,6 @@ internal class ChatBridge {
     private fun createMessage(jsonStr: String): MessageToContact {
         val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
         return callbackObj.param.messageToContact
-    }
-
-    private fun createSingleContactSuccess(callbackId: String) = { contactId: String? ->
-        if (contactId.isNullOrEmpty())
-            bridgeExecutor.postValue(callbackId, "null")
-        else
-            bridgeExecutor.postValue(callbackId, contactId.toString())
     }
 
     private fun createErrorCallback(callbackId: String) = { errMessage: String ->
