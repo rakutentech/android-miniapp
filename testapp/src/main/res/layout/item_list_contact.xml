@@ -5,28 +5,27 @@
   <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/small_8"
-    android:paddingBottom="@dimen/small_8"
+    android:paddingTop="@dimen/small_10"
+    android:paddingBottom="@dimen/small_10"
     android:paddingStart="@dimen/medium_16"
     android:paddingEnd="@dimen/medium_16"
     android:gravity="center_horizontal">
+
+    <ImageView
+      android:id="@+id/contactPicture"
+      android:layout_width="@dimen/miniapp_icon_size"
+      android:layout_height="@dimen/miniapp_icon_size"
+      android:layout_marginEnd="@dimen/medium_16"
+      android:layout_centerVertical="true"
+      android:src="@drawable/ic_contact" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_toEndOf="@+id/contactPicture"
         android:layout_toStartOf="@+id/buttonRemoveContact"
         android:layout_marginEnd="@dimen/activity_horizontal_margin">
-
-      <androidx.appcompat.widget.AppCompatTextView
-          android:id="@+id/tvId"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ellipsize="end"
-          android:maxLines="1"
-          android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16"
-          tools:text="Contact id" />
 
       <androidx.appcompat.widget.AppCompatTextView
           android:id="@+id/tvName"
@@ -39,23 +38,51 @@
           tools:text="Contacts name" />
 
       <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/tvId"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@android:color/black"
+          android:textSize="@dimen/text_small_12"
+          tools:text="Contact id" />
+
+      <androidx.appcompat.widget.AppCompatTextView
           android:id="@+id/tvEmail"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:ellipsize="end"
           android:maxLines="1"
           android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16"
+          android:textSize="@dimen/text_small_12"
           tools:text="Contacts email" />
 
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/buttonRemoveContact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_remove_24dp" />
+      android:id="@+id/buttonRemoveContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:src="@drawable/ic_remove_24dp" />
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+      android:id="@+id/multipleSelectContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:clickable="false"
+      android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatRadioButton
+      android:id="@+id/singleSelectContact"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:clickable="false"
+      android:visibility="gone" />
   </RelativeLayout>
 </layout>

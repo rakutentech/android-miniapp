@@ -13,6 +13,8 @@ internal enum class ActionType(val action: String) {
     SET_SCREEN_ORIENTATION("setScreenOrientation"),
     GET_CONTACTS("getContacts"),
     SEND_MESSAGE_TO_CONTACT("sendMessageToContact"),
+    SEND_MESSAGE_TO_CONTACT_ID("sendMessageToContactId"),
+    SEND_MESSAGE_TO_MULTIPLE_CONTACTS("sendMessageToMultipleContacts"),
 }
 
 internal enum class DialogType {

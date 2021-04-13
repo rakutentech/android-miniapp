@@ -3,6 +3,8 @@
     <color name="colorPrimary">#BF0000</color>
     <color name="colorPrimaryDark">#800000</color>
     <color name="colorAccent">#BF0000</color>
+    <color name="colorBg">#FFF</color>
+    <color name="colorAlternate">#AAA</color>
     <color name="color_bg_default_icon">#F5F1F1</color>
     <color name="bg_section">#DADADA</color>
     <color name="window_top_bar">#F8F5F5</color>

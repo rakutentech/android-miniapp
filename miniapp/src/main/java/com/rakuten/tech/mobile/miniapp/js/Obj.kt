@@ -70,4 +70,14 @@ internal data class SendContactCallbackObj(val param: MessageParam) {
     @Keep
     internal data class MessageParam(val messageToContact: MessageToContact)
 }
+
+@Keep
+internal data class SendContactIdCallbackObj(val param: MessageParamId) {
+
+    @Keep
+    internal data class MessageParamId(
+        val contactId: String,
+        val messageToContact: MessageToContact
+    )
+}
 // end region

@@ -1,11 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
+import com.rakuten.tech.mobile.miniapp.js.SendContactIdCallbackObj
 
-@Suppress("TooGenericExceptionCaught", "LongMethod")
+@Suppress("TooGenericExceptionCaught", "LongMethod", "StringLiteralDuplication")
 internal class ChatBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
@@ -37,24 +39,74 @@ internal class ChatBridge {
     internal fun onSendMessageToContact(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
-                val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
-                val messageToContact = callbackObj.param.messageToContact
                 val successCallback = { contactId: String? ->
-                    bridgeExecutor.postValue(callbackId, contactId.toString())
+                    if (contactId.isNullOrEmpty())
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, contactId.toString())
                 }
-                val errorCallback = { errMessage: String ->
-                    bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE $errMessage")
-                }
-
                 chatBridgeDispatcher.sendMessageToContact(
-                    messageToContact,
+                    createMessage(jsonStr),
                     successCallback,
-                    errorCallback
+                    createErrorCallback(callbackId)
                 )
             } catch (e: Exception) {
                 bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
             }
         }
+
+    internal fun onSendMessageToContactId(callbackId: String, jsonStr: String) =
+        whenReady(callbackId) {
+            try {
+                val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
+                val specificContactId = callbackObj.param.contactId
+                val successCallback = { contactId: String? ->
+                    if (contactId.isNullOrEmpty() || contactId != specificContactId)
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, specificContactId)
+                }
+
+                chatBridgeDispatcher.sendMessageToContactId(
+                    specificContactId,
+                    callbackObj.param.messageToContact,
+                    successCallback,
+                    createErrorCallback(callbackId)
+                )
+            } catch (e: Exception) {
+                bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
+            }
+        }
+
+    @Suppress("FunctionMaxLength")
+    internal fun onSendMessageToMultipleContacts(callbackId: String, jsonStr: String) =
+        whenReady(callbackId) {
+            try {
+                val successCallback = { contactIds: List<String>? ->
+                    if (contactIds.isNullOrEmpty())
+                        bridgeExecutor.postValue(callbackId, "null")
+                    else
+                        bridgeExecutor.postValue(callbackId, Gson().toJson(contactIds).toString())
+                }
+
+                chatBridgeDispatcher.sendMessageToMultipleContacts(
+                    createMessage(jsonStr),
+                    successCallback,
+                    createErrorCallback(callbackId)
+                )
+            } catch (e: Exception) {
+                bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE ${e.message}")
+            }
+        }
+
+    private fun createMessage(jsonStr: String): MessageToContact {
+        val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
+        return callbackObj.param.messageToContact
+    }
+
+    private fun createErrorCallback(callbackId: String) = { errMessage: String ->
+        bridgeExecutor.postError(callbackId, "$ERR_SEND_MESSAGE $errMessage")
+    }
 
     internal companion object {
         const val ERR_SEND_MESSAGE = "Cannot send message:"
