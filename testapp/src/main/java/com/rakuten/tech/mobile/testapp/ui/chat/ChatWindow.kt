@@ -104,7 +104,7 @@ class ChatWindow(private val activity: Activity) {
         // set message content
         GlobalScope.launch(Dispatchers.Main) {
             message.apply {
-                rootView.messageImage.load(activity, image)
+                rootView.messageImage.load(activity, image, R.drawable.r_logo)
                 rootView.messageText.text = text
                 rootView.messageCaption.text = caption
                 rootView.messageCaption.setOnClickListener {
