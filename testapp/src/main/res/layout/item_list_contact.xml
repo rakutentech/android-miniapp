@@ -5,8 +5,8 @@
   <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/small_8"
-    android:paddingBottom="@dimen/small_8"
+    android:paddingTop="@dimen/small_10"
+    android:paddingBottom="@dimen/small_10"
     android:paddingStart="@dimen/medium_16"
     android:paddingEnd="@dimen/medium_16"
     android:gravity="center_horizontal">
@@ -15,7 +15,7 @@
       android:id="@+id/contactPicture"
       android:layout_width="@dimen/miniapp_icon_size"
       android:layout_height="@dimen/miniapp_icon_size"
-      android:layout_marginEnd="@dimen/small_8"
+      android:layout_marginEnd="@dimen/medium_16"
       android:layout_centerVertical="true"
       android:src="@drawable/ic_contact" />
 
@@ -28,16 +28,6 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin">
 
       <androidx.appcompat.widget.AppCompatTextView
-          android:id="@+id/tvId"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:ellipsize="end"
-          android:maxLines="1"
-          android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16"
-          tools:text="Contact id" />
-
-      <androidx.appcompat.widget.AppCompatTextView
           android:id="@+id/tvName"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -48,13 +38,23 @@
           tools:text="Contacts name" />
 
       <androidx.appcompat.widget.AppCompatTextView
+          android:id="@+id/tvId"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@android:color/black"
+          android:textSize="@dimen/text_small_12"
+          tools:text="Contact id" />
+
+      <androidx.appcompat.widget.AppCompatTextView
           android:id="@+id/tvEmail"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:ellipsize="end"
           android:maxLines="1"
           android:textColor="@android:color/black"
-          android:textSize="@dimen/text_large_16"
+          android:textSize="@dimen/text_small_12"
           tools:text="Contacts email" />
 
     </LinearLayout>

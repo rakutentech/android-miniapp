@@ -8,87 +8,110 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-      android:id="@+id/chatTutorial"
-      android:textStyle="bold"
+  <TextView
+    android:id="@+id/chatTutorial"
+    android:textStyle="bold"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="@dimen/large_24"
+    android:background="@color/window_top_bar"
+    android:text="@string/chat_tutorial"
+    android:textColor="@android:color/black"
+    android:textSize="@dimen/text_large_16" />
+
+
+
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:padding="@dimen/medium_16"
-      android:background="@color/window_top_bar"
-      android:text="@string/chat_tutorial"
-      android:textColor="@android:color/black"
-      android:textSize="@dimen/text_large_16" />
+        android:layout_above="@id/lnChatAction"
+        android:layout_below="@id/chatTutorial"
+      android:background="@android:color/white"
+      android:gravity="center_horizontal"
+      android:orientation="vertical">
 
-    <ScrollView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_above="@id/lnChatAction"
-      android:layout_below="@id/chatTutorial">
-
-      <LinearLayout
+      <androidx.cardview.widget.CardView
+        android:id="@+id/chatMessageContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
-        <androidx.cardview.widget.CardView
-          android:id="@+id/chatMessageContent"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="@dimen/small_8"
-          card_view:cardCornerRadius="@dimen/medium_16">
-
-          <androidx.constraintlayout.widget.ConstraintLayout
+          app:cardBackgroundColor="@color/colorAlternate"
+        android:layout_margin="@dimen/small_8"
+        card_view:cardCornerRadius="@dimen/small_10">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_8">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="Message"
+              android:padding="@dimen/small_10"
+              android:textSize="@dimen/text_large_18"
+              android:gravity="center"/>
+          <androidx.constraintlayout.widget.ConstraintLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/bg_message"
+              android:padding="@dimen/small_12"
+              android:id="@+id/messageCard"
+              >
 
             <ImageView
-              android:id="@+id/messageImage"
-              android:layout_width="@dimen/miniapp_logo_size"
-              android:layout_height="@dimen/miniapp_logo_size"
-              android:src="@drawable/ic_default"
-              app:layout_constraintLeft_toLeftOf="parent"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/messageImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="H,63:74"
+                app:layout_constraintWidth_percent="0.36"
+                android:background="@drawable/bg_action_message"
+                android:src="@drawable/r_logo"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/messageText"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_marginStart="@dimen/medium_16"
+                android:layout_marginTop="@dimen/small_4"
+                android:singleLine="false"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_large_16"
+                app:layout_constraintStart_toEndOf="@+id/messageImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/messageImage"
+                app:layout_constraintBottom_toTopOf="@id/messageCaption"
+                tools:text="Message Text" />
 
             <TextView
-              android:id="@+id/messageCaption"
-              android:textStyle="italic"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginStart="@dimen/small_8"
-              android:padding="@dimen/small_4"
-              android:background="@drawable/bg_action_caption"
-              android:textColor="@android:color/white"
-              app:layout_constraintStart_toEndOf="@+id/messageImage"
-              app:layout_constraintTop_toTopOf="@+id/messageImage"
-              tools:text="Message Caption" />
+                android:id="@+id/messageCaption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_action_message"
+                android:padding="@dimen/small_4"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="normal"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@+id/messageCard"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/messageText"
+                tools:text="Message Caption" />
 
-            <TextView
-              android:id="@+id/messageText"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="@dimen/small_4"
-              android:layout_marginStart="@dimen/small_8"
-              android:singleLine="false"
-              android:textColor="@android:color/black"
-              android:textSize="@dimen/text_large_16"
-              app:layout_constraintStart_toEndOf="@+id/messageImage"
-              app:layout_constraintTop_toBottomOf="@id/messageCaption"
-              tools:text="Message Text" />
+
           </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/listContactSelection"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/small_4"
-          tools:listitem="@layout/item_list_contact_selection" />
-      </LinearLayout>
-    </ScrollView>
+
+      </androidx.cardview.widget.CardView>
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listContactSelection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_4"
+        tools:listitem="@layout/item_list_contact" />
+    </LinearLayout>
+
 
     <LinearLayout
       android:id="@+id/lnChatAction"
