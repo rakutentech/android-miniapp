@@ -273,8 +273,6 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-    const val NO_IMPLEMENT_PERMISSION =
-        "The `MiniAppMessageBridge.requestPermission` $NO_IMPL"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =
         "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =

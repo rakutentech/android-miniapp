@@ -8,12 +8,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.ActionType
-import com.rakuten.tech.mobile.miniapp.js.CallbackObj
-import com.rakuten.tech.mobile.miniapp.js.MessageToContact
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
-import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
+import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge.Companion.ERR_SEND_MESSAGE
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -94,19 +89,16 @@ class ChatBridgeDispatcherSpec {
 
     @Test
     fun `postError should be called when hostapp doesn't implement the chat dispatcher`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, false))
-        val errMsg = "The `ChatBridgeDispatcher` has not been implemented by the Host App."
 
         chatBridge.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
-        verify(bridgeExecutor).postError(sendMessageCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(sendMessageCallbackObj.id, ErrorBridgeMessage.NO_IMPL)
     }
 
     @Test
     fun `postError should be called when hostapp can't send message`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 
@@ -116,8 +108,7 @@ class ChatBridgeDispatcherSpec {
 
     @Test
     fun `postValue should be called when hostapp can send message`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(true))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(true))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
 
         chatBridge.onSendMessageToContact(sendMessageCallbackObj.id, sendingMessageJsonStr)
