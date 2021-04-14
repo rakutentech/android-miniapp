@@ -29,7 +29,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
-import com.rakuten.tech.mobile.testapp.ui.chat.ContactSelectionWindow
+import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -211,6 +211,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
         // setup ChatBridgeDispatcher
+        val chatWindow = ChatWindow(this@MiniAppDisplayActivity)
         val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
             override fun sendMessageToContact(
@@ -218,8 +219,24 @@ class MiniAppDisplayActivity : BaseActivity() {
                 onSuccess: (contactId: String?) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                val contactSelectionWindow = ContactSelectionWindow(this@MiniAppDisplayActivity)
-                contactSelectionWindow.openSingleContactSelection(message, onSuccess, onError)
+                chatWindow.openSingleContactSelection(message, onSuccess, onError)
+            }
+
+            override fun sendMessageToContactId(
+                contactId: String,
+                message: MessageToContact,
+                onSuccess: (contactId: String?) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                chatWindow.openSpecificContactIdSelection(contactId, message, onSuccess, onError)
+            }
+
+            override fun sendMessageToMultipleContacts(
+                message: MessageToContact,
+                onSuccess: (contactIds: List<String>?) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                chatWindow.openMultipleContactSelections(message, onSuccess, onError)
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)

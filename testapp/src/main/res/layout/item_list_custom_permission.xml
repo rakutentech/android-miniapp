@@ -41,7 +41,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/small_8"
-      android:textColor="@android:color/black"
+      android:textColor="@color/colorAlternate"
       android:textSize="@dimen/text_medium_14"
       tools:text="Custom Permission Description" />
   </LinearLayout>

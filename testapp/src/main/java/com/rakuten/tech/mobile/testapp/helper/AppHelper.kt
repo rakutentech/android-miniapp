@@ -68,9 +68,9 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     alertDialog.create().show()
 }
 
-fun ImageView.load(context: Context, res: String) = Glide.with(context)
+fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) = Glide.with(context)
     .load(res)
-    .placeholder(R.drawable.ic_default)
+    .placeholder(placeholder)
     .into(this)
 
 fun defaultContact(id: String) = Contact(
