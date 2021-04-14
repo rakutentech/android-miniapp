@@ -106,11 +106,28 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `getUniqueId should be called when there is a getting unique id request from external`() {
+    fun `should be able to return unique id to miniapp`() {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
-        verify(miniAppBridge, times(1)).getUniqueId()
         verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when cannot get unique id`() {
+        val errMsg = "Cannot get unique id: null"
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
+        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+        miniAppBridge.postMessage(uniqueIdJsonStr)
+
+        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     /** region: device permission */
@@ -167,24 +184,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         bridgeExecutor.postError(TEST_CALLBACK_ID, TEST_ERROR_MSG)
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
-    }
-
-    @Test
-    fun `postError should be called when cannot get unique id`() {
-        val errMsg = "Cannot get unique id: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
-        )
-        miniAppBridge.postMessage(uniqueIdJsonStr)
-
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
