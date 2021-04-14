@@ -51,9 +51,7 @@ interface UserInfoBridgeDispatcher {
         accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
-    ) {
-        throw MiniAppSdkException(NO_IMPL)
-    }
+    ) = getAccessToken(miniAppId, onSuccess, onError)
 
     /**
      * Get contacts from host app.
