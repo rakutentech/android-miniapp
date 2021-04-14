@@ -25,7 +25,8 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass", "ComplexMethod")
+@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
+    "ComplexMethod", "UnnecessaryAbstractClass")
 /** Bridge interface for communicating with mini app. **/
 abstract class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
