@@ -157,25 +157,20 @@ class ChatWindow(private val activity: Activity) {
                 val storedContact = getSavedSpecificContact()
                 if (storedContact != null)
                     contactSelectionAdapter.addContactList(mode, arrayListOf(storedContact))
-                else
-                    Toast.makeText(
-                        activity, "Provided contact id hasn't been saved in HostApp yet.", Toast.LENGTH_SHORT
-                    ).show()
+                else showInstruction("Provided contact id hasn't been saved in HostApp yet.")
             }
         }
     }
 
     private fun onSingleMessageSend() {
         if (contactSelectionAdapter.singleContact == null) {
-            Toast.makeText(
-                activity, "Please select a single contact.", Toast.LENGTH_SHORT
-            ).show()
+            showInstruction("Please select a single contact.")
             return
         }
         when {
             message.isEmpty -> onErrorContact("The message sent was empty.")
             contactSelectionAdapter.singleContact?.contact?.id?.isEmpty()!! -> {
-                onErrorContact("There is no contact found in HostApp!")
+                onErrorContact("Provided contact ID is invalid.")
             }
             else -> {
                 val contactId = contactSelectionAdapter.singleContact?.contact?.id
@@ -187,11 +182,12 @@ class ChatWindow(private val activity: Activity) {
     }
 
     private fun onMultipleMessageSend() {
+        if (contactSelectionAdapter.multipleContacts.isEmpty()) {
+            showInstruction("Please select at-least one contact.")
+            return
+        }
         when {
             message.isEmpty -> onErrorContact("The message sent was empty.")
-            contactSelectionAdapter.multipleContacts.isEmpty() -> {
-                onErrorContact("There is no contact found in HostApp!")
-            }
             else -> {
                 val contactIds = arrayListOf<String>()
                 contactSelectionAdapter.multipleContacts.forEach {
@@ -231,20 +227,20 @@ class ChatWindow(private val activity: Activity) {
             intent.data = Uri.parse(action)
             activity.startActivity(intent)
         } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(
-                activity, "The action data is not a valid url.", Toast.LENGTH_LONG
-            ).show()
+            showInstruction("The action data is not a valid url.")
         }
     }
 
     private fun onMessageSent() {
         // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
-        Toast.makeText(
-            activity, "The message has been sent successfully!", Toast.LENGTH_LONG
-        ).show()
+        showInstruction("The message has been sent successfully!")
     }
 
     private fun warnNoContactSaved() {
         showAlertDialog(activity, "Warning", "There is no contact found saved in HostApp!")
+    }
+
+    private fun showInstruction(instruction: String) {
+        Toast.makeText(activity, instruction, Toast.LENGTH_LONG).show()
     }
 }
