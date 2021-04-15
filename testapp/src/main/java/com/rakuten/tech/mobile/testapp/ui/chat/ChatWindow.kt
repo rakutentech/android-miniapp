@@ -81,15 +81,17 @@ class ChatWindow(private val activity: Activity) {
     ) {
         if (hasContact) {
             this.specificContactId = contactId
-            this.message = message
-            this.onSuccessSpecificContactId = onSuccess
-            this.onErrorContact = onError
+            if (getSavedSpecificContact() != null) {
+                this.message = message
+                this.onSuccessSpecificContactId = onSuccess
+                this.onErrorContact = onError
 
-            prepareWindow(ContactSelectionMode.OTHER)
-            prepareDataForAdapter(ContactSelectionMode.OTHER)
+                prepareWindow(ContactSelectionMode.OTHER)
+                prepareDataForAdapter(ContactSelectionMode.OTHER)
 
-            // preview dialog
-            contactSelectionAlertDialog.show()
+                // preview dialog
+                contactSelectionAlertDialog.show()
+            } else showInstruction("Provided contact id hasn't been saved in HostApp yet.")
         } else warnNoContactSaved()
     }
 
@@ -204,7 +206,7 @@ class ChatWindow(private val activity: Activity) {
     private fun onSendToSpecificContactId() {
         when {
             message.isEmpty -> onErrorContact("The message sent was empty.")
-            specificContactId.isNullOrEmpty() || getSavedSpecificContact() == null -> {
+            specificContactId.isNullOrEmpty() -> {
                 onErrorContact("Provided contact ID is invalid.")
             }
             else -> {
