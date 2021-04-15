@@ -132,12 +132,20 @@ class ChatWindow(private val activity: Activity) {
             }
         }
         rootView.chatActionCancel.setOnClickListener {
-            when (mode) {
-                ContactSelectionMode.SINGLE -> onSuccessSingleContact(null)
-                ContactSelectionMode.MULTIPLE -> onSuccessMultipleContacts(null)
-                ContactSelectionMode.OTHER -> onSuccessSpecificContactId.invoke(null)
-            }
+            onCancel(mode)
             contactSelectionAlertDialog.dismiss()
+        }
+
+        contactSelectionAlertDialog.setOnCancelListener {
+            onCancel(mode)
+        }
+    }
+
+    private fun onCancel(mode: ContactSelectionMode) {
+        when (mode) {
+            ContactSelectionMode.SINGLE -> onSuccessSingleContact(null)
+            ContactSelectionMode.MULTIPLE -> onSuccessMultipleContacts(null)
+            ContactSelectionMode.OTHER -> onSuccessSpecificContactId.invoke(null)
         }
     }
 
