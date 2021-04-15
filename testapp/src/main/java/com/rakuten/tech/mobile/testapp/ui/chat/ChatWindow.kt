@@ -22,8 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ChatWindow(private val activity: Activity) {
-
-    lateinit var contactSelectionAlertDialog: AlertDialog
+    private lateinit var contactSelectionAlertDialog: AlertDialog
     private val layoutInflater = LayoutInflater.from(activity)
     private lateinit var contactSelectionAdapter: ContactSelectionAdapter
 
@@ -101,7 +100,7 @@ class ChatWindow(private val activity: Activity) {
         // set message content
         GlobalScope.launch(Dispatchers.Main) {
             message.apply {
-                rootView.messageImage.load(activity, image, R.drawable.r_logo)
+                rootView.messageImage.load(activity, image)
                 rootView.messageText.text = text
                 rootView.messageCaption.text = caption
                 rootView.messageCaption.setOnClickListener {
