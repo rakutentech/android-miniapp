@@ -11,17 +11,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.microsoft.appcenter.utils.HandlerUtils.runOnUiThread
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowChatBinding
+import com.rakuten.tech.mobile.testapp.helper.load
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ChatWindow(private val activity: Activity) {
     private lateinit var contactSelectionAlertDialog: AlertDialog
-    private val layoutInflater = LayoutInflater.from(activity)
     private lateinit var contactSelectionAdapter: ContactSelectionAdapter
 
     private val storedContacts = AppSettings.instance.contacts
@@ -43,12 +45,7 @@ class ChatWindow(private val activity: Activity) {
             this.message = message
             this.onSuccessSingleContact = onSuccess
             this.onErrorContact = onError
-
-            prepareWindow(ContactSelectionMode.SINGLE)
-            prepareDataForAdapter(ContactSelectionMode.SINGLE)
-
-            // preview dialog
-            contactSelectionAlertDialog.show()
+            launchScreen(ContactSelectionMode.SINGLE)
         } else warnNoContactSaved()
     }
 
@@ -61,12 +58,7 @@ class ChatWindow(private val activity: Activity) {
             this.message = message
             this.onSuccessMultipleContacts = onSuccess
             this.onErrorContact = onError
-
-            prepareWindow(ContactSelectionMode.MULTIPLE)
-            prepareDataForAdapter(ContactSelectionMode.MULTIPLE)
-
-            // preview dialog
-            contactSelectionAlertDialog.show()
+            launchScreen(ContactSelectionMode.MULTIPLE)
         } else warnNoContactSaved()
     }
 
@@ -82,22 +74,24 @@ class ChatWindow(private val activity: Activity) {
                 this.message = message
                 this.onSuccessSpecificContactId = onSuccess
                 this.onErrorContact = onError
-
-                prepareWindow(ContactSelectionMode.OTHER)
-                prepareDataForAdapter(ContactSelectionMode.OTHER)
-
-                contactSelectionAlertDialog.show()
+                launchScreen(ContactSelectionMode.OTHER)
             } else showInstruction("Provided contact id hasn't been saved in HostApp yet.")
         } else warnNoContactSaved()
     }
 
+    private fun launchScreen(mode: ContactSelectionMode) = GlobalScope.launch(Dispatchers.Main) {
+        prepareWindow(mode)
+    }
+
     private fun prepareWindow(mode: ContactSelectionMode) {
+        val layoutInflater = LayoutInflater.from(activity)
         val rootView = WindowChatBinding.inflate(layoutInflater, null, false)
         contactSelectionAlertDialog =
             AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
         contactSelectionAlertDialog.setView(rootView.root)
 
         message.apply {
+            rootView.messageImage.load(activity, image, R.drawable.r_logo)
             rootView.messageText.text = text
             rootView.messageCaption.text = caption
             rootView.messageCaption.setOnClickListener {
@@ -107,16 +101,14 @@ class ChatWindow(private val activity: Activity) {
         }
         rootView.messageText.movementMethod = ScrollingMovementMethod()
 
-        // set list of contacts to select
         rootView.listContactSelection.layoutManager = LinearLayoutManager(activity)
-
         if (mode != ContactSelectionMode.OTHER)
             rootView.listContactSelection.addItemDecoration(
                 DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
             )
-
         contactSelectionAdapter = ContactSelectionAdapter()
         rootView.listContactSelection.adapter = contactSelectionAdapter
+        prepareDataForAdapter(mode)
 
         rootView.chatActionSend.setOnClickListener {
             when (mode) {
@@ -133,6 +125,7 @@ class ChatWindow(private val activity: Activity) {
         contactSelectionAlertDialog.setOnCancelListener {
             onCancel(mode)
         }
+        contactSelectionAlertDialog.show()
     }
 
     private fun onCancel(mode: ContactSelectionMode) {
