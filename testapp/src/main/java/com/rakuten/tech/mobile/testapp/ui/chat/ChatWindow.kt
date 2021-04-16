@@ -4,22 +4,20 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.microsoft.appcenter.utils.HandlerUtils.runOnUiThread
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowChatBinding
-import com.rakuten.tech.mobile.testapp.helper.load
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class ChatWindow(private val activity: Activity) {
     private lateinit var contactSelectionAlertDialog: AlertDialog
@@ -88,7 +86,6 @@ class ChatWindow(private val activity: Activity) {
                 prepareWindow(ContactSelectionMode.OTHER)
                 prepareDataForAdapter(ContactSelectionMode.OTHER)
 
-                // preview dialog
                 contactSelectionAlertDialog.show()
             } else showInstruction("Provided contact id hasn't been saved in HostApp yet.")
         } else warnNoContactSaved()
@@ -96,19 +93,19 @@ class ChatWindow(private val activity: Activity) {
 
     private fun prepareWindow(mode: ContactSelectionMode) {
         val rootView = WindowChatBinding.inflate(layoutInflater, null, false)
+        contactSelectionAlertDialog =
+            AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
+        contactSelectionAlertDialog.setView(rootView.root)
 
-        // set message content
-        GlobalScope.launch(Dispatchers.Main) {
-            message.apply {
-                rootView.messageImage.load(activity, image)
-                rootView.messageText.text = text
-                rootView.messageCaption.text = caption
-                rootView.messageCaption.setOnClickListener {
-                    openActionUrl(action)
-                }
-                if (caption.isEmpty()) rootView.messageCaption.visibility = View.GONE
+        message.apply {
+            rootView.messageText.text = text
+            rootView.messageCaption.text = caption
+            rootView.messageCaption.setOnClickListener {
+                openActionUrl(action)
             }
+            if (caption.isEmpty()) rootView.messageCaption.visibility = View.GONE
         }
+        rootView.messageText.movementMethod = ScrollingMovementMethod()
 
         // set list of contacts to select
         rootView.listContactSelection.layoutManager = LinearLayoutManager(activity)
@@ -120,10 +117,6 @@ class ChatWindow(private val activity: Activity) {
 
         contactSelectionAdapter = ContactSelectionAdapter()
         rootView.listContactSelection.adapter = contactSelectionAdapter
-
-        contactSelectionAlertDialog =
-            AlertDialog.Builder(activity, R.style.AppTheme_DefaultWindow).create()
-        contactSelectionAlertDialog.setView(rootView.root)
 
         rootView.chatActionSend.setOnClickListener {
             when (mode) {
