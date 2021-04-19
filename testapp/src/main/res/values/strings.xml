@@ -30,6 +30,7 @@
     <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
     <string name="miniapp_preload_perm_status_required">(Required)</string>
 
+    <string name="chat_message_head">Message</string>
     <string name="chat_tutorial">Would you like to send the message?</string>
 
     <string name="action_display">Display</string>
