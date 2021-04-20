@@ -991,7 +991,7 @@ fun createMiniAppAsync(
     }
 }
 ```
-</detail>
+</details>
 
 <details><summary markdown="span"><b>How to override text for localization purpose?</b>
 </summary>
@@ -1003,11 +1003,12 @@ Just need to place them in your app `strings.xml` with the same key. You can als
 
 Example: We want to change `<string name="miniapp_custom_permission_save">Save</string>` in another locale text.
 
-```src/main/res/values-ja/strings.xml
+```xml
+<!--src/main/res/values-ja/strings.xml-->
 
 <string name="miniapp_custom_permission_save">セーブ</string>
 ```
-</detail>
+</details>
 
 ## Changelog
 
