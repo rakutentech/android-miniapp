@@ -11,15 +11,9 @@
     app:showAsAction="always" />
 
   <item
-    android:id="@+id/settings_menu"
-    android:icon="@drawable/ic_more_vert_white_24dp"
-    android:title="@string/menu_title_settings"
-    app:showAsAction="ifRoom">
-    <menu>
-      <item
-        android:id="@+id/set_app_id_and_key"
-        android:title="@string/menu_title_change_settings" />
-    </menu>
-  </item>
+      android:id="@+id/set_app_id_and_key"
+      android:icon="@drawable/ic_wheel"
+      android:title="@string/menu_title_change_settings"
+      app:showAsAction="ifRoom" />
 
 </menu>

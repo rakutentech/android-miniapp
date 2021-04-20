@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 3.X.X (In progress)
+**SDK**
+- **Feature:** Added several chatting interfaces e.g. `sendMessageToContact`, `sendMessageToContactId` and `sendMessageToMultipleContacts` in `ChatBridgeDispatcher` for sending message to single or multiple contacts, even to a specific contact id. HostApp can get the message using `MessageToContact` object.
+
+**Sample App**
+- **Feature:** Added implementations of `ChatMessageBridgeDispatcher.sendMessageToContact`, `ChatMessageBridgeDispatcher.sendMessageToContactId` and `ChatMessageBridgeDispatcher.sendMessageToMultipleContacts` with the demo UI.
+
 ### 3.1.0 (2021-04-02)
 **SDK**
 - **Feature:** Support name and email as optional in Contact.
@@ -30,7 +37,6 @@ Before v3.0.0  |  v3.0.0
 - **Change:** Migrated publishing to Maven Central due to Bintray/JCenter being [shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). You must add `mavenCentral()` to your `repositories`.
 - **Fix:** Load ad error when do re-try loading.
 - **Fix:** Failure when simultaneous custom permission requests are received.
-- **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
 - **Feature:** Added `MiniApp.getMiniAppManifest` interface to retrieve the manifest of a MiniApp.
 - **Feature:** Added `MiniApp.getDownloadedManifest` interface to retrieve currently downloaded manifest of a MiniApp.
 
@@ -53,6 +59,9 @@ Before v3.0.0  |  v3.0.0
 - **Feature:** Added crash reports integration with [app-center diagnostics](https://docs.microsoft.com/en-us/appcenter/diagnostics/).
 - **Fix:** Correct the group and order display of miniapp list.
 - **Change:** Added the usage of `MiniAppMessageBridge.requestDevicePermission`.
+
+### 2.7.2 (2021-03-03)
+- **Fix:** Exception for miniapp verification failed. See [this](miniapp/USERGUIDE.md#troubleshooting--faqs).
 
 ### 2.7.1 (2020-12-23)
 **SDK**
