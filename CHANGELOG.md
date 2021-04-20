@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.X.X (In progress)
+### 3.2.0 (2021-04-22)
 **SDK**
 - **Feature:** Added several chatting interfaces e.g. `sendMessageToContact`, `sendMessageToContactId` and `sendMessageToMultipleContacts` in `ChatBridgeDispatcher` for sending message to single or multiple contacts, even to a specific contact id. HostApp can get the message using `MessageToContact` object.
 
