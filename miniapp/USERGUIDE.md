@@ -993,7 +993,8 @@ fun createMiniAppAsync(
 ```
 </detail>
 
-<details><summary markdown="span"><b>How to override text for localization purpose?</b></summary>
+<details><summary markdown="span"><b>How to override text for localization purpose?</b>
+</summary>
 
 The MiniApp SDK provides the default UI (i.e custom permission window) when your app does not have own UI implementation.
 
@@ -1006,7 +1007,6 @@ Example: We want to change `<string name="miniapp_custom_permission_save">Save</
 
 <string name="miniapp_custom_permission_save">セーブ</string>
 ```
-
 </detail>
 
 ## Changelog
