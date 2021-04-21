@@ -1001,12 +1001,12 @@ The MiniApp SDK provides the default UI (i.e custom permission window) when your
 In case you want to use the default UI and only change text display, you can override the string values in [here](https://github.com/rakutentech/android-miniapp/blob/master/miniapp/src/main/res/values/strings.xml).
 Just need to place them in your app `strings.xml` with the same key. You can also put them in different localization resource directory.
 
-Example: We want to change `<string name="miniapp_sdk_all_save">Save</string>` in another locale text.
+Example: We want to change `<string name="miniapp_sdk_android_save">Save</string>` in another locale text.
 
 ```xml
 <!--src/main/res/values-ja/strings.xml-->
 
-<string name="miniapp_sdk_all_save">セーブ</string>
+<string name="miniapp_sdk_android_save">セーブ</string>
 ```
 </details>
 
