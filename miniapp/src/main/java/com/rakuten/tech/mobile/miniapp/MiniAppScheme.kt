@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import android.content.Intent
+import android.net.MailTo
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 
@@ -46,6 +47,16 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
 
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = url.toUri()
+        context.startActivity(it)
+    }
+
+    internal fun openMaiComposer(context: Context, url: String) = Intent(Intent.ACTION_SEND).let {
+        val mail = MailTo.parse(url)
+        it.putExtra(Intent.EXTRA_EMAIL, arrayOf(mail.to))
+        it.putExtra(Intent.EXTRA_TEXT, mail.body)
+        it.putExtra(Intent.EXTRA_SUBJECT, mail.subject)
+        it.putExtra(Intent.EXTRA_CC, mail.cc)
+        it.type = "message/rfc822"
         context.startActivity(it)
     }
 }

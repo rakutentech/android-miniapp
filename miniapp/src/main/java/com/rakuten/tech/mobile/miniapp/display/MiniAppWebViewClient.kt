@@ -33,6 +33,9 @@ internal class MiniAppWebViewClient(
             if (requestUrl.startsWith("tel:")) {
                 miniAppScheme.openPhoneDialer(context, requestUrl)
                 shouldCancelLoading = true
+            } else if (requestUrl.startsWith("mailto:")) {
+                miniAppScheme.openMaiComposer(context, requestUrl)
+                shouldCancelLoading = true
             } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
                 shouldCancelLoading = true
