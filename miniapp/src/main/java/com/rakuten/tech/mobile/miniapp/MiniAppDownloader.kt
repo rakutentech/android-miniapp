@@ -153,7 +153,8 @@ internal class MiniAppDownloader(
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
         val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
 
-        return MiniAppManifest(requiredPermissions, optionalPermissions, accessTokenPermission, customMetadata, versionId)
+        return MiniAppManifest(requiredPermissions, optionalPermissions,
+            accessTokenPermission, customMetadata, versionId)
     }
 
     @VisibleForTesting

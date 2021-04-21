@@ -36,6 +36,10 @@ open class BaseRealMiniAppSpec {
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()
+    val demoManifest: MiniAppManifest = MiniAppManifest(
+        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
+        TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
+    )
 
     @Before
     fun setup() {
@@ -90,13 +94,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         }
 
     private fun onGettingManifestWhileCreate() = runBlockingTest {
-        val demoManifest =
-            MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-                listOf(),
-                TEST_ATP_LIST,
-                mapOf()
-            )
+
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
     }
@@ -248,9 +246,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 @Suppress("LongMethod")
 @ExperimentalCoroutinesApi
 class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
-    private val demoManifest = MiniAppManifest(
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(), TEST_ATP_LIST, mapOf()
-    )
     private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
     private val deniedPermission = MiniAppCustomPermission(
         TEST_MA_ID,
