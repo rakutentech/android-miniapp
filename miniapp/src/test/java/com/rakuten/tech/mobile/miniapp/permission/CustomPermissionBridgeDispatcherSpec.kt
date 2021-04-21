@@ -172,7 +172,8 @@ class CustomPermissionBridgeDispatcherSpec {
         )
         val manifest = CachedManifest(
             TEST_MA_VERSION_ID,
-            MiniAppManifest(listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(),
+            MiniAppManifest(
+                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(),
                 TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
             )
         )
