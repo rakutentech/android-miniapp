@@ -44,7 +44,6 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         context: Context
     ): Boolean {
         try {
-            resetCallback()
             this.callback = filePathCallback
             val intent = fileChooserParams?.createIntent()
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
