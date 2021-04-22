@@ -25,6 +25,7 @@ HOST_PROJECT_ID=test-host-project-id
 HOST_APP_SUBSCRIPTION_KEY=test-subs-key
 HOST_APP_UA_INFO=MiniAppDemoApp/1.0.0-SNAPSHOT
 HOST_APP_VERSION=test-host-app-version
+ADMOB_APP_ID=test-admob-id
 ```
 
 Finally, you can build the project via Gradle:
@@ -51,6 +52,7 @@ HOST_PROJECT_PROD_ID=test-host-project-id
 HOST_APP_PROD_SUBSCRIPTION_KEY=test-subs-key
 HOST_APP_PROD_UA_INFO=MiniAppDemoApp/1.0.0
 HOST_APP_PROD_VERSION=test-host-app-version
+PROD_ADMOB_APP_ID=test-admob-id
 ```
 
 Finally, you can build the release config for the Sample App.
