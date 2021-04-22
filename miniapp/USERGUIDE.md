@@ -159,10 +159,14 @@ class MiniAppActivity : Activity(), CoroutineScope {
     }
 
     fun createMessageBridge() = object : MiniAppMessageBridge() {
-        override fun getUniqueId() {
-            // Implementation details to generate a Unique ID
-
-            return "your-unique-id"
+        override fun getUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (...)
+                onSuccess("your-unique-id")
+            else
+                onError("your-error-message")
         }
 
         override fun requestPermission(
