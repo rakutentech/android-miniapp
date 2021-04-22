@@ -1,136 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:card_view="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/chatTutorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/window_top_bar"
-            android:gravity="center"
-            android:padding="@dimen/large_24"
-            android:text="@string/chat_tutorial"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16"
-            android:textStyle="bold" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/lnChatAction"
-            android:layout_below="@id/chatTutorial"
-            >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/chatMessageContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8"
-                    app:cardBackgroundColor="@color/colorAlternate"
-                    card_view:cardCornerRadius="@dimen/small_10">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:padding="@dimen/small_10"
-                            android:text="Message"
-                            android:textSize="@dimen/text_large_18" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/messageCard"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="#F5F5F5"
-                            android:padding="@dimen/small_12">
-
-                            <ImageView
-                                android:id="@+id/messageImage"
-                                android:layout_width="126dp"
-                                android:layout_height="148dp"
-                                android:background="@drawable/bg_action_message"
-                                android:src="@drawable/r_logo"
-                                app:layout_constraintLeft_toLeftOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                />
-
-                            <TextView
-                                android:id="@+id/messageText"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/medium_16"
-                                android:layout_marginTop="@dimen/small_4"
-                                android:singleLine="false"
-                                android:textColor="@android:color/black"
-                                android:textSize="@dimen/text_large_16"
-                                app:layout_constraintBottom_toTopOf="@id/messageCaption"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/messageImage"
-                                app:layout_constraintTop_toTopOf="@id/messageImage"
-                                tools:text="Message Text" />
-
-                            <TextView
-                                android:id="@+id/messageCaption"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_action_message"
-                                android:gravity="center"
-                                android:padding="@dimen/small_4"
-                                android:textColor="@color/colorPrimary"
-                                android:textStyle="normal"
-                                app:layout_constraintBottom_toBottomOf="@+id/messageCard"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="@id/messageText"
-                                tools:text="Message Caption" />
-
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/listContactSelection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/small_4"
-                    android:nestedScrollingEnabled="false"
-                    tools:listitem="@layout/item_list_contact" />
-            </LinearLayout>
-        </ScrollView>
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/lnChatAction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/white"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/medium_16"
-            android:paddingTop="@dimen/small_8"
-            android:paddingRight="@dimen/medium_16"
-            android:paddingBottom="@dimen/medium_16">
+          android:id="@+id/topView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/small_8"
+          android:orientation="vertical">
+
+            <TextView
+              android:id="@+id/chatTutorial"
+              android:textStyle="bold"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:padding="@dimen/large_24"
+              android:background="@color/window_top_bar"
+              android:gravity="center"
+              android:text="@string/chat_tutorial"
+              android:textColor="@android:color/black"
+              android:textSize="@dimen/text_large_16" />
+
+            <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:color/white"
+              android:gravity="center_horizontal"
+              android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                  android:id="@+id/chatMessageContent"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_margin="@dimen/small_8"
+                  app:cardBackgroundColor="@color/colorAlternate"
+                  card_view:cardCornerRadius="@dimen/small_10">
+
+                    <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
+
+                        <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/small_10"
+                          android:gravity="center"
+                          android:text="@string/chat_message_head"
+                          android:textSize="@dimen/text_large_18" />
+
+                        <RelativeLayout
+                          android:id="@+id/messageCard"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/small_12"
+                          android:background="#F5F5F5">
+
+                            <ImageView
+                              android:id="@+id/messageImage"
+                              android:layout_width="126dp"
+                              android:layout_height="148dp"
+                              android:background="@drawable/bg_action_message"
+                              android:src="@drawable/r_logo" />
+
+                            <LinearLayout
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:layout_centerInParent="true"
+                              android:layout_toEndOf="@+id/messageImage"
+                              android:orientation="vertical">
+
+                                <TextView
+                                  android:id="@+id/messageText"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:layout_marginTop="@dimen/small_4"
+                                  android:layout_marginStart="@dimen/medium_16"
+                                  android:maxLines="7"
+                                  android:scrollbars="vertical"
+                                  android:singleLine="false"
+                                  android:textColor="@android:color/black"
+                                  android:textSize="@dimen/text_large_16"
+                                  tools:text="Message Text" />
+
+                                <TextView
+                                  android:id="@+id/messageCaption"
+                                  android:textStyle="normal"
+                                  android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:layout_marginTop="@dimen/small_8"
+                                  android:layout_marginStart="@dimen/small_12"
+                                  android:padding="@dimen/small_4"
+                                  android:background="@drawable/bg_action_message"
+                                  android:gravity="center"
+                                  android:textColor="@color/colorPrimary"
+                                  tools:text="Message Caption" />
+                            </LinearLayout>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/listContactSelection"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_above="@id/lnChatAction"
+          android:layout_below="@id/topView"
+          android:nestedScrollingEnabled="false"
+          tools:listitem="@layout/item_list_contact" />
+
+        <LinearLayout
+          android:id="@+id/lnChatAction"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:paddingTop="@dimen/small_8"
+          android:paddingBottom="@dimen/medium_16"
+          android:paddingLeft="@dimen/medium_16"
+          android:paddingRight="@dimen/medium_16"
+          android:background="@android:color/white"
+          android:gravity="center_horizontal"
+          android:orientation="vertical">
 
             <TextView
                 android:id="@+id/chatActionSend"

@@ -62,7 +62,7 @@ class PreloadMiniAppWindow(
 
         // set data to ui
         if (miniAppInfo != null) {
-            miniAppInfo?.icon?.let { binding.preloadAppIcon.load(context, it) }
+            miniAppInfo?.icon?.let { binding.preloadAppIcon.load(context, it, R.drawable.r_logo) }
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
             binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
