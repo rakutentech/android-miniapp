@@ -37,7 +37,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
@@ -95,7 +95,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     }
 
     @VisibleForTesting
-    fun resetCallback() {
+    internal fun resetCallback() {
         this.callback = null
     }
 }
