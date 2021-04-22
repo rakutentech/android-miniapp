@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import androidx.annotation.VisibleForTesting
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -43,6 +44,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         context: Context
     ): Boolean {
         try {
+            resetCallback()
             this.callback = filePathCallback
             val intent = fileChooserParams?.createIntent()
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
@@ -50,6 +52,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
+            resetCallback()
             Log.e(MiniAppFileChooser::class.java.simpleName, e.message.toString())
             return false
         }
@@ -66,7 +69,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         val clipData = intent.clipData
         when {
             data != null -> {
-                callback?.onReceiveValue((arrayOf(data)))
+                this.callback?.onReceiveValue((arrayOf(data)))
             }
             clipData != null -> {
                 val uriList = mutableListOf<Uri>()
@@ -74,20 +77,25 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                     uriList.add(clipData.getItemAt(i).uri)
                 }
 
-                callback?.onReceiveValue((uriList.toTypedArray()))
+                this.callback?.onReceiveValue((uriList.toTypedArray()))
             }
             else -> {
-                callback?.onReceiveValue(null)
+                this.callback?.onReceiveValue(null)
             }
         }
-        callback = null
+        resetCallback()
     }
 
     /**
      * Can be used when HostApp wants to cancel the file choosing operation.
      */
     fun onCancel() {
-        callback?.onReceiveValue(null)
-        callback = null
+        this.callback?.onReceiveValue(null)
+        resetCallback()
+    }
+
+    @VisibleForTesting
+    fun resetCallback() {
+        this.callback = null
     }
 }

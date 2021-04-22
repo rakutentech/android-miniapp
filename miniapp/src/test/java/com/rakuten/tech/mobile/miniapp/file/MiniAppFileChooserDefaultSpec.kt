@@ -35,7 +35,7 @@ class MiniAppFileChooserDefaultSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             context = spy(activity)
             whenever(fileChooserParams?.createIntent()).thenReturn(intent)
-            miniAppFileChooser = MiniAppFileChooserDefault(requestCode)
+            miniAppFileChooser = spy(MiniAppFileChooserDefault(requestCode))
         }
     }
 
@@ -78,6 +78,7 @@ class MiniAppFileChooserDefaultSpec {
         When calling intent.data itReturns uri
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
+        verify(miniAppFileChooser, times(2)).resetCallback()
         verify(callback)?.onReceiveValue(arrayOf(uri))
     }
 
@@ -89,6 +90,7 @@ class MiniAppFileChooserDefaultSpec {
         When calling intent.clipData itReturns clipData
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
+        verify(miniAppFileChooser, times(2)).resetCallback()
         verify(callback)?.onReceiveValue(uriList.toTypedArray())
     }
 
@@ -97,12 +99,14 @@ class MiniAppFileChooserDefaultSpec {
         val intent: Intent = mock()
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
+        verify(miniAppFileChooser, times(2)).resetCallback()
         verify(callback)?.onReceiveValue(null)
     }
 
     @Test
     fun `onReceivedFiles should not invoke onReceiveValue of file path callback is null`() {
         miniAppFileChooser.onShowFileChooser(null, fileChooserParams, context)
+        verify(miniAppFileChooser).resetCallback()
         verify(callback, times(0))?.onReceiveValue(arrayOf())
     }
 
@@ -111,5 +115,6 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onCancel()
         verify(callback)?.onReceiveValue(null)
+        verify(miniAppFileChooser, times(2)).resetCallback()
     }
 }
