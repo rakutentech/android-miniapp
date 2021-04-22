@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -13,7 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.util.ArrayList
 
-@Suppress("TooGenericExceptionCaught", "LongMethod")
+@Suppress("TooGenericExceptionCaught")
 internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
@@ -44,7 +43,7 @@ internal class UserInfoBridge {
             if (this::userInfoBridgeDispatcher.isInitialized)
                 callback.invoke()
             else
-                bridgeExecutor.postError(callbackId, "The `UserInfoBridgeDispatcher` $NO_IMPL")
+                bridgeExecutor.postError(callbackId, NO_IMPL)
         }
     }
 
@@ -97,7 +96,6 @@ internal class UserInfoBridge {
     private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
         if (doesAccessTokenMatch(tokenPermission)) {
-
             val successCallback = { accessToken: TokenData ->
                 accessToken.scopes = tokenPermission
                 bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
@@ -106,14 +104,7 @@ internal class UserInfoBridge {
                 bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
             }
 
-            try {
-                userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
-            } catch (e: MiniAppSdkException) {
-                if (e.message == "The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
-                    userInfoBridgeDispatcher.getAccessToken(miniAppId, successCallback, errorCallback)
-                else
-                    throw e
-            }
+            userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
         } else
             bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
     }

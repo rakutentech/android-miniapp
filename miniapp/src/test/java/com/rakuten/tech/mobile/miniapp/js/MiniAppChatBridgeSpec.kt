@@ -106,11 +106,28 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `getUniqueId should be called when there is a getting unique id request from external`() {
+    fun `should be able to return unique id to miniapp`() {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
-        verify(miniAppBridge, times(1)).getUniqueId()
         verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when cannot get unique id`() {
+        val errMsg = "Cannot get unique id: null"
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
+        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            miniAppId = TEST_MA_ID
+        )
+        miniAppBridge.postMessage(uniqueIdJsonStr)
+
+        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     /** region: device permission */
@@ -170,40 +187,18 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `postError should be called when cannot get unique id`() {
-        val errMsg = "Cannot get unique id: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
-        )
-        miniAppBridge.postMessage(uniqueIdJsonStr)
-
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
-    }
-
-    @Test
     fun `all error bridge messages should be expected`() {
-        assertEquals("has not been implemented by the Host App.", ErrorBridgeMessage.NO_IMPL)
+        assertEquals("no implementation by the Host App.", ErrorBridgeMessage.NO_IMPL)
         assertEquals("No support from hostapp", ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP)
         assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
         assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
         assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
         assertEquals(
-            "The `MiniAppMessageBridge.requestPermission` has not been implemented by the Host App.",
-            ErrorBridgeMessage.NO_IMPLEMENT_PERMISSION
-        )
-        assertEquals(
-            "The `MiniAppMessageBridge.requestDevicePermission` has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestDevicePermission` ${ErrorBridgeMessage.NO_IMPL}",
             ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
         )
         assertEquals(
-            "The `MiniAppMessageBridge.requestCustomPermissions` has not been implemented by the Host App.",
+            "The `MiniAppMessageBridge.requestCustomPermissions` ${ErrorBridgeMessage.NO_IMPL}",
             ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION
         )
         assertEquals("Cannot share content:", ErrorBridgeMessage.ERR_SHARE_CONTENT)

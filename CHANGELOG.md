@@ -3,9 +3,12 @@
 ### 3.X.X (In progress)
 **SDK**
 - **Feature:** Added several chatting interfaces e.g. `sendMessageToContact`, `sendMessageToContactId` and `sendMessageToMultipleContacts` in `ChatBridgeDispatcher` for sending message to single or multiple contacts, even to a specific contact id. HostApp can get the message using `MessageToContact` object.
+- **Deprecated:** Old `getUniqueId`interface.
+- **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 
 **Sample App**
 - **Feature:** Added implementations of `ChatMessageBridgeDispatcher.sendMessageToContact`, `ChatMessageBridgeDispatcher.sendMessageToContactId` and `ChatMessageBridgeDispatcher.sendMessageToMultipleContacts` with the demo UI.
+- **Change:** Replaced the implementation of `getUniqueId` using new interface.
 
 ### 3.1.0 (2021-04-02)
 **SDK**
