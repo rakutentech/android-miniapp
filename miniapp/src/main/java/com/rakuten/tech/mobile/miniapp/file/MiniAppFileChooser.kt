@@ -80,6 +80,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 callback?.onReceiveValue(null)
             }
         }
+        callback = null
     }
 
     /**
@@ -87,5 +88,6 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      */
     fun onCancel() {
         callback?.onReceiveValue(null)
+        callback = null
     }
 }
