@@ -44,7 +44,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         context: Context
     ): Boolean {
         try {
-            this.callback = filePathCallback
+            callback = filePathCallback
             val intent = fileChooserParams?.createIntent()
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
@@ -68,7 +68,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         val clipData = intent.clipData
         when {
             data != null -> {
-                this.callback?.onReceiveValue((arrayOf(data)))
+                callback?.onReceiveValue((arrayOf(data)))
             }
             clipData != null -> {
                 val uriList = mutableListOf<Uri>()
@@ -76,10 +76,10 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                     uriList.add(clipData.getItemAt(i).uri)
                 }
 
-                this.callback?.onReceiveValue((uriList.toTypedArray()))
+                callback?.onReceiveValue((uriList.toTypedArray()))
             }
             else -> {
-                this.callback?.onReceiveValue(null)
+                callback?.onReceiveValue(null)
             }
         }
         resetCallback()
@@ -89,12 +89,12 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * Can be used when HostApp wants to cancel the file choosing operation.
      */
     fun onCancel() {
-        this.callback?.onReceiveValue(null)
+        callback?.onReceiveValue(null)
         resetCallback()
     }
 
     @VisibleForTesting
     internal fun resetCallback() {
-        this.callback = null
+        callback = null
     }
 }
