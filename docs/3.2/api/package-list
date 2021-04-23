@@ -1,0 +1,12 @@
+$dokka.format:markdown
+$dokka.linkExtension:md
+
+com.rakuten.tech.mobile.miniapp
+com.rakuten.tech.mobile.miniapp.ads
+com.rakuten.tech.mobile.miniapp.api
+com.rakuten.tech.mobile.miniapp.file
+com.rakuten.tech.mobile.miniapp.js
+com.rakuten.tech.mobile.miniapp.js.chat
+com.rakuten.tech.mobile.miniapp.js.userinfo
+com.rakuten.tech.mobile.miniapp.navigator
+com.rakuten.tech.mobile.miniapp.permission
