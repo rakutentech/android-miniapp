@@ -55,7 +55,8 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         it.putExtra(Intent.EXTRA_EMAIL, arrayOf(mail.to))
         it.putExtra(Intent.EXTRA_TEXT, mail.body)
         it.putExtra(Intent.EXTRA_SUBJECT, mail.subject)
-        it.putExtra(Intent.EXTRA_CC, mail.cc)
+        it.putExtra(Intent.EXTRA_CC, arrayOf(mail.cc))
+        it.putExtra(Intent.EXTRA_BCC, arrayOf(mail.headers["bcc"]))
         it.type = "message/rfc822"
         context.startActivity(it)
     }
