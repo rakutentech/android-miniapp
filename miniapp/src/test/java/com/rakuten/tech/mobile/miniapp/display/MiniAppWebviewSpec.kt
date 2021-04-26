@@ -326,6 +326,19 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     }
 
     @Test
+    fun `should open mail composer when there is mail scheme`() {
+        val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
+        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
+                externalResultHandler, miniAppScheme))
+        val displayer = Mockito.spy(miniAppWebView)
+
+        webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
+        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_MAIL_URI.toUri()))
+
+        verify(miniAppScheme, times(1)).openMaiComposer(context, TEST_MAIL_URI)
+    }
+
+    @Test
     fun `should have default external link handler when there is no config for navigation`() {
         val displayer = Mockito.spy(MiniAppWebView(
             context,
