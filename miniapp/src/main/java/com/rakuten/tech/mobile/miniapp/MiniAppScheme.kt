@@ -24,17 +24,15 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         }
     }
 
-    fun isMiniAppUrl(url: String): Boolean {
-        return if (appUrl?.isNotEmpty() == true) {
-            val miniAppUri = appUrl!!.toUri()
-            if (miniAppUri.host?.isNotEmpty() == true) {
-                miniAppUri.host.equals(url.toUri().host)
-            } else {
-                false
-            }
+    fun isMiniAppUrl(url: String): Boolean = if (appUrl?.isNotEmpty() == true) {
+        val miniAppUri = appUrl!!.toUri()
+        if (miniAppUri.host?.isNotEmpty() == true) {
+            miniAppUri.host.equals(url.toUri().host)
         } else {
-            url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
+            false
         }
+    } else {
+        url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
     }
 
     fun appendParametersToUrl(url: String, queryParams: String): String {

@@ -57,12 +57,19 @@ class MiniAppExternalUrlLoader private constructor(
      **/
     fun shouldOverrideUrlLoading(url: String): Boolean {
         var shouldCancelLoading = false
-        if (url.startsWith("tel:") && activity != null) {
-            miniAppScheme.openPhoneDialer(activity, url)
-            shouldCancelLoading = true
-        } else if (shouldClose(url)) {
-            closeExternalView(url)
-            shouldCancelLoading = true
+        when {
+            url.startsWith("tel:") -> activity?.let {
+                miniAppScheme.openPhoneDialer(activity, url)
+                shouldCancelLoading = true
+            }
+            url.startsWith("mailto:") -> activity?.let {
+                miniAppScheme.openMaiComposer(activity, url)
+                shouldCancelLoading = true
+            }
+            shouldClose(url) -> {
+                closeExternalView(url)
+                shouldCancelLoading = true
+            }
         }
 
         return shouldCancelLoading
