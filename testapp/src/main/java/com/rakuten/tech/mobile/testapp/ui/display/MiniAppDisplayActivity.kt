@@ -149,7 +149,10 @@ class MiniAppDisplayActivity : BaseActivity() {
     private fun setupMiniAppMessageBridge() {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
-            override fun getUniqueId() = AppSettings.instance.uniqueId
+            override fun getUniqueId(
+                    onSuccess: (uniqueId: String) -> Unit,
+                    onError: (message: String) -> Unit
+            ) = onSuccess(AppSettings.instance.uniqueId)
 
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
@@ -265,11 +268,9 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
     }
 
-    private fun toggleProgressLoading(isOn: Boolean) {
-        when (isOn) {
-            true -> binding.pb.visibility = View.VISIBLE
-            false -> binding.pb.visibility = View.GONE
-        }
+    private fun toggleProgressLoading(isOn: Boolean) = when (isOn) {
+        true -> binding.pb.visibility = View.VISIBLE
+        false -> binding.pb.visibility = View.GONE
     }
 
     override fun onBackPressed() {

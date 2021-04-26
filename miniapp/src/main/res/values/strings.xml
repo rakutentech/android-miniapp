@@ -1,6 +1,6 @@
 <resources>
-    <!-- Custom permission resources -->
-    <string name="miniapp_custom_permission_save">Save</string>
-    <string name="miniapp_custom_permission_close">Close</string>
-    <string name="miniapp_custom_permission_tutorial">MiniApp wants to access the following permissions. Please choose your preference accordingly.</string>
+    <string name="miniapp_sdk_android_save">Save</string>
+    <string name="miniapp_sdk_android_close">Close</string>
+    <!-- Permission resources -->
+    <string name="miniapp_sdk_android_permission_tutorial">MiniApp wants to access the following permissions. Please choose your preference accordingly.</string>
 </resources>

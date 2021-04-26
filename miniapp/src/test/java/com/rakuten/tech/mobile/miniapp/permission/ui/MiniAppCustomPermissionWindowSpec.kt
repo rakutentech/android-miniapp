@@ -15,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,7 +35,7 @@ class MiniAppCustomPermissionWindowSpec {
     private val mockContext: Context = mock()
     private lateinit var activity: Activity
     private lateinit var permissionWindow: MiniAppCustomPermissionWindow
-
+    private var activityScenario = ActivityScenario.launch(TestActivity::class.java)
     private val miniAppId = TEST_CALLBACK_ID
     private val permissionWithDescriptions =
         listOf(
@@ -54,7 +55,7 @@ class MiniAppCustomPermissionWindowSpec {
         downloadedManifestCache = DownloadedManifestCache(mockContext)
         cachedCustomPermission = permissionCache.readPermissions(miniAppId)
 
-        ActivityScenario.launch(TestActivity::class.java).onActivity {
+        activityScenario.onActivity {
             activity = it
             dispatcher =
                 CustomPermissionBridgeDispatcher(
@@ -66,6 +67,11 @@ class MiniAppCustomPermissionWindowSpec {
                 )
             permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         }
+    }
+
+    @After
+    fun finish() {
+        activityScenario.close()
     }
 
     @Test

@@ -19,28 +19,27 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
-@Suppress("LargeClass")
-class ChatBridgeDispatcherSpec {
-    private lateinit var miniAppBridge: MiniAppMessageBridge
-    private val singleChatCallbackObj = CallbackObj(
+open class BaseChatBridgeDispatcherSpec {
+    internal lateinit var miniAppBridge: MiniAppMessageBridge
+    internal val singleChatCallbackObj = CallbackObj(
         action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
         param = null,
         id = TEST_CALLBACK_ID
     )
-    private val multipleChatCallbackObj = CallbackObj(
+    internal val multipleChatCallbackObj = CallbackObj(
         action = ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action,
         param = null,
         id = TEST_CALLBACK_ID
     )
-    private val specificIdCallbackObj = CallbackObj(
+    internal val specificIdCallbackObj = CallbackObj(
         action = ActionType.SEND_MESSAGE_TO_CONTACT_ID.action,
         param = null,
         id = TEST_CALLBACK_ID
     )
-    private val customPermissionCache: MiniAppCustomPermissionCache = mock()
-    private val downloadedManifestCache: DownloadedManifestCache = mock()
-    private val webViewListener: WebViewListener = mock()
-    private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
+    internal val customPermissionCache: MiniAppCustomPermissionCache = mock()
+    internal val downloadedManifestCache: DownloadedManifestCache = mock()
+    internal val webViewListener: WebViewListener = mock()
+    internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     @Before
     fun setup() {
@@ -55,7 +54,7 @@ class ChatBridgeDispatcherSpec {
         )
     }
 
-    private fun createChatMessageBridgeDispatcher(
+    protected fun createChatMessageBridgeDispatcher(
         canSendMessage: Boolean,
         isCancelSingleOp: Boolean = false,
         isCancelContactIdOp: Boolean = false,
@@ -102,9 +101,9 @@ class ChatBridgeDispatcherSpec {
         }
     }
 
-    private val messageToContact = MessageToContact("", "", "", "")
+    protected val messageToContact = MessageToContact("", "", "", "")
 
-    private fun createChatBridge(
+    internal fun createChatBridge(
         chatBridgeDispatcher: ChatBridgeDispatcher,
         isImplement: Boolean
     ): ChatBridge {
@@ -116,12 +115,12 @@ class ChatBridgeDispatcherSpec {
         return chatBridge
     }
 
-    private fun createMessageBridge(): MiniAppMessageBridge =
+    protected fun createMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
         }
 
-    private val sendingMessageJsonStr = Gson().toJson(
+    protected val sendingMessageJsonStr = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
             param = SendContactCallbackObj.MessageParam(messageToContact),
@@ -129,7 +128,7 @@ class ChatBridgeDispatcherSpec {
         )
     )
 
-    private val multipleMessageJsonStr = Gson().toJson(
+    protected val multipleMessageJsonStr = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action,
             param = SendContactCallbackObj.MessageParam(messageToContact),
@@ -137,7 +136,7 @@ class ChatBridgeDispatcherSpec {
         )
     )
 
-    private val specificMessageJsonStr = Gson().toJson(
+    protected val specificMessageJsonStr = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_CONTACT_ID.action,
             param = SendContactIdCallbackObj.MessageParamId("contactId", messageToContact),
@@ -145,67 +144,56 @@ class ChatBridgeDispatcherSpec {
         )
     )
 
-    private val chatBridgeOnSuccess =
-        Mockito.spy(
-            createChatBridge(
-                Mockito.spy(
-                    createChatMessageBridgeDispatcher(true)
-                ), true
-            )
+    internal val chatBridgeOnSuccess = Mockito.spy(
+        createChatBridge(
+            Mockito.spy(
+                createChatMessageBridgeDispatcher(true)
+            ), true
         )
+    )
+}
 
-    /** region: doesn't implementation area */
+class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     @Test
     fun `postError should be called when hostapp doesn't implement the chat dispatcher for single chat`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, false))
-        val errMsg = "The `ChatBridgeDispatcher` has not been implemented by the Host App."
-
         chatBridge.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
-        verify(bridgeExecutor).postError(singleChatCallbackObj.id, errMsg)
+
+        verify(bridgeExecutor).postError(singleChatCallbackObj.id, ErrorBridgeMessage.NO_IMPL)
     }
 
     @Test
     fun `postError should be called when hostapp doesn't implement the chat dispatcher for multiple chat`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, false))
-        val errMsg = "The `ChatBridgeDispatcher` has not been implemented by the Host App."
-
         chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, multipleMessageJsonStr)
-        verify(bridgeExecutor).postError(multipleChatCallbackObj.id, errMsg)
+
+        verify(bridgeExecutor).postError(multipleChatCallbackObj.id, ErrorBridgeMessage.NO_IMPL)
     }
 
     @Test
-    fun `postError should be called when hostapp doesn't implement the chat dispatcher for a contact id`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+    fun `postError should be called when hostapp doesn't implement the chat dispatcher`() {
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, false))
-        val errMsg = "The `ChatBridgeDispatcher` has not been implemented by the Host App."
+        chatBridge.onSendMessageToContact(specificIdCallbackObj.id, sendingMessageJsonStr)
 
-        chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
-        verify(bridgeExecutor).postError(specificIdCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(specificIdCallbackObj.id, ErrorBridgeMessage.NO_IMPL)
     }
 
-    /** end region */
-
-    /** region: onError */
     @Test
-    fun `postError should be called when hostapp can't send message to single contact`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+    fun `postError should be called when hostapp can't send message`() {
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
-
         chatBridge.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
+
         verify(bridgeExecutor).postError(singleChatCallbackObj.id, errMsg)
     }
 
     @Test
     fun `postError should be called when hostapp can't send message to multiple contacts`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 

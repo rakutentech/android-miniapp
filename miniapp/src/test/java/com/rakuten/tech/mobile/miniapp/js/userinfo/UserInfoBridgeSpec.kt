@@ -123,7 +123,7 @@ class UserInfoBridgeSpec {
 
     @Test
     fun `postError should be called when there is no UserInfoBridgeDispatcher`() {
-        val errMsg = "The `UserInfoBridgeDispatcher` ${ErrorBridgeMessage.NO_IMPL}"
+        val errMsg = ErrorBridgeMessage.NO_IMPL
         // not set UserInfoBridgeDispatcher.
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
         // not call init for MiniAppMessageBridge.
@@ -138,7 +138,7 @@ class UserInfoBridgeSpec {
     fun `postError should be called when there is no get user name retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createUserNameImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_USER_NAME The `UserInfoBridgeDispatcher.getUserName` ${ErrorBridgeMessage.NO_IMPL}"
+        val errMsg = "$ERR_GET_USER_NAME ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(userNameCallbackObj))
 
         verify(bridgeExecutor).postError(userNameCallbackObj.id, errMsg)
@@ -208,7 +208,7 @@ class UserInfoBridgeSpec {
     fun `postError should be called when there is no get profile photo retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createProfilePhotoImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_PROFILE_PHOTO The `UserInfoBridgeDispatcher.getProfilePhoto` " +
+        val errMsg = "$ERR_GET_PROFILE_PHOTO " +
                 ErrorBridgeMessage.NO_IMPL
         miniAppBridge.postMessage(Gson().toJson(profilePhotoCallbackObj))
 
@@ -288,7 +288,7 @@ class UserInfoBridgeSpec {
     fun `postError should be called when there is no access token retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_ACCESS_TOKEN The `UserInfoBridgeDispatcher.getAccessToken` ${ErrorBridgeMessage.NO_IMPL}"
+        val errMsg = "$ERR_GET_ACCESS_TOKEN ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(tokenCallbackObj))
 
         verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
@@ -434,7 +434,7 @@ class UserInfoBridgeSpec {
     fun `postError should be called when there is no get contacts retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createContactsImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_CONTACTS The `UserInfoBridgeDispatcher.getContacts` ${ErrorBridgeMessage.NO_IMPL}"
+        val errMsg = "$ERR_GET_CONTACTS ${ErrorBridgeMessage.NO_IMPL}"
         miniAppBridge.postMessage(Gson().toJson(contactsCallbackObj))
 
         verify(bridgeExecutor).postError(contactsCallbackObj.id, errMsg)
