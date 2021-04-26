@@ -159,10 +159,14 @@ class MiniAppActivity : Activity(), CoroutineScope {
     }
 
     fun createMessageBridge() = object : MiniAppMessageBridge() {
-        override fun getUniqueId() {
-            // Implementation details to generate a Unique ID
-
-            return "your-unique-id"
+        override fun getUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (...)
+                onSuccess("your-unique-id")
+            else
+                onError("your-error-message")
         }
 
         override fun requestPermission(
@@ -991,7 +995,24 @@ fun createMiniAppAsync(
     }
 }
 ```
-</detail>
+</details>
+
+<details><summary markdown="span"><b>How to override text for localization purpose?</b>
+</summary>
+
+The MiniApp SDK provides the default UI (i.e custom permission window) when your app does not have own UI implementation.
+
+In case you want to use the default UI and only change text display, you can override the string values in [here](https://github.com/rakutentech/android-miniapp/blob/master/miniapp/src/main/res/values/strings.xml).
+Just need to place them in your app `strings.xml` with the same key. You can also put them in different localization resource directory.
+
+Example: We want to change `<string name="miniapp_sdk_android_save">Save</string>` in another locale text.
+
+```xml
+<!--src/main/res/values-ja/strings.xml-->
+
+<string name="miniapp_sdk_android_save">セーブ</string>
+```
+</details>
 
 ## Changelog
 

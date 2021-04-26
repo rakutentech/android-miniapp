@@ -18,7 +18,7 @@ interface UserInfoBridgeDispatcher {
         onSuccess: (userName: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getUserName` $NO_IMPL")
+        throw MiniAppSdkException(NO_IMPL)
     }
 
     /**
@@ -29,7 +29,7 @@ interface UserInfoBridgeDispatcher {
         onSuccess: (profilePhoto: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getProfilePhoto` $NO_IMPL")
+        throw MiniAppSdkException(NO_IMPL)
     }
 
     /** Get access token from host app. **/
@@ -39,7 +39,7 @@ interface UserInfoBridgeDispatcher {
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
+        throw MiniAppSdkException(NO_IMPL)
     }
 
     /**
@@ -51,9 +51,7 @@ interface UserInfoBridgeDispatcher {
         accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
-    ) {
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getAccessToken` $NO_IMPL")
-    }
+    ) = getAccessToken(miniAppId, onSuccess, onError)
 
     /**
      * Get contacts from host app.
@@ -63,6 +61,6 @@ interface UserInfoBridgeDispatcher {
         onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        throw MiniAppSdkException("The `UserInfoBridgeDispatcher.getContacts` $NO_IMPL")
+        throw MiniAppSdkException(NO_IMPL)
     }
 }
