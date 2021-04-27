@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import androidx.annotation.VisibleForTesting
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -36,20 +37,21 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
         context: Context
     ): Boolean {
         try {
-            this.callback = filePathCallback
+            callback = filePathCallback
             val intent = fileChooserParams?.createIntent()
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
+            resetCallback()
             Log.e(MiniAppFileChooser::class.java.simpleName, e.message.toString())
             return false
         }
@@ -80,6 +82,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 callback?.onReceiveValue(null)
             }
         }
+        resetCallback()
     }
 
     /**
@@ -87,5 +90,11 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      */
     fun onCancel() {
         callback?.onReceiveValue(null)
+        resetCallback()
+    }
+
+    @VisibleForTesting
+    internal fun resetCallback() {
+        callback = null
     }
 }
