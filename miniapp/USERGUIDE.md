@@ -923,6 +923,23 @@ fun handleDeepLink(uri: Uri) {
 
 </details>
 
+<details><summary markdown="span"><b>How do I clear the session data for Mini Apps?</b>
+</summary>
+
+In the case that a user logs out of your App, you should clear the session data for all of your Mini Apps. This will ensure that the next user does not have access to the stored sensitive information about the previous user such as Local Storage, IndexedDB, and Web SQL.
+
+The session data can be cleared by using the following:
+
+```kotlin
+// Should be called after the User logs out
+WebStorage.getInstance().deleteAllData()
+CookieManager.getInstance().removeAllCookies {}
+WebViewDatabase.getInstance(this).clearHttpAuthUsernamePassword()
+```
+
+**Note:** This will also clear the storage, cookies, and authentication data for ALL WebViews used by your App.
+</details>
+
 <details><summary markdown="span"><b>How can I use this SDK in a Java project?</b>
 </summary>
 
