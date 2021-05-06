@@ -267,6 +267,33 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     /** end region */
 
+    /** region: postError when exception */
+    @Test
+    fun `postError should be called when for exception when sending message to single contact`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        chatBridge.onSendMessageToContact(singleChatCallbackObj.id, "")
+        verify(bridgeExecutor).postError(singleChatCallbackObj.id, "Cannot send message: null")
+    }
+
+    @Test
+    fun `postError should be called when for exception when sending message to specific contact id`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, "")
+        verify(bridgeExecutor).postError(specificIdCallbackObj.id, "Cannot send message: ")
+    }
+
+    @Test
+    fun `postError should be called when for exception when sending message to multiple contacts`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, "")
+        verify(bridgeExecutor).postError(multipleChatCallbackObj.id, "Cannot send message: ")
+    }
+
+    /** end region */
+
     @Test
     fun `postValue should be called with null when hostapp wants to send a different specific contact id`() {
         val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
