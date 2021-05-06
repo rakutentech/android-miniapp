@@ -4,6 +4,7 @@
 **SDK**
 - **Deprecated:** Old `getUniqueId`interface.
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
+- **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.

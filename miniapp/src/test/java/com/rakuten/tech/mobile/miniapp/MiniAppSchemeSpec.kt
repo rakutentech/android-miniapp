@@ -1,5 +1,9 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
+import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
+import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldEqualTo
 import org.amshove.kluent.shouldNotEqual
@@ -10,12 +14,13 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 internal class MiniAppSchemeSpec {
-
+    private lateinit var context: Context
     private lateinit var schemeWithAppId: MiniAppScheme
     private lateinit var schemeWithCustomUrl: MiniAppScheme
 
     @Before
     fun setup() {
+        context = ApplicationProvider.getApplicationContext()
         schemeWithAppId = MiniAppScheme.schemeWithAppId(TEST_ID_MINIAPP)
         schemeWithCustomUrl = MiniAppScheme.schemeWithCustomUrl(TEST_URL_HTTPS_1)
     }
@@ -83,5 +88,10 @@ internal class MiniAppSchemeSpec {
     fun `resolveParameters should append qus mark prior to the parameters`() {
         val query = "param1=value1&param2=value2"
         schemeWithAppId.resolveParameters(query) shouldEqual "?$query"
+    }
+
+    @Test
+    fun `should not start activity when there is no supported activity`() {
+        schemeWithAppId.startExportedActivity(Intent("TEST_ACTION"), context) shouldBe false
     }
 }
