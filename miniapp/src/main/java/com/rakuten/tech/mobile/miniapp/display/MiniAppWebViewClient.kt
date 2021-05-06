@@ -34,7 +34,7 @@ internal class MiniAppWebViewClient(
                 miniAppScheme.openPhoneDialer(context, requestUrl)
                 shouldCancelLoading = true
             } else if (requestUrl.startsWith("mailto:")) {
-                miniAppScheme.openMaiComposer(context, requestUrl)
+                miniAppScheme.openMailComposer(context, requestUrl)
                 shouldCancelLoading = true
             } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)

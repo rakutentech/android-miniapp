@@ -63,7 +63,7 @@ class MiniAppExternalUrlLoader private constructor(
                 shouldCancelLoading = true
             }
             url.startsWith("mailto:") -> activity?.let {
-                miniAppScheme.openMaiComposer(activity, url)
+                miniAppScheme.openMailComposer(activity, url)
                 shouldCancelLoading = true
             }
             shouldClose(url) -> {

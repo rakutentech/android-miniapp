@@ -335,7 +335,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_MAIL_URI.toUri()))
 
-        verify(miniAppScheme, times(1)).openMaiComposer(context, TEST_MAIL_URI)
+        verify(miniAppScheme, times(1)).openMailComposer(context, TEST_MAIL_URI)
     }
 
     @Test

@@ -45,10 +45,10 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
 
     internal fun openPhoneDialer(context: Context, url: String) = Intent(Intent.ACTION_DIAL).let {
         it.data = url.toUri()
-        context.startActivity(it)
+        startExportedActivity(it, context)
     }
 
-    internal fun openMaiComposer(context: Context, url: String) = Intent(Intent.ACTION_SEND).let {
+    internal fun openMailComposer(context: Context, url: String) = Intent(Intent.ACTION_SEND).let {
         val mail = MailTo.parse(url)
         it.putExtra(Intent.EXTRA_EMAIL, arrayOf(mail.to))
         it.putExtra(Intent.EXTRA_TEXT, mail.body)
@@ -56,6 +56,15 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         it.putExtra(Intent.EXTRA_CC, arrayOf(mail.cc))
         it.putExtra(Intent.EXTRA_BCC, arrayOf(mail.headers["bcc"]))
         it.type = "message/rfc822"
-        context.startActivity(it)
+        startExportedActivity(it, context)
+    }
+
+    @VisibleForTesting
+    internal fun startExportedActivity(intent: Intent, context: Context): Boolean {
+        return if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+            true
+        } else
+            false
     }
 }
