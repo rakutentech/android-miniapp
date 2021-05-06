@@ -283,6 +283,7 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     fun `postError should be called when for exception when sending message to specific contact id`() {
         val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, "")
         verify(bridgeExecutor).postError(specificIdCallbackObj.id, "Cannot send message: ")
     }
