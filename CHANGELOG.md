@@ -2,6 +2,15 @@
 
 ### 3.X.X (In progress)
 **SDK**
+- **Deprecated:** Old `getUniqueId`interface.
+- **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
+- **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+
+**Sample App**
+- **Change:** Replaced the implementation of `getUniqueId` using new interface.
+
+### 3.2.0 (2021-04-23)
+**SDK**
 - **Feature:** Added several chatting interfaces e.g. `sendMessageToContact`, `sendMessageToContactId` and `sendMessageToMultipleContacts` in `ChatBridgeDispatcher` for sending message to single or multiple contacts, even to a specific contact id. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
