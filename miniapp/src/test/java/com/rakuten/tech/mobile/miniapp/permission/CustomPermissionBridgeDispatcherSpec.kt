@@ -51,8 +51,7 @@ class CustomPermissionBridgeDispatcherSpec {
         MiniAppManifest(
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
             listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
-            TEST_ATP_LIST,
-            emptyMap()
+            TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
         )
     )
 
@@ -174,7 +173,8 @@ class CustomPermissionBridgeDispatcherSpec {
         val manifest = CachedManifest(
             TEST_MA_VERSION_ID,
             MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(), TEST_ATP_LIST, emptyMap()
+                listOf(Pair(MiniAppCustomPermissionType.UNKNOWN, "")), emptyList(),
+                TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
             )
         )
         When calling downloadedManifestCache.readDownloadedManifest(miniAppId) itReturns manifest

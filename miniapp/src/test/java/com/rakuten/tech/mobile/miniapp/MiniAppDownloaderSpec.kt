@@ -36,6 +36,12 @@ class MiniAppDownloaderSpec {
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
     )
+
+    private val dummyManifest = MiniAppManifest(
+        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
+        listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "")),
+        TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
+    )
     private val requiredPermissionObj =
         MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
     private val optionalPermissionObj =
@@ -296,22 +302,16 @@ class MiniAppDownloaderSpec {
                     listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
                 )
             )
-            val apiManifest = MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
-                listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "")),
-                TEST_ATP_LIST,
-                emptyMap()
-            )
 
             When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
-            When calling downloader.prepareMiniAppManifest(metadataEntity) itReturns apiManifest
+            When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
             When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns metadataEntity
 
             val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
 
-            assertEquals(apiManifest, actual)
+            assertEquals(dummyManifest, actual)
             verify(manifestApiCache).readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, apiManifest)
+            verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
         }
 
     @Test
@@ -325,21 +325,15 @@ class MiniAppDownloaderSpec {
                     hashMapOf()
                 )
             )
-            val cachedManifest = MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
-                listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "")),
-                TEST_ATP_LIST,
-                emptyMap()
-            )
 
-            When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns cachedManifest
+            When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns dummyManifest
             val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
 
-            assertEquals(cachedManifest, actual)
+            assertEquals(dummyManifest, actual)
             verify(manifestApiCache).readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(downloader, times(0)).prepareMiniAppManifest(metadataEntity)
+            verify(downloader, times(0)).prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID)
             verify(apiClient, times(0)).fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, cachedManifest)
+            verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
         }
 
     @Test(expected = MiniAppSdkException::class)
@@ -387,12 +381,15 @@ class MiniAppDownloaderSpec {
             When calling downloader.listOfPermissions(listOf(requiredPermissionObj)) itReturns requiredPermission
             When calling downloader.listOfPermissions(listOf(optionalPermissionObj)) itReturns optionalPermission
 
-            val actual = downloader.prepareMiniAppManifest(metadataEntity)
+            val actual = downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID)
             val requiredPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
             val optionalPermissions =
                 listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
-            val expected = MiniAppManifest(requiredPermissions, optionalPermissions, TEST_ATP_LIST, hashMapOf())
+            val expected = MiniAppManifest(
+                requiredPermissions, optionalPermissions,
+                TEST_ATP_LIST, hashMapOf(), TEST_MA_VERSION_ID
+            )
 
             assertEquals(expected, actual)
         }
@@ -408,8 +405,8 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP_VERSION
             ) itReturns metadataEntity
 
-            val actual = downloader.prepareMiniAppManifest(metadataEntity)
-            val expected = MiniAppManifest(emptyList(), emptyList(), emptyList(), emptyMap())
+            val actual = downloader.prepareMiniAppManifest(metadataEntity, "")
+            val expected = MiniAppManifest(emptyList(), emptyList(), emptyList(), emptyMap(), "")
 
             assertEquals(expected, actual)
         }
