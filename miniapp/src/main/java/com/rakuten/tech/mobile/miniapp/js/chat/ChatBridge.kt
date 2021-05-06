@@ -6,19 +6,24 @@ import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.js.SendContactCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.SendContactIdCallbackObj
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class ChatBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
     private var isMiniAppComponentReady = false
     private lateinit var chatBridgeDispatcher: ChatBridgeDispatcher
+    private lateinit var customPermissionCache: MiniAppCustomPermissionCache
 
     fun setMiniAppComponents(
         bridgeExecutor: MiniAppBridgeExecutor,
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         miniAppId: String
     ) {
         this.bridgeExecutor = bridgeExecutor
+        this.customPermissionCache = miniAppCustomPermissionCache
         this.miniAppId = miniAppId
         isMiniAppComponentReady = true
     }
@@ -57,15 +62,21 @@ internal class ChatBridge {
 
     internal fun onSendMessageToContactId(callbackId: String, jsonStr: String) = whenReady(callbackId) {
         try {
-            val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
-            val specificContactId = callbackObj.param.contactId
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.SEND_MESSAGE)) {
+                val callbackObj = Gson().fromJson(jsonStr, SendContactIdCallbackObj::class.java)
+                val specificContactId = callbackObj.param.contactId
 
-            chatBridgeDispatcher.sendMessageToContactId(
-                specificContactId,
-                callbackObj.param.messageToContact,
-                createSuccessSendMsgContactId(specificContactId, callbackId),
-                createErrorCallback(callbackId)
-            )
+                chatBridgeDispatcher.sendMessageToContactId(
+                    specificContactId,
+                    callbackObj.param.messageToContact,
+                    createSuccessSendMsgContactId(specificContactId, callbackId),
+                    createErrorCallback(callbackId)
+                )
+            } else
+                bridgeExecutor.postError(
+                    callbackId,
+                    "$ERR_SEND_MESSAGE $ERR_NO_PERMISSION_CONTACT_ID"
+                )
         } catch (e: Exception) {
             createErrorCallback(callbackId).invoke(e.message.orEmpty())
         }
@@ -113,5 +124,7 @@ internal class ChatBridge {
 
     internal companion object {
         const val ERR_SEND_MESSAGE = "Cannot send message:"
+        const val ERR_NO_PERMISSION_CONTACT_ID =
+            "Permission has not been accepted yet for sending message to contact Id."
     }
 }
