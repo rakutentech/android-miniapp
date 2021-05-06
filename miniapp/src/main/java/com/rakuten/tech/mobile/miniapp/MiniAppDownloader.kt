@@ -139,7 +139,7 @@ internal class MiniAppDownloader(
             if (cachedLatestManifest != null) cachedLatestManifest
             else {
                 val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
-                val latestManifest = prepareMiniAppManifest(apiResponse)
+                val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
                 manifestApiCache.storeManifest(appId, versionId, latestManifest)
                 latestManifest
             }
@@ -147,13 +147,14 @@ internal class MiniAppDownloader(
     }
 
     @VisibleForTesting
-    fun prepareMiniAppManifest(metadataEntity: MetadataEntity): MiniAppManifest {
+    fun prepareMiniAppManifest(metadataEntity: MetadataEntity, versionId: String): MiniAppManifest {
         val requiredPermissions = listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
         val optionalPermissions = listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
         val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
 
-        return MiniAppManifest(requiredPermissions, optionalPermissions, accessTokenPermission, customMetadata)
+        return MiniAppManifest(requiredPermissions, optionalPermissions,
+            accessTokenPermission, customMetadata, versionId)
     }
 
     @VisibleForTesting
