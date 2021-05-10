@@ -91,7 +91,7 @@ class ChatWindow(private val activity: Activity) {
         contactSelectionAlertDialog.setView(rootView.root)
 
         message.apply {
-            rootView.messageImage.load(activity, image, R.drawable.r_logo)
+            rootView.messageImage.load(activity, image, R.drawable.bg_action_message)
             rootView.messageText.text = text
             rootView.messageCaption.text = caption
             rootView.messageCaption.setOnClickListener {
