@@ -5,7 +5,7 @@
 - **Deprecated:** Old `getUniqueId`interface.
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
-- **Feature:** Added `rakuten.miniapp.user.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
+- **Feature:** Added `rakuten.miniapp.user.action.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.
