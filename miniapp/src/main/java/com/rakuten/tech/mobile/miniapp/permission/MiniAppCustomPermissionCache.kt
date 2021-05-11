@@ -2,9 +2,13 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import java.lang.Exception
 
 /**
@@ -12,10 +16,43 @@ import java.lang.Exception
  * using [SharedPreferences].
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
-internal class MiniAppCustomPermissionCache(context: Context) {
-    private val prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
+internal class MiniAppCustomPermissionCache constructor(
+    private val nonEncryptedPreferences: SharedPreferences,
+    private val prefs: SharedPreferences
+) {
+
+    constructor(context: Context) : this(
+        nonEncryptedPreferences = context.getSharedPreferences(
+            "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
+        ),
+        prefs = initEncryptedSharedPreference(context)
     )
+
+    init {
+        migrateToEncryptedPref()
+    }
+
+    private fun migrateToEncryptedPref() {
+        Log.d("AAAAA non1",""+nonEncryptedPreferences.all)
+        Log.d("AAAAA pref1",""+prefs.all)
+        if (nonEncryptedPreferences.all.isNotEmpty()) {
+            nonEncryptedPreferences.copyTo(prefs)
+            Log.d("AAAAA pref2",""+prefs.all)
+            nonEncryptedPreferences.edit().clear().apply()
+            Log.d("AAAAA non2",""+nonEncryptedPreferences.all)
+        }
+    }
+
+    private fun SharedPreferences.copyTo(dest: SharedPreferences) = with(dest.edit()) {
+        for ((key, value1) in all) {
+            val value = value1 ?: continue
+            when (value) {
+                is String -> putString(key, value)
+                else -> error("Unknown type: $value")
+            }
+        }
+        apply()
+    }
 
     /**
      * Reads the grant results from SharedPreferences.
@@ -133,4 +170,16 @@ internal class MiniAppCustomPermissionCache(context: Context) {
 
         return isPermissionGranted
     }
+}
+
+internal fun initEncryptedSharedPreference(context: Context) = try {
+    EncryptedSharedPreferences.create(
+        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache.hash",
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+} catch (e: Exception) {
+    throw MiniAppVerificationException(e.message)
 }
