@@ -21,7 +21,6 @@ class MiniAppCustomPermissionCacheSpec {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
-    private val editor: SharedPreferences.Editor = prefs.edit()
     private val deniedPermissions =
         listOf(
             Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
