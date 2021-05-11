@@ -583,7 +583,8 @@ In Host App, we can get the downloaded manifest information as following:
 **API Docs:** [ChatBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/)
 
 Send a message to a single contact, multiple contacts or to a specific contact id by using the following three methods can be triggered by the Mini App, and here are the recommended behaviors for each one:
-| |[ChatBridgeDispatcher.sendMessageToContact](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-contact.html)|[ChatBridgeDispatcher.sendMessageToContactId](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-contact-id.html)|[ChatBridgeDispatcher.sendMessageToMultipleContacts](api/com.rakuten.tech.mobile.miniapp.js.chat/-chat-bridge-dispatcher/send-message-to-multiple-contacts.html)|
+
+| |`ChatBridgeDispatcher.sendMessageToContact`|`ChatBridgeDispatcher.sendMessageToContactId`|`ChatBridgeDispatcher.sendMessageToMultipleContacts`|
 |---|---|---|---|
 |**Triggered when**|Mini App wants to send a message to a contact.|Triggered when Mini App wants to send a message to a specific contact.|Triggered when Mini App wants to send a message to multiple contacts. |
 | **Contact chooser needed** | single contact | None | multiple contacts |

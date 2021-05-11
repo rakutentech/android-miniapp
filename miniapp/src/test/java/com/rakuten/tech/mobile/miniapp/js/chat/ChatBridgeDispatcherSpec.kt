@@ -9,8 +9,10 @@ import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge.Companion.ERR_NO_PERMISSION_CONTACT_ID
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge.Companion.ERR_SEND_MESSAGE
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -20,7 +22,7 @@ import org.junit.Test
 import org.mockito.Mockito
 
 open class BaseChatBridgeDispatcherSpec {
-    internal lateinit var miniAppBridge: MiniAppMessageBridge
+    private lateinit var miniAppBridge: MiniAppMessageBridge
     internal val singleChatCallbackObj = CallbackObj(
         action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
         param = null,
@@ -37,8 +39,8 @@ open class BaseChatBridgeDispatcherSpec {
         id = TEST_CALLBACK_ID
     )
     internal val customPermissionCache: MiniAppCustomPermissionCache = mock()
-    internal val downloadedManifestCache: DownloadedManifestCache = mock()
-    internal val webViewListener: WebViewListener = mock()
+    private val downloadedManifestCache: DownloadedManifestCache = mock()
+    private val webViewListener: WebViewListener = mock()
     internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     @Before
@@ -101,21 +103,21 @@ open class BaseChatBridgeDispatcherSpec {
         }
     }
 
-    protected val messageToContact = MessageToContact("", "", "", "")
+    private val messageToContact = MessageToContact("", "", "", "")
 
     internal fun createChatBridge(
         chatBridgeDispatcher: ChatBridgeDispatcher,
         isImplement: Boolean
     ): ChatBridge {
         val chatBridge = ChatBridge()
-        chatBridge.setMiniAppComponents(bridgeExecutor, TEST_MA.id)
+        chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, TEST_MA.id)
         if (isImplement)
             chatBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 
         return chatBridge
     }
 
-    protected fun createMessageBridge(): MiniAppMessageBridge =
+    private fun createMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
             override fun getUniqueId() = TEST_CALLBACK_VALUE
         }
@@ -253,6 +255,7 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     fun `postValue should be called when hostapp wants to cancel sending message to specific contact id`() {
         val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
         verify(bridgeExecutor).postValue(specificIdCallbackObj.id, "null")
     }
@@ -280,6 +283,7 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     fun `postError should be called when for exception when sending message to specific contact id`() {
         val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, "")
         verify(bridgeExecutor).postError(specificIdCallbackObj.id, "Cannot send message: ")
     }
@@ -298,7 +302,22 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     fun `postValue should be called with null when hostapp wants to send a different specific contact id`() {
         val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
         verify(bridgeExecutor).postValue(specificIdCallbackObj.id, "null")
     }
+
+    @Test
+    fun `postError should be called when send message permission hasn't been allowed for specific contact id`() {
+        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
+        val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
+        val errMsg = "$ERR_SEND_MESSAGE $ERR_NO_PERMISSION_CONTACT_ID"
+        setSendMessagePermission(false)
+        chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
+        verify(bridgeExecutor).postError(specificIdCallbackObj.id, errMsg)
+    }
+
+    private fun setSendMessagePermission(isAllowed: Boolean) = whenever(
+        customPermissionCache.hasPermission(TEST_MA.id, MiniAppCustomPermissionType.SEND_MESSAGE)
+    ).thenReturn(isAllowed)
 }

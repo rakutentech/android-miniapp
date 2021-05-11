@@ -5,6 +5,7 @@
 - **Deprecated:** Old `getUniqueId`interface.
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+- **Feature:** Added `rakuten.miniapp.user.action.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.
@@ -14,7 +15,7 @@
 - **Feature:** Added several chatting interfaces e.g. `sendMessageToContact`, `sendMessageToContactId` and `sendMessageToMultipleContacts` in `ChatBridgeDispatcher` for sending message to single or multiple contacts, even to a specific contact id. HostApp can get the message using `MessageToContact` object.
 
 **Sample App**
-- **Feature:** Added implementations of `ChatMessageBridgeDispatcher.sendMessageToContact`, `ChatMessageBridgeDispatcher.sendMessageToContactId` and `ChatMessageBridgeDispatcher.sendMessageToMultipleContacts` with the demo UI.
+- **Feature:** Added implementations of `ChatBridgeDispatcher.sendMessageToContact`, `ChatBridgeDispatcher.sendMessageToContactId` and `ChatBridgeDispatcher.sendMessageToMultipleContacts` with the demo UI.
 
 ### 3.1.0 (2021-04-02)
 **SDK**

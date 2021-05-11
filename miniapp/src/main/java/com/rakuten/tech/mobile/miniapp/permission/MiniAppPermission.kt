@@ -20,6 +20,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
     PROFILE_PHOTO("rakuten.miniapp.user.PROFILE_PHOTO"),
     CONTACT_LIST("rakuten.miniapp.user.CONTACT_LIST"),
     ACCESS_TOKEN("rakuten.miniapp.user.ACCESS_TOKEN"),
+    SEND_MESSAGE("rakuten.miniapp.user.action.SEND_MESSAGE"),
     LOCATION("rakuten.miniapp.device.LOCATION"),
     UNKNOWN("UNKNOWN");
 

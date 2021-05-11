@@ -9,6 +9,7 @@ fun toReadableName(type: MiniAppCustomPermissionType?): String {
         MiniAppCustomPermissionType.PROFILE_PHOTO -> "Profile Photo"
         MiniAppCustomPermissionType.CONTACT_LIST -> "Contact List"
         MiniAppCustomPermissionType.ACCESS_TOKEN -> "Access Token"
+        MiniAppCustomPermissionType.SEND_MESSAGE -> "Send Message"
         MiniAppCustomPermissionType.LOCATION -> "Device Location"
         else -> "Unknown"
     }

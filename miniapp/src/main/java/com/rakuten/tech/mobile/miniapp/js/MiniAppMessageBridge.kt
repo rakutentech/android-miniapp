@@ -56,7 +56,7 @@ open class MiniAppMessageBridge {
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
-        chatBridge.setMiniAppComponents(bridgeExecutor, miniAppId)
+        chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
 
         miniAppViewInitialized = true
     }
