@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -33,13 +32,9 @@ internal class MiniAppCustomPermissionCache constructor(
     }
 
     private fun migrateToEncryptedPref() {
-        Log.d("AAAAA non1",""+nonEncryptedPreferences.all)
-        Log.d("AAAAA pref1",""+prefs.all)
         if (nonEncryptedPreferences.all.isNotEmpty()) {
             nonEncryptedPreferences.copyTo(prefs)
-            Log.d("AAAAA pref2",""+prefs.all)
             nonEncryptedPreferences.edit().clear().apply()
-            Log.d("AAAAA non2",""+nonEncryptedPreferences.all)
         }
     }
 
@@ -172,6 +167,7 @@ internal class MiniAppCustomPermissionCache constructor(
     }
 }
 
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 internal fun initEncryptedSharedPreference(context: Context) = try {
     EncryptedSharedPreferences.create(
         "com.rakuten.tech.mobile.miniapp.custom.permissions.cache.hash",
