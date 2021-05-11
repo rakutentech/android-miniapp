@@ -39,11 +39,11 @@ internal class MiniAppCustomPermissionCache constructor(
     }
 
     private fun SharedPreferences.copyTo(dest: SharedPreferences) = with(dest.edit()) {
-        for ((key, value1) in all) {
-            val value = value1 ?: continue
-            when (value) {
-                is String -> putString(key, value)
-                else -> error("Unknown type: $value")
+        for ((key, value) in all) {
+            val v = value ?: continue
+            when (v) {
+                is String -> putString(key, v)
+                else -> error("Unknown type: $v")
             }
         }
         apply()
