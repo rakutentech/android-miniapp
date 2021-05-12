@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
+import com.rakuten.tech.mobile.miniapp.BuildConfig
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,12 +24,17 @@ internal fun ZipInputStream.decompress(zipPath: String) = use { input ->
 
     while (input.nextEntry.also { entry = it } != null) {
         val newFile = File(outputFilePath.parentFile, entry!!.name)
-        newFile.parentFile?.mkdirs()
-        if (entry!!.isDirectory)
-            newFile.mkdir()
-        else
-            writeFile(newFile, input)
+        if (newFile.canonicalPath.contains(BuildConfig.LIBRARY_PACKAGE_NAME))
+            createData(newFile, entry!!, input)
     }
+}
+
+private fun createData(newFile: File, entry: ZipEntry, input: ZipInputStream) {
+    newFile.parentFile?.mkdirs()
+    if (entry.isDirectory)
+        newFile.mkdir()
+    else
+        writeFile(newFile, input)
 }
 
 @Suppress("MagicNumber")
