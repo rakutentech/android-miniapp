@@ -210,7 +210,8 @@ abstract class MiniApp internal constructor() {
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
-                initDownloadedManifestCache = { DownloadedManifestCache(context) }
+                initDownloadedManifestCache = { DownloadedManifestCache(context) },
+                initManifestVerifier = { MiniAppManifestVerifier(context) }
             )
         }
     }

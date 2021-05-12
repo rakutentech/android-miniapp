@@ -19,11 +19,13 @@ internal class RealMiniApp(
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
-    initDownloadedManifestCache: () -> DownloadedManifestCache
+    initDownloadedManifestCache: () -> DownloadedManifestCache,
+    initManifestVerifier: () -> MiniAppManifestVerifier
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
+    private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -137,17 +139,23 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        if (cachedManifest?.versionId != versionId) {
-            val apiManifest = getMiniAppManifest(appId, versionId)
-            downloadedManifestCache.storeDownloadedManifest(appId, CachedManifest(versionId, apiManifest))
-        }
+        if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
+            if (cachedManifest.versionId != versionId) updateManifest(appId, versionId)
 
-        val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
-        val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
-        miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
+            val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
+            val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
+            miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
 
-        if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
-            throw RequiredPermissionsNotGrantedException(appId, versionId)
+            if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
+                throw RequiredPermissionsNotGrantedException(appId, versionId)
+        } else updateManifest(appId, versionId)
+    }
+
+    private suspend fun updateManifest(appId: String, versionId: String) {
+        val apiManifest = getMiniAppManifest(appId, versionId)
+        val cached = CachedManifest(versionId, apiManifest)
+        downloadedManifestCache.storeDownloadedManifest(appId, cached)
+        manifestVerifier.storeHashAsync(appId, cached)
     }
 
     @VisibleForTesting

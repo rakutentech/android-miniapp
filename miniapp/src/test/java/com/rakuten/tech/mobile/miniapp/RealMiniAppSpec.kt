@@ -33,6 +33,7 @@ open class BaseRealMiniAppSpec {
     val miniAppSdkConfig: MiniAppSdkConfig = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
+    internal val manifestVerifier: MiniAppManifestVerifier = mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()
@@ -46,7 +47,8 @@ open class BaseRealMiniAppSpec {
         realMiniApp =
             spy(RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher,
                 initCustomPermissionCache = { miniAppCustomPermissionCache },
-                initDownloadedManifestCache = { downloadedManifestCache }
+                initDownloadedManifestCache = { downloadedManifestCache },
+                initManifestVerifier = { manifestVerifier }
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
@@ -94,9 +96,9 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         }
 
     private fun onGettingManifestWhileCreate() = runBlockingTest {
-
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
     @Test
@@ -255,9 +257,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Before
     fun before() {
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
-    /** region: RealMiniApp.listDownloadedWithCustomPermissions */
+    /** region: Manifest verification */
     @Test(expected = RequiredPermissionsNotGrantedException::class)
     fun `verifyManifest will throw exception when required permissions are denied`() =
         runBlockingTest {
