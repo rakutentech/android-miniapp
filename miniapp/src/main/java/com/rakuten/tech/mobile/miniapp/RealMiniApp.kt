@@ -139,19 +139,21 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
+        if (cachedManifest?.versionId != versionId) {
+            downloadManifest(appId, versionId)
+        }
         if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
-            if (cachedManifest.versionId != versionId) updateManifest(appId, versionId)
-
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
             val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
             miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
 
             if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
                 throw RequiredPermissionsNotGrantedException(appId, versionId)
-        } else updateManifest(appId, versionId)
+        } else downloadManifest(appId, versionId)
     }
 
-    private suspend fun updateManifest(appId: String, versionId: String) {
+    @VisibleForTesting
+    suspend fun downloadManifest(appId: String, versionId: String) {
         val apiManifest = getMiniAppManifest(appId, versionId)
         val cached = CachedManifest(versionId, apiManifest)
         downloadedManifestCache.storeDownloadedManifest(appId, cached)

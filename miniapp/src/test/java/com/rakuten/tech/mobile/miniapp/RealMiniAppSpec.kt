@@ -275,11 +275,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         runBlockingTest {
             val allowedPermission = MiniAppCustomPermission(
                 TEST_MA_ID,
-                listOf(
-                    Pair(
-                        MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
-                    )
-                )
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
             )
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns
                     allowedPermission
@@ -308,8 +304,32 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
 
             realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 
+            verify(realMiniApp).downloadManifest(TEST_MA_ID, differentVersionId)
             verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
             verify(miniAppCustomPermissionCache).removePermissionsNotMatching(TEST_MA_ID, deniedPermission.pairValues)
+        }
+
+    @Test
+    fun `verifyManifest will download api manifest when hash has not been verified`() =
+        runBlockingTest {
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
+            When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns false
+            When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+
+            realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+
+            verify(realMiniApp).downloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        }
+
+    @Test
+    fun `downloadManifest will store manifest and hash properly`() =
+        runBlockingTest {
+            val manifestToStore = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
+            realMiniApp.downloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+
+            verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
+            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, manifestToStore)
         }
 
     /** end region */

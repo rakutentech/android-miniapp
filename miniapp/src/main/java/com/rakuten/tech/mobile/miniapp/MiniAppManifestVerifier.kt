@@ -24,7 +24,7 @@ internal class MiniAppManifestVerifier
         coroutineDispatcher = Dispatchers.IO
     )
 
-    /** Verifies that the cached files for the Mini App manifest have not been modified. */
+    /** Verifies that the cached data for the Mini App manifest have not been modified. */
     fun verify(appId: String, cachedManifest: CachedManifest): Boolean {
         val hash = calculateHash(cachedManifest)
         val storedHash = prefs.getString(appId, null) ?: ""
