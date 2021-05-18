@@ -1,4 +1,4 @@
-qpackage com.rakuten.tech.mobile.miniapp.errors
+package com.rakuten.tech.mobile.miniapp.errors
 
 /** Type of errors for access token fetch **/
 @Suppress("MatchingDeclarationName")
