@@ -1,6 +1,8 @@
-package com.rakuten.tech.mobile.miniapp.errors
+qpackage com.rakuten.tech.mobile.miniapp.errors
 
-enum class AccessTokenErrorType(val error_key: String) {
+/** Type of errors for access token fetch **/
+@Suppress("MatchingDeclarationName")
+enum class AccessTokenErrorType(val errorKey: String) {
     AudienceNotSupportedError("AudienceNotSupportedError"),
     ScopesNotSupportedError("ScopesNotSupportedError"),
     AuthorizationFailureError("AuthorizationFailureError");
