@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.errors.AccessTokenErrorType
+import com.rakuten.tech.mobile.miniapp.errors.AccessTokenErrorType.*
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -100,8 +102,17 @@ internal class UserInfoBridge {
                 accessToken.scopes = tokenPermission
                 bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
             }
-            val errorCallback = { message: String ->
-                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
+            val errorCallback = { error_key: String ->
+                /**
+                 * send a specifically formatted error key
+                 * to show specific error in mini app
+                 * */
+                when(error_key){
+                    AudienceNotSupportedError.error_key -> bridgeExecutor.postError(callbackObj.id, AudienceNotSupportedError.error_key)
+                    ScopesNotSupportedError.error_key -> bridgeExecutor.postError(callbackObj.id, ScopesNotSupportedError.error_key)
+                    AuthorizationFailureError.error_key -> bridgeExecutor.postError(callbackObj.id, AuthorizationFailureError.error_key)
+                    else -> bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $error_key")
+                }
             }
 
             userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
