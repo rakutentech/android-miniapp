@@ -102,22 +102,16 @@ class MiniAppStorageSpec {
     @Test
     fun `should unzip file without exception`() = runBlockingTest {
         val file = tempFolder.newFile()
-        val folder = tempFolder.newFolder(BuildConfig.LIBRARY_PACKAGE_NAME)
-        var containerPath = file.parent
+        val filePath = file.path
+        val folder = tempFolder.newFolder()
+        val folderPath = folder.path
+        val containerPath = file.parent
 
         val fileWriter = FileWriter(TestCoroutineDispatcher())
-        zipFiles(containerPath, arrayOf(file.path, folder.path))
+        zipFiles(containerPath, arrayOf(filePath, folderPath))
         val inputStream = File("$containerPath${File.separator}$zipFile").inputStream()
-        fileWriter.unzip(inputStream, containerPath)
 
-        // unzip file under miniapp package name
-        val childFolder = File(folder.path + File.separator + BuildConfig.LIBRARY_PACKAGE_NAME)
-        childFolder.mkdir()
-        val file2 = File.createTempFile("prefix_val", "suffix_val", childFolder)
-        containerPath = file2.parent
-        zipFiles(containerPath, arrayOf(file2.path))
-        val inputStream2 = File("$containerPath${File.separator}$zipFile").inputStream()
-        fileWriter.unzip(inputStream2, containerPath)
+        fileWriter.unzip(inputStream, containerPath)
     }
 
     @Test(expected = MiniAppSdkException::class)
