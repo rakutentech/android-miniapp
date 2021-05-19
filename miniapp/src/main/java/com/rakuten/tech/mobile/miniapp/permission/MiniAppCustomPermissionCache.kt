@@ -41,10 +41,7 @@ internal class MiniAppCustomPermissionCache constructor(
     private fun SharedPreferences.copyTo(dest: SharedPreferences) = with(dest.edit()) {
         for ((key, value) in all) {
             val v = value ?: continue
-            when (v) {
-                is String -> putString(key, v)
-                else -> error("Unknown type: $v")
-            }
+            if (v is String) putString(key, v)
         }
         apply()
     }
@@ -170,7 +167,7 @@ internal class MiniAppCustomPermissionCache constructor(
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
 internal fun initEncryptedSharedPreference(context: Context) = try {
     EncryptedSharedPreferences.create(
-        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache.hash",
+        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache.encrypted",
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
         context,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
