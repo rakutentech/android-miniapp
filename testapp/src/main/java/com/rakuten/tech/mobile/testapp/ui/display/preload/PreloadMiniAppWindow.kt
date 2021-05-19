@@ -81,10 +81,8 @@ class PreloadMiniAppWindow(
             ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
                 .apply {
                     miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
-                        if (apiManifest != null)
-                            onShowManifest(apiManifest)
-                        else
-                            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
+                        if (apiManifest != null) onShowManifest(apiManifest)
+                        else onAccept()
                     })
 
                     manifestErrorData.observe(lifecycleOwner, Observer {
@@ -97,12 +95,14 @@ class PreloadMiniAppWindow(
         // set action listeners
         binding.preloadAccept.setOnClickListener {
             viewModel.storeManifestPermission(miniAppId, permissionAdapter.manifestPermissionPairs)
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
-            preloadMiniAppAlertDialog.dismiss()
+            onAccept()
         }
         binding.preloadCancel.setOnClickListener {
-            preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
-            preloadMiniAppAlertDialog.dismiss()
+            onCancel()
+        }
+
+        preloadMiniAppAlertDialog.setOnCancelListener {
+            onCancel()
         }
     }
 
@@ -124,6 +124,16 @@ class PreloadMiniAppWindow(
             LABEL_CUSTOM_METADATA + toPrettyMetadata(manifest.customMetaData)
 
         launchScreen()
+    }
+
+    private fun onAccept() {
+        preloadMiniAppLaunchListener.onPreloadMiniAppResponse(true)
+        preloadMiniAppAlertDialog.dismiss()
+    }
+
+    private fun onCancel() {
+        preloadMiniAppLaunchListener.onPreloadMiniAppResponse(false)
+        preloadMiniAppAlertDialog.dismiss()
     }
 
     private fun toPrettyMetadata(metadata: Map<String, String>) =
