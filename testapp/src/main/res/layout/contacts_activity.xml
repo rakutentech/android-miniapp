@@ -32,6 +32,8 @@
           android:id="@+id/listContacts"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:clipToPadding="false"
+          android:paddingBottom="72dp"
           tools:listitem="@layout/item_list_contact" />
 
       <TextView
