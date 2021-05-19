@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.storage
+package com.rakuten.tech.mobile.miniapp.storage.verifier
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest

@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.storage
+package com.rakuten.tech.mobile.miniapp.storage.verifier
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

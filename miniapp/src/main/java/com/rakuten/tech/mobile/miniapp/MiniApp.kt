@@ -11,10 +11,10 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
+import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppManifestVerifier
+import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -212,10 +212,7 @@ abstract class MiniApp internal constructor() {
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
-                initManifestVerifier = {
-                    MiniAppManifestVerifier(
-                        context
-                    )
+                initManifestVerifier = { MiniAppManifestVerifier(context)
                 }
             )
         }
