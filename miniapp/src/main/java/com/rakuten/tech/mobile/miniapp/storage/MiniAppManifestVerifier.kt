@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp
+package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -20,7 +20,9 @@ internal class MiniAppManifestVerifier
     private val coroutineDispatcher: CoroutineDispatcher
 ) {
     constructor(context: Context) : this(
-        prefs = initEncryptedSharedPreference(context),
+        prefs = initEncryptedSharedPreference(
+            context
+        ),
         coroutineDispatcher = Dispatchers.IO
     )
 
