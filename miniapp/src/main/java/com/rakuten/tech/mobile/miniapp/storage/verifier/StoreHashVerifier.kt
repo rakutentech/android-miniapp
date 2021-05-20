@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.storage.verifier
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
@@ -10,7 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
-internal class StoreHashVerifier @VisibleForTesting constructor(
+internal class StoreHashVerifier constructor(
     private val prefs: SharedPreferences,
     private val coroutineDispatcher: CoroutineDispatcher
 ) {

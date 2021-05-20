@@ -28,7 +28,7 @@ internal class CachedMiniAppVerifier @VisibleForTesting constructor(
     fun verify(appId: String, directory: File): Boolean =
         storeHashVerifier.verify(appId, calculateHash(directory))
 
-    /** Stores hash in encrypted shared preferences. This runs asynchronously so it will return immediately. */
+    /** Stores hash in encrypted shared preferences. */
     suspend fun storeHashAsync(appId: String, directory: File) =
         storeHashVerifier.storeHashAsync(appId, calculateHash(directory))
 
