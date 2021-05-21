@@ -19,16 +19,22 @@ internal class FileWriter(private val coroutineDispatcher: CoroutineDispatcher =
 
 internal fun ZipInputStream.decompress(zipPath: String) = use { input ->
     val outputFilePath = File(zipPath).apply { parentFile?.mkdirs() }
+    val basePath = outputFilePath.canonicalPath.substringBeforeLast(File.separator)
     var entry: ZipEntry?
 
     while (input.nextEntry.also { entry = it } != null) {
         val newFile = File(outputFilePath.parentFile, entry!!.name)
-        newFile.parentFile?.mkdirs()
-        if (entry!!.isDirectory)
-            newFile.mkdir()
-        else
-            writeFile(newFile, input)
+        if (newFile.canonicalPath.startsWith(basePath))
+            createData(newFile, entry!!, input)
     }
+}
+
+private fun createData(newFile: File, entry: ZipEntry, input: ZipInputStream) {
+    newFile.parentFile?.mkdirs()
+    if (entry.isDirectory)
+        newFile.mkdir()
+    else
+        writeFile(newFile, input)
 }
 
 @Suppress("MagicNumber")
