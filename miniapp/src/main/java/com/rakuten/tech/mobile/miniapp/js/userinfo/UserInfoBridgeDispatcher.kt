@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.util.ArrayList
@@ -46,12 +47,34 @@ interface UserInfoBridgeDispatcher {
      * Get access token from host app.
      * @param accessTokenScope contains audience and scope for permission validation.
      **/
+    @JvmName("getAccessTokenDeprecated")
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith("getAccessToken(miniAppId, accessTokenScope,  onSuccess, onError)")
+    )
     fun getAccessToken(
         miniAppId: String,
         accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
         onError: (message: String) -> Unit
     ) = getAccessToken(miniAppId, onSuccess, onError)
+
+    /**
+     * Get access token from host app.
+     * @param accessTokenScope contains audience and scope for permission validation.
+     * @param onError contains custom error message send from host app
+     **/
+    @JvmName("getAccessToken")
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    fun getAccessToken(
+        miniAppId: String,
+        accessTokenScope: AccessTokenScope,
+        onSuccess: (tokenData: TokenData) -> Unit,
+        onError: (errorKey: MiniAppAccessTokenError) -> Unit
+    ) {
+        throw MiniAppSdkException(NO_IMPL)
+    }
 
     /**
      * Get contacts from host app.

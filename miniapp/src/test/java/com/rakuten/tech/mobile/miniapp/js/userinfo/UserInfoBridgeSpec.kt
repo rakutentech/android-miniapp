@@ -13,6 +13,8 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.errors.AccessTokenErrorType
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
@@ -260,6 +262,7 @@ class UserInfoBridgeSpec {
             param = Gson().toJson(TEST_ATP1),
             id = TEST_CALLBACK_ID
     )
+    private val testError = MiniAppAccessTokenError(AccessTokenErrorType.Error, TEST_ERROR_MSG)
 
     private fun createAccessTokenImpl(
         hasAccessToken: Boolean,
@@ -271,12 +274,12 @@ class UserInfoBridgeSpec {
                     miniAppId: String,
                     accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
-                    onError: (message: String) -> Unit
+                    onError: (error: MiniAppAccessTokenError) -> Unit
                 ) {
                     if (canGetToken)
                         onSuccess.invoke(testToken)
                     else
-                        onError.invoke(TEST_ERROR_MSG)
+                        onError.invoke(testError)
                 }
             }
         } else {
@@ -389,12 +392,92 @@ class UserInfoBridgeSpec {
     }
 
     @Test
-    fun `will call deprecated function to get token when still using old implementation`() {
+    fun `postError should be called with custom access token error type`() {
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
+            override fun getAccessToken(
+                miniAppId: String,
+                accessTokenScope: AccessTokenScope,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (errorType: MiniAppAccessTokenError) -> Unit
+            ) {
+                onError.invoke(testError)
+            }
+        })
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id,
+            "$ERR_GET_ACCESS_TOKEN ${testError.message}"
+        )
+    }
+
+    @Test
+    fun `postError should be called with AudienceNotSupportedError error type from host`() {
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
+            override fun getAccessToken(
+                miniAppId: String,
+                accessTokenScope: AccessTokenScope,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (errorType: MiniAppAccessTokenError) -> Unit
+            ) {
+                onError.invoke(MiniAppAccessTokenError(AccessTokenErrorType.AudienceNotSupportedError))
+            }
+        })
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id,
+            AccessTokenErrorType.getValue(AccessTokenErrorType.AudienceNotSupportedError)
+        )
+    }
+
+    @Test
+    fun `postError should be called with ScopesNotSupportedError error type from host`() {
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
+            override fun getAccessToken(
+                miniAppId: String,
+                accessTokenScope: AccessTokenScope,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (errorType: MiniAppAccessTokenError) -> Unit
+            ) {
+                onError.invoke(MiniAppAccessTokenError(AccessTokenErrorType.ScopesNotSupportedError))
+            }
+        })
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id,
+            AccessTokenErrorType.getValue(AccessTokenErrorType.ScopesNotSupportedError)
+        )
+    }
+
+    @Test
+    fun `postError should be called with AuthorizationFailureError error type from host`() {
+        val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
+            override fun getAccessToken(
+                miniAppId: String,
+                accessTokenScope: AccessTokenScope,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (errorType: MiniAppAccessTokenError) -> Unit
+            ) {
+                onError.invoke(MiniAppAccessTokenError(AccessTokenErrorType.AuthorizationFailureError))
+            }
+        })
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id,
+            AccessTokenErrorType.getValue(AccessTokenErrorType.AuthorizationFailureError)
+        )
+    }
+
+    @Test
+    fun `will not call deprecated function to get token when still using old implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(object : UserInfoBridgeDispatcher {
             override fun getAccessToken(
                 miniAppId: String,
                 onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (message: String) -> Unit
+                onError: (errorType: String) -> Unit
             ) {
                 onSuccess.invoke(testToken)
             }
@@ -403,7 +486,7 @@ class UserInfoBridgeSpec {
 
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
-        verify(bridgeExecutor).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
+        verify(bridgeExecutor, never()).postValue(tokenCallbackObj.id, Gson().toJson(testToken))
     }
     /** end region */
 
