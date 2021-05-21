@@ -3,8 +3,11 @@ package com.rakuten.tech.mobile.miniapp.permission
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import java.lang.Exception
 
 /**
@@ -12,10 +15,36 @@ import java.lang.Exception
  * using [SharedPreferences].
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
-internal class MiniAppCustomPermissionCache(context: Context) {
-    private val prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
+internal class MiniAppCustomPermissionCache constructor(
+    private val nonEncryptedPreferences: SharedPreferences,
+    private val prefs: SharedPreferences
+) {
+
+    constructor(context: Context) : this(
+        nonEncryptedPreferences = context.getSharedPreferences(
+            "com.rakuten.tech.mobile.miniapp.custom.permissions.cache", Context.MODE_PRIVATE
+        ),
+        prefs = initEncryptedSharedPreference(context)
     )
+
+    init {
+        migrateToEncryptedPref()
+    }
+
+    private fun migrateToEncryptedPref() {
+        if (nonEncryptedPreferences.all.isNotEmpty()) {
+            nonEncryptedPreferences.copyTo(prefs)
+            nonEncryptedPreferences.edit().clear().apply()
+        }
+    }
+
+    private fun SharedPreferences.copyTo(dest: SharedPreferences) = with(dest.edit()) {
+        for ((key, value) in all) {
+            val v = value ?: continue
+            if (v is String) putString(key, v)
+        }
+        apply()
+    }
 
     /**
      * Reads the grant results from SharedPreferences.
@@ -133,4 +162,17 @@ internal class MiniAppCustomPermissionCache(context: Context) {
 
         return isPermissionGranted
     }
+}
+
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
+internal fun initEncryptedSharedPreference(context: Context) = try {
+    EncryptedSharedPreferences.create(
+        "com.rakuten.tech.mobile.miniapp.custom.permissions.cache.encrypted",
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+} catch (e: Exception) {
+    throw MiniAppVerificationException(e.message)
 }
