@@ -7,14 +7,19 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniappDownloadedListActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModel
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 
 class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity(),
     MiniAppDownloadedListAdapter.MiniAppDownloadedListener {
@@ -23,6 +28,8 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
 
     private lateinit var adapter: MiniAppDownloadedListAdapter
     private lateinit var binding: MiniappDownloadedListActivityBinding
+    private lateinit var viewModel: MiniAppListViewModel
+    private lateinit var settingsProgressDialog: SettingsProgressDialog
 
     private val startPermissionSettingsForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -31,10 +38,16 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
             }
         }
 
+    override fun onStart() {
+        super.onStart()
+        executeLoadingList()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.miniapp_downloaded_list_activity)
+        settingsProgressDialog = SettingsProgressDialog(this)
         renderScreen()
     }
 
@@ -63,14 +76,39 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
     }
 
     private fun loadList() {
+        settingsProgressDialog.show()
+        viewModel =
+            ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+                settingsProgressDialog.cancel()
+                miniAppListData.observe(
+                    this@MiniAppDownloadedListActivity,
+                    Observer { miniAppListAvailable ->
+                        checkAndUpdateList(miniAppListAvailable)
+                    })
+                errorData.observe(this@MiniAppDownloadedListActivity, Observer {
+                    val list = MiniAppListStore.instance.getMiniAppList()
+                    if (list.isNotEmpty()) {
+                        checkAndUpdateList(list)
+                    }
+                })
+            }
+    }
+    /** Check MiniApp List Available in RAS and Update the downloaded miniapp list*/
+    private fun checkAndUpdateList(availableMiniAppList: List<MiniAppInfo>) {
         val miniAppList: ArrayList<MiniAppInfo> = arrayListOf()
         val miniAppPermissions: ArrayList<String> = arrayListOf()
         miniApp.listDownloadedWithCustomPermissions().forEach {
-            miniAppList.add(it.first)
-            miniAppPermissions.add(parsePermissionText(it.second.pairValues))
+            if (availableMiniAppList.contains(it.first)) {
+                miniAppList.add(it.first)
+                miniAppPermissions.add(parsePermissionText(it.second.pairValues))
+            }
         }
         adapter.addDownloadedList(miniAppList, miniAppPermissions)
         updateEmptyView()
+    }
+
+    private fun executeLoadingList() {
+        viewModel.getMiniAppList()
     }
 
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
