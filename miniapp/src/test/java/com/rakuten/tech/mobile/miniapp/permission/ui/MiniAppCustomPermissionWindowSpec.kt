@@ -2,9 +2,9 @@ package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -19,9 +19,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
 
 @Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
@@ -30,9 +27,8 @@ class MiniAppCustomPermissionWindowSpec {
     private lateinit var downloadedManifestCache: DownloadedManifestCache
     private lateinit var dispatcher: CustomPermissionBridgeDispatcher
     private val bridgeExecutor: MiniAppBridgeExecutor = mock()
-    private val mockSharedPrefs: SharedPreferences = mock()
-    private val mockEditor: SharedPreferences.Editor = mock()
-    private val mockContext: Context = mock()
+    private val context: Context = ApplicationProvider.getApplicationContext()
+    private val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
     private lateinit var activity: Activity
     private lateinit var permissionWindow: MiniAppCustomPermissionWindow
     private var activityScenario = ActivityScenario.launch(TestActivity::class.java)
@@ -47,12 +43,8 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Before
     fun setup() {
-        `when`(mockSharedPrefs.edit()).thenReturn(mockEditor)
-        `when`(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPrefs)
-        `when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
-
-        permissionCache = MiniAppCustomPermissionCache(mockContext)
-        downloadedManifestCache = DownloadedManifestCache(mockContext)
+        permissionCache = MiniAppCustomPermissionCache(prefs, prefs)
+        downloadedManifestCache = DownloadedManifestCache(context)
         cachedCustomPermission = permissionCache.readPermissions(miniAppId)
 
         activityScenario.onActivity {

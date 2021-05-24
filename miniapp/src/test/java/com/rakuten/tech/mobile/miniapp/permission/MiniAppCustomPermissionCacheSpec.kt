@@ -2,22 +2,25 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.*
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
+import org.junit.runner.RunWith
+import org.mockito.kotlin.*
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @Suppress("LongMethod", "LargeClass")
+@RunWith(AndroidJUnit4::class)
 class MiniAppCustomPermissionCacheSpec {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
-    private val mockSharedPrefs: SharedPreferences = mock()
-    private val mockEditor: SharedPreferences.Editor = mock()
-    private val mockContext: Context = mock()
+    private val context: Context = ApplicationProvider.getApplicationContext()
+    private val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
     private val deniedPermissions =
         listOf(
             Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
@@ -26,13 +29,12 @@ class MiniAppCustomPermissionCacheSpec {
 
     @Before
     fun setUp() {
-        `when`(mockSharedPrefs.edit()).thenReturn(mockEditor)
-        `when`(mockContext.getSharedPreferences(anyString(), anyInt()))
-            .thenReturn(mockSharedPrefs)
-        `when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
-        `when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
+        miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(prefs, prefs))
+    }
 
-        miniAppCustomPermissionCache = spy(MiniAppCustomPermissionCache(mockContext))
+    @Test(expected = MiniAppVerificationException::class)
+    fun `initiating encrypted preferences with invalid context will throw error`() {
+        MiniAppCustomPermissionCache(context)
     }
 
     /**
@@ -57,7 +59,7 @@ class MiniAppCustomPermissionCacheSpec {
     @Test
     fun `removeId will remove all permission data from the store`() {
         miniAppCustomPermissionCache.removePermission(TEST_MA_ID)
-        verify(mockEditor, times(1)).remove(TEST_MA_ID)
+        assertFalse(prefs.all.contains(TEST_MA_ID))
     }
 
     @Test
@@ -69,10 +71,9 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     @Test
-    fun `applyStoringPermissions will invoke putString while storing custom permissions`() {
+    fun `applyStoringPermissions will invoke sortedByDefault to save value`() {
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
-
-        verify(mockEditor).putString(anyString(), anyString())
+        assertTrue(prefs.all.contains(miniAppCustomPermission.miniAppId))
         verify(miniAppCustomPermissionCache).sortedByDefault(miniAppCustomPermission)
     }
 

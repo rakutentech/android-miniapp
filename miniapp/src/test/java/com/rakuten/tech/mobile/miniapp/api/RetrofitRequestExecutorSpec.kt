@@ -144,7 +144,6 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
                 mockServer.enqueue(MockResponse().setResponseCode(500))
                 createRequestExecutor().executeRequest(createApi().fetch())
                 advanceTimeBy(1000)
-                advanceTimeBy(2000)
             } catch (exception: MiniAppNetException) {
                 exception.message.toString() shouldContain "Found some problem, timeout"
             }
