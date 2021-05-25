@@ -74,6 +74,7 @@ open class MiniAppDownloaderBaseSpec {
     }
 }
 @ExperimentalCoroutinesApi
+@SuppressWarnings("LargeClass")
 class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     @Test
     fun `when downloading a mini app then downloader should fetch manifest at first`() {

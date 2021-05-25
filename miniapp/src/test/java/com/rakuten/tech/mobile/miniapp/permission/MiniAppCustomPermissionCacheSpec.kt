@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException

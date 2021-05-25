@@ -11,45 +11,41 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlin.Exception
+import java.io.File
 
 /**
- * A caching class to read and store the [CachedManifest] per MiniApp using [SharedPreferences].
+ * A caching class to read and store the [CachedManifest] per MiniApp using [File].
  */
-@Suppress("TooGenericExceptionCaught", "SwallowedException")
+@Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 internal class DownloadedManifestCache(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )
+    private val hostAppBasePath = context.filesDir.path
+    private val miniAppBasePath = "$hostAppBasePath/miniapp/"
+    private fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
+
+    init {
+        migrateToFileStorage()
+    }
 
     /**
-     * Reads the downloaded manifest from SharedPreferences.
+     * Reads the downloaded manifest from File.
      * @param [miniAppId] the key provided to find the stored manifest per MiniApp.
      * @return [CachedManifest] an object to contain MiniAppManifest per versionId,
      * if data has been stored in cache, otherwise null.
      */
-    fun readDownloadedManifest(miniAppId: String): CachedManifest? {
-        val manifestJsonStr =
-            prefs.getString(miniAppId, null) ?: return null
-        return try {
-            Gson().fromJson(manifestJsonStr, object : TypeToken<CachedManifest>() {}.type)
-        } catch (e: Exception) {
-            Log.e(this::class.java.canonicalName, e.message.toString())
-            null
-        }
-    }
+    fun readDownloadedManifest(miniAppId: String): CachedManifest? = readCachedFile(miniAppId)
 
     /**
-     * Stores the downloaded manifest to SharedPreferences.
+     * Stores the downloaded manifest to File.
      * @param [miniAppId] the key provided to store manifest per MiniApp id.
      * @return [CachedManifest] an object to contain MiniAppManifest per versionId.
      */
     fun storeDownloadedManifest(
         miniAppId: String,
         cachedManifest: CachedManifest
-    ) {
-        val jsonToStore: String = Gson().toJson(cachedManifest)
-        prefs.edit().putString(miniAppId, jsonToStore).apply()
-    }
+    ) = storeNewFile(miniAppId, cachedManifest)
 
     /**
      * Returns the list of all manifest permissions e.g. required and optional.
@@ -68,7 +64,6 @@ internal class DownloadedManifestCache(context: Context) {
         }?.let {
             return true
         }
-
         return false
     }
 
@@ -103,5 +98,43 @@ internal class DownloadedManifestCache(context: Context) {
     fun getAccessTokenPermissions(miniAppId: String): List<AccessTokenScope> {
         val manifest: CachedManifest? = readDownloadedManifest(miniAppId)
         return manifest?.miniAppManifest?.accessTokenPermissions ?: emptyList()
+    }
+
+    private fun toCachedManifest(manifestJsonStr: String): CachedManifest? {
+        return try {
+            Gson().fromJson(manifestJsonStr, object : TypeToken<CachedManifest>() {}.type)
+        } catch (e: Exception) {
+            Log.e(this::class.java.canonicalName, e.message.toString())
+            null
+        }
+    }
+
+    private fun migrateToFileStorage() {
+        if (prefs.all.isNotEmpty()) {
+            prefs.all.forEach {
+                storeNewFile(it.key, toCachedManifest(it.value.toString()))
+            }
+            prefs.edit().clear().apply()
+        }
+    }
+
+    private fun storeNewFile(miniAppId: String, cachedManifest: CachedManifest?) {
+        File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).printWriter().use { out ->
+            val jsonToStore: String = Gson().toJson(cachedManifest)
+            out.println("$jsonToStore}")
+        }
+    }
+
+    private fun readCachedFile(miniAppId: String): CachedManifest? {
+        val jsonToRead = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).bufferedReader()
+            .use {
+                it.readText()
+                    .dropLast(2) // for fixing the json format
+            }
+        return toCachedManifest(jsonToRead)
+    }
+
+    private companion object {
+        const val DEFAULT_FILE_NAME = "manifest.txt"
     }
 }
