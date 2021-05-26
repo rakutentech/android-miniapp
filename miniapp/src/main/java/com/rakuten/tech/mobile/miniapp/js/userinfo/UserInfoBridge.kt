@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.util.ArrayList
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "TooManyFunctions")
 internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
