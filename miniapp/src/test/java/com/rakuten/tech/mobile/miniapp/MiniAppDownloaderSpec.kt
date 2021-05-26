@@ -22,29 +22,26 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@Suppress("LargeClass", "LongMethod")
-@ExperimentalCoroutinesApi
-class MiniAppDownloaderSpec {
-    private val apiClient: ApiClient = mock()
-    private val storage: MiniAppStorage = mock()
-    private val miniAppStatus: MiniAppStatus = mock()
-    private val verifier: CachedMiniAppVerifier = mock()
-    private val manifestApiCache: ManifestApiCache = mock()
-    private lateinit var downloader: MiniAppDownloader
-    private val dispatcher = TestCoroutineDispatcher()
-    private val testMiniApp = TEST_MA.copy(
+open class MiniAppDownloaderBaseSpec {
+    internal val apiClient: ApiClient = mock()
+    internal val storage: MiniAppStorage = mock()
+    internal val miniAppStatus: MiniAppStatus = mock()
+    internal val verifier: CachedMiniAppVerifier = mock()
+    internal val manifestApiCache: ManifestApiCache = mock()
+    internal lateinit var downloader: MiniAppDownloader
+    internal val dispatcher = TestCoroutineDispatcher()
+    internal val testMiniApp = TEST_MA.copy(
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
     )
-
-    private val dummyManifest = MiniAppManifest(
+    internal val dummyManifest = MiniAppManifest(
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
         listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "")),
         TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
     )
-    private val requiredPermissionObj =
+    internal val requiredPermissionObj =
         MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
-    private val optionalPermissionObj =
+    internal val optionalPermissionObj =
         MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
 
     @Before
@@ -64,6 +61,20 @@ class MiniAppDownloaderSpec {
         When calling verifier.verify(any(), any()) itReturns true
     }
 
+    internal suspend fun setupLatestMiniAppInfoResponse(
+        apiClient: ApiClient,
+        appId: String,
+        versionId: String
+    ) {
+        When calling apiClient.fetchInfo(appId) itReturns
+                MiniAppInfo(
+                    id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
+                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId)
+                )
+    }
+}
+@ExperimentalCoroutinesApi
+class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     @Test
     fun `when downloading a mini app then downloader should fetch manifest at first`() {
         runBlocking {
@@ -131,8 +142,9 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `when there is latest existing app in local storage, load the local storage path`() =
+    fun `when there is latest existing app in local storage but in preview mode, run download execution`() =
         runBlockingTest {
+            When calling apiClient.isPreviewMode itReturns true
             When calling miniAppStatus.isVersionDownloaded(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
@@ -142,12 +154,32 @@ class MiniAppDownloaderSpec {
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             ) itReturns TEST_BASE_PATH
-
             setupValidManifestResponse(downloader, apiClient)
             setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
 
-            downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
+            downloader.getMiniApp(TEST_ID_MINIAPP)
+
+            verify(apiClient).fetchFileList(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
         }
+
+    @Test
+    fun `when there is latest existing app in local storage, load the local storage path`() = runBlockingTest {
+        When calling apiClient.isPreviewMode itReturns false
+        When calling miniAppStatus.isVersionDownloaded(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION,
+            TEST_BASE_PATH
+        ) itReturns true
+        When calling storage.getMiniAppVersionPath(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION
+        ) itReturns TEST_BASE_PATH
+
+        setupValidManifestResponse(downloader, apiClient)
+        setupLatestMiniAppInfoResponse(apiClient, TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+
+        downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
+    }
 
     @Test
     fun `should execute old file deletion after downloading new version when in host mode`() = runBlockingTest {
@@ -295,46 +327,46 @@ class MiniAppDownloaderSpec {
     }
 
     @Test
-    fun `metadata manifest should be fetched from api when cache returns null`() =
-        runBlockingTest {
-            val metadataEntity = MetadataEntity(
-                MetadataResponse(
-                    listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
-                )
+    fun `metadata manifest should be fetched from api and be stored when cache returns null`() = runBlockingTest {
+        val metadataEntity = MetadataEntity(
+            MetadataResponse(
+                listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
             )
+        )
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
+        When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
+        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns metadataEntity
 
-            When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
-            When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
-            When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns metadataEntity
+        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
 
-            val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-
-            assertEquals(dummyManifest, actual)
-            verify(manifestApiCache).readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
-        }
+        assertEquals(dummyManifest, actual)
+        verify(manifestApiCache, times(1)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+    }
 
     @Test
-    fun `metadata manifest should not be fetched from api when cache returns manifest`() =
-        runBlockingTest {
-            val metadataEntity = MetadataEntity(
-                MetadataResponse(
-                    listOf(requiredPermissionObj),
-                    listOf(optionalPermissionObj),
-                    TEST_ATP_LIST,
-                    hashMapOf()
-                )
+    fun `should not store manifest when in preview mode`() = runBlockingTest {
+        val metadataEntity = MetadataEntity(
+            MetadataResponse(
+                listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
             )
+        )
+        When calling apiClient.isPreviewMode itReturns true
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
+        When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
+        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns metadataEntity
 
-            When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns dummyManifest
-            val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
+        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
 
-            assertEquals(dummyManifest, actual)
-            verify(manifestApiCache).readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(downloader, times(0)).prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID)
-            verify(apiClient, times(0)).fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
-            verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
-        }
+        verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+    }
+
+    @Test
+    fun `metadata manifest should not be fetched from api when cache returns manifest`() = runBlockingTest {
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns dummyManifest
+        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID)
+
+        assertEquals(dummyManifest, actual)
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when cannot get metadata for invalid version id`() =
@@ -467,17 +499,5 @@ class MiniAppDownloaderSpec {
 
         val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody
-    }
-
-    private suspend fun setupLatestMiniAppInfoResponse(
-        apiClient: ApiClient,
-        appId: String,
-        versionId: String
-    ) {
-        When calling apiClient.fetchInfo(appId) itReturns
-                MiniAppInfo(
-                    id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
-                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId)
-                )
     }
 }
