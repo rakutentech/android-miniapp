@@ -17,17 +17,17 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 
 /** Only init when analytics dependency is provided. */
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class MiniAppAnalytics(val rasProjectId: String) {
+class MiniAppAnalytics(private val rasProjectId: String) {
 
     companion object {
         var instance: MiniAppAnalytics? = null
-
-        fun init(rasProjectId: String) = whenHasAnalytics {
+        private var listOfExternalConfig = mutableListOf<MiniAppAnalyticsConfig>()
+        internal fun init(rasProjectId: String) = whenHasAnalytics {
             instance = MiniAppAnalytics(rasProjectId)
         }
     }
 
-    fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
+    internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
         val params = mutableMapOf<String, Any>()
         // Send to this acc/aid
         params["acc"] = BuildConfig.ANALYTICS_ACC
@@ -43,9 +43,34 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
                 .put("mini_app_version_id", miniAppInfo.version.versionId)
         }
         params["cp"] = cp
-
         RatTracker.event(eType.value, params).track()
+        // Send to all the external acc/aid added by host app
+        listOfExternalConfig.map { config ->
+                params["acc"] = config.acc
+                params["aid"] = config.aid
+                RatTracker.event(eType.value, params).track()
+        }
     } catch (e: Exception) {
         Log.e("MiniAppAnalytics", e.message.orEmpty())
+    }
+
+    /** Is add single analytic configuration. **/
+    fun addAnalyticsConfig(miniAppAnalyticsConfig: MiniAppAnalyticsConfig) {
+        listOfExternalConfig.add(miniAppAnalyticsConfig)
+    }
+
+    /** Is add multiple analytic configuration. **/
+    fun addAnalyticsConfig(miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>) {
+        listOfExternalConfig.addAll(miniAppAnalyticsConfigs)
+    }
+
+    /** Is remove single analytic configuration. **/
+    fun removeAnalyticsConfig(miniAppAnalyticsConfig: MiniAppAnalyticsConfig) {
+        listOfExternalConfig.remove(miniAppAnalyticsConfig)
+    }
+
+    /** Is remove multiple analytic configuration. **/
+    fun removeAnalyticsConfig(miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>) {
+        listOfExternalConfig.removeAll(miniAppAnalyticsConfigs)
     }
 }
