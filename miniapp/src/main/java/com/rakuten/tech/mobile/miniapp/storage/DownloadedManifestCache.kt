@@ -21,8 +21,9 @@ internal class DownloadedManifestCache(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )
-    private val hostAppBasePath = context.filesDir.path
-    private val miniAppBasePath = "$hostAppBasePath/miniapp/"
+
+    private val sdkBasePath = context.filesDir.path
+    private val miniAppBasePath = "$sdkBasePath/$SUB_DIR_MINIAPP/"
     private fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
 
     init {
@@ -125,7 +126,8 @@ internal class DownloadedManifestCache(context: Context) {
         }
     }
 
-    private fun readCachedFile(miniAppId: String): CachedManifest? {
+    @VisibleForTesting
+    fun readCachedFile(miniAppId: String): CachedManifest? {
         val jsonToRead = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).bufferedReader()
             .use {
                 it.readText()
@@ -136,5 +138,6 @@ internal class DownloadedManifestCache(context: Context) {
 
     private companion object {
         const val DEFAULT_FILE_NAME = "manifest.txt"
+        const val SUB_DIR_MINIAPP = "miniapp"
     }
 }

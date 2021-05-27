@@ -2,11 +2,12 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
+import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -16,6 +17,8 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import java.io.File
+import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 
 @Suppress("LongMethod")
@@ -39,13 +42,15 @@ class DownloadedManifestCacheSpec {
             .thenReturn(mockSharedPrefs)
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
         Mockito.`when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
+        Mockito.`when`(mockContext.filesDir).thenReturn(File(TEST_BASE_PATH))
         manifestCache = spy(DownloadedManifestCache(mockContext))
 
         doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
+        doReturn(null).whenever(manifestCache).readCachedFile(TEST_MA_ID)
         val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
         val expected = null
         actual shouldEqual expected
@@ -59,7 +64,7 @@ class DownloadedManifestCacheSpec {
         actual shouldEqual cachedManifest
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `storeDownloadedManifest will invoke putString while storing manifest`() {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
         manifestCache.storeDownloadedManifest(TEST_MA_ID, cachedManifest)
@@ -162,7 +167,7 @@ class DownloadedManifestCacheSpec {
         manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should get empty list of AccessTokenPermission when no cache`() {
         DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
     }

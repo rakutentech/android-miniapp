@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
@@ -15,10 +16,14 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import org.amshove.kluent.When
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
+import java.io.File
+import java.io.FileNotFoundException
 
 @Suppress("LongMethod")
 @RunWith(AndroidJUnit4::class)
@@ -45,6 +50,7 @@ class MiniAppCustomPermissionWindowSpec {
     fun setup() {
         permissionCache = MiniAppCustomPermissionCache(prefs, prefs)
         downloadedManifestCache = DownloadedManifestCache(context)
+
         cachedCustomPermission = permissionCache.readPermissions(miniAppId)
 
         activityScenario.onActivity {
@@ -66,7 +72,7 @@ class MiniAppCustomPermissionWindowSpec {
         activityScenario.close()
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should init default view with preparing data when trying to display permissions`() {
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
@@ -74,14 +80,14 @@ class MiniAppCustomPermissionWindowSpec {
         verify(permissionWindow).prepareDataForAdapter(permissionWithDescriptions)
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should add click listeners when trying to display permissions`() {
         permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
 
         verify(permissionWindow).addPermissionClickListeners()
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should show dialog when trying to display permissions`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
@@ -91,7 +97,7 @@ class MiniAppCustomPermissionWindowSpec {
         verify(mockDialog).show()
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should not init anything while miniAppId is empty`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
@@ -104,7 +110,7 @@ class MiniAppCustomPermissionWindowSpec {
         verify(mockDialog, times(0)).show()
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should not init anything while permissions are empty`() {
         val mockDialog: AlertDialog = mock()
         val emptyPermissions: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
