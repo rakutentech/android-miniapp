@@ -4,13 +4,13 @@ import androidx.annotation.Keep
 
 /**
  *  Contains the components to use custom errors from host app.
- *  @property error The type of accessToken error.
+ *  @property type The type of error.
  *  @property message error message send to min app.
  */
 @Keep
-data class MiniAppAccessTokenError(
-    val error: AccessTokenErrorType,
+data class MiniAppError(
+    val type: String = "",
     val message: String = ""
 ) {
-    constructor() : this(error = AccessTokenErrorType.Error, message = "")
+    constructor() : this(type = "", message = "")
 }

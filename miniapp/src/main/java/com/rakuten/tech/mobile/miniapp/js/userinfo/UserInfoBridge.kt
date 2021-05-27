@@ -3,8 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.errors.AccessTokenErrorType
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppError
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -104,25 +103,13 @@ internal class UserInfoBridge {
             }
 
             // send a specifically formatted error key to show specific error in mini app
-            val errorCallback = { errorType: MiniAppAccessTokenError ->
-                bridgeExecutor.postError(callbackObj.id, returnAccessTokenError(errorType))
+            val errorCallback = { error: MiniAppError ->
+                bridgeExecutor.postError(callbackObj.id, Gson().toJson(error))
             }
 
             userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
         } else
             bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
-    }
-
-    private fun returnAccessTokenError(errorType: MiniAppAccessTokenError): String {
-        return when (errorType.error) {
-            AccessTokenErrorType.AudienceNotSupportedError -> AccessTokenErrorType.getValue(errorType.error)
-            AccessTokenErrorType.ScopesNotSupportedError -> AccessTokenErrorType.getValue(errorType.error)
-            AccessTokenErrorType.AuthorizationFailureError ->
-                if (errorType.message.isNullOrEmpty()) AccessTokenErrorType.getValue(
-                    errorType.error
-                ) else "${errorType.message}"
-            else -> "$ERR_GET_ACCESS_TOKEN ${errorType.message}"
-        }
     }
 
     private fun doesAccessTokenMatch(tokenScope: AccessTokenScope): Boolean {
