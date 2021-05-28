@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.util.ArrayList
@@ -71,7 +71,7 @@ interface UserInfoBridgeDispatcher {
         miniAppId: String,
         accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
-        onError: (errorKey: MiniAppError) -> Unit
+        onError: (tokenError: MiniAppAccessTokenError) -> Unit
     ) {
         throw MiniAppSdkException(NO_IMPL)
     }

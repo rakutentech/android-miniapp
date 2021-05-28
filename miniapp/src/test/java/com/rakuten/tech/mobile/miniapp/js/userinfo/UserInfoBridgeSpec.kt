@@ -13,8 +13,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.errors.AccessTokenErrorType
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
@@ -262,7 +261,7 @@ class UserInfoBridgeSpec {
             param = Gson().toJson(TEST_ATP1),
             id = TEST_CALLBACK_ID
     )
-    private val testError = MiniAppError(AccessTokenErrorType.Error.type, TEST_ERROR_MSG)
+    private val testError = MiniAppAccessTokenError.audienceNotSupportedError
 
     private fun createAccessTokenImpl(
         hasAccessToken: Boolean,
@@ -274,7 +273,7 @@ class UserInfoBridgeSpec {
                     miniAppId: String,
                     accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
-                    onError: (error: MiniAppError) -> Unit
+                    onError: (tokenError: MiniAppAccessTokenError) -> Unit
                 ) {
                     if (canGetToken)
                         onSuccess.invoke(testToken)
@@ -398,7 +397,7 @@ class UserInfoBridgeSpec {
                 miniAppId: String,
                 accessTokenScope: AccessTokenScope,
                 onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (errorType: MiniAppError) -> Unit
+                onError: (tokenError: MiniAppAccessTokenError) -> Unit
             ) {
                 onError.invoke(testError)
             }

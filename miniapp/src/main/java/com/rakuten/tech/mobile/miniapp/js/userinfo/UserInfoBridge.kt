@@ -3,7 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -103,8 +104,10 @@ internal class UserInfoBridge {
             }
 
             // send a specifically formatted error key to show specific error in mini app
-            val errorCallback = { error: MiniAppError ->
-                bridgeExecutor.postError(callbackObj.id, Gson().toJson(error))
+            val errorCallback = { callback: MiniAppAccessTokenError ->
+                // convert error callback to common MiniAppBridgeErrorModel
+                val errorBridgeModel = MiniAppBridgeErrorModel(callback.type, callback.message)
+                bridgeExecutor.postError(callbackObj.id, Gson().toJson(errorBridgeModel))
             }
 
             userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)

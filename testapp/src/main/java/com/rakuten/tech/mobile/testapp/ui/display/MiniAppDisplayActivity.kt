@@ -16,7 +16,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -196,7 +197,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     miniAppId: String,
                     accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
-                    onError: (error: MiniAppError) -> Unit
+                    onError: (tokenError: MiniAppAccessTokenError) -> Unit
             ) = onSuccess(AppSettings.instance.tokenData)
 
             override fun getContacts(
