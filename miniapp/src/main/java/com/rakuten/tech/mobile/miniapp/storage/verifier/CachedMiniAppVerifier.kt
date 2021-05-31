@@ -1,28 +1,18 @@
 package com.rakuten.tech.mobile.miniapp.storage.verifier
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
-import androidx.annotation.VisibleForTesting
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.security.MessageDigest
 
-internal class CachedMiniAppVerifier @VisibleForTesting constructor(
-    private val prefs: SharedPreferences,
-    private val coroutineDispatcher: CoroutineDispatcher
-) {
-    private val storeHashVerifier = StoreHashVerifier(prefs, coroutineDispatcher)
-
-    constructor(context: Context) : this(
-        prefs = initEncryptedSharedPreference(
+internal class CachedMiniAppVerifier(context: Context) {
+    private var storeHashVerifier =
+        StoreHashVerifier(
             context,
-            "com.rakuten.tech.mobile.miniapp.cache.hash"
-        ),
-        coroutineDispatcher = Dispatchers.IO
-    )
+            "com.rakuten.tech.mobile.miniapp.cache.hash",
+            EncryptedPrefInitializer()
+        )
 
     /** Verifies that the cached files for the Mini App have not been modified. */
     fun verify(appId: String, directory: File): Boolean =
