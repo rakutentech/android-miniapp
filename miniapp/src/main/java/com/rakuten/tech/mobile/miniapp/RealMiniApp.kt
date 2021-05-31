@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -133,6 +135,14 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
     }
+
+    @Suppress("SpreadOperator")
+    override fun addAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) =
+        MiniAppAnalytics.instance?.addAnalyticsConfig(*miniAppAnalyticsConfig)
+
+    @Suppress("SpreadOperator")
+    override fun removeAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) =
+        MiniAppAnalytics.instance?.removeAnalyticsConfig(*miniAppAnalyticsConfig)
 
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {

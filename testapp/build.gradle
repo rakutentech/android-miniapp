@@ -12,6 +12,8 @@ android {
     defaultConfig {
         versionCode 1
         versionName project.version
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_ACC", property("ADDITIONAL_ANALYTICS_ACC")
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_AID", property("ADDITIONAL_ANALYTICS_AID")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,7 +39,7 @@ android {
     def commonPlaceholders = [
             appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             ratAcc                  : property("ANALYTICS_ACC") ?: "0",
-            ratAid                  : property("ANALYTICS_AID") ?: "0",
+            ratAid                  : property("ANALYTICS_AID") ?: "0"
     ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",

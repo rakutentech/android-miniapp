@@ -1,27 +1,27 @@
 package com.rakuten.tech.mobile.miniapp
 
-import org.mockito.kotlin.*
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
+
 
 open class BaseRealMiniAppSpec {
     internal lateinit var realMiniApp: RealMiniApp
@@ -110,8 +110,14 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(miniAppDownloader).getMiniApp(TEST_MA_ID)
             verify(realMiniApp).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
             verify(displayer).createMiniAppDisplay(
-                getMiniAppResult.first, getMiniAppResult.second,
-                miniAppMessageBridge, null, null, miniAppCustomPermissionCache, downloadedManifestCache, ""
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppMessageBridge,
+                null,
+                null,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                ""
             )
         }
 
@@ -192,23 +198,19 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     }
     /** end region */
 
-    /** region: custom permissions setter / getter */
+    /** region: analytics */
     @Test
-    fun `getCustomPermissions should get data from custom permission cache`() {
-        realMiniApp.getCustomPermissions(TEST_MA_ID)
+    fun `should invoke from MiniAppAnalytics when calling addAnalyticsConfig`() = runBlockingTest {
+        realMiniApp.addAnalyticsConfig()
 
-        verify(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+        //verify(miniAppAnalytics).addAnalyticsConfig(TEST_ANALYTICS_CONFIG)
     }
 
     @Test
-    fun `setCustomPermissions should store data in custom permission cache`() {
-        val miniAppCustomPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-        )
-        realMiniApp.setCustomPermissions(miniAppCustomPermission)
+    fun `should invoke from MiniAppAnalytics when calling removeAnalyticsConfig`() = runBlockingTest {
+        realMiniApp.removeAnalyticsConfig()
 
-        verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+        //verify(miniAppAnalytics).removeAnalyticsConfig()
     }
     /** end region */
 
@@ -222,17 +224,26 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
     @Test
     fun `should return the correct result when listDownloadedWithCustomPermissions calls`() {
-        val miniAppInfo = MiniAppInfo("test_id", "display_name", "test_icon_url",
+        val miniAppInfo = MiniAppInfo(
+            "test_id", "display_name", "test_icon_url",
             Version("test_version_tag", "test_version_id")
         )
         val downloadedList = listOf(miniAppInfo)
-        val miniAppCustomPermission = MiniAppCustomPermission("test_id",
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED))
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            "test_id",
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.DENIED
+                )
+            )
         )
         doReturn(downloadedList).whenever(miniAppDownloader).getDownloadedMiniAppList()
         downloadedList.forEach {
-            doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache).readPermissions(it.id)
+            doReturn(miniAppCustomPermission).whenever(miniAppCustomPermissionCache).readPermissions(
+                it.id
+            )
         }
 
         val actual = realMiniApp.listDownloadedWithCustomPermissions()
@@ -240,6 +251,45 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
         assertEquals(expected, actual)
     }
+    /** end region */
+
+    /** region: custom permissions setter / getter */
+    @Test
+    fun `getCustomPermissions should get data from custom permission cache`() {
+        realMiniApp.getCustomPermissions(TEST_MA_ID)
+
+        verify(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
+    }
+    /** end region */
+
+    /** region: access token setter / remove */
+    private val TEST_RAT_ACC = 1
+    private val TEST_RAT_AID = 2
+    private val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC,TEST_RAT_AID)
+    private lateinit var miniAppAnalytics: MiniAppAnalytics
+
+    @Test
+    fun `addAnalyticsConfig should increase list size of external config in MiniAppAnalytics`() {
+        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
+        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
+
+        realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
+
+        MiniAppAnalytics.listOfExternalConfig.size shouldBe 1
+        MiniAppAnalytics.listOfExternalConfig[0] shouldBe testMiniAppAnalyticsConfig
+    }
+
+    @Test
+    fun `removeAnalyticsConfig should decrease list size of external config in MiniAppAnalytics`() {
+        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
+        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
+
+        realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
+        realMiniApp.removeAnalyticsConfig(testMiniAppAnalyticsConfig)
+
+        MiniAppAnalytics.listOfExternalConfig.size shouldBe 0
+    }
+
     /** end region */
 }
 
@@ -306,7 +356,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 
             verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
-            verify(miniAppCustomPermissionCache).removePermissionsNotMatching(TEST_MA_ID, deniedPermission.pairValues)
+            verify(miniAppCustomPermissionCache).removePermissionsNotMatching(
+                TEST_MA_ID,
+                deniedPermission.pairValues
+            )
         }
 
     /** end region */

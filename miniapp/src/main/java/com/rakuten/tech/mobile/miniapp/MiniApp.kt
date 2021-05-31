@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -121,7 +122,11 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any other reason.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class
+    )
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**
@@ -169,6 +174,16 @@ abstract class MiniApp internal constructor() {
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
+
+    /**
+     * add analytic configuration [MiniAppAnalyticsConfig] to send events in multiple account.
+     */
+    abstract fun addAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig): Unit?
+
+    /**
+     * remove analytic configuration [MiniAppAnalyticsConfig] to stop send events in multiple account.
+     */
+    abstract fun removeAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig): Unit?
 
     companion object {
         @VisibleForTesting

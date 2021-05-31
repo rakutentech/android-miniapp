@@ -12,6 +12,4 @@ import androidx.annotation.Keep
 data class MiniAppAnalyticsConfig(
     val acc: Int,
     val aid: Int
-) {
-    constructor(endPoint: String, acc: Int, aid: Int) : this(acc, aid)
-}
+)
