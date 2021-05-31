@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.X.X (In progress)
+### 3.3.0 (2021-05-19)
 **SDK**
 - **Deprecated:** Old `getUniqueId`interface.
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
