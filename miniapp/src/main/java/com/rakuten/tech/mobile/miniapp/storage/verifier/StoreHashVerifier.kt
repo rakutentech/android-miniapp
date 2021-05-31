@@ -3,6 +3,9 @@ package com.rakuten.tech.mobile.miniapp.storage.verifier
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
+import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -13,8 +16,8 @@ internal class StoreHashVerifier @VisibleForTesting constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) {
 
-    constructor(context: Context, fileName: String, initializer: EncryptedPrefInitializer) : this(
-        prefs = initializer.initEncryptedSharedPreference(context, fileName),
+    constructor(context: Context, fileName: String) : this(
+        prefs = initEncryptedSharedPreference(context, fileName),
         coroutineDispatcher = Dispatchers.IO
     )
 
@@ -31,4 +34,17 @@ internal class StoreHashVerifier @VisibleForTesting constructor(
                 prefs.edit().putString(appId, hash).apply()
             }
         }
+}
+
+@SuppressWarnings("SwallowedException")
+private fun initEncryptedSharedPreference(context: Context, fileName: String) = try {
+    EncryptedSharedPreferences.create(
+        fileName,
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        context,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+} catch (e: Exception) {
+    throw MiniAppVerificationException(e.message)
 }

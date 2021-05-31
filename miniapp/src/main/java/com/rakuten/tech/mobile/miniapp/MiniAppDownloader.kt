@@ -99,6 +99,7 @@ internal class MiniAppDownloader(
         miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
     }
 
+    @SuppressWarnings("MaximumLineLength")
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 

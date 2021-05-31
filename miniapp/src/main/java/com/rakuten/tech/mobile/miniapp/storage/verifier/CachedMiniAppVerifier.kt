@@ -8,11 +8,7 @@ import java.security.MessageDigest
 
 internal class CachedMiniAppVerifier(context: Context) {
     private var storeHashVerifier =
-        StoreHashVerifier(
-            context,
-            "com.rakuten.tech.mobile.miniapp.cache.hash",
-            EncryptedPrefInitializer()
-        )
+        StoreHashVerifier(context, "com.rakuten.tech.mobile.miniapp.cache.hash")
 
     /** Verifies that the cached files for the Mini App have not been modified. */
     fun verify(appId: String, directory: File): Boolean =
