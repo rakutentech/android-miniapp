@@ -21,6 +21,6 @@ class MiniAppAccessTokenError(val type: String? = null, val message: String? = n
         val authorizationFailureError = MiniAppAccessTokenError(type = AuthorizationFailureError)
 
         // Send only error message.
-        fun errorMsg(message: String) = MiniAppAccessTokenError(message = message)
+        fun custom(message: String) = MiniAppAccessTokenError(message = message)
     }
 }
