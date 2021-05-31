@@ -17,11 +17,9 @@ import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
-
 
 open class BaseRealMiniAppSpec {
     internal lateinit var realMiniApp: RealMiniApp
@@ -100,8 +98,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     }
 
     @Test
-    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while miniapp creation`() =
-        runBlockingTest {
+    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while miniapp creation`() = runBlockingTest {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
@@ -198,22 +195,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     }
     /** end region */
 
-    /** region: analytics */
-    @Test
-    fun `should invoke from MiniAppAnalytics when calling addAnalyticsConfig`() = runBlockingTest {
-        realMiniApp.addAnalyticsConfig()
-
-        //verify(miniAppAnalytics).addAnalyticsConfig(TEST_ANALYTICS_CONFIG)
-    }
-
-    @Test
-    fun `should invoke from MiniAppAnalytics when calling removeAnalyticsConfig`() = runBlockingTest {
-        realMiniApp.removeAnalyticsConfig()
-
-        //verify(miniAppAnalytics).removeAnalyticsConfig()
-    }
-    /** end region */
-
     /** region: RealMiniApp.listDownloadedWithCustomPermissions */
     @Test
     fun `should invoke getDownloadedMiniAppList from downloader when listDownloadedWithCustomPermissions calls`() {
@@ -265,7 +246,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     /** region: access token setter / remove */
     private val TEST_RAT_ACC = 1
     private val TEST_RAT_AID = 2
-    private val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC,TEST_RAT_AID)
+    private val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC, TEST_RAT_AID)
     private lateinit var miniAppAnalytics: MiniAppAnalytics
 
     @Test

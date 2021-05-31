@@ -16,7 +16,7 @@ class MiniAppAnalyticsSpec {
     fun setUp() {
         MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
         miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
-        testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC,TEST_RAT_AID)
+        testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC, TEST_RAT_AID)
     }
 
     @Test

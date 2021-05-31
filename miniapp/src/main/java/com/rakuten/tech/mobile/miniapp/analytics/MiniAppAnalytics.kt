@@ -28,7 +28,7 @@ class MiniAppAnalytics(private val rasProjectId: String) {
             instance = MiniAppAnalytics(rasProjectId)
         }
     }
-
+    @Suppress("LongMethod")
     internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
         val params = mutableMapOf<String, Any>()
         // Send to this acc/aid
