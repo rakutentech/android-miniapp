@@ -397,6 +397,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
+    @SuppressWarnings("LongMethod")
     @Test
     fun `prepareMiniAppManifest should return values correctly`() =
         runBlockingTest {

@@ -36,7 +36,7 @@ internal class DownloadedManifestCache(context: Context) {
      * @return [CachedManifest] an object to contain MiniAppManifest per versionId,
      * if data has been stored in cache, otherwise null.
      */
-    fun readDownloadedManifest(miniAppId: String): CachedManifest? = readCachedFile(miniAppId)
+    fun readDownloadedManifest(miniAppId: String): CachedManifest? = readFromCachedFile(miniAppId)
 
     /**
      * Stores the downloaded manifest to File.
@@ -127,7 +127,7 @@ internal class DownloadedManifestCache(context: Context) {
     }
 
     @VisibleForTesting
-    fun readCachedFile(miniAppId: String): CachedManifest? {
+    fun readFromCachedFile(miniAppId: String): CachedManifest? {
         val jsonToRead = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).bufferedReader()
             .use {
                 it.readText()
