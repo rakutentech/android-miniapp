@@ -247,6 +247,17 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
         verify(miniAppCustomPermissionCache).readPermissions(TEST_MA_ID)
     }
+
+    @Test
+    fun `setCustomPermissions should store data in custom permission cache`() {
+        val miniAppCustomPermission = MiniAppCustomPermission(
+            TEST_MA_ID,
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
+        )
+        realMiniApp.setCustomPermissions(miniAppCustomPermission)
+
+        verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+    }
     /** end region */
 
     /** region: access token setter / remove */
