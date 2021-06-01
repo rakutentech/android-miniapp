@@ -38,6 +38,10 @@ open class BaseRealMiniAppSpec {
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
         TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
     )
+    private val TEST_RAT_ACC = 1
+    private val TEST_RAT_AID = 2
+    internal val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC, TEST_RAT_AID)
+    internal lateinit var miniAppAnalytics: MiniAppAnalytics
 
     @Before
     fun setup() {
@@ -48,6 +52,8 @@ open class BaseRealMiniAppSpec {
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
+        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
+        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
     }
 }
 
@@ -244,15 +250,9 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     /** end region */
 
     /** region: access token setter / remove */
-    private val TEST_RAT_ACC = 1
-    private val TEST_RAT_AID = 2
-    private val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC, TEST_RAT_AID)
-    private lateinit var miniAppAnalytics: MiniAppAnalytics
-
     @Test
     fun `addAnalyticsConfig should increase list size of external config in MiniAppAnalytics`() {
-        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
-        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
+        MiniAppAnalytics.listOfExternalConfig.clear()
 
         realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
 
@@ -262,8 +262,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
     @Test
     fun `removeAnalyticsConfig should decrease list size of external config in MiniAppAnalytics`() {
-        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
-        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
+        MiniAppAnalytics.listOfExternalConfig.clear()
 
         realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
         realMiniApp.removeAnalyticsConfig(testMiniAppAnalyticsConfig)
