@@ -4,6 +4,8 @@ import android.app.Application
 import com.google.android.gms.ads.MobileAds
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.crashes.Crashes
+import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
@@ -21,5 +23,12 @@ class SampleApplication : Application() {
         // Enable microsoft.appcenter Crash class for staging, rc and release builds
         if (BuildConfig.ENABLE_APPCENTER_CRASHLYTICS)
             AppCenter.start(this, getString(R.string.appcenter_secret), Crashes::class.java)
+        // Add addition analytics
+        MiniApp.instance().addAnalyticsConfig(
+            MiniAppAnalyticsConfig(
+                BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                BuildConfig.ADDITIONAL_ANALYTICS_AID
+            )
+        )
     }
 }
