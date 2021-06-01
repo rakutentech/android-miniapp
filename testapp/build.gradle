@@ -7,13 +7,17 @@ def property = { key ->
     return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
 }
 
+def numProperty = { key ->
+    return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "0")
+}
+
 android {
 
     defaultConfig {
         versionCode 1
         versionName project.version
-        buildConfigField "int", "ADDITIONAL_ANALYTICS_ACC", property("ADDITIONAL_ANALYTICS_ACC")
-        buildConfigField "int", "ADDITIONAL_ANALYTICS_AID", property("ADDITIONAL_ANALYTICS_AID")
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_ACC", numProperty("ADDITIONAL_ANALYTICS_ACC")
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_AID", numProperty("ADDITIONAL_ANALYTICS_AID")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
