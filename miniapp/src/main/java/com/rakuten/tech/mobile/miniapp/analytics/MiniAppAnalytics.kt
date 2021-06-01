@@ -18,13 +18,13 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 
 /** Only init when analytics dependency is provided. */
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-class MiniAppAnalytics(private val rasProjectId: String) {
+internal class MiniAppAnalytics(val rasProjectId: String) {
 
     companion object {
         var instance: MiniAppAnalytics? = null
         @VisibleForTesting
         internal var listOfExternalConfig = mutableListOf<MiniAppAnalyticsConfig>()
-        internal fun init(rasProjectId: String) = whenHasAnalytics {
+        fun init(rasProjectId: String) = whenHasAnalytics {
             instance = MiniAppAnalytics(rasProjectId)
         }
     }
