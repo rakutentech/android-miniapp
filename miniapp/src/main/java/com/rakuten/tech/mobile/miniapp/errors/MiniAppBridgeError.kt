@@ -5,7 +5,7 @@ package com.rakuten.tech.mobile.miniapp.errors
  *  @property type The type of error.
  *  @property message error message send to min app.
  */
-abstract class MiniAppBridgeError(
+open class MiniAppBridgeError(
     type: String?,
     message: String?
 )

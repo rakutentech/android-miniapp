@@ -20,7 +20,10 @@ class MiniAppAccessTokenError(val type: String? = null, val message: String? = n
         // Authorization failed and the reason will be shared by the host app.
         val authorizationFailureError = MiniAppAccessTokenError(type = AuthorizationFailureError)
 
-        // Send only error message.
+        /**
+         *  send custom error message from host app.
+         *  @property message error message send to min app.
+         */
         fun custom(message: String) = MiniAppAccessTokenError(message = message)
     }
 }

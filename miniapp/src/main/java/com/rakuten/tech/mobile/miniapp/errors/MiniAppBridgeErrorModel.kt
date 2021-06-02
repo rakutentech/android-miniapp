@@ -7,6 +7,6 @@ import androidx.annotation.Keep
  */
 @Keep
 internal data class MiniAppBridgeErrorModel(
-    val type: String?,
-    val message: String?
+    val type: String? = null,
+    val message: String? = null
 )

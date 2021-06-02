@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_TAG
 import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
@@ -290,21 +291,24 @@ class UserInfoBridgeSpec {
     fun `postError should be called when there is no access token retrieval implementation`() {
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(false, false))
         miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
-        val errMsg = "$ERR_GET_ACCESS_TOKEN ${ErrorBridgeMessage.NO_IMPL}"
+        val errMsg = MiniAppBridgeErrorModel(message = "$ERR_GET_ACCESS_TOKEN ${ErrorBridgeMessage.NO_IMPL}")
         miniAppBridge.postMessage(Gson().toJson(tokenCallbackObj))
 
-        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(tokenCallbackObj.id, Gson().toJson(errMsg))
     }
 
     @Test
     fun `postError should be called when hostapp denies providing access token`() {
-        val errMsg = "$ERR_GET_ACCESS_TOKEN $TEST_ERROR_MSG"
         val userInfoBridgeDispatcher = Mockito.spy(createAccessTokenImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
-        verify(bridgeExecutor).postError(tokenCallbackObj.id, Gson().toJson(testError))
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id, Gson().toJson(
+                testError
+            )
+        )
     }
 
     @Test
@@ -319,7 +323,11 @@ class UserInfoBridgeSpec {
 
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
 
-        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id, Gson().toJson(
+                MiniAppBridgeErrorModel(message = errMsg)
+            )
+        )
     }
 
     @Test
@@ -334,17 +342,25 @@ class UserInfoBridgeSpec {
             id = TEST_CALLBACK_ID
         )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj)
-        verify(bridgeExecutor).postError(tokenCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj.id, Gson().toJson(
+                MiniAppBridgeErrorModel(message = errMsg)
+            )
+        )
 
         val atp2 = AccessTokenScope(audience = "aud", scopes = mutableListOf("scopeB"))
+        val audienceNotSupportedError = MiniAppAccessTokenError.audienceNotSupportedError
         val tokenCallbackObj2 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp2),
             id = TEST_CALLBACK_ID + '2'
         )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2)
-        verify(bridgeExecutor).postError(tokenCallbackObj2.id, errMsg)
-
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj2.id, Gson().toJson(
+                MiniAppBridgeErrorModel(audienceNotSupportedError.type, audienceNotSupportedError.message)
+            )
+        )
         val atp3 = AccessTokenScope(audience = "aud1", scopes = mutableListOf())
         val tokenCallbackObj3 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
@@ -352,16 +368,24 @@ class UserInfoBridgeSpec {
             id = TEST_CALLBACK_ID + '3'
         )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj3)
-        verify(bridgeExecutor).postError(tokenCallbackObj3.id, errMsg)
-
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj3.id, Gson().toJson(
+                MiniAppBridgeErrorModel(message = errMsg)
+            )
+        )
         val atp4 = AccessTokenScope(audience = "aud2", scopes = mutableListOf("scopeA", "scopeB"))
+        val scopeNotSupportedError = MiniAppAccessTokenError.scopesNotSupportedError
         val tokenCallbackObj4 = CallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = Gson().toJson(atp4),
             id = TEST_CALLBACK_ID + '4'
         )
         userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj4)
-        verify(bridgeExecutor).postError(tokenCallbackObj4.id, errMsg)
+        verify(bridgeExecutor).postError(
+            tokenCallbackObj4.id, Gson().toJson(
+                MiniAppBridgeErrorModel(scopeNotSupportedError.type, scopeNotSupportedError.message)
+            )
+        )
     }
 
     @Test
