@@ -17,12 +17,16 @@ class MiniAppAccessTokenError(val type: String? = null, val message: String? = n
         // Requested Scope is not supported.
         val scopesNotSupportedError = MiniAppAccessTokenError(type = ScopesNotSupportedError)
 
-        // Authorization failed and the reason will be shared by the host app.
-        val authorizationFailureError = MiniAppAccessTokenError(type = AuthorizationFailureError)
+        /**
+         *  send custom error message for authorization fail from host app.
+         *  @property message error message send to mini app.
+         */
+        fun authorizationFailureError(message: String) =
+            MiniAppAccessTokenError(type = AuthorizationFailureError, message = message)
 
         /**
          *  send custom error message from host app.
-         *  @property message error message send to min app.
+         *  @property message error message send to mini app.
          */
         fun custom(message: String) = MiniAppAccessTokenError(message = message)
     }
