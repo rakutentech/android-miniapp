@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -33,6 +34,7 @@ open class BaseRealMiniAppSpec {
     val miniAppSdkConfig: MiniAppSdkConfig = mock()
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
+    internal val manifestVerifier: MiniAppManifestVerifier = mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()
@@ -46,7 +48,8 @@ open class BaseRealMiniAppSpec {
         realMiniApp =
             spy(RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher,
                 initCustomPermissionCache = { miniAppCustomPermissionCache },
-                initDownloadedManifestCache = { downloadedManifestCache }
+                initDownloadedManifestCache = { downloadedManifestCache },
+                initManifestVerifier = { manifestVerifier }
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
@@ -94,9 +97,9 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         }
 
     private fun onGettingManifestWhileCreate() = runBlockingTest {
-
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
     @Test
@@ -255,9 +258,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Before
     fun before() {
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
-    /** region: RealMiniApp.listDownloadedWithCustomPermissions */
+    /** region: Manifest verification */
     @Test(expected = RequiredPermissionsNotGrantedException::class)
     fun `verifyManifest will throw exception when required permissions are denied`() =
         runBlockingTest {
@@ -272,11 +276,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         runBlockingTest {
             val allowedPermission = MiniAppCustomPermission(
                 TEST_MA_ID,
-                listOf(
-                    Pair(
-                        MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
-                    )
-                )
+                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED))
             )
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns
                     allowedPermission
@@ -305,8 +305,32 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
 
             realMiniApp.verifyManifest(TEST_MA_ID, differentVersionId)
 
+            verify(realMiniApp).downloadManifest(TEST_MA_ID, differentVersionId)
             verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
             verify(miniAppCustomPermissionCache).removePermissionsNotMatching(TEST_MA_ID, deniedPermission.pairValues)
+        }
+
+    @Test
+    fun `verifyManifest will download api manifest when hash has not been verified`() =
+        runBlockingTest {
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
+            When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns false
+            When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+
+            realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+
+            verify(realMiniApp).downloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        }
+
+    @Test
+    fun `downloadManifest will store manifest and hash properly`() =
+        runBlockingTest {
+            val manifestToStore = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
+            realMiniApp.downloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+
+            verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
+            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, manifestToStore)
         }
 
     /** end region */
