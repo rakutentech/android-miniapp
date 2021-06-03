@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -25,7 +24,12 @@ internal class MiniAppAnalytics(
 
     companion object {
         @Suppress("LongMethod")
-        internal fun sendAnalyticsDefault(rasProjectId: String,eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
+        internal fun sendAnalyticsDefault(
+            rasProjectId: String,
+            eType: Etype,
+            actype: Actype,
+            miniAppInfo: MiniAppInfo?
+        ) = try {
             val params = createParams(
                 rasProjectId = rasProjectId,
                 acc = BuildConfig.ANALYTICS_ACC,
@@ -33,12 +37,15 @@ internal class MiniAppAnalytics(
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )
-            RatTracker.event(eType.value, params).track()
+            whenHasAnalytics {
+                RatTracker.event(eType.value, params).track()
+            }
         } catch (e: Exception) {
             Log.e("MiniAppAnalytics", e.message.orEmpty())
         }
 
         /** common function to create params to send to tracker. */
+        @Suppress("LongMethod")
         private fun createParams(
             rasProjectId: String,
             acc: Int,
@@ -74,7 +81,9 @@ internal class MiniAppAnalytics(
             actype = actype,
             miniAppInfo = miniAppInfo
         )
-        RatTracker.event(eType.value, params).track()
+        whenHasAnalytics {
+            RatTracker.event(eType.value, params).track()
+        }
         // Send to all the external acc/aid added by host app
         for (config in configs) {
             val params = createParams(
@@ -84,7 +93,9 @@ internal class MiniAppAnalytics(
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )
-            RatTracker.event(eType.value, params).track()
+            whenHasAnalytics {
+                RatTracker.event(eType.value, params).track()
+            }
         }
     } catch (e: Exception) {
         Log.e("MiniAppAnalytics", e.message.orEmpty())

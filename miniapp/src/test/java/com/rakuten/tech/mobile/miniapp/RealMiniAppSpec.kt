@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
-import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
@@ -40,10 +39,10 @@ open class BaseRealMiniAppSpec {
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
         TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
     )
-    private val TEST_RAT_ACC = 1
-    private val TEST_RAT_AID = 2
-    internal val testMiniAppAnalyticsConfig = MiniAppAnalyticsConfig(TEST_RAT_ACC, TEST_RAT_AID)
-    internal lateinit var miniAppAnalytics: MiniAppAnalytics
+    internal var miniAppAnalytics: MiniAppAnalytics = MiniAppAnalytics(
+        TEST_HA_ID_PROJECT,
+        TEST_HA_ANALYTICS_CONFIGS
+    )
 
     @Before
     fun setup() {
@@ -51,7 +50,8 @@ open class BaseRealMiniAppSpec {
             spy(RealMiniApp(apiClientRepository, miniAppDownloader, displayer, miniAppInfoFetcher,
                 initCustomPermissionCache = { miniAppCustomPermissionCache },
                 initDownloadedManifestCache = { downloadedManifestCache },
-                initManifestVerifier = { manifestVerifier }
+                initManifestVerifier = { manifestVerifier },
+                miniAppAnalytics = miniAppAnalytics
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
@@ -105,6 +105,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `should invoke MiniAppDownloader, Displayer and verifyManifest while miniapp creation`() = runBlockingTest {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
@@ -121,11 +122,13 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 null,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                ""
+                "",
+                miniAppAnalytics
             )
         }
 
     @Test
+    @Suppress("LongMethod")
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {
             onGettingManifestWhileCreate()
@@ -142,7 +145,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                ""
+                "",
+                miniAppAnalytics
             )
         }
 
@@ -160,7 +164,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(miniAppDownloader).validateHttpAppUrl(TEST_MA_URL)
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
-                miniAppCustomPermissionCache, downloadedManifestCache, ""
+                miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics
             )
         }
 
@@ -212,6 +216,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `should return the correct result when listDownloadedWithCustomPermissions calls`() {
         val miniAppInfo = MiniAppInfo(
             "test_id", "display_name", "test_icon_url",

@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
-import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -23,13 +22,13 @@ internal class RealMiniApp(
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
-    initManifestVerifier: () -> MiniAppManifestVerifier
+    initManifestVerifier: () -> MiniAppManifestVerifier,
+    private var miniAppAnalytics: MiniAppAnalytics
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
     private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
-    private lateinit var miniAppAnalytics: MiniAppAnalytics
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -141,8 +140,9 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
-
-        miniAppAnalytics = MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
+        if (newConfig.rasProjectId != null)
+            miniAppAnalytics =
+                MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
     }
 
     @VisibleForTesting

@@ -10,7 +10,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_HA_ID_PROJECT
 import com.rakuten.tech.mobile.miniapp.TEST_HA_NAME
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
@@ -34,7 +33,7 @@ class RealMiniAppDisplaySpec {
     private lateinit var context: Context
     private lateinit var basePath: String
     private lateinit var realDisplay: RealMiniAppDisplay
-    private lateinit var miniAppAnalytics: MiniAppAnalytics
+    private var miniAppAnalytics: MiniAppAnalytics = mock()
     private val activityScenario = ActivityScenario.launch(TestActivity::class.java)
     private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
@@ -52,11 +51,9 @@ class RealMiniAppDisplaySpec {
                 hostAppUserAgentInfo = TEST_HA_NAME,
                 miniAppCustomPermissionCache = mock(),
                 downloadedManifestCache = mock(),
-                queryParams = TEST_URL_PARAMS
+                queryParams = TEST_URL_PARAMS,
+                miniAppAnalytics = mock()
             )
-
-            MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
-            miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
         }
     }
 
@@ -75,7 +72,8 @@ class RealMiniAppDisplaySpec {
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            queryParams = TEST_URL_PARAMS
+            queryParams = TEST_URL_PARAMS,
+            miniAppAnalytics = mock()
         )
 
         realDisplay.miniAppInfo.apply {
