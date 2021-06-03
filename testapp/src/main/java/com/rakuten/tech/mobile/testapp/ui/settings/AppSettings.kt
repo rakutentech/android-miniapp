@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import java.util.Date
 import java.util.UUID
 import kotlin.collections.ArrayList
@@ -90,7 +91,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>
-        get() = cache.miniAppAnalyticsConfigs ?: listOf()
+        get() = cache.miniAppAnalyticsConfigs ?: emptyList()
         set(miniAppAnalyticsConfigs) {
             cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
         }
@@ -104,7 +105,13 @@ class AppSettings private constructor(context: Context) {
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
-            miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
+            // temporarily taking values from buildConfig, we may add UI for this later.
+            miniAppAnalyticsConfigs = listOf(
+                MiniAppAnalyticsConfig(
+                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                    BuildConfig.ADDITIONAL_ANALYTICS_AID
+                )
+            )
         )
 
     companion object {

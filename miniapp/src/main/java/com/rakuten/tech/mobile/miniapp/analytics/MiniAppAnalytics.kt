@@ -20,39 +20,70 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class MiniAppAnalytics(
     val rasProjectId: String,
-    val configs: List<MiniAppAnalyticsConfig>
+    private val configs: List<MiniAppAnalyticsConfig>
 ) {
 
     companion object {
-//        var instance: MiniAppAnalytics? = null
-//        @VisibleForTesting
-//        internal var listOfExternalConfig = mutableListOf<MiniAppAnalyticsConfig>()
-//        fun init(rasProjectId: String) = whenHasAnalytics {
-//            instance = MiniAppAnalytics(rasProjectId)
-//        }
+        @Suppress("LongMethod")
+        internal fun sendAnalyticsDefault(rasProjectId: String,eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
+            val params = createParams(
+                rasProjectId = rasProjectId,
+                acc = BuildConfig.ANALYTICS_ACC,
+                aid = BuildConfig.ANALYTICS_AID,
+                actype = actype,
+                miniAppInfo = miniAppInfo
+            )
+            RatTracker.event(eType.value, params).track()
+        } catch (e: Exception) {
+            Log.e("MiniAppAnalytics", e.message.orEmpty())
+        }
+
+        /** common function to create params to send to tracker. */
+        private fun createParams(
+            rasProjectId: String,
+            acc: Int,
+            aid: Int,
+            actype: Actype,
+            miniAppInfo: MiniAppInfo?
+        ): MutableMap<String, Any> {
+            val params = mutableMapOf<String, Any>()
+            params["acc"] = acc
+            params["aid"] = aid
+            params["actype"] = actype.value
+
+            val cp = JSONObject()
+                .put("mini_app_project_id", rasProjectId)
+                .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
+            if (miniAppInfo != null) {
+                cp.put("mini_app_id", miniAppInfo.id)
+                    .put("mini_app_version_id", miniAppInfo.version.versionId)
+            }
+            params["cp"] = cp
+
+            return params
+        }
     }
+
     @Suppress("LongMethod")
     internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
-        val params = mutableMapOf<String, Any>()
         // Send to this acc/aid
-        params["acc"] = BuildConfig.ANALYTICS_ACC
-        params["aid"] = BuildConfig.ANALYTICS_AID
-
-        params["actype"] = actype.value
-
-        val cp = JSONObject()
-            .put("mini_app_project_id", rasProjectId)
-            .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
-        if (miniAppInfo != null) {
-            cp.put("mini_app_id", miniAppInfo.id)
-                .put("mini_app_version_id", miniAppInfo.version.versionId)
-        }
-        params["cp"] = cp
+        val params = createParams(
+            rasProjectId = rasProjectId,
+            acc = BuildConfig.ANALYTICS_ACC,
+            aid = BuildConfig.ANALYTICS_AID,
+            actype = actype,
+            miniAppInfo = miniAppInfo
+        )
         RatTracker.event(eType.value, params).track()
         // Send to all the external acc/aid added by host app
         for (config in configs) {
-            params["acc"] = config.acc
-            params["aid"] = config.aid
+            val params = createParams(
+                rasProjectId = rasProjectId,
+                acc = config.acc,
+                aid = config.aid,
+                actype = actype,
+                miniAppInfo = miniAppInfo
+            )
             RatTracker.event(eType.value, params).track()
         }
     } catch (e: Exception) {

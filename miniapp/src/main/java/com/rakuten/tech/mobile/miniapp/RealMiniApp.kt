@@ -29,6 +29,7 @@ internal class RealMiniApp(
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
     private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
+    private lateinit var miniAppAnalytics: MiniAppAnalytics
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -69,7 +70,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -93,7 +95,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -115,7 +118,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -138,7 +142,7 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
+        miniAppAnalytics = MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
     }
 
     @VisibleForTesting
