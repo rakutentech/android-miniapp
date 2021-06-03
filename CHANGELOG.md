@@ -6,7 +6,7 @@
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 - **Feature:** Added `rakuten.miniapp.user.action.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
-- **Feature:** Added `addAnalyticsConfig`, `removeAnalyticsConfig` function to `MiniAppAnalytics`. This functions can be called from host app to add/remove single/multiple analytics ids to send events.
+- **Feature:** Update `MiniAppSdkConfig` class to accept list of `MiniAppAnalyticsConfig` to send analytics in multiple account.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.
