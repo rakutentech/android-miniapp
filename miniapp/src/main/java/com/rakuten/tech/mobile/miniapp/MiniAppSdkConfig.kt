@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+
 /**
  * This represents the configuration settings for the Mini App SDK.
  * @property baseUrl Base URL used for retrieving a Mini App.
@@ -15,7 +17,8 @@ data class MiniAppSdkConfig(
     val subscriptionKey: String,
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
-    val isPreviewMode: Boolean
+    val isPreviewMode: Boolean,
+    val miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig> = emptyList()
 ) {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 

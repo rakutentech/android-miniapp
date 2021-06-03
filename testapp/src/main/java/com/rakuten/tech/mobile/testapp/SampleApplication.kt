@@ -24,11 +24,11 @@ class SampleApplication : Application() {
         if (BuildConfig.ENABLE_APPCENTER_CRASHLYTICS)
             AppCenter.start(this, getString(R.string.appcenter_secret), Crashes::class.java)
         // Add addition analytics
-        MiniApp.instance().addAnalyticsConfig(
-            MiniAppAnalyticsConfig(
-                BuildConfig.ADDITIONAL_ANALYTICS_ACC,
-                BuildConfig.ADDITIONAL_ANALYTICS_AID
-            )
-        )
+//        MiniApp.instance().addAnalyticsConfig(
+//            MiniAppAnalyticsConfig(
+//                BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+//                BuildConfig.ADDITIONAL_ANALYTICS_AID
+//            )
+//        )
     }
 }

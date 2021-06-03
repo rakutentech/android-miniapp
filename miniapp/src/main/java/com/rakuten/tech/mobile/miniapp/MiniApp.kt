@@ -176,16 +176,6 @@ abstract class MiniApp internal constructor() {
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
 
-    /**
-     * add analytic configuration [MiniAppAnalyticsConfig] to send events in multiple account.
-     */
-    abstract fun addAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig): Unit?
-
-    /**
-     * remove analytic configuration [MiniAppAnalyticsConfig] to stop send events in multiple account.
-     */
-    abstract fun removeAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig): Unit?
-
     companion object {
         @VisibleForTesting
         internal lateinit var instance: MiniApp

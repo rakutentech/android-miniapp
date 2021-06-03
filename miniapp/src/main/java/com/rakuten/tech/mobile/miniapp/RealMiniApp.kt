@@ -137,15 +137,9 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
+
+        MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
     }
-
-    @Suppress("SpreadOperator")
-    override fun addAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) =
-        MiniAppAnalytics.instance?.addAnalyticsConfig(*miniAppAnalyticsConfig)
-
-    @Suppress("SpreadOperator")
-    override fun removeAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) =
-        MiniAppAnalytics.instance?.removeAnalyticsConfig(*miniAppAnalyticsConfig)
 
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {

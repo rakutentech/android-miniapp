@@ -397,6 +397,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `prepareMiniAppManifest should return values correctly`() =
         runBlockingTest {
             val metadataEntity = MetadataEntity(

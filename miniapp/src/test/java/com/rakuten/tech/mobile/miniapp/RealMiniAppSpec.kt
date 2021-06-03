@@ -55,8 +55,6 @@ open class BaseRealMiniAppSpec {
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
-        MiniAppAnalytics.init(TEST_HA_ID_PROJECT)
-        miniAppAnalytics = Mockito.spy(MiniAppAnalytics.instance!!)
     }
 }
 
@@ -195,7 +193,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             rasProjectId = TEST_HA_ID_PROJECT,
             isPreviewMode = true,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-            hostAppUserAgentInfo = TEST_HA_NAME
+            hostAppUserAgentInfo = TEST_HA_NAME,
+            miniAppAnalyticsConfigs = TEST_HA_ANALYTICS_CONFIGS
         )
 
         miniApp.updateConfiguration(miniAppSdkConfig)
@@ -261,29 +260,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
         verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
     }
-    /** end region */
-
-    /** region: access token setter / remove */
-    @Test
-    fun `addAnalyticsConfig should increase list size of external config in MiniAppAnalytics`() {
-        MiniAppAnalytics.listOfExternalConfig.clear()
-
-        realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
-
-        MiniAppAnalytics.listOfExternalConfig.size shouldBe 1
-        MiniAppAnalytics.listOfExternalConfig[0] shouldBe testMiniAppAnalyticsConfig
-    }
-
-    @Test
-    fun `removeAnalyticsConfig should decrease list size of external config in MiniAppAnalytics`() {
-        MiniAppAnalytics.listOfExternalConfig.clear()
-
-        realMiniApp.addAnalyticsConfig(testMiniAppAnalyticsConfig)
-        realMiniApp.removeAnalyticsConfig(testMiniAppAnalyticsConfig)
-
-        MiniAppAnalytics.listOfExternalConfig.size shouldBe 0
-    }
-
     /** end region */
 }
 

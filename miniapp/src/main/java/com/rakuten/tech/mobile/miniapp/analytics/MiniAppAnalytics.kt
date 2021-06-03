@@ -18,15 +18,18 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 
 /** Only init when analytics dependency is provided. */
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class MiniAppAnalytics(val rasProjectId: String) {
+internal class MiniAppAnalytics(
+    val rasProjectId: String,
+    val configs: List<MiniAppAnalyticsConfig>
+) {
 
     companion object {
-        var instance: MiniAppAnalytics? = null
-        @VisibleForTesting
-        internal var listOfExternalConfig = mutableListOf<MiniAppAnalyticsConfig>()
-        fun init(rasProjectId: String) = whenHasAnalytics {
-            instance = MiniAppAnalytics(rasProjectId)
-        }
+//        var instance: MiniAppAnalytics? = null
+//        @VisibleForTesting
+//        internal var listOfExternalConfig = mutableListOf<MiniAppAnalyticsConfig>()
+//        fun init(rasProjectId: String) = whenHasAnalytics {
+//            instance = MiniAppAnalytics(rasProjectId)
+//        }
     }
     @Suppress("LongMethod")
     internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
@@ -47,22 +50,12 @@ internal class MiniAppAnalytics(val rasProjectId: String) {
         params["cp"] = cp
         RatTracker.event(eType.value, params).track()
         // Send to all the external acc/aid added by host app
-        for (config in listOfExternalConfig) {
+        for (config in configs) {
             params["acc"] = config.acc
             params["aid"] = config.aid
             RatTracker.event(eType.value, params).track()
         }
     } catch (e: Exception) {
         Log.e("MiniAppAnalytics", e.message.orEmpty())
-    }
-
-    /** add analytic configuration. **/
-    fun addAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) {
-        listOfExternalConfig.addAll(miniAppAnalyticsConfig)
-    }
-
-    /** remove analytic configuration. **/
-    fun removeAnalyticsConfig(vararg miniAppAnalyticsConfig: MiniAppAnalyticsConfig) {
-        listOfExternalConfig.removeAll(miniAppAnalyticsConfig)
     }
 }
