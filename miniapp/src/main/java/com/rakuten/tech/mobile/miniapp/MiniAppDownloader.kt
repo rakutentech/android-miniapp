@@ -103,7 +103,10 @@ internal class MiniAppDownloader(
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
-        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
+        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(miniAppInfo.id,
+                miniAppInfo.version.versionId, versionPath
+            )
+        ) {
             return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
             else {
