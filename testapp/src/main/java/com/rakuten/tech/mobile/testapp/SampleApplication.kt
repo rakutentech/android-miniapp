@@ -23,12 +23,5 @@ class SampleApplication : Application() {
         // Enable microsoft.appcenter Crash class for staging, rc and release builds
         if (BuildConfig.ENABLE_APPCENTER_CRASHLYTICS)
             AppCenter.start(this, getString(R.string.appcenter_secret), Crashes::class.java)
-        // Add addition analytics
-//        MiniApp.instance().addAnalyticsConfig(
-//            MiniAppAnalyticsConfig(
-//                BuildConfig.ADDITIONAL_ANALYTICS_ACC,
-//                BuildConfig.ADDITIONAL_ANALYTICS_AID
-//            )
-//        )
     }
 }
