@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   android-sdk: rakutentech/android-sdk@0.2.1
-  app-center: rakutentech/app-center@0.1.3
+  app-center: rakutentech/app-center@dev:0.1.3
 
 commands:
   update-submodules:
@@ -115,31 +115,7 @@ workflows:
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $APP_VERSION_NAME
-          version-code: 1
-          requires:
-            - android-sdk/build
-          filters:
-            branches:
-              only: master
-      - app-center/mapping:
-          name: deploy-test-app-release-mapping
-          file: mapping/release/mapping.txt
-          app: $APP_CENTER_APP_NAME
-          token: $APP_CENTER_TOKEN
-          version-name: $APP_VERSION_NAME
-          version-code: 1
-          requires:
-            - android-sdk/build
-          filters:
-            branches:
-              only: master
-      - app-center/mapping:
-          name: deploy-test-app-rc-mapping
-          file: mapping/rc/mapping.txt
-          app: $APP_CENTER_APP_NAME
-          token: $APP_CENTER_TOKEN
-          version-name: $APP_VERSION_NAME
+          version-name: $APP_CENTER_APP_NAME
           version-code: 1
           requires:
             - android-sdk/build
