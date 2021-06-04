@@ -109,5 +109,5 @@ tasks.withType(Test) {
 tasks.withType(JavaCompile) {
     options.fork = true
     options.incremental = true
-    // TODO: systemProperty ('APP_VERSION_NAME', project.version)
+    systemProperty 'APP_VERSION_NAME', project.version
 }

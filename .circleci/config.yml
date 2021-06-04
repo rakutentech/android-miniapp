@@ -115,7 +115,7 @@ workflows:
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $APP_CENTER_APP_NAME
+          version-name: $APP_VERSION_NAME
           version-code: 1
           requires:
             - android-sdk/build
@@ -127,7 +127,7 @@ workflows:
           file: mapping/release/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $APP_CENTER_APP_NAME
+          version-name: $APP_VERSION_NAME
           version-code: 1
           requires:
             - android-sdk/build
@@ -139,7 +139,7 @@ workflows:
           file: mapping/rc/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $APP_CENTER_APP_NAME
+          version-name: $APP_VERSION_NAME
           version-code: 1
           requires:
             - android-sdk/build
