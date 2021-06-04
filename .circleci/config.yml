@@ -47,7 +47,7 @@ workflows:
             - android-sdk/build
           filters:
             branches:
-              only: debt/appcenter_mapping_upload
+              only: master
       - release-verification:
           type: approval
           requires:
@@ -121,7 +121,7 @@ workflows:
             - android-sdk/build
           filters:
             branches:
-              only: debt/appcenter_mapping_upload
+              only: master
       - app-center/mapping:
           name: deploy-test-app-release-mapping
           file: mapping/release/mapping.txt
@@ -132,8 +132,10 @@ workflows:
           requires:
             - android-sdk/build
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/
       - app-center/mapping:
           name: deploy-test-app-rc-mapping
           file: mapping/rc/mapping.txt
