@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -46,7 +47,8 @@ internal class MiniAppAnalytics(
 
         /** common function to create params to send to tracker. */
         @Suppress("LongMethod")
-        private fun createParams(
+        @VisibleForTesting
+        internal fun createParams(
             rasProjectId: String,
             acc: Int,
             aid: Int,
@@ -85,11 +87,11 @@ internal class MiniAppAnalytics(
             RatTracker.event(eType.value, params).track()
         }
         // Send to all the external acc/aid added by host app
-        for (config in configs) {
+        for ((acc, aid) in configs) {
             val params = createParams(
                 rasProjectId = rasProjectId,
-                acc = config.acc,
-                aid = config.aid,
+                acc = acc,
+                aid = aid,
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )

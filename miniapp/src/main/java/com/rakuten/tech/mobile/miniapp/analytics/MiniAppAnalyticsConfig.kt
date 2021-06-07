@@ -6,7 +6,6 @@ import androidx.annotation.Keep
  *  Contains the components which need to add extra analytics credentials from host app.
  *  @property acc The RAT account id.
  *  @property aid The RAT app id.
- *  @property endPoint is not in use.
  */
 @Keep
 data class MiniAppAnalyticsConfig(

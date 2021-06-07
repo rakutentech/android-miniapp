@@ -140,9 +140,9 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
-        if (newConfig.rasProjectId != null)
-            miniAppAnalytics =
-                MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
+
+        miniAppAnalytics =
+            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
     }
 
     @VisibleForTesting

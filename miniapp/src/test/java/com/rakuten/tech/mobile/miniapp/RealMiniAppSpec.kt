@@ -55,6 +55,8 @@ open class BaseRealMiniAppSpec {
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
+        When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
+        When calling miniAppSdkConfig.miniAppAnalyticsConfigs itReturns TEST_HA_ANALYTICS_CONFIGS
     }
 }
 

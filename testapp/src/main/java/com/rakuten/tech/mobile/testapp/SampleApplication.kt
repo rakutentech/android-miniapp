@@ -4,8 +4,6 @@ import android.app.Application
 import com.google.android.gms.ads.MobileAds
 import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.crashes.Crashes
-import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore

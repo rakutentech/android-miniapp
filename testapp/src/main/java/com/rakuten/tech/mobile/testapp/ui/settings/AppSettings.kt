@@ -95,6 +95,7 @@ class AppSettings private constructor(context: Context) {
         set(miniAppAnalyticsConfigs) {
             cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
         }
+
     val baseUrl = manifestConfig.baseUrl()
 
     val miniAppSettings: MiniAppSdkConfig
