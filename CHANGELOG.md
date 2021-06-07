@@ -6,6 +6,7 @@
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 - **Feature:** Added `rakuten.miniapp.user.action.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
+- **Change:** Added `getAccessToken` result with new Error type i.e `MiniAppAccessTokenError` to support predefined error types, previous `getAccessToken` is deprecated and can not be used anymore.
 - **Feature:** Update `MiniAppSdkConfig` class to accept list of `MiniAppAnalyticsConfig` to send analytics in multiple account.
 
 **Sample App**

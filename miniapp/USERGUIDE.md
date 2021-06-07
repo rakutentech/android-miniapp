@@ -310,7 +310,7 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
         miniAppId: String,
         accessTokenScope: AccessTokenScope,
         onSuccess: (tokenData: TokenData) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (tokenError: MiniAppAccessTokenError) -> Unit
     ) {
         var allowToken: Boolean = false
         // Check if you want to allow this Mini App ID to use the Access Token based on AccessTokenScope.
@@ -318,7 +318,7 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
         if (allowToken)
             onSuccess(tokenData) // allow miniapp to get token and return TokenData value.
         else
-            onError(message) // reject miniapp to get token with message explanation.
+            onError(tokenError) // reject miniapp to get token with specific access token error type.
     }
 
     override fun getContacts(
