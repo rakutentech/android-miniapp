@@ -107,7 +107,7 @@ class AppSettings private constructor(context: Context) {
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
             // temporarily taking values from buildConfig, we may add UI for this later.
-            miniAppAnalyticsConfigs = listOf(
+            miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(
                     BuildConfig.ADDITIONAL_ANALYTICS_ACC,
                     BuildConfig.ADDITIONAL_ANALYTICS_AID

@@ -56,7 +56,7 @@ open class BaseRealMiniAppSpec {
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
         When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
-        When calling miniAppSdkConfig.miniAppAnalyticsConfigs itReturns TEST_HA_ANALYTICS_CONFIGS
+        When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
     }
 }
 
@@ -200,7 +200,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             isPreviewMode = true,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME,
-            miniAppAnalyticsConfigs = TEST_HA_ANALYTICS_CONFIGS
+            miniAppAnalyticsConfigList = TEST_HA_ANALYTICS_CONFIGS
         )
 
         miniApp.updateConfiguration(miniAppSdkConfig)

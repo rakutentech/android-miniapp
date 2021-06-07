@@ -24,7 +24,6 @@ internal class MiniAppAnalytics(
 ) {
 
     companion object {
-        @Suppress("LongMethod")
         internal fun sendAnalyticsDefault(
             rasProjectId: String,
             eType: Etype,
@@ -39,7 +38,7 @@ internal class MiniAppAnalytics(
                 miniAppInfo = miniAppInfo
             )
             whenHasAnalytics {
-                RatTracker.event(eType.value, params).track()
+                trackEvent(eType, params)
             }
         } catch (e: Exception) {
             Log.e("MiniAppAnalytics", e.message.orEmpty())
@@ -54,11 +53,7 @@ internal class MiniAppAnalytics(
             aid: Int,
             actype: Actype,
             miniAppInfo: MiniAppInfo?
-        ): MutableMap<String, Any> {
-            val params = mutableMapOf<String, Any>()
-            params["acc"] = acc
-            params["aid"] = aid
-            params["actype"] = actype.value
+        ): Map<String, Any> {
 
             val cp = JSONObject()
                 .put("mini_app_project_id", rasProjectId)
@@ -67,13 +62,21 @@ internal class MiniAppAnalytics(
                 cp.put("mini_app_id", miniAppInfo.id)
                     .put("mini_app_version_id", miniAppInfo.version.versionId)
             }
-            params["cp"] = cp
 
-            return params
+            return mapOf<String, Any>(
+                "acc" to acc,
+                "aid" to aid,
+                "actype" to actype.value,
+                "cp" to cp
+            )
+        }
+
+        /** common function to send to tracker. */
+        private fun trackEvent(eType: Etype, params: Map<String, Any>) = whenHasAnalytics {
+            RatTracker.event(eType.value, params).track()
         }
     }
 
-    @Suppress("LongMethod")
     internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
         // Send to this acc/aid
         val params = createParams(
@@ -96,7 +99,7 @@ internal class MiniAppAnalytics(
                 miniAppInfo = miniAppInfo
             )
             whenHasAnalytics {
-                RatTracker.event(eType.value, params).track()
+                trackEvent(eType, params)
             }
         }
     } catch (e: Exception) {

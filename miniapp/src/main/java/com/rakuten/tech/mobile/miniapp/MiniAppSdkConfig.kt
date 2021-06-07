@@ -10,7 +10,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
  * @property isPreviewMode Whether the host app wants to use the API Endpoints under "Preview" mode.
- * @property miniAppAnalyticsConfigs List of analytic config to send events on.
+ * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  */
 data class MiniAppSdkConfig(
     val baseUrl: String,
@@ -19,7 +19,7 @@ data class MiniAppSdkConfig(
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean,
-    val miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig> = emptyList()
+    val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList()
 ) {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 

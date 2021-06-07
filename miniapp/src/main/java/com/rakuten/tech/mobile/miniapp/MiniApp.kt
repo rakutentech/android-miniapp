@@ -220,7 +220,7 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = MiniAppAnalytics(
                     miniAppSdkConfig.rasProjectId,
-                    miniAppSdkConfig.miniAppAnalyticsConfigs
+                    miniAppSdkConfig.miniAppAnalyticsConfigList
                 )
             )
         }

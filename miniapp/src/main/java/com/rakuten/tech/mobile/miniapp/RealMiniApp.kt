@@ -142,7 +142,7 @@ internal class RealMiniApp(
         }
 
         miniAppAnalytics =
-            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigs)
+            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
 
     @VisibleForTesting
