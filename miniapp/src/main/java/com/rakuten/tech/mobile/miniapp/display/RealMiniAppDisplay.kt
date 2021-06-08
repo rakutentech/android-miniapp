@@ -33,7 +33,8 @@ internal class RealMiniAppDisplay(
     val hostAppUserAgentInfo: String,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     val downloadedManifestCache: DownloadedManifestCache,
-    val queryParams: String
+    val queryParams: String,
+    val miniAppAnalytics: MiniAppAnalytics
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -41,7 +42,7 @@ internal class RealMiniAppDisplay(
     @VisibleForTesting
     internal var miniAppWebView: MiniAppWebView? = null
     @VisibleForTesting
-    internal fun getMiniAppAnalytics() = MiniAppAnalytics.instance
+    internal fun getMiniAppAnalytics() = miniAppAnalytics
 
     constructor(
         appUrl: String,
@@ -51,7 +52,8 @@ internal class RealMiniAppDisplay(
         hostAppUserAgentInfo: String,
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
-        queryParams: String
+        queryParams: String,
+        miniAppAnalytics: MiniAppAnalytics
     ) : this(
         "",
         MiniAppInfo.forUrl(),
@@ -61,7 +63,8 @@ internal class RealMiniAppDisplay(
         hostAppUserAgentInfo,
         miniAppCustomPermissionCache,
         downloadedManifestCache,
-        queryParams
+        queryParams,
+        miniAppAnalytics
     ) {
         this.appUrl = appUrl
     }
@@ -72,7 +75,7 @@ internal class RealMiniAppDisplay(
     override suspend fun getMiniAppView(activityContext: Context): View? =
         if (isContextValid(activityContext)) {
             // send analytics tracking when Host App displays a mini app.
-            getMiniAppAnalytics()?.sendAnalytics(
+            getMiniAppAnalytics().sendAnalytics(
                 eType = Etype.CLICK,
                 actype = Actype.OPEN,
                 miniAppInfo = miniAppInfo
@@ -83,7 +86,7 @@ internal class RealMiniAppDisplay(
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     override fun destroyView() {
         // send analytics tracking when mini app is closed.
-        getMiniAppAnalytics()?.sendAnalytics(
+        getMiniAppAnalytics().sendAnalytics(
             eType = Etype.CLICK,
             actype = Actype.CLOSE,
             miniAppInfo = miniAppInfo

@@ -6,8 +6,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import java.util.Date
 import java.util.UUID
 import kotlin.collections.ArrayList
@@ -88,6 +90,12 @@ class AppSettings private constructor(context: Context) {
             cache.urlParameters = urlParameters
         }
 
+    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>
+        get() = cache.miniAppAnalyticsConfigs ?: emptyList()
+        set(miniAppAnalyticsConfigs) {
+            cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
+        }
+
     val baseUrl = manifestConfig.baseUrl()
 
     val miniAppSettings: MiniAppSdkConfig
@@ -97,7 +105,14 @@ class AppSettings private constructor(context: Context) {
             subscriptionKey = subscriptionKey,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isPreviewMode = isPreviewMode
+            isPreviewMode = isPreviewMode,
+            // temporarily taking values from buildConfig, we may add UI for this later.
+            miniAppAnalyticsConfigList = listOf(
+                MiniAppAnalyticsConfig(
+                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                    BuildConfig.ADDITIONAL_ANALYTICS_AID
+                )
+            )
         )
 
     companion object {
@@ -174,6 +189,13 @@ private class Settings(context: Context) {
         get() = prefs.getString(URL_PARAMETERS, null)
         set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
 
+    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>?
+        get() = Gson().fromJson(
+            prefs.getString(ANALYTIC_CONFIGS, null),
+            object : TypeToken<List<MiniAppAnalyticsConfig>>() {}.type
+        )
+        set(miniAppAnalyticsConfigs) = prefs.edit().putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
@@ -186,5 +208,6 @@ private class Settings(context: Context) {
         private const val CONTACTS = "contacts"
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
+        private const val ANALYTIC_CONFIGS = "analytic_configs"
     }
 }
