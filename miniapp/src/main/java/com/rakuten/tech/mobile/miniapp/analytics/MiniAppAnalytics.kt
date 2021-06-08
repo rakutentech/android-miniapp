@@ -37,9 +37,7 @@ internal class MiniAppAnalytics(
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )
-            whenHasAnalytics {
-                trackEvent(eType, params)
-            }
+            trackEvent(eType, params)
         } catch (e: Exception) {
             Log.e("MiniAppAnalytics", e.message.orEmpty())
         }
@@ -86,9 +84,8 @@ internal class MiniAppAnalytics(
             actype = actype,
             miniAppInfo = miniAppInfo
         )
-        whenHasAnalytics {
-            RatTracker.event(eType.value, params).track()
-        }
+        trackEvent(eType, params)
+
         // Send to all the external acc/aid added by host app
         for ((acc, aid) in configs) {
             val params = createParams(
@@ -98,9 +95,7 @@ internal class MiniAppAnalytics(
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )
-            whenHasAnalytics {
-                trackEvent(eType, params)
-            }
+            trackEvent(eType, params)
         }
     } catch (e: Exception) {
         Log.e("MiniAppAnalytics", e.message.orEmpty())
