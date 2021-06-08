@@ -103,7 +103,8 @@ internal class MiniAppDownloader(
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
-        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(miniAppInfo.id,
+        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
+                miniAppInfo.id,
                 miniAppInfo.version.versionId, versionPath
             )
         ) {
@@ -115,7 +116,11 @@ internal class MiniAppDownloader(
                             "The files will be deleted and the Mini App re-downloaded."
                 )
                 storage.removeApp(miniAppInfo.id)
-                miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
+                miniAppStatus.setVersionDownloaded(
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId,
+                    false
+                )
                 null
             }
         }

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -21,7 +22,8 @@ internal class RealMiniApp(
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
-    initManifestVerifier: () -> MiniAppManifestVerifier
+    initManifestVerifier: () -> MiniAppManifestVerifier,
+    private var miniAppAnalytics: MiniAppAnalytics
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
@@ -67,7 +69,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -91,7 +94,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -113,7 +117,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -135,6 +140,9 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
+
+        miniAppAnalytics =
+            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
 
     @VisibleForTesting
