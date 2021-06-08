@@ -89,6 +89,7 @@ android {
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled true
+            shrinkResources true
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
