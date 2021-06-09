@@ -2,11 +2,12 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
+import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -16,11 +17,12 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import java.io.File
+import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 
 @Suppress("LongMethod")
 class DownloadedManifestCacheSpec {
-
     private lateinit var manifestCache: DownloadedManifestCache
     private val mockSharedPrefs: SharedPreferences = mock()
     private val mockEditor: SharedPreferences.Editor = mock()
@@ -39,13 +41,14 @@ class DownloadedManifestCacheSpec {
             .thenReturn(mockSharedPrefs)
         Mockito.`when`(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor)
         Mockito.`when`(mockEditor.remove(anyString())).thenReturn(mockEditor)
+        Mockito.`when`(mockContext.filesDir).thenReturn(File(TEST_BASE_PATH))
         manifestCache = spy(DownloadedManifestCache(mockContext))
-
         doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
+        doReturn(null).whenever(manifestCache).readFromCachedFile(TEST_MA_ID)
         val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
         val expected = null
         actual shouldEqual expected
@@ -60,21 +63,11 @@ class DownloadedManifestCacheSpec {
     }
 
     @Test
-    fun `storeDownloadedManifest will invoke putString while storing manifest`() {
-        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
-        manifestCache.storeDownloadedManifest(TEST_MA_ID, cachedManifest)
-        verify(mockEditor).putString(anyString(), anyString())
-    }
-
-    @Test
     fun `getAllPermissions will invoke required and optional permissions getters`() {
         val cachedPermission = MiniAppCustomPermission(
             TEST_MA_ID,
             listOf(
-                Pair(
-                    MiniAppCustomPermissionType.USER_NAME,
-                    MiniAppCustomPermissionResult.ALLOWED
-                )
+                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED)
             )
         )
         manifestCache.getAllPermissions(cachedPermission)
@@ -100,9 +93,7 @@ class DownloadedManifestCacheSpec {
 
     @Test
     fun `getRequiredPermissions will return empty while there is error`() {
-        val cachedPermission = MiniAppCustomPermission(
-            TEST_MA_ID, listOf()
-        )
+        val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, listOf())
         doReturn(null).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
 
         val actual = manifestCache.getRequiredPermissions(cachedPermission)
@@ -112,10 +103,7 @@ class DownloadedManifestCacheSpec {
     @Test
     fun `getRequiredPermissions will return expected values`() {
         val expected = listOf(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME,
-                MiniAppCustomPermissionResult.ALLOWED
-            )
+            Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED)
         )
         val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, expected)
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
@@ -128,10 +116,7 @@ class DownloadedManifestCacheSpec {
     @Test
     fun `getOptionalPermissions will return expected values`() {
         val expected = listOf(
-            Pair(
-                MiniAppCustomPermissionType.PROFILE_PHOTO,
-                MiniAppCustomPermissionResult.ALLOWED
-            )
+            Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.ALLOWED)
         )
         val demoOptionalManifest =
             MiniAppManifest(
@@ -148,9 +133,7 @@ class DownloadedManifestCacheSpec {
 
     @Test
     fun `getOptionalPermissions will return empty while there is error`() {
-        val cachedPermission = MiniAppCustomPermission(
-            TEST_MA_ID, listOf()
-        )
+        val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, listOf())
         doReturn(null).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
 
         val actual = manifestCache.getOptionalPermissions(cachedPermission)
@@ -162,7 +145,7 @@ class DownloadedManifestCacheSpec {
         manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     fun `should get empty list of AccessTokenPermission when no cache`() {
         DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
     }
@@ -170,14 +153,9 @@ class DownloadedManifestCacheSpec {
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {
         val list = arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
         if (isAllowed) list.add(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
-            )
-        )
-        else list.add(
-            Pair(
-                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED
-            )
+            Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED)
+        ) else list.add(
+            Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED)
         )
         return MiniAppCustomPermission(TEST_MA_ID, list)
     }

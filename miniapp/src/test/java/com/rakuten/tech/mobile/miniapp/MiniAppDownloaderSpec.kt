@@ -75,6 +75,7 @@ open class MiniAppDownloaderBaseSpec {
     }
 }
 @ExperimentalCoroutinesApi
+@SuppressWarnings("LargeClass")
 class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     @Test
     fun `when downloading a mini app then downloader should fetch manifest at first`() {
@@ -397,6 +398,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
+    @SuppressWarnings("LongMethod")
     @Test
     @Suppress("LongMethod")
     fun `prepareMiniAppManifest should return values correctly`() =
