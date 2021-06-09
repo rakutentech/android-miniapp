@@ -36,6 +36,11 @@ workflows:
               only: /^v.*/
             branches:
               only: /.*/
+          post-steps:
+            - persist_to_workspace:
+                root: testapp/build/outputs
+                paths:
+                  - mapping/
       - app-center/publish:
           name: deploy-test-app-stg
           group: Testers
