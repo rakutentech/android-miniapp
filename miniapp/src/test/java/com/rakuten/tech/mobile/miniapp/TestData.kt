@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
 
@@ -62,3 +63,12 @@ internal val TEST_ATP2 = AccessTokenScope(
     audience = "aud2", scopes = mutableListOf("scopeB")
 )
 internal val TEST_ATP_LIST = mutableListOf<AccessTokenScope>(TEST_ATP1, TEST_ATP2)
+
+// HOST_APP_ANALYTICS
+internal val TEST_CONFIG1 = MiniAppAnalyticsConfig(
+    acc = 1, aid = 2
+)
+internal val TEST_CONFIG2 = MiniAppAnalyticsConfig(
+    acc = 3, aid = 4
+)
+internal val TEST_HA_ANALYTICS_CONFIGS = listOf<MiniAppAnalyticsConfig>(TEST_CONFIG1, TEST_CONFIG2)

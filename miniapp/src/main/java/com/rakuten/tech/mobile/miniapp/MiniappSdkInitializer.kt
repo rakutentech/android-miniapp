@@ -81,8 +81,8 @@ class MiniappSdkInitializer : ContentProvider() {
     )
 
     private fun executeMiniAppAnalytics(rasProjId: String) {
-        MiniAppAnalytics.init(rasProjectId = rasProjId)
-        MiniAppAnalytics.instance?.sendAnalytics(
+        MiniAppAnalytics.sendAnalyticsDefault(
+            rasProjectId = rasProjId,
             eType = Etype.APPEAR,
             actype = Actype.HOST_LAUNCH,
             miniAppInfo = null

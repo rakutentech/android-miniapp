@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -12,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.util.ArrayList
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("LargeClass", "TooGenericExceptionCaught", "TooManyFunctions")
 internal class UserInfoBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var customPermissionCache: MiniAppCustomPermissionCache
@@ -81,42 +83,94 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
     }
-
+    @Suppress("LongMethod")
     internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
         try {
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.ACCESS_TOKEN)) {
                 onHasAccessTokenPermission(callbackObj)
             } else
-                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION")
+                bridgeExecutor.postError(
+                    callbackObj.id,
+                    Gson().toJson(
+                        MiniAppBridgeErrorModel(
+                            message = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NO_PERMISSION"
+                        )
+                    )
+                )
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN ${e.message}")
+            bridgeExecutor.postError(
+                callbackObj.id,
+                Gson().toJson(
+                    MiniAppBridgeErrorModel(
+                        message = "$ERR_GET_ACCESS_TOKEN ${e.message}"
+                    )
+                )
+            )
         }
     }
-
+    @Suppress("LongMethod")
     private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
-        if (doesAccessTokenMatch(tokenPermission)) {
-            val successCallback = { accessToken: TokenData ->
-                accessToken.scopes = tokenPermission
-                bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
-            }
-            val errorCallback = { message: String ->
-                bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $message")
-            }
+        doesAccessTokenMatch(tokenPermission) { success, error ->
+            if (success) {
+                val successCallback = { accessToken: TokenData ->
+                    accessToken.scopes = tokenPermission
+                    bridgeExecutor.postValue(callbackObj.id, Gson().toJson(accessToken))
+                }
 
-            userInfoBridgeDispatcher.getAccessToken(miniAppId, tokenPermission, successCallback, errorCallback)
-        } else
-            bridgeExecutor.postError(callbackObj.id, "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST")
-    }
+                // send a specifically formatted error key to show specific error in mini app
+                val errorCallback = { callback: MiniAppAccessTokenError ->
+                    // convert error callback to common MiniAppBridgeErrorModel
+                    val errorBridgeModel = MiniAppBridgeErrorModel(callback.type, callback.message)
+                    bridgeExecutor.postError(callbackObj.id, Gson().toJson(errorBridgeModel))
+                }
 
-    private fun doesAccessTokenMatch(tokenScope: AccessTokenScope): Boolean {
-        if (tokenScope.scopes.isNotEmpty()) {
-            for (atc in downloadedManifestCache.getAccessTokenPermissions(miniAppId)) {
-                if (atc.audience == tokenScope.audience && atc.scopes.containsAll(tokenScope.scopes))
-                    return true
+                userInfoBridgeDispatcher.getAccessToken(
+                    miniAppId,
+                    tokenPermission,
+                    successCallback,
+                    errorCallback
+                )
+            } else {
+                bridgeExecutor.postError(
+                    callbackObj.id,
+                    Gson().toJson(MiniAppBridgeErrorModel(error?.type, error?.message))
+                )
             }
         }
-        return false
+    }
+    @Suppress("LongMethod", "ComplexMethod")
+    private fun doesAccessTokenMatch(
+        tokenScope: AccessTokenScope,
+        callback: (Boolean, MiniAppAccessTokenError?) -> Unit
+    ) {
+        if (tokenScope.scopes.isNotEmpty()) {
+            var listOfAccessTokenScopesCached = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
+            var audience: AccessTokenScope? =
+                listOfAccessTokenScopesCached.firstOrNull { it.audience == tokenScope.audience }
+                    ?: return callback(false, MiniAppAccessTokenError.audienceNotSupportedError)
+            if (audience?.scopes?.containsAll(tokenScope.scopes) != true) {
+                callback(false, MiniAppAccessTokenError.scopesNotSupportedError)
+            } else {
+                return if (audience != null)
+                // audience and scope matched.
+                    callback(true, null)
+                else
+                    callback(
+                        false,
+                        MiniAppAccessTokenError.custom(
+                            message = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
+                        )
+                    )
+            }
+        } else {
+            callback(
+                false,
+                MiniAppAccessTokenError.custom(
+                    message = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
+                )
+            )
+        }
     }
 
     private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenScope>(

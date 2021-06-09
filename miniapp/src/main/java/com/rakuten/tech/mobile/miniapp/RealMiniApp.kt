@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -11,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 
 @Suppress("TooManyFunctions", "LongMethod")
 internal class RealMiniApp(
@@ -19,11 +21,14 @@ internal class RealMiniApp(
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
-    initDownloadedManifestCache: () -> DownloadedManifestCache
+    initDownloadedManifestCache: () -> DownloadedManifestCache,
+    initManifestVerifier: () -> MiniAppManifestVerifier,
+    private var miniAppAnalytics: MiniAppAnalytics
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
+    private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -64,7 +69,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -88,7 +94,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -110,7 +117,8 @@ internal class RealMiniApp(
                 miniAppFileChooser,
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
-                queryParams
+                queryParams,
+                miniAppAnalytics
             )
         }
     }
@@ -132,22 +140,33 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
         }
+
+        miniAppAnalytics =
+            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
 
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
         if (cachedManifest?.versionId != versionId) {
-            val apiManifest = getMiniAppManifest(appId, versionId)
-            downloadedManifestCache.storeDownloadedManifest(appId, CachedManifest(versionId, apiManifest))
+            downloadManifest(appId, versionId)
         }
+        if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
+            val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
+            val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
+            miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
 
-        val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
-        val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
-        miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
+            if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
+                throw RequiredPermissionsNotGrantedException(appId, versionId)
+        } else downloadManifest(appId, versionId)
+    }
 
-        if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
-            throw RequiredPermissionsNotGrantedException(appId, versionId)
+    @VisibleForTesting
+    suspend fun downloadManifest(appId: String, versionId: String) {
+        val apiManifest = getMiniAppManifest(appId, versionId)
+        val cached = CachedManifest(versionId, apiManifest)
+        downloadedManifestCache.storeDownloadedManifest(appId, cached)
+        manifestVerifier.storeHashAsync(appId, cached)
     }
 
     @VisibleForTesting
