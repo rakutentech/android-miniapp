@@ -117,7 +117,7 @@ workflows:
               only: /^feature\/.*/
       - app-center/mapping:
           name: deploy-test-app-stg-mapping
-          file: apk/staging/mapping.txt
+          file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
           version-name: $APP_CENTER_APP_NAME
@@ -129,7 +129,7 @@ workflows:
               only: master
       - app-center/mapping:
           name: deploy-test-app-release-mapping
-          file: apk/release/mapping.txt
+          file: mapping/release/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
           version-name: $APP_CENTER_APP_NAME
@@ -143,7 +143,7 @@ workflows:
               ignore: /.*/
       - app-center/mapping:
           name: deploy-test-app-rc-mapping
-          file: apk/rc/mapping.txt
+          file: mapping/rc/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
           version-name: $APP_CENTER_APP_NAME
