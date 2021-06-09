@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
@@ -94,6 +95,12 @@ class AppSettings private constructor(context: Context) {
         get() = cache.miniAppAnalyticsConfigs ?: emptyList()
         set(miniAppAnalyticsConfigs) {
             cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
+        }
+
+    var accessTokenError: MiniAppAccessTokenError?
+        get() = cache.accessTokenError
+        set(accessTokenError) {
+            cache.accessTokenError = accessTokenError
         }
 
     val baseUrl = manifestConfig.baseUrl()
@@ -196,6 +203,11 @@ private class Settings(context: Context) {
         )
         set(miniAppAnalyticsConfigs) = prefs.edit().putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
 
+    var accessTokenError: MiniAppAccessTokenError?
+        get() = gson.fromJson(prefs.getString(ACCESS_TOKEN_ERROR, null), MiniAppAccessTokenError::class.java)
+        set(accessTokenError) = prefs.edit().putString(ACCESS_TOKEN_ERROR, gson.toJson(accessTokenError))
+            .apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
@@ -209,5 +221,6 @@ private class Settings(context: Context) {
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
         private const val ANALYTIC_CONFIGS = "analytic_configs"
+        private const val ACCESS_TOKEN_ERROR = "access_token_error"
     }
 }

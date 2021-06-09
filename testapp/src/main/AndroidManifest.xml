@@ -58,6 +58,9 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity"
             android:label="Permission Settings" />
         <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity"
+            android:label="@string/action_qa" />
+        <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
             android:label="@string/lb_access_token" />
 

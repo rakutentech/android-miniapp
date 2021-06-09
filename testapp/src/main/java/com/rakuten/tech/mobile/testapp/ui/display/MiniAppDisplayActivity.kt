@@ -198,7 +198,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                     accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
                     onError: (tokenError: MiniAppAccessTokenError) -> Unit
-            ) = onSuccess(AppSettings.instance.tokenData)
+            ) {
+                if(AppSettings.instance.accessTokenError != null){
+                    onError(AppSettings.instance.accessTokenError!!)
+                }else{
+                    onSuccess(AppSettings.instance.tokenData)
+                }
+            }
 
             override fun getContacts(
                 onSuccess: (contacts: ArrayList<Contact>) -> Unit,
