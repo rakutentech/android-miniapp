@@ -83,6 +83,7 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
     }
+
     @Suppress("LongMethod")
     internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
         try {
@@ -108,6 +109,7 @@ internal class UserInfoBridge {
             )
         }
     }
+
     @Suppress("LongMethod")
     private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
@@ -139,14 +141,15 @@ internal class UserInfoBridge {
             }
         }
     }
+
     @Suppress("LongMethod", "ComplexMethod")
     private fun doesAccessTokenMatch(
         tokenScope: AccessTokenScope,
         callback: (Boolean, MiniAppAccessTokenError?) -> Unit
     ) {
         if (tokenScope.scopes.isNotEmpty()) {
-            var listOfAccessTokenScopesCached = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
-            var audience: AccessTokenScope? =
+            val listOfAccessTokenScopesCached = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
+            val audience: AccessTokenScope? =
                 listOfAccessTokenScopesCached.firstOrNull { it.audience == tokenScope.audience }
                     ?: return callback(false, MiniAppAccessTokenError.audienceNotSupportedError)
             if (audience?.scopes?.containsAll(tokenScope.scopes) != true) {

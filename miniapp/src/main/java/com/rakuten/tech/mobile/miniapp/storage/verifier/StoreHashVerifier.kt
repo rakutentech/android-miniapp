@@ -36,7 +36,7 @@ internal class StoreHashVerifier @VisibleForTesting constructor(
         }
 }
 
-@SuppressWarnings("SwallowedException")
+@SuppressWarnings("SwallowedException", "TooGenericExceptionCaught")
 private fun initEncryptedSharedPreference(context: Context, fileName: String) = try {
     EncryptedSharedPreferences.create(
         context,
