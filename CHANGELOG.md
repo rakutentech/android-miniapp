@@ -11,6 +11,7 @@
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.
+- **Feature:** Added QA option in settings screen to test `authorizationFailureError` and `custom` error type.
 
 ### 3.2.0 (2021-04-23)
 **SDK**

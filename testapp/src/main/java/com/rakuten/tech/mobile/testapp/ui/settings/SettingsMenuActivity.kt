@@ -27,6 +27,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.ME
 import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
 import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity
 import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.properties.Delegates
@@ -122,7 +123,13 @@ class SettingsMenuActivity : BaseActivity() {
             MiniAppDownloadedListActivity.start(this@SettingsMenuActivity)
         }
 
-        binding.buttonAccessToken.setOnClickListener { AccessTokenActivity.start(this@SettingsMenuActivity) }
+        binding.buttonAccessToken.setOnClickListener {
+            AccessTokenActivity.start(this@SettingsMenuActivity)
+        }
+
+        binding.buttonQA.setOnClickListener {
+            QASettingsActivity.start(this@SettingsMenuActivity)
+        }
 
         validateInputIDs()
     }
