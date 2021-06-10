@@ -127,13 +127,15 @@ internal class DownloadedManifestCache(context: Context) {
     }
 
     @VisibleForTesting
-    fun readFromCachedFile(miniAppId: String): CachedManifest? {
+    fun readFromCachedFile(miniAppId: String): CachedManifest? = try {
         val jsonToRead = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).bufferedReader()
             .use {
                 it.readText()
                     .dropLast(2) // for fixing the json format
             }
-        return toCachedManifest(jsonToRead)
+        toCachedManifest(jsonToRead)
+    } catch (e: Exception) {
+        null
     }
 
     private companion object {
