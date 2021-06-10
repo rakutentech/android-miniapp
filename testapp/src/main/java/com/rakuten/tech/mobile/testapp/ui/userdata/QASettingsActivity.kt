@@ -1,22 +1,17 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.miniapp.testapp.databinding.AccessTokenSettingsActivityBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.parseDateToString
-import com.rakuten.tech.mobile.testapp.helper.parseStringToDate
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.util.*
 
 class QASettingsActivity : BaseActivity() {
 
@@ -38,6 +33,7 @@ class QASettingsActivity : BaseActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.qa_settings_activity)
         binding.activity = this
         renderScreen()
+        startListeners()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -82,10 +78,30 @@ class QASettingsActivity : BaseActivity() {
         }
     }
 
+    private fun startListeners(){
+        binding.switchAuthFailure.setOnCheckedChangeListener(listener)
+        binding.switchOtherError.setOnCheckedChangeListener(listener)
+    }
+
+    private val listener =
+        CompoundButton.OnCheckedChangeListener { view, isChecked ->
+            setSwitchStates(view,isChecked)
+        }
+
+    private fun setSwitchStates(view: CompoundButton, isChecked: Boolean) {
+        when(view.id){
+            R.id.switchAuthFailure-> {
+                if(isChecked) binding.switchOtherError.isChecked = false
+            }
+            R.id.switchOtherError->{
+                if(isChecked) binding.switchAuthFailure.isChecked = false
+            }
+        }
+    }
+
     private fun update() {
         // If Authorization failure checked then authorizationFailureError type will send.
         // If Unknown failure checked then custom type will send.
-        // If Authorization and Unknown both checked then authorizationFailureError type will send.
         when {
             binding.switchAuthFailure.isChecked -> {
                 settings.accessTokenError =
