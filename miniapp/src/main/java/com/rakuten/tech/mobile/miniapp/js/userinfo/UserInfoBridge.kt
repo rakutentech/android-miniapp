@@ -152,16 +152,7 @@ internal class UserInfoBridge {
             if (audience?.scopes?.containsAll(tokenScope.scopes) != true) {
                 callback(false, MiniAppAccessTokenError.scopesNotSupportedError)
             } else {
-                return if (audience != null)
-                // audience and scope matched.
-                    callback(true, null)
-                else
-                    callback(
-                        false,
-                        MiniAppAccessTokenError.custom(
-                            message = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
-                        )
-                    )
+                return callback(true, null)
             }
         } else {
             callback(
