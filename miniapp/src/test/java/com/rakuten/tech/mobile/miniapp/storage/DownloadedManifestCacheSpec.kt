@@ -46,12 +46,10 @@ class DownloadedManifestCacheSpec {
         doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
     }
 
-    @Test(expected = FileNotFoundException::class)
+    @Test
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
-        doReturn(null).whenever(manifestCache).readFromCachedFile(TEST_MA_ID)
         val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
-        val expected = null
-        actual shouldEqual expected
+        actual shouldEqual null
     }
 
     @Test

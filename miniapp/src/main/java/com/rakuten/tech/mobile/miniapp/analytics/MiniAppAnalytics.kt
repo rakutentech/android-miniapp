@@ -75,6 +75,7 @@ internal class MiniAppAnalytics(
         }
     }
 
+    @Suppress("LongMethod")
     internal fun sendAnalytics(eType: Etype, actype: Actype, miniAppInfo: MiniAppInfo?) = try {
         // Send to this acc/aid
         val params = createParams(
