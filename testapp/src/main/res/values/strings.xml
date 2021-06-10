@@ -16,7 +16,6 @@
     <string name="lb_other_error">Always Generate Custom Error</string>
     <string name="hint_custom_error_message">Custom Error Message</string>
 
-
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
     <string name="menu_title_change_settings">Change App Settings</string>

@@ -199,9 +199,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                     onSuccess: (tokenData: TokenData) -> Unit,
                     onError: (tokenError: MiniAppAccessTokenError) -> Unit
             ) {
-                if(AppSettings.instance.accessTokenError != null){
+                if (AppSettings.instance.accessTokenError != null) {
                     onError(AppSettings.instance.accessTokenError!!)
-                }else{
+                } else {
                     onSuccess(AppSettings.instance.tokenData)
                 }
             }

@@ -56,7 +56,7 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun renderScreen() {
-        if(accessTokenErrorCacheData != null){
+        if (accessTokenErrorCacheData != null) {
             // set up initial state.
             when {
                 accessTokenErrorCacheData?.type != null -> {
@@ -70,7 +70,7 @@ class QASettingsActivity : BaseActivity() {
                     binding.edtCustomErrorMessage.setText(accessTokenErrorCacheData?.message ?: "")
                 }
             }
-        }else{
+        } else {
             // default state
             binding.switchAuthFailure.isChecked = false
             binding.switchOtherError.isChecked = false
