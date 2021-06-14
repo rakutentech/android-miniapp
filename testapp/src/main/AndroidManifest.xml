@@ -65,8 +65,10 @@
             android:label="@string/lb_access_token" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
-            android:exported="true">
-            <intent-filter android:label="@string/lb_filter_view_miniapp">
+            android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
+            <intent-filter
+                android:autoVerify="true"
+                android:label="@string/lb_filter_view_miniapp">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
