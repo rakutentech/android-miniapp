@@ -1,5 +1,4 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -23,54 +22,28 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_access_token" />
 
-        <RelativeLayout
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchAuthFailure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="@dimen/medium_16">
-
-            <Switch
-                android:id="@+id/switchAuthFailure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:checked="false" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/lb_auth_failure_error"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/text_large_16" />
-        </RelativeLayout>
+            android:padding="@dimen/medium_16"
+            android:text="@string/lb_auth_failure_error"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/horizontal_divider_height"
             android:background="@color/bg_section" />
 
-        <RelativeLayout
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchOtherError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="@dimen/medium_16">
-
-            <Switch
-                android:id="@+id/switchOtherError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:checked="false" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/lb_other_error"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/text_large_16" />
-        </RelativeLayout>
+            android:padding="@dimen/medium_16"
+            android:text="@string/lb_other_error"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
 
         <View
             android:layout_width="match_parent"
@@ -80,16 +53,38 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/small_8"
+            android:padding="@dimen/small_8">
 
-            android:visibility="visible">
-
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtCustomErrorMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/small_4"
                 android:hint="@string/hint_custom_error_message"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_section"
+            android:paddingStart="@dimen/medium_16"
+            android:paddingTop="@dimen/small_4"
+            android:paddingEnd="@dimen/medium_16"
+            android:paddingBottom="@dimen/small_4"
+            android:text="@string/lb_unique_id" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_8">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtUniqueIdError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_4"
+                android:hint="@string/hint_unique_id_error"
                 android:imeOptions="actionDone"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>

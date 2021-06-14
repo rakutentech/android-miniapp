@@ -39,13 +39,15 @@ class AppSettings private constructor(context: Context) {
         }
 
     var uniqueId: String
-        get() {
-            val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
+        get() = cache.uniqueId ?: UUID.randomUUID().toString()
+        set(uniqueId) {
             cache.uniqueId = uniqueId
-            return uniqueId
         }
-        set(subscriptionKey) {
-            cache.subscriptionKey = subscriptionKey
+
+    var uniqueIdError: String
+        get() = cache.uniqueIdError ?: ""
+        set(uniqueIdError) {
+            cache.uniqueIdError = uniqueIdError
         }
 
     var isSettingSaved: Boolean
@@ -103,11 +105,9 @@ class AppSettings private constructor(context: Context) {
             cache.accessTokenError = accessTokenError
         }
 
-    val baseUrl = manifestConfig.baseUrl()
-
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
-            baseUrl = baseUrl,
+            baseUrl = manifestConfig.baseUrl(),
             rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
@@ -158,6 +158,10 @@ private class Settings(context: Context) {
     var uniqueId: String?
         get() = prefs.getString(UNIQUE_ID, null)
         set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
+
+    var uniqueIdError: String?
+        get() = prefs.getString(UNIQUE_ID_ERROR, null)
+        set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
 
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
@@ -213,6 +217,7 @@ private class Settings(context: Context) {
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
+        private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
