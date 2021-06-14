@@ -63,15 +63,19 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
             android:label="@string/lb_access_token" />
-        <activity android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity">
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
+            android:exported="true">
             <intent-filter android:label="@string/lb_filter_view_miniapp">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="@string/miniappdemo_scheme"
                     android:host="@string/miniappdemo_host"
-                    android:pathPrefix="@string/miniappdemo_pathprefix" />
+                    android:pathPrefix="@string/miniappdemo_pathprefix"
+                    android:scheme="@string/miniappdemo_scheme" />
             </intent-filter>
         </activity>
 
