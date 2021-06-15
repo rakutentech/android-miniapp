@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
@@ -56,6 +58,7 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun renderScreen() {
+        // access token
         if (accessTokenErrorCacheData != null) {
             // set up initial state.
             when {
@@ -74,27 +77,35 @@ class QASettingsActivity : BaseActivity() {
             // default state
             binding.switchAuthFailure.isChecked = false
             binding.switchOtherError.isChecked = false
-            binding.edtCustomErrorMessage.text.clear()
+            binding.edtCustomErrorMessage.text?.clear()
         }
+
+        // unique id
+        binding.edtUniqueIdError.isEnabled = settings.uniqueIdError.isNotEmpty()
+        binding.edtUniqueIdError.setText(settings.uniqueIdError)
+        binding.switchUniqueIdError.isChecked = settings.uniqueIdError.isNotEmpty()
     }
 
     private fun startListeners(){
-        binding.switchAuthFailure.setOnCheckedChangeListener(listener)
-        binding.switchOtherError.setOnCheckedChangeListener(listener)
+        binding.switchAuthFailure.setOnCheckedChangeListener(accessTokenListener)
+        binding.switchOtherError.setOnCheckedChangeListener(accessTokenListener)
+        binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
+            binding.edtUniqueIdError.isEnabled = isChecked
+        }
     }
 
-    private val listener =
+    private val accessTokenListener =
         CompoundButton.OnCheckedChangeListener { view, isChecked ->
-            setSwitchStates(view,isChecked)
+            setAccessTokenSwitchStates(view,isChecked)
         }
 
-    private fun setSwitchStates(view: CompoundButton, isChecked: Boolean) {
-        when(view.id){
-            R.id.switchAuthFailure-> {
-                if(isChecked) binding.switchOtherError.isChecked = false
+    private fun setAccessTokenSwitchStates(view: CompoundButton, isChecked: Boolean) {
+        when (view.id) {
+            R.id.switchAuthFailure -> {
+                if (isChecked) binding.switchOtherError.isChecked = false
             }
-            R.id.switchOtherError->{
-                if(isChecked) binding.switchAuthFailure.isChecked = false
+            R.id.switchOtherError -> {
+                if (isChecked) binding.switchAuthFailure.isChecked = false
             }
         }
     }
@@ -119,6 +130,17 @@ class QASettingsActivity : BaseActivity() {
                 settings.accessTokenError = null
             }
         }
+
+        // Save unique ID error response
+        if (binding.switchUniqueIdError.isChecked) {
+            if (binding.edtUniqueIdError.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG).show()
+                return
+            } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
+        } else settings.uniqueIdError = ""
+
+        // post tasks
+        hideSoftKeyboard(binding.root)
         finish()
     }
 }

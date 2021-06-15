@@ -173,7 +173,11 @@ open class MiniAppMessageBridge {
         val successCallback = { uniqueId: String ->
             bridgeExecutor.postValue(callbackObj.id, uniqueId)
         }
-        val errorCallback = { message: String -> throw MiniAppSdkException(message) }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                    callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} $message"
+            )
+        }
 
         getUniqueId(successCallback, errorCallback)
     } catch (e: Exception) {
