@@ -11,11 +11,14 @@
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
-    <string name="lb_filter_view_miniapp">Open MiniApp</string>
+    <string name="lb_unique_id">Unique ID</string>
 
     <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
     <string name="lb_other_error">Always Generate Custom Error</string>
     <string name="hint_custom_error_message">Custom Error Message</string>
+
+    <string name="lb_unique_id_error">Always Generate Unique ID Error</string>
+    <string name="hint_unique_id_error">Unique ID Error Message</string>
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>

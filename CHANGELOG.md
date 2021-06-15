@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 3.4.0 (2021-06-XX)
+**SDK**
+- **Fix:** Prevent exception during calling `onError` asynchronously in `getUniqueId`.
+
 ### 3.3.0 (2021-05-19)
 **SDK**
 - **Deprecated:** Old `getUniqueId`interface.
