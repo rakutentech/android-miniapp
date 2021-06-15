@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -151,10 +150,15 @@ class MiniAppDisplayActivity : BaseActivity() {
     private fun setupMiniAppMessageBridge() {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
+
             override fun getUniqueId(
                     onSuccess: (uniqueId: String) -> Unit,
                     onError: (message: String) -> Unit
-            ) = onSuccess(AppSettings.instance.uniqueId)
+            ) {
+                val errorMsg = AppSettings.instance.uniqueIdError
+                if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess(AppSettings.instance.uniqueId)
+            }
 
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
