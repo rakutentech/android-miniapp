@@ -17,6 +17,7 @@
     <string name="lb_other_error">Always Generate Custom Error</string>
     <string name="hint_custom_error_message">Custom Error Message</string>
 
+    <string name="lb_unique_id_error">Always Generate Unique ID Error</string>
     <string name="hint_unique_id_error">Unique ID Error Message</string>
 
     <string name="menu_title_search">Search</string>

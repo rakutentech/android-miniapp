@@ -155,10 +155,9 @@ class MiniAppDisplayActivity : BaseActivity() {
                     onSuccess: (uniqueId: String) -> Unit,
                     onError: (message: String) -> Unit
             ) {
-                onSuccess(AppSettings.instance.uniqueId)
-
                 val errorMsg = AppSettings.instance.uniqueIdError
                 if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess(AppSettings.instance.uniqueId)
             }
 
             override fun requestDevicePermission(

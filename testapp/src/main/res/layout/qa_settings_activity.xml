@@ -74,6 +74,20 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_unique_id" />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchUniqueIdError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/medium_16"
+            android:text="@string/lb_unique_id_error"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_large_16" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/horizontal_divider_height"
+            android:background="@color/bg_section" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

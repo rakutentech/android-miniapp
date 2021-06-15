@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -57,6 +58,7 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun renderScreen() {
+        // access token
         if (accessTokenErrorCacheData != null) {
             // set up initial state.
             when {
@@ -78,12 +80,18 @@ class QASettingsActivity : BaseActivity() {
             binding.edtCustomErrorMessage.text?.clear()
         }
 
+        // unique id
+        binding.edtUniqueIdError.isEnabled = settings.uniqueIdError.isNotEmpty()
         binding.edtUniqueIdError.setText(settings.uniqueIdError)
+        binding.switchUniqueIdError.isChecked = settings.uniqueIdError.isNotEmpty()
     }
 
     private fun startListeners(){
         binding.switchAuthFailure.setOnCheckedChangeListener(accessTokenListener)
         binding.switchOtherError.setOnCheckedChangeListener(accessTokenListener)
+        binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
+            binding.edtUniqueIdError.isEnabled = isChecked
+        }
     }
 
     private val accessTokenListener =
@@ -124,7 +132,14 @@ class QASettingsActivity : BaseActivity() {
         }
 
         // Save unique ID error response
-        settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
+        if (binding.switchUniqueIdError.isChecked) {
+            if (binding.edtUniqueIdError.text.isNullOrEmpty()) {
+                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG).show()
+                return
+            } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
+        } else settings.uniqueIdError = ""
+
+        // post tasks
         hideSoftKeyboard(binding.root)
         finish()
     }

@@ -39,9 +39,13 @@ class AppSettings private constructor(context: Context) {
         }
 
     var uniqueId: String
-        get() = cache.uniqueId ?: UUID.randomUUID().toString()
-        set(uniqueId) {
+        get() {
+            val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
             cache.uniqueId = uniqueId
+            return uniqueId
+        }
+        set(subscriptionKey) {
+            cache.subscriptionKey = subscriptionKey
         }
 
     var uniqueIdError: String
