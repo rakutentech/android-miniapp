@@ -12,6 +12,7 @@
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
     <string name="lb_unique_id">Unique ID</string>
+    <string name="lb_filter_view_miniapp">Open MiniApp</string>
 
     <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
     <string name="lb_other_error">Always Generate Custom Error</string>
