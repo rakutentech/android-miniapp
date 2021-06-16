@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -21,12 +22,14 @@ internal class RealMiniApp(
     private val displayer: Displayer,
     private val miniAppInfoFetcher: MiniAppInfoFetcher,
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
+    initManifestApiCache: () -> ManifestApiCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
     private var miniAppAnalytics: MiniAppAnalytics
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
+    private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
     private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
 
@@ -148,7 +151,10 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        if (cachedManifest?.versionId != versionId) {
+        val cachedApiManifest = manifestApiCache.readManifest(appId, versionId)
+        if ((cachedManifest?.versionId != versionId) ||
+                // this is the case when user wants to update miniapp using same version id
+                (!isManifestEqual(cachedApiManifest, cachedManifest.miniAppManifest))) {
             downloadManifest(appId, versionId)
         }
         if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
@@ -162,11 +168,30 @@ internal class RealMiniApp(
     }
 
     @VisibleForTesting
+    fun isManifestEqual(apiManifest: MiniAppManifest?, downloadedManifest: MiniAppManifest?): Boolean {
+        if (apiManifest != null && downloadedManifest != null) {
+            val changedRequiredPermissions =
+                    (apiManifest.requiredPermissions + downloadedManifest.requiredPermissions).groupBy { it.first.type }
+                            .filter { it.value.size == 1 }
+                            .flatMap { it.value }
+
+            val changedOptionalPermissions =
+                    (apiManifest.optionalPermissions + downloadedManifest.optionalPermissions).groupBy { it.first.type }
+                            .filter { it.value.size == 1 }
+                            .flatMap { it.value }
+
+            return changedRequiredPermissions.isEmpty() && changedOptionalPermissions.isEmpty() &&
+                    apiManifest.customMetaData == downloadedManifest.customMetaData
+        }
+        return false
+    }
+
+    @VisibleForTesting
     suspend fun downloadManifest(appId: String, versionId: String) {
         val apiManifest = getMiniAppManifest(appId, versionId)
-        val cached = CachedManifest(versionId, apiManifest)
-        downloadedManifestCache.storeDownloadedManifest(appId, cached)
-        manifestVerifier.storeHashAsync(appId, cached)
+        val storableManifest = CachedManifest(versionId, apiManifest)
+        downloadedManifestCache.storeDownloadedManifest(appId, storableManifest)
+        manifestVerifier.storeHashAsync(appId, storableManifest)
     }
 
     @VisibleForTesting
