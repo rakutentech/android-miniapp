@@ -10,7 +10,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -211,13 +210,11 @@ abstract class MiniApp internal constructor() {
                     apiClient = apiClient,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
-                    initVerifier = { CachedMiniAppVerifier(context) },
-                    initManifestApiCache = { ManifestApiCache(context) }
+                    initVerifier = { CachedMiniAppVerifier(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
-                initManifestApiCache = { ManifestApiCache(context) },
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = MiniAppAnalytics(
                     miniAppSdkConfig.rasProjectId,

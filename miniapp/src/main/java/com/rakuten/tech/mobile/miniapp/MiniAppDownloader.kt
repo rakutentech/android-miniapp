@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
@@ -29,13 +28,11 @@ internal class MiniAppDownloader(
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
-    initManifestApiCache: () -> ManifestApiCache,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
     private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
     private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
-    private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -143,16 +140,9 @@ internal class MiniAppDownloader(
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
         return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            // every version should have it's own manifest information or null
-            val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
-            if (cachedLatestManifest != null) cachedLatestManifest
-            else {
-                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
-                val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
-                if (!apiClient.isPreviewMode)
-                    manifestApiCache.storeManifest(appId, versionId, latestManifest)
-                latestManifest
-            }
+            // every version should have it's own manifest information and it can be changed
+            val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+            prepareMiniAppManifest(apiResponse, versionId)
         }
     }
 
