@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- This Relative layout is only to show the alert Dialog fullscreen-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -63,14 +62,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
                     android:layout_marginBottom="@dimen/margin_20"
-                    android:text="Close"
+                    android:text="@string/lb_close"
                     android:textColor="@color/link_blue"
                     android:textSize="@dimen/text_large_16"
                     android:textStyle="bold" />
             </LinearLayout>
-
-
         </LinearLayout>
-
     </RelativeLayout>
 </layout>

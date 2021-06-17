@@ -16,22 +16,19 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowQrCodeErrorBind
 /**
  * This QRErroWindow is the common class for qrcode/deeplink error.
  */
-class QRErroWindow {
+class QRErrorWindow {
 
     companion object {
-        private var mInstance: QRErroWindow? = null
+        private var instance: QRErrorWindow? = null
         private var dialog: AlertDialog? = null
-        private var binding: WindowQrCodeErrorBinding? = null
+        private lateinit var binding: WindowQrCodeErrorBinding
         private lateinit var context: Context
 
         @Synchronized
-        fun getInstance(context: Context): QRErroWindow {
-            if (mInstance == null) {
-                mInstance = QRErroWindow()
-            }
+        fun getInstance(context: Context): QRErrorWindow {
             dialog = dialog ?: initDialog(context)
             this.context = context
-            return mInstance as QRErroWindow
+            return instance ?: QRErrorWindow()
         }
 
         private fun initDialog(context: Context): AlertDialog {
@@ -41,7 +38,7 @@ class QRErroWindow {
                 layoutInflater, R.layout.window_qr_code_error, null, false
             )
             val alertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
-            alertDialog?.setView(binding?.root)
+            alertDialog?.setView(binding.root)
             return alertDialog
         }
     }
@@ -71,7 +68,7 @@ class QRErroWindow {
         renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
     }
 
-    private fun dissmissDialog() {
+    private fun dismissDialog() {
         dialog?.cancel()
     }
 
@@ -85,12 +82,12 @@ class QRErroWindow {
 
     /** render view for specific error type. */
     private fun renderScreen(type: QRCodeErrorType, versionCode: String? = null) {
-        if (dialog?.isShowing == true) dialog?.cancel()
-        binding?.imgThumbnail?.setImageResource(getThumbImage(type))
-        binding?.tvErrorTitle?.text = getTitleDescription(type, versionCode).first
-        binding?.tvErrorDescription?.text = getTitleDescription(type, versionCode).second
-        binding?.tvErrorDescription?.movementMethod = LinkMovementMethod.getInstance();
-        binding?.btnClose?.setOnClickListener(listener)
+        if (dialog?.isShowing == true) dismissDialog()
+        binding.imgThumbnail.setImageResource(getThumbImage(type))
+        binding.tvErrorTitle.text = getTitleDescription(type, versionCode).first
+        binding.tvErrorDescription.text = getTitleDescription(type, versionCode).second
+        binding.tvErrorDescription.movementMethod = LinkMovementMethod.getInstance()
+        binding.btnClose.setOnClickListener(listener)
         dialog?.show()
     }
 
@@ -160,10 +157,9 @@ class QRErroWindow {
         }
 
         override fun updateDrawState(ds: TextPaint) {
-            // set to false to remove underline.
             ds.isUnderlineText = false
             ds.color = context.getColor(R.color.link_blue)
         }
     }
-    private val listener = View.OnClickListener { dissmissDialog() }
+    private val listener = View.OnClickListener { dismissDialog() }
 }

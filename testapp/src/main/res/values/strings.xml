@@ -80,4 +80,5 @@
     <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
 
     <string name="help_center_text">Help Center</string>
+    <string name="lb_close">Close</string>
 </resources>
