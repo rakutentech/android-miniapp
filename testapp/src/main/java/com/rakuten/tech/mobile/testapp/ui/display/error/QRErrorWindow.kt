@@ -20,15 +20,15 @@ class QRErrorWindow {
 
     companion object {
         private var instance: QRErrorWindow? = null
-        private var dialog: AlertDialog? = null
+        private lateinit var dialog: AlertDialog
         private lateinit var binding: WindowQrCodeErrorBinding
         private lateinit var context: Context
 
         @Synchronized
         fun getInstance(context: Context): QRErrorWindow {
-            dialog = dialog ?: initDialog(context)
+            dialog = initDialog(context)
             this.context = context
-            return instance ?: QRErrorWindow()
+            return instance ?: QRErrorWindow().also { instance = it }
         }
 
         private fun initDialog(context: Context): AlertDialog {
@@ -45,31 +45,31 @@ class QRErrorWindow {
 
     /** show error screen for miniApp no longer exist. */
     fun showMiniAppNoLongerExistError() {
-        renderScreen(QRCodeErrorType.MiniAppNoLongerExist)
+        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoLongerExist)
     }
 
     /** show error screen for does not have permission. */
     fun showMiniAppPermissionError() {
-        renderScreen(QRCodeErrorType.MiniAppNoPermission)
+        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPermission)
     }
 
     /** show error screen for qrCode expired. */
     fun showQRCodeExpiredError() {
-        renderScreen(QRCodeErrorType.QRCodeExpire)
+        if (instance != null) renderScreen(QRCodeErrorType.QRCodeExpire)
     }
 
     /** show error screen for miniApp can not be previewed for specific version. */
     fun showMiniAppPreviewError(versionCode: String) {
-        renderScreen(QRCodeErrorType.MiniAppNoPreview, versionCode)
+        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPreview, versionCode)
     }
 
     /** show error screen for miniApp version do not exist. */
     fun showMiniAppVersionError(versionCode: String) {
-        renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
+        if (instance != null) renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
     }
 
     private fun dismissDialog() {
-        dialog?.cancel()
+        dialog.cancel()
     }
 
     private enum class QRCodeErrorType {
@@ -82,13 +82,13 @@ class QRErrorWindow {
 
     /** render view for specific error type. */
     private fun renderScreen(type: QRCodeErrorType, versionCode: String? = null) {
-        if (dialog?.isShowing == true) dismissDialog()
+        if (dialog.isShowing) dismissDialog()
         binding.imgThumbnail.setImageResource(getThumbImage(type))
         binding.tvErrorTitle.text = getTitleDescription(type, versionCode).first
         binding.tvErrorDescription.text = getTitleDescription(type, versionCode).second
         binding.tvErrorDescription.movementMethod = LinkMovementMethod.getInstance()
         binding.btnClose.setOnClickListener(listener)
-        dialog?.show()
+        dialog.show()
     }
 
     /** return the thumb image res id. */
