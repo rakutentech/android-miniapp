@@ -94,7 +94,7 @@ class QRErrorWindow {
     /** return the thumb image res id. */
     private fun getThumbImage(type: QRCodeErrorType): Int{
         return when(type){
-            QRCodeErrorType.MiniAppNoLongerExist,QRCodeErrorType.MiniAppNoPermission -> R.drawable.ic_qr_error_invalid_miniapp
+            QRCodeErrorType.MiniAppNoLongerExist, QRCodeErrorType.MiniAppNoPermission -> R.drawable.ic_qr_error_invalid_miniapp
             else -> R.drawable.ic_qr_error_basic
         }
     }
