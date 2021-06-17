@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowQrCodeErrorBinding
 
 /**
- * This QRErroWindow is the common class for qrcode/deeplink error.
+ * This QRErrorWindow is the common class for qrcode/deeplink error.
  */
 class QRErrorWindow {
 
