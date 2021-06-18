@@ -217,6 +217,7 @@ abstract class MiniApp internal constructor() {
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
+                initManifestApiCache = { ManifestApiCache(context) },
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = MiniAppAnalytics(
                     miniAppSdkConfig.rasProjectId,
