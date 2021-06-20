@@ -147,8 +147,8 @@ internal class RealMiniApp(
 
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
-        checkToDownloadManifest(appId, versionId)
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
+        checkToDownloadManifest(appId, versionId, cachedManifest)
         if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
             val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
@@ -156,12 +156,11 @@ internal class RealMiniApp(
 
             if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
                 throw RequiredPermissionsNotGrantedException(appId, versionId)
-        } else checkToDownloadManifest(appId, versionId)
+        } else checkToDownloadManifest(appId, versionId, cachedManifest)
     }
 
     @VisibleForTesting
-    suspend fun checkToDownloadManifest(appId: String, versionId: String) {
-        val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
+    suspend fun checkToDownloadManifest(appId: String, versionId: String, cachedManifest: CachedManifest?) {
         val apiManifest = getMiniAppManifest(appId, versionId)
         val isDifferentVersion = cachedManifest?.versionId != versionId
         val isSameVerDiffApp = !isManifestEqual(apiManifest, cachedManifest?.miniAppManifest)

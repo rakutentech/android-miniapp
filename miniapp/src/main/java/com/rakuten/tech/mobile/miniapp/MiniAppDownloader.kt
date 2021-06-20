@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.api.*
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
@@ -141,9 +141,9 @@ internal class MiniAppDownloader(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            if (apiClient.isPreviewMode) {
+            return if (apiClient.isPreviewMode) {
                 // every version should have it's own manifest information and it can be changed
                 val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
                 prepareMiniAppManifest(apiResponse, versionId)
