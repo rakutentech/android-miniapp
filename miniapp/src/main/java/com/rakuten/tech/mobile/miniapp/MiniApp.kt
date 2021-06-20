@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -210,7 +211,8 @@ abstract class MiniApp internal constructor() {
                     apiClient = apiClient,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
-                    initVerifier = { CachedMiniAppVerifier(context) }
+                    initVerifier = { CachedMiniAppVerifier(context) },
+                    initManifestApiCache = { ManifestApiCache(context) }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
