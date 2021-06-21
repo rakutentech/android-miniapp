@@ -103,6 +103,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     private fun onGettingManifestWhileCreate() = runBlockingTest {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
         When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
@@ -289,6 +290,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Test(expected = RequiredPermissionsNotGrantedException::class)
     fun `verifyManifest will throw exception when required permissions are denied`() =
         runBlockingTest {
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
 
