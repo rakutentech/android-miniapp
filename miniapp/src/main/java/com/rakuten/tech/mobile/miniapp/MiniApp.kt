@@ -2,18 +2,20 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
-import com.rakuten.tech.mobile.miniapp.storage.FileWriter
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.FileWriter
+import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 
@@ -121,7 +123,11 @@ abstract class MiniApp internal constructor() {
      * server but has no published versions
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any other reason.
      */
-    @Throws(MiniAppNotFoundException::class, MiniAppHasNoPublishedVersionException::class, MiniAppSdkException::class)
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class
+    )
     abstract suspend fun fetchInfo(appId: String): MiniAppInfo
 
     /**
@@ -210,7 +216,12 @@ abstract class MiniApp internal constructor() {
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
-                initDownloadedManifestCache = { DownloadedManifestCache(context) }
+                initDownloadedManifestCache = { DownloadedManifestCache(context) },
+                initManifestVerifier = { MiniAppManifestVerifier(context) },
+                miniAppAnalytics = MiniAppAnalytics(
+                    miniAppSdkConfig.rasProjectId,
+                    miniAppSdkConfig.miniAppAnalyticsConfigList
+                )
             )
         }
     }

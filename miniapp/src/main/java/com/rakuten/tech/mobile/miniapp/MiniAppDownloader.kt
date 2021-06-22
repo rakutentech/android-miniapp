@@ -9,7 +9,7 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
+import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.CoroutineDispatcher
@@ -99,10 +99,15 @@ internal class MiniAppDownloader(
         miniAppStatus.saveDownloadedMiniApp(miniAppInfo)
     }
 
+    @SuppressWarnings("MaximumLineLength")
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
-        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, versionPath)) {
+        if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
+                miniAppInfo.id,
+                miniAppInfo.version.versionId, versionPath
+            )
+        ) {
             return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
             else {
@@ -111,7 +116,11 @@ internal class MiniAppDownloader(
                             "The files will be deleted and the Mini App re-downloaded."
                 )
                 storage.removeApp(miniAppInfo.id)
-                miniAppStatus.setVersionDownloaded(miniAppInfo.id, miniAppInfo.version.versionId, false)
+                miniAppStatus.setVersionDownloaded(
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId,
+                    false
+                )
                 null
             }
         }
@@ -132,17 +141,22 @@ internal class MiniAppDownloader(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
-        return if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
+        if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            // every version should have it's own manifest information or null
-            val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
-            if (cachedLatestManifest != null) cachedLatestManifest
-            else {
+            return if (apiClient.isPreviewMode) {
+                // every version should have it's own manifest information and it can be changed
                 val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
-                val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
-                if (!apiClient.isPreviewMode)
+                prepareMiniAppManifest(apiResponse, versionId)
+            } else {
+                // every version should have it's own manifest information or null
+                val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+                if (cachedLatestManifest != null) cachedLatestManifest
+                else {
+                    val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                    val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
                     manifestApiCache.storeManifest(appId, versionId, latestManifest)
-                latestManifest
+                    latestManifest
+                }
             }
         }
     }

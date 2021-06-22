@@ -3,8 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.storage.CachedMiniAppVerifier
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
+import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("LargeClass")
 open class MiniAppDownloaderBaseSpec {
     internal val apiClient: ApiClient = mock()
     internal val storage: MiniAppStorage = mock()
@@ -74,6 +74,7 @@ open class MiniAppDownloaderBaseSpec {
     }
 }
 @ExperimentalCoroutinesApi
+@SuppressWarnings("LargeClass")
 class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     @Test
     fun `when downloading a mini app then downloader should fetch manifest at first`() {
@@ -396,7 +397,9 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
+    @SuppressWarnings("LongMethod")
     @Test
+    @Suppress("LongMethod")
     fun `prepareMiniAppManifest should return values correctly`() =
         runBlockingTest {
             val metadataEntity = MetadataEntity(

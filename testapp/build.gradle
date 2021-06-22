@@ -7,11 +7,17 @@ def property = { key ->
     return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
 }
 
+def numProperty = { key ->
+    return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : "0")
+}
+
 android {
 
     defaultConfig {
         versionCode 1
         versionName project.version
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_ACC", numProperty("ADDITIONAL_ANALYTICS_ACC")
+        buildConfigField "int", "ADDITIONAL_ANALYTICS_AID", numProperty("ADDITIONAL_ANALYTICS_AID")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,7 +43,7 @@ android {
     def commonPlaceholders = [
             appCenterSecret         : property("APPCENTER_SECRET") ?: "",
             ratAcc                  : property("ANALYTICS_ACC") ?: "0",
-            ratAid                  : property("ANALYTICS_AID") ?: "0",
+            ratAid                  : property("ANALYTICS_AID") ?: "0"
     ]
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
@@ -83,6 +89,7 @@ android {
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             debuggable true
             minifyEnabled true
+            shrinkResources true
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
@@ -108,8 +115,8 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding true
     }
 
     compileOptions {

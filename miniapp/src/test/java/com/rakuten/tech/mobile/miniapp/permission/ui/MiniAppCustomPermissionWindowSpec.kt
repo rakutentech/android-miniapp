@@ -2,36 +2,35 @@ package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AlertDialog
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.mockito.kotlin.*
+import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TestActivity
-import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import org.junit.After
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
+import java.io.File
 
 @Suppress("LongMethod")
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class MiniAppCustomPermissionWindowSpec {
     private lateinit var permissionCache: MiniAppCustomPermissionCache
     private lateinit var downloadedManifestCache: DownloadedManifestCache
-    private lateinit var dispatcher: CustomPermissionBridgeDispatcher
-    private val bridgeExecutor: MiniAppBridgeExecutor = mock()
-    private val context: Context = ApplicationProvider.getApplicationContext()
-    private val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
-    private lateinit var activity: Activity
+    private val dispatcher: CustomPermissionBridgeDispatcher = mock()
+    private val context: Context = mock()
+    private val editor: SharedPreferences.Editor = mock()
+    private val prefs: SharedPreferences = mock()
+    private val activity: Activity = mock()
     private lateinit var permissionWindow: MiniAppCustomPermissionWindow
-    private var activityScenario = ActivityScenario.launch(TestActivity::class.java)
     private val miniAppId = TEST_CALLBACK_ID
     private val permissionWithDescriptions =
         listOf(
@@ -43,52 +42,13 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Before
     fun setup() {
+        Mockito.`when`(prefs.edit()).thenReturn(editor)
+        Mockito.`when`(context.getSharedPreferences(anyString(), anyInt())).thenReturn(prefs)
+        Mockito.`when`(context.filesDir).thenReturn(File(TEST_BASE_PATH))
         permissionCache = MiniAppCustomPermissionCache(prefs, prefs)
-        downloadedManifestCache = DownloadedManifestCache(context)
+        downloadedManifestCache = spy(DownloadedManifestCache(context))
         cachedCustomPermission = permissionCache.readPermissions(miniAppId)
-
-        activityScenario.onActivity {
-            activity = it
-            dispatcher =
-                CustomPermissionBridgeDispatcher(
-                    bridgeExecutor,
-                    permissionCache,
-                    downloadedManifestCache,
-                    miniAppId,
-                    ""
-                )
-            permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        }
-    }
-
-    @After
-    fun finish() {
-        activityScenario.close()
-    }
-
-    @Test
-    fun `should init default view with preparing data when trying to display permissions`() {
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
-
-        verify(permissionWindow).initDefaultWindow()
-        verify(permissionWindow).prepareDataForAdapter(permissionWithDescriptions)
-    }
-
-    @Test
-    fun `should add click listeners when trying to display permissions`() {
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
-
-        verify(permissionWindow).addPermissionClickListeners()
-    }
-
-    @Test
-    fun `should show dialog when trying to display permissions`() {
-        val mockDialog: AlertDialog = mock()
-        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-
-        permissionWindow.displayPermissions(miniAppId, permissionWithDescriptions)
-
-        verify(mockDialog).show()
+        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
     }
 
     @Test

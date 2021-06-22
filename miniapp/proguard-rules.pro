@@ -29,3 +29,6 @@
 
 -keep class com.google.android.gms.ads.MobileAds { *; }
 -keep class com.rakuten.tech.mobile.analytics.Event { *; }
+
+# Prevent crash when minify enabled
+-keep class com.google.crypto.** { *; }
