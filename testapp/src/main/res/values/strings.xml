@@ -69,8 +69,21 @@
 
     <string name="prefix_placeholder">%1$s %2$s</string>
 
+    <string name="error_title_miniapp_no_longer_exist">This mini app is not valid</string>
+    <string name="error_desc_miniapp_no_longer_exist">You can generate a valid QR code on Mini \nApp Platform.\nSee our Help Center for more details.</string>
+    <string name="error_title_miniapp_no_permission">This mini app is not valid</string>
+    <string name="error_desc_miniapp_no_permission">The Host App does not have permission to \na Mini App with this ID. \nSee our Help Center for more details.</string>
+    <string name="error_title_qr_code_expire">"The QR code is expired "</string>
+    <string name="error_desc_qr_code_expire">You can generate a new one on Mini App \nPlatform. See our Help Center for more \ndetails.</string>
+    <string name="error_title_miniapp_no_preview">MiniappName %1$s cannot be previewed now</string>
+    <string name="error_desc_miniapp_no_preview">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
+    <string name="error_title_miniapp_version_mismatch">" Version %1$s is not valid "</string>
+    <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
+
+    <string name="help_center_text">Help Center</string>
+    <string name="lb_close">Close</string>
+
     <string name="miniappdemo_scheme">miniappdemo</string>
     <string name="miniappdemo_host">miniapp</string>
     <string name="miniappdemo_pathprefix">/preview/token/</string>
-
 </resources>
