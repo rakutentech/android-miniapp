@@ -12,6 +12,7 @@
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
     <string name="lb_unique_id">Unique ID</string>
+    <string name="lb_filter_view_miniapp">Open MiniApp</string>
 
     <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
     <string name="lb_other_error">Always Generate Custom Error</string>
@@ -81,4 +82,8 @@
 
     <string name="help_center_text">Help Center</string>
     <string name="lb_close">Close</string>
+
+    <string name="miniappdemo_scheme">miniappdemo</string>
+    <string name="miniappdemo_host">miniapp</string>
+    <string name="miniappdemo_pathprefix">/preview/token/</string>
 </resources>
