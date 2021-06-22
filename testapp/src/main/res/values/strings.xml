@@ -12,6 +12,7 @@
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
     <string name="lb_unique_id">Unique ID</string>
+    <string name="lb_filter_view_miniapp">Open MiniApp</string>
 
     <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
     <string name="lb_other_error">Always Generate Custom Error</string>
@@ -67,4 +68,9 @@
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 
     <string name="prefix_placeholder">%1$s %2$s</string>
+
+    <string name="miniappdemo_scheme">miniappdemo</string>
+    <string name="miniappdemo_host">miniapp</string>
+    <string name="miniappdemo_pathprefix">/preview/token/</string>
+
 </resources>
