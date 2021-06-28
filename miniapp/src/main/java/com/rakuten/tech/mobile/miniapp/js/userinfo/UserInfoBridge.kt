@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -191,6 +192,26 @@ internal class UserInfoBridge {
         }
     }
 
+    @Suppress("LongMethod")
+    internal fun onGetPoints(callbackId: String) = whenReady(callbackId) {
+        try {
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.POINTS)) {
+                val successCallback = { points: Points ->
+                    Log.d("AAAAA2",""+points)
+                    bridgeExecutor.postValue(callbackId, Gson().toJson(points))
+                }
+                val errorCallback = { message: String ->
+                    bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS $message")
+                }
+
+                userInfoBridgeDispatcher.getPoints(successCallback, errorCallback)
+            } else
+                bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION")
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS ${e.message}")
+        }
+    }
+
     @VisibleForTesting
     internal companion object {
         const val ERR_GET_USER_NAME = "Cannot get user name:"
@@ -206,5 +227,8 @@ internal class UserInfoBridge {
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
         const val ERR_GET_CONTACTS_NO_PERMISSION =
             "Permission has not been accepted yet for getting contacts."
+        const val ERR_GET_POINTS = "Cannot get points:"
+        const val ERR_GET_POINTS_NO_PERMISSION =
+                "Permission has not been accepted yet for getting points."
     }
 }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
@@ -218,6 +219,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                     onSuccess(AppSettings.instance.contacts)
                 else
                     onError("There is no contact found in HostApp.")
+            }
+
+            override fun getPoints(onSuccess: (points: Points) -> Unit,
+                                   onError: (message: String) -> Unit) {
+                val points = Points(100, 200, 350)
+                onSuccess(points)
+                Log.d("AAAAA0",""+points)
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
