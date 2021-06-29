@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 3.X.X (2021-XX-XX)
+**SDK**
+- **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
+
+**Sample App**
+- **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
+
 ### 3.4.0 (2021-06-XX)
 **SDK**
 - **Fix:** Prevent exception during calling `onError` asynchronously in `getUniqueId`.
