@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.4.0 (2021-06-24)
+### 3.4.0 (2021-06-29)
 **SDK**
 - **Feature:** Update `MiniAppSdkConfig` class to accept list of `MiniAppAnalyticsConfig` to send analytics in multiple account.
 - **Change:** Added `getAccessToken` result with new Error type i.e `MiniAppAccessTokenError` to support predefined error types, previous `getAccessToken` is deprecated and can not be used anymore.
