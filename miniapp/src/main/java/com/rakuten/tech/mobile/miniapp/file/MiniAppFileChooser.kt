@@ -49,6 +49,22 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
+            // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
+            fileChooserParams?.acceptTypes?.let { acceptTypes ->
+                if (!acceptTypes.equals("") && acceptTypes.size > 1) {
+                    // Accept all first.
+                    intent?.type = "*/*"
+                    val imageExtensionList = listOf(".jpg", ".jpeg", ".png")
+                    // Transform extensions into acceptable MIME Type.
+                    acceptTypes.forEachIndexed { index, type ->
+                        if (type.startsWith(".") && imageExtensionList.contains(type)) {
+                            acceptTypes[index] = "image/${type.replace(".", "")}"
+                        }
+                    }
+                    // filter mime types by Intent.EXTRA_MIME_TYPES.
+                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, acceptTypes)
+                }
+            }
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
             resetCallback()
