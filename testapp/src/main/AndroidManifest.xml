@@ -14,8 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
@@ -36,9 +36,9 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
+            android:label="@string/lb_display_input"
             android:theme="@style/MaterialAppTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:label="@string/lb_display_input" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
             android:label="@string/lb_app_settings"
@@ -63,6 +63,23 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
             android:label="@string/lb_access_token" />
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
+            android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
+            <intent-filter
+                android:autoVerify="true"
+                android:label="@string/lb_filter_view_miniapp">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="@string/miniappdemo_host"
+                    android:pathPrefix="@string/miniappdemo_pathprefix"
+                    android:scheme="@string/miniappdemo_scheme" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
@@ -82,11 +99,14 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${adMobAppId}" />
-        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATAccountId"
+        <meta-data
+            android:name="com.rakuten.tech.mobile.analytics.RATAccountId"
             android:value="${ratAcc}" />
-        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATApplicationId"
+        <meta-data
+            android:name="com.rakuten.tech.mobile.analytics.RATApplicationId"
             android:value="${ratAid}" />
-        <meta-data  android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
+        <meta-data
+            android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
             android:value="${ratEndpoint}" />
     </application>
 
