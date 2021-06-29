@@ -537,14 +537,13 @@ class UserInfoBridgeSpec {
     /** start region: get points */
     private val points = Points(0, 0, 0)
     private fun createPointsImpl(
-            hasGetPoints: Boolean,
-            canGetPoints: Boolean
+        hasGetPoints: Boolean, canGetPoints: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasGetPoints) {
             object : UserInfoBridgeDispatcher {
                 override fun getPoints(
-                        onSuccess: (points: Points) -> Unit,
-                        onError: (message: String) -> Unit) {
+                    onSuccess: (points: Points) -> Unit, onError: (message: String) -> Unit
+                ) {
                     if (canGetPoints)
                         onSuccess.invoke(points)
                     else
