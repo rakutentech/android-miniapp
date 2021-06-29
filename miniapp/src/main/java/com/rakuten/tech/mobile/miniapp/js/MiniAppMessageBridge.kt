@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -127,7 +126,6 @@ open class MiniAppMessageBridge {
     @SuppressWarnings("UndocumentedPublicFunction")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
-        Log.d("AAAAA",""+jsonStr)
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
 
         when (callbackObj.action) {

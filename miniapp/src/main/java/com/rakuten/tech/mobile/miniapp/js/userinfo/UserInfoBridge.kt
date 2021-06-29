@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -193,7 +192,7 @@ internal class UserInfoBridge {
     }
 
     @Suppress("LongMethod")
-    internal fun onGetPoints(callbackId: String) = whenReady(callbackId) {
+    fun onGetPoints(callbackId: String) = whenReady(callbackId) {
         try {
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.POINTS)) {
                 val successCallback = { points: Points ->
