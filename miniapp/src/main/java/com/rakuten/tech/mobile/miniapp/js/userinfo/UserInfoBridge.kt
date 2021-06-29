@@ -197,18 +197,27 @@ internal class UserInfoBridge {
         try {
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.POINTS)) {
                 val successCallback = { points: Points ->
-                    Log.d("AAAAA2",""+points)
                     bridgeExecutor.postValue(callbackId, Gson().toJson(points))
                 }
                 val errorCallback = { message: String ->
-                    bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS $message")
+                    val errorBridgeModel = MiniAppBridgeErrorModel("$ERR_GET_POINTS $message")
+                    bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
                 }
 
                 userInfoBridgeDispatcher.getPoints(successCallback, errorCallback)
-            } else
-                bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION")
+            } else {
+                bridgeExecutor.postError(callbackId,
+                        Gson().toJson(MiniAppBridgeErrorModel(
+                                "$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION")
+                        )
+                )
+            }
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "$ERR_GET_POINTS ${e.message}")
+            bridgeExecutor.postError(callbackId,
+                    Gson().toJson(MiniAppBridgeErrorModel(
+                            "$ERR_GET_POINTS ${e.message}")
+                    )
+            )
         }
     }
 
