@@ -58,6 +58,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                     // Transform extensions into acceptable MIME Type.
                     acceptTypes.forEachIndexed { index, type ->
                         if (type.startsWith(".") && imageExtensionList.contains(type)) {
+                            // transform .jpg as .jpeg because image/jpg is not a valid MIME TYPE.
+                            if (type.equals(".jpg")) type.replace(".jpg", ".jpeg")
+                            // transform into valid MIME TYPE.
                             acceptTypes[index] = "image/${type.replace(".", "")}"
                         }
                     }
