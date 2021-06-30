@@ -24,7 +24,7 @@ internal class DownloadedManifestCache(context: Context) {
 
     private val sdkBasePath = context.filesDir.path
     private val miniAppBasePath = "$sdkBasePath/$SUB_DIR_MINIAPP/"
-    private fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
+    fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
 
     init {
         migrateToFileStorage()
