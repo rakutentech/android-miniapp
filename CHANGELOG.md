@@ -7,9 +7,16 @@
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
 
-### 3.4.0 (2021-06-XX)
+### 3.4.0 (2021-06-29)
 **SDK**
+- **Feature:** Update `MiniAppSdkConfig` class to accept list of `MiniAppAnalyticsConfig` to send analytics in multiple account.
+- **Change:** Added `getAccessToken` result with new Error type i.e `MiniAppAccessTokenError` to support predefined error types, previous `getAccessToken` is deprecated and can not be used anymore.
 - **Fix:** Prevent exception during calling `onError` asynchronously in `getUniqueId`.
+- **Update:** Supported "Update codebase" functionality for preview mode.
+- **Update:** Included technical improvement in custom permission and manifest information caching.
+
+**Sample App**
+- **Feature:** Added QA option in settings screen to test `authorizationFailureError` and `custom` error type.
 
 ### 3.3.0 (2021-05-19)
 **SDK**
@@ -17,12 +24,9 @@
 - **Feature:** Added `getUniqueId` new interface for invoking data using `onSuccess` and `onError`.
 - **Feature:** Support `mailto` uri address. See [this](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
 - **Feature:** Added `rakuten.miniapp.user.action.SEND_MESSAGE` custom permission and applied to `ChatBridgeDispatcher.sendMessageToContactId`.
-- **Change:** Added `getAccessToken` result with new Error type i.e `MiniAppAccessTokenError` to support predefined error types, previous `getAccessToken` is deprecated and can not be used anymore.
-- **Feature:** Update `MiniAppSdkConfig` class to accept list of `MiniAppAnalyticsConfig` to send analytics in multiple account.
 
 **Sample App**
 - **Change:** Replaced the implementation of `getUniqueId` using new interface.
-- **Feature:** Added QA option in settings screen to test `authorizationFailureError` and `custom` error type.
 
 ### 3.2.0 (2021-04-23)
 **SDK**
