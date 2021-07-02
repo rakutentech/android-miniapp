@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
@@ -16,10 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
-import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
@@ -109,7 +105,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
         When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
-        //When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
     @Test
@@ -277,7 +272,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 }
 
 @Suppress("LongMethod")
-@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
@@ -285,18 +279,13 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         TEST_MA_ID,
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
     )
-
-    @Rule
-    @JvmField
-    val tempFolder = TemporaryFolder()
+    private val file: File = mock()
 
     @Before
     fun before() {
-        val folder = tempFolder.newFolder("mini-app-folder")
-        File(folder, "file1.html").writeText("test content")
-        File(folder, "file2.html").writeText("test content")
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
-        When calling manifestVerifier.verify(TEST_MA_ID, folder) itReturns true
+        When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns true
     }
 
     /** region: Manifest verification */
@@ -360,10 +349,9 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Test
     fun `verifyManifest will download api manifest when hash has not been verified`() =
         runBlockingTest {
-
             When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
-            //When calling manifestVerifier.verify(TEST_MA_ID, folder) itReturns false
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns false
 
             realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
@@ -378,16 +366,13 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
                             Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")), listOf(),
                     TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
             )
-            val folder = tempFolder.newFolder("mini-app-folder3")
-            File(folder, "file1.html").writeText("test content")
-            File(folder, "file2.html").writeText("test content")
             val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, manifest)
             val manifestToStore = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
             When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
             realMiniApp.checkToDownloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID, cachedManifest)
 
             verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
-            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, folder)
+            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, file)
         }
 
     @Test

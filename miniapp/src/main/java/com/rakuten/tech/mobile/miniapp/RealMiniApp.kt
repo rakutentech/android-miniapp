@@ -13,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import java.io.File
 
 @Suppress("TooManyFunctions", "LongMethod")
 internal class RealMiniApp(
@@ -150,7 +149,7 @@ internal class RealMiniApp(
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
         checkToDownloadManifest(appId, versionId, cachedManifest)
-        val manifestFile = File(downloadedManifestCache.getManifestPath(appId))
+        val manifestFile = downloadedManifestCache.getManifestFile(appId)
         if (cachedManifest != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
             val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
@@ -169,7 +168,7 @@ internal class RealMiniApp(
         if (isDifferentVersion || isSameVerDiffApp) {
             val storableManifest = CachedManifest(versionId, apiManifest)
             downloadedManifestCache.storeDownloadedManifest(appId, storableManifest)
-            val manifestFile = File(downloadedManifestCache.getManifestPath(appId))
+            val manifestFile = downloadedManifestCache.getManifestFile(appId)
             manifestVerifier.storeHashAsync(appId, manifestFile)
         }
     }

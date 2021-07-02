@@ -24,6 +24,8 @@ internal class DownloadedManifestCache(context: Context) {
 
     private val sdkBasePath = context.filesDir.path
     private val miniAppBasePath = "$sdkBasePath/$SUB_DIR_MINIAPP/"
+
+    @VisibleForTesting
     fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
 
     init {
@@ -141,6 +143,8 @@ internal class DownloadedManifestCache(context: Context) {
             null
         }
     }
+
+    fun getManifestFile(miniAppId: String) = File(getManifestPath(miniAppId))
 
     private companion object {
         const val DEFAULT_FILE_NAME = "manifest.txt"
