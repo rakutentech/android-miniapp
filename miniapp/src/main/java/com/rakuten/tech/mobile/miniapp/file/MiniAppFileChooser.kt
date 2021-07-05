@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
@@ -54,19 +55,10 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 if (!acceptTypes.equals("") && acceptTypes.size > 1) {
                     // Accept all first.
                     intent?.type = "*/*"
-                    val imageExtensionList = listOf(".jpg", ".jpeg", ".png")
-                    // Transform extensions into acceptable MIME Type.
-                    acceptTypes.forEachIndexed { index, type ->
-                        if (type.startsWith(".") && imageExtensionList.contains(type)) {
-                            // transform into valid MIME TYPE.
-                            acceptTypes[index] = "image/${type.replace(".", "")}"
-                        }
-                        // transform jpg as jpeg because image/jpg is not a valid MIME TYPE.
-                        if (acceptTypes[index].equals("image/jpg"))
-                            acceptTypes[index] = "image/jpeg"
-                    }
+                    // Convert to valid MimeType if with dot.
+                    val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
                     // filter mime types by Intent.EXTRA_MIME_TYPES.
-                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, acceptTypes)
+                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
                 }
             }
             (context as Activity).startActivityForResult(intent, requestCode)
@@ -76,6 +68,31 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             return false
         }
         return true
+    }
+
+    /**
+     * Validation Utility for MimeTypes.
+     * @param mimeTypes The Mimetypes needs to convert to valid types.
+     */
+    private fun extractValidMimeTypes(mimeTypes: Array<String>): List<String> {
+        val results: MutableList<String> = ArrayList()
+
+        val mtm = MimeTypeMap.getSingleton()
+        for (mime in mimeTypes) {
+            if (mime != null && mime.trim { it <= ' ' }.startsWith(".")) {
+                val extensionWithoutDot =
+                    mime.trim { it <= ' ' }.substring(1, mime.trim { it <= ' ' }.length)
+                val derivedMime = mtm.getMimeTypeFromExtension(extensionWithoutDot)
+                if (derivedMime != null && !results.contains(derivedMime)) {
+                    // adds valid mime type derived from the file extension
+                    results.add(derivedMime)
+                }
+            } else if (mtm.getExtensionFromMimeType(mime) != null && !results.contains(mime)) {
+                // adds valid mime type checked again file extensions mappings
+                results.add(mime)
+            }
+        }
+        return results
     }
 
     /**
