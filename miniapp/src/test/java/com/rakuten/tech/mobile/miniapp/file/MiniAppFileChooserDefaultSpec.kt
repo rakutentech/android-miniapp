@@ -5,11 +5,11 @@ import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -17,6 +17,8 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
+import org.robolectric.Shadows.shadowOf
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -29,6 +31,8 @@ class MiniAppFileChooserDefaultSpec {
     private val callback: ValueCallback<Array<Uri>>? = mock()
     private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
+    private val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".png", ".gif", ".pdf")
+    private val validMimeTypes = listOf<String>("image/jpeg", "image/png", "image/gif", "application/pdf")
 
     @Before
     fun setup() {
@@ -115,5 +119,20 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onCancel()
         verify(callback)?.onReceiveValue(null)
         verify(miniAppFileChooser).resetCallback()
+    }
+
+    @Test
+    fun `extractValidMimeTypes should return the correct MimeType`() {
+        val mtm = MimeTypeMap.getSingleton()
+        shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
+        shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
+        shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
+        shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
+        shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
+
+        assertEquals(
+            validMimeTypes,
+            miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
+        )
     }
 }

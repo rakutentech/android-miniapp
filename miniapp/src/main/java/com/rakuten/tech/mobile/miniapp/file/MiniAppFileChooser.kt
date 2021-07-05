@@ -74,7 +74,8 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * Validation Utility for MimeTypes.
      * @param mimeTypes The Mimetypes needs to convert to valid types.
      */
-    private fun extractValidMimeTypes(mimeTypes: Array<String>): List<String> {
+    @VisibleForTesting
+    internal fun extractValidMimeTypes(mimeTypes: Array<String>): List<String> {
         val results: MutableList<String> = ArrayList()
 
         val mtm = MimeTypeMap.getSingleton()
