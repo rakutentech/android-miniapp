@@ -80,7 +80,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
         val mtm = MimeTypeMap.getSingleton()
         for (mime in mimeTypes) {
-            if (mime != null && mime.trim { it <= ' ' }.startsWith(".")) {
+            if (mime.trim { it <= ' ' }.startsWith(".")) {
                 val extensionWithoutDot =
                     mime.trim { it <= ' ' }.substring(1, mime.trim { it <= ' ' }.length)
                 val derivedMime = mtm.getMimeTypeFromExtension(extensionWithoutDot)
