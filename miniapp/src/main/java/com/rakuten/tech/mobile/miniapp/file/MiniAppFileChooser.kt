@@ -52,7 +52,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
             // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
             fileChooserParams?.acceptTypes?.let { acceptTypes ->
-                if (!acceptTypes.equals("") && acceptTypes.size > 1) {
+                if (!acceptTypes.equals("") && acceptTypes.isNotEmpty()) {
                     // Accept all first.
                     intent?.type = "*/*"
                     // Convert to valid MimeType if with dot.
@@ -76,24 +76,16 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      */
     @VisibleForTesting
     internal fun extractValidMimeTypes(mimeTypes: Array<String>): List<String> {
-        val results: MutableList<String> = ArrayList()
-
         val mtm = MimeTypeMap.getSingleton()
-        for (mime in mimeTypes) {
-            if (mime.trim { it <= ' ' }.startsWith(".")) {
-                val extensionWithoutDot =
-                    mime.trim { it <= ' ' }.substring(1, mime.trim { it <= ' ' }.length)
-                val derivedMime = mtm.getMimeTypeFromExtension(extensionWithoutDot)
-                if (derivedMime != null && !results.contains(derivedMime)) {
-                    // adds valid mime type derived from the file extension
-                    results.add(derivedMime)
+        return mimeTypes.mapNotNull { mime ->
+            mime.trim().let {
+                if (it.startsWith(".")) {
+                    mtm.getMimeTypeFromExtension(it.removePrefix("."))
+                } else {
+                    if (mtm.hasMimeType(it)) it else null
                 }
-            } else if (mtm.getExtensionFromMimeType(mime) != null && !results.contains(mime)) {
-                // adds valid mime type checked again file extensions mappings
-                results.add(mime)
             }
-        }
-        return results
+        }.distinct()
     }
 
     /**

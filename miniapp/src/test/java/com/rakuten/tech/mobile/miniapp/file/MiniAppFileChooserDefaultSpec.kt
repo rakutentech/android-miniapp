@@ -31,8 +31,6 @@ class MiniAppFileChooserDefaultSpec {
     private val callback: ValueCallback<Array<Uri>>? = mock()
     private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
-    private val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".png", ".gif", ".pdf")
-    private val validMimeTypes = listOf<String>("image/jpeg", "image/png", "image/gif", "application/pdf")
 
     @Before
     fun setup() {
@@ -41,6 +39,14 @@ class MiniAppFileChooserDefaultSpec {
             whenever(fileChooserParams?.createIntent()).thenReturn(intent)
             miniAppFileChooser = spy(MiniAppFileChooserDefault(requestCode))
         }
+        //setup for the MimeTypeMap
+        val mtm = MimeTypeMap.getSingleton()
+        shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
+        shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
+        shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
+        shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
+        shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
+
     }
 
     @Test
@@ -123,15 +129,40 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `extractValidMimeTypes should return the correct MimeType`() {
-        val mtm = MimeTypeMap.getSingleton()
-        shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
-        shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
-        shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
-        shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
-        shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
-
+        val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".png", ".gif", ".pdf")
+        val expectedMimeTypes = listOf<String>("image/jpeg", "image/png", "image/gif", "application/pdf")
         assertEquals(
-            validMimeTypes,
+            expectedMimeTypes,
+            miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
+        )
+    }
+
+    @Test
+    fun `extractValidMimeTypes should remove duplicate MimeType`() {
+        val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".jpg")
+        val expectedMimeTypes = listOf<String>("image/jpeg")
+        assertEquals(
+            expectedMimeTypes,
+            miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
+        )
+    }
+
+    @Test
+    fun `extractValidMimeTypes should remove bad MimeType`() {
+        val invalidMimeTypes = listOf<String>(".jpg", ".badMime")
+        val expectedMimeTypes = listOf<String>("image/jpeg")
+        assertEquals(
+            expectedMimeTypes,
+            miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
+        )
+    }
+
+    @Test
+    fun `extractValidMimeTypes should not effect proper MimeType`() {
+        val invalidMimeTypes = listOf<String>(".png", "image/jpeg")
+        val expectedMimeTypes = listOf<String>("image/png", "image/jpeg")
+        assertEquals(
+            expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
         )
     }
