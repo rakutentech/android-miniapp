@@ -147,6 +147,12 @@ class DownloadedManifestCacheSpec {
         DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
     }
 
+    @Test
+    fun `getManifestFile should invoke with manifest file path`() {
+        manifestCache.getManifestFile(TEST_MA_ID)
+        verify(manifestCache).getManifestPath(TEST_MA_ID)
+    }
+
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {
         val list = arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
         if (isAllowed) list.add(
