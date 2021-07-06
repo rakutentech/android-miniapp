@@ -149,7 +149,8 @@ internal class RealMiniApp(
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
         checkToDownloadManifest(appId, versionId, cachedManifest)
-        if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
+        val manifestFile = downloadedManifestCache.getManifestFile(appId)
+        if (cachedManifest != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
             val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
             miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
@@ -167,7 +168,8 @@ internal class RealMiniApp(
         if (isDifferentVersion || isSameVerDiffApp) {
             val storableManifest = CachedManifest(versionId, apiManifest)
             downloadedManifestCache.storeDownloadedManifest(appId, storableManifest)
-            manifestVerifier.storeHashAsync(appId, storableManifest)
+            val manifestFile = downloadedManifestCache.getManifestFile(appId)
+            manifestVerifier.storeHashAsync(appId, manifestFile)
         }
     }
 

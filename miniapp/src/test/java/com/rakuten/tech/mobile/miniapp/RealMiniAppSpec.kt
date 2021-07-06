@@ -19,6 +19,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
+import java.io.File
 import kotlin.test.assertEquals
 
 open class BaseRealMiniAppSpec {
@@ -104,7 +105,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
         When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
-        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
     }
 
     @Test
@@ -279,11 +279,13 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         TEST_MA_ID,
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
     )
+    private val file: File = mock()
 
     @Before
     fun before() {
         When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
-        When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns true
+        When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns true
     }
 
     /** region: Manifest verification */
@@ -348,8 +350,8 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     fun `verifyManifest will download api manifest when hash has not been verified`() =
         runBlockingTest {
             When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
-            When calling manifestVerifier.verify(TEST_MA_ID, cachedManifest) itReturns false
             When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns false
 
             realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
@@ -370,7 +372,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             realMiniApp.checkToDownloadManifest(TEST_MA_ID, TEST_MA_VERSION_ID, cachedManifest)
 
             verify(downloadedManifestCache).storeDownloadedManifest(TEST_MA_ID, manifestToStore)
-            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, manifestToStore)
+            verify(manifestVerifier).storeHashAsync(TEST_MA_ID, file)
         }
 
     @Test
