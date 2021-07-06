@@ -52,7 +52,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
             // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
             fileChooserParams?.acceptTypes?.let { acceptTypes ->
-                if (!acceptTypes.equals("") && acceptTypes.isNotEmpty()) {
+                if (acceptTypes.isNotEmpty()
+                    && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))
+                ) {
                     // Accept all first.
                     intent?.type = "*/*"
                     // Convert to valid MimeType if with dot.

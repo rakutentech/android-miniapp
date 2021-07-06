@@ -39,14 +39,13 @@ class MiniAppFileChooserDefaultSpec {
             whenever(fileChooserParams?.createIntent()).thenReturn(intent)
             miniAppFileChooser = spy(MiniAppFileChooserDefault(requestCode))
         }
-        //setup for the MimeTypeMap
+        // setup for the MimeTypeMap
         val mtm = MimeTypeMap.getSingleton()
         shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
         shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
         shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
         shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
         shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
-
     }
 
     @Test
