@@ -1,15 +1,22 @@
 package com.rakuten.tech.mobile.testapp.ui.component
 
+import android.R
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Message
+import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 
+
 @SuppressLint("SetJavaScriptEnabled")
-class SampleExternalWebView(context: Context, url: String, sampleWebViewClient: WebViewClient): WebView(context) {
+class SampleExternalWebView(context: Context, url: String, sampleWebViewClient: WebViewClient): WebView(
+    context
+) {
 
     init {
         settings.javaScriptEnabled = true
@@ -44,5 +51,21 @@ class SampleWebChromeClient(val context: Context) : WebChromeClient() {
             resultMsg.sendToTarget()
             true
         } else false
+    }
+
+    override fun onJsAlert(
+        view: WebView?,
+        url: String?,
+        message: String?,
+        result: JsResult?
+    ): Boolean {
+        val dialog = AlertDialog.Builder(context)
+            .setMessage(message)
+            .setPositiveButton("OK"){ _: DialogInterface, _: Int ->
+                result?.confirm()
+            }
+            .create()
+        dialog.show()
+        return true
     }
 }
