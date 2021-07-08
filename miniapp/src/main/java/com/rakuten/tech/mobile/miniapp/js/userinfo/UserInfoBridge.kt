@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -198,8 +199,8 @@ internal class UserInfoBridge {
                 val successCallback = { points: Points ->
                     bridgeExecutor.postValue(callbackId, Gson().toJson(points))
                 }
-                val errorCallback = { message: String ->
-                    val errorBridgeModel = MiniAppBridgeErrorModel("$ERR_GET_POINTS $message")
+                val errorCallback = { callback: MiniAppPointsError ->
+                    val errorBridgeModel = MiniAppBridgeErrorModel(callback.type, callback.message)
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
                 }
 

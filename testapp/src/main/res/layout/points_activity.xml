@@ -21,7 +21,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_points_standard"
                 android:imeOptions="actionDone"
-                android:inputType="number" />
+                android:inputType="number"
+                android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -38,7 +39,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_points_time_limited"
                 android:imeOptions="actionDone"
-                android:inputType="number" />
+                android:inputType="number"
+                android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_points_rakuten_cash"
                 android:imeOptions="actionDone"
-                android:inputType="number" />
+                android:inputType="number"
+                android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
