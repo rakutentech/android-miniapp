@@ -86,4 +86,15 @@ interface UserInfoBridgeDispatcher {
     ) {
         throw MiniAppSdkException(NO_IMPL)
     }
+
+    /**
+     * Get points from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    fun getPoints(
+        onSuccess: (points: Points) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(NO_IMPL)
+    }
 }

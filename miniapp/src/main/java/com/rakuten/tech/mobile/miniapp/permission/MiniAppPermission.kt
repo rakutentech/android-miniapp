@@ -22,6 +22,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
     ACCESS_TOKEN("rakuten.miniapp.user.ACCESS_TOKEN"),
     SEND_MESSAGE("rakuten.miniapp.user.action.SEND_MESSAGE"),
     LOCATION("rakuten.miniapp.device.LOCATION"),
+    POINTS("rakuten.miniapp.user.POINTS"),
     UNKNOWN("UNKNOWN");
 
     internal companion object {
