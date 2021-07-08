@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.component
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
@@ -11,7 +10,6 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
-
 
 @SuppressLint("SetJavaScriptEnabled")
 class SampleExternalWebView(context: Context, url: String, sampleWebViewClient: WebViewClient): WebView(
