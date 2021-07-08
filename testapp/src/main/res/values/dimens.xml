@@ -21,6 +21,8 @@
 
     <dimen name="text_large_18">18sp</dimen>
     <dimen name="text_large_16">16sp</dimen>
+    <dimen name="text_large_17">17sp</dimen>
+    <dimen name="text_large_22">22sp</dimen>
     <dimen name="text_medium_14">14sp</dimen>
     <dimen name="text_small_12">12sp</dimen>
 
@@ -28,4 +30,11 @@
     <dimen name="miniapp_icon_size">48dp</dimen>
     <dimen name="miniapp_logo_size">86dp</dimen>
 
+    <dimen name="margin_30">30dp</dimen>
+    <dimen name="margin_20">20dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_10">10dp</dimen>
+
+    <dimen name="line_space_1">1sp</dimen>
+    <dimen name="line_space_3">3sp</dimen>
 </resources>

@@ -18,7 +18,6 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import java.io.File
-import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 
 @Suppress("LongMethod")
@@ -46,12 +45,10 @@ class DownloadedManifestCacheSpec {
         doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
     }
 
-    @Test(expected = FileNotFoundException::class)
+    @Test
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
-        doReturn(null).whenever(manifestCache).readFromCachedFile(TEST_MA_ID)
         val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
-        val expected = null
-        actual shouldEqual expected
+        actual shouldEqual null
     }
 
     @Test
@@ -145,9 +142,15 @@ class DownloadedManifestCacheSpec {
         manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
     }
 
-    @Test(expected = FileNotFoundException::class)
+    @Test
     fun `should get empty list of AccessTokenPermission when no cache`() {
         DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
+    }
+
+    @Test
+    fun `getManifestFile should invoke with manifest file path`() {
+        manifestCache.getManifestFile(TEST_MA_ID)
+        verify(manifestCache).getManifestPath(TEST_MA_ID)
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {

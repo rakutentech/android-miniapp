@@ -83,6 +83,7 @@ internal class UserInfoBridge {
             bridgeExecutor.postError(callbackId, "$ERR_GET_PROFILE_PHOTO ${e.message}")
         }
     }
+
     @Suppress("LongMethod")
     internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
         try {
@@ -108,6 +109,7 @@ internal class UserInfoBridge {
             )
         }
     }
+
     @Suppress("LongMethod")
     private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
@@ -139,29 +141,21 @@ internal class UserInfoBridge {
             }
         }
     }
+
     @Suppress("LongMethod", "ComplexMethod")
     private fun doesAccessTokenMatch(
         tokenScope: AccessTokenScope,
         callback: (Boolean, MiniAppAccessTokenError?) -> Unit
     ) {
         if (tokenScope.scopes.isNotEmpty()) {
-            var listOfAccessTokenScopesCached = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
-            var audience: AccessTokenScope? =
+            val listOfAccessTokenScopesCached = downloadedManifestCache.getAccessTokenPermissions(miniAppId)
+            val audience: AccessTokenScope? =
                 listOfAccessTokenScopesCached.firstOrNull { it.audience == tokenScope.audience }
                     ?: return callback(false, MiniAppAccessTokenError.audienceNotSupportedError)
             if (audience?.scopes?.containsAll(tokenScope.scopes) != true) {
                 callback(false, MiniAppAccessTokenError.scopesNotSupportedError)
             } else {
-                return if (audience != null)
-                // audience and scope matched.
-                    callback(true, null)
-                else
-                    callback(
-                        false,
-                        MiniAppAccessTokenError.custom(
-                            message = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
-                        )
-                    )
+                return callback(true, null)
             }
         } else {
             callback(
@@ -197,6 +191,35 @@ internal class UserInfoBridge {
         }
     }
 
+    @Suppress("LongMethod")
+    fun onGetPoints(callbackId: String) = whenReady(callbackId) {
+        try {
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.POINTS)) {
+                val successCallback = { points: Points ->
+                    bridgeExecutor.postValue(callbackId, Gson().toJson(points))
+                }
+                val errorCallback = { message: String ->
+                    val errorBridgeModel = MiniAppBridgeErrorModel("$ERR_GET_POINTS $message")
+                    bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
+                }
+
+                userInfoBridgeDispatcher.getPoints(successCallback, errorCallback)
+            } else {
+                bridgeExecutor.postError(callbackId,
+                        Gson().toJson(MiniAppBridgeErrorModel(
+                                "$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION")
+                        )
+                )
+            }
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId,
+                    Gson().toJson(MiniAppBridgeErrorModel(
+                            "$ERR_GET_POINTS ${e.message}")
+                    )
+            )
+        }
+    }
+
     @VisibleForTesting
     internal companion object {
         const val ERR_GET_USER_NAME = "Cannot get user name:"
@@ -212,5 +235,8 @@ internal class UserInfoBridge {
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
         const val ERR_GET_CONTACTS_NO_PERMISSION =
             "Permission has not been accepted yet for getting contacts."
+        const val ERR_GET_POINTS = "Cannot get points:"
+        const val ERR_GET_POINTS_NO_PERMISSION =
+                "Permission has not been accepted yet for getting points."
     }
 }

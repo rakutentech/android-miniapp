@@ -5,7 +5,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.text.InputType
 import android.util.Patterns
+import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -80,3 +82,8 @@ fun defaultContact(id: String) = Contact(
 )
 
 fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+fun hideSoftKeyboard(view: View) {
+    val imm: InputMethodManager? = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+    imm?.hideSoftInputFromWindow(view.windowToken, 0)
+}

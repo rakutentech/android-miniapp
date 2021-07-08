@@ -7,7 +7,9 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import java.util.Date
@@ -45,6 +47,12 @@ class AppSettings private constructor(context: Context) {
         }
         set(subscriptionKey) {
             cache.subscriptionKey = subscriptionKey
+        }
+
+    var uniqueIdError: String
+        get() = cache.uniqueIdError ?: ""
+        set(uniqueIdError) {
+            cache.uniqueIdError = uniqueIdError
         }
 
     var isSettingSaved: Boolean
@@ -96,11 +104,21 @@ class AppSettings private constructor(context: Context) {
             cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
         }
 
-    val baseUrl = manifestConfig.baseUrl()
+    var accessTokenError: MiniAppAccessTokenError?
+        get() = cache.accessTokenError
+        set(accessTokenError) {
+            cache.accessTokenError = accessTokenError
+        }
+
+    var points: Points?
+        get() = cache.points
+        set(points) {
+            cache.points = points
+        }
 
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
-            baseUrl = baseUrl,
+            baseUrl = manifestConfig.baseUrl(),
             rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
@@ -152,6 +170,10 @@ private class Settings(context: Context) {
         get() = prefs.getString(UNIQUE_ID, null)
         set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
 
+    var uniqueIdError: String?
+        get() = prefs.getString(UNIQUE_ID_ERROR, null)
+        set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
+
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
         set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
@@ -196,11 +218,22 @@ private class Settings(context: Context) {
         )
         set(miniAppAnalyticsConfigs) = prefs.edit().putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
 
+    var accessTokenError: MiniAppAccessTokenError?
+        get() = gson.fromJson(prefs.getString(ACCESS_TOKEN_ERROR, null), MiniAppAccessTokenError::class.java)
+        set(accessTokenError) = prefs.edit().putString(ACCESS_TOKEN_ERROR, gson.toJson(accessTokenError))
+            .apply()
+
+    var points: Points?
+        get() = gson.fromJson(prefs.getString(POINTS, null), Points::class.java)
+        set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
+                .apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
+        private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
@@ -209,5 +242,7 @@ private class Settings(context: Context) {
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
         private const val ANALYTIC_CONFIGS = "analytic_configs"
+        private const val ACCESS_TOKEN_ERROR = "access_token_error"
+        private const val POINTS = "points"
     }
 }

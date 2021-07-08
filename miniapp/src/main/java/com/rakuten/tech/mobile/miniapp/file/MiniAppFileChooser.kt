@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
@@ -49,6 +50,17 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
+            // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
+            fileChooserParams?.acceptTypes?.let { acceptTypes ->
+                if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
+                    // Accept all first.
+                    intent?.type = "*/*"
+                    // Convert to valid MimeType if with dot.
+                    val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
+                    // filter mime types by Intent.EXTRA_MIME_TYPES.
+                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
+                }
+            }
             (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
             resetCallback()
@@ -56,6 +68,24 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             return false
         }
         return true
+    }
+
+    /**
+     * Validation Utility for MimeTypes.
+     * @param mimeTypes The Mimetypes needs to convert to valid types.
+     */
+    @VisibleForTesting
+    internal fun extractValidMimeTypes(mimeTypes: Array<String>): List<String> {
+        val mtm = MimeTypeMap.getSingleton()
+        return mimeTypes.mapNotNull { mime ->
+            mime.trim().let {
+                if (it.startsWith(".")) {
+                    mtm.getMimeTypeFromExtension(it.removePrefix("."))
+                } else {
+                    if (mtm.hasMimeType(it)) it else null
+                }
+            }
+        }.distinct()
     }
 
     /**

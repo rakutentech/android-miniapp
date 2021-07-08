@@ -8,4 +8,6 @@
     <color name="color_bg_default_icon">#F5F1F1</color>
     <color name="bg_section">#DADADA</color>
     <color name="window_top_bar">#F8F5F5</color>
+    <color name="qr_error_title">#333333</color>
+    <color name="link_blue">#358ED7</color>
 </resources>

@@ -11,6 +11,19 @@
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
     <string name="lb_display_input">Display by Input</string>
+    <string name="lb_unique_id">Unique ID</string>
+    <string name="lb_filter_view_miniapp">Open MiniApp</string>
+
+    <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
+    <string name="lb_other_error">Always Generate Custom Error</string>
+    <string name="hint_custom_error_message">Custom Error Message</string>
+
+    <string name="lb_unique_id_error">Always Generate Unique ID Error</string>
+    <string name="hint_unique_id_error">Unique ID Error Message</string>
+
+    <string name="hint_points_standard">Points (Standard)</string>
+    <string name="hint_points_time_limited">Points (Time-Limited)</string>
+    <string name="hint_points_rakuten_cash">Points (Rakuten Cash)</string>
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
@@ -41,6 +54,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
+    <string name="action_points">Points</string>
+    <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Permissions</string>
     <string name="action_first_time_accept">Accept</string>
     <string name="action_message_send">Send</string>
@@ -58,4 +73,22 @@
     <string name="tut_setting">This is the first time you launch the MiniApp Demo application on this device. You need to provide your own Host Project ID and Subscription Key from &lt;font color="#BF0000">&lt;b>Rakuten&lt;/b>&lt;/font> &lt;b>App Studio&lt;/b></string>
 
     <string name="prefix_placeholder">%1$s %2$s</string>
+
+    <string name="error_title_miniapp_no_longer_exist">This mini app is not valid</string>
+    <string name="error_desc_miniapp_no_longer_exist">You can generate a valid QR code on Mini \nApp Platform.\nSee our Help Center for more details.</string>
+    <string name="error_title_miniapp_no_permission">This mini app is not valid</string>
+    <string name="error_desc_miniapp_no_permission">The Host App does not have permission to \na Mini App with this ID. \nSee our Help Center for more details.</string>
+    <string name="error_title_qr_code_expire">"The QR code is expired "</string>
+    <string name="error_desc_qr_code_expire">You can generate a new one on Mini App \nPlatform. See our Help Center for more \ndetails.</string>
+    <string name="error_title_miniapp_no_preview">MiniappName %1$s cannot be previewed now</string>
+    <string name="error_desc_miniapp_no_preview">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
+    <string name="error_title_miniapp_version_mismatch">" Version %1$s is not valid "</string>
+    <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
+
+    <string name="help_center_text">Help Center</string>
+    <string name="lb_close">Close</string>
+
+    <string name="miniappdemo_scheme">miniappdemo</string>
+    <string name="miniappdemo_host">miniapp</string>
+    <string name="miniappdemo_pathprefix">/preview/token/</string>
 </resources>

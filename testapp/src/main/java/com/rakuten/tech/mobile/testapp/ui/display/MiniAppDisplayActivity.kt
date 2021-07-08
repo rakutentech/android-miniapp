@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -151,10 +150,15 @@ class MiniAppDisplayActivity : BaseActivity() {
     private fun setupMiniAppMessageBridge() {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
+
             override fun getUniqueId(
                     onSuccess: (uniqueId: String) -> Unit,
                     onError: (message: String) -> Unit
-            ) = onSuccess(AppSettings.instance.uniqueId)
+            ) {
+                val errorMsg = AppSettings.instance.uniqueIdError
+                if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess(AppSettings.instance.uniqueId)
+            }
 
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
@@ -198,7 +202,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                     accessTokenScope: AccessTokenScope,
                     onSuccess: (tokenData: TokenData) -> Unit,
                     onError: (tokenError: MiniAppAccessTokenError) -> Unit
-            ) = onSuccess(AppSettings.instance.tokenData)
+            ) {
+                if (AppSettings.instance.accessTokenError != null) {
+                    onError(AppSettings.instance.accessTokenError!!)
+                } else {
+                    onSuccess(AppSettings.instance.tokenData)
+                }
+            }
 
             override fun getContacts(
                 onSuccess: (contacts: ArrayList<Contact>) -> Unit,
@@ -208,6 +218,15 @@ class MiniAppDisplayActivity : BaseActivity() {
                     onSuccess(AppSettings.instance.contacts)
                 else
                     onError("There is no contact found in HostApp.")
+            }
+
+            override fun getPoints(
+                onSuccess: (points: Points) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val points = AppSettings.instance.points
+                if (points != null) onSuccess(points)
+                else onError("There is no points found in HostApp.")
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)

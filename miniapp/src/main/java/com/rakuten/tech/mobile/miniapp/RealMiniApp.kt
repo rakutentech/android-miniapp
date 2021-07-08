@@ -148,25 +148,48 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        if (cachedManifest?.versionId != versionId) {
-            downloadManifest(appId, versionId)
-        }
-        if (cachedManifest != null && manifestVerifier.verify(appId, cachedManifest)) {
+        checkToDownloadManifest(appId, versionId, cachedManifest)
+        val manifestFile = downloadedManifestCache.getManifestFile(appId)
+        if (cachedManifest != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
             val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
             miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
 
             if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
                 throw RequiredPermissionsNotGrantedException(appId, versionId)
-        } else downloadManifest(appId, versionId)
+        } else checkToDownloadManifest(appId, versionId, cachedManifest)
     }
 
     @VisibleForTesting
-    suspend fun downloadManifest(appId: String, versionId: String) {
+    suspend fun checkToDownloadManifest(appId: String, versionId: String, cachedManifest: CachedManifest?) {
         val apiManifest = getMiniAppManifest(appId, versionId)
-        val cached = CachedManifest(versionId, apiManifest)
-        downloadedManifestCache.storeDownloadedManifest(appId, cached)
-        manifestVerifier.storeHashAsync(appId, cached)
+        val isDifferentVersion = cachedManifest?.versionId != versionId
+        val isSameVerDiffApp = !isManifestEqual(apiManifest, cachedManifest?.miniAppManifest)
+        if (isDifferentVersion || isSameVerDiffApp) {
+            val storableManifest = CachedManifest(versionId, apiManifest)
+            downloadedManifestCache.storeDownloadedManifest(appId, storableManifest)
+            val manifestFile = downloadedManifestCache.getManifestFile(appId)
+            manifestVerifier.storeHashAsync(appId, manifestFile)
+        }
+    }
+
+    @VisibleForTesting
+    fun isManifestEqual(apiManifest: MiniAppManifest?, downloadedManifest: MiniAppManifest?): Boolean {
+        if (apiManifest != null && downloadedManifest != null) {
+            val changedRequiredPermissions =
+                    (apiManifest.requiredPermissions + downloadedManifest.requiredPermissions).groupBy { it.first.type }
+                            .filter { it.value.size == 1 }
+                            .flatMap { it.value }
+
+            val changedOptionalPermissions =
+                    (apiManifest.optionalPermissions + downloadedManifest.optionalPermissions).groupBy { it.first.type }
+                            .filter { it.value.size == 1 }
+                            .flatMap { it.value }
+
+            return changedRequiredPermissions.isEmpty() && changedOptionalPermissions.isEmpty() &&
+                    apiManifest.customMetaData == downloadedManifest.customMetaData
+        }
+        return false
     }
 
     @VisibleForTesting

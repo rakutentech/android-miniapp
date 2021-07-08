@@ -24,7 +24,9 @@ internal class DownloadedManifestCache(context: Context) {
 
     private val sdkBasePath = context.filesDir.path
     private val miniAppBasePath = "$sdkBasePath/$SUB_DIR_MINIAPP/"
-    private fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
+
+    @VisibleForTesting
+    fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
 
     init {
         migrateToFileStorage()
@@ -128,13 +130,21 @@ internal class DownloadedManifestCache(context: Context) {
 
     @VisibleForTesting
     fun readFromCachedFile(miniAppId: String): CachedManifest? {
-        val jsonToRead = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).bufferedReader()
-            .use {
-                it.readText()
-                    .dropLast(2) // for fixing the json format
-            }
-        return toCachedManifest(jsonToRead)
+        val file = File(getManifestPath(miniAppId), DEFAULT_FILE_NAME)
+        if (!file.exists()) return null
+        return try {
+            val jsonToRead = file.bufferedReader()
+                    .use {
+                        it.readText()
+                                .dropLast(2) // for fixing the json format
+                    }
+            toCachedManifest(jsonToRead)
+        } catch (e: Exception) {
+            null
+        }
     }
+
+    fun getManifestFile(miniAppId: String) = File(getManifestPath(miniAppId))
 
     private companion object {
         const val DEFAULT_FILE_NAME = "manifest.txt"
