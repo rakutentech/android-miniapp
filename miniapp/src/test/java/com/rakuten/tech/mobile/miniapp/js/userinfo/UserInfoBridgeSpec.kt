@@ -539,11 +539,15 @@ class UserInfoBridgeSpec {
     private val points = Points(0, 0, 0)
     private val testPointsError = MiniAppPointsError(null, "$ERR_GET_POINTS $TEST_ERROR_MSG")
     private fun createPointsImpl(
-        hasGetPoints: Boolean, canGetPoints: Boolean
+        hasGetPoints: Boolean,
+        canGetPoints: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasGetPoints) {
             object : UserInfoBridgeDispatcher {
-                override fun getPoints(onSuccess: (points: Points) -> Unit, onError: (pointsError: MiniAppPointsError) -> Unit) {
+                override fun getPoints(
+                    onSuccess: (points: Points) -> Unit,
+                    onError: (pointsError: MiniAppPointsError) -> Unit
+                ) {
                     if (canGetPoints)
                         onSuccess.invoke(points)
                     else
