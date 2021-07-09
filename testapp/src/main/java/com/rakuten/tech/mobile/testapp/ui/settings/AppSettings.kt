@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import java.util.Date
@@ -107,6 +108,12 @@ class AppSettings private constructor(context: Context) {
         get() = cache.accessTokenError
         set(accessTokenError) {
             cache.accessTokenError = accessTokenError
+        }
+
+    var points: Points?
+        get() = cache.points
+        set(points) {
+            cache.points = points
         }
 
     val miniAppSettings: MiniAppSdkConfig
@@ -216,6 +223,11 @@ private class Settings(context: Context) {
         set(accessTokenError) = prefs.edit().putString(ACCESS_TOKEN_ERROR, gson.toJson(accessTokenError))
             .apply()
 
+    var points: Points?
+        get() = gson.fromJson(prefs.getString(POINTS, null), Points::class.java)
+        set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
+                .apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val APP_ID = "app_id"
@@ -231,5 +243,6 @@ private class Settings(context: Context) {
         private const val URL_PARAMETERS = "url_parameters"
         private const val ANALYTIC_CONFIGS = "analytic_configs"
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
+        private const val POINTS = "points"
     }
 }

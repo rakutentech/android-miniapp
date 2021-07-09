@@ -219,6 +219,15 @@ class MiniAppDisplayActivity : BaseActivity() {
                 else
                     onError("There is no contact found in HostApp.")
             }
+
+            override fun getPoints(
+                onSuccess: (points: Points) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val points = AppSettings.instance.points
+                if (points != null) onSuccess(points)
+                else onError("There is no points found in HostApp.")
+            }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
