@@ -15,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_USER_NAME
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
@@ -536,18 +537,17 @@ class UserInfoBridgeSpec {
 
     /** start region: get points */
     private val points = Points(0, 0, 0)
+    private val testPointsError = MiniAppPointsError(null, "$ERR_GET_POINTS $TEST_ERROR_MSG")
     private fun createPointsImpl(
         hasGetPoints: Boolean, canGetPoints: Boolean
     ): UserInfoBridgeDispatcher {
         return if (hasGetPoints) {
             object : UserInfoBridgeDispatcher {
-                override fun getPoints(
-                    onSuccess: (points: Points) -> Unit, onError: (message: String) -> Unit
-                ) {
+                override fun getPoints(onSuccess: (points: Points) -> Unit, onError: (pointsError: MiniAppPointsError) -> Unit) {
                     if (canGetPoints)
                         onSuccess.invoke(points)
                     else
-                        onError.invoke(TEST_ERROR_MSG)
+                        onError.invoke(testPointsError)
                 }
             }
         } else {
@@ -580,12 +580,14 @@ class UserInfoBridgeSpec {
 
     @Test
     fun `postError should be called when hostapp doesn't providing points`() {
-        val errMsg = "{\"type\":\"$ERR_GET_POINTS $TEST_ERROR_MSG\"}"
+        val errMsg = "$ERR_GET_POINTS $TEST_ERROR_MSG"
         val userInfoBridgeDispatcher = Mockito.spy(createPointsImpl(true, false))
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
         userInfoBridgeWrapper.onGetPoints(pointsCallbackObj.id)
 
-        verify(bridgeExecutor).postError(pointsCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(pointsCallbackObj.id, Gson().toJson(
+                MiniAppBridgeErrorModel(message = errMsg)
+        ))
     }
 
     @Test
