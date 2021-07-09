@@ -41,8 +41,6 @@ workflows:
                 root: testapp/build/outputs
                 paths:
                   - mapping/
-            - run: |
-                echo $(grep "VERSION_NAME" testapp/build/generated/staging/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
       - app-center/publish:
           name: deploy-test-app-stg
           group: Testers
