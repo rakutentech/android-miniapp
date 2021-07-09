@@ -250,6 +250,12 @@
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.RATButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="this is a cutom button"
+                    android:textColor="@color/link_blue"
+                    />
             </LinearLayout>
 
         </ScrollView>
