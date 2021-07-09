@@ -66,9 +66,9 @@
                                 android:id="@+id/messageBanner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:visibility="gone"
+                                android:padding="@dimen/small_10"
                                 android:textColor="@android:color/black"
-                                android:padding="@dimen/small_10"/>
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:id="@+id/messageImage"
