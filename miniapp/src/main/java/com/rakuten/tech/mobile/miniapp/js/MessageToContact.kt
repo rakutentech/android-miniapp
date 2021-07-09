@@ -8,7 +8,8 @@ data class MessageToContact(
     val image: String,
     val text: String,
     val caption: String,
-    val action: String
+    val action: String,
+    val bannerMessage: String?
 ) {
     /** Returns true when all the properties are empty, otherwise returns false. */
     val isEmpty: Boolean =
