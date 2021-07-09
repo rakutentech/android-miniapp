@@ -10,4 +10,5 @@
     <color name="window_top_bar">#F8F5F5</color>
     <color name="qr_error_title">#333333</color>
     <color name="link_blue">#358ED7</color>
+    <color name="colorPink">#EBCAC9</color>
 </resources>

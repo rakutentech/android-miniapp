@@ -62,19 +62,10 @@
                             android:background="#F5F5F5"
                             android:padding="@dimen/small_12">
 
-                            <TextView
-                                android:id="@+id/messageBanner"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:padding="@dimen/small_10"
-                                android:textColor="@android:color/black"
-                                android:visibility="gone" />
-
                             <ImageView
                                 android:id="@+id/messageImage"
                                 android:layout_width="126dp"
                                 android:layout_height="148dp"
-                                android:layout_below="@id/messageBanner"
                                 android:background="@drawable/bg_action_message" />
 
                             <LinearLayout
@@ -116,12 +107,45 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/banner_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/topView"
+            android:background="@color/colorPink"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="@dimen/medium_16"
+                android:layout_marginTop="@dimen/small_8"
+                android:layout_marginRight="@dimen/small_8"
+                android:layout_marginBottom="@dimen/small_8"
+                android:src="@drawable/ic_megaphone" />
+
+            <TextView
+                android:id="@+id/messageBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_8"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:paddingTop="@dimen/small_8"
+                android:paddingEnd="@dimen/small_8"
+                android:paddingBottom="@dimen/small_8"
+                android:textColor="@android:color/black"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listContactSelection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/lnChatAction"
-            android:layout_below="@id/topView"
+            android:layout_below="@id/banner_view"
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_list_contact" />
 
