@@ -138,6 +138,7 @@ open class MiniAppMessageBridge {
             ActionType.GET_USER_NAME.action -> userInfoBridge.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridge.onGetProfilePhoto(callbackObj.id)
             ActionType.GET_ACCESS_TOKEN.action -> userInfoBridge.onGetAccessToken(callbackObj)
+            ActionType.GET_POINTS.action -> userInfoBridge.onGetPoints(callbackObj.id)
             ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
             ActionType.GET_CONTACTS.action -> userInfoBridge.onGetContacts(callbackObj.id)
             ActionType.SEND_MESSAGE_TO_CONTACT.action -> chatBridge.onSendMessageToContact(

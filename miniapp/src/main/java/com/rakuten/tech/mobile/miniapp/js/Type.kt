@@ -15,6 +15,7 @@ internal enum class ActionType(val action: String) {
     SEND_MESSAGE_TO_CONTACT("sendMessageToContact"),
     SEND_MESSAGE_TO_CONTACT_ID("sendMessageToContactId"),
     SEND_MESSAGE_TO_MULTIPLE_CONTACTS("sendMessageToMultipleContacts"),
+    GET_POINTS("getPoints"),
 }
 
 internal enum class DialogType {

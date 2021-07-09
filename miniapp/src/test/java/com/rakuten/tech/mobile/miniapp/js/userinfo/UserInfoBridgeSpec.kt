@@ -16,11 +16,14 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_ACCESS_TOKEN_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_ACCESS_TOKEN
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_CONTACTS_NO_PERMISSION
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_POINTS
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_POINTS_NO_PERMISSION
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_PROFILE_PHOTO
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge.Companion.ERR_GET_USER_NAME
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -50,6 +53,11 @@ class UserInfoBridgeSpec {
         action = ActionType.GET_CONTACTS.action,
         param = null,
         id = TEST_CALLBACK_ID
+    )
+    private val pointsCallbackObj = CallbackObj(
+            action = ActionType.GET_POINTS.action,
+            param = null,
+            id = TEST_CALLBACK_ID
     )
     private val customPermissionCache: MiniAppCustomPermissionCache = mock()
     private val downloadedManifestCache: DownloadedManifestCache = mock()
@@ -85,6 +93,9 @@ class UserInfoBridgeSpec {
         ).thenReturn(true)
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.ACCESS_TOKEN)
+        ).thenReturn(true)
+        whenever(customPermissionCache.hasPermission(
+                miniAppInfo.id, MiniAppCustomPermissionType.POINTS)
         ).thenReturn(true)
         When calling downloadedManifestCache.getAccessTokenPermissions(TEST_MA_ID) itReturns TEST_ATP_LIST
     }
@@ -520,6 +531,70 @@ class UserInfoBridgeSpec {
         userInfoBridgeWrapper.onGetContacts(contactsCallbackObj.id)
 
         verify(bridgeExecutor).postValue(contactsCallbackObj.id, Gson().toJson(contacts))
+    }
+    /** end region */
+
+    /** start region: get points */
+    private val points = Points(0, 0, 0)
+    private fun createPointsImpl(
+        hasGetPoints: Boolean, canGetPoints: Boolean
+    ): UserInfoBridgeDispatcher {
+        return if (hasGetPoints) {
+            object : UserInfoBridgeDispatcher {
+                override fun getPoints(
+                    onSuccess: (points: Points) -> Unit, onError: (message: String) -> Unit
+                ) {
+                    if (canGetPoints)
+                        onSuccess.invoke(points)
+                    else
+                        onError.invoke(TEST_ERROR_MSG)
+                }
+            }
+        } else {
+            object : UserInfoBridgeDispatcher {}
+        }
+    }
+
+    @Test
+    fun `postError should be called when there is no get points retrieval implementation`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createPointsImpl(false, false))
+        miniAppBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
+        val errMsg = "{\"type\":\"$ERR_GET_POINTS $NO_IMPL\"}"
+        miniAppBridge.postMessage(Gson().toJson(pointsCallbackObj))
+
+        verify(bridgeExecutor).postError(pointsCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when points permission hasn't been allowed`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createPointsImpl(true, true))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        val errMsg = "{\"type\":\"$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION\"}"
+        whenever(customPermissionCache.hasPermission(
+                miniAppInfo.id, MiniAppCustomPermissionType.POINTS)
+        ).thenReturn(false)
+        userInfoBridgeWrapper.onGetPoints(pointsCallbackObj.id)
+
+        verify(bridgeExecutor).postError(pointsCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postError should be called when hostapp doesn't providing points`() {
+        val errMsg = "{\"type\":\"$ERR_GET_POINTS $TEST_ERROR_MSG\"}"
+        val userInfoBridgeDispatcher = Mockito.spy(createPointsImpl(true, false))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetPoints(pointsCallbackObj.id)
+
+        verify(bridgeExecutor).postError(pointsCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when retrieve points successfully`() {
+        val userInfoBridgeDispatcher = Mockito.spy(createPointsImpl(true, true))
+        val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
+        userInfoBridgeWrapper.onGetPoints(pointsCallbackObj.id)
+
+        verify(bridgeExecutor).postValue(pointsCallbackObj.id, Gson().toJson(points))
     }
     /** end region */
 
