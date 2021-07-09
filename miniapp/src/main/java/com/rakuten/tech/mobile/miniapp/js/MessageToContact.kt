@@ -9,7 +9,7 @@ data class MessageToContact(
     val text: String,
     val caption: String,
     val action: String,
-    val bannerMessage: String?
+    val bannerMessage: String? = null
 ) {
     /** Returns true when all the properties are empty, otherwise returns false. */
     val isEmpty: Boolean =

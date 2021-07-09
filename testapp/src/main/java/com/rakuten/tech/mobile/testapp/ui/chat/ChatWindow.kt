@@ -94,6 +94,12 @@ class ChatWindow(private val activity: Activity) {
             rootView.messageImage.load(activity, image, R.drawable.bg_action_message)
             rootView.messageText.text = text
             rootView.messageCaption.text = caption
+            bannerMessage?.let {
+                rootView.messageBanner.visibility = View.VISIBLE
+                rootView.messageBanner.text = it
+            } ?: kotlin.run {
+                rootView.messageBanner.visibility = View.GONE
+            }
             rootView.messageCaption.setOnClickListener {
                 openActionUrl(action)
             }
