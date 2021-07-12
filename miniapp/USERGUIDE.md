@@ -335,16 +335,16 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
     }
 
     override fun getPoints(
-            onSuccess: (points: Points) -> Unit,
-            onError: (message: String) -> Unit
-        ) {
-            // Check if there is any points in HostApp
-            // .. .. ..
-            if (hasPoints)
-                onSuccess(points) // allow miniapp to get points.
-            else
-                onError(message) // reject miniapp to get points with message explanation.
-        }
+        onSuccess: (points: Points) -> Unit,
+        onError: (pointsError: MiniAppPointsError) -> Unit
+    ) {
+        // Check if there is any point in HostApp
+        // .. .. ..
+        if (hasPoints)
+            onSuccess(points) // allow miniapp to get points.
+        else
+            onError(pointsError) // reject miniapp to get points with message explanation.
+    }
 }
 
 // set UserInfoBridgeDispatcher object to miniAppMessageBridge

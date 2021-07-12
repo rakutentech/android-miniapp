@@ -24,6 +24,7 @@
     <string name="hint_points_standard">Points (Standard)</string>
     <string name="hint_points_time_limited">Points (Time-Limited)</string>
     <string name="hint_points_rakuten_cash">Points (Rakuten Cash)</string>
+    <string name="hint_points_default_value">0</string>
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
