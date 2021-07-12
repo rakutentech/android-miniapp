@@ -43,7 +43,9 @@ class PointsActivity : BaseActivity() {
                 return true
             }
             R.id.settings_menu_save -> {
-                update()
+                updatePreferences()
+                hideSoftKeyboard(binding.root)
+                finish()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -55,15 +57,20 @@ class PointsActivity : BaseActivity() {
         settings.points?.standard?.let { binding.edtPointStandard.setText(it.toString()) }
         settings.points?.term?.let { binding.edtPointTimeLimited.setText(it.toString()) }
         settings.points?.cash?.let { binding.edtPointRakutenCash.setText(it.toString()) }
+        updatePreferences()
     }
 
-    private fun update() {
+    private fun updatePreferences() {
+        var pointStandard = edtPointStandard.text.toString()
+        if (pointStandard == "") pointStandard = "0"
+        var pointTimeLimited = edtPointTimeLimited.text.toString()
+        if (pointTimeLimited == "") pointTimeLimited = "0"
+        var pointRakutenCash = edtPointRakutenCash.text.toString()
+        if (pointRakutenCash == "") pointRakutenCash = "0"
         settings.points = Points(
-                edtPointStandard.text.toString().toInt(),
-                edtPointTimeLimited.text.toString().toInt(),
-                edtPointRakutenCash.text.toString().toInt()
+                pointStandard.toInt(),
+                pointTimeLimited.toInt(),
+                pointRakutenCash.toInt()
         )
-        hideSoftKeyboard(binding.root)
-        finish()
     }
 }
