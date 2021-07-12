@@ -2,12 +2,14 @@ package com.rakuten.tech.mobile.testapp.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatButton
-import com.rakuten.tech.mobile.miniapp.analytics.RATTrackerDispatcher
+import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class RATButton : AppCompatButton {
+class RATButton : AppCompatButton, IRatComponent{
+
+    private lateinit var ratEvent: RATEvent
 
     constructor(@NonNull context: Context) : super(context)
 
@@ -20,8 +22,17 @@ class RATButton : AppCompatButton {
     )
 
     override fun performClick(): Boolean {
-        RATTrackerDispatcher.instance().sendEvent()
-        return super.performClick()
+        val returnClick = super.performClick()
+        prepareEventForSend()
+        MiniApp.instance(AppSettings.instance.miniAppSettings).sendTrackEvent(ratEvent)
+        return returnClick
+    }
+
+    override fun prepareEventForSend() {
+        ratEvent = RATEvent(
+            event = EventType.CLICK,
+            action = Actiontype.OPEN
+        )
     }
 
 }
