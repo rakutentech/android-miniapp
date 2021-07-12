@@ -58,33 +58,61 @@
                     android:paddingBottom="@dimen/small_4"
                     android:text="@string/lb_ras" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8">
+                    android:layout_height="wrap_content">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/editProjectId"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/hint_host_project_id"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_margin="@dimen/small_8">
 
-                <com.google.android.material.textfield.TextInputLayout
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/editProjectId"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/hint_host_project_id"
+                            android:imeOptions="actionDone"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/clearProjectId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/small_4"
+                        android:layout_marginEnd="@dimen/small_10"
+                        android:src="@drawable/ic_close_24dp" />
+                </FrameLayout>
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8">
+                    android:layout_height="wrap_content">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/editSubscriptionKey"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/hint_subscription_key"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_margin="@dimen/small_8">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/editSubscriptionKey"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/hint_subscription_key"
+                            android:imeOptions="actionDone"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/clearSubscriptionKey"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/small_4"
+                        android:layout_marginEnd="@dimen/small_10"
+                        android:src="@drawable/ic_close_24dp" />
+                </FrameLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"

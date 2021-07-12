@@ -132,6 +132,8 @@ class SettingsMenuActivity : BaseActivity() {
             QASettingsActivity.start(this@SettingsMenuActivity)
         }
 
+        binding.clearProjectId.setOnClickListener { binding.editProjectId.setText("") }
+        binding.clearSubscriptionKey.setOnClickListener { binding.editSubscriptionKey.setText("") }
         validateInputIDs()
     }
 
