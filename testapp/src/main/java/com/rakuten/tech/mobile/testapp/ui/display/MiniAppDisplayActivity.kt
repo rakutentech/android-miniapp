@@ -227,7 +227,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             ) {
                 val points = AppSettings.instance.points
                 if (points != null) onSuccess(points)
-                else onError(MiniAppPointsError(null, "There is no points found in HostApp."))
+                else onError(MiniAppPointsError.custom("There is no points found in HostApp."))
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
