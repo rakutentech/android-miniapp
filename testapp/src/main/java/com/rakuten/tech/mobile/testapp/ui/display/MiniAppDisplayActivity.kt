@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -218,6 +219,15 @@ class MiniAppDisplayActivity : BaseActivity() {
                     onSuccess(AppSettings.instance.contacts)
                 else
                     onError("There is no contact found in HostApp.")
+            }
+
+            override fun getPoints(
+                onSuccess: (points: Points) -> Unit,
+                onError: (pointsError: MiniAppPointsError) -> Unit
+            ) {
+                val points = AppSettings.instance.points
+                if (points != null) onSuccess(points)
+                else onError(MiniAppPointsError.custom("There is no points found in HostApp."))
             }
         }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)

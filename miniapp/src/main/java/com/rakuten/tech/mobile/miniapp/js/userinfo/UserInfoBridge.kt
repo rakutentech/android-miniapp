@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -191,6 +192,35 @@ internal class UserInfoBridge {
         }
     }
 
+    @Suppress("LongMethod")
+    fun onGetPoints(callbackId: String) = whenReady(callbackId) {
+        try {
+            if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.POINTS)) {
+                val successCallback = { points: Points ->
+                    bridgeExecutor.postValue(callbackId, Gson().toJson(points))
+                }
+                val errorCallback = { callback: MiniAppPointsError ->
+                    val errorBridgeModel = MiniAppBridgeErrorModel(callback.type, callback.message)
+                    bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
+                }
+
+                userInfoBridgeDispatcher.getPoints(successCallback, errorCallback)
+            } else {
+                bridgeExecutor.postError(callbackId,
+                        Gson().toJson(MiniAppBridgeErrorModel(
+                                "$ERR_GET_POINTS $ERR_GET_POINTS_NO_PERMISSION")
+                        )
+                )
+            }
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId,
+                    Gson().toJson(MiniAppBridgeErrorModel(
+                            "$ERR_GET_POINTS ${e.message}")
+                    )
+            )
+        }
+    }
+
     @VisibleForTesting
     internal companion object {
         const val ERR_GET_USER_NAME = "Cannot get user name:"
@@ -206,5 +236,8 @@ internal class UserInfoBridge {
         const val ERR_GET_CONTACTS = "Cannot get contacts:"
         const val ERR_GET_CONTACTS_NO_PERMISSION =
             "Permission has not been accepted yet for getting contacts."
+        const val ERR_GET_POINTS = "Cannot get points:"
+        const val ERR_GET_POINTS_NO_PERMISSION =
+                "Permission has not been accepted yet for getting points."
     }
 }

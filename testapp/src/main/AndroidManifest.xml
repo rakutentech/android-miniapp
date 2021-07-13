@@ -64,6 +64,9 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
             android:label="@string/lb_access_token" />
         <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.PointsActivity"
+            android:label="@string/action_points" />
+        <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
             android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter

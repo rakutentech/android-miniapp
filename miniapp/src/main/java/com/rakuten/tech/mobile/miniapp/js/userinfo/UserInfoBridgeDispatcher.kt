@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.util.ArrayList
@@ -83,6 +84,17 @@ interface UserInfoBridgeDispatcher {
     fun getContacts(
         onSuccess: (contacts: ArrayList<Contact>) -> Unit,
         onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(NO_IMPL)
+    }
+
+    /**
+     * Get points from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    fun getPoints(
+        onSuccess: (points: Points) -> Unit,
+        onError: (pointsError: MiniAppPointsError) -> Unit
     ) {
         throw MiniAppSdkException(NO_IMPL)
     }

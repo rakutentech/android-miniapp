@@ -220,6 +220,7 @@ The `UserInfoBridgeDispatcher`:
 | getProfilePhoto              | 🚫       |
 | getAccessToken               | 🚫       |
 | getContacts                  | 🚫       |
+| getPoints                    | 🚫       |
 
 The `ChatBridgeDispatcher`:
 
@@ -331,6 +332,18 @@ val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
             onSuccess(contacts) // allow miniapp to get contacts.
         else
             onError(message) // reject miniapp to get contacts with message explanation.
+    }
+
+    override fun getPoints(
+        onSuccess: (points: Points) -> Unit,
+        onError: (pointsError: MiniAppPointsError) -> Unit
+    ) {
+        // Check if there is any point in HostApp
+        // .. .. ..
+        if (hasPoints)
+            onSuccess(points) // allow miniapp to get points.
+        else
+            onError(pointsError) // reject miniapp to get points with message explanation.
     }
 }
 

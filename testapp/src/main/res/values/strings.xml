@@ -21,6 +21,11 @@
     <string name="lb_unique_id_error">Always Generate Unique ID Error</string>
     <string name="hint_unique_id_error">Unique ID Error Message</string>
 
+    <string name="hint_points_standard">Points (Standard)</string>
+    <string name="hint_points_time_limited">Points (Time-Limited)</string>
+    <string name="hint_points_rakuten_cash">Points (Rakuten Cash)</string>
+    <string name="hint_points_default_value">0</string>
+
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
     <string name="menu_title_change_settings">Change App Settings</string>
@@ -50,6 +55,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
+    <string name="action_points">Points</string>
     <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Permissions</string>
     <string name="action_first_time_accept">Accept</string>
