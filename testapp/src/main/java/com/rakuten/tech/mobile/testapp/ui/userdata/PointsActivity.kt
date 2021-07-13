@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.points_activity.*
+import java.lang.NumberFormatException
 
 class PointsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
@@ -39,13 +40,12 @@ class PointsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                onExit()
                 return true
             }
             R.id.settings_menu_save -> {
                 updatePreferences()
-                hideSoftKeyboard(binding.root)
-                finish()
+                onExit()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -67,10 +67,19 @@ class PointsActivity : BaseActivity() {
         if (pointTimeLimited == "") pointTimeLimited = "0"
         var pointRakutenCash = edtPointRakutenCash.text.toString()
         if (pointRakutenCash == "") pointRakutenCash = "0"
-        settings.points = Points(
-                pointStandard.toInt(),
-                pointTimeLimited.toInt(),
-                pointRakutenCash.toInt()
-        )
+        try {
+            settings.points = Points(
+                    pointStandard.toInt(),
+                    pointTimeLimited.toInt(),
+                    pointRakutenCash.toInt()
+            )
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun onExit() {
+        hideSoftKeyboard(binding.root)
+        finish()
     }
 }
