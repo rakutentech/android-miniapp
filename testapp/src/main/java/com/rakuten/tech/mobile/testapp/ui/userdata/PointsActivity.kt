@@ -69,9 +69,9 @@ class PointsActivity : BaseActivity() {
         if (pointRakutenCash == "") pointRakutenCash = "0"
         try {
             settings.points = Points(
-                    pointStandard.toLong(),
-                    pointTimeLimited.toLong(),
-                    pointRakutenCash.toLong()
+                    pointStandard.toInt(),
+                    pointTimeLimited.toInt(),
+                    pointRakutenCash.toInt()
             )
         } catch (e: NumberFormatException) {
             e.printStackTrace()
