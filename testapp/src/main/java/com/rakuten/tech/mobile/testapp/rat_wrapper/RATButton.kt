@@ -24,6 +24,7 @@ class RATButton : AppCompatButton, IRatComponent{
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
         prepareEventForSend()
+        //TODO: Send The event
         return returnClick
     }
 
@@ -32,6 +33,10 @@ class RATButton : AppCompatButton, IRatComponent{
             event = EventType.CLICK,
             action = Actiontype.OPEN
         )
+    }
+
+    override fun setCustomRatEvent(ratEvent: RATEvent) {
+        this.ratEvent = ratEvent
     }
 
 }

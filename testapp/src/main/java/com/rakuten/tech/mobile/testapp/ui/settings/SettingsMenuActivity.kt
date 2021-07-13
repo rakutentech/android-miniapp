@@ -131,6 +131,9 @@ class SettingsMenuActivity : BaseActivity() {
         binding.buttonQA.setOnClickListener {
             QASettingsActivity.start(this@SettingsMenuActivity)
         }
+        binding.btnTest.setOnClickListener{
+
+        }
 
         validateInputIDs()
     }
@@ -197,7 +200,7 @@ class SettingsMenuActivity : BaseActivity() {
                     subscriptionKeyHolder,
                     urlParametersHolder,
                     isPreviewModeHolder,
-            "URL parameter",
+                    "URL parameter",
                     error.message.toString()
                 )
             }
@@ -205,12 +208,12 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun onUpdateError(
-            appIdHolder: String,
-            subscriptionKeyHolder: String,
-            urlParametersHolder: String,
-            isPreviewModeHolder: Boolean,
-            errTitle: String,
-            errMsg: String
+        appIdHolder: String,
+        subscriptionKeyHolder: String,
+        urlParametersHolder: String,
+        isPreviewModeHolder: Boolean,
+        errTitle: String,
+        errMsg: String
     ) {
         settings.projectId = appIdHolder
         settings.subscriptionKey = subscriptionKeyHolder

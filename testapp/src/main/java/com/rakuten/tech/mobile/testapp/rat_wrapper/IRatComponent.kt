@@ -6,4 +6,9 @@ interface IRatComponent {
      * screen name, miniapp info
      */
     fun prepareEventForSend()
+
+    /**
+     * Set Custom rat events
+     */
+    fun setCustomRatEvent(ratEvent: RATEvent)
 }

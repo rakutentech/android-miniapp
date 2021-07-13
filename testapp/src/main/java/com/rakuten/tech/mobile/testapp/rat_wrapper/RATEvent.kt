@@ -8,15 +8,14 @@ enum class EventType {
 }
 
 enum class Actiontype {
-    HOST_LAUNCH,
     OPEN,
     CLOSE
 }
 
 class RATEvent {
-    private var event: EventType? = null
+    private var event: EventType?
     private var action: Actiontype? = null
-    private var screenName: String? = null
+    private var label: String? = null
     private var miniAppInfo: MiniAppInfo? = null
 
     constructor(event: EventType, action: Actiontype) {
@@ -24,10 +23,10 @@ class RATEvent {
         this.action = action
     }
 
-    constructor(event: EventType, action: Actiontype, screenName: String) {
+    constructor(event: EventType, action: Actiontype, label: String) {
         this.event = event
         this.action = action
-        this.screenName = screenName
+        this.label = label
     }
 
     constructor(event: EventType, action: Actiontype, miniAppInfo: MiniAppInfo) {
