@@ -5,7 +5,7 @@ import androidx.annotation.Keep
 /** Points object for miniapp. */
 @Keep
 data class Points(
-    val standard: Int,
-    var term: Int,
-    var cash: Int
+    val standard: Long,
+    var term: Long,
+    var cash: Long
 )

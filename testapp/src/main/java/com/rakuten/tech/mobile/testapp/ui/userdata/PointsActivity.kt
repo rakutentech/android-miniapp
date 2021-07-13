@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.points_activity.*
+import java.lang.NumberFormatException
 
 class PointsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
@@ -67,10 +68,14 @@ class PointsActivity : BaseActivity() {
         if (pointTimeLimited == "") pointTimeLimited = "0"
         var pointRakutenCash = edtPointRakutenCash.text.toString()
         if (pointRakutenCash == "") pointRakutenCash = "0"
-        settings.points = Points(
-                pointStandard.toInt(),
-                pointTimeLimited.toInt(),
-                pointRakutenCash.toInt()
-        )
+        try {
+            settings.points = Points(
+                    pointStandard.toLong(),
+                    pointTimeLimited.toLong(),
+                    pointRakutenCash.toLong()
+            )
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
+        }
     }
 }
