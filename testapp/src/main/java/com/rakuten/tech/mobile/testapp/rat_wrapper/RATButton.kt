@@ -24,7 +24,6 @@ class RATButton : AppCompatButton, IRatComponent{
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
         prepareEventForSend()
-        MiniApp.instance(AppSettings.instance.miniAppSettings).sendTrackEvent(ratEvent)
         return returnClick
     }
 

@@ -1,8 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.analytics.Actype
-import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -15,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import com.rakuten.tech.mobile.testapp.rat_wrapper.RATEvent
 
 @Suppress("TooManyFunctions", "LongMethod")
 internal class RealMiniApp(
@@ -131,14 +128,6 @@ internal class RealMiniApp(
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
-
-    override fun sendTrackEvent(ratEvent: RATEvent) {
-        miniAppAnalytics.sendAnalytics(
-            eType = Etype.CLICK,
-            actype = Actype.OPEN,
-            miniAppInfo = null
-        )
-    }
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)

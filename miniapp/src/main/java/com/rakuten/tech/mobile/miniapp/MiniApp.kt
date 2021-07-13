@@ -2,8 +2,6 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.analytics.Actype
-import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -20,7 +18,6 @@ import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import com.rakuten.tech.mobile.testapp.rat_wrapper.RATEvent
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -173,13 +170,6 @@ abstract class MiniApp internal constructor() {
      * @return MiniAppManifest an object contains manifest information of a miniapp.
      */
     abstract fun getDownloadedManifest(appId: String): MiniAppManifest?
-
-    /**
-     * Send the event to RAT accounts.
-     * @param appId mini app id.
-     * @return MiniAppManifest an object contains manifest information of a miniapp.
-     */
-    abstract fun sendTrackEvent(ratEvent: RATEvent): Unit
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.

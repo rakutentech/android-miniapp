@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.testapp.rat_wrapper
 
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 
-
 enum class EventType {
     APPEAR,
     CLICK,
