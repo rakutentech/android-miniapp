@@ -40,13 +40,12 @@ class PointsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                onExit()
                 return true
             }
             R.id.settings_menu_save -> {
                 updatePreferences()
-                hideSoftKeyboard(binding.root)
-                finish()
+                onExit()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -77,5 +76,10 @@ class PointsActivity : BaseActivity() {
         } catch (e: NumberFormatException) {
             e.printStackTrace()
         }
+    }
+
+    private fun onExit() {
+        hideSoftKeyboard(binding.root)
+        finish()
     }
 }

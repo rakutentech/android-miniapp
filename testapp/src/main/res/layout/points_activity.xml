@@ -22,7 +22,7 @@
                 android:hint="@string/hint_points_standard"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:maxLength="18"
+                android:maxLength="15"
                 android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,7 +41,7 @@
                 android:hint="@string/hint_points_time_limited"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:maxLength="18"
+                android:maxLength="15"
                 android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,7 +59,7 @@
                 android:hint="@string/hint_points_rakuten_cash"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:maxLength="18"
+                android:maxLength="15"
                 android:text="@string/hint_points_default_value" />
         </com.google.android.material.textfield.TextInputLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
