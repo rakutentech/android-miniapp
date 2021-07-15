@@ -9,6 +9,7 @@
         android:padding="@dimen/medium_16">
 
         <ImageView
+            android:id="@+id/img_arrow_right"
             android:layout_width="@dimen/sec_icon_size"
             android:layout_height="@dimen/sec_icon_size"
             android:layout_alignParentEnd="true"
@@ -19,7 +20,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="@string/action_profile"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_large_16" />
     </RelativeLayout>

@@ -96,162 +96,72 @@
                     android:paddingBottom="@dimen/small_4"
                     android:text="@string/lb_user_details" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/action_profile"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_profile" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonContacts"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/action_contacts"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_contacts" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonAccessToken"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/lb_access_token"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/lb_access_token" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonCustomPermissions"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/action_custom_permissions"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_custom_permissions" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonPoints"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/action_points"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_points" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <RelativeLayout
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonQA"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:padding="@dimen/medium_16">
-
-                    <ImageView
-                        android:layout_width="@dimen/sec_icon_size"
-                        android:layout_height="@dimen/sec_icon_size"
-                        android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_arrow_forward" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/action_qa"
-                        android:textColor="@android:color/black"
-                        android:textSize="@dimen/text_large_16" />
-                </RelativeLayout>
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_qa" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
@@ -277,19 +187,6 @@
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.SettingMenuOptionView
-                    android:id="@+id/btnTest"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:titleLabel="Hello Custom"/>
-
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.RATButton
-                    android:id="@+id/btn_rat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="this is a cutom button"
-                    android:textColor="@color/link_blue"
-                    />
             </LinearLayout>
 
         </ScrollView>

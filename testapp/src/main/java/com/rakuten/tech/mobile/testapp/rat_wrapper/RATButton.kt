@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatButton
-import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class RATButton : AppCompatButton, IRatComponent{
@@ -24,15 +24,19 @@ class RATButton : AppCompatButton, IRatComponent{
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
         prepareEventForSend()
-        //TODO: Send The event
+        ratEvent?.let {
+            DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
+        }
         return returnClick
     }
 
     override fun prepareEventForSend() {
-        ratEvent = RATEvent(
-            event = EventType.CLICK,
-            action = Actiontype.OPEN
-        )
+        if (ratEvent == null)
+            ratEvent = RATEvent(
+                event = EventType.CLICK,
+                action = ActionType.OPEN,
+                label = this.text.toString()
+            )
     }
 
     override fun setCustomRatEvent(ratEvent: RATEvent) {

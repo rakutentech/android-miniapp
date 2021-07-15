@@ -131,9 +131,6 @@ class SettingsMenuActivity : BaseActivity() {
         binding.buttonQA.setOnClickListener {
             QASettingsActivity.start(this@SettingsMenuActivity)
         }
-        binding.btnTest.setOnClickListener{
-
-        }
 
         validateInputIDs()
     }
