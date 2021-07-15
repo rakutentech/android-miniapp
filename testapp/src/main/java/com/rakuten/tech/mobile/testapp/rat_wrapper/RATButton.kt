@@ -7,7 +7,11 @@ import androidx.appcompat.widget.AppCompatButton
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class RATButton : AppCompatButton, IRatComponent{
+/**
+ * This is custom Button.
+ * It can also handle rat analytics
+ */
+class RATButton : AppCompatButton, IRatComponent {
 
     private lateinit var ratEvent: RATEvent
 
