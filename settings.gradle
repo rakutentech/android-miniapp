@@ -1,1 +1,2 @@
+include ':admob'
 include ':analytics', ':testapp', ':miniapp'
