@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.points_activity.*
+import java.lang.NumberFormatException
 
 class PointsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
@@ -39,11 +40,12 @@ class PointsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                onExit()
                 return true
             }
             R.id.settings_menu_save -> {
-                update()
+                updatePreferences()
+                onExit()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -55,14 +57,28 @@ class PointsActivity : BaseActivity() {
         settings.points?.standard?.let { binding.edtPointStandard.setText(it.toString()) }
         settings.points?.term?.let { binding.edtPointTimeLimited.setText(it.toString()) }
         settings.points?.cash?.let { binding.edtPointRakutenCash.setText(it.toString()) }
+        updatePreferences()
     }
 
-    private fun update() {
-        settings.points = Points(
-                edtPointStandard.text.toString().toInt(),
-                edtPointTimeLimited.text.toString().toInt(),
-                edtPointRakutenCash.text.toString().toInt()
-        )
+    private fun updatePreferences() {
+        var pointStandard = edtPointStandard.text.toString()
+        if (pointStandard == "") pointStandard = "0"
+        var pointTimeLimited = edtPointTimeLimited.text.toString()
+        if (pointTimeLimited == "") pointTimeLimited = "0"
+        var pointRakutenCash = edtPointRakutenCash.text.toString()
+        if (pointRakutenCash == "") pointRakutenCash = "0"
+        try {
+            settings.points = Points(
+                    pointStandard.toInt(),
+                    pointTimeLimited.toInt(),
+                    pointRakutenCash.toInt()
+            )
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun onExit() {
         hideSoftKeyboard(binding.root)
         finish()
     }

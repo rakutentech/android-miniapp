@@ -14,6 +14,7 @@
 - **Fix:** Prevent exception during calling `onError` asynchronously in `getUniqueId`.
 - **Update:** Supported "Update codebase" functionality for preview mode.
 - **Update:** Included technical improvement in custom permission and manifest information caching.
+- **Update:** Update `MessageToContact` to support an optional message to the user for the contact picker capability.
 
 **Sample App**
 - **Feature:** Added QA option in settings screen to test `authorizationFailureError` and `custom` error type.
