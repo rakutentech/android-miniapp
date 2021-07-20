@@ -42,7 +42,7 @@ workflows:
                 paths:
                   - mapping/
             - run: |
-                echo $(<testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java) > ./testapp/version-name-staging.txt
+                echo $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/release/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\') > "$APP_V_NAME"
       - app-center/publish:
           name: deploy-test-app-stg
           group: Testers
@@ -122,10 +122,7 @@ workflows:
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name:
-            - run: |
-                echo $(<testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java) > ./testapp/version-name-staging2.txt
-            - $(grep "VERSION_NAME" testapp/version-name-staging2.txt | awk '{print $7}' | tr -d \''";\')
+          version-name: $APP_V_NAME
           version-code: 1
           requires:
             - android-sdk/build
