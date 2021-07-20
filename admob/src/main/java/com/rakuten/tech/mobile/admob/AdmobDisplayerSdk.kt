@@ -9,24 +9,41 @@ import android.app.Activity
 abstract class AdmobDisplayerSdk internal constructor() {
 
     /** Load the interstitial ad when it is ready.
-     * @param context the activity the ad will load.
      * @param adUnitId the id the ad will load upon.
      * @param onCallback is the callback status of th ad.
      */
     abstract fun loadInterstitialAdForSdk(
-        context: Activity,
+        adUnitId: String,
+        onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
+    )
+
+    /** Load the rewarded ad when it is ready.
+     * @param adUnitId the id the ad will load upon.
+     * @param onCallback is the callback status of th ad.
+     */
+    abstract fun loadRewardedAdSdk(
+        adUnitId: String,
+        onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
+    )
+
+
+    /** show the interstitial ad when it is ready.
+     * @param adUnitId the id the ad will load upon.
+     * @param onCallback is the callback status of th ad.
+     */
+    abstract fun showInterstitialAdForSdk(
         adUnitId: String,
         onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
     )
 
     /** show the interstitial ad when it is ready.
-     * @param context the activity the ad will load.
      * @param adUnitId the id the ad will load upon.
+     * @param onReward is the callback for getting reward of th ad.
      * @param onCallback is the callback status of th ad.
      */
-    abstract fun showInterstitialAdForSdk(
-        context: Activity,
+    abstract fun showRewardedAdForSdk(
         adUnitId: String,
+        onReward: (amount: Int, type: String) -> Unit,
         onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
     )
 
@@ -36,8 +53,8 @@ abstract class AdmobDisplayerSdk internal constructor() {
             return instance
         }
 
-        fun init() {
-            instance = RealAdmobDisplayerSdk()
+        fun init(context: Activity) {
+            instance = RealAdmobDisplayerSdk(context)
         }
     }
 }

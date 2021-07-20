@@ -19,6 +19,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
+/** Check whether hostapp provides latest admob dependency. */
+@Suppress("EmptyCatchBlock", "SwallowedException")
+private inline fun <T> whenHasAdmobLatest(callback: () -> T) {
+    try {
+        Class.forName("com.rakuten.tech.mobile.admob.AdmobDisplayerSdk")
+        callback.invoke()
+    } catch (e: ClassNotFoundException) {}
+}
 /**
  * The ad displayer.
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
@@ -46,7 +54,9 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
 
     init {
         /** init the sdk for latest admob version 20.0.0. **/
-        AdmobDisplayerSdk.init()
+        whenHasAdmobLatest {
+            AdmobDisplayerSdk.init(context)
+        }
     }
 
     /** Load the interstitial ad when it is ready. **/
@@ -84,12 +94,9 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         adUnitId: String,
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
-    ) {
+    ) = whenHasAdmobLatest {
         launch {
-            AdmobDisplayerSdk.getInstance().loadInterstitialAdForSdk(
-                context = context,
-                adUnitId = adUnitId
-            ) { loadStatus, errorMessage ->
+            AdmobDisplayerSdk.getInstance().loadInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
                     AdStatus.LOADED -> onLoaded.invoke()
                     AdStatus.FAILED -> {
@@ -130,12 +137,9 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         adUnitId: String,
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
-    ) {
+    ) = whenHasAdmobLatest {
         launch {
-            AdmobDisplayerSdk.getInstance().showInterstitialAdForSdk(
-                context = context,
-                adUnitId = adUnitId
-            ) { loadStatus, errorMessage ->
+            AdmobDisplayerSdk.getInstance().showInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
                     AdStatus.CLOSED -> onClosed.invoke()
                     AdStatus.FAILED -> onFailed.invoke(errorMessage ?: "")
@@ -166,6 +170,23 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         }
     }
 
+    /** Load the interstitial ad or version 20.0.0 when it is ready. **/
+    override fun loadRewardedAdSdk(
+        adUnitId: String,
+        onLoaded: () -> Unit,
+        onFailed: (String) -> Unit
+    ) = whenHasAdmobLatest {
+        launch {
+            AdmobDisplayerSdk.getInstance().loadRewardedAdSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
+                when (loadStatus) {
+                    AdStatus.LOADED -> onLoaded.invoke()
+                    AdStatus.FAILED -> onFailed.invoke(errorMessage ?: "")
+                    else -> Log.d("Ad", "Something went wrong.")
+                }
+            }
+        }
+    }
+
     /**
      * Show the rewarded ad when it is already loaded.
      * @param onClosed When the ad is closed, forward the reward earned by the user.
@@ -184,6 +205,36 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
                 ad.show(context, adCallback)
             } else
                 onFailed.invoke("Ad is not loaded yet")
+        }
+    }
+
+    /**
+     * Show the rewarded ad when it is already loaded.
+     * @param onClosed When the ad is closed, forward the reward earned by the user.
+     * Reward will be null if the user did not earn the reward.
+     */
+    override fun showRewardedAdSdk(
+        adUnitId: String,
+        onClosed: (reward: Reward?) -> Unit,
+        onFailed: (String) -> Unit
+    ) {
+        launch {
+            var reward: Reward? = null
+            AdmobDisplayerSdk.getInstance().showRewardedAdForSdk(
+                adUnitId = adUnitId,
+                onReward = { amount: Int, type: String ->
+                    reward = Reward(type = type, amount = amount)
+                }
+            ) { loadStatus, errorMessage ->
+                when (loadStatus) {
+                    AdStatus.FAILED -> {
+                        interstitialAdMap.remove(adUnitId)
+                        onFailed.invoke(errorMessage ?: "")
+                    }
+                    AdStatus.CLOSED -> onClosed.invoke(reward)
+                    else -> Log.d("Ad", "Something went wrong.")
+                }
+            }
         }
     }
 

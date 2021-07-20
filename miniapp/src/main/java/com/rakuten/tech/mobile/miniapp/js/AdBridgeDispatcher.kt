@@ -33,7 +33,7 @@ internal class AdBridgeDispatcher {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitialAd(
+                    AdType.INTERSTITIAL.value -> adDisplayer.loadInterstitialAdSdk(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { bridgeExecutor.postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -43,7 +43,7 @@ internal class AdBridgeDispatcher {
                             )
                         }
                     )
-                    AdType.REWARDED.value -> adDisplayer.loadRewardedAd(
+                    AdType.REWARDED.value -> adDisplayer.loadRewardedAdSdk(
                         adUnitId = adObj.adUnitId,
                         onLoaded = { bridgeExecutor.postValue(callbackId, SUCCESS) },
                         onFailed = { errMsg ->
@@ -69,7 +69,7 @@ internal class AdBridgeDispatcher {
                 val adObj = callbackObj.param
 
                 when (adObj.adType) {
-                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitialAd(
+                    AdType.INTERSTITIAL.value -> adDisplayer.showInterstitialAdSdk(
                         adUnitId = adObj.adUnitId,
                         onClosed = { bridgeExecutor.postValue(callbackId, CLOSED) },
                         onFailed = { errMsg ->
@@ -79,7 +79,7 @@ internal class AdBridgeDispatcher {
                             )
                         }
                     )
-                    AdType.REWARDED.value -> adDisplayer.showRewardedAd(
+                    AdType.REWARDED.value -> adDisplayer.showRewardedAdSdk(
                         adUnitId = adObj.adUnitId,
                         onClosed = { reward ->
                             if (reward == null)
