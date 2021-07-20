@@ -180,7 +180,14 @@ class MiniAppDisplayActivity : BaseActivity() {
         // setup UserInfoBridgeDispatcher
         val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
-
+            override fun getUserName(
+                onSuccess: (userName: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val name = AppSettings.instance.profileName
+                if (name.isNotEmpty()) onSuccess(name)
+                else onError("User name is not found.")
+            }
 
             override fun getProfilePhoto(
                 onSuccess: (profilePhoto: String) -> Unit,
