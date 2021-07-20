@@ -1,11 +1,13 @@
 ## CHANGELOG
 
-### 3.X.X (2021-XX-XX)
+### 3.5.0 (2021-07-26)
 **SDK**
+- **Update:** Update `MessageToContact` to support an optional message to the user for the contact picker capability.
 - **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
+- **Update:** Display a banner message on contact picker ui while sending message to single/multiple contacts.
 
 ### 3.4.0 (2021-06-29)
 **SDK**
@@ -14,7 +16,6 @@
 - **Fix:** Prevent exception during calling `onError` asynchronously in `getUniqueId`.
 - **Update:** Supported "Update codebase" functionality for preview mode.
 - **Update:** Included technical improvement in custom permission and manifest information caching.
-- **Update:** Update `MessageToContact` to support an optional message to the user for the contact picker capability.
 
 **Sample App**
 - **Feature:** Added QA option in settings screen to test `authorizationFailureError` and `custom` error type.
