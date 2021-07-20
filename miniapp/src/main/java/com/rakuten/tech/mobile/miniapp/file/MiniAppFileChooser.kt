@@ -97,7 +97,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         val data = intent.data
         val clipData = intent.clipData
         when {
-            data != null && clipData == null-> {
+            data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
             }
             clipData != null -> {
