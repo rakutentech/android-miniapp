@@ -42,7 +42,7 @@ workflows:
                 paths:
                   - mapping/
             - run: |
-                echo $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/release/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\') > "$APP_V_NAME"
+                echo $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\') > ./testapp/tmp-version-name.txt
       - app-center/publish:
           name: deploy-test-app-stg
           group: Testers
