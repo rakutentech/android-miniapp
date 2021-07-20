@@ -118,13 +118,14 @@ workflows:
             branches:
               only: /^feature\/.*/
       - app-center/mapping:
-          - run: |
-              echo $(<testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java) > ./testapp/version-name-staging2.txt
           name: deploy-test-app-stg-mapping
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $(grep "VERSION_NAME" testapp/version-name-staging2.txt | awk '{print $7}' | tr -d \''";\')
+          version-name:
+            - run: |
+                echo $(<testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java) > ./testapp/version-name-staging2.txt
+            - $(grep "VERSION_NAME" testapp/version-name-staging2.txt | awk '{print $7}' | tr -d \''";\')
           version-code: 1
           requires:
             - android-sdk/build
