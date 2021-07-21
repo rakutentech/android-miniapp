@@ -120,13 +120,13 @@ workflows:
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-name: $(grep "VERSION_NAME" ../testapp/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
           version-code: 1
           requires:
             - android-sdk/build
           filters:
             branches:
-              only: master
+              only: /.*/
       - app-center/mapping:
           name: deploy-test-app-release-mapping
           file: mapping/release/mapping.txt
