@@ -2,11 +2,10 @@ package com.rakuten.tech.mobile.miniapp.js.userinfo
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
-import com.rakuten.tech.mobile.miniapp.js.CallbackObj
+import com.rakuten.tech.mobile.miniapp.js.AccessTokenCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
@@ -86,8 +85,9 @@ internal class UserInfoBridge {
     }
 
     @Suppress("LongMethod")
-    internal fun onGetAccessToken(callbackObj: CallbackObj) = whenReady(callbackObj.id) {
+    internal fun onGetAccessToken(callbackId: String, jsonStr: String) = whenReady(callbackId) {
         try {
+            val callbackObj: AccessTokenCallbackObj = Gson().fromJson(jsonStr, AccessTokenCallbackObj::class.java)
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.ACCESS_TOKEN)) {
                 onHasAccessTokenPermission(callbackObj)
             } else
@@ -101,7 +101,7 @@ internal class UserInfoBridge {
                 )
         } catch (e: Exception) {
             bridgeExecutor.postError(
-                callbackObj.id,
+                callbackId,
                 Gson().toJson(
                     MiniAppBridgeErrorModel(
                         message = "$ERR_GET_ACCESS_TOKEN ${e.message}"
@@ -112,7 +112,7 @@ internal class UserInfoBridge {
     }
 
     @Suppress("LongMethod")
-    private fun onHasAccessTokenPermission(callbackObj: CallbackObj) {
+    private fun onHasAccessTokenPermission(callbackObj: AccessTokenCallbackObj) {
         val tokenPermission = parseAccessTokenPermission(callbackObj)
         doesAccessTokenMatch(tokenPermission) { success, error ->
             if (success) {
@@ -168,10 +168,8 @@ internal class UserInfoBridge {
         }
     }
 
-    private fun parseAccessTokenPermission(callbackObj: CallbackObj) = Gson().fromJson<AccessTokenScope>(
-            callbackObj.param.toString(),
-            object : TypeToken<AccessTokenScope>() {}.type
-    ) ?: AccessTokenScope("", emptyList())
+    private fun parseAccessTokenPermission(callbackObj: AccessTokenCallbackObj) =
+        callbackObj.param ?: AccessTokenScope("", emptyList())
 
     fun onGetContacts(callbackId: String) = whenReady(callbackId) {
         try {
