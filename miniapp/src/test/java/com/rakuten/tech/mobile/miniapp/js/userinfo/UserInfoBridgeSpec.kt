@@ -269,9 +269,9 @@ class UserInfoBridgeSpec {
 
     /** start region: access token */
     private val testToken = TokenData("test_token", 0)
-    private val tokenCallbackObj = CallbackObj(
+    private val tokenCallbackObj = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(TEST_ATP1),
+            param = TEST_ATP1,
             id = TEST_CALLBACK_ID
     )
     private val testError = MiniAppAccessTokenError.audienceNotSupportedError
@@ -348,7 +348,7 @@ class UserInfoBridgeSpec {
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
         val errMsg = "$ERR_GET_ACCESS_TOKEN $ERR_ACCESS_TOKEN_NOT_MATCH_MANIFEST"
 
-        val tokenCallbackObj = CallbackObj(
+        val tokenCallbackObj = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
             param = null,
             id = TEST_CALLBACK_ID
@@ -362,24 +362,24 @@ class UserInfoBridgeSpec {
 
         val atp2 = AccessTokenScope(audience = "aud", scopes = mutableListOf("scopeB"))
         val audienceNotSupportedError = MiniAppAccessTokenError.audienceNotSupportedError
-        val tokenCallbackObj2 = CallbackObj(
+        val tokenCallbackObj2 = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(atp2),
+            param = atp2,
             id = TEST_CALLBACK_ID + '2'
         )
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id, Gson().toJson(tokenCallbackObj))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj2.id, Gson().toJson(tokenCallbackObj2))
         verify(bridgeExecutor).postError(
             tokenCallbackObj2.id, Gson().toJson(
                 MiniAppBridgeErrorModel(audienceNotSupportedError.type, audienceNotSupportedError.message)
             )
         )
         val atp3 = AccessTokenScope(audience = "aud1", scopes = mutableListOf())
-        val tokenCallbackObj3 = CallbackObj(
+        val tokenCallbackObj3 = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(atp3),
+            param = atp3,
             id = TEST_CALLBACK_ID + '3'
         )
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id, Gson().toJson(tokenCallbackObj))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj3.id, Gson().toJson(tokenCallbackObj3))
         verify(bridgeExecutor).postError(
             tokenCallbackObj3.id, Gson().toJson(
                 MiniAppBridgeErrorModel(message = errMsg)
@@ -387,12 +387,12 @@ class UserInfoBridgeSpec {
         )
         val atp4 = AccessTokenScope(audience = "aud2", scopes = mutableListOf("scopeA", "scopeB"))
         val scopeNotSupportedError = MiniAppAccessTokenError.scopesNotSupportedError
-        val tokenCallbackObj4 = CallbackObj(
+        val tokenCallbackObj4 = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(atp4),
+            param = atp4,
             id = TEST_CALLBACK_ID + '4'
         )
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id, Gson().toJson(tokenCallbackObj))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj4.id, Gson().toJson(tokenCallbackObj4))
         verify(bridgeExecutor).postError(
             tokenCallbackObj4.id, Gson().toJson(
                 MiniAppBridgeErrorModel(scopeNotSupportedError.type, scopeNotSupportedError.message)
@@ -406,12 +406,12 @@ class UserInfoBridgeSpec {
         val userInfoBridgeWrapper = Mockito.spy(createUserInfoBridgeWrapper(userInfoBridgeDispatcher))
 
         val atp2 = AccessTokenScope(audience = "aud1", scopes = mutableListOf("scopeB"))
-        val tokenCallbackObj2 = CallbackObj(
+        val tokenCallbackObj2 = AccessTokenCallbackObj(
             action = ActionType.GET_ACCESS_TOKEN.action,
-            param = Gson().toJson(atp2),
+            param = atp2,
             id = TEST_CALLBACK_ID
         )
-        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id, Gson().toJson(tokenCallbackObj))
+        userInfoBridgeWrapper.onGetAccessToken(tokenCallbackObj.id, Gson().toJson(tokenCallbackObj2))
 
         verify(bridgeExecutor).postValue(tokenCallbackObj2.id, Gson().toJson(testToken))
         testToken.scopes shouldEqual atp2
