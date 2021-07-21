@@ -59,14 +59,11 @@
                     android:text="@string/lb_ras" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/inputProjectId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_4"
-                    app:endIconMode="clear_text"
-                    app:errorTextAppearance="@style/SettingsError.TextAppearance">
+                    android:layout_margin="@dimen/small_8">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/editProjectId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -76,14 +73,11 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/inputSubscriptionKey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_4"
-                    app:endIconMode="clear_text"
-                    app:errorTextAppearance="@style/SettingsError.TextAppearance">
+                    android:layout_margin="@dimen/small_8">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/editSubscriptionKey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
