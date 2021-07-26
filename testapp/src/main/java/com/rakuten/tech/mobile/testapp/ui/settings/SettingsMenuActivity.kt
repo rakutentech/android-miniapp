@@ -148,13 +148,13 @@ class SettingsMenuActivity : BaseActivity() {
                 || isInputEmpty(binding.editSubscriptionKey)
                 || isAppIdInvalid)
 
-        if (isInputEmpty(binding.editProjectId) || isAppIdInvalid) {
-            binding.editProjectId.error = getString(R.string.error_invalid_input)
-        }
+        if (isInputEmpty(binding.editProjectId) || isAppIdInvalid)
+            binding.inputProjectId.error = getString(R.string.error_invalid_input)
+        else binding.inputProjectId.error = null
 
-        if (isInputEmpty(binding.editSubscriptionKey)) {
-            binding.editSubscriptionKey.error = getString(R.string.error_invalid_input)
-        }
+        if (isInputEmpty(binding.editSubscriptionKey))
+            binding.inputSubscriptionKey.error = getString(R.string.error_invalid_input)
+        else binding.inputSubscriptionKey.error = null
     }
 
     private fun updateSettings(
