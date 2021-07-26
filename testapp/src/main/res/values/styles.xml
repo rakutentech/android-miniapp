@@ -39,4 +39,9 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <style name="SettingsError.TextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text_medium_14</item>
+    </style>
+
 </resources>
