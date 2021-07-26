@@ -174,7 +174,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
 
-        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
+        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity, true))
         miniAppMessageBridge.allowScreenOrientation(true)
 
         // setup UserInfoBridgeDispatcher
