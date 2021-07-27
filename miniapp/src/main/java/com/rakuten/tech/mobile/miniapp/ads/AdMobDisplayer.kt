@@ -21,11 +21,12 @@ import kotlin.coroutines.CoroutineContext
 
 /** Check whether hostapp provides latest admob dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
-private inline fun <T> whenHasAdmobLatest(callback: () -> T) {
+private inline fun <T> whenHasAdmobLatest(callback: (success: Boolean) -> T) {
     try {
         Class.forName("com.rakuten.tech.mobile.admob.AdmobDisplayerSdk")
-        callback.invoke()
+        callback.invoke(true)
     } catch (e: ClassNotFoundException) {
+        callback.invoke(false)
     }
 }
 
@@ -34,8 +35,7 @@ private inline fun <T> whenHasAdmobLatest(callback: () -> T) {
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  * Support Interstitial, Reward ads.
  */
-class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boolean = false) :
-    MiniAppAdDisplayer, CoroutineScope {
+class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
@@ -56,9 +56,9 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
     }
 
     init {
-        /** init the sdk for latest admob version 20.0.0. **/
-        whenHasAdmobLatest {
-            AdmobDisplayerSdk.init(context)
+        /** init the sdk for latest admob version 20.2.0. **/
+        whenHasAdmobLatest { available ->
+            if (available) AdmobDisplayerSdk.init(context)
         }
     }
 
@@ -69,10 +69,12 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         onFailed: (String) -> Unit
     ) {
         launch {
-            if (isUseLatest)
-                loadLatestInterstitialAd(adUnitId, onLoaded, onFailed)
-            else
-                loadOldInterstitialAd(adUnitId, onLoaded, onFailed)
+            whenHasAdmobLatest { available ->
+                if (available)
+                    loadLatestInterstitialAd(adUnitId, onLoaded, onFailed)
+                else
+                    loadOldInterstitialAd(adUnitId, onLoaded, onFailed)
+            }
         }
     }
 
@@ -108,8 +110,7 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         adUnitId: String,
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest {
-
+    ) {
         AdmobDisplayerSdk.getInstance()
             .loadInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
@@ -130,10 +131,12 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         onFailed: (String) -> Unit
     ) {
         launch {
-            if (isUseLatest)
-                showLatestInterstitialAd(adUnitId, onClosed, onFailed)
-            else
-                showOldInterstitialAd(adUnitId, onClosed, onFailed)
+            whenHasAdmobLatest { available ->
+                if (available)
+                    showLatestInterstitialAd(adUnitId, onClosed, onFailed)
+                else
+                    showOldInterstitialAd(adUnitId, onClosed, onFailed)
+            }
         }
     }
 
@@ -162,7 +165,7 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         adUnitId: String,
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest {
+    ) {
         AdmobDisplayerSdk.getInstance()
             .showInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
@@ -181,10 +184,12 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         onFailed: (String) -> Unit
     ) {
         launch {
-            if (isUseLatest)
-                loadLatestRewardedAd(adUnitId, onLoaded, onFailed)
-            else
-                loadOldRewardedAd(adUnitId, onLoaded, onFailed)
+            whenHasAdmobLatest { available ->
+                if (available)
+                    loadLatestRewardedAd(adUnitId, onLoaded, onFailed)
+                else
+                    loadOldRewardedAd(adUnitId, onLoaded, onFailed)
+            }
         }
     }
 
@@ -210,7 +215,7 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         adUnitId: String,
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest {
+    ) {
         AdmobDisplayerSdk.getInstance()
             .loadRewardedAdSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
@@ -232,10 +237,12 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
         onFailed: (String) -> Unit
     ) {
         launch {
-            if (isUseLatest)
-                showLatestRewardedAd(adUnitId, onClosed, onFailed)
-            else
-                showOldRewardedAd(adUnitId, onClosed, onFailed)
+            whenHasAdmobLatest { available ->
+                if (available)
+                    showLatestRewardedAd(adUnitId, onClosed, onFailed)
+                else
+                    showOldRewardedAd(adUnitId, onClosed, onFailed)
+            }
         }
     }
 
