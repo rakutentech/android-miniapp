@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.5.0 (2021-07-26)
+### 3.5.0 (2021-07-27)
 **SDK**
 - **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
 - **Feature:** Added support for using `".jpg"` and multiple types e.g. `".jpg,.png"` in the accept field of the file input.
