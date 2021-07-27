@@ -121,7 +121,6 @@ class AdMobDisplayer(private val context: Activity, private val isUseLatest: Boo
                     else -> Log.d("Ad", "Something went wrong.")
                 }
             }
-
     }
 
     /** Show the interstitial ad when it is already loaded. **/
