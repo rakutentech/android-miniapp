@@ -38,7 +38,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <androidx.appcompat.widget.SwitchCompat
+                <com.rakuten.tech.mobile.testapp.rat_wrapper.RATSwitch
                     android:id="@+id/switchPreviewMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
