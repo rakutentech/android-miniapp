@@ -20,7 +20,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
         if (interstitialAdMap.containsKey(adUnitId))
             onCallback(AdStatus.FAILED, createLoadReqError(adUnitId))
         else {
-            var adRequest = AdRequest.Builder().build()
+            val adRequest = AdRequest.Builder().build()
             val adLoadCallback = object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     interstitialAdMap.remove(adUnitId)
@@ -43,7 +43,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
         if (rewardedAdMap.containsKey(adUnitId))
             onCallback(AdStatus.FAILED, createLoadReqError(adUnitId))
         else {
-            var adRequest = AdRequest.Builder().build()
+            val adRequest = AdRequest.Builder().build()
             val adLoadCallback = object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     rewardedAdMap.remove(adUnitId)
@@ -64,7 +64,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
         onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
     ) {
         if (interstitialAdMap.containsKey(adUnitId)) {
-            val ad = interstitialAdMap[adUnitId]!!
+            val ad = interstitialAdMap[adUnitId]
             val adListener = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     onCallback(AdStatus.CLOSED, null)
@@ -99,10 +99,10 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
         onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
     ) {
         if (rewardedAdMap.containsKey(adUnitId)) {
-            val ad = rewardedAdMap[adUnitId]!!
+            val ad = rewardedAdMap[adUnitId]
             val rewardListener = OnUserEarnedRewardListener {
-                var rewardAmount = it.amount
-                var rewardType = it.type
+                val rewardAmount = it.amount
+                val rewardType = it.type
                 onReward(rewardAmount, rewardType)
             }
             val adListener = object : FullScreenContentCallback() {
