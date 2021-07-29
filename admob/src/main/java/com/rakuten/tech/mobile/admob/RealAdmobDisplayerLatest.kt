@@ -24,7 +24,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
             val adLoadCallback = object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     interstitialAdMap.remove(adUnitId)
-                    onCallback(AdStatus.FAILED, adError?.message)
+                    onCallback(AdStatus.FAILED, adError.message)
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
@@ -47,7 +47,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
             val adLoadCallback = object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     rewardedAdMap.remove(adUnitId)
-                    onCallback(AdStatus.FAILED, adError?.message)
+                    onCallback(AdStatus.FAILED, adError.message)
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
