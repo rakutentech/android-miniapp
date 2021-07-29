@@ -12,7 +12,7 @@ import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdCallback
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.rakuten.tech.mobile.admob.AdmobDisplayerSdk
+import com.rakuten.tech.mobile.admob.AdmobDisplayerLatest
 import com.rakuten.tech.mobile.admob.AdStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
 @Suppress("EmptyCatchBlock", "SwallowedException")
 private inline fun <T> whenHasAdmobLatest(callback: (success: Boolean) -> T) {
     try {
-        Class.forName("com.rakuten.tech.mobile.admob.AdmobDisplayerSdk")
+        Class.forName("com.rakuten.tech.mobile.admob.AdmobDisplayerLatest")
         callback.invoke(true)
     } catch (e: ClassNotFoundException) {
         callback.invoke(false)
@@ -58,7 +58,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     init {
         /** init the sdk for latest admob version 20.2.0. **/
         whenHasAdmobLatest { available ->
-            if (available) AdmobDisplayerSdk.init(context)
+            if (available) AdmobDisplayerLatest.init(context)
         }
     }
 
@@ -111,8 +111,8 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
     ) {
-        AdmobDisplayerSdk.getInstance()
-            .loadInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
+        AdmobDisplayerLatest.getInstance()
+            .loadInterstitialAd(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
                     AdStatus.LOADED -> onLoaded.invoke()
                     AdStatus.FAILED -> {
@@ -166,13 +166,13 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
     ) {
-        AdmobDisplayerSdk.getInstance()
-            .showInterstitialAdForSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
+        AdmobDisplayerLatest.getInstance()
+            .showInterstitialAd(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
                     AdStatus.CLOSED -> onClosed.invoke()
                     AdStatus.FAILED -> onFailed.invoke(errorMessage ?: "")
-                    AdStatus.LOADED -> Log.d("Ad", "Loaded")
-                    AdStatus.SHOWED -> Log.d("Ad", "Showed")
+                    AdStatus.LOADED -> {}
+                    AdStatus.SHOWED -> {}
                 }
             }
     }
@@ -216,8 +216,8 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onLoaded: () -> Unit,
         onFailed: (String) -> Unit
     ) {
-        AdmobDisplayerSdk.getInstance()
-            .loadRewardedAdSdk(adUnitId = adUnitId) { loadStatus, errorMessage ->
+        AdmobDisplayerLatest.getInstance()
+            .loadRewardedAd(adUnitId = adUnitId) { loadStatus, errorMessage ->
                 when (loadStatus) {
                     AdStatus.LOADED -> onLoaded.invoke()
                     AdStatus.FAILED -> onFailed.invoke(errorMessage ?: "")
@@ -271,7 +271,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onFailed: (String) -> Unit
     ) {
         var reward: Reward? = null
-        AdmobDisplayerSdk.getInstance().showRewardedAdForSdk(
+        AdmobDisplayerLatest.getInstance().showRewardedAd(
             adUnitId = adUnitId,
             onReward = { amount: Int, type: String ->
                 reward = Reward(type = type, amount = amount)
