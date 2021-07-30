@@ -17,5 +17,6 @@ internal interface ManifestApi {
 }
 
 internal data class ManifestEntity(
-    @SerializedName("manifest") val files: List<String>
+    @SerializedName("manifest") val files: List<String>,
+    @SerializedName("publicKeyId") val publicKeyId: String
 )
