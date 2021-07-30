@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import io.github.rakutentech.signatureverifier.SignatureVerifier
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -30,12 +32,14 @@ internal class MiniAppDownloader(
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
     initManifestApiCache: () -> ManifestApiCache,
+    initSignatureVerifier: () -> SignatureVerifier,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
     private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
     private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
     private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
+    private val signatureVerifier: SignatureVerifier by lazy { initSignatureVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -194,10 +198,12 @@ internal class MiniAppDownloader(
         val versionId = miniAppInfo.version.versionId
         val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
         when {
-            isManifestValid(manifest) -> {
+            isManifestFileExist(manifest) -> {
                 for (file in manifest.files) {
                     val response = apiClient.downloadFile(file)
-                    storage.saveFile(file, baseSavePath, response.byteStream())
+                    val dataStream = response.byteStream()
+                    if (signatureVerifier.verify(manifest.publicKeyId, dataStream))
+                    storage.saveFile(file, baseSavePath, dataStream)
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
@@ -215,7 +221,7 @@ internal class MiniAppDownloader(
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
-    internal fun isManifestValid(manifest: ManifestEntity) =
+    internal fun isManifestFileExist(manifest: ManifestEntity) =
         manifest != null && manifest.files != null && manifest.files.isNotEmpty()
 
     override fun updateApiClient(apiClient: ApiClient) {

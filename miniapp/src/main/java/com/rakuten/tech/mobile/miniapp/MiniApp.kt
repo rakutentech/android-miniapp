@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import io.github.rakutentech.signatureverifier.SignatureVerifier
 
 /**
  * This represents the contract between the consuming application and the SDK
@@ -204,6 +205,12 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
+            val signatureVerifier: SignatureVerifier = SignatureVerifier.init(
+                context = context,
+                baseUrl = miniAppSdkConfig.baseUrl,
+                subscriptionKey = miniAppSdkConfig.subscriptionKey
+            )!!
+
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
@@ -212,7 +219,8 @@ abstract class MiniApp internal constructor() {
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
                     initVerifier = { CachedMiniAppVerifier(context) },
-                    initManifestApiCache = { ManifestApiCache(context) }
+                    initManifestApiCache = { ManifestApiCache(context) },
+                    initSignatureVerifier = { signatureVerifier }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
