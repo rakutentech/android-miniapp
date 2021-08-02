@@ -472,6 +472,15 @@ Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle th
 miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
 ```
 
+#### Admob Version
+In case the host app wants to use the latest admob sdk, Add the following to your `build.gradle` file:
+
+```groovy
+dependency {
+    implementation project(':admob')
+}
+``` 
+
 #### Custom Ads Provider
 **API Docs:** [MiniAppAdDisplayer](com.rakuten.tech.mobile.miniapp.ads/-mini-app-ad-displayer/)
 

@@ -3,6 +3,7 @@
 ### 3.X.X (2021-XX-XX)
 **SDK**
 - **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
+- **Feature:** Added `admob` module to support latest admob sdk. 
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.

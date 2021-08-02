@@ -146,16 +146,16 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onFailed: (String) -> Unit
     ) {
         if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
-            val ad = interstitialAdMap[adUnitId]!!
-            ad.adListener = object : AdListener() {
+            interstitialAdMap[adUnitId]?.let { ad ->
+                ad.adListener = object : AdListener() {
 
-                override fun onAdClosed() {
-                    onClosed.invoke()
-                    interstitialAdMap.remove(adUnitId)
+                    override fun onAdClosed() {
+                        onClosed.invoke()
+                        interstitialAdMap.remove(adUnitId)
+                    }
                 }
+                ad.show()
             }
-
-            ad.show()
         } else
             onFailed.invoke("Ad is not loaded yet")
     }
@@ -251,11 +251,11 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onClosed: (reward: Reward?) -> Unit,
         onFailed: (String) -> Unit
     ) {
-        if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]!!.isLoaded) {
-            val ad = rewardedAdMap[adUnitId]!!
-            val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
-
-            ad.show(context, adCallback)
+        if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]?.isLoaded == true) {
+            rewardedAdMap[adUnitId]?.let { ad->
+                val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
+                ad.show(context, adCallback)
+            }
         } else
             onFailed.invoke("Ad is not loaded yet")
     }
