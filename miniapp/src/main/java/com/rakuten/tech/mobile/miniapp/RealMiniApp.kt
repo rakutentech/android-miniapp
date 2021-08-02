@@ -13,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import io.github.rakutentech.signatureverifier.SignatureVerifier
 
 @Suppress("TooManyFunctions", "LongMethod")
 internal class RealMiniApp(

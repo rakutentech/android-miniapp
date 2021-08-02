@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -205,11 +206,15 @@ abstract class MiniApp internal constructor() {
                 registerApiClient(defaultConfig.key, apiClient)
             }
 
-            val signatureVerifier: SignatureVerifier = SignatureVerifier.init(
+            val errorCallback = { ex: Exception ->
+                ex.printStackTrace()
+            }
+            val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
                 context = context,
                 baseUrl = miniAppSdkConfig.baseUrl,
-                subscriptionKey = miniAppSdkConfig.subscriptionKey
-            )!!
+                subscriptionKey = miniAppSdkConfig.subscriptionKey,
+                errorCallback = errorCallback
+            )
 
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,

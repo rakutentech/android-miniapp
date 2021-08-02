@@ -32,14 +32,14 @@ internal class MiniAppDownloader(
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
     initManifestApiCache: () -> ManifestApiCache,
-    initSignatureVerifier: () -> SignatureVerifier,
+    initSignatureVerifier: () -> SignatureVerifier?,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UpdatableApiClient {
     private val storage: MiniAppStorage by lazy { initStorage() }
     private val miniAppStatus: MiniAppStatus by lazy { initStatus() }
     private val verifier: CachedMiniAppVerifier by lazy { initVerifier() }
     private val manifestApiCache: ManifestApiCache by lazy { initManifestApiCache() }
-    private val signatureVerifier: SignatureVerifier by lazy { initSignatureVerifier() }
+    private val signatureVerifier: SignatureVerifier? by lazy { initSignatureVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
         val miniAppInfo = apiClient.fetchInfo(appId)
@@ -74,17 +74,11 @@ internal class MiniAppDownloader(
     }
 
     private suspend fun onGetMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
-        val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
+        val versionPath = startDownload(miniAppInfo)
+        verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
+        storeDownloadedMiniApp(miniAppInfo)
 
-        return if (downloadedVersionPath == null) {
-            val versionPath = startDownload(miniAppInfo)
-            verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
-            storeDownloadedMiniApp(miniAppInfo)
-
-            Pair(versionPath, miniAppInfo)
-        } else {
-            Pair(downloadedVersionPath, miniAppInfo)
-        }
+        return Pair(versionPath, miniAppInfo)
     }
 
     private fun onNetworkError(miniAppInfo: MiniAppInfo?): Pair<String, MiniAppInfo> {
@@ -104,6 +98,7 @@ internal class MiniAppDownloader(
     }
 
     @SuppressWarnings("MaximumLineLength")
+    // TODO
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
@@ -196,14 +191,21 @@ internal class MiniAppDownloader(
     ): String {
         val appId = miniAppInfo.id
         val versionId = miniAppInfo.version.versionId
-        val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+        var baseSavePath = ""
         when {
             isManifestFileExist(manifest) -> {
                 for (file in manifest.files) {
                     val response = apiClient.downloadFile(file)
                     val dataStream = response.byteStream()
-                    if (signatureVerifier.verify(manifest.publicKeyId, dataStream))
-                    storage.saveFile(file, baseSavePath, dataStream)
+                    if (signatureVerifier?.verify(manifest.publicKeyId, dataStream, "put signature here")!!) {
+                        Log.d("Trace", "verified")
+                        baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+                        storage.saveFile(file, baseSavePath, dataStream)
+                    }
+                    else {
+                        Log.d("Trace", "failed")
+                        // send "verification failed" event
+                    }
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {

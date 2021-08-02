@@ -115,7 +115,7 @@ internal class RetrofitRequestExecutor(
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
-                Log.d("AAAA",""+response.body().toString())
+                Log.d("Trace header signature",""+ response.headers()["Signature"])
                 response.body() ?: throw sdkExceptionForInternalServerError()
             }
             else -> throw exceptionForHttpError(response)
