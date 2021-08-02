@@ -252,7 +252,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onFailed: (String) -> Unit
     ) {
         if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]?.isLoaded == true) {
-            rewardedAdMap[adUnitId]?.let { ad->
+            rewardedAdMap[adUnitId]?.let { ad ->
                 val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
                 ad.show(context, adCallback)
             }
