@@ -145,7 +145,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
         onClosed: () -> Unit,
         onFailed: (String) -> Unit
     ) {
-        if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
+        if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]?.isLoaded == true) {
             interstitialAdMap[adUnitId]?.let { ad ->
                 ad.adListener = object : AdListener() {
 
