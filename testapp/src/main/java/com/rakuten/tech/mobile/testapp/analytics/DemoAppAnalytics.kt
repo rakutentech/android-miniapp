@@ -3,8 +3,8 @@ package com.rakuten.tech.mobile.testapp.analytics
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
-import com.rakuten.tech.mobile.testapp.rat_wrapper.EventType
-import com.rakuten.tech.mobile.testapp.rat_wrapper.RATEvent
+import com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.EventType
+import com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATEvent
 import org.json.JSONObject
 
 /** Check whether hostapp provides Analytics dependency. */

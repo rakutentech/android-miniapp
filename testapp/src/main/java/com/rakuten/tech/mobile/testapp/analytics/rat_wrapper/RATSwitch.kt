@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.rat_wrapper
+package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
@@ -27,7 +27,7 @@ class RATSwitch : SwitchCompat, IRatComponent {
 
     }
 
-    override fun prepareEventForSend() {
+    override fun prepareEventToSend() {
         if (ratEvent == null)
             ratEvent = RATEvent(
                 event = EventType.CLICK,
@@ -57,7 +57,7 @@ class RATSwitch : SwitchCompat, IRatComponent {
         if(this.isChecked != tempCheckStatus){
             //So Switch status changed so send analytics
             tempCheckStatus = this.isChecked
-            prepareEventForSend()
+            prepareEventToSend()
             ratEvent?.let {
                 DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
             }

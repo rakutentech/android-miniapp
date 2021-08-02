@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.rat_wrapper
+package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
@@ -43,14 +43,14 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        prepareEventForSend()
+        prepareEventToSend()
         ratEvent?.let {
             DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
         }
         return returnClick
     }
 
-    override fun prepareEventForSend() {
+    override fun prepareEventToSend() {
         if (ratEvent == null)
             ratEvent = RATEvent(
                 event = EventType.CLICK,

@@ -38,7 +38,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.RATSwitch
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
                     android:id="@+id/switchPreviewMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
                     android:paddingBottom="@dimen/small_4"
                     android:text="@string/lb_user_details" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonContacts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonAccessToken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonCustomPermissions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonPoints"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
-                <com.rakuten.tech.mobile.testapp.rat_wrapper.CustomButtonViewWithArrow
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonQA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

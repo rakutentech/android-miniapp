@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.rat_wrapper
+package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
@@ -13,7 +13,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
  */
 class RATButton : AppCompatButton, IRatComponent {
 
-    private lateinit var ratEvent: RATEvent
+    private var ratEvent: RATEvent? = null
 
     constructor(@NonNull context: Context) : super(context)
 
@@ -27,14 +27,14 @@ class RATButton : AppCompatButton, IRatComponent {
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        prepareEventForSend()
+        prepareEventToSend()
         ratEvent?.let {
             DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
         }
         return returnClick
     }
 
-    override fun prepareEventForSend() {
+    override fun prepareEventToSend() {
         if (ratEvent == null)
             ratEvent = RATEvent(
                 event = EventType.CLICK,
