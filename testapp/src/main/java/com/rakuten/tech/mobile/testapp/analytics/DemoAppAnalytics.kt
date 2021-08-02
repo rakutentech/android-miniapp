@@ -39,7 +39,6 @@ class DemoAppAnalytics private constructor(private val rasProjectId: String) {
 
     /** common function to create params to send to tracker. */
     @Suppress("LongMethod")
-    @VisibleForTesting
     internal fun createParams(
         rasProjectId: String,
         acc: Int,
