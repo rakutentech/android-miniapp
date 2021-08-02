@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 @Keep
 internal data class CallbackObj(
@@ -20,6 +21,13 @@ internal data class Screen(val action: String)
 internal data class CustomPermissionCallbackObj(
     var action: String,
     val param: CustomPermission?,
+    var id: String
+)
+
+@Keep
+internal data class AccessTokenCallbackObj(
+    var action: String,
+    val param: AccessTokenScope?,
     var id: String
 )
 

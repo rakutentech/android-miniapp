@@ -21,4 +21,10 @@
             android:initOrder="100"
             tools:replace="android:initOrder" />
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+    </queries>
 </manifest>
