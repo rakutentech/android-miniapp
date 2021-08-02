@@ -43,9 +43,6 @@ class RATSwitch : SwitchCompat, IRatComponent {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_UP ->
-                /**
-                 * Check status
-                 */
                 checkStatus()
             else -> {
             }
