@@ -48,10 +48,17 @@ abstract class AdmobDisplayerLatest internal constructor() {
 
     companion object {
         private lateinit var instance: AdmobDisplayerLatest
+        /**
+         * Instance of [AdmobDisplayerLatest].
+         * @return [AdmobDisplayerLatest] instance.
+         */
         fun getInstance(): AdmobDisplayerLatest {
             return instance
         }
 
+        /**
+         * Initialization to use the api.
+         */
         fun init(context: Activity) {
             instance = RealAdmobDisplayerLatest(context)
         }

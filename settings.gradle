@@ -1,2 +1,2 @@
-include ':admob'
+include ':admob-latest'
 include ':analytics', ':testapp', ':miniapp'

@@ -1,12 +1,16 @@
 package com.rakuten.tech.mobile.admob
 
 import android.app.Activity
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.OnUserEarnedRewardListener
+
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-
 
 internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDisplayerLatest() {
 
@@ -82,13 +86,12 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
                 }
             }
             if (ad != null) {
-                //Show interstitial ad.
+                // Show interstitial ad.
                 ad.show(context)
                 ad.fullScreenContentCallback = adListener
             } else {
                 onCallback(AdStatus.FAILED, ERR_AD_NOT_LOADED)
             }
-
         } else
             onCallback(AdStatus.FAILED, ERR_AD_NOT_LOADED)
     }
@@ -122,7 +125,7 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
                 }
             }
             if (ad != null) {
-                //Show interstitial ad.
+                // Show interstitial ad.
                 ad.show(context, rewardListener)
                 ad.fullScreenContentCallback = adListener
             } else {
@@ -130,7 +133,6 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
             }
         } else
             onCallback(AdStatus.FAILED, ERR_AD_NOT_LOADED)
-
     }
 
     internal companion object {
