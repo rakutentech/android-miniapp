@@ -28,9 +28,8 @@ android {
         jvmTarget = '1.8'
     }
     testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
     }
 }
 
@@ -40,9 +39,9 @@ ext {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "com.google.android.gms:play-services-ads:$google_ads_latest"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
+    testImplementation "androidx.test.ext:junit-ktx:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
     testImplementation "org.mockito:mockito-core:$mockito"
     testImplementation "org.mockito:mockito-inline:$mockito"
@@ -50,6 +49,8 @@ dependencies {
     testImplementation "org.amshove.kluent:kluent-android:$kluent_android"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
+    testImplementation "junit:junit:$junit"
+
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
@@ -66,9 +67,3 @@ afterEvaluate {
         }
     }
 }
-
-def isSnapshot = project.version.contains('-')
-if (isSnapshot) {
-    ext["MAVEN_CENTRAL_IS_SNAPSHOT"] = true
-}
-apply from: '../config/publish/maven-central.gradle'

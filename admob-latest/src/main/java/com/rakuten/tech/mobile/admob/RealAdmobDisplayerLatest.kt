@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.admob
 
 import android.app.Activity
+import androidx.annotation.VisibleForTesting
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -17,13 +18,25 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
     private val interstitialAdMap = HashMap<String, InterstitialAd>()
     internal val rewardedAdMap = HashMap<String, RewardedAd>()
 
+    @VisibleForTesting
+    internal fun initAdMap(
+        interstitialAdMap: Map<String, InterstitialAd> = HashMap(),
+        rewardedAdMap: Map<String, RewardedAd> = HashMap()
+    ) {
+        this.interstitialAdMap.clear()
+        this.interstitialAdMap.putAll(interstitialAdMap)
+
+        this.rewardedAdMap.clear()
+        this.rewardedAdMap.putAll(rewardedAdMap)
+    }
+
     override fun loadInterstitialAd(
         adUnitId: String,
         onCallback: (loadStatus: AdStatus, errorMessage: String?) -> Unit
     ) {
-        if (interstitialAdMap.containsKey(adUnitId))
+        if (interstitialAdMap.containsKey(adUnitId)) {
             onCallback(AdStatus.FAILED, createLoadReqError(adUnitId))
-        else {
+        } else {
             val adRequest = AdRequest.Builder().build()
             val adLoadCallback = object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -126,8 +139,8 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
             }
             if (ad != null) {
                 // Show interstitial ad.
-                ad.show(context, rewardListener)
                 ad.fullScreenContentCallback = adListener
+                ad.show(context, rewardListener)
             } else {
                 onCallback(AdStatus.FAILED, ERR_AD_NOT_LOADED)
             }
@@ -139,5 +152,6 @@ internal class RealAdmobDisplayerLatest(private val context: Activity) : AdmobDi
         const val ERR_AD_NOT_LOADED = "Ad is not loaded yet"
         const val ERR_FAILED_T0_SHOW_AD = "Failed to show ad"
     }
-    private fun createLoadReqError(adUnitId: String) = "Previous $adUnitId already loaded."
+
+    internal fun createLoadReqError(adUnitId: String) = "Previous $adUnitId already loaded."
 }

@@ -52,9 +52,7 @@ abstract class AdmobDisplayerLatest internal constructor() {
          * Instance of [AdmobDisplayerLatest].
          * @return [AdmobDisplayerLatest] instance.
          */
-        fun getInstance(): AdmobDisplayerLatest {
-            return instance
-        }
+        fun getInstance(): AdmobDisplayerLatest = instance
 
         /**
          * Initialization to use the api.
