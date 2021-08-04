@@ -474,12 +474,18 @@ miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
 
 #### Admob Version
 In case the host app wants to use the latest admob sdk, Add the following to your `build.gradle` file:
-
 ```groovy
 dependency {
-    implementation project(':admob')
+    implementation project(':admob-latest')
 }
 ``` 
+Default: Play Services Ads 19.x.x  
+admob-latest module: Play Services Ads 20+
+
+Set the `AdMob20Displayer` provided by MiniApp SDK. This controller will handle the display of ad for the latest admob sdk.
+```kotlin
+miniAppMessageBridge.setAdMobDisplayer(AdMob20Displayer(activityContext))
+```
 
 #### Custom Ads Provider
 **API Docs:** [MiniAppAdDisplayer](com.rakuten.tech.mobile.miniapp.ads/-mini-app-ad-displayer/)

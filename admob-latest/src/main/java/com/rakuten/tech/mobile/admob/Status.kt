@@ -1,4 +1,5 @@
 package com.rakuten.tech.mobile.admob
+
 /**
  * Ad Status send from the callbacks.
  */
