@@ -41,87 +41,63 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     }
 
     /** Load the interstitial ad when it is ready. **/
-    override fun loadInterstitialAd(
-        adUnitId: String,
-        onLoaded: () -> Unit,
-        onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest { isAvailable ->
-        if (!isAvailable) {
-            launch {
-                if (interstitialAdMap.containsKey(adUnitId))
-                    onFailed.invoke(createLoadReqError(adUnitId))
-                else {
-                    val ad = InterstitialAd(context)
-                    ad.adUnitId = adUnitId
-                    interstitialAdMap[adUnitId] = ad
+    override fun loadInterstitialAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+        launch {
+            if (interstitialAdMap.containsKey(adUnitId))
+                onFailed.invoke(createLoadReqError(adUnitId))
+            else {
+                val ad = InterstitialAd(context)
+                ad.adUnitId = adUnitId
+                interstitialAdMap[adUnitId] = ad
 
-                    ad.adListener = object : AdListener() {
-                        override fun onAdLoaded() {
-                            onLoaded.invoke()
-                        }
-
-                        override fun onAdFailedToLoad(adError: LoadAdError) {
-                            interstitialAdMap.remove(adUnitId)
-                            onFailed.invoke(adError.message)
-                        }
+                ad.adListener = object : AdListener() {
+                    override fun onAdLoaded() {
+                        onLoaded.invoke()
                     }
 
-                    ad.loadAd(AdRequest.Builder().build())
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        interstitialAdMap.remove(adUnitId)
+                        onFailed.invoke(adError.message)
+                    }
                 }
+
+                ad.loadAd(AdRequest.Builder().build())
             }
-        } else {
-            onFailed.invoke(ERR_SDK_VERSION_MISMATCH)
         }
     }
 
     /** Show the interstitial ad when it is already loaded. **/
-    override fun showInterstitialAd(
-        adUnitId: String,
-        onClosed: () -> Unit,
-        onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest { isAvailable ->
-        if (!isAvailable) {
-            launch {
-                if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
-                    val ad = interstitialAdMap[adUnitId]!!
-                    ad.adListener = object : AdListener() {
+    override fun showInterstitialAd(adUnitId: String, onClosed: () -> Unit, onFailed: (String) -> Unit) {
+        launch {
+            if (interstitialAdMap.containsKey(adUnitId) && interstitialAdMap[adUnitId]!!.isLoaded) {
+                val ad = interstitialAdMap[adUnitId]!!
+                ad.adListener = object : AdListener() {
 
-                        override fun onAdClosed() {
-                            onClosed.invoke()
-                            interstitialAdMap.remove(adUnitId)
-                        }
+                    override fun onAdClosed() {
+                        onClosed.invoke()
+                        interstitialAdMap.remove(adUnitId)
                     }
+                }
 
-                    ad.show()
-                } else
-                    onFailed.invoke("Ad is not loaded yet")
-            }
-        } else {
-            onFailed.invoke(ERR_SDK_VERSION_MISMATCH)
+                ad.show()
+            } else
+                onFailed.invoke("Ad is not loaded yet")
         }
     }
 
     /** Load the rewarded ad when it is ready. **/
-    override fun loadRewardedAd(
-        adUnitId: String,
-        onLoaded: () -> Unit,
-        onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest { isAvailable ->
-        if (!isAvailable) {
-            launch {
-                if (rewardedAdMap.containsKey(adUnitId))
-                    onFailed.invoke(createLoadReqError(adUnitId))
-                else {
-                    val ad = RewardedAd(context, adUnitId)
-                    rewardedAdMap[adUnitId] = ad
+    override fun loadRewardedAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+        launch {
+            if (rewardedAdMap.containsKey(adUnitId))
+                onFailed.invoke(createLoadReqError(adUnitId))
+            else {
+                val ad = RewardedAd(context, adUnitId)
+                rewardedAdMap[adUnitId] = ad
 
-                    val adLoadCallback = createRewardedAdLoadCallback(adUnitId, onLoaded, onFailed)
+                val adLoadCallback = createRewardedAdLoadCallback(adUnitId, onLoaded, onFailed)
 
-                    ad.loadAd(AdRequest.Builder().build(), adLoadCallback)
-                }
+                ad.loadAd(AdRequest.Builder().build(), adLoadCallback)
             }
-        } else {
-            onFailed.invoke(ERR_SDK_VERSION_MISMATCH)
         }
     }
 
@@ -130,23 +106,15 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
      * @param onClosed When the ad is closed, forward the reward earned by the user.
      * Reward will be null if the user did not earn the reward.
      */
-    override fun showRewardedAd(
-        adUnitId: String,
-        onClosed: (reward: Reward?) -> Unit,
-        onFailed: (String) -> Unit
-    ) = whenHasAdmobLatest { isAvailable ->
-        if (!isAvailable) {
-            launch {
-                if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]!!.isLoaded) {
-                    val ad = rewardedAdMap[adUnitId]!!
-                    val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
+    override fun showRewardedAd(adUnitId: String, onClosed: (reward: Reward?) -> Unit, onFailed: (String) -> Unit) {
+        launch {
+            if (rewardedAdMap.containsKey(adUnitId) && rewardedAdMap[adUnitId]!!.isLoaded) {
+                val ad = rewardedAdMap[adUnitId]!!
+                val adCallback = createRewardedAdShowCallback(adUnitId, onClosed, onFailed)
 
-                    ad.show(context, adCallback)
-                } else
-                    onFailed.invoke("Ad is not loaded yet")
-            }
-        } else {
-            onFailed.invoke(ERR_SDK_VERSION_MISMATCH)
+                ad.show(context, adCallback)
+            } else
+                onFailed.invoke("Ad is not loaded yet")
         }
     }
 
@@ -190,8 +158,4 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
     }
 
     private fun createLoadReqError(adUnitId: String) = "Previous $adUnitId is still in progress"
-
-    internal companion object {
-        const val ERR_SDK_VERSION_MISMATCH = "Sdk version mismatch"
-    }
 }
