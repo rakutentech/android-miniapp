@@ -20,3 +20,7 @@ internal data class ManifestEntity(
     @SerializedName("manifest") val files: List<String>,
     @SerializedName("publicKeyId") val publicKeyId: String
 )
+
+internal data class ManifestHeader(
+    @SerializedName("signature") val signature: String?
+)

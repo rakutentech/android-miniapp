@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -55,7 +54,7 @@ internal class ApiClient @VisibleForTesting constructor(
             hostId = hostId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        return requestExecutor.executeRequest(request).body() as List<MiniAppInfo>
     }
 
     @Throws(MiniAppSdkException::class)
@@ -65,7 +64,7 @@ internal class ApiClient @VisibleForTesting constructor(
             miniAppId = appId,
             testPath = testPath
         )
-        val info = requestExecutor.executeRequest(request)
+        val info = requestExecutor.executeRequest(request).body() as List<MiniAppInfo>
 
         if (info.isNotEmpty()) {
             return info.first()
@@ -75,14 +74,17 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
+    suspend fun fetchFileList(miniAppId: String, versionId: String): Pair<ManifestEntity, ManifestHeader> {
         val request = manifestApi.fetchFileListFromManifest(
             hostId = hostId,
             miniAppId = miniAppId,
             versionId = versionId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        val response = requestExecutor.executeRequest(request)
+        val manifestEntity = response.body() as ManifestEntity
+        val manifestHeader = ManifestHeader(response.headers()["signature"])
+        return Pair(manifestEntity, manifestHeader)
     }
 
     @Throws(MiniAppSdkException::class)
@@ -93,12 +95,12 @@ internal class ApiClient @VisibleForTesting constructor(
             versionId = versionId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        return requestExecutor.executeRequest(request).body() as MetadataEntity
     }
 
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
-        return requestExecutor.executeRequest(request)
+        return requestExecutor.executeRequest(request).body()!!
     }
 }
 
@@ -109,14 +111,14 @@ internal class RetrofitRequestExecutor(
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
     @Suppress("TooGenericExceptionCaught", "ThrowsCount")
-    suspend fun <T> executeRequest(call: Call<T>): T = try {
+    suspend fun <T> executeRequest(call: Call<T>): Response<T> = try {
         val response = executeWithRetry(call)
 
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
-                Log.d("Trace header signature",""+ response.headers()["Signature"])
-                response.body() ?: throw sdkExceptionForInternalServerError()
+                if (response.body() != null) response
+                else throw sdkExceptionForInternalServerError()
             }
             else -> throw exceptionForHttpError(response)
         }

@@ -2,10 +2,11 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
+import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.ManifestHeader
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -129,7 +130,7 @@ internal class MiniAppDownloader(
     @VisibleForTesting
     suspend fun startDownload(miniAppInfo: MiniAppInfo): String {
         val manifest = fetchManifest(miniAppInfo.id, miniAppInfo.version.versionId)
-        return downloadMiniApp(miniAppInfo, manifest)
+        return downloadMiniApp(miniAppInfo, Pair(manifest.first, manifest.second))
     }
 
     @VisibleForTesting
@@ -187,17 +188,18 @@ internal class MiniAppDownloader(
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
-        manifest: ManifestEntity
+        manifest: Pair<ManifestEntity, ManifestHeader>
     ): String {
         val appId = miniAppInfo.id
         val versionId = miniAppInfo.version.versionId
         var baseSavePath = ""
         when {
-            isManifestFileExist(manifest) -> {
-                for (file in manifest.files) {
+            isManifestFileExist(manifest.first) -> {
+                for (file in manifest.first.files) {
                     val response = apiClient.downloadFile(file)
                     val dataStream = response.byteStream()
-                    if (signatureVerifier?.verify(manifest.publicKeyId, dataStream, "put signature here")!!) {
+                    Log.d("Trace sig", manifest.second.signature.toString())
+                    if (signatureVerifier?.verify(manifest.first.publicKeyId, dataStream, manifest.second.signature.toString())!!) {
                         Log.d("Trace", "verified")
                         baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
                         storage.saveFile(file, baseSavePath, dataStream)
