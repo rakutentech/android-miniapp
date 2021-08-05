@@ -57,3 +57,4 @@ afterEvaluate {
         }
     }
 }
+apply from: '../config/publish/maven-central.gradle'

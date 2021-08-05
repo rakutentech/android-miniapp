@@ -1,9 +1,7 @@
 package com.rakuten.tech.mobile.admob
 
 import android.app.Activity
-import android.os.Looper.getMainLooper
 import androidx.test.core.app.ActivityScenario
-import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -11,15 +9,11 @@ import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import org.amshove.kluent.shouldBe
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.verify
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import org.robolectric.annotation.LooperMode
-import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
