@@ -6,7 +6,7 @@
 - **Feature:** Added support for using `".jpg"` and multiple types e.g. `".jpg,.png"` in the accept field of the file input.
 - **Update:** Updated `MessageToContact` to support an optional message to the user for the contact picker capability.
 - **Update:** Included technical improvement in manifest file verification process.
-- **Feature:** Added `admob` module to support latest admob sdk. 
+- **Feature:** Added `admob-latest` module to support latest admob sdk. 
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
