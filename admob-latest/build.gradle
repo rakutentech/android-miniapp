@@ -4,16 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "30.0.3"
-
-    defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -40,6 +30,7 @@ ext {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.google.android.gms:play-services-ads:$google_ads_latest"
+    testImplementation "com.google.android.gms:play-services-ads:$google_ads_latest"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "androidx.test.ext:junit-ktx:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"
@@ -50,7 +41,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "junit:junit:$junit"
-
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

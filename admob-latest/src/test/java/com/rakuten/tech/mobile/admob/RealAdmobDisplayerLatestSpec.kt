@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.admob
 
 import android.app.Activity
+import android.os.Looper.getMainLooper
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -15,7 +16,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.verify
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.LooperMode
+import org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
@@ -27,14 +31,10 @@ class RealAdmobDisplayerLatestSpec {
     private var mockInterstitialAd: InterstitialAd = mock()
     private var mockRewardedAd: RewardedAd = mock()
 
-    @get:Rule
-    var activityScenarioRule = activityScenarioRule<TestActivity>()
-
     @Before
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             context = activity
-            activityScenarioRule.scenario
             ad20Displayer = Mockito.spy(RealAdmobDisplayerLatest(context))
         }
     }
