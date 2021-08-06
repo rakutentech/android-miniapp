@@ -14,9 +14,8 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.rakuten.tech.mobile.admob.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.ads.AdMob20Displayer
-import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
@@ -174,7 +173,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 )
             }
         }
-        miniAppMessageBridge.setAdMobDisplayer(AdMob20Displayer(this@MiniAppDisplayActivity))
+        //miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer19(this@MiniAppDisplayActivity))
+        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer20(this@MiniAppDisplayActivity))
 
         miniAppMessageBridge.allowScreenOrientation(true)
 

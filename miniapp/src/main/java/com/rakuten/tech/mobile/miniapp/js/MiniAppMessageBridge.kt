@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
@@ -153,7 +153,7 @@ open class MiniAppMessageBridge {
         }
     }
 
-    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
+    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer19]. **/
     fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) = adBridgeDispatcher.setAdMobDisplayer(adDisplayer)
 
     /**

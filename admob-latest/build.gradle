@@ -30,6 +30,8 @@ ext {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.google.android.gms:play-services-ads:$google_ads_latest"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads_latest"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "androidx.test.ext:junit-ktx:$androidx_test_ext"
@@ -41,6 +43,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "junit:junit:$junit"
+    implementation project(':miniapp')
+
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
