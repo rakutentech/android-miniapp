@@ -14,14 +14,9 @@ import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import io.github.rakutentech.signatureverifier.SignatureVerifier
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -75,10 +70,22 @@ internal class MiniAppDownloader(
     }
 
     private suspend fun onGetMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
+//        val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
+//
+//        return if (downloadedVersionPath == null) {
+//            val versionPath = startDownload(miniAppInfo)
+//            verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
+//            storeDownloadedMiniApp(miniAppInfo)
+//
+//            Pair(versionPath, miniAppInfo)
+//        } else {
+//            Pair(downloadedVersionPath, miniAppInfo)
+//        }
+
+        // refactored for testing purpose
         val versionPath = startDownload(miniAppInfo)
         verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
         storeDownloadedMiniApp(miniAppInfo)
-
         return Pair(versionPath, miniAppInfo)
     }
 
@@ -99,7 +106,6 @@ internal class MiniAppDownloader(
     }
 
     @SuppressWarnings("MaximumLineLength")
-    // TODO
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
         val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
@@ -198,15 +204,13 @@ internal class MiniAppDownloader(
                 for (file in manifest.first.files) {
                     val response = apiClient.downloadFile(file)
                     val dataStream = response.byteStream()
-                    Log.d("Trace sig", manifest.second.signature.toString())
-                    if (signatureVerifier?.verify(manifest.first.publicKeyId, dataStream, manifest.second.signature.toString())!!) {
-                        Log.d("Trace", "verified")
-                        baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
-                        storage.saveFile(file, baseSavePath, dataStream)
-                    }
-                    else {
-                        Log.d("Trace", "failed")
-                        // send "verification failed" event
+                    CoroutineScope(Dispatchers.Main).launch {
+                        if (signatureVerifier?.verify(manifest.first.publicKeyId, dataStream, manifest.second.signature.toString())!!) {
+                            baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+                            storage.saveFile(file, baseSavePath, dataStream)
+                        } else {
+                            // send "verification failed" event
+                        }
                     }
                 }
                 if (!apiClient.isPreviewMode) {
