@@ -3,23 +3,19 @@ package com.rakuten.tech.mobile.miniapp
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.*
-import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
-import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
-import com.rakuten.tech.mobile.miniapp.api.ManifestHeader
-import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
-import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
+import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import io.github.rakutentech.signatureverifier.SignatureVerifier
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
+import java.math.BigInteger
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 
 @Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
@@ -70,23 +66,17 @@ internal class MiniAppDownloader(
     }
 
     private suspend fun onGetMiniApp(miniAppInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
-//        val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
-//
-//        return if (downloadedVersionPath == null) {
-//            val versionPath = startDownload(miniAppInfo)
-//            verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
-//            storeDownloadedMiniApp(miniAppInfo)
-//
-//            Pair(versionPath, miniAppInfo)
-//        } else {
-//            Pair(downloadedVersionPath, miniAppInfo)
-//        }
+        val downloadedVersionPath = retrieveDownloadedVersionPath(miniAppInfo)
 
-        // refactored for testing purpose
-        val versionPath = startDownload(miniAppInfo)
-        verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
-        storeDownloadedMiniApp(miniAppInfo)
-        return Pair(versionPath, miniAppInfo)
+        return if (downloadedVersionPath == null) {
+            val versionPath = startDownload(miniAppInfo)
+            verifier.storeHashAsync(miniAppInfo.version.versionId, File(versionPath))
+            storeDownloadedMiniApp(miniAppInfo)
+
+            Pair(versionPath, miniAppInfo)
+        } else {
+            Pair(downloadedVersionPath, miniAppInfo)
+        }
     }
 
     private fun onNetworkError(miniAppInfo: MiniAppInfo?): Pair<String, MiniAppInfo> {
@@ -198,18 +188,24 @@ internal class MiniAppDownloader(
     ): String {
         val appId = miniAppInfo.id
         val versionId = miniAppInfo.version.versionId
-        var baseSavePath = ""
+        val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
         when {
             isManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
                     val response = apiClient.downloadFile(file)
-                    val dataStream = response.byteStream()
+
                     CoroutineScope(Dispatchers.Main).launch {
-                        if (signatureVerifier?.verify(manifest.first.publicKeyId, dataStream, manifest.second.signature.toString())!!) {
-                            baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+                        withContext(Dispatchers.Default) {
+                            val dataStream = response.byteStream()
+                            val hash = generateSha512Hash(dataStream.readBytes())
+                            val data = miniAppInfo.version.versionId + hash
+                            if (signatureVerifier?.verify(manifest.first.publicKeyId, data.byteInputStream(), manifest.second.signature.toString())!!) {
+                                // TODO
+                            } else {
+                                // send "verification failed" event
+                            }
+
                             storage.saveFile(file, baseSavePath, dataStream)
-                        } else {
-                            // send "verification failed" event
                         }
                     }
                 }
@@ -223,6 +219,33 @@ internal class MiniAppDownloader(
             // If backend functions correctly, this should never happen
             else -> throw sdkExceptionForInternalServerError()
         }
+    }
+
+//    fun generateSha512Hash(input: String): String? {
+//        var generated: String? = null
+//        try {
+//            val md = MessageDigest.getInstance("SHA-512")
+//            val bytes = md.digest(input.toByteArray(StandardCharsets.UTF_8))
+//            val sb = java.lang.StringBuilder()
+//            for (i in bytes.indices) {
+//                sb.append(((bytes[i] and 0xff) + 0x100).toString(16).substring(1))
+//            }
+//            generated = sb.toString()
+//        } catch (e: NoSuchAlgorithmException) {
+//            e.printStackTrace()
+//        }
+//        return generated
+//    }
+
+    private fun generateSha512Hash(input: ByteArray?): String? {
+        val md = MessageDigest.getInstance("SHA-512")
+        val raw = md.digest(input)
+        val bigInt = BigInteger(1, raw)
+        val hash = StringBuilder(bigInt.toString(16))
+        while (hash.length < 32) {
+            hash.insert(0, '0')
+        }
+        return hash.toString()
     }
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()

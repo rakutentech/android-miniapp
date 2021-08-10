@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -206,6 +207,7 @@ abstract class MiniApp internal constructor() {
             }
 
             val errorCallback = { ex: Exception ->
+                Log.d("Trace", ""+ex.localizedMessage.toString())
                 ex.printStackTrace()
             }
             val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
