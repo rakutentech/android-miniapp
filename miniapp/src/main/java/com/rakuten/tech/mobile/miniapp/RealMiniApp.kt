@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 
-@Suppress("TooManyFunctions", "LongMethod")
+@Suppress("TooManyFunctions", "LongMethod", "LargeClass")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,

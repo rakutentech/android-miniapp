@@ -2,13 +2,24 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.api.*
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
+import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
+import com.rakuten.tech.mobile.miniapp.api.ManifestHeader
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
+import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import io.github.rakutentech.signatureverifier.SignatureVerifier
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.math.BigInteger
@@ -237,6 +248,7 @@ internal class MiniAppDownloader(
 //        return generated
 //    }
 
+    @SuppressWarnings("MagicNumber")
     private fun generateSha512Hash(input: ByteArray?): String? {
         val md = MessageDigest.getInstance("SHA-512")
         val raw = md.digest(input)

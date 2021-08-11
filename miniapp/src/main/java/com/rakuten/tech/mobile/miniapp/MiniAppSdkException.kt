@@ -61,13 +61,6 @@ internal class MiniAppNetException(message: String, cause: Throwable?) : MiniApp
     constructor(message: String) : this(message, null)
 }
 
-// TODO: Setting to disable Mini App when Signature Verification fails
-/**
- * Exception which is thrown when signature verification has been failed during opening a miniapp.
- */
-internal class RequireMiniAppSignatureVerification :
-        MiniAppSdkException("error message when signature verification failed")
-
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Internal server error")
 
