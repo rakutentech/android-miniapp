@@ -1,37 +1,45 @@
 package com.rakuten.tech.mobile.admob
 
 import android.app.Activity
-import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.OnUserEarnedRewardListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import org.amshove.kluent.mock
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.robolectric.annotation.Config
+import org.mockito.kotlin.*
 
 @RunWith(AndroidJUnit4::class)
-@Config(manifest = Config.NONE)
 class AdMobDisplayer20Spec {
 
-    private lateinit var context: Activity
+    private var context: Activity = mock()
     private lateinit var adDisplayer20: AdMobDisplayer20
     private var mockInterstitialAd: InterstitialAd = mock()
     private var mockRewardedAd: RewardedAd = mock()
+    private var testLoadInterstitialAd: (
+        context: Activity,
+        adUnitId: String,
+        adRequest: AdRequest,
+        adLoadCallback: InterstitialAdLoadCallback
+    ) -> Unit = mock()
+    private val testShowInterstitialAd: (context: Activity, ad: InterstitialAd) -> Unit = mock()
+    private val testLoadRewardedAd: (context: Activity, adUnitId: String, adRequest: AdRequest, RewardedAdLoadCallback) -> Unit = mock()
+    private val testShowRewardedAd: (context: Activity, ad: RewardedAd, rewardListener: OnUserEarnedRewardListener) -> Unit = mock()
 
     @Before
     fun setup() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            context = activity
-            adDisplayer20 = Mockito.spy(AdMobDisplayer20(context))
-        }
+        adDisplayer20 = spy(AdMobDisplayer20(context))
+        whenever(adDisplayer20.loadInterstitialAd).thenReturn(testLoadInterstitialAd)
+        whenever(adDisplayer20.showInterstitialAd).thenReturn(testShowInterstitialAd)
+        whenever(adDisplayer20.loadRewardedAd).thenReturn(testLoadRewardedAd)
+        whenever(adDisplayer20.showRewardedAd).thenReturn(testShowRewardedAd)
     }
 
     @Test
@@ -42,7 +50,7 @@ class AdMobDisplayer20Spec {
         adDisplayer20.initAdMap(interstitialAdMap = map)
 
         adDisplayer20.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
-        verify(mockInterstitialAd).show(context)
+        verify(adDisplayer20).showInterstitialAd
     }
 
     @Test
@@ -82,7 +90,7 @@ class AdMobDisplayer20Spec {
         whenever(adDisplayer20.createRewardedAdShowCallback()) doReturn rewardedAdCallback
 
         adDisplayer20.showRewardedAd(TEST_AD_UNIT_ID, {}, {})
-        verify(mockRewardedAd).show(context, rewardedAdCallback)
+        verify(adDisplayer20).showRewardedAd
     }
 
     @Test

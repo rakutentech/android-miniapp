@@ -24,6 +24,40 @@ import kotlin.coroutines.CoroutineContext
  * Support Interstitial, Reward ads.
  */
 class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
+
+    @VisibleForTesting
+    internal val loadInterstitialAd: (
+        context: Activity,
+        adUnitId: String,
+        adRequest: AdRequest,
+        adLoadCallback: InterstitialAdLoadCallback
+    ) -> Unit = InterstitialAd::load
+
+    @VisibleForTesting
+    internal val showInterstitialAd: (
+        context: Activity,
+        ad: InterstitialAd
+    ) -> Unit = { context, ad ->
+        ad.show(context)
+    }
+
+    @VisibleForTesting
+    internal val loadRewardedAd: (
+        context: Activity,
+        adUnitId: String,
+        adRequest: AdRequest,
+        RewardedAdLoadCallback
+    ) -> Unit = RewardedAd::load
+
+    @VisibleForTesting
+    internal val showRewardedAd: (
+        context: Activity,
+        ad: RewardedAd,
+        rewardListener: OnUserEarnedRewardListener
+    ) -> Unit = { context, ad, rewardListener ->
+        ad.show(context, rewardListener)
+    }
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
 
@@ -65,7 +99,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                         onLoaded.invoke()
                     }
                 }
-                InterstitialAd.load(context, adUnitId, adRequest, adLoadCallback)
+                loadInterstitialAd(context, adUnitId, adRequest, adLoadCallback)
             }
         }
     }
@@ -95,8 +129,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                     }
                 }
                 if (ad != null) {
-                    // Show interstitial ad.
-                    ad.show(context)
+                    showInterstitialAd(context, ad)
                     ad.fullScreenContentCallback = adListener
                 } else {
                     onFailed.invoke(ERR_AD_NOT_LOADED)
@@ -128,7 +161,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                         onLoaded.invoke()
                     }
                 }
-                RewardedAd.load(context, adUnitId, adRequest, adLoadCallback)
+                loadRewardedAd(context, adUnitId, adRequest, adLoadCallback)
             }
         }
     }
@@ -164,8 +197,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                     }
                 }
                 if (ad != null) {
-                    // Show interstitial ad.
-                    ad.show(context, rewardListener)
+                    showRewardedAd(context, ad, rewardListener)
                     ad.fullScreenContentCallback = adListener
                 } else {
                     onFailed.invoke(ERR_AD_NOT_LOADED)
