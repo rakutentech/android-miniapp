@@ -37,6 +37,7 @@ dependencies {
     testImplementation "androidx.test.ext:junit-ktx:$androidx_test_ext"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin"
     testImplementation "org.amshove.kluent:kluent-android:$kluent_android"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "junit:junit:$junit"
     implementation project(':miniapp')
 
