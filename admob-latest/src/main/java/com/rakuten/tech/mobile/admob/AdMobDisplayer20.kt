@@ -57,7 +57,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                 val adLoadCallback = object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         interstitialAdMap.remove(adUnitId)
-                        onFailed.invoke(adError.message ?: "")
+                        onFailed.invoke(adError.message)
                     }
 
                     override fun onAdLoaded(interstitialAd: InterstitialAd) {

@@ -467,9 +467,9 @@ Configure the Android Ads SDK from [here](https://developers.google.com/admob/an
 #### AdMob
 **API Docs:** [AdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.ads/-ad-mob-displayer/)
 
-Set the `AdMobDisplayer` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
+Set the `AdMobDisplayer19` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
 ```kotlin
-miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
+miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer19(activityContext))
 ```
 
 #### Admob Version
@@ -482,9 +482,9 @@ dependency {
 Default: Play Services Ads 19.x.x  
 admob-latest module: Play Services Ads 20+
 
-Set the `AdMob20Displayer` provided by MiniApp SDK. This controller will handle the display of ad for the latest admob sdk.
+Set the `AdMobDisplayer20` provided by `admob-latest`. This controller will handle the display of ad for the latest admob sdk.
 ```kotlin
-miniAppMessageBridge.setAdMobDisplayer(AdMob20Displayer(activityContext))
+miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer20(this@MiniAppDisplayActivity))
 ```
 
 #### Custom Ads Provider
