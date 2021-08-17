@@ -15,8 +15,10 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
+@Config(manifest = Config.NONE)
 class AdMobDisplayer20Spec {
 
     private lateinit var context: Activity
