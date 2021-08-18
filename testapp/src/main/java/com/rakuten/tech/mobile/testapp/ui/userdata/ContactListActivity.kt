@@ -19,11 +19,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.defaultContact
 import com.rakuten.tech.mobile.testapp.helper.isEmailValid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.util.UUID
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.arrayListOf
 
 class ContactListActivity : BaseActivity() {
 
@@ -36,6 +37,9 @@ class ContactListActivity : BaseActivity() {
         set(value) {
             contactListPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
         }
+
+    private val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
+    private val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,40 +84,54 @@ class ContactListActivity : BaseActivity() {
         val edtContactEmail = contactView.findViewById<AppCompatEditText>(R.id.edtContactEmail)
 
         ContactInputDialog.Builder().build(this).apply {
+            // generate random contact inputs in builder
+            val contact = createRandomContact()
+            edtContactId.setText(contact.id)
+            edtContactName.setText(contact.name)
+            edtContactEmail.setText(contact.email)
+
             setView(contactView)
             setPositiveListener(View.OnClickListener {
-                var canSave = true
                 val id: String = edtContactId.text.toString().trim()
-                var name: String? = edtContactName.text.toString().trim()
-                var email: String? = edtContactEmail.text.toString().trim()
+                val name: String = edtContactName.text.toString().trim()
+                val email: String = edtContactEmail.text.toString().trim()
 
-                if (id.isNotEmpty()) {
-                    if (name!!.isEmpty())
-                        name = null
-
-                    if (email!!.isEmpty())
-                        email = null
-                    else {
-                        if (!email.isEmailValid()) {
-                            canSave = false
-                            Toast.makeText(this@ContactListActivity, getString(R.string.userdata_error_invalid_contact_email), Toast.LENGTH_LONG)
-                                .apply { setGravity(Gravity.TOP, 0, 50) }
-                                .show()
-                        }
-                    }
-                } else {
-                    canSave = false
-                    Toast.makeText(this@ContactListActivity, getString(R.string.userdata_error_invalid_contact_id), Toast.LENGTH_LONG)
-                        .apply { setGravity(Gravity.TOP, 0, 50) }
-                        .show()
-                }
-
-                if (canSave) {
+                if (isVerifiedContact(id, name, email)) {
                     adapter.addContact(adapter.itemCount, Contact(id = id, name = name, email = email))
                     this.dialog?.cancel()
                 }
             })
         }.show()
+    }
+
+    private fun isVerifiedContact(id: String, name: String, email: String): Boolean {
+        var canSave = true
+
+        if (id.isEmpty()) {
+            canSave = false
+            showContactInputWarning(getString(R.string.userdata_error_empty_contact_id))
+        }
+
+        if (name.isEmpty()) {
+            canSave = false
+            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name))
+        }
+
+        if (email.isNotEmpty() && !email.isEmailValid()) {
+            canSave = false
+            showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
+        } else if (email.isEmpty()) {
+            canSave = false
+            showContactInputWarning(getString(R.string.userdata_error_empty_email_name))
+        }
+
+        return canSave
+    }
+
+    private fun showContactInputWarning(message: String) {
+        Toast.makeText(this@ContactListActivity, message, Toast.LENGTH_LONG)
+                .apply { setGravity(Gravity.TOP, 0, 50) }
+                .show()
     }
 
     override fun onResume() {
@@ -133,8 +151,16 @@ class ContactListActivity : BaseActivity() {
     }
 
     private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
-        for (i in 1..10)
-            this.add(defaultContact(UUID.randomUUID().toString().trimEnd()))
+        for (i in 1..5) {
+            this.add(createRandomContact())
+        }
+    }
+
+    private fun createRandomContact(): Contact {
+        val firstName = fakeFirstNames[(Math.random() * fakeFirstNames.size).toInt()]
+        val lastName = fakeLastNames[(Math.random() * fakeLastNames.size).toInt()]
+        val email = firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
 
     private fun renderAdapter(contactNames: ArrayList<Contact>) {
