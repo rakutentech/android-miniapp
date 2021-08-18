@@ -22,7 +22,8 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBindi
 import com.rakuten.tech.mobile.testapp.helper.isEmailValid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 import kotlin.collections.ArrayList
 import kotlin.collections.arrayListOf
 
@@ -49,7 +50,7 @@ class ContactListActivity : BaseActivity() {
         settings = AppSettings.instance
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.contacts_activity)
-        renderContactList()
+        renderRandomContactList()
         binding.fabAddContact.setOnClickListener { onAddAction() }
     }
 
@@ -84,7 +85,6 @@ class ContactListActivity : BaseActivity() {
         val edtContactEmail = contactView.findViewById<AppCompatEditText>(R.id.edtContactEmail)
 
         ContactInputDialog.Builder().build(this).apply {
-            // generate random contact inputs in builder
             val contact = createRandomContact()
             edtContactId.setText(contact.id)
             edtContactName.setText(contact.name)
@@ -130,7 +130,7 @@ class ContactListActivity : BaseActivity() {
 
     private fun showContactInputWarning(message: String) {
         Toast.makeText(this@ContactListActivity, message, Toast.LENGTH_LONG)
-                .apply { setGravity(Gravity.TOP, 0, 50) }
+                .apply { setGravity(Gravity.TOP, 0, 100) }
                 .show()
     }
 
@@ -139,7 +139,7 @@ class ContactListActivity : BaseActivity() {
         if (isFirstLaunch) isFirstLaunch = false
     }
 
-    private fun renderContactList() {
+    private fun renderRandomContactList() {
         if (!isFirstLaunch && settings.isContactsSaved) {
             if (settings.contacts.isEmpty()) {
                 renderAdapter(arrayListOf())
@@ -151,7 +151,7 @@ class ContactListActivity : BaseActivity() {
     }
 
     private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
-        for (i in 1..5) {
+        for (i in 1..10) {
             this.add(createRandomContact())
         }
     }
