@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Base64
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
@@ -14,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import io.github.rakutentech.signatureverifier.SignatureVerifier
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
-import java.math.BigInteger
+import java.lang.Exception
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -204,21 +204,7 @@ internal class MiniAppDownloader(
             isManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
                     val response = apiClient.downloadFile(file)
-
-                    CoroutineScope(Dispatchers.Main).launch {
-                        withContext(Dispatchers.Default) {
-                            val dataStream = response.byteStream()
-                            val hash = generateSha512Hash(dataStream.readBytes())
-                            val data = miniAppInfo.version.versionId + hash
-                            if (signatureVerifier?.verify(manifest.first.publicKeyId, data.byteInputStream(), manifest.second.signature.toString())!!) {
-                                // TODO
-                            } else {
-                                // send "verification failed" event
-                            }
-
-                            storage.saveFile(file, baseSavePath, dataStream)
-                        }
-                    }
+                    storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
@@ -232,32 +218,30 @@ internal class MiniAppDownloader(
         }
     }
 
-//    fun generateSha512Hash(input: String): String? {
-//        var generated: String? = null
-//        try {
-//            val md = MessageDigest.getInstance("SHA-512")
-//            val bytes = md.digest(input.toByteArray(StandardCharsets.UTF_8))
-//            val sb = java.lang.StringBuilder()
-//            for (i in bytes.indices) {
-//                sb.append(((bytes[i] and 0xff) + 0x100).toString(16).substring(1))
-//            }
-//            generated = sb.toString()
-//        } catch (e: NoSuchAlgorithmException) {
-//            e.printStackTrace()
-//        }
-//        return generated
-//    }
+    // TODO: true --> extract and return Mini App
+    // TODO: false --> send "validation failed" event
+    private suspend fun isSignatureValid(
+        miniAppInfo: MiniAppInfo,
+        manifest: Pair<ManifestEntity, ManifestHeader>,
+        dataByteArray: ByteArray
+    ): Boolean {
+        val hash = calculateHash(dataByteArray)
+        val data = miniAppInfo.version.versionId + hash
 
-    @SuppressWarnings("MagicNumber")
-    private fun generateSha512Hash(input: ByteArray?): String? {
-        val md = MessageDigest.getInstance("SHA-512")
-        val raw = md.digest(input)
-        val bigInt = BigInteger(1, raw)
-        val hash = StringBuilder(bigInt.toString(16))
-        while (hash.length < 32) {
-            hash.insert(0, '0')
-        }
-        return hash.toString()
+        return signatureVerifier?.verify(
+            manifest.first.publicKeyId,
+            data.byteInputStream(),
+            manifest.second.signature.toString()
+        )!!
+    }
+
+    private fun calculateHash(input: ByteArray): String = try {
+        val messageDigest = MessageDigest.getInstance("SHA-256")
+        val hashedBytes = messageDigest.digest(input)
+        Base64.encodeToString(hashedBytes, Base64.NO_WRAP)
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to calculate hash for Mini App zip file.", e)
+        ""
     }
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
