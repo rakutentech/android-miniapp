@@ -1,21 +1,37 @@
 package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
-interface IRatComponent {
+interface IRatActivity {
     /**
      * Prepare the component's rat event before it is sent using eventTypes, actions,
      * screen name, miniapp info
      */
-    fun prepareEventToSend()
+    fun prepareMenuItemClickEventToSend()
 
     /**
-     * Set Custom rat events
+     * Prepare the component's rat event before it is sent using eventTypes, actions,
+     * screen name, miniapp info
      */
-    fun setCustomRatEvent(ratEvent: RATEvent)
+    fun prepareScreenAppearEventToSend()
+
+    /**
+     * Set Custom rat events for menu items
+     */
+    fun setCustomRatEventForMenuItem(ratEvent: RATEvent)
+
+    /**
+     * Set Custom rat events for whole activity
+     */
+    fun setCustomRatEventForDefault(ratEvent: RATEvent)
 
     /**
      * Clear Custom rat events
      */
     fun clearCustomRatEvent()
+
+    /**
+     * Clear Custom rat events for menu item click
+     */
+    fun clearCustomRatEventforMenuItem()
 
     /**
      * Get the screen name of the activity
@@ -28,5 +44,6 @@ interface IRatComponent {
     /**
      * Set Custom screen name
      */
-    fun setScreenName(screen_name: String)
+    fun setScreenName(screenName: String)
+
 }

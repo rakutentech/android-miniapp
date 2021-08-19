@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
  * This activity will be the gateway of all deeplink scheme.
  */
 class SchemeActivity : BaseActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent?.data?.let { data ->

@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
+import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.SwitchCompat
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
@@ -10,7 +10,8 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class RATSwitch : SwitchCompat, IRatComponent {
     private var ratEvent: RATEvent? = null
-    private var tempCheckStatus: Boolean = false
+    private var screen_name = ""
+    private var passedlistener: OnCheckedChangeListener? = null
 
     constructor(@NonNull context: Context) : super(context)
 
@@ -22,9 +23,18 @@ class RATSwitch : SwitchCompat, IRatComponent {
         defStyleAttr
     )
 
-    init {
-        tempCheckStatus = this.isChecked
+    /** This listener will send the RAT event first then send the values to child listener. */
+    private var listener: OnCheckedChangeListener =
+        OnCheckedChangeListener { buttonView, isChecked ->
+            prepareEventToSend()
+            ratEvent?.let {
+                DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
+            }
+            passedlistener?.onCheckedChanged(buttonView, isChecked)
+        }
 
+    init {
+        this.setOnCheckedChangeListener(listener)
     }
 
     override fun prepareEventToSend() {
@@ -40,24 +50,23 @@ class RATSwitch : SwitchCompat, IRatComponent {
         this.ratEvent = ratEvent
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_UP ->
-                checkStatus()
-            else -> {
-            }
-        }
-        return super.onTouchEvent(event)
+    override fun clearCustomRatEvent() {
+        this.ratEvent = null
     }
 
-    private fun checkStatus(){
-        if(this.isChecked != tempCheckStatus){
-            //So Switch status changed so send analytics
-            tempCheckStatus = this.isChecked
-            prepareEventToSend()
-            ratEvent?.let {
-                DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
-            }
+    override fun getScreenName(): String {
+        return screen_name
+    }
+
+    override fun setScreenName(screen_name: String) {
+        this.screen_name = screen_name
+    }
+
+    override fun setOnCheckedChangeListener(listener: OnCheckedChangeListener?) {
+        if (listener == this.listener) {
+            super.setOnCheckedChangeListener(this.listener)
+        } else {
+            passedlistener = listener
         }
     }
 }

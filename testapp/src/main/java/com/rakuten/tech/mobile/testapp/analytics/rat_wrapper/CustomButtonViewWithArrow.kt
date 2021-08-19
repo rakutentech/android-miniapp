@@ -25,6 +25,7 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
 
     private var ratEvent: RATEvent? = null
     private var btnLabel = ""
+    private var screen_name = ""
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_button_view_with_arrow, this, true)
@@ -61,5 +62,17 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
 
     override fun setCustomRatEvent(ratEvent: RATEvent) {
         this.ratEvent = ratEvent
+    }
+
+    override fun clearCustomRatEvent() {
+        this.ratEvent = null
+    }
+
+    override fun getScreenName(): String {
+        return screen_name
+    }
+
+    override fun setScreenName(screen_name: String) {
+        this.screen_name = screen_name
     }
 }

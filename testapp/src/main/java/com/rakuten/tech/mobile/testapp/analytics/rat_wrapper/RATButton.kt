@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 class RATButton : AppCompatButton, IRatComponent {
 
     private var ratEvent: RATEvent? = null
+    private var screen_name = ""
 
     constructor(@NonNull context: Context) : super(context)
 
@@ -47,4 +48,15 @@ class RATButton : AppCompatButton, IRatComponent {
         this.ratEvent = ratEvent
     }
 
+    override fun clearCustomRatEvent() {
+        this.ratEvent = null
+    }
+
+    override fun getScreenName(): String {
+        return screen_name
+    }
+
+    override fun setScreenName(screen_name: String) {
+        this.screen_name = screen_name
+    }
 }

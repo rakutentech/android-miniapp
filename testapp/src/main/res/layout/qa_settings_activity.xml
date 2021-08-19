@@ -22,7 +22,7 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_access_token" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchAuthFailure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:layout_height="@dimen/horizontal_divider_height"
             android:background="@color/bg_section" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchOtherError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_unique_id" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchUniqueIdError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

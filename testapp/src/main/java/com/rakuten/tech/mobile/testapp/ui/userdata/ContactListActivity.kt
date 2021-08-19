@@ -55,6 +55,7 @@ class ContactListActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()

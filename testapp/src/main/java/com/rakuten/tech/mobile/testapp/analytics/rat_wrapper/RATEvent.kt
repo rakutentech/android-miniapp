@@ -18,6 +18,7 @@ class RATEvent {
     private var event: EventType?
     private var action: ActionType? = null
     private var label: String? = null
+    private var screenName: String? = null
     private var miniAppInfo: MiniAppInfo? = null
 
     fun getEvent(): EventType {
@@ -32,8 +33,13 @@ class RATEvent {
         return label ?: ""
     }
 
+
     fun getMiniAppInfo(): MiniAppInfo? {
         return miniAppInfo
+    }
+
+    fun getScreenName():String{
+        return screenName ?: ""
     }
 
     constructor(event: EventType, action: ActionType) {
@@ -51,5 +57,12 @@ class RATEvent {
         this.event = event
         this.action = action
         this.miniAppInfo = miniAppInfo
+    }
+
+    constructor(event: EventType, action: ActionType, label: String, screen_name: String){
+        this.event = event
+        this.action = action
+        this.label = label
+        this.screenName = screen_name
     }
 }

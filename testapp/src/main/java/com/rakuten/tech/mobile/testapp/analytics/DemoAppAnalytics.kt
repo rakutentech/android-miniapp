@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.analytics
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
@@ -57,15 +58,19 @@ class DemoAppAnalytics private constructor(private val rasProjectId: String) {
         return mapOf<String, Any>(
             "acc" to acc,
             "aid" to aid,
+            "event" to ratEvent.getEvent().value,
             "actype" to ratEvent.getAction().value,
-            "pgn" to ratEvent.getLabel(),
-            "ssc" to "demoApp",
+            "label" to ratEvent.getLabel(),
+            "screen_name" to ratEvent.getScreenName(),
+            "app_name" to "demoApp",
             "cp" to cp
         )
     }
 
     /** common function to send to tracker. */
     private fun trackEvent(eType: EventType, params: Map<String, Any>) = whenHasAnalytics {
+        Log.e("event type",eType.value)
+        Log.e("params", params.toString())
         RatTracker.event(eType.value, params).track()
     }
 }

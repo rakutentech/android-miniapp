@@ -43,6 +43,8 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
         executeLoadingList()
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
