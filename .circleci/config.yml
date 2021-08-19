@@ -41,6 +41,10 @@ workflows:
                 root: testapp/build/outputs
                 paths:
                   - mapping/
+            - persist_to_workspace:
+                root: testapp/build/generated/source
+                paths:
+                  - buildConfig/
       - app-center/publish:
           name: deploy-test-app-stg
           group: Testers
@@ -120,19 +124,19 @@ workflows:
           file: mapping/staging/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $(grep "VERSION_NAME" android-sdk/build/generated/source/buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-name: $(grep "VERSION_NAME" buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
           version-code: 1
           requires:
             - android-sdk/build
           filters:
             branches:
-              only: /.*/
+              only: master
       - app-center/mapping:
           name: deploy-test-app-release-mapping
           file: mapping/release/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/release/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-name: $(grep "VERSION_NAME" buildConfig/release/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
           version-code: 1
           requires:
             - android-sdk/build
@@ -146,7 +150,7 @@ workflows:
           file: mapping/rc/mapping.txt
           app: $APP_CENTER_APP_NAME
           token: $APP_CENTER_TOKEN
-          version-name: $(grep "VERSION_NAME" testapp/build/generated/source/buildConfig/rc/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-name: $(grep "VERSION_NAME" buildConfig/rc/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
           version-code: 1
           requires:
             - android-sdk/build
