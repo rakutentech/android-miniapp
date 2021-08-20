@@ -144,6 +144,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
         return when (item.itemId) {
             R.id.action_search -> activity?.onSearchRequested() ?: false
             else -> super.onOptionsItemSelected(item)

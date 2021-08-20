@@ -48,7 +48,7 @@
         tools:visibility="visible" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATFloatingActionButton
       android:id="@+id/fabAddContact"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"

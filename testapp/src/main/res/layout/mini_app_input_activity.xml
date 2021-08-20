@@ -30,7 +30,7 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
                 android:id="@+id/btnDisplayAppId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
