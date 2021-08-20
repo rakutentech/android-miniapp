@@ -22,13 +22,12 @@ class RATFloatingActionButton: FloatingActionButton , IRatComponent {
         defStyleAttr
     )
 
-    override fun performClick(): Boolean {
-        val returnClick = super.performClick()
-        prepareEventToSend()
-        ratEvent?.let {
-            DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
-        }
-        return returnClick
+    override fun setCustomRatEvent(ratEvent: RATEvent) {
+        this.ratEvent = ratEvent
+    }
+
+    override fun getScreenName(): String {
+        return screen_name
     }
 
     override fun prepareEventToSend() {
@@ -40,20 +39,21 @@ class RATFloatingActionButton: FloatingActionButton , IRatComponent {
             )
     }
 
-    override fun setCustomRatEvent(ratEvent: RATEvent) {
-        this.ratEvent = ratEvent
-    }
-
     override fun clearCustomRatEvent() {
         this.ratEvent = null
     }
 
-    override fun getScreenName(): String {
-        return screen_name
-    }
-
     override fun setScreenName(screen_name: String) {
         this.screen_name = screen_name
+    }
+
+    override fun performClick(): Boolean {
+        val returnClick = super.performClick()
+        prepareEventToSend()
+        ratEvent?.let {
+            DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
+        }
+        return returnClick
     }
 }
 
