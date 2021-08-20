@@ -218,8 +218,8 @@ internal class MiniAppDownloader(
         }
     }
 
-    // TODO: true --> extract and return Mini App
-    // TODO: false --> send "validation failed" event
+    // TODO: implement spec when verification fails / passes
+    // TODO: RequireMiniAppSignatureVerification: Setting to disable Mini App when verification fails
     private suspend fun isSignatureValid(
         miniAppInfo: MiniAppInfo,
         manifest: Pair<ManifestEntity, ManifestHeader>,

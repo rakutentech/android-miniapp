@@ -13,6 +13,7 @@ import org.junit.Test
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
+import okhttp3.Headers.Companion.toHeaders
 
 @ExperimentalCoroutinesApi
 open class ApiClientSpec {
@@ -34,9 +35,10 @@ open class ApiClientSpec {
     @Test
     fun `should fetch the list of mini apps`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
+        val response: Response<List<MiniAppInfo>> = Response.success(listOf(miniAppInfo))
 
         When calling mockAppInfoApi.list(any(), any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.list()[0] shouldEqual miniAppInfo
@@ -45,20 +47,47 @@ open class ApiClientSpec {
     @Test
     fun `should fetch the file list of a mini app`() = runBlockingTest {
         val fileList = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
-        val manifestEntity = ManifestEntity(fileList)
+        val manifestEntity = ManifestEntity(fileList, TEST_PUBLIC_KEY_ID)
         val mockCall: Call<ManifestEntity> = mock()
+        val response: Response<ManifestEntity> =
+            Response.success(ManifestEntity(fileList, TEST_PUBLIC_KEY_ID))
         When calling
                 mockManifestApi
                     .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
-                    .executeRequest(mockCall) itReturns ManifestEntity(fileList)
+                    .executeRequest(mockCall) itReturns response
 
         createApiClient(manifestApi = mockManifestApi).apply {
             fetchFileList(
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
-            ) shouldEqual manifestEntity
+            ) shouldEqual Pair(manifestEntity, ManifestHeader(null))
+        }
+    }
+
+    @Test
+    fun `should fetch the signature of a mini app`() = runBlockingTest {
+        val fileList = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2)
+        val mockCall: Call<ManifestEntity> = mock()
+        val response: Response<ManifestEntity> =
+            Response.success(
+                ManifestEntity(fileList, TEST_PUBLIC_KEY_ID),
+                mapOf("signature" to TEST_MANIFEST_SIGNATURE).toHeaders()
+            )
+
+        When calling
+                mockManifestApi
+                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
+        When calling
+                mockRequestExecutor
+                    .executeRequest(mockCall) itReturns response
+
+        createApiClient(manifestApi = mockManifestApi).apply {
+            fetchFileList(
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION
+            ).second.signature shouldEqual TEST_MANIFEST_SIGNATURE
         }
     }
 
@@ -66,12 +95,13 @@ open class ApiClientSpec {
     fun `should download a file from the given url`() = runBlockingTest {
         val mockCall: Call<ResponseBody> = mock()
         val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
+        val mockResponse: Response<ResponseBody> = Response.success(mockResponseBody)
         When calling
                 mockDownloadApi
                     .downloadFile(TEST_URL_FILE) itReturns mockCall
         When calling
                 mockRequestExecutor
-                    .executeRequest(mockCall) itReturns mockResponseBody
+                    .executeRequest(mockCall) itReturns mockResponse
 
         val apiClient = createApiClient()
         val response = apiClient
@@ -82,9 +112,10 @@ open class ApiClientSpec {
     @Test
     fun `should fetch meta data for a mini app for a given appId`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
+        val response: Response<List<MiniAppInfo>> = Response.success(listOf(miniAppInfo))
 
         When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns listOf(miniAppInfo)
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.fetchInfo(TEST_MA_ID) shouldEqual miniAppInfo
@@ -95,9 +126,10 @@ open class ApiClientSpec {
         val mockCall: Call<List<MiniAppInfo>> = mock()
         val secondItem = miniAppInfo.copy()
         val resultList = listOf(miniAppInfo, secondItem)
+        val response: Response<List<MiniAppInfo>> = Response.success(resultList)
 
         When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns resultList
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
         apiClient.fetchInfo(TEST_MA_ID) shouldNotBe secondItem
@@ -105,15 +137,16 @@ open class ApiClientSpec {
 
     @Test(expected = MiniAppHasNoPublishedVersionException::class)
     fun `fetchInfo should throw MiniAppHasNoPublishedVersionException when the API returns zero items`() =
-            runBlockingTest {
-        val mockCall: Call<List<MiniAppInfo>> = mock()
+        runBlockingTest {
+            val mockCall: Call<List<MiniAppInfo>> = mock()
+            val response: Response<List<MiniAppInfo>> = Response.success(emptyList())
 
-        When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
-        When calling mockRequestExecutor.executeRequest(mockCall) itReturns emptyList()
+            When calling mockAppInfoApi.fetchInfo(any(), any(), any()) itReturns mockCall
+            When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
-        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
-        apiClient.fetchInfo("test-app-id")
-    }
+            val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+            apiClient.fetchInfo("test-app-id")
+        }
 
     @Test
     fun `custom error response should extend the same error class`() {
@@ -145,7 +178,8 @@ open class ApiClientSpec {
     @Test
     fun `MiniAppHttpException should provide proper message`() {
         val exception = MiniAppHttpException(
-            Response.error(400, TEST_ERROR_MSG.toResponseBody()), TEST_ERROR_MSG)
+            Response.error(400, TEST_ERROR_MSG.toResponseBody()), TEST_ERROR_MSG
+        )
 
         exception.message() shouldContain TEST_ERROR_MSG
         exception.errorMessage shouldBe TEST_ERROR_MSG

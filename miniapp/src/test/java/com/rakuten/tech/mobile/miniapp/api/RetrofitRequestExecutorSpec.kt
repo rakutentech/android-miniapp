@@ -73,7 +73,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
         val response = createRequestExecutor().executeRequest(createApi().fetch())
 
-        response.testKey shouldEqual TEST_VALUE
+        response.body()?.testKey shouldEqual TEST_VALUE
     }
 
     @Test
