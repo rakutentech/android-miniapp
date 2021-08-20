@@ -4,31 +4,23 @@ import androidx.fragment.app.Fragment
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-open class RATFragment: Fragment(), IRatActivity {
+open class RATFragment: Fragment(), IRATFragment {
     private var ratEvent: RATEvent? = null
     private var ratEventMenuItem: RATEvent? = null
     private var screen_name = ""
 
-    /** Will send Appear event when open a activity. */
+    /** Will send Appear event when open a fragment. */
     override fun onResume() {
         sendAnalyticsDefault()
         super.onResume()
     }
 
-    /** Will send click event when any of the menu item is being clicked. */
-    private fun sendAnalyticsForMenuItem() {
-    }
-
-    /** Will send Appear event when open a activity. */
+    /** Will send Appear event when open a fragment. */
     private fun sendAnalyticsDefault() {
         prepareScreenAppearEventToSend()
         ratEvent?.let {
             DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
         }
-    }
-
-    /** Prepare default event if custom RAT event is not set. */
-    override fun prepareMenuItemClickEventToSend() {
     }
 
     /** Prepare default event if custom RAT event is not set. */
@@ -43,11 +35,6 @@ open class RATFragment: Fragment(), IRatActivity {
     }
 
     /** Can send custom RAT event if set. */
-    override fun setCustomRatEventForMenuItem(ratEvent: RATEvent) {
-        this.ratEventMenuItem = ratEvent
-    }
-
-    /** Can send custom RAT event if set. */
     override fun setCustomRatEventForDefault(ratEvent: RATEvent) {
         this.ratEvent = ratEvent
     }
@@ -55,11 +42,6 @@ open class RATFragment: Fragment(), IRatActivity {
     /** Can clear custom RAT event if set. */
     override fun clearCustomRatEvent() {
         this.ratEvent = null
-    }
-
-    /** Can clear custom RAT event if set. */
-    override fun clearCustomRatEventforMenuItem() {
-        this.ratEventMenuItem = null
     }
 
     /**
