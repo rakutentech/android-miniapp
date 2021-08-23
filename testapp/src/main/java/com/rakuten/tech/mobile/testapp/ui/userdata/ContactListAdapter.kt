@@ -5,11 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBinding
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 
-class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
+class ContactListAdapter(private val contactListener: ContactListener) : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
     ContactAdapterPresenter {
     private var contactEntries = ArrayList<Contact>()
 
@@ -26,6 +28,9 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
         bindNonVisibleView("Email: ", contact.email, holder.contactEmail)
 
         holder.contactRemoveButton.setOnClickListener { removeContactAt(position) }
+        holder.rootView.setOnClickListener{
+            contactListener.onContactItemClick(position)
+        }
     }
 
     private fun bindNonVisibleView(prefix: String, text: String?, holderView: TextView) {
@@ -41,6 +46,11 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
     override fun addContact(position: Int, contact: Contact) {
         contactEntries.add(position, contact)
         notifyItemInserted(position)
+    }
+
+    override fun updateContact(position: Int, contact: Contact) {
+        contactEntries[position] = contact
+        notifyItemChanged(position)
     }
 
     override fun addContactList(contacts: ArrayList<Contact>) {
@@ -61,5 +71,10 @@ class ContactListAdapter : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(
         val contactName = itemView.tvName
         val contactEmail = itemView.tvEmail
         val contactRemoveButton = itemView.buttonRemoveContact
+        val rootView = itemView.root
     }
+}
+
+interface ContactListener {
+    fun onContactItemClick(position: Int)
 }

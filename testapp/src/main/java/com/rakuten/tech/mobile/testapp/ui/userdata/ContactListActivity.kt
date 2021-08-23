@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -25,11 +26,11 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.UUID
 
-class ContactListActivity : BaseActivity() {
+class ContactListActivity : BaseActivity(), ContactListener {
 
     private lateinit var settings: AppSettings
     private lateinit var binding: ContactsActivityBinding
-    private val adapter = ContactListAdapter()
+    private val adapter = ContactListAdapter(this)
     private var contactListPrefs: SharedPreferences? = null
     private var isFirstLaunch: Boolean
         get() = contactListPrefs?.getBoolean(IS_FIRST_TIME, true) ?: true
@@ -74,6 +75,10 @@ class ContactListActivity : BaseActivity() {
     }
 
     private fun onAddAction() {
+        showDialog(isUpdate = false)
+    }
+
+    private fun showDialog(isUpdate: Boolean, position: Int? = null){
         val contactView = layoutInflater.inflate(R.layout.dialog_add_contact, null)
         val edtContactId = contactView.findViewById<AppCompatEditText>(R.id.edtContactId)
         val edtContactName = contactView.findViewById<AppCompatEditText>(R.id.edtContactName)
@@ -81,6 +86,20 @@ class ContactListActivity : BaseActivity() {
 
         ContactInputDialog.Builder().build(this).apply {
             setView(contactView)
+            if(isUpdate) {
+                setPositiveButton("Update")
+                position?.let {
+                    val contact = adapter.provideContactEntries()[it]
+                    edtContactId.setText(contact.id)
+                    edtContactName.setText(contact.name)
+                    edtContactEmail.setText(contact.email)
+                    edtContactId.isEnabled = false
+                }
+            }else {
+                setPositiveButton("Add")
+                edtContactId.isEnabled = true
+            }
+
             setPositiveListener(View.OnClickListener {
                 var canSave = true
                 val id: String = edtContactId.text.toString().trim()
@@ -109,13 +128,21 @@ class ContactListActivity : BaseActivity() {
                 }
 
                 if (canSave) {
-                    adapter.addContact(adapter.itemCount, Contact(id = id, name = name, email = email))
+                    if(isUpdate){
+                        position?.let {
+                            adapter.updateContact(it, Contact(id = id, name = name, email = email))
+                        }
+                    }else {
+                        adapter.addContact(
+                            adapter.itemCount,
+                            Contact(id = id, name = name, email = email)
+                        )
+                    }
                     this.dialog?.cancel()
                 }
             })
         }.show()
     }
-
     override fun onResume() {
         super.onResume()
         if (isFirstLaunch) isFirstLaunch = false
@@ -188,5 +215,9 @@ class ContactListActivity : BaseActivity() {
         fun start(activity: Activity) {
             activity.startActivity(Intent(activity, ContactListActivity::class.java))
         }
+    }
+
+    override fun onContactItemClick(position: Int) {
+        showDialog(isUpdate = true, position = position)
     }
 }
