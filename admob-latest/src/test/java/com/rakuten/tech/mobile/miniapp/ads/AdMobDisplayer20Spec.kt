@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.admob
+package com.rakuten.tech.mobile.miniapp.ads
 
 import android.app.Activity
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,6 +8,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import org.amshove.kluent.mock
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
@@ -118,3 +119,4 @@ class AdMobDisplayer20Spec {
         adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 }
+

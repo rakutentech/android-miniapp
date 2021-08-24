@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.admob
+package com.rakuten.tech.mobile.miniapp.ads
 
 import android.app.Activity
 import androidx.annotation.VisibleForTesting
@@ -11,8 +11,6 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.ads.Reward
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
