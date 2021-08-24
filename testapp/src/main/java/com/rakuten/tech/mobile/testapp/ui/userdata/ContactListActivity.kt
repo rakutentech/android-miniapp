@@ -115,24 +115,32 @@ class ContactListActivity : BaseActivity(), ContactListener {
                     else {
                         if (!email.isEmailValid()) {
                             canSave = false
-                            Toast.makeText(this@ContactListActivity, getString(R.string.userdata_error_invalid_contact_email), Toast.LENGTH_LONG)
+                            Toast.makeText(
+                                this@ContactListActivity,
+                                getString(R.string.userdata_error_invalid_contact_email),
+                                Toast.LENGTH_LONG
+                            )
                                 .apply { setGravity(Gravity.TOP, 0, 50) }
                                 .show()
                         }
                     }
                 } else {
                     canSave = false
-                    Toast.makeText(this@ContactListActivity, getString(R.string.userdata_error_invalid_contact_id), Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        this@ContactListActivity,
+                        getString(R.string.userdata_error_invalid_contact_id),
+                        Toast.LENGTH_LONG
+                    )
                         .apply { setGravity(Gravity.TOP, 0, 50) }
                         .show()
                 }
 
                 if (canSave) {
-                    if(isUpdate){
+                    if (isUpdate) {
                         position?.let {
                             adapter.updateContact(it, Contact(id = id, name = name, email = email))
                         }
-                    }else {
+                    } else {
                         adapter.addContact(
                             adapter.itemCount,
                             Contact(id = id, name = name, email = email)
