@@ -13,7 +13,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import com.bumptech.glide.Glide
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -74,12 +73,6 @@ fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.
     .load(res)
     .placeholder(placeholder)
     .into(this)
-
-fun defaultContact(id: String) = Contact(
-    id = id,
-    name = "default_name",
-    email = "default@email.com"
-)
 
 fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 

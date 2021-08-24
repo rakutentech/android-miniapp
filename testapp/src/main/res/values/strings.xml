@@ -33,8 +33,10 @@
 
     <string name="userdata_edit_photo">Edit Photo</string>
     <string name="userdata_hint_edit_name">Enter your name here</string>
-    <string name="userdata_error_invalid_contact_id">Invalid contact id, please try again.</string>
-    <string name="userdata_error_invalid_contact_email">Invalid contact email, please input the correct format or leave it blank.</string>
+    <string name="userdata_error_empty_contact_id">Empty contact id, please try again.</string>
+    <string name="userdata_error_empty_contact_name">Empty contact name, please try again.</string>
+    <string name="userdata_error_empty_email_name">Empty contact email, please try again.</string>
+    <string name="userdata_error_invalid_contact_email">Invalid contact email, please input the correct format.</string>
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>
     <string name="userdata_contact_id">Contact id</string>
@@ -53,6 +55,7 @@
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_update">Update</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
     <string name="action_points">Points</string>
