@@ -25,8 +25,11 @@ class ContactInputDialog {
 
         fun setPositiveListener(listener: View.OnClickListener): Builder {
             positiveListener = listener
-            alert?.setPositiveButton("Add", null)
             return this
+        }
+
+        fun setPositiveButton(title: String){
+            alert?.setPositiveButton(title, null)
         }
 
         private fun setNegativeListener(): Builder {
