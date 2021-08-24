@@ -119,4 +119,3 @@ class AdMobDisplayer20Spec {
         adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 }
-
