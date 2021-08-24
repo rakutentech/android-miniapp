@@ -55,6 +55,7 @@
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_update">Update</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
     <string name="action_points">Points</string>
