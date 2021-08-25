@@ -119,9 +119,9 @@ class ContactListActivity : BaseActivity(), ContactListener {
                     val contact = Contact(id = id, name = name, email = email)
                     if (isUpdate) position?.let { adapter.updateContact(it, contact) }
                     else adapter.addContact(adapter.itemCount, contact)
-                }
 
-                this.dialog?.cancel()
+                    this.dialog?.cancel()
+                }
             })
         }.show()
     }
