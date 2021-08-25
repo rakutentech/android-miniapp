@@ -58,11 +58,10 @@ class DemoAppAnalytics private constructor(private val rasProjectId: String) {
         return mapOf<String, Any>(
             "acc" to acc,
             "aid" to aid,
-            "event" to ratEvent.getEvent().value,
+            "etype" to ratEvent.getEvent().value,
             "actype" to ratEvent.getAction().value,
-            "label" to ratEvent.getLabel(),
-            "screen_name" to ratEvent.getScreenName(),
-            "app_name" to "demoApp",
+            "target_ele" to ratEvent.getLabel(),
+            "pgn" to ratEvent.getScreenName(),
             "cp" to cp
         )
     }
