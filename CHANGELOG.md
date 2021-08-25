@@ -1,11 +1,16 @@
 ## CHANGELOG
 
+### 3.6.0 (2021-MM-DD)
+**Sample App**
+- **Feature:** User can edit contact name and email in App Settings.
+
 ### 3.5.0 (2021-07-27)
 **SDK**
 - **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
 - **Feature:** Added support for using `".jpg"` and multiple types e.g. `".jpg,.png"` in the accept field of the file input.
 - **Update:** Updated `MessageToContact` to support an optional message to the user for the contact picker capability.
 - **Update:** Included technical improvement in manifest file verification process.
+- **Feature:** Added `admob-latest` module to support latest admob sdk. 
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
