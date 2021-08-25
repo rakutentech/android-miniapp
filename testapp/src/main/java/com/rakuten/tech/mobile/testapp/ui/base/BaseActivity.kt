@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.base
 
-import androidx.appcompat.app.AppCompatActivity
 import com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATActivity
 import com.rakuten.tech.mobile.testapp.helper.RaceExecutor
 import kotlinx.coroutines.CoroutineScope

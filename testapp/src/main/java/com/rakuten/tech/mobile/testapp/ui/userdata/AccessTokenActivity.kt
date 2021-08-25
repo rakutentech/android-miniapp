@@ -17,7 +17,8 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
 class AccessTokenActivity : BaseActivity() {
-
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var accessToken: String
     private var expiredDate: Long = 0

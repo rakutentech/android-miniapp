@@ -1,4 +1,5 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -27,9 +28,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/medium_16"
+            android:textOff="@string/lb_auth_failure_error"
+            android:textOn="@string/lb_auth_failure_error"
             android:text="@string/lb_auth_failure_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"
@@ -43,7 +49,10 @@
             android:padding="@dimen/medium_16"
             android:text="@string/lb_other_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"
@@ -81,7 +90,10 @@
             android:padding="@dimen/medium_16"
             android:text="@string/lb_unique_id_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"

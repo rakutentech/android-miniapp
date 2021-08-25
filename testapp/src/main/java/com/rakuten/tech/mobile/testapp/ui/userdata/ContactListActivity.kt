@@ -28,7 +28,8 @@ import java.util.UUID
 import kotlin.collections.ArrayList
 
 class ContactListActivity : BaseActivity(), ContactListener {
-
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var binding: ContactsActivityBinding
     private val adapter = ContactListAdapter(this)

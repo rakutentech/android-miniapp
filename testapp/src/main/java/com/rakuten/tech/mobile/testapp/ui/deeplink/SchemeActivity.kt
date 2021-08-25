@@ -10,6 +10,9 @@ import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
  */
 class SchemeActivity : BaseActivity() {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent?.data?.let { data ->

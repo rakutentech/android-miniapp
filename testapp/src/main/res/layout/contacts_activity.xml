@@ -49,14 +49,17 @@
     </LinearLayout>
 
     <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATFloatingActionButton
-      android:id="@+id/fabAddContact"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/large_24"
-      android:layout_gravity="end|bottom"
-      android:contentDescription="@string/action_add"
-      android:src="@drawable/ic_add_24dp"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent" />
+        android:id="@+id/fabAddContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/large_24"
+        android:contentDescription="@string/action_add"
+        android:src="@drawable/ic_add_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:actionType="open"
+        app:pageName="ContactList"
+        app:siteSection="Settings" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

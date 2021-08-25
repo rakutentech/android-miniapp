@@ -18,6 +18,9 @@ import kotlinx.android.synthetic.main.mini_app_list_activity.*
 
 class MiniAppListActivity : MenuBaseActivity() {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mini_app_list_activity)

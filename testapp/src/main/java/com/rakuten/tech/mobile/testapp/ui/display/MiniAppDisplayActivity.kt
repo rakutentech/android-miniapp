@@ -37,6 +37,9 @@ import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}

@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.custom_button_view_with_arrow.view.*
+import kotlin.math.sign
 
 /**
  * This is custom View with a label and arrow.
@@ -21,58 +22,55 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
     Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : RelativeLayout(context, attrs, defStyleAttr), IRatComponent {
+) : RelativeLayout(context, attrs, defStyleAttr) {
 
-    private var ratEvent: RATEvent? = null
     private var btnLabel = ""
-    private var screen_name = ""
+    private var siteSection = ""
+    private var pageName = ""
+    private var action: ActionType = ActionType.DEFAULT
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_button_view_with_arrow, this, true)
 
         context.theme.obtainStyledAttributes(attrs, R.styleable.CustomButtonViewWithArrow, 0, 0)
             .let {
+                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
+                pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
+                val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
+                if (index > -1) action = ActionType.values()[index]
                 btnLabel = it.getString(R.styleable.CustomButtonViewWithArrow_titleLabel) ?: ""
                 val isArrowEnable =
                     it.getBoolean(R.styleable.CustomButtonViewWithArrow_rightArrowEnable, true)
                 tv_label.text = btnLabel
                 if (isArrowEnable) img_arrow_right.visibility =
                     View.VISIBLE else img_arrow_right.visibility = View.INVISIBLE
+
+                DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+                    RATEvent(
+                        event = EventType.APPEAR,
+                        action = action,
+                        pageName = pageName,
+                        siteSection = siteSection,
+                        componentName = btnLabel,
+                        elementType = "ButtonWithTextArrow"
+                    )
+                )
                 it.recycle()
             }
     }
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        prepareEventToSend()
-        ratEvent?.let {
-            DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(it)
-        }
-        return returnClick
-    }
-
-    override fun prepareEventToSend() {
-        if (ratEvent == null)
-            ratEvent = RATEvent(
+        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+            RATEvent(
                 event = EventType.CLICK,
-                action = ActionType.OPEN,
-                label = btnLabel
+                action = action,
+                pageName = pageName,
+                siteSection = siteSection,
+                componentName = btnLabel,
+                elementType = "ButtonWithTextArrow"
             )
-    }
-
-    override fun setCustomRatEvent(ratEvent: RATEvent) {
-        this.ratEvent = ratEvent
-    }
-
-    override fun clearCustomRatEvent() {
-        this.ratEvent = null
-    }
-
-    override fun getScreenName(): String {
-        return screen_name
-    }
-
-    override fun setScreenName(screen_name: String) {
-        this.screen_name = screen_name
+        )
+        return returnClick
     }
 }

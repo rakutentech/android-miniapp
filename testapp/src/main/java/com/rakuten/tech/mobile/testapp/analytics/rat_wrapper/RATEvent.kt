@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 
 
 enum class EventType(val value: String) {
@@ -11,15 +10,19 @@ enum class EventType(val value: String) {
 
 enum class ActionType(val value: String) {
     OPEN("open"),
-    CLOSE("close")
+    CLOSE("close"),
+    CHANGE_STATUS("changeStatus"),
+    DEFAULT("default")
 }
 
 class RATEvent {
     private var event: EventType?
     private var action: ActionType? = null
-    private var label: String? = null
-    private var screenName: String? = null
-    private var miniAppInfo: MiniAppInfo? = null
+    private var siteSection: String? = null
+    private var pageName: String? = null
+    private var targetElement: String? = null
+    private var componentName: String? = null
+    private var elementType: String? = null
 
     fun getEvent(): EventType {
         return event ?: EventType.CLICK
@@ -29,40 +32,39 @@ class RATEvent {
         return action ?: ActionType.OPEN
     }
 
-    fun getLabel(): String {
-        return label ?: ""
+    fun getPgn():String{
+        return "$siteSection→$pageName"
     }
 
-
-    fun getMiniAppInfo(): MiniAppInfo? {
-        return miniAppInfo
+    fun getTargetElement(): String {
+        return targetElement ?: ""
     }
 
-    fun getScreenName():String{
-        return screenName ?: ""
-    }
-
-    constructor(event: EventType, action: ActionType) {
+    constructor(event: EventType, pageName: String, siteSection: String){
         this.event = event
-        this.action = action
+        this.pageName = pageName
+        this.siteSection = siteSection
     }
 
-    constructor(event: EventType, action: ActionType, label: String) {
+    constructor(event: EventType,action: ActionType, pageName: String, siteSection: String, componentName: String, elementType: String){
         this.event = event
-        this.action = action
-        this.label = label
+        this.action= action
+        this.pageName = pageName
+        this.siteSection = siteSection
+        this.componentName = componentName
+        this.elementType = elementType
+        //{screen_name}:{component_name}-{element_type}.{action}
+        this.targetElement = "$pageName: $componentName-$elementType.${action.value}"
     }
 
-    constructor(event: EventType, action: ActionType, miniAppInfo: MiniAppInfo) {
+    constructor(event: EventType, pageName: String, siteSection: String, componentName: String, elementType: String){
         this.event = event
-        this.action = action
-        this.miniAppInfo = miniAppInfo
+        this.pageName = pageName
+        this.siteSection = siteSection
+        this.componentName = componentName
+        this.elementType = elementType
+        //{screen_name}:{component_name}-{element_type}
+        this.targetElement = "$pageName: $componentName-$elementType"
     }
 
-    constructor(event: EventType, action: ActionType, label: String, screen_name: String){
-        this.event = event
-        this.action = action
-        this.label = label
-        this.screenName = screen_name
-    }
 }

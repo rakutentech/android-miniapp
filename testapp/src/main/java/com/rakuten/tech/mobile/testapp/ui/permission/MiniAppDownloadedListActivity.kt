@@ -24,6 +24,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity(),
     MiniAppDownloadedListAdapter.MiniAppDownloadedListener {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
 
     private lateinit var adapter: MiniAppDownloadedListAdapter

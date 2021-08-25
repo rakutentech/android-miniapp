@@ -35,6 +35,9 @@ import kotlin.collections.ArrayList
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     companion object {
         val TAG = MiniAppListFragment::class.java.canonicalName
         fun newInstance(): MiniAppListFragment = MiniAppListFragment()
