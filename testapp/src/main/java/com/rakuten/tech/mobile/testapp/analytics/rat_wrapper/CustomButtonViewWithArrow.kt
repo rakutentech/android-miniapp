@@ -9,7 +9,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.custom_button_view_with_arrow.view.*
-import kotlin.math.sign
 
 /**
  * This is custom View with a label and arrow.
@@ -18,8 +17,7 @@ import kotlin.math.sign
  * right arrow can be hide and show by app:rightArrowEnable = true/false.
  */
 class CustomButtonViewWithArrow @JvmOverloads constructor(
-    context:
-    Context,
+    context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : RelativeLayout(context, attrs, defStyleAttr) {
