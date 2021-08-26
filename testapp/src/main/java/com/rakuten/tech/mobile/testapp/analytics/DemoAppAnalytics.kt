@@ -63,8 +63,6 @@ class DemoAppAnalytics private constructor(private val rasProjectId: String) {
 
     /** common function to send to tracker. */
     private fun trackEvent(eType: EventType, params: Map<String, Any>) = whenHasAnalytics {
-        Log.e("eType", eType.toString())
-        Log.e("params", params.toString())
         RatTracker.event(eType.value, params).track()
     }
 }

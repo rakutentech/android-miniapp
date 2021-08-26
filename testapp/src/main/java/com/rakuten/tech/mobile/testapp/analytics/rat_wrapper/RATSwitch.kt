@@ -17,13 +17,19 @@ class RATSwitch : SwitchCompat {
 
     constructor(@NonNull context: Context) : super(context)
 
-    constructor(@NonNull context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(@NonNull context: Context, attrs: AttributeSet?) : super(context, attrs){
+        initialization(context= context, attrs = attrs)
+    }
 
     constructor(@NonNull context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
     ){
+        initialization(context= context, attrs = attrs)
+    }
+
+    private fun initialization(context: Context, attrs: AttributeSet?){
         context.theme.obtainStyledAttributes(attrs, R.styleable.RatCustomAttributes, 0, 0)
             .let {
                 siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
@@ -42,7 +48,6 @@ class RATSwitch : SwitchCompat {
                 elementType = "Switch"
             )
         )
-
     }
 
     /** This listener will send the RAT event first then send the values to child listener. */
