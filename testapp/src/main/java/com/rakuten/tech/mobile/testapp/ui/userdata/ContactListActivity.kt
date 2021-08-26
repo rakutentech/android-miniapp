@@ -98,16 +98,16 @@ class ContactListActivity : BaseActivity(), ContactListener {
 
             if (isUpdate) {
                 setPositiveButton(getString(R.string.action_update))
+                setDialogTitle("Contact Update")
                 position?.let {
                     val existingContact = adapter.provideContactEntries()[it]
                     edtContactId.setText(existingContact.id)
                     edtContactName.setText(existingContact.name)
                     edtContactEmail.setText(existingContact.email)
-                    edtContactId.isEnabled = false
                 }
             } else {
                 setPositiveButton(getString(R.string.action_add))
-                edtContactId.isEnabled = true
+                setDialogTitle("Contact Input")
             }
 
             setPositiveListener(View.OnClickListener {
