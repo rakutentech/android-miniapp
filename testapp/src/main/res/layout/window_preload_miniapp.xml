@@ -121,7 +121,7 @@
           android:textSize="@dimen/text_large_16"
           app:actionType="open"
           app:pageName="MiniAppPermission"
-          app:siteSection="Settings" />
+          app:siteSection="PreloadMiniApp" />
 
       <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
           android:id="@+id/preloadCancel"
@@ -136,7 +136,7 @@
           android:textSize="@dimen/text_large_16"
           app:actionType="close"
           app:pageName="MiniAppPermission"
-          app:siteSection="Settings" />
+          app:siteSection="PreloadMiniApp" />
     </LinearLayout>
   </RelativeLayout>
 </layout>
