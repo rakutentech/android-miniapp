@@ -23,12 +23,26 @@ class RATButton @JvmOverloads constructor(
     private var pageName = ""
     private var action: ActionType = ActionType.DEFAULT
 
+    override fun performClick(): Boolean {
+        val returnClick = super.performClick()
+        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+            RATEvent(
+                event = EventType.CLICK,
+                action = action,
+                pageName = pageName,
+                siteSection = siteSection,
+                componentName = this.text.toString(),
+                elementType = "Button"
+            )
+        )
+        return returnClick
+    }
 
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.RatCustomAttributes, 0, 0)
             .let {
-                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
                 pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
+                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
                 val index = it.getInt(R.styleable.RatCustomAttributes_actionType,0)
                 if (index > -1) action = ActionType.values()[index]
                 it.recycle()
@@ -43,20 +57,5 @@ class RATButton @JvmOverloads constructor(
                 elementType = "Button"
             )
         )
-    }
-
-    override fun performClick(): Boolean {
-        val returnClick = super.performClick()
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
-            RATEvent(
-                event = EventType.CLICK,
-                action = action,
-                pageName = pageName,
-                siteSection = siteSection,
-                componentName = this.text.toString(),
-                elementType = "Button"
-            )
-        )
-        return returnClick
     }
 }

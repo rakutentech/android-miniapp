@@ -15,9 +15,9 @@ class RATFloatingActionButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FloatingActionButton(context, attrs, defStyleAttr) {
 
-    private var siteSection = ""
-    private var pageName = ""
     private var action: ActionType = ActionType.DEFAULT
+    private var pageName = ""
+    private var siteSection = ""
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
@@ -37,10 +37,10 @@ class RATFloatingActionButton @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.RatCustomAttributes, 0, 0)
             .let {
-                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
-                pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
                 val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
                 if (index > -1) action = ActionType.values()[index]
+                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
+                pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
                 it.recycle()
             }
         DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
