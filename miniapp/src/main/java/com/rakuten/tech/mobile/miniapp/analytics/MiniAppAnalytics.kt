@@ -71,8 +71,6 @@ internal class MiniAppAnalytics(
 
         /** common function to send to tracker. */
         private fun trackEvent(eType: Etype, params: Map<String, Any>) = whenHasAnalytics {
-            Log.e("etype", eType.toString())
-            Log.e("params", params.toString())
             RatTracker.event(eType.value, params).track()
         }
     }
