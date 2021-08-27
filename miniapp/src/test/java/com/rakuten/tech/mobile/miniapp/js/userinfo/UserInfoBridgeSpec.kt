@@ -70,6 +70,7 @@ class UserInfoBridgeSpec {
     )
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
+    private val ratDispatcher = Mockito.spy(MessageBridgeRatDispatcher(mock()))
 
     @Before
     fun setup() {
@@ -81,7 +82,7 @@ class UserInfoBridgeSpec {
             customPermissionCache = customPermissionCache,
             downloadedManifestCache = downloadedManifestCache,
             miniAppId = TEST_MA.id,
-            ratDispatcher = mock()
+            ratDispatcher = ratDispatcher
         )
 
         whenever(customPermissionCache.hasPermission(

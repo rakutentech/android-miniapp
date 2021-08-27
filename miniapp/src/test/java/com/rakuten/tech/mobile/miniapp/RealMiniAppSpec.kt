@@ -4,6 +4,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -46,6 +47,8 @@ open class BaseRealMiniAppSpec {
         TEST_HA_ANALYTICS_CONFIGS
     )
 
+    internal var ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
+
     @Before
     fun setup() {
         realMiniApp =
@@ -54,7 +57,7 @@ open class BaseRealMiniAppSpec {
                 initDownloadedManifestCache = { downloadedManifestCache },
                 initManifestVerifier = { manifestVerifier },
                 miniAppAnalytics = miniAppAnalytics,
-                ratDispatcher = mock()
+                ratDispatcher = ratDispatcher
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
@@ -129,7 +132,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher = mock()
+                ratDispatcher
             )
         }
 
@@ -153,7 +156,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher = mock()
+                ratDispatcher
             )
         }
 
@@ -172,7 +175,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher = mock()
+                ratDispatcher
             )
         }
 
