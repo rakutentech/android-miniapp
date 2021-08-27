@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -14,7 +15,7 @@ import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 
-@Suppress("TooManyFunctions", "LongMethod")
+@Suppress("TooManyFunctions", "LongMethod", "LargeClass")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
@@ -23,7 +24,8 @@ internal class RealMiniApp(
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
-    private var miniAppAnalytics: MiniAppAnalytics
+    private var miniAppAnalytics: MiniAppAnalytics,
+    private var ratDispatcher: MessageBridgeRatDispatcher
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
@@ -70,7 +72,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }
@@ -95,7 +98,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }
@@ -118,7 +122,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }

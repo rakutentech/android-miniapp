@@ -37,7 +37,7 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
-
+    private lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
 
@@ -46,7 +46,8 @@ open class MiniAppMessageBridge {
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
-        miniAppId: String
+        miniAppId: String,
+        ratDispatcher: MessageBridgeRatDispatcher
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -54,6 +55,7 @@ open class MiniAppMessageBridge {
         this.customPermissionCache = customPermissionCache
         this.downloadedManifestCache = downloadedManifestCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
+        this.ratDispatcher = ratDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
@@ -127,7 +129,7 @@ open class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
-
+        ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)

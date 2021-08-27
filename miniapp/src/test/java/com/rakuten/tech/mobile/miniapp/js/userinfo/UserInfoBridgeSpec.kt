@@ -80,7 +80,8 @@ class UserInfoBridgeSpec {
             webViewListener = webViewListener,
             customPermissionCache = customPermissionCache,
             downloadedManifestCache = downloadedManifestCache,
-            miniAppId = TEST_MA.id
+            miniAppId = TEST_MA.id,
+            ratDispatcher = mock()
         )
 
         whenever(customPermissionCache.hasPermission(

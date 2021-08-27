@@ -4,6 +4,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.*
@@ -36,6 +37,7 @@ open class BaseRealMiniAppSpec {
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()
+
     val dummyManifest: MiniAppManifest = MiniAppManifest(
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
         TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
@@ -52,7 +54,8 @@ open class BaseRealMiniAppSpec {
                 initCustomPermissionCache = { miniAppCustomPermissionCache },
                 initDownloadedManifestCache = { downloadedManifestCache },
                 initManifestVerifier = { manifestVerifier },
-                miniAppAnalytics = miniAppAnalytics
+                miniAppAnalytics = miniAppAnalytics,
+                ratDispatcher = mock()
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
@@ -126,7 +129,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 "",
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher = mock()
             )
         }
 
@@ -149,7 +153,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 "",
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher = mock()
             )
         }
 
@@ -167,7 +172,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(miniAppDownloader).validateHttpAppUrl(TEST_MA_URL)
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
-                miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics
+                miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
+                ratDispatcher = mock()
             )
         }
 

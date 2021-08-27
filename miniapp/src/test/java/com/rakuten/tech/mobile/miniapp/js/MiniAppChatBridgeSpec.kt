@@ -101,7 +101,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
     }
 
@@ -123,7 +124,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
@@ -142,7 +144,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
 
         miniAppBridge.postMessage(permissionJsonStr)
@@ -161,7 +164,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
 
         miniAppBridge.postMessage(permissionJsonStr)
@@ -220,7 +224,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
     }
 
@@ -246,7 +251,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
-                miniAppId = TEST_MA_ID
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -266,7 +272,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -316,7 +323,8 @@ class AdBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
         return miniAppBridge
@@ -375,7 +383,8 @@ class ScreenBridgeSpec : BridgeCommon() {
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
         )
     }
 
@@ -393,7 +402,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID)
+            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock())
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
