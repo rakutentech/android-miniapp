@@ -19,8 +19,8 @@ import javax.crypto.spec.GCMParameterSpec
 
 @SuppressWarnings("TooGenericExceptionCaught")
 internal class AesEncryptor @VisibleForTesting constructor(
-        private val keyStore: KeyStore?,
-        private val keyGenerator: AesKeyGenerator
+    private val keyStore: KeyStore?,
+    private val keyGenerator: AesKeyGenerator
 ) {
 
     constructor() : this(
@@ -105,8 +105,8 @@ internal class AesEncryptor @VisibleForTesting constructor(
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal class AesKeyGenerator(
-        private val alias: String,
-        private val provider: String
+    private val alias: String,
+    private val provider: String
 ) {
 
     @SuppressWarnings("TooGenericExceptionCaught")
@@ -137,8 +137,8 @@ internal class AesKeyGenerator(
 }
 
 internal data class AesEncryptedData(
-        val iv: String,
-        val encryptedData: String
+    val iv: String,
+    val encryptedData: String
 ) {
 
     fun toJsonString(): String = Gson().toJson(this)

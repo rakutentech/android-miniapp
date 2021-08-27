@@ -9,11 +9,11 @@ import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import java.io.File
 
 internal class PublicKeyCache(
-        private val keyFetcher: PublicKeyFetcher,
-        context: Context,
-        baseUrl: String,
-        encryptor: AesEncryptor? = null,
-        testKeys: MutableMap<String, String>? = null
+    private val keyFetcher: PublicKeyFetcher,
+    context: Context,
+    baseUrl: String,
+    encryptor: AesEncryptor? = null,
+    testKeys: MutableMap<String, String>? = null
 ) {
 
     private val encryptor: AesEncryptor by lazy { encryptor ?: AesEncryptor() }

@@ -17,8 +17,8 @@ import java.security.spec.ECPoint
 import java.security.spec.ECPublicKeySpec
 
 internal class RealSignatureVerifier(
-        private val cache: PublicKeyCache,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val cache: PublicKeyCache,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : SignatureVerifier() {
 
     @SuppressWarnings("LabeledExpression")

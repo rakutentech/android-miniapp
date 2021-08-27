@@ -58,7 +58,7 @@ internal class ApiClient(baseUrl: String, subscriptionKey: String, context: Cont
  * Exception thrown when endpoint is not a valid URL.
  */
 class InvalidSignatureVerifierBaseUrlException(
-        exception: IllegalArgumentException
+    exception: IllegalArgumentException
 ) : IllegalArgumentException("An invalid URL was provided for the Signature Verifier base url.", exception)
 
 /**

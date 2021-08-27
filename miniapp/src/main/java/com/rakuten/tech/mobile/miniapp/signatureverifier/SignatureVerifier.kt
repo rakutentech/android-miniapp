@@ -10,7 +10,7 @@ import java.io.InputStream
  * Main entry point for the Signature Verifier SDK.
  * Should be accessed via [SignatureVerifier.instance].
  */
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("UnnecessaryAbstractClass", "ParameterListWrapping")
 abstract class SignatureVerifier {
 
     /**
@@ -35,10 +35,10 @@ abstract class SignatureVerifier {
          */
         @SuppressWarnings("LongMethod", "TooGenericExceptionCaught")
         fun init(
-                context: Context,
-                baseUrl: String,
-                subscriptionKey: String,
-                errorCallback: ((ex: Exception) -> Unit)? = null
+            context: Context,
+            baseUrl: String,
+            subscriptionKey: String,
+            errorCallback: ((ex: Exception) -> Unit)? = null
         ): SignatureVerifier? {
             callback = errorCallback
             return try {

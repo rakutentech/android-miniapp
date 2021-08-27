@@ -21,9 +21,9 @@ internal class PublicKeyFetcher(private val client: ApiClient) {
 }
 
 internal data class PublicKeyResponse(
-        val id: String = "",
-        val ecKey: String = "",
-        val pemKey: String = ""
+    val id: String = "",
+    val ecKey: String = "",
+    val pemKey: String = ""
 ) {
     companion object {
         @SuppressWarnings("SwallowedException")
