@@ -13,7 +13,7 @@ import org.mockito.kotlin.verify
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class MessageBridgeRatDispatcherSpec{
+class MessageBridgeRatDispatcherSpec {
 
     private var miniAppAnalytics: MiniAppAnalytics = mock()
     private val ratDispatcher: MessageBridgeRatDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
@@ -30,14 +30,14 @@ class MessageBridgeRatDispatcherSpec{
     }
 
     @Test
-    fun `getAcType should return the correct acType for correct action`(){
+    fun `getAcType should return the correct acType for correct action`() {
         val acType = ratDispatcher.getAcType(testAction)
-        assertEquals(expected = Actype.GET_ACCESS_TOKEN,actual = acType)
+        assertEquals(expected = Actype.GET_ACCESS_TOKEN, actual = acType)
     }
 
     @Test
-    fun `getAcType should return the default acType for wrong action`(){
+    fun `getAcType should return the default acType for wrong action`() {
         val acType = ratDispatcher.getAcType("")
-        assertEquals(expected = Actype.DEFAULT,actual = acType)
+        assertEquals(expected = Actype.DEFAULT, actual = acType)
     }
 }
