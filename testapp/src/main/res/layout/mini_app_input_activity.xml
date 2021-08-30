@@ -30,7 +30,7 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
                 android:id="@+id/btnDisplayAppId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -39,7 +39,10 @@
                 android:layout_marginBottom="@dimen/large_24"
                 android:background="@drawable/bg_red_curve"
                 android:textColor="@android:color/white"
-                android:text="@string/action_display" />
+                android:text="@string/action_display"
+                app:actionType="open"
+                app:pageName="MiniApp Input"
+                app:siteSection="Top"/>
         </LinearLayout>
 
         <TextView

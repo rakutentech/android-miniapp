@@ -1,4 +1,5 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -22,28 +23,36 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_access_token" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchAuthFailure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/medium_16"
+            android:textOff="@string/lb_auth_failure_error"
+            android:textOn="@string/lb_auth_failure_error"
             android:text="@string/lb_auth_failure_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/horizontal_divider_height"
             android:background="@color/bg_section" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchOtherError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/medium_16"
             android:text="@string/lb_other_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"
@@ -74,14 +83,17 @@
             android:paddingBottom="@dimen/small_4"
             android:text="@string/lb_unique_id" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
             android:id="@+id/switchUniqueIdError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/medium_16"
             android:text="@string/lb_unique_id_error"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings"/>
 
         <View
             android:layout_width="match_parent"

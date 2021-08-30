@@ -29,11 +29,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Custom Permission" />
 
-      <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/permissionSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+      <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+          android:id="@+id/permissionSwitch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          app:actionType="change_status"
+          app:pageName="MiniAppPermission"
+          app:siteSection="Settings" />
     </LinearLayout>
 
     <TextView

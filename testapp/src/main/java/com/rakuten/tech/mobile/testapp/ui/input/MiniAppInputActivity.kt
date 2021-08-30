@@ -23,6 +23,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 
 class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     private lateinit var binding: MiniAppInputActivityBinding
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
 
@@ -32,6 +35,8 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         class None: InputDisplay("")
     }
     private var display: InputDisplay = InputDisplay.None()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

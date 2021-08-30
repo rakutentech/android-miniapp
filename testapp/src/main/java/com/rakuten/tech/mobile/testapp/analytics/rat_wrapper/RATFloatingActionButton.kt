@@ -2,26 +2,22 @@ package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.custom_button_view_with_arrow.view.*
 
-/**
- * This is custom Button.
- * It can also handle rat analytics
- */
-
-class RATButton @JvmOverloads constructor(
+class RATFloatingActionButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : AppCompatButton(context, attrs, defStyleAttr) {
+) : FloatingActionButton(context, attrs, defStyleAttr) {
 
-    private var siteSection = ""
-    private var pageName = ""
     private var action: ActionType = ActionType.DEFAULT
+    private var pageName = ""
+    private var siteSection = ""
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
@@ -31,8 +27,8 @@ class RATButton @JvmOverloads constructor(
                 action = action,
                 pageName = pageName,
                 siteSection = siteSection,
-                componentName = this.text.toString(),
-                elementType = "Button"
+                componentName = this.id.toString(),
+                elementType = "FabButton"
             )
         )
         return returnClick
@@ -41,10 +37,10 @@ class RATButton @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.RatCustomAttributes, 0, 0)
             .let {
-                pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
-                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
-                val index = it.getInt(R.styleable.RatCustomAttributes_actionType,0)
+                val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
                 if (index > -1) action = ActionType.values()[index]
+                siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
+                pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
                 it.recycle()
             }
         DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
@@ -53,9 +49,10 @@ class RATButton @JvmOverloads constructor(
                 action = action,
                 pageName = pageName,
                 siteSection = siteSection,
-                componentName = this.text.toString(),
-                elementType = "Button"
+                componentName = this.id.toString(),
+                elementType = "FabButton"
             )
         )
     }
+
 }

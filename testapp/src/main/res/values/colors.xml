@@ -11,4 +11,5 @@
     <color name="qr_error_title">#333333</color>
     <color name="link_blue">#358ED7</color>
     <color name="colorPink">#33BE0000</color>
+    <color name="btn_disable_grey">#D3D3D3</color>
 </resources>
