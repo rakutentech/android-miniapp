@@ -46,7 +46,10 @@
                     android:padding="@dimen/small_8"
                     android:text="@string/lb_preview_mode"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_large_16" />
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
@@ -107,7 +110,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_profile" />
+                    app:titleLabel="@string/action_profile"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -119,7 +125,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_contacts" />
+                    app:titleLabel="@string/action_contacts"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -131,7 +140,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/lb_access_token" />
+                    app:titleLabel="@string/lb_access_token"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -143,7 +155,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_custom_permissions" />
+                    app:titleLabel="@string/action_custom_permissions"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -155,7 +170,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_points" />
+                    app:titleLabel="@string/action_points"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -167,7 +185,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_qa" />
+                    app:titleLabel="@string/action_qa"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"

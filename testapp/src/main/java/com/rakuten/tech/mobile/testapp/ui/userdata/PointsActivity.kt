@@ -18,7 +18,8 @@ import java.lang.NumberFormatException
 class PointsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var binding: PointsActivityBinding
-
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
     companion object {
         fun start(activity: Activity) {
             activity.startActivity(Intent(activity, PointsActivity::class.java))
@@ -38,6 +39,7 @@ class PointsActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
                 onExit()

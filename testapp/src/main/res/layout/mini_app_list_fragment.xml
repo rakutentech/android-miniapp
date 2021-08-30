@@ -41,7 +41,7 @@
           android:visibility="gone"
           tools:visibility="visible" />
 
-        <TextView
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
             android:id="@+id/btnInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,7 +54,10 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:siteSection="Top"
+            app:pageName="MiniAppList"
+            app:actionType="open"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

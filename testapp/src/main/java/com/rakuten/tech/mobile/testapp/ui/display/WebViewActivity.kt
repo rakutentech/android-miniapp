@@ -12,6 +12,9 @@ import com.rakuten.tech.mobile.testapp.ui.component.SampleWebViewClient
 class WebViewActivity : BaseActivity() {
     private lateinit var sampleExternalWebView: SampleExternalWebView
 
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
+
     companion object {
         val loadUrlTag = "load_url_tag"
         val miniAppIdTag = "miniapp_id_tag"
