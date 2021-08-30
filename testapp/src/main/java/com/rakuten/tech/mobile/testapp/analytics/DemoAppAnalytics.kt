@@ -57,6 +57,7 @@ class DemoAppAnalytics private constructor(private val rasProjectId: String) {
             "actype" to ratEvent.getAction().value,
             "target_ele" to ratEvent.getTargetElement(),
             "pgn" to ratEvent.getPgn(),
+            "ssc" to ratEvent.getSiteSection(),
             "cp" to cp
         )
     }

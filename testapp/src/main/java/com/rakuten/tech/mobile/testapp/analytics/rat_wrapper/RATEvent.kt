@@ -33,11 +33,15 @@ class RATEvent {
     }
 
     fun getPgn():String{
-        return "$siteSection→$pageName"
+        return pageName ?: ""
     }
 
     fun getTargetElement(): String {
         return targetElement ?: ""
+    }
+
+    fun getSiteSection(): String {
+        return siteSection ?: ""
     }
 
     constructor(event: EventType, pageName: String, siteSection: String){
@@ -53,8 +57,8 @@ class RATEvent {
         this.siteSection = siteSection
         this.componentName = componentName
         this.elementType = elementType
-        //{screen_name}:{component_name}-{element_type}.{action}
-        this.targetElement = "$pageName: $componentName-$elementType.${action.value}"
+        //{component_name}-{element_type}.{action}
+        this.targetElement = "$componentName-$elementType.${action.value}"
     }
 
     constructor(event: EventType, pageName: String, siteSection: String, componentName: String, elementType: String){
@@ -63,8 +67,8 @@ class RATEvent {
         this.siteSection = siteSection
         this.componentName = componentName
         this.elementType = elementType
-        //{screen_name}:{component_name}-{element_type}
-        this.targetElement = "$pageName: $componentName-$elementType"
+        //{component_name}-{element_type}
+        this.targetElement = "$componentName-$elementType"
     }
 
 }
