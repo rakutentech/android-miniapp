@@ -13,7 +13,6 @@ class ContactInputDialog {
 
         fun build(context: Context?): Builder {
             alert = AlertDialog.Builder(context)
-            alert?.setTitle("Contact Input")
             setNegativeListener()
             return this
         }
@@ -30,6 +29,10 @@ class ContactInputDialog {
 
         fun setPositiveButton(title: String){
             alert?.setPositiveButton(title, null)
+        }
+
+        fun setDialogTitle(title: String){
+            alert?.setTitle(title)
         }
 
         private fun setNegativeListener(): Builder {
