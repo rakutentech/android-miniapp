@@ -11,7 +11,7 @@ import java.io.InputStream
  * Should be accessed via [SignatureVerifier.instance].
  */
 @Suppress("UnnecessaryAbstractClass", "ParameterListWrapping")
-abstract class SignatureVerifier {
+internal abstract class SignatureVerifier {
 
     /**
      * Verifies the [signature] of the [data] using the [publicKeyId].
@@ -21,7 +21,7 @@ abstract class SignatureVerifier {
     abstract suspend fun verify(publicKeyId: String, data: InputStream, signature: String): Boolean
 
     companion object {
-        internal var callback: ((ex: Exception) -> Unit)? = null
+        var callback: ((ex: Exception) -> Unit)? = null
 
         /**
          * Initializes an instance of the Signature Verifier SDK based on the provided parameters.
@@ -69,5 +69,5 @@ abstract class SignatureVerifier {
 /**
  * Custom exception for Signature Verifier SDK.
  */
-class SignatureVerifierException(name: String, cause: Throwable? = null) :
+internal class SignatureVerifierException(name: String, cause: Throwable? = null) :
         RuntimeException(name, cause)
