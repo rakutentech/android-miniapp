@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -14,7 +15,8 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
     }
 
     @Suppress("ComplexMethod")
-    private fun getAcType(action: String): Actype {
+    @VisibleForTesting
+    internal fun getAcType(action: String): Actype {
         return when (action) {
             ActionType.GET_UNIQUE_ID.action -> Actype.GET_UNIQUE_ID
             ActionType.REQUEST_PERMISSION.action -> Actype.REQUEST_PERMISSION
