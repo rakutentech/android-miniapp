@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.analytics
 
-import android.util.Log
 import com.rakuten.tech.mobile.analytics.RatTracker
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.EventType
