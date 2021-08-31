@@ -16,12 +16,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
+@Deprecated("Use AdMobDisplayer19 if you're using Google Ads SDK 19. If you're using Google Ads SDK 20 or higher, use AdMobDisplyer20 from the admob-latest module.")
+typealias AdMobDisplayer = AdMobDisplayer19
+
 /**
  * The ad displayer.
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  * Support Interstitial, Reward ads.
  */
-class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
+class AdMobDisplayer19(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
     private val interstitialAdMap = HashMap<String, InterstitialAd>()

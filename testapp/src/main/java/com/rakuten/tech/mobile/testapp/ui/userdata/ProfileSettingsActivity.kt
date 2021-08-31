@@ -24,7 +24,8 @@ import java.io.ByteArrayOutputStream
 import java.lang.Exception
 
 class ProfileSettingsActivity : BaseActivity() {
-
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
     private lateinit var profileUrlBase64: String
@@ -47,6 +48,7 @@ class ProfileSettingsActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()

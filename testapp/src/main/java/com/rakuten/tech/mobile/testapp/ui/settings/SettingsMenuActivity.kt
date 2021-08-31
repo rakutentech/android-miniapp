@@ -30,7 +30,8 @@ import java.net.URL
 import kotlin.properties.Delegates
 
 class SettingsMenuActivity : BaseActivity() {
-
+    override val pageName: String = this::class.simpleName ?: ""
+    override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var settingsProgressDialog: SettingsProgressDialog
     private lateinit var binding: SettingsMenuActivityBinding
@@ -68,7 +69,8 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+         super.onOptionsItemSelected(item)
+         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
                 return true

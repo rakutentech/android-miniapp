@@ -18,30 +18,30 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 @RunWith(AndroidJUnit4::class)
-class AdMobDisplayerSpec {
+class AdMobDisplayer19Spec {
     private lateinit var context: Activity
-    private lateinit var adDisplayer: AdMobDisplayer
+    private lateinit var adDisplayer19: AdMobDisplayer19
 
     @Before
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             context = activity
-            adDisplayer = Mockito.spy(AdMobDisplayer(context))
+            adDisplayer19 = Mockito.spy(AdMobDisplayer19(context))
         }
     }
 
     @Test
     fun `should show interstitial ads when it is ready`() {
-        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, InterstitialAd>()
         val ad = Mockito.spy(InterstitialAd(context))
         ad.adUnitId = TEST_AD_UNIT_ID
         When calling ad.isLoaded itReturns true
         map[TEST_AD_UNIT_ID] = ad
-        adDisplayer.initAdMap(interstitialAdMap = map)
+        adDisplayer19.initAdMap(interstitialAdMap = map)
 
-        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
         verify(ad).show()
     }
 
@@ -50,10 +50,10 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -61,35 +61,35 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID is still in progress"
         }
-        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
 
-        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.loadInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
     fun `should show rewarded ads when it is ready`() {
-        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, RewardedAd>()
         val ad = Mockito.spy(RewardedAd(context, TEST_AD_UNIT_ID))
         When calling ad.isLoaded itReturns true
         map[TEST_AD_UNIT_ID] = ad
-        adDisplayer.initAdMap(rewardedAdMap = map)
+        adDisplayer19.initAdMap(rewardedAdMap = map)
 
         val onClosed: (reward: Reward?) -> Unit = {}
         val onError: (msg: String) -> Unit = {}
-        val rewardedAdCallback = adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, onClosed, onError)
-        When calling adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, onClosed, onError) itReturns
+        val rewardedAdCallback = adDisplayer19.createRewardedAdShowCallback(TEST_AD_UNIT_ID, onClosed, onError)
+        When calling adDisplayer19.createRewardedAdShowCallback(TEST_AD_UNIT_ID, onClosed, onError) itReturns
                 rewardedAdCallback
 
-        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, onClosed, onError)
+        adDisplayer19.showRewardedAd(TEST_AD_UNIT_ID, onClosed, onError)
         verify(ad).show(context, rewardedAdCallback)
     }
 
     @Test
     fun `should invoke sdk callbacks without error`() {
-        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
-        val rewardedAdShowCallback = adDisplayer.createRewardedAdShowCallback(TEST_AD_UNIT_ID, spy(), spy())
+        val rewardedAdLoadCallback = adDisplayer19.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
+        val rewardedAdShowCallback = adDisplayer19.createRewardedAdShowCallback(TEST_AD_UNIT_ID, spy(), spy())
         val rewardItem = object : RewardItem {
             override fun getType(): String = ""
 
@@ -108,10 +108,10 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -119,9 +119,9 @@ class AdMobDisplayerSpec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID is still in progress"
         }
-        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer19.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
-        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer19.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -129,12 +129,12 @@ class AdMobDisplayerSpec {
         val map = HashMap<String, RewardedAd>()
         val ad = Mockito.spy(RewardedAd(context, TEST_AD_UNIT_ID))
         map[TEST_AD_UNIT_ID] = ad
-        adDisplayer.initAdMap(interstitialAdMap = mutableMapOf(), rewardedAdMap = map)
+        adDisplayer19.initAdMap(interstitialAdMap = mutableMapOf(), rewardedAdMap = map)
 
-        val rewardedAdLoadCallback = adDisplayer.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
+        val rewardedAdLoadCallback = adDisplayer19.createRewardedAdLoadCallback(TEST_AD_UNIT_ID, spy(), spy())
         rewardedAdLoadCallback.onRewardedAdLoaded()
         rewardedAdLoadCallback.onRewardedAdFailedToLoad(LoadAdError(0, "", "", null, null))
 
-        adDisplayer.rewardedAdMap.containsKey(TEST_AD_UNIT_ID) shouldBe false
+        adDisplayer19.rewardedAdMap.containsKey(TEST_AD_UNIT_ID) shouldBe false
     }
 }
