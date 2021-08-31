@@ -19,8 +19,6 @@ class MessageBridgeRatDispatcherSpec {
     private val ratDispatcher: MessageBridgeRatDispatcher = MessageBridgeRatDispatcher(
         miniAppAnalytics
     )
-    private val testAction = ActionType.GET_ACCESS_TOKEN.action
-
     private val testActionValues = mapOf<String, Actype>(
         ActionType.REQUEST_PERMISSION.action to Actype.REQUEST_PERMISSION,
         ActionType.REQUEST_CUSTOM_PERMISSIONS.action to Actype.REQUEST_CUSTOM_PERMISSIONS,
@@ -40,12 +38,14 @@ class MessageBridgeRatDispatcherSpec {
 
     @Test
     fun `should send analytics with correct params`() = runBlockingTest {
-        ratDispatcher.sendAnalyticsSdkFeature(testAction)
-        verify(miniAppAnalytics, times(1)).sendAnalytics(
-            eType = Etype.CLICK,
-            actype = ratDispatcher.getAcType(testAction),
-            miniAppInfo = null
-        )
+        for (entry in testActionValues.entries) {
+            ratDispatcher.sendAnalyticsSdkFeature(entry.key)
+            verify(miniAppAnalytics, times(1)).sendAnalytics(
+                eType = Etype.CLICK,
+                actype = ratDispatcher.getAcType(entry.key),
+                miniAppInfo = null
+            )
+        }
     }
 
     @Test
