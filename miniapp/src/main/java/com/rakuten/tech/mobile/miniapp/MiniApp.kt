@@ -12,13 +12,13 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
-import io.github.rakutentech.signatureverifier.SignatureVerifier
 
 /**
  * This represents the contract between the consuming application and the SDK

@@ -59,11 +59,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android") {
-        version {
-            strictly "$kotlin_coroutines"
-        }
-    }
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
 
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
@@ -77,7 +73,6 @@ dependencies {
     kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
     implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
     implementation "io.github.rakutentech.sdkutils:sdk-utils:$sdk_utils"
-    implementation "io.github.rakutentech.signatureverifier:signatureverifier:$signature_verifier"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"

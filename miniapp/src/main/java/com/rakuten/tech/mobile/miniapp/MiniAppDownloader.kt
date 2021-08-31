@@ -11,10 +11,10 @@ import com.rakuten.tech.mobile.miniapp.api.ManifestHeader
 import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
-import io.github.rakutentech.signatureverifier.SignatureVerifier
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

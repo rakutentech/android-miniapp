@@ -33,7 +33,6 @@ buildscript {
     ext.appCenterSdkVersion = '4.0.0'
     ext.analytics_sdk= '7.0.0'
     ext.json_test = '20210307'
-    ext.signature_verifier = '1.0.0-SNAPSHOT'
 
 //  Build Config.
     apply from: 'config/index.gradle'
@@ -79,8 +78,6 @@ allprojects {
                 }
             }
         }
-
-        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
     }
 
     gradle.projectsEvaluated {
