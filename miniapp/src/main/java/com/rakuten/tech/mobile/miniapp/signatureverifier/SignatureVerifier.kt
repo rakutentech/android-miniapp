@@ -1,26 +1,142 @@
 package com.rakuten.tech.mobile.miniapp.signatureverifier
 
 import android.content.Context
+import android.util.Base64
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.internal.and
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
+import java.math.BigInteger
+import java.security.*
+import java.security.interfaces.ECPublicKey
+import java.security.spec.ECGenParameterSpec
+import java.security.spec.ECParameterSpec
+import java.security.spec.ECPoint
+import java.security.spec.ECPublicKeySpec
 
-/**
- * Main entry point for the Signature Verifier SDK.
- * Should be accessed via [SignatureVerifier.instance].
- */
-@Suppress("UnnecessaryAbstractClass", "ParameterListWrapping")
-internal abstract class SignatureVerifier {
+internal class SignatureVerifier(
+    private val cache: PublicKeyCache,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
 
     /**
      * Verifies the [signature] of the [data] using the [publicKeyId].
      *
      * @return true if [signature] associated with [data] is valid.
      */
-    abstract suspend fun verify(publicKeyId: String, data: InputStream, signature: String): Boolean
+    @SuppressWarnings("LabeledExpression")
+    suspend fun verify(publicKeyId: String, versionId: String, baseSavePath: String, inputStream: InputStream, signature: String) =
+        withContext(dispatcher) {
+            // always return false when EncryptedSharedPreferences was not initialized
+            // due to keystore validation.
+            val key = cache[publicKeyId] ?: return@withContext false
+
+            // preparing zip file
+            val zipFile = File(baseSavePath, "ma-bundle.zip").apply { parentFile?.mkdirs() }
+            try {
+                inputStream.use { input ->
+                    val outputStream = FileOutputStream(zipFile)
+                    outputStream.use { output ->
+                        val buffer = ByteArray(4 * 1024)
+                        while (true) {
+                            val byteCount = input.read(buffer)
+                            if (byteCount < 0) break
+                            output.write(buffer, 0, byteCount)
+                        }
+                        output.flush()
+                    }
+                }
+            } catch (e: Exception) {
+                // exception will produce wrong hash
+                return@withContext false
+            }
+
+            // preparing hash
+            val hash = calculateSha256Hash(zipFile.inputStream().readBytes())
+
+            // delete zip
+            try {
+                zipFile.deleteRecursively()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            // preparing data byte stream
+            val data = (versionId + hash).byteInputStream()
+
+            // verifying signature
+            val isVerified = Signature.getInstance("SHA256withECDSA").apply {
+                initVerify(rawToEncodedECPublicKey(key))
+
+                val buffer = ByteArray(SIXTEEN_KILOBYTES)
+                var read = data.read(buffer)
+                while (read != -1) {
+                    update(buffer, 0, read)
+
+                    read = data.read(buffer)
+                }
+            }.verify(Base64.decode(signature, Base64.DEFAULT))
+
+            if (!isVerified) {
+                cache.remove(publicKeyId)
+            }
+
+            isVerified
+        }
+
+    private fun rawToEncodedECPublicKey(key: String): ECPublicKey {
+        val parameters = ecParameterSpecForCurve("secp256r1")
+        val keySizeBytes = parameters.order.bitLength() / java.lang.Byte.SIZE
+        val pubKey = Base64.decode(key, Base64.DEFAULT)
+
+        // First Byte represents compressed/uncompressed status
+        // We're expecting it to always be uncompressed (04)
+        var offset = UNCOMPRESSED_OFFSET
+        val x = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+
+        offset += keySizeBytes
+        val y = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+
+        val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
+        val keyFactory = KeyFactory.getInstance("EC")
+        return keyFactory.generatePublic(keySpec) as ECPublicKey
+    }
+
+    private fun ecParameterSpecForCurve(curveName: String): ECParameterSpec {
+        val kpg = KeyPairGenerator.getInstance("EC")
+        kpg.initialize(ECGenParameterSpec(curveName))
+
+        return (kpg.generateKeyPair().public as ECPublicKey).params
+    }
+
+    private fun calculateSha256Hash(byteArray: ByteArray): String {
+        var generated: String? = null
+        try {
+            val md = MessageDigest.getInstance("SHA-256")
+            val bytes = md.digest(byteArray)
+            val sb = java.lang.StringBuilder()
+            for (i in bytes.indices) {
+                sb.append(((bytes[i] and 0xff) + 0x100).toString(16).substring(1))
+            }
+            generated = sb.toString()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }
+        return generated.toString()
+    }
 
     companion object {
+        private const val SIXTEEN_KILOBYTES = 16 * 1024
+
+        private const val UNCOMPRESSED_OFFSET = 1
+        private const val POSITIVE_BIG_INTEGER = 1
+
         var callback: ((ex: Exception) -> Unit)? = null
 
         /**
@@ -44,17 +160,17 @@ internal abstract class SignatureVerifier {
             return try {
 
                 val client = ApiClient(
-                        baseUrl = baseUrl,
-                        subscriptionKey = subscriptionKey,
-                        context = context
+                    baseUrl = baseUrl,
+                    subscriptionKey = subscriptionKey,
+                    context = context
                 )
 
-                RealSignatureVerifier(
-                        PublicKeyCache(
-                                keyFetcher = PublicKeyFetcher(client),
-                                context = context,
-                                baseUrl = baseUrl
-                        )
+                SignatureVerifier(
+                    PublicKeyCache(
+                        keyFetcher = PublicKeyFetcher(client),
+                        context = context,
+                        baseUrl = baseUrl
+                    )
                 )
             } catch (ex: Exception) {
                 callback?.let {
@@ -70,4 +186,4 @@ internal abstract class SignatureVerifier {
  * Custom exception for Signature Verifier SDK.
  */
 internal class SignatureVerifierException(name: String, cause: Throwable? = null) :
-        RuntimeException(name, cause)
+    RuntimeException(name, cause)
