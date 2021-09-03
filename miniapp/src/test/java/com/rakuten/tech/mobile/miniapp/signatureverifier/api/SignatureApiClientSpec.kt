@@ -12,7 +12,7 @@ import org.junit.Test
 import java.util.logging.Level
 import java.util.logging.LogManager
 
-class ApiClientSpec : RobolectricBaseSpec() {
+class SignatureApiClientSpec : RobolectricBaseSpec() {
 
     private val server = MockWebServer()
     private val mockContext = ApplicationProvider.getApplicationContext<Context>()
@@ -101,7 +101,7 @@ class ApiClientSpec : RobolectricBaseSpec() {
         val paramMap = HashMap<String, String>()
         paramMap["key1"] = "value1"
         paramMap["key2"] = "value2"
-        val client = ApiClient(baseUrl, "key", mockContext)
+        val client = SignatureApiClient(baseUrl, "key", mockContext)
 
         enqueueResponse("test-body")
         server.enqueue(MockResponse().setResponseCode(304))
@@ -115,7 +115,7 @@ class ApiClientSpec : RobolectricBaseSpec() {
         val paramMap = HashMap<String, String>()
         paramMap["key1"] = "value1"
         paramMap["key2"] = ""
-        val client = ApiClient(baseUrl, "key", mockContext)
+        val client = SignatureApiClient(baseUrl, "key", mockContext)
 
         enqueueResponse("test-body")
         server.enqueue(MockResponse().setResponseCode(304))
@@ -131,7 +131,7 @@ class ApiClientSpec : RobolectricBaseSpec() {
         val paramMap = HashMap<String, String>()
         paramMap["key1"] = "value1"
         paramMap[""] = "value2"
-        val client = ApiClient(baseUrl, "key", mockContext)
+        val client = SignatureApiClient(baseUrl, "key", mockContext)
 
         enqueueResponse("test-body")
         server.enqueue(MockResponse().setResponseCode(304))
@@ -147,7 +147,7 @@ class ApiClientSpec : RobolectricBaseSpec() {
         val paramMap = HashMap<String, String>()
         paramMap["key1"] = "value1"
         paramMap[""] = ""
-        val client = ApiClient(baseUrl, "key", mockContext)
+        val client = SignatureApiClient(baseUrl, "key", mockContext)
 
         enqueueResponse("test-body")
         server.enqueue(MockResponse().setResponseCode(304))
@@ -161,7 +161,7 @@ class ApiClientSpec : RobolectricBaseSpec() {
     @Test
     fun `should not include empty value`() {
         val paramMap = HashMap<String, String>()
-        val client = ApiClient(baseUrl, "key", mockContext)
+        val client = SignatureApiClient(baseUrl, "key", mockContext)
 
         enqueueResponse("test-body")
         server.enqueue(MockResponse().setResponseCode(304))
@@ -184,5 +184,5 @@ class ApiClientSpec : RobolectricBaseSpec() {
     }
 
     private fun createClient(url: String = baseUrl) =
-        ApiClient(url, "key", ApplicationProvider.getApplicationContext())
+        SignatureApiClient(url, "key", ApplicationProvider.getApplicationContext())
 }

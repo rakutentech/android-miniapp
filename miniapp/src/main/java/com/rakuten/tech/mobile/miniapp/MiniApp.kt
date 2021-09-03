@@ -208,8 +208,7 @@ abstract class MiniApp internal constructor() {
             val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
                 context = context,
                 baseUrl = miniAppSdkConfig.baseUrl + "keys/",
-                subscriptionKey = miniAppSdkConfig.subscriptionKey,
-                errorCallback = { ex: Exception -> ex.printStackTrace() }
+                subscriptionKey = miniAppSdkConfig.subscriptionKey
             )
 
             instance = RealMiniApp(

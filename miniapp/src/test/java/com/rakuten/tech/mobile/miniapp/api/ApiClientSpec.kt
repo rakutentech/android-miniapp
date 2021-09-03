@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import okhttp3.Headers.Companion.toHeaders
 
 @ExperimentalCoroutinesApi
+@SuppressWarnings("LargeClass")
 open class ApiClientSpec {
 
     private val mockRetrofitClient: Retrofit = mock()

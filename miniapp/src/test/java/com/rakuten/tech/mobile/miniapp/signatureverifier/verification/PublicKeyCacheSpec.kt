@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier.verification
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
-import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import org.amshove.kluent.*
 import org.junit.Before
@@ -12,7 +11,6 @@ import org.mockito.Mockito
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
-import java.io.IOException
 
 class PublicKeyCacheSpec : RobolectricBaseSpec() {
 
@@ -22,7 +20,6 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
 
     @Before
     fun setup() {
-        SignatureVerifier.callback = null
         mockMap["test_key_id"] = "encrypted"
         When calling mockFetcher.fetch("test_key_id") itReturns "test_public_key"
         When calling mockEncryptor.encrypt(any(String::class), any()) itReturns "encrypted"
@@ -53,20 +50,6 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
 
         cache["test_key_id"]?.shouldBeEqualTo("test_public_key")
         Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
-    }
-
-    @Test
-    fun `should return null when key fetcher failed`() {
-        val function: (ex: Exception) -> Unit = {}
-        val mockCallback = Mockito.mock(function.javaClass)
-        SignatureVerifier.callback = mockCallback
-        val cache = createCache()
-        When calling mockEncryptor.encrypt(any(), any()) itReturns null
-        When calling mockFetcher.fetch(eq("test_key_id")) itThrows IOException("test")
-
-        cache["test_key_id"].shouldBeNull()
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
-        Mockito.verify(mockCallback).invoke(any(IOException::class))
     }
 
     @Test

@@ -14,11 +14,13 @@ import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -187,8 +189,6 @@ internal class MiniAppDownloader(
         return pairs
     }
 
-
-
     @SuppressWarnings("LongMethod")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
@@ -201,19 +201,6 @@ internal class MiniAppDownloader(
             isManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
                     val response = apiClient.downloadFile(file)
-
-                    if (signatureVerifier?.verify(
-                                    manifest.first.publicKeyId,
-                                    miniAppInfo.version.versionId,
-                                    baseSavePath,
-                                    response.byteStream(),
-                                    manifest.second.signature.toString()
-                            )!!) {
-                        Log.d("AAAAA", "true")
-                    } else {
-                        Log.d("AAAAA", "false")
-                    }
-
                     storage.saveFile(file, baseSavePath, response.byteStream())
                 }
                 if (!apiClient.isPreviewMode) {
@@ -228,21 +215,16 @@ internal class MiniAppDownloader(
         }
     }
 
-    // TODO: implement spec when verification fails / passes
-//    private suspend fun isSignatureValid(
-//        miniAppInfo: MiniAppInfo,
-//        manifest: Pair<ManifestEntity, ManifestHeader>,
-//        dataByteArray: ByteArray
-//    ): Boolean {
-//        val hash = calculateHash(dataByteArray)
-//        val data = miniAppInfo.version.versionId + hash
-//
-//        return signatureVerifier?.verify(
-//            manifest.first.publicKeyId,
-//            data.byteInputStream(),
-//            manifest.second.signature.toString()
-//        )!!
-//    }
+    private suspend fun isSignatureValid(
+        filePath: String,
+        versionId: String,
+        manifest: Pair<ManifestEntity, ManifestHeader>
+    ) = signatureVerifier?.verify(
+            manifest.first.publicKeyId,
+            versionId,
+            apiClient.downloadFile(filePath).byteStream(),
+            manifest.second.signature.toString()
+    )!!
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 

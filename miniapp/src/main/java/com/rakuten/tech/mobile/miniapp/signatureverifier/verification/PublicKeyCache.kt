@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import java.io.File
 
@@ -62,12 +61,12 @@ internal class PublicKeyCache(
         file.writeText(Gson().toJson(keys))
     }
 
-    @SuppressWarnings("TooGenericExceptionCaught")
+    @SuppressWarnings("TooGenericExceptionCaught", "PrintStackTrace")
     private fun fetch(keyId: String): String? {
         val key = try {
             keyFetcher.fetch(keyId)
         } catch (ex: Exception) {
-            SignatureVerifier.callback?.let { it(ex) }
+            ex.printStackTrace()
             null
         }
         if (!key.isNullOrEmpty()) {
