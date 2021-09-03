@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowQrCodeErrorBind
  * This QRErrorWindow is the common class for qrcode/deeplink error.
  */
 class QRErrorWindow {
+    private var onClosed: (() -> Unit)? = null
 
     companion object {
         private var instance: QRErrorWindow? = null
@@ -44,32 +45,48 @@ class QRErrorWindow {
     }
 
     /** show error screen for miniApp no longer exist. */
-    fun showMiniAppNoLongerExistError() {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoLongerExist)
+    fun showMiniAppNoLongerExistError(onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(QRCodeErrorType.MiniAppNoLongerExist)
+            this.onClosed = onClosed
+        }
     }
 
     /** show error screen for does not have permission. */
-    fun showMiniAppPermissionError() {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPermission)
+    fun showMiniAppPermissionError(onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(QRCodeErrorType.MiniAppNoPermission)
+            this.onClosed = onClosed
+        }
     }
 
     /** show error screen for qrCode expired. */
-    fun showQRCodeExpiredError() {
-        if (instance != null) renderScreen(QRCodeErrorType.QRCodeExpire)
+    fun showQRCodeExpiredError(onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(QRCodeErrorType.QRCodeExpire)
+            this.onClosed = onClosed
+        }
     }
 
     /** show error screen for miniApp can not be previewed for specific version. */
-    fun showMiniAppPreviewError(versionCode: String) {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPreview, versionCode)
+    fun showMiniAppPreviewError(versionCode: String, onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(QRCodeErrorType.MiniAppNoPreview, versionCode)
+            this.onClosed = onClosed
+        }
     }
 
     /** show error screen for miniApp version do not exist. */
-    fun showMiniAppVersionError(versionCode: String) {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
+    fun showMiniAppVersionError(versionCode: String, onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
+            this.onClosed = onClosed
+        }
     }
 
     private fun dismissDialog() {
         dialog.cancel()
+        onClosed?.let { it() }
     }
 
     private enum class QRCodeErrorType {

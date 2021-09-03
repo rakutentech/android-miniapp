@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
 import com.rakuten.tech.mobile.sdkutils.okhttp.addHeaderInterceptor
+import okhttp3.CertificatePinner
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -31,6 +32,7 @@ internal fun createRetrofitClient(
 ): Retrofit {
     @Suppress("SpreadOperator")
     val httpClient = OkHttpClient.Builder()
+        .certificatePinner(createCertificatePinner())
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
         .build()
@@ -47,4 +49,12 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
         .build()
 
     chain.proceed(request)
+}
+
+private fun createCertificatePinner(): CertificatePinner {
+    return CertificatePinner.Builder()
+        .add(
+            "test.api-catalog-gateway-api.rakuten.co.jp",
+            "sha256/pLyeiBzfv0PHmMNKgels98qxdeEc/bCTVpOBejp2s9w="
+        ).build()
 }

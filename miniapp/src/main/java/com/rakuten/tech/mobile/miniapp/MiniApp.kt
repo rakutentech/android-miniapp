@@ -36,6 +36,14 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
+     * Fetches MiniappInfo by preview code.
+     * @return of type [MiniAppInfo] when obtained successfully
+     * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun getMiniAppInfoByPreviewCode(previewCode: String): MiniAppInfo
+
+    /**
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.

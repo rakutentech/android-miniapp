@@ -11,6 +11,9 @@ internal class MiniAppInfoFetcher(private var apiClient: ApiClient) : UpdatableA
     @Throws(MiniAppSdkException::class)
     suspend fun getInfo(appId: String) = apiClient.fetchInfo(appId)
 
+    @Throws(MiniAppSdkException::class)
+    suspend fun getInfoByPreviewCode(previewCode: String) = apiClient.fetchInfoByPreviewCode(previewCode)
+
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
     }

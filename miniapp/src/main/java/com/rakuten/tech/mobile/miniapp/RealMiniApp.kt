@@ -37,6 +37,11 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
+    override suspend fun getMiniAppInfoByPreviewCode(previewCode: String): MiniAppInfo = when {
+        previewCode.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> miniAppInfoFetcher.getInfoByPreviewCode(previewCode)
+    }
+
     override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
         miniAppCustomPermissionCache.readPermissions(miniAppId)
 

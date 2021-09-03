@@ -23,6 +23,7 @@ import kotlin.math.pow
 internal class ApiClient @VisibleForTesting constructor(
     retrofit: Retrofit,
     internal val isPreviewMode: Boolean,
+    private val subscriptionKey: String,
     private val hostId: String,
     private val appInfoApi: AppInfoApi = retrofit.create(AppInfoApi::class.java),
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
@@ -43,7 +44,8 @@ internal class ApiClient @VisibleForTesting constructor(
             subscriptionKey = subscriptionKey
         ),
         isPreviewMode = isPreviewMode,
-        hostId = rasProjectId
+        hostId = rasProjectId,
+        subscriptionKey = subscriptionKey
     )
 
     private val testPath = if (isPreviewMode) "preview" else ""
@@ -71,6 +73,17 @@ internal class ApiClient @VisibleForTesting constructor(
         } else {
             throw MiniAppHasNoPublishedVersionException(appId)
         }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchInfoByPreviewCode(previewCode: String): MiniAppInfo {
+        val request = appInfoApi.fetchInfoByPreviewCode(
+            hostId = hostId,
+            previewCode = previewCode
+        )
+        val info = requestExecutor.executeRequest(request)
+        // TODO: Have to do some checkings here
+        return info
     }
 
     @Throws(MiniAppSdkException::class)
