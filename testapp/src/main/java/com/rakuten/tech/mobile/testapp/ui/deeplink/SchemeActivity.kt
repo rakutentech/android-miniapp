@@ -29,6 +29,7 @@ class SchemeActivity : BaseActivity() {
                 CoroutineScope(Dispatchers.IO).launch{
                     try {
                         val miniAppInfo = MiniApp.instance().getMiniAppInfoByPreviewCode(previewCode = code)
+                        //TODO: if get the miniapp successfully open the app in demo app.
                     }catch (e: Exception){
                         Log.e("error", e.localizedMessage)
                         CoroutineScope(Dispatchers.Main).launch {
