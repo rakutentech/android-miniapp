@@ -37,6 +37,12 @@ class MiniappSdkInitializer : ContentProvider() {
         fun isPreviewMode(): Boolean
 
         /**
+         * Whether the sdk verifies signature of a Mini App.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification")
+        fun isRequireSignatureVerification(): Boolean
+
+        /**
          * This user agent specific info will be appended to the default user-agent.
          * It should be meaningful e.g. host-app-name/version.
          * @see [link][https://developer.chrome.com/multidevice/user-agent] for more information.
@@ -77,7 +83,8 @@ class MiniappSdkInitializer : ContentProvider() {
         rasProjectId = manifestConfig.rasProjectId(),
         subscriptionKey = manifestConfig.subscriptionKey(),
         hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-        isPreviewMode = manifestConfig.isPreviewMode()
+        isPreviewMode = manifestConfig.isPreviewMode(),
+        isRequireSignatureVerification = manifestConfig.isRequireSignatureVerification()
     )
 
     private fun executeMiniAppAnalytics(rasProjId: String) {

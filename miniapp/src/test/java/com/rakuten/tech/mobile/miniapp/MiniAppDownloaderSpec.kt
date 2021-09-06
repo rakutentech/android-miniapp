@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
@@ -25,13 +26,14 @@ import kotlin.test.assertTrue
 @Suppress("LargeClass")
 open class MiniAppDownloaderBaseSpec {
     internal val apiClient: ApiClient = mock()
+    private val miniAppAnalytics: MiniAppAnalytics = mock()
     internal val storage: MiniAppStorage = mock()
     internal val miniAppStatus: MiniAppStatus = mock()
     internal val verifier: CachedMiniAppVerifier = mock()
     internal val manifestApiCache: ManifestApiCache = mock()
-    internal val signatureVerifier: SignatureVerifier = mock()
+    private val signatureVerifier: SignatureVerifier = mock()
     internal lateinit var downloader: MiniAppDownloader
-    internal val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = TestCoroutineDispatcher()
     internal val testMiniApp = TEST_MA.copy(
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
@@ -51,6 +53,8 @@ open class MiniAppDownloaderBaseSpec {
         downloader = spy(
             MiniAppDownloader(
                 apiClient = apiClient,
+                miniAppAnalytics = miniAppAnalytics,
+                isRequireSignatureVerification = false,
                 initStorage = { storage },
                 initStatus = { miniAppStatus },
                 initVerifier = { verifier },

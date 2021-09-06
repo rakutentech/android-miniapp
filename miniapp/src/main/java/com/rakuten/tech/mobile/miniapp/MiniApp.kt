@@ -211,11 +211,18 @@ abstract class MiniApp internal constructor() {
                 subscriptionKey = miniAppSdkConfig.subscriptionKey
             )
 
+            val miniAppAnalytics = MiniAppAnalytics(
+                    miniAppSdkConfig.rasProjectId,
+                    miniAppSdkConfig.miniAppAnalyticsConfigList
+            )
+
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(
                     apiClient = apiClient,
+                    miniAppAnalytics = miniAppAnalytics,
+                    isRequireSignatureVerification = miniAppSdkConfig.isRequireSignatureVerification,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
                     initVerifier = { CachedMiniAppVerifier(context) },
@@ -226,10 +233,7 @@ abstract class MiniApp internal constructor() {
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
-                miniAppAnalytics = MiniAppAnalytics(
-                    miniAppSdkConfig.rasProjectId,
-                    miniAppSdkConfig.miniAppAnalyticsConfigList
-                )
+                miniAppAnalytics = miniAppAnalytics
             )
         }
     }

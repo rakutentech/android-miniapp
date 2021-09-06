@@ -27,6 +27,12 @@ class AppSettings private constructor(context: Context) {
             cache.isPreviewMode = isPreviewMode
         }
 
+    var isRequireSignatureVerification: Boolean
+        get() = cache.isRequireSignatureVerification ?: manifestConfig.isRequireSignatureVerification()
+        set(isRequireSignatureVerification) {
+            cache.isRequireSignatureVerification = isRequireSignatureVerification
+        }
+
     var projectId: String
         get() = cache.projectId ?: manifestConfig.rasProjectId()
         set(projectId) {
@@ -124,6 +130,7 @@ class AppSettings private constructor(context: Context) {
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
+            isRequireSignatureVerification = isRequireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(
@@ -157,6 +164,14 @@ private class Settings(context: Context) {
             else
                 null
         set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
+
+    var isRequireSignatureVerification: Boolean?
+        get() =
+            if (prefs.contains(IS_REQUIRE_SIGNATURE_VERIFICATION))
+                prefs.getBoolean(IS_REQUIRE_SIGNATURE_VERIFICATION, true)
+            else
+                null
+        set(isRequire) = prefs.edit().putBoolean(IS_REQUIRE_SIGNATURE_VERIFICATION, isRequire!!).apply()
 
     var projectId: String?
         get() = prefs.getString(APP_ID, null)
@@ -230,6 +245,7 @@ private class Settings(context: Context) {
 
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
+        private const val IS_REQUIRE_SIGNATURE_VERIFICATION = "is_require_signature_verification"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

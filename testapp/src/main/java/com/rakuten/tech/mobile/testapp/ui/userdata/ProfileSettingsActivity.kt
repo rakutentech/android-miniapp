@@ -26,10 +26,10 @@ import java.lang.Exception
 class ProfileSettingsActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
-    private lateinit var settings: AppSettings
     private lateinit var profileUrl: String
     private lateinit var profileUrlBase64: String
     private lateinit var binding: ProfileSettingsActivityBinding
+    private lateinit var settings: AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

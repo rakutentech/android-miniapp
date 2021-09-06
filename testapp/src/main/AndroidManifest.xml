@@ -91,6 +91,9 @@
             android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
             android:value="${isPreviewMode}" />
         <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification"
+            android:value="${isRequireSignatureVerification}" />
+        <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo"
             android:value="${hostAppUserAgentInfo}" />
         <meta-data

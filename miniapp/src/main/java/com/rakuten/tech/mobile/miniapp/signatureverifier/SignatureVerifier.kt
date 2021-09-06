@@ -47,6 +47,7 @@ internal class SignatureVerifier(
         // preparing hash using miniapp zip
         val zipFile = MiniAppZipUtil(basePath).createZip(inputStream)
         val hash = calculateSha256Hash(zipFile.inputStream().readBytes())
+
         zipFile.deleteRecursively()
 
         // preparing data byte stream

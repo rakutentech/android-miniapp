@@ -2,6 +2,9 @@ package com.rakuten.tech.mobile.miniapp
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.analytics.Actype
+import com.rakuten.tech.mobile.miniapp.analytics.Etype
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
@@ -21,6 +24,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -28,6 +32,8 @@ import java.net.URL
 @Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
+    private val miniAppAnalytics: MiniAppAnalytics,
+    private var isRequireSignatureVerification: Boolean,
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
@@ -115,20 +121,22 @@ internal class MiniAppDownloader(
             return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
             else {
-                Log.e(
-                    TAG, "Failed to verify the hash of the cached files. " +
-                            "The files will be deleted and the Mini App re-downloaded."
-                )
-                storage.removeApp(miniAppInfo.id)
-                miniAppStatus.setVersionDownloaded(
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId,
-                    false
-                )
+                removeMiniApp(miniAppInfo, "Failed to verify the hash of the cached files. " +
+                        "The files will be deleted and the Mini App re-downloaded.")
                 null
             }
         }
         return null
+    }
+
+    private fun removeMiniApp(miniAppInfo: MiniAppInfo, log: String) {
+        Log.e(TAG, log)
+        storage.removeApp(miniAppInfo.id)
+        miniAppStatus.setVersionDownloaded(
+                miniAppInfo.id,
+                miniAppInfo.version.versionId,
+                false
+        )
     }
 
     @VisibleForTesting
@@ -200,8 +208,25 @@ internal class MiniAppDownloader(
         when {
             isManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    val response = apiClient.downloadFile(file)
-                    storage.saveFile(file, baseSavePath, response.byteStream())
+                    if (isRequireSignatureVerification) {
+                        if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+                            storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
+                            miniAppAnalytics.sendAnalytics(
+                                    eType = Etype.CLICK,
+                                    actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                                    miniAppInfo = miniAppInfo
+                            )
+                        } else {
+                            removeMiniApp(miniAppInfo, "$SIGNATURE_VERIFICATION_ERR " +
+                                    "The files will be deleted.")
+                            miniAppAnalytics.sendAnalytics(
+                                    eType = Etype.CLICK,
+                                    actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                                    miniAppInfo = miniAppInfo
+                            )
+                            throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
+                        }
+                    } else storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
@@ -216,13 +241,13 @@ internal class MiniAppDownloader(
     }
 
     private suspend fun isSignatureValid(
-        filePath: String,
+        inputStream: InputStream,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>
     ) = signatureVerifier?.verify(
             manifest.first.publicKeyId,
             versionId,
-            apiClient.downloadFile(filePath).byteStream(),
+            inputStream,
             manifest.second.signature.toString()
     )!!
 
@@ -237,7 +262,12 @@ internal class MiniAppDownloader(
         this.apiClient = apiClient
     }
 
+    internal fun updateRequireSignatureVerification(isRequire: Boolean) {
+        this.isRequireSignatureVerification = isRequire
+    }
+
     companion object {
         private const val TAG = "MiniAppDownloader"
+        private const val SIGNATURE_VERIFICATION_ERR = "Failed to verify the signature of MiniApp's zip."
     }
 }
