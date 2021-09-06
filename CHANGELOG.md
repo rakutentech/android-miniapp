@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 3.X.X (2021-MM-DD)
+**SDK**
+- **Feature:** Added signature verification process before downloading a MiniApp. HostApp also can enable the settings of SDK to verify signature. Please see user-guide.
+
+**Sample App**
+- **Feature:** Added signature verification requirement enabling .
+
 ### 3.6.0 (2021-MM-DD)
 **Sample App**
 - **Feature:** User can edit contact name and email in App Settings.

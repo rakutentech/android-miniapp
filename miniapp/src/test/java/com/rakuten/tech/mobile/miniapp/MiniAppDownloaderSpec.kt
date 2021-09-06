@@ -33,7 +33,7 @@ open class MiniAppDownloaderBaseSpec {
     internal val manifestApiCache: ManifestApiCache = mock()
     private val signatureVerifier: SignatureVerifier = mock()
     internal lateinit var downloader: MiniAppDownloader
-    private val dispatcher = TestCoroutineDispatcher()
+    @ExperimentalCoroutinesApi private val dispatcher = TestCoroutineDispatcher()
     internal val testMiniApp = TEST_MA.copy(
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)

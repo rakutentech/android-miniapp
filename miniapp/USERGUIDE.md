@@ -43,7 +43,8 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | Field                        | Datatype| Manifest Key                                           | Optional   | Default  |
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
-| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ✅         | false     |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ✅         | true      |
+| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification`    | ✅         | true      |
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
@@ -68,6 +69,11 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.IsPreviewMode"
             android:value="${isPreviewMode}" />
+
+        <!-- Using for enabling SDK's settings to verify the signature of the Mini Apps -->
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification"
+            android:value="${isRequireSignatureVerification}" />
 
         <!-- Project ID for the Platform API -->
         <meta-data

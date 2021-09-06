@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient

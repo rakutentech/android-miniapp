@@ -262,6 +262,7 @@ internal class MiniAppDownloader(
         this.apiClient = apiClient
     }
 
+    @SuppressWarnings("FunctionMaxLength")
     internal fun updateRequireSignatureVerification(isRequire: Boolean) {
         this.isRequireSignatureVerification = isRequire
     }
