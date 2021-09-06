@@ -105,6 +105,7 @@ class QRErrorWindow {
         binding.tvErrorDescription.text = getTitleDescription(type, versionCode).second
         binding.tvErrorDescription.movementMethod = LinkMovementMethod.getInstance()
         binding.btnClose.setOnClickListener(listener)
+        dialog.setCancelable(false)
         dialog.show()
     }
 

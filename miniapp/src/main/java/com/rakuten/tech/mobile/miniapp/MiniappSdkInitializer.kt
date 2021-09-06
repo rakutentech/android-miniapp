@@ -11,6 +11,7 @@ import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
+import com.rakuten.tech.mobile.miniapp.preview.PreviewMiniApp
 
 /**
  * This initializes the SDK module automatically as the Content Providers are initialized
@@ -63,6 +64,11 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
+            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig)
+        )
+
+        PreviewMiniApp.init(
+            pubKey = "sha256/pLyeiBzfv0PHmMNKgels98qxdeEc/bCTVpOBejp2s9w=",
             miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig)
         )
 

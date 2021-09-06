@@ -32,7 +32,41 @@ internal fun createRetrofitClient(
 ): Retrofit {
     @Suppress("SpreadOperator")
     val httpClient = OkHttpClient.Builder()
-        .certificatePinner(createCertificatePinner())
+        .addHeaderInterceptor(*headers.asArray())
+        .addInterceptor(provideHeaderInterceptor())
+        .build()
+    return Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+        .baseUrl(baseUrl)
+        .client(httpClient)
+        .build()
+}
+
+internal fun createRetrofitClientWithCertPinner(
+    baseUrl: String,
+    rasProjectId: String,
+    subscriptionKey: String,
+    pubKey: String
+) = createRetrofitClientWithCertPinner(
+    baseUrl = baseUrl,
+    pubKey = pubKey,
+    headers = RasSdkHeaders(
+        appId = rasProjectId,
+        subscriptionKey = subscriptionKey,
+        sdkName = "MiniApp",
+        sdkVersion = BuildConfig.VERSION_NAME
+    )
+)
+
+@VisibleForTesting
+internal fun createRetrofitClientWithCertPinner(
+    baseUrl: String,
+    pubKey: String,
+    headers: RasSdkHeaders
+): Retrofit {
+    @Suppress("SpreadOperator")
+    val httpClient = OkHttpClient.Builder()
+        .certificatePinner(createCertificatePinner(baseUrl = baseUrl, pubKey = pubKey))
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
         .build()
@@ -51,10 +85,10 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
     chain.proceed(request)
 }
 
-private fun createCertificatePinner(): CertificatePinner {
+private fun createCertificatePinner(baseUrl: String, pubKey: String): CertificatePinner {
     return CertificatePinner.Builder()
-        .add(
-            "test.api-catalog-gateway-api.rakuten.co.jp",
-            "sha256/pLyeiBzfv0PHmMNKgels98qxdeEc/bCTVpOBejp2s9w="
-        ).build()
+        .add(baseUrl, pubKey)
+        .build()
 }
+
+
