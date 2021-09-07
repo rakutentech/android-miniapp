@@ -182,7 +182,7 @@ abstract class MiniApp internal constructor() {
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
      */
-    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig, isTemporaryUpdate: Boolean)
+    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig, isTemporaryUpdate: Boolean = false)
 
     companion object {
         @VisibleForTesting

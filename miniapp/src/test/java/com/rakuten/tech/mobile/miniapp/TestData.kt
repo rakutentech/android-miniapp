@@ -36,6 +36,7 @@ internal const val TEST_CALLBACK_ID = "test_callback_id"
 internal const val TEST_CALLBACK_VALUE = "test_callback_value"
 
 internal const val TEST_AD_UNIT_ID = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
+internal const val TEST_PUBLIC_KEY_SSL = "sha256/xxxxxxxxxxxxxxxx/xxxxxxxxxx"
 
 private val FILE_SEPARATOR = File.separator
 internal val VALID_FILE_URL_PATH =

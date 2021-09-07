@@ -14,4 +14,4 @@ import kotlinx.android.parcel.Parcelize
 data class MiniAppAnalyticsConfig(
     val acc: Int,
     val aid: Int
-): Parcelable
+) : Parcelable

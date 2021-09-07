@@ -19,6 +19,6 @@ class MiniAppSpec {
         miniAppCompanion.instance = miniApp
         miniAppCompanion.instance(miniAppSdkConfig)
 
-        verify(miniApp, times(1)).updateConfiguration(miniAppSdkConfig, isTemporaryUpdate)
+        verify(miniApp, times(1)).updateConfiguration(miniAppSdkConfig)
     }
 }

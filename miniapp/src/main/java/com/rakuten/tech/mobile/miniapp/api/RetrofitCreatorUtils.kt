@@ -40,7 +40,7 @@ internal fun createRetrofitClient(
     var httpClientBuilder = OkHttpClient.Builder()
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
-    if(pubKey != "") {
+    if (pubKey != "") {
         Log.e("Pinning key", pubKey)
         httpClientBuilder.certificatePinner(
             createCertificatePinner(
@@ -72,11 +72,11 @@ private fun createCertificatePinner(baseUrl: String, pubKey: String): Certificat
         .build()
 }
 
-private fun extractBaseUrl(url: String): String{
+private fun extractBaseUrl(url: String): String {
     return try {
         val url = URI.create(url).toURL()
         url.authority
-    }catch (e: MalformedURLException){
+    } catch (e: MalformedURLException) {
         ""
     }
 }

@@ -138,7 +138,7 @@ internal class RealMiniApp(
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
-            if(!isTemporaryUpdate)
+            if (!isTemporaryUpdate)
                 apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
         }
 
@@ -147,7 +147,7 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        if(!isTemporaryUpdate)
+        if (!isTemporaryUpdate)
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
