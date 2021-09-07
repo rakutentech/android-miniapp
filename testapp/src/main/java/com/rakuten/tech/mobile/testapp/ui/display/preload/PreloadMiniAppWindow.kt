@@ -136,7 +136,7 @@ class PreloadMiniAppWindow(
     ) {
         val bottomText = StringBuilder()
 
-        // add scopes requested for the RAE token
+        // add scopes requested for the RAE audience
         manifestPermissions.find {
             it.type == MiniAppCustomPermissionType.ACCESS_TOKEN
         }.let {
