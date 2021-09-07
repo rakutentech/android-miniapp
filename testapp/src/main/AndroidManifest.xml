@@ -11,6 +11,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
+        android:networkSecurityConfig="@xml/network_policy"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
