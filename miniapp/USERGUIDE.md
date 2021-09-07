@@ -44,7 +44,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 |------------------------------|---------|--------------------------------------------------------|----------- |--------- |
 | Base URL                     | String  | `com.rakuten.tech.mobile.miniapp.BaseUrl`              | ❌         | 🚫        |
 | Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsPreviewMode`        | ✅         | true      |
-| Is Preview Mode              | Boolean | `com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification`    | ✅         | true      |
+| Is Require Signature Verification      | Boolean | `com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification`    | ✅         | true      |
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
