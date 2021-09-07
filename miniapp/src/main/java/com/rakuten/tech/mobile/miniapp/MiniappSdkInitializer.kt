@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.manifestconfig.annotations.MetaData
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
-import com.rakuten.tech.mobile.miniapp.preview.PreviewMiniApp
 
 /**
  * This initializes the SDK module automatically as the Content Providers are initialized
@@ -56,6 +55,12 @@ class MiniappSdkInitializer : ContentProvider() {
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectSubscriptionKey")
         fun subscriptionKey(): String
+
+        /**
+         * Public Key for the ssl pinning.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.ras.SSLPinningPublicKey")
+        fun sslPinningPublicKey(): String
     }
 
     override fun onCreate(): Boolean {
@@ -64,11 +69,6 @@ class MiniappSdkInitializer : ContentProvider() {
 
         MiniApp.init(
             context = context,
-            miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig)
-        )
-
-        PreviewMiniApp.init(
-            pubKey = "sha256/pLyeiBzfv0PHmMNKgels98qxdeEc/bCTVpOBejp2s9w=",
             miniAppSdkConfig = createMiniAppSdkConfig(manifestConfig)
         )
 
@@ -83,7 +83,8 @@ class MiniappSdkInitializer : ContentProvider() {
         rasProjectId = manifestConfig.rasProjectId(),
         subscriptionKey = manifestConfig.subscriptionKey(),
         hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-        isPreviewMode = manifestConfig.isPreviewMode()
+        isPreviewMode = manifestConfig.isPreviewMode(),
+        sslPinningPublicKey = manifestConfig.sslPinningPublicKey()
     )
 
     private fun executeMiniAppAnalytics(rasProjId: String) {

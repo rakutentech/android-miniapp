@@ -16,6 +16,15 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowQrCodeErrorBind
 /**
  * This QRErrorWindow is the common class for qrcode/deeplink error.
  */
+
+enum class QRErrorType{
+    MINIAPP_NO_LONGER_EXIST,
+    MINIAPP_PERMISSION_ERROR,
+    MINIAPP_QR_CODE_EXPIRED,
+    MINIAPP_PREVIEW_ERROR,
+    MINIAPP_VERSION_ERROR
+}
+
 class QRErrorWindow {
     private var onClosed: (() -> Unit)? = null
 

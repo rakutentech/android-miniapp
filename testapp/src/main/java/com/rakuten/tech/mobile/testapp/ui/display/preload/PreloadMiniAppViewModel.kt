@@ -11,9 +11,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PreloadMiniAppViewModel constructor(private val miniApp: MiniApp) : ViewModel() {
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
-
+class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
     private val _manifestErrorData = MutableLiveData<String>()
 

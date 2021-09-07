@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -12,11 +13,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.GsonBuilder
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.load
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class PreloadMiniAppWindow(
     private val context: Context,
@@ -26,13 +30,21 @@ class PreloadMiniAppWindow(
     private lateinit var binding: WindowPreloadMiniappBinding
     private lateinit var viewModel: PreloadMiniAppViewModel
     private lateinit var lifecycleOwner: LifecycleOwner
+    private lateinit var miniApp: MiniApp
     private var miniAppInfo: MiniAppInfo? = null
     private var miniAppId: String = ""
     private var versionId: String = ""
     private val permissionAdapter = PreloadMiniAppPermissionAdapter()
 
-    fun initiate(appInfo: MiniAppInfo?, miniAppId: String, versionId: String, lifecycleOwner: LifecycleOwner) {
+    fun initiate(
+        appInfo: MiniAppInfo?,
+        miniAppId: String,
+        versionId: String,
+        lifecycleOwner: LifecycleOwner,
+        miniApp: MiniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+    ) {
         this.lifecycleOwner = lifecycleOwner
+        this.miniApp = miniApp
 
         if (appInfo != null) {
             this.miniAppInfo = appInfo
@@ -76,9 +88,8 @@ class PreloadMiniAppWindow(
         binding.listPreloadPermission.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
-
-        viewModel =
-            ViewModelProvider.NewInstanceFactory().create(PreloadMiniAppViewModel::class.java)
+        val factory = PreloadMiniAppFactory(miniApp = miniApp)
+        viewModel = factory.create(PreloadMiniAppViewModel::class.java)
                 .apply {
                     miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
                         if (apiManifest != null) onShowManifest(apiManifest)

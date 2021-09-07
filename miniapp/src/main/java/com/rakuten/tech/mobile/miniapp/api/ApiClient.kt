@@ -2,11 +2,8 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
@@ -18,6 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.http.Url
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.security.PublicKey
 import kotlin.math.pow
 
 internal class ApiClient @VisibleForTesting constructor(
@@ -35,10 +33,12 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasProjectId: String,
         subscriptionKey: String,
-        isPreviewMode: Boolean = false
+        isPreviewMode: Boolean = false,
+        sslPublicKey: String = ""
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
+            pubKey = sslPublicKey,
             rasProjectId = rasProjectId,
             subscriptionKey = subscriptionKey
         ),
@@ -59,6 +59,7 @@ internal class ApiClient @VisibleForTesting constructor(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
+
         val request = appInfoApi.fetchInfo(
             hostId = hostId,
             miniAppId = appId,
@@ -74,7 +75,7 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchInfoByPreviewCode(previewCode: String): MiniAppInfo {
+    suspend fun fetchInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo {
         val request = appInfoApi.fetchInfoByPreviewCode(
             hostId = hostId,
             previewCode = previewCode
@@ -82,9 +83,9 @@ internal class ApiClient @VisibleForTesting constructor(
         val info = requestExecutor.executeRequest(request)
 
         if (info.miniapp != null) {
-            return info.miniapp
+            return info
         } else {
-            throw MiniAppHasNoPublishedVersionException(previewCode)
+            throw MiniAppNotFoundException("")
         }
     }
 
@@ -180,6 +181,7 @@ internal class RetrofitRequestExecutor(
                 )
             )
             404 -> throw MiniAppNotFoundException(response.message())
+            400 -> throw MiniAppHostException(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConverter(retrofit)
