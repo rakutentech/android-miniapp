@@ -41,6 +41,10 @@ class PreloadMiniAppPermissionAdapter :
             holder.permissionReason.visibility = View.GONE
         else holder.permissionReason.visibility = View.VISIBLE
 
+        if (manifestPermissions[position].optionalInfo.isNotEmpty())
+            holder.permissionOptionalInfo.text = manifestPermissions[position].optionalInfo
+        else holder.permissionOptionalInfo.visibility = View.GONE
+
         holder.permissionSwitch.setOnCheckedChangeListener { _, _ ->
             manifestPermissionPairs.removeAt(position)
             manifestPermissionPairs.add(
@@ -69,6 +73,7 @@ class PreloadMiniAppPermissionAdapter :
         val permissionStatus: TextView = itemView.manifestPermissionStatus
         val permissionSwitch: SwitchCompat = itemView.manifestPermissionSwitch
         val permissionReason: TextView = itemView.permissionReason
+        val permissionOptionalInfo: TextView = itemView.permissionOptionalInfo
     }
 
     private fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {

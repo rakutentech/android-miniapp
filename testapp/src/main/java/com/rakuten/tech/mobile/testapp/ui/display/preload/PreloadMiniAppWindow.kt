@@ -123,20 +123,8 @@ class PreloadMiniAppWindow(
             manifestPermissions.add(permission)
         }
 
-        permissionAdapter.addManifestPermissionList(manifestPermissions)
-        prepareBottomText(binding.preloadMiniAppMetaData, manifest, manifestPermissions)
-
-        launchScreen()
-    }
-
-    private fun prepareBottomText(
-        bottomTextView: TextView,
-        manifest: MiniAppManifest,
-        manifestPermissions: List<PreloadManifestPermission>
-    ) {
-        val bottomText = StringBuilder()
-
         // add scopes requested for the RAE audience
+        var scope = ""
         manifestPermissions.find {
             it.type == MiniAppCustomPermissionType.ACCESS_TOKEN
         }.let {
@@ -145,19 +133,30 @@ class PreloadMiniAppWindow(
                     scope.audience == "rae"
                 }.let {
                     val scopes: List<String> = it?.scopes ?: emptyList()
-                    bottomText.append(LABEL_RAE_SCOPES).append("\n").append(
-                        scopes.joinToString(
+                    scope = scopes.joinToString(
                             separator = ", ",
                             prefix = "",
                             postfix = "",
                             truncated = "",
                             limit = scopes.size
-                        )
-                    ).append("\n\n")
+                    )
                 }
+
+                it?.optionalInfo = "(rae scopes): $scope"
             }
         }
 
+        permissionAdapter.addManifestPermissionList(manifestPermissions)
+        prepareBottomText(binding.preloadMiniAppMetaData, manifest)
+
+        launchScreen()
+    }
+
+    private fun prepareBottomText(
+        bottomTextView: TextView,
+        manifest: MiniAppManifest
+    ) {
+        val bottomText = StringBuilder()
         val metaData = toPrettyMetadata(manifest.customMetaData)
         if (!metaData.contentEquals("{}"))
             bottomText.append(LABEL_CUSTOM_METADATA + toPrettyMetadata(manifest.customMetaData))
