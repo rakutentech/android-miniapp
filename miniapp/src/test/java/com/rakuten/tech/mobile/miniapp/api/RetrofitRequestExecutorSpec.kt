@@ -127,7 +127,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should append default message when server doesn't return error message`() =
         runBlockingTest {
-            mockServer.enqueue(MockResponse().setResponseCode(400).setBody("{}"))
+            mockServer.enqueue(MockResponse().setResponseCode(406).setBody("{}"))
 
             try {
                 createRequestExecutor().executeRequest(createApi().fetch())
@@ -202,7 +202,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     }
 
     private fun createErrorResponse(
-        code: Int = 400,
+        code: Int = 406,
         message: String = TEST_ERROR_MSG
     ): MockResponse = MockResponse()
         .setResponseCode(code)

@@ -181,6 +181,7 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
+     * [isTemporaryUpdate] for use the [MiniAppSdkConfig] temporarily.
      */
     internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig, isTemporaryUpdate: Boolean = false)
 

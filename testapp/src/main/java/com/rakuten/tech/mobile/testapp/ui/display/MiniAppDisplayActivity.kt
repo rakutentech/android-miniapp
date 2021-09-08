@@ -116,6 +116,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppSdkConfig = AppSettings.instance.miniAppSettings
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
+
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
         viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
             miniAppView.observe(this@MiniAppDisplayActivity, Observer {
