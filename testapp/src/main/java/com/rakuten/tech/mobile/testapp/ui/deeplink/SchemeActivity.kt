@@ -1,19 +1,15 @@
 package com.rakuten.tech.mobile.testapp.ui.deeplink
 
 import android.os.Bundle
-import android.util.Log
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
-import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorType
+import com.rakuten.tech.mobile.testapp.ui.display.error.QRCodeErrorType
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -55,13 +51,13 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                             }
                         }
                     }catch (e: MiniAppNotFoundException){
-                        showErrorDialog(QRErrorType.MINIAPP_NO_LONGER_EXIST)
+                        showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     }
                     catch (e: MiniAppHostException){
-                        showErrorDialog(QRErrorType.MINIAPP_PERMISSION_ERROR)
+                        showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
                     }
                     catch (e: MiniAppSdkException){
-                        showErrorDialog(QRErrorType.MINIAPP_NO_LONGER_EXIST)
+                        showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     }
                 }
             }
@@ -79,24 +75,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         finish()
     }
 
-    private fun showErrorDialog(type: QRErrorType, miniAppVersion: String = ""){
+    private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = ""){
         Coroutines.main {
-            when(type){
-                QRErrorType.MINIAPP_NO_LONGER_EXIST -> QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppNoLongerExistError(){
-                    finish()
-                }
-                QRErrorType.MINIAPP_PERMISSION_ERROR -> QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppPermissionError(){
-                    finish()
-                }
-                QRErrorType.MINIAPP_QR_CODE_EXPIRED -> QRErrorWindow.getInstance(this@SchemeActivity).showQRCodeExpiredError(){
-                    finish()
-                }
-                QRErrorType.MINIAPP_PREVIEW_ERROR -> QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppPreviewError(miniAppVersion){
-                    finish()
-                }
-                QRErrorType.MINIAPP_VERSION_ERROR -> QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppVersionError(miniAppVersion){
-                    finish()
-                }
+            QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppQRCodeError(errorType = type){
+                finish()
             }
         }
     }
