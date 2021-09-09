@@ -1,13 +1,10 @@
 package com.rakuten.tech.mobile.miniapp
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class MiniAppSpec {
 
     @Test

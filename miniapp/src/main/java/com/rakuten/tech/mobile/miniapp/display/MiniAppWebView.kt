@@ -13,15 +13,17 @@ import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppDownloadNavigator
+import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
+private const val TAG = "MiniAppWebView"
 
 @SuppressLint("SetJavaScriptEnabled")
 internal open class MiniAppWebView(
@@ -45,6 +47,7 @@ internal open class MiniAppWebView(
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
     protected var miniAppId = miniAppInfo.id
+    private val defaultFileDownloader = WebViewFileDownloader(context, File("${context.cacheDir}/mini_app_download"))
 
     @VisibleForTesting
     internal val externalResultHandler = ExternalResultHandler().apply {
@@ -59,6 +62,20 @@ internal open class MiniAppWebView(
     init {
         if (this::class == MiniAppWebView::class)
             commonInit()
+
+        setDownloadListener { url: String, userAgent: String, contentDisposition: String,
+                              mimetype: String, contentLength: Long ->
+            if (miniAppNavigator is MiniAppDownloadNavigator) {
+                (miniAppNavigator as MiniAppDownloadNavigator)
+                    .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+            } else {
+                defaultFileDownloader.onDownloadStart(
+                    url = url,
+                    mimetype = mimetype,
+                    onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
+                )
+            }
+        }
     }
 
     @Suppress("LongMethod")
@@ -111,6 +128,7 @@ internal open class MiniAppWebView(
 
     fun destroyView() {
         stopLoading()
+        defaultFileDownloader.cleanup()
         destroy()
     }
 
