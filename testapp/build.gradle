@@ -54,7 +54,7 @@ android {
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName + " DEBUG",
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("CERTIFICATE_PUBLIC_KEY") ?: ""
+            sslPinningPublicKey     : property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -67,7 +67,7 @@ android {
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName,
             ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("CERTIFICATE_PUBLIC_KEY") ?: ""
+            sslPinningPublicKey     : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: ""
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')

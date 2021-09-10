@@ -41,7 +41,6 @@ internal fun createRetrofitClient(
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
     if (pubKey != "") {
-        Log.e("Pinning key", pubKey)
         httpClientBuilder.certificatePinner(
             createCertificatePinner(
                 baseUrl = baseUrl,

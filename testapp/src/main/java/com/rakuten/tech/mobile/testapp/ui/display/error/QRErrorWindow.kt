@@ -56,7 +56,7 @@ class QRErrorWindow {
     /**
      * show error screen depending on the type.
      * [errorType] type of error.
-     * [onClosed]  callback when the window closes.
+     * [onClosed] callback when the window closes.
      */
     fun showMiniAppQRCodeError(errorType: QRCodeErrorType, onClosed: (()->Unit)? = null) {
         if (instance != null) {
