@@ -4,6 +4,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -21,7 +22,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
-        miniAppAnalytics: MiniAppAnalytics
+        miniAppAnalytics: MiniAppAnalytics,
+        ratDispatcher: MessageBridgeRatDispatcher
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
         miniAppInfo = miniAppInfo,
@@ -32,7 +34,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
-        miniAppAnalytics = miniAppAnalytics
+        miniAppAnalytics = miniAppAnalytics,
+        ratDispatcher = ratDispatcher
     )
 
     fun createMiniAppDisplay(
@@ -43,7 +46,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
-        miniAppAnalytics: MiniAppAnalytics
+        miniAppAnalytics: MiniAppAnalytics,
+        ratDispatcher: MessageBridgeRatDispatcher
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
@@ -53,6 +57,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
-        miniAppAnalytics = miniAppAnalytics
+        miniAppAnalytics = miniAppAnalytics,
+        ratDispatcher = ratDispatcher
     )
 }
