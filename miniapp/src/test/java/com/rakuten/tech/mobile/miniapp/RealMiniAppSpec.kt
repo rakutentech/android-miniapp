@@ -176,7 +176,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     /** region: RealMiniApp.updateConfiguration */
     @Test
     fun `should update ApiClient when configuration updated`() {
-        realMiniApp.updateConfiguration(miniAppSdkConfig)
+        realMiniApp.updateConfiguration(miniAppSdkConfig, setConfigAsDefault = true)
 
         verify(miniAppDownloader).updateApiClient(apiClient)
         verify(miniAppInfoFetcher).updateApiClient(apiClient)
@@ -186,7 +186,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     fun `should not create ApiClient for existing configuration`() {
         val miniApp = Mockito.spy(realMiniApp)
 
-        realMiniApp.updateConfiguration(miniAppSdkConfig)
+        realMiniApp.updateConfiguration(miniAppSdkConfig, setConfigAsDefault = true)
 
         verify(miniApp, times(0)).createApiClient(miniAppSdkConfig)
     }
@@ -204,7 +204,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             miniAppAnalyticsConfigList = TEST_HA_ANALYTICS_CONFIGS
         )
 
-        miniApp.updateConfiguration(miniAppSdkConfig)
+        miniApp.updateConfiguration(miniAppSdkConfig, setConfigAsDefault = true)
 
         verify(miniApp).createApiClient(miniAppSdkConfig)
     }
