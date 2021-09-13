@@ -80,7 +80,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:nestedScrollingEnabled="false"
-          tools:listitem="@layout/item_list_custom_permission" />
+          tools:listitem="@layout/item_list_manifest_permission" />
 
         <TextView
           android:id="@+id/preloadMiniAppMetaData"
