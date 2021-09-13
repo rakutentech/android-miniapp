@@ -68,8 +68,8 @@
             android:label="@string/action_points" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
-            android:permission="android.permission.CAMERA"
-            android:launchMode="singleTop"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
+            android:launchMode="singleTop"
+            android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter
                 android:autoVerify="true"
                 android:label="@string/lb_filter_view_miniapp">

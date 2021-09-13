@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig

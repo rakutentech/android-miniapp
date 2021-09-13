@@ -47,6 +47,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
+| Public Key For SSL Pinning   | String  | `com.rakuten.tech.mobile.ras.SSLPinningPublicKey`      | ✅         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.

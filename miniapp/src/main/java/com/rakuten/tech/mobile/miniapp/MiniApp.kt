@@ -195,11 +195,12 @@ abstract class MiniApp internal constructor() {
          * as defined in AndroidManifest.xml. For usual scenarios the default config suffices.
          * However, should it be required to change the config at runtime for QA purpose or similar,
          * another [MiniAppSdkConfig] can be provided for customization.
+         * [setConfigAsDefault] is to use the config as default.
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(settings: MiniAppSdkConfig = defaultConfig, isTemporaryUpdate: Boolean = false): MiniApp =
-            instance.apply { updateConfiguration(settings, isTemporaryUpdate) }
+        fun instance(settings: MiniAppSdkConfig = defaultConfig, setConfigAsDefault: Boolean = true): MiniApp =
+            instance.apply { updateConfiguration(settings, setConfigAsDefault) }
 
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
             defaultConfig = miniAppSdkConfig

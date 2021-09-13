@@ -46,7 +46,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                                     it.id,
                                     it.version.versionId,
                                     this@SchemeActivity,
-                                    MiniApp.instance(miniAppSdkConfig, isTemporaryUpdate = true)
+                                    MiniApp.instance(miniAppSdkConfig, setConfigAsDefault = false)
                                 )
                             }
                         }

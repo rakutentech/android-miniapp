@@ -134,11 +134,11 @@ internal class RealMiniApp(
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
-    override fun updateConfiguration(newConfig: MiniAppSdkConfig, isTemporaryUpdate: Boolean) {
+    override fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
-            if (!isTemporaryUpdate)
+            if (setConfigAsDefault)
                 apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
         }
 
@@ -147,7 +147,7 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        if (!isTemporaryUpdate)
+        if (setConfigAsDefault)
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
