@@ -79,7 +79,8 @@ open class BaseWebViewSpec {
         miniAppWebChromeClient = webChromeClient,
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = mock(),
-        queryParams = TEST_URL_PARAMS
+        queryParams = TEST_URL_PARAMS,
+        ratDispatcher = mock()
     )
 }
 
@@ -99,7 +100,8 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 miniAppWebChromeClient = webChromeClient,
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                 downloadedManifestCache = mock(),
-                queryParams = TEST_URL_PARAMS
+                queryParams = TEST_URL_PARAMS,
+                ratDispatcher = mock()
         )
     }
 
@@ -174,7 +176,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
-            queryParams = TEST_URL_PARAMS
+            queryParams = TEST_URL_PARAMS,
+            ratDispatcher = mock()
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -226,11 +229,13 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             mock(),
             mock(),
             mock(),
-            TEST_URL_PARAMS
+            TEST_URL_PARAMS,
+            mock()
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
-            miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS)
+            miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS,
+            mock())
         miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
@@ -351,7 +356,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             miniAppWebChromeClient = webChromeClient,
             miniAppCustomPermissionCache = miniAppCustomPermissionCache,
             downloadedManifestCache = mock(),
-            queryParams = TEST_URL_PARAMS
+            queryParams = TEST_URL_PARAMS,
+            ratDispatcher = mock()
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader? = (displayer.webViewClient as MiniAppWebViewClient).loader

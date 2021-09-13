@@ -25,7 +25,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
-@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass", "ComplexMethod")
+@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass", "ComplexMethod", "LongParameterList")
 /** Bridge interface for communicating with mini app. **/
 open class MiniAppMessageBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -37,7 +37,8 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
-
+    @VisibleForTesting
+    internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
 
@@ -46,7 +47,8 @@ open class MiniAppMessageBridge {
         webViewListener: WebViewListener,
         customPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
-        miniAppId: String
+        miniAppId: String,
+        ratDispatcher: MessageBridgeRatDispatcher
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -54,6 +56,7 @@ open class MiniAppMessageBridge {
         this.customPermissionCache = customPermissionCache
         this.downloadedManifestCache = downloadedManifestCache
         this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
+        this.ratDispatcher = ratDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
@@ -127,7 +130,6 @@ open class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
-
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
@@ -151,6 +153,8 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
         }
+        if (this::ratDispatcher.isInitialized)
+            ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
 
     /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer19]. **/

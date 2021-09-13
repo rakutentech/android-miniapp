@@ -1,6 +1,9 @@
 ## CHANGELOG
 
 ### 3.6.0 (2021-MM-DD)
+**SDK**
+- **Feature:** Added additional rat events to track sdk feature usage.
+
 **Sample App**
 - **Feature:** User can edit contact name and email in App Settings.
 - **Feature:** User can see access token scopes requested for the RAE audience in first-time screen.
