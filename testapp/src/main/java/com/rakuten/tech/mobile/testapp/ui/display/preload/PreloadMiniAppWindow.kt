@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.testapp.ui.display.preload
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -14,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.load
+import java.lang.StringBuilder
 
 class PreloadMiniAppWindow(
     private val context: Context,
@@ -119,11 +123,46 @@ class PreloadMiniAppWindow(
             manifestPermissions.add(permission)
         }
 
+        // add scopes requested for the RAE audience
+        var scope = ""
+        manifestPermissions.find {
+            it.type == MiniAppCustomPermissionType.ACCESS_TOKEN
+        }.let {
+            if (manifest.accessTokenPermissions.isNotEmpty()) {
+                manifest.accessTokenPermissions.find { scope ->
+                    scope.audience == "rae"
+                }.let {
+                    val scopes: List<String> = it?.scopes ?: emptyList()
+                    scope = scopes.joinToString(
+                            separator = ", ",
+                            prefix = "",
+                            postfix = "",
+                            truncated = "",
+                            limit = scopes.size
+                    )
+                }
+
+                it?.optionalInfo = "(rae scopes): $scope"
+            }
+        }
+
         permissionAdapter.addManifestPermissionList(manifestPermissions)
-        binding.preloadMiniAppMetaData.text =
-            LABEL_CUSTOM_METADATA + toPrettyMetadata(manifest.customMetaData)
+        prepareBottomText(binding.preloadMiniAppMetaData, manifest)
 
         launchScreen()
+    }
+
+    private fun prepareBottomText(
+        bottomTextView: TextView,
+        manifest: MiniAppManifest
+    ) {
+        val bottomText = StringBuilder()
+        val metaData = toPrettyMetadata(manifest.customMetaData)
+        if (!metaData.contentEquals("{}"))
+            bottomText.append(LABEL_CUSTOM_METADATA + toPrettyMetadata(manifest.customMetaData))
+
+        if (bottomText.toString().isNotEmpty()) bottomTextView.text = bottomText.toString()
+        else bottomTextView.visibility = View.GONE
     }
 
     private fun onAccept() {
@@ -137,7 +176,7 @@ class PreloadMiniAppWindow(
     }
 
     private fun toPrettyMetadata(metadata: Map<String, String>) =
-        GsonBuilder().setPrettyPrinting().create().toJson(metadata)
+        GsonBuilder().setPrettyPrinting().create().toJson(metadata).toString()
 
     interface PreloadMiniAppLaunchListener {
         fun onPreloadMiniAppResponse(isAccepted: Boolean)
@@ -146,6 +185,7 @@ class PreloadMiniAppWindow(
     private companion object {
         const val LABEL_VERSION = "Version: "
         const val LABEL_CUSTOM_METADATA = "Custom MetaData: "
+        const val LABEL_RAE_SCOPES = "RAE Access Token Scopes: "
         const val ERR_NO_INFO = "No info found for this miniapp!"
     }
 }

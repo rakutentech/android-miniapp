@@ -51,6 +51,17 @@
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_medium_14"
         tools:text="Manifest Permission Reason" />
+
+      <TextView
+          android:id="@+id/permissionOptionalInfo"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="@dimen/small_8"
+          android:padding="@dimen/small_4"
+          android:textColor="@color/colorPrimaryDark"
+          android:textSize="@dimen/text_medium_14"
+          tools:text="Optional Info"
+          tools:visibility="visible" />
     </LinearLayout>
 
       <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
