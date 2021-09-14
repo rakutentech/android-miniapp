@@ -29,6 +29,13 @@ class MiniAppNotFoundException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
+ * Exception which is thrown when the provided project ID
+ * does not have any mini app exist on the server.
+ */
+class MiniAppHostException(serverMessage: String) :
+    MiniAppSdkException("$serverMessage: Only the correct host has access to this token.")
+
+/**
  * Exception which is thrown when cannot verify device keystore.
  */
 class MiniAppVerificationException(message: String?) :

@@ -14,8 +14,10 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
@@ -54,22 +56,30 @@ class MiniAppDisplayActivity : BaseActivity() {
         private val appIdTag = "app_id_tag"
         private val miniAppTag = "mini_app_tag"
         private val appUrlTag = "app_url_tag"
+        private val sdkConfigTag = "sdk_config_tag"
+        private val updateTypeTag = "update_type_tag"
 
-        fun start(context: Context, appId: String) {
+        fun start(context: Context, appId: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
+                putExtra(updateTypeTag, updatetype)
+                miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
 
-        fun startUrl(context: Context, appUrl: String) {
+        fun startUrl(context: Context, appUrl: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appUrlTag, appUrl)
+                putExtra(updateTypeTag, updatetype)
+                miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
 
-        fun start(context: Context, miniAppInfo: MiniAppInfo) {
+        fun start(context: Context, miniAppInfo: MiniAppInfo, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(miniAppTag, miniAppInfo)
+                putExtra(updateTypeTag, updatetype)
+                miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
     }
@@ -99,28 +109,32 @@ class MiniAppDisplayActivity : BaseActivity() {
         val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
+        var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
+        val updateType = intent.getBooleanExtra(updateTypeTag, false)
+
+        if(miniAppSdkConfig == null)
+            miniAppSdkConfig = AppSettings.instance.miniAppSettings
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
-        viewModel = ViewModelProvider.NewInstanceFactory()
-            .create(MiniAppDisplayViewModel::class.java).apply {
+        val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
+        viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
+            miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+                if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+                    WebView.setWebContentsDebuggingEnabled(true)
+                //action: display webview
+                addLifeCycleObserver(lifecycle)
+                setContentView(it)
+            })
 
-                miniAppView.observe(this@MiniAppDisplayActivity, Observer {
-                    if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
-                        WebView.setWebContentsDebuggingEnabled(true)
-                    //action: display webview
-                    addLifeCycleObserver(lifecycle)
-                    setContentView(it)
-                })
+            errorData.observe(this@MiniAppDisplayActivity, Observer {
+                Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
+            })
 
-                errorData.observe(this@MiniAppDisplayActivity, Observer {
-                    Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-                })
-
-                isLoading.observe(this@MiniAppDisplayActivity, Observer {
-                    toggleProgressLoading(it)
-                })
-            }
+            isLoading.observe(this@MiniAppDisplayActivity, Observer {
+                toggleProgressLoading(it)
+            })
+        }
 
         setupMiniAppMessageBridge()
 

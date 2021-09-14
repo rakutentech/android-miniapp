@@ -68,6 +68,7 @@
             android:label="@string/action_points" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
+            android:launchMode="singleTop"
             android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter
                 android:autoVerify="true"
@@ -111,6 +112,9 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
             android:value="${ratEndpoint}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.ras.SSLPinningPublicKey"
+            android:value="${sslPinningPublicKey}" />
     </application>
 
 </manifest>

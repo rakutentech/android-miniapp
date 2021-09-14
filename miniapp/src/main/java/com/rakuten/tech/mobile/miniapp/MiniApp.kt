@@ -37,6 +37,14 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun listMiniApp(): List<MiniAppInfo>
 
     /**
+     * Fetches MiniappInfo by preview code.
+     * @return of type [MiniAppInfo] when obtained successfully
+     * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun getMiniAppInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo
+
+    /**
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a [MiniAppDisplay] when successful.
      * @param appId mini app id.
@@ -174,8 +182,9 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Update SDK interaction interface based on [MiniAppSdkConfig] configuration.
+     * [setConfigAsDefault] for use the [MiniAppSdkConfig] as default.
      */
-    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig)
+    internal abstract fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean)
 
     companion object {
         @VisibleForTesting
@@ -187,11 +196,12 @@ abstract class MiniApp internal constructor() {
          * as defined in AndroidManifest.xml. For usual scenarios the default config suffices.
          * However, should it be required to change the config at runtime for QA purpose or similar,
          * another [MiniAppSdkConfig] can be provided for customization.
+         * [setConfigAsDefault] is to use the config as default.
          * @return [MiniApp] instance
          */
         @JvmStatic
-        fun instance(settings: MiniAppSdkConfig = defaultConfig): MiniApp =
-            instance.apply { updateConfiguration(settings) }
+        fun instance(settings: MiniAppSdkConfig = defaultConfig, setConfigAsDefault: Boolean = true): MiniApp =
+            instance.apply { updateConfiguration(settings, setConfigAsDefault) }
 
         internal fun init(context: Context, miniAppSdkConfig: MiniAppSdkConfig) {
             defaultConfig = miniAppSdkConfig
@@ -199,7 +209,8 @@ abstract class MiniApp internal constructor() {
                 baseUrl = miniAppSdkConfig.baseUrl,
                 rasProjectId = miniAppSdkConfig.rasProjectId,
                 subscriptionKey = miniAppSdkConfig.subscriptionKey,
-                isPreviewMode = miniAppSdkConfig.isPreviewMode
+                isPreviewMode = miniAppSdkConfig.isPreviewMode,
+                sslPublicKey = miniAppSdkConfig.sslPinningPublicKey
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)

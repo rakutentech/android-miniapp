@@ -16,7 +16,17 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowQrCodeErrorBind
 /**
  * This QRErrorWindow is the common class for qrcode/deeplink error.
  */
+
+enum class QRCodeErrorType {
+    MiniAppNoLongerExist,
+    MiniAppNoPermission,
+    QRCodeExpire,
+    MiniAppNoPreview,
+    MiniAppVersionMisMatch
+}
+
 class QRErrorWindow {
+    private var onClosed: (() -> Unit)? = null
 
     companion object {
         private var instance: QRErrorWindow? = null
@@ -43,42 +53,23 @@ class QRErrorWindow {
         }
     }
 
-    /** show error screen for miniApp no longer exist. */
-    fun showMiniAppNoLongerExistError() {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoLongerExist)
-    }
-
-    /** show error screen for does not have permission. */
-    fun showMiniAppPermissionError() {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPermission)
-    }
-
-    /** show error screen for qrCode expired. */
-    fun showQRCodeExpiredError() {
-        if (instance != null) renderScreen(QRCodeErrorType.QRCodeExpire)
-    }
-
-    /** show error screen for miniApp can not be previewed for specific version. */
-    fun showMiniAppPreviewError(versionCode: String) {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppNoPreview, versionCode)
-    }
-
-    /** show error screen for miniApp version do not exist. */
-    fun showMiniAppVersionError(versionCode: String) {
-        if (instance != null) renderScreen(QRCodeErrorType.MiniAppVersionMisMatch, versionCode)
+    /**
+     * show error screen depending on the type.
+     * [errorType] type of error.
+     * [onClosed] callback when the window closes.
+     */
+    fun showMiniAppQRCodeError(errorType: QRCodeErrorType, onClosed: (()->Unit)? = null) {
+        if (instance != null) {
+            renderScreen(errorType)
+            this.onClosed = onClosed
+        }
     }
 
     private fun dismissDialog() {
         dialog.cancel()
+        onClosed?.let { it() }
     }
 
-    private enum class QRCodeErrorType {
-        MiniAppNoLongerExist,
-        MiniAppNoPermission,
-        QRCodeExpire,
-        MiniAppNoPreview,
-        MiniAppVersionMisMatch
-    }
 
     /** render view for specific error type. */
     private fun renderScreen(type: QRCodeErrorType, versionCode: String? = null) {
@@ -88,6 +79,7 @@ class QRErrorWindow {
         binding.tvErrorDescription.text = getTitleDescription(type, versionCode).second
         binding.tvErrorDescription.movementMethod = LinkMovementMethod.getInstance()
         binding.btnClose.setOnClickListener(listener)
+        dialog.setCancelable(false)
         dialog.show()
     }
 

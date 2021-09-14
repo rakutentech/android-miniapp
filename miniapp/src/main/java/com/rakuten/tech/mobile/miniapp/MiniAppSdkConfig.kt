@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.os.Parcelable
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import kotlinx.android.parcel.Parcelize
 
 /**
  * This represents the configuration settings for the Mini App SDK.
@@ -12,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
  * @property isPreviewMode Whether the host app wants to use the API Endpoints under "Preview" mode.
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  */
+@Parcelize
 data class MiniAppSdkConfig(
     val baseUrl: String,
     val rasProjectId: String,
@@ -19,8 +22,9 @@ data class MiniAppSdkConfig(
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean,
-    val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList()
-) {
+    val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
+    val sslPinningPublicKey: String = ""
+) : Parcelable {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 
     init {

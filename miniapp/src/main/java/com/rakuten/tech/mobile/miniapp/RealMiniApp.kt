@@ -39,6 +39,11 @@ internal class RealMiniApp(
         else -> miniAppInfoFetcher.getInfo(appId)
     }
 
+    override suspend fun getMiniAppInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo = when {
+        previewCode.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> miniAppInfoFetcher.getInfoByPreviewCode(previewCode)
+    }
+
     override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
         miniAppCustomPermissionCache.readPermissions(miniAppId)
 
@@ -134,11 +139,12 @@ internal class RealMiniApp(
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
-    override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
+    override fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
-            apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
+            if (setConfigAsDefault)
+                apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
         }
 
         nextApiClient.also {
@@ -146,8 +152,9 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        miniAppAnalytics =
-            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
+        if (setConfigAsDefault)
+            miniAppAnalytics =
+                MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
 
     @VisibleForTesting
@@ -202,6 +209,7 @@ internal class RealMiniApp(
         baseUrl = newConfig.baseUrl,
         rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
-        isPreviewMode = newConfig.isPreviewMode
+        isPreviewMode = newConfig.isPreviewMode,
+        sslPublicKey = newConfig.sslPinningPublicKey
     )
 }

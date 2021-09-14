@@ -56,6 +56,7 @@ open class RetrofitRequestExecutorSpec private constructor(
         AppInfo.instance = mock()
         val retrofit = createRetrofitClient(
             baseUrl = TEST_URL_HTTPS_2,
+            pubKey = TEST_PUBLIC_KEY_SSL,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )
@@ -126,7 +127,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     @Test
     fun `should append default message when server doesn't return error message`() =
         runBlockingTest {
-            mockServer.enqueue(MockResponse().setResponseCode(400).setBody("{}"))
+            mockServer.enqueue(MockResponse().setResponseCode(406).setBody("{}"))
 
             try {
                 createRequestExecutor().executeRequest(createApi().fetch())
@@ -201,7 +202,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     }
 
     private fun createErrorResponse(
-        code: Int = 400,
+        code: Int = 406,
         message: String = TEST_ERROR_MSG
     ): MockResponse = MockResponse()
         .setResponseCode(code)
