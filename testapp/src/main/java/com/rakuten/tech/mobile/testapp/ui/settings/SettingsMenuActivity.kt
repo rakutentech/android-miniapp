@@ -107,7 +107,7 @@ class SettingsMenuActivity : BaseActivity() {
         binding.editSubscriptionKey.setText(settings.subscriptionKey)
         binding.editParametersUrl.setText(settings.urlParameters)
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
-        binding.switchSignatureVerification.isChecked = settings.isRequireSignatureVerification
+        binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -166,18 +166,18 @@ class SettingsMenuActivity : BaseActivity() {
         subscriptionKey: String,
         urlParameters: String,
         isPreviewMode: Boolean,
-        isRequireSignatureVerification: Boolean
+        requireSignatureVerification: Boolean
     ) {
         val appIdHolder = settings.projectId
         val subscriptionKeyHolder = settings.subscriptionKey
         val urlParametersHolder = settings.urlParameters
         val isPreviewModeHolder = settings.isPreviewMode
-        val isRequireSignatureVerificationHolder = settings.isRequireSignatureVerification
+        val requireSignatureVerificationHolder = settings.requireSignatureVerification
         settings.projectId = projectId
         settings.subscriptionKey = subscriptionKey
         settings.urlParameters = urlParameters
         settings.isPreviewMode = isPreviewMode
-        settings.isRequireSignatureVerification = isRequireSignatureVerification
+        settings.requireSignatureVerification = requireSignatureVerification
 
         launch {
             try {
@@ -195,7 +195,7 @@ class SettingsMenuActivity : BaseActivity() {
                     subscriptionKeyHolder,
                     urlParametersHolder,
                     isPreviewModeHolder,
-                    isRequireSignatureVerificationHolder,
+                    requireSignatureVerificationHolder,
                     "MiniApp SDK",
                     error.message.toString()
                 )
@@ -205,7 +205,7 @@ class SettingsMenuActivity : BaseActivity() {
                     subscriptionKeyHolder,
                     urlParametersHolder,
                     isPreviewModeHolder,
-                    isRequireSignatureVerificationHolder,
+                    requireSignatureVerificationHolder,
                     "URL parameter",
                     error.message.toString()
                 )
@@ -218,7 +218,7 @@ class SettingsMenuActivity : BaseActivity() {
         subscriptionKeyHolder: String,
         urlParametersHolder: String,
         isPreviewModeHolder: Boolean,
-        isRequireSignatureVerificationHolder: Boolean,
+        requireSignatureVerificationHolder: Boolean,
         errTitle: String,
         errMsg: String
     ) {
@@ -226,7 +226,7 @@ class SettingsMenuActivity : BaseActivity() {
         settings.subscriptionKey = subscriptionKeyHolder
         settings.urlParameters = urlParametersHolder
         settings.isPreviewMode = isPreviewModeHolder
-        settings.isRequireSignatureVerification = isRequireSignatureVerificationHolder
+        settings.requireSignatureVerification = requireSignatureVerificationHolder
         runOnUiThread {
             settingsProgressDialog.cancel()
             showAlertDialog(this@SettingsMenuActivity, errTitle, errMsg)

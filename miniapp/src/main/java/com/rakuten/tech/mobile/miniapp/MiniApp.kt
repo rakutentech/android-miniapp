@@ -231,7 +231,7 @@ abstract class MiniApp internal constructor() {
                 miniAppDownloader = MiniAppDownloader(
                     apiClient = apiClient,
                     miniAppAnalytics = miniAppAnalytics,
-                    isRequireSignatureVerification = miniAppSdkConfig.isRequireSignatureVerification,
+                    requireSignatureVerification = miniAppSdkConfig.requireSignatureVerification,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
                     initVerifier = { CachedMiniAppVerifier(context) },

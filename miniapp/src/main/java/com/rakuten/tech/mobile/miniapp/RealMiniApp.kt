@@ -152,7 +152,7 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        miniAppDownloader.updateRequireSignatureVerification(newConfig.isRequireSignatureVerification)
+        miniAppDownloader.updateRequireSignatureVerification(newConfig.requireSignatureVerification)
 
         if (setConfigAsDefault)
             miniAppAnalytics =

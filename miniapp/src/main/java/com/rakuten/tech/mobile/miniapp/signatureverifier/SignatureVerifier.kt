@@ -44,8 +44,8 @@ internal class SignatureVerifier(
         // due to keystore validation.
         val key = cache[publicKeyId] ?: return@withContext false
 
-        // preparing hash using miniapp zip
-        val zipFile = MiniAppZipUtil(basePath).createZip(inputStream)
+        // preparing hash using miniapp zip file
+        val zipFile = MiniAppFileUtil(basePath).createFile(inputStream)
         val hash = calculateSha256Hash(zipFile.inputStream().readBytes())
 
         zipFile.deleteRecursively()

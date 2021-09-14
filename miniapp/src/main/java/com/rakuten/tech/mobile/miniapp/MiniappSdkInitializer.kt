@@ -39,8 +39,8 @@ class MiniappSdkInitializer : ContentProvider() {
         /**
          * Whether the sdk verifies signature of a Mini App.
          **/
-        @MetaData(key = "com.rakuten.tech.mobile.miniapp.IsRequireSignatureVerification")
-        fun isRequireSignatureVerification(): Boolean
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.RequireSignatureVerification")
+        fun requireSignatureVerification(): Boolean
 
         /**
          * This user agent specific info will be appended to the default user-agent.
@@ -90,7 +90,7 @@ class MiniappSdkInitializer : ContentProvider() {
         subscriptionKey = manifestConfig.subscriptionKey(),
         hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
         isPreviewMode = manifestConfig.isPreviewMode(),
-        isRequireSignatureVerification = manifestConfig.isRequireSignatureVerification(),
+        requireSignatureVerification = manifestConfig.requireSignatureVerification(),
         sslPinningPublicKey = manifestConfig.sslPinningPublicKey()
     )
 

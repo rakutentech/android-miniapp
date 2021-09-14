@@ -27,10 +27,10 @@ class AppSettings private constructor(context: Context) {
             cache.isPreviewMode = isPreviewMode
         }
 
-    var isRequireSignatureVerification: Boolean
-        get() = cache.isRequireSignatureVerification ?: manifestConfig.isRequireSignatureVerification()
-        set(isRequireSignatureVerification) {
-            cache.isRequireSignatureVerification = isRequireSignatureVerification
+    var requireSignatureVerification: Boolean
+        get() = cache.requireSignatureVerification ?: manifestConfig.requireSignatureVerification()
+        set(isRequired) {
+            cache.requireSignatureVerification = isRequired
         }
 
     var projectId: String
@@ -130,7 +130,7 @@ class AppSettings private constructor(context: Context) {
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
-            isRequireSignatureVerification = isRequireSignatureVerification,
+            requireSignatureVerification = requireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(
@@ -166,13 +166,13 @@ private class Settings(context: Context) {
                 null
         set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
 
-    var isRequireSignatureVerification: Boolean?
+    var requireSignatureVerification: Boolean?
         get() =
-            if (prefs.contains(IS_REQUIRE_SIGNATURE_VERIFICATION))
-                prefs.getBoolean(IS_REQUIRE_SIGNATURE_VERIFICATION, true)
+            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
+                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
             else
                 null
-        set(isRequire) = prefs.edit().putBoolean(IS_REQUIRE_SIGNATURE_VERIFICATION, isRequire!!).apply()
+        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!).apply()
 
     var projectId: String?
         get() = prefs.getString(APP_ID, null)
@@ -246,7 +246,7 @@ private class Settings(context: Context) {
 
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
-        private const val IS_REQUIRE_SIGNATURE_VERIFICATION = "is_require_signature_verification"
+        private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

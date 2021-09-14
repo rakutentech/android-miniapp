@@ -10,7 +10,7 @@ class MiniAppSdkConfigSpec {
         val config = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
@@ -24,7 +24,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = "http://www.example.com/1",
             isPreviewMode = false,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
@@ -36,7 +36,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = " ",
             isPreviewMode = true,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
@@ -48,7 +48,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             rasProjectId = " ",
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
@@ -60,7 +60,7 @@ class MiniAppSdkConfigSpec {
         MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = " ",
             hostAppUserAgentInfo = TEST_HA_NAME

@@ -12,6 +12,7 @@ import kotlinx.android.parcel.Parcelize
  * @property hostAppVersionId Version of the host app, used to determine feature compatibility for Mini App.
  * @property hostAppUserAgentInfo User Agent information from Host App.
  * @property isPreviewMode Whether the host app wants to use the API Endpoints under "Preview" mode.
+ * @property requireSignatureVerification Whether the Mini App SDK verifies signature of a Mini App.
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  */
 @Parcelize
@@ -22,7 +23,7 @@ data class MiniAppSdkConfig(
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean,
-    val isRequireSignatureVerification: Boolean,
+    val requireSignatureVerification: Boolean,
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
     val sslPinningPublicKey: String = ""
 ) : Parcelable {

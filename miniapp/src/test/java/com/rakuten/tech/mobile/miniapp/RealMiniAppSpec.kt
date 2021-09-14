@@ -207,7 +207,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             baseUrl = TEST_URL_HTTPS_2,
             rasProjectId = TEST_HA_ID_PROJECT,
             isPreviewMode = true,
-            isRequireSignatureVerification = true,
+            requireSignatureVerification = true,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME,
             miniAppAnalyticsConfigList = TEST_HA_ANALYTICS_CONFIGS

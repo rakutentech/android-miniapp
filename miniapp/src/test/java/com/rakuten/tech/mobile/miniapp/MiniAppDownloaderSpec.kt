@@ -33,7 +33,7 @@ open class MiniAppDownloaderBaseSpec {
     internal val manifestApiCache: ManifestApiCache = mock()
     private val signatureVerifier: SignatureVerifier = mock()
     internal lateinit var downloader: MiniAppDownloader
-    @ExperimentalCoroutinesApi private val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = TestCoroutineDispatcher()
     internal val testMiniApp = TEST_MA.copy(
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
@@ -54,7 +54,7 @@ open class MiniAppDownloaderBaseSpec {
             MiniAppDownloader(
                 apiClient = apiClient,
                 miniAppAnalytics = miniAppAnalytics,
-                isRequireSignatureVerification = false,
+                requireSignatureVerification = false,
                 initStorage = { storage },
                 initStatus = { miniAppStatus },
                 initVerifier = { verifier },
@@ -116,25 +116,25 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             files = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2),
             publicKeyId = TEST_PUBLIC_KEY_ID
         )
-        assertTrue { downloader.isManifestFileExist(manifestEntity) }
+        assertTrue { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
     fun `isManifestFileExist returns false when Manifest has empty list`() {
         val manifestEntity = ManifestEntity(emptyList(), TEST_PUBLIC_KEY_ID)
-        assertFalse { downloader.isManifestFileExist(manifestEntity) }
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
     fun `isManifestFileExist returns false when manifest is null`() {
         val manifestEntity = Gson().fromJson("{}", ManifestEntity::class.java)
-        assertFalse { downloader.isManifestFileExist(manifestEntity) }
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
     fun `isManifestFileExist returns false when files list in manifest is null`() {
         val manifestEntity = Gson().fromJson("""{"files": null}""", ManifestEntity::class.java)
-        assertFalse { downloader.isManifestFileExist(manifestEntity) }
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test

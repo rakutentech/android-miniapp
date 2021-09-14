@@ -33,7 +33,7 @@ import java.net.URL
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
     private val miniAppAnalytics: MiniAppAnalytics,
-    private var isRequireSignatureVerification: Boolean,
+    private var requireSignatureVerification: Boolean,
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
@@ -197,7 +197,7 @@ internal class MiniAppDownloader(
         return pairs
     }
 
-    @SuppressWarnings("LongMethod")
+    @SuppressWarnings("LongMethod", "NestedBlockDepth")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
         manifest: Pair<ManifestEntity, ManifestHeader>
@@ -206,27 +206,28 @@ internal class MiniAppDownloader(
         val versionId = miniAppInfo.version.versionId
         val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
         when {
-            isManifestFileExist(manifest.first) -> {
+            doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    if (isRequireSignatureVerification) {
-                        if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
-                            storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
-                            miniAppAnalytics.sendAnalytics(
-                                    eType = Etype.CLICK,
-                                    actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
-                                    miniAppInfo = miniAppInfo
-                            )
-                        } else {
+                    if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+                        miniAppAnalytics.sendAnalytics(
+                            eType = Etype.CLICK,
+                            actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                            miniAppInfo = miniAppInfo
+                        )
+                    } else {
+                        miniAppAnalytics.sendAnalytics(
+                            eType = Etype.CLICK,
+                            actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                            miniAppInfo = miniAppInfo
+                        )
+                        if (requireSignatureVerification) {
                             removeMiniApp(miniAppInfo, "$SIGNATURE_VERIFICATION_ERR " +
                                     "The files will be deleted.")
-                            miniAppAnalytics.sendAnalytics(
-                                    eType = Etype.CLICK,
-                                    actype = Actype.SIGNATURE_VALIDATION_FAIL,
-                                    miniAppInfo = miniAppInfo
-                            )
                             throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
                         }
-                    } else storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
+                    }
+
+                    storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
@@ -255,7 +256,7 @@ internal class MiniAppDownloader(
 
     @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
-    internal fun isManifestFileExist(manifest: ManifestEntity) =
+    internal fun doesManifestFileExist(manifest: ManifestEntity) =
         manifest != null && manifest.files != null && manifest.files.isNotEmpty()
 
     override fun updateApiClient(apiClient: ApiClient) {
@@ -263,8 +264,8 @@ internal class MiniAppDownloader(
     }
 
     @SuppressWarnings("FunctionMaxLength")
-    internal fun updateRequireSignatureVerification(isRequire: Boolean) {
-        this.isRequireSignatureVerification = isRequire
+    internal fun updateRequireSignatureVerification(isRequired: Boolean) {
+        this.requireSignatureVerification = isRequired
     }
 
     companion object {
