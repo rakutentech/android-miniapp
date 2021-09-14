@@ -2,9 +2,15 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
+import com.rakuten.tech.mobile.miniapp.SSLCertificatePinnigException
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
 import retrofit2.Call

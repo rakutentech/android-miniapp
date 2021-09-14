@@ -56,10 +56,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     } catch (e: MiniAppHostException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
-                    } catch (e: SSLCertificatePinnigException){
+                    } catch (e: SSLCertificatePinnigException) {
                         Log.e("SSLCertificatePinnigException", e.message ?: "")
                         finish()
-                    }catch (e: MiniAppSdkException) {
+                    } catch (e: MiniAppSdkException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     }
                 }
