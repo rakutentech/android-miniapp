@@ -4,6 +4,7 @@
 **SDK**
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
 - **Feature:** Added optional public key pinning through meta data.
+- **Feature:** Added additional rat events to track sdk feature usage.
 
 **Sample App**
 - **Feature:** User can edit contact name and email in App Settings.

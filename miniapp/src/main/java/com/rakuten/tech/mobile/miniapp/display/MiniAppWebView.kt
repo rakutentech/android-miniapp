@@ -13,6 +13,7 @@ import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -40,7 +41,8 @@ internal open class MiniAppWebView(
         miniAppCustomPermissionCache,
         miniAppFileChooser
     ),
-    val queryParams: String
+    val queryParams: String,
+    val ratDispatcher: MessageBridgeRatDispatcher
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -75,7 +77,8 @@ internal open class MiniAppWebView(
             webViewListener = this,
             customPermissionCache = miniAppCustomPermissionCache,
             downloadedManifestCache = downloadedManifestCache,
-            miniAppId = miniAppId
+            miniAppId = miniAppId,
+            ratDispatcher = ratDispatcher
         )
 
         settings.allowUniversalAccessFromFileURLs = true

@@ -52,7 +52,8 @@ class DisplayerSpec {
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
-            miniAppAnalytics = mock()
+            miniAppAnalytics = mock(),
+            ratDispatcher = mock()
         )
 
     private fun getMiniAppDisplayUrl(): MiniAppDisplay = Displayer(TEST_HA_NAME).createMiniAppDisplay(
@@ -63,6 +64,7 @@ class DisplayerSpec {
         miniAppCustomPermissionCache = mock(),
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS,
-        miniAppAnalytics = mock()
+        miniAppAnalytics = mock(),
+        ratDispatcher = mock()
     )
 }

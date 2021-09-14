@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
@@ -214,7 +215,10 @@ abstract class MiniApp internal constructor() {
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
-
+            val miniAppAnalytics = MiniAppAnalytics(
+                miniAppSdkConfig.rasProjectId,
+                miniAppSdkConfig.miniAppAnalyticsConfigList
+            )
             instance = RealMiniApp(
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
@@ -229,10 +233,8 @@ abstract class MiniApp internal constructor() {
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
-                miniAppAnalytics = MiniAppAnalytics(
-                    miniAppSdkConfig.rasProjectId,
-                    miniAppSdkConfig.miniAppAnalyticsConfigList
-                )
+                miniAppAnalytics = miniAppAnalytics,
+                ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics)
             )
         }
     }
