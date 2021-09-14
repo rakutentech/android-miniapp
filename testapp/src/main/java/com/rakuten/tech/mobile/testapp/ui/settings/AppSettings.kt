@@ -137,7 +137,8 @@ class AppSettings private constructor(context: Context) {
                     BuildConfig.ADDITIONAL_ANALYTICS_ACC,
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
-            )
+            ),
+            sslPinningPublicKey = manifestConfig.sslPinningPublicKey()
         )
 
     companion object {

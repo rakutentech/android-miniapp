@@ -18,9 +18,6 @@ import kotlinx.coroutines.launch
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
 ) : ViewModel() {
-
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
-
     private lateinit var miniAppDisplay: MiniAppDisplay
 
     private val _miniAppView = MutableLiveData<View>()

@@ -2,11 +2,13 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHostException
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
@@ -35,10 +37,12 @@ internal class ApiClient @VisibleForTesting constructor(
         baseUrl: String,
         rasProjectId: String,
         subscriptionKey: String,
-        isPreviewMode: Boolean = false
+        isPreviewMode: Boolean = false,
+        sslPublicKey: String = ""
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
+            pubKey = sslPublicKey,
             rasProjectId = rasProjectId,
             subscriptionKey = subscriptionKey
         ),
@@ -70,6 +74,21 @@ internal class ApiClient @VisibleForTesting constructor(
             return info.first()
         } else {
             throw MiniAppHasNoPublishedVersionException(appId)
+        }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo {
+        val request = appInfoApi.fetchInfoByPreviewCode(
+            hostId = hostId,
+            previewCode = previewCode
+        )
+        val info = requestExecutor.executeRequest(request).body() as PreviewMiniAppInfo
+
+        if (info.miniapp != null) {
+            return info
+        } else {
+            throw MiniAppNotFoundException("")
         }
     }
 
@@ -110,7 +129,7 @@ internal class RetrofitRequestExecutor(
     private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
-    @Suppress("TooGenericExceptionCaught", "ThrowsCount", "ComplexMethod")
+    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
     suspend fun <T> executeRequest(call: Call<T>): Response<T> = try {
         val response = executeWithRetry(call)
 
@@ -169,6 +188,7 @@ internal class RetrofitRequestExecutor(
                 )
             )
             404 -> throw MiniAppNotFoundException(response.message())
+            400 -> throw MiniAppHostException(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConverter(retrofit)

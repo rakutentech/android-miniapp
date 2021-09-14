@@ -15,8 +15,6 @@ class MiniAppListViewModel constructor(
     private val miniapp: MiniApp
 ) : ViewModel() {
 
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
-
     private val _miniAppListData = MutableLiveData<List<MiniAppInfo>>()
 
     private val _errorData = MutableLiveData<String>()

@@ -8,8 +8,16 @@
 - **Feature:** Added signature verification requirement enabling .
 
 ### 3.6.0 (2021-MM-DD)
+**SDK**
+- **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
+- **Feature:** Added optional public key pinning through meta data.
+- **Feature:** Added additional rat events to track sdk feature usage.
+
 **Sample App**
 - **Feature:** User can edit contact name and email in App Settings.
+- **Feature:** User can see access token scopes requested for the RAE audience in first-time screen.
+- **Feature:** User can scan qr code and preview miniapp in demo app.
+- **Feature:** Added deeplink support to open miniapp in demo app by qrcode scan.
 
 ### 3.5.0 (2021-07-27)
 **SDK**
