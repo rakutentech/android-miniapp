@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.deeplink
 
 import android.os.Bundle
+import android.util.Log
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
@@ -55,7 +56,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     } catch (e: MiniAppHostException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
-                    } catch (e: MiniAppSdkException) {
+                    } catch (e: SSLCertificatePinnigException){
+                        Log.e("SSLCertificatePinnigException", e.message ?: "")
+                        finish()
+                    }catch (e: MiniAppSdkException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     }
                 }
