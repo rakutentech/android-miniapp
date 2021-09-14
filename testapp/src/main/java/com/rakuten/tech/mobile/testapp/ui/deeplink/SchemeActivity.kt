@@ -31,7 +31,8 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                 val code = data.pathSegments[1]
                 Coroutines.IO {
                     try {
-                        previewMiniAppInfo = MiniApp.instance().getMiniAppInfoByPreviewCode(previewCode = code)
+                        previewMiniAppInfo =
+                            MiniApp.instance().getMiniAppInfoByPreviewCode(previewCode = code)
                         miniAppInfo = previewMiniAppInfo?.miniapp
                         previewMiniAppInfo?.host?.let {
                             miniAppSdkConfig = createSdkConfigForHostIdSubscriptionKey(
@@ -50,13 +51,11 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                                 )
                             }
                         }
-                    }catch (e: MiniAppNotFoundException){
+                    } catch (e: MiniAppNotFoundException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
-                    }
-                    catch (e: MiniAppHostException){
+                    } catch (e: MiniAppHostException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
-                    }
-                    catch (e: MiniAppSdkException){
+                    } catch (e: MiniAppSdkException) {
                         showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
                     }
                 }
@@ -83,7 +82,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         }
     }
 
-    private fun createSdkConfigForHostIdSubscriptionKey(hostId: String, subscriptionKey: String): MiniAppSdkConfig{
+    private fun createSdkConfigForHostIdSubscriptionKey(
+        hostId: String,
+        subscriptionKey: String
+    ): MiniAppSdkConfig {
         return MiniAppSdkConfig(
             baseUrl = AppSettings.instance.miniAppSettings.baseUrl,
             rasProjectId = hostId,
