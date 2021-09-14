@@ -35,3 +35,25 @@ data class Version(
     @SerializedName("versionTag") val versionTag: String,
     @SerializedName("versionId") val versionId: String
 ) : Parcelable
+
+/**
+ * This represents a host entity of a Mini App.
+ * @property id host id information of the mini app.
+ * @property subscriptionKey subscription identifier of the mini app.
+ */
+@Parcelize
+data class Host(
+    @SerializedName("id") val id: String,
+    @SerializedName("subscriptionKey") val subscriptionKey: String
+) : Parcelable
+
+/**
+ * This represents a response entity for preview code.
+ * @property host host identifier unique to a mini app.
+ * @property miniapp represents a Mini App entity.
+ */
+@Parcelize
+data class PreviewMiniAppInfo(
+    @SerializedName("host") val host: Host,
+    @SerializedName("miniapp") val miniapp: MiniAppInfo
+) : Parcelable

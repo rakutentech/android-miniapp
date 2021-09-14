@@ -94,5 +94,5 @@
 
     <string name="miniappdemo_scheme">miniappdemo</string>
     <string name="miniappdemo_host">miniapp</string>
-    <string name="miniappdemo_pathprefix">/preview/token/</string>
+    <string name="miniappdemo_pathprefix">/preview/</string>
 </resources>

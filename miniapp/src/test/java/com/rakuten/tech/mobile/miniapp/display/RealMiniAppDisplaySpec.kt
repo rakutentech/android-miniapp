@@ -52,7 +52,8 @@ class RealMiniAppDisplaySpec {
                 miniAppCustomPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS,
-                miniAppAnalytics = mock()
+                miniAppAnalytics = mock(),
+                ratDispatcher = mock()
             )
         }
     }
@@ -73,7 +74,8 @@ class RealMiniAppDisplaySpec {
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
-            miniAppAnalytics = mock()
+            miniAppAnalytics = mock(),
+            ratDispatcher = mock()
         )
 
         realDisplay.miniAppInfo.apply {

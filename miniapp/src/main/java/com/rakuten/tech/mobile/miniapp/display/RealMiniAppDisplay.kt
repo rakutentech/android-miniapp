@@ -15,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -34,7 +35,8 @@ internal class RealMiniAppDisplay(
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
     val downloadedManifestCache: DownloadedManifestCache,
     val queryParams: String,
-    val miniAppAnalytics: MiniAppAnalytics
+    val miniAppAnalytics: MiniAppAnalytics,
+    val ratDispatcher: MessageBridgeRatDispatcher
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -53,7 +55,8 @@ internal class RealMiniAppDisplay(
         miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
-        miniAppAnalytics: MiniAppAnalytics
+        miniAppAnalytics: MiniAppAnalytics,
+        ratDispatcher: MessageBridgeRatDispatcher
     ) : this(
         "",
         MiniAppInfo.forUrl(),
@@ -64,7 +67,8 @@ internal class RealMiniAppDisplay(
         miniAppCustomPermissionCache,
         downloadedManifestCache,
         queryParams,
-        miniAppAnalytics
+        miniAppAnalytics,
+        ratDispatcher
     ) {
         this.appUrl = appUrl
     }
@@ -131,7 +135,8 @@ internal class RealMiniAppDisplay(
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
-                    queryParams = queryParams
+                    queryParams = queryParams,
+                    ratDispatcher = ratDispatcher
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -144,7 +149,8 @@ internal class RealMiniAppDisplay(
                     hostAppUserAgentInfo = hostAppUserAgentInfo,
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
-                    queryParams = queryParams
+                    queryParams = queryParams,
+                    ratDispatcher = ratDispatcher
                 )
             }
 

@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
@@ -27,6 +28,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.Locale
 
@@ -84,9 +86,9 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
         viewModel =
-            ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+            ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
                     binding.swipeRefreshLayout.isRefreshing = false
                     addMiniAppList(it)
@@ -111,6 +113,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onResume() {
         super.onResume()
+        MiniApp.instance(AppSettings.instance.miniAppSettings)
         activity?.invalidateOptionsMenu()
     }
 

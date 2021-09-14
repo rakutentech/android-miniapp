@@ -52,7 +52,8 @@ open class BaseChatBridgeDispatcherSpec {
             webViewListener = webViewListener,
             customPermissionCache = customPermissionCache,
             downloadedManifestCache = downloadedManifestCache,
-            miniAppId = TEST_MA.id
+            miniAppId = TEST_MA.id,
+            ratDispatcher = mock()
         )
     }
 

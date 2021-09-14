@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -26,7 +27,8 @@ internal class MiniAppHttpWebView(
         miniAppCustomPermissionCache,
         miniAppFileChooser
     ),
-    queryParams: String
+    queryParams: String,
+    ratDispatcher: MessageBridgeRatDispatcher
 ) : MiniAppWebView(
     context,
     "",
@@ -38,7 +40,8 @@ internal class MiniAppHttpWebView(
     miniAppCustomPermissionCache,
     downloadedManifestCache,
     miniAppWebChromeClient,
-    queryParams
+    queryParams,
+    ratDispatcher
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)

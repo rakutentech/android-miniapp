@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
@@ -14,7 +15,7 @@ import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 
-@Suppress("TooManyFunctions", "LongMethod")
+@Suppress("TooManyFunctions", "LongMethod", "LargeClass")
 internal class RealMiniApp(
     private val apiClientRepository: ApiClientRepository,
     private val miniAppDownloader: MiniAppDownloader,
@@ -23,7 +24,8 @@ internal class RealMiniApp(
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
-    private var miniAppAnalytics: MiniAppAnalytics
+    private var miniAppAnalytics: MiniAppAnalytics,
+    private var ratDispatcher: MessageBridgeRatDispatcher
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
@@ -35,6 +37,11 @@ internal class RealMiniApp(
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppInfoFetcher.getInfo(appId)
+    }
+
+    override suspend fun getMiniAppInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo = when {
+        previewCode.isBlank() -> throw sdkExceptionForInvalidArguments()
+        else -> miniAppInfoFetcher.getInfoByPreviewCode(previewCode)
     }
 
     override fun getCustomPermissions(miniAppId: String): MiniAppCustomPermission =
@@ -70,7 +77,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }
@@ -95,7 +103,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }
@@ -118,7 +127,8 @@ internal class RealMiniApp(
                 miniAppCustomPermissionCache,
                 downloadedManifestCache,
                 queryParams,
-                miniAppAnalytics
+                miniAppAnalytics,
+                ratDispatcher
             )
         }
     }
@@ -129,11 +139,12 @@ internal class RealMiniApp(
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
-    override fun updateConfiguration(newConfig: MiniAppSdkConfig) {
+    override fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean) {
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
-            apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
+            if (setConfigAsDefault)
+                apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
         }
 
         nextApiClient.also {
@@ -141,8 +152,9 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
-        miniAppAnalytics =
-            MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
+        if (setConfigAsDefault)
+            miniAppAnalytics =
+                MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
     }
 
     @VisibleForTesting
@@ -197,6 +209,7 @@ internal class RealMiniApp(
         baseUrl = newConfig.baseUrl,
         rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
-        isPreviewMode = newConfig.isPreviewMode
+        isPreviewMode = newConfig.isPreviewMode,
+        sslPublicKey = newConfig.sslPinningPublicKey
     )
 }
