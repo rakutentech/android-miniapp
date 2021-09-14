@@ -35,7 +35,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                             MiniApp.instance().getMiniAppInfoByPreviewCode(previewCode = code)
                         miniAppInfo = previewMiniAppInfo?.miniapp
                         previewMiniAppInfo?.host?.let {
-                            miniAppSdkConfig = createSdkConfigForHostIdSubscriptionKey(
+                            miniAppSdkConfig = createSdkConfig(
                                 hostId = it.id,
                                 subscriptionKey = it.subscriptionKey
                             )
@@ -82,10 +82,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         }
     }
 
-    private fun createSdkConfigForHostIdSubscriptionKey(
-        hostId: String,
-        subscriptionKey: String
-    ): MiniAppSdkConfig {
+    private fun createSdkConfig(hostId: String, subscriptionKey: String): MiniAppSdkConfig {
         return MiniAppSdkConfig(
             baseUrl = AppSettings.instance.miniAppSettings.baseUrl,
             rasProjectId = hostId,
