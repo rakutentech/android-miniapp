@@ -64,7 +64,7 @@ open class MiniAppDownloaderBaseSpec {
             )
         )
         downloader.updateApiClient(apiClient)
-
+        downloader.updateRequireSignatureVerification(false)
         When calling verifier.verify(any(), any()) itReturns true
     }
 
@@ -111,7 +111,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         }
 
     @Test
-    fun `isManifestFileExist returns true for valid Manifest`() {
+    fun `doesManifestFileExist returns true for valid Manifest`() {
         val manifestEntity = ManifestEntity(
             files = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2),
             publicKeyId = TEST_PUBLIC_KEY_ID
@@ -120,19 +120,19 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     }
 
     @Test
-    fun `isManifestFileExist returns false when Manifest has empty list`() {
+    fun `doesManifestFileExist returns false when Manifest has empty list`() {
         val manifestEntity = ManifestEntity(emptyList(), TEST_PUBLIC_KEY_ID)
         assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
-    fun `isManifestFileExist returns false when manifest is null`() {
+    fun `doesManifestFileExist returns false when manifest is null`() {
         val manifestEntity = Gson().fromJson("{}", ManifestEntity::class.java)
         assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
-    fun `isManifestFileExist returns false when files list in manifest is null`() {
+    fun `doesManifestFileExist returns false when files list in manifest is null`() {
         val manifestEntity = Gson().fromJson("""{"files": null}""", ManifestEntity::class.java)
         assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
@@ -513,8 +513,8 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
         ) itReturns Pair(
-            ManifestEntity(listOf(TEST_URL_HTTPS_1), TEST_PUBLIC_KEY_ID),
-            ManifestHeader(TEST_MANIFEST_SIGNATURE)
+                ManifestEntity(listOf(TEST_URL_HTTPS_1), TEST_PUBLIC_KEY_ID),
+                ManifestHeader(TEST_MANIFEST_SIGNATURE)
         )
 
         val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)

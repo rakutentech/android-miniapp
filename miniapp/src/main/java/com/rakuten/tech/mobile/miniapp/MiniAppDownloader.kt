@@ -208,7 +208,7 @@ internal class MiniAppDownloader(
         when {
             doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+                    if (doesSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
                         miniAppAnalytics.sendAnalytics(
                             eType = Etype.CLICK,
                             actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
@@ -241,16 +241,17 @@ internal class MiniAppDownloader(
         }
     }
 
-    private suspend fun isSignatureValid(
+    @VisibleForTesting
+    internal suspend fun doesSignatureValid(
         inputStream: InputStream,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>
-    ) = signatureVerifier?.verify(
+    ): Boolean = signatureVerifier?.verify(
             manifest.first.publicKeyId,
             versionId,
             inputStream,
             manifest.second.signature.toString()
-    )!!
+    ) ?: false
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 
