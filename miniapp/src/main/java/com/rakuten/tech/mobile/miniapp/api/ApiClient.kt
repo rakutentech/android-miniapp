@@ -83,13 +83,7 @@ internal class ApiClient @VisibleForTesting constructor(
             hostId = hostId,
             previewCode = previewCode
         )
-        val info = requestExecutor.executeRequest(request).body() as PreviewMiniAppInfo
-
-        if (info.miniapp != null) {
-            return info
-        } else {
-            throw MiniAppNotFoundException("")
-        }
+        return requestExecutor.executeRequest(request).body() as PreviewMiniAppInfo
     }
 
     @Throws(MiniAppSdkException::class)
@@ -140,8 +134,11 @@ internal class RetrofitRequestExecutor(
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
-                if (response.body() != null) response
-                else throw sdkExceptionForInternalServerError()
+                response.body()?.let {
+                    response
+                } ?: run {
+                    throw sdkExceptionForInternalServerError()
+                }
             }
             else -> throw exceptionForHttpError(response)
         }
