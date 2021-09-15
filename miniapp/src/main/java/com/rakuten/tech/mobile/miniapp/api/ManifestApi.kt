@@ -20,10 +20,10 @@ internal interface ManifestApi {
 @Keep
 internal data class ManifestEntity(
     @SerializedName("manifest") val files: List<String>,
-    @SerializedName("publicKeyId") val publicKeyId: String
+    val publicKeyId: String
 )
 
 @Keep
 internal data class ManifestHeader(
-    @SerializedName("signature") val signature: String?
+    val signature: String?
 )

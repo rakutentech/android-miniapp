@@ -24,7 +24,7 @@ internal data class MetadataEntity(
 
 /** Metadata response object includes required and optional permissions. */
 @Keep
-data class MetadataResponse(
+internal data class MetadataResponse(
     // List of permissions requested by Mini App in their manifest
     @SerializedName("reqPermissions") val requiredPermissions: List<MetadataPermissionObj>?,
     @SerializedName("optPermissions") val optionalPermissions: List<MetadataPermissionObj>?,
@@ -34,7 +34,7 @@ data class MetadataResponse(
 
 /** Metadata permission object includes name and reason. */
 @Keep
-data class MetadataPermissionObj(
+internal data class MetadataPermissionObj(
     val name: String?,
     val reason: String?
 )
