@@ -2,6 +2,7 @@
 
 ### 3.X.X (YYYY-MM-DD)
 **SDK**
+- **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
 - **Feature:** Added optional public key pinning through meta data.
 - **Feature:** Added additional rat events to track sdk feature usage.
@@ -20,7 +21,6 @@
 - **Feature:** Added support for using `".jpg"` and multiple types e.g. `".jpg,.png"` in the accept field of the file input.
 - **Update:** Updated `MessageToContact` to support an optional message to the user for the contact picker capability.
 - **Update:** Included technical improvement in manifest file verification process.
-- **Feature:** Added `admob-latest` module to support latest admob sdk. 
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.
