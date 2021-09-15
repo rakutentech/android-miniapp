@@ -119,7 +119,11 @@ internal class ApiClient @VisibleForTesting constructor(
 
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
-        return requestExecutor.executeRequest(request).body()!!
+        requestExecutor.executeRequest(request).body()?.let { body ->
+            return body
+        } ?: run {
+            throw sdkExceptionForInternalServerError()
+        }
     }
 }
 
