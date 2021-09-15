@@ -33,7 +33,7 @@ import java.net.URL
 internal class MiniAppDownloader(
     private var apiClient: ApiClient,
     private val miniAppAnalytics: MiniAppAnalytics,
-    private var requireSignatureVerification: Boolean,
+    private var requireSignatureVerification: Boolean = false,
     initStorage: () -> MiniAppStorage,
     initStatus: () -> MiniAppStatus,
     initVerifier: () -> CachedMiniAppVerifier,
@@ -208,7 +208,7 @@ internal class MiniAppDownloader(
         when {
             doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    if (doesSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+                    if (isSignatureValid(apiClient.downloadFile(file)?.byteStream(), versionId, manifest)) {
                         miniAppAnalytics.sendAnalytics(
                             eType = Etype.CLICK,
                             actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
@@ -241,8 +241,7 @@ internal class MiniAppDownloader(
         }
     }
 
-    @VisibleForTesting
-    internal suspend fun doesSignatureValid(
+    private suspend fun isSignatureValid(
         inputStream: InputStream,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>
