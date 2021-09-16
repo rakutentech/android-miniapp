@@ -34,9 +34,8 @@ internal class SignatureVerifier(
 ) {
 
     /**
-     * Verifies the [signature] of the [data] using the [publicKeyId].
-     *
-     * @return true if [signature] associated with [data] is valid.
+     * Verifies the [signature] of the data from [inputStream] using the [publicKeyId].
+     * @return true if [signature] associated with the data from [inputStream] is valid.
      */
     @SuppressWarnings("LabeledExpression", "MaxLineLength")
     suspend fun verify(publicKeyId: String, versionId: String, inputStream: InputStream, signature: String) = withContext(dispatcher) {
