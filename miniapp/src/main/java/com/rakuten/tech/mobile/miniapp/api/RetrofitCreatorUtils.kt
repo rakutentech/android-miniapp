@@ -36,7 +36,7 @@ internal fun createRetrofitClient(
     headers: RasSdkHeaders
 ): Retrofit {
     @Suppress("SpreadOperator")
-    var httpClientBuilder = OkHttpClient.Builder()
+    val httpClientBuilder = OkHttpClient.Builder()
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
     if (pubKey != "") {
@@ -70,9 +70,9 @@ private fun createCertificatePinner(baseUrl: String, pubKey: String): Certificat
         .build()
 }
 
-private fun extractBaseUrl(url: String): String {
+private fun extractBaseUrl(baseUrl: String): String {
     return try {
-        val url = URI.create(url).toURL()
+        val url = URI.create(baseUrl).toURL()
         url.authority
     } catch (e: MalformedURLException) {
         ""

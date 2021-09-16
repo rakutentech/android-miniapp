@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config
 import java.io.IOException
 
 open class PublicKeyFetcherSpec {
-    internal val mockApiClient = Mockito.mock(ApiClient::class.java)
+    internal val mockApiClient = Mockito.mock(SignatureApiClient::class.java)
 
     internal fun createFetcher() =
         PublicKeyFetcher(mockApiClient)
@@ -159,7 +159,7 @@ class PublicKeyFetcherErrorSpec : PublicKeyFetcherSpec() {
         enqueueErrorResponse(code = 404)
 
         val fetcher = PublicKeyFetcher(
-            ApiClient(
+            SignatureApiClient(
                 "https://www.example.com",
                 "key",
                 ApplicationProvider.getApplicationContext()

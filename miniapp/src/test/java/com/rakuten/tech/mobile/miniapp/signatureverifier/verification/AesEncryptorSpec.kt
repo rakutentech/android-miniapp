@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier.verification
 
 import com.google.gson.JsonParseException
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
-import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
@@ -10,7 +9,6 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import java.lang.ClassCastException
-import java.lang.IllegalArgumentException
 import java.security.InvalidKeyException
 import java.security.KeyStore
 import java.security.NoSuchAlgorithmException
@@ -28,7 +26,6 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
     @Before
     open fun setup() {
         val key = generateAesKey()
-        SignatureVerifier.callback = null
         When calling mockKeyGenerator.generateKey() itReturns key
         When calling mockKeyEntry.secretKey itReturns key
         When calling mockKeyStore.getEntry(any(), anyOrNull()) itReturns mockKeyEntry
@@ -107,12 +104,10 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
 open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
 
     private val function: (ex: Exception) -> Unit = {}
-    private val mockCallback = Mockito.mock(function.javaClass)
 
     @Before
     override fun setup() {
         super.setup()
-        SignatureVerifier.callback = mockCallback
     }
 
     @Test
@@ -129,7 +124,6 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
         val encryptor = createAesEncryptor()
 
         verifyFunction(encryptor, true)
-        Mockito.verify(mockCallback, times(2)).invoke(any(ClassCastException::class))
     }
 
     @Test
@@ -141,8 +135,6 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
         val encryptor = createAesEncryptor(keyGenerator = generator)
 
         verifyFunction(encryptor, false)
-        // twice called: encrypt and decrypt
-        Mockito.verify(mockCallback, times(2)).invoke(any(IllegalArgumentException::class))
     }
 
     @Test
@@ -151,7 +143,6 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
         val encryptor = createAesEncryptor()
 
         verifyFunction(encryptor, true)
-        Mockito.verify(mockCallback).invoke(any(NoSuchAlgorithmException::class))
     }
 
     @Test
@@ -165,7 +156,6 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
 
         encryptor.encrypt("test data", mockCipher).shouldBeNull()
         encryptor.decrypt("test data", mockCipher).shouldBeNull()
-        Mockito.verify(mockCallback, times(2)).invoke(any(InvalidKeyException::class))
     }
 
     private fun verifyFunction(encryptor: AesEncryptor, isValid: Boolean) {
@@ -182,11 +172,6 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
 }
 
 class AesEncryptedDataSpec : RobolectricBaseSpec() {
-
-    @Before
-    fun setup() {
-        SignatureVerifier.callback = null
-    }
 
     @Test
     fun `should serialize empty string data is correctly`() {
@@ -216,12 +201,11 @@ class AesEncryptedDataSpec : RobolectricBaseSpec() {
     fun `should return empty data when parsing failed with callback`() {
         val function: (ex: Exception) -> Unit = {}
         val mockCallback = Mockito.mock(function.javaClass)
-        SignatureVerifier.callback = mockCallback
         val data = AesEncryptedData.fromJsonString(DATA_FAILED)
         data.iv.shouldBeEmpty()
         data.encryptedData.shouldBeEmpty()
 
-        Mockito.verify(mockCallback).invoke(any(JsonParseException::class))
+        Mockito.verify(mockCallback, times(0)).invoke(any(JsonParseException::class))
     }
 
     companion object {

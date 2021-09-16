@@ -8,7 +8,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.lang.IllegalArgumentException
 
-internal class ApiClient(baseUrl: String, subscriptionKey: String, context: Context) {
+internal class SignatureApiClient(baseUrl: String, subscriptionKey: String, context: Context) {
 
     init {
         if (subscriptionKey.isEmpty()) {

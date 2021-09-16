@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
-import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import java.security.KeyStore
 import java.security.KeyStoreException
 import javax.crypto.Cipher
@@ -40,7 +39,6 @@ internal class AesEncryptor @VisibleForTesting constructor(
                 } catch (e: ClassCastException) {
                     // Key wasn't an AES key, so we need to generate a new one
                     Log.d(TAG, "Error retrieving key from KeyStore, will be generate new key.", e)
-                    SignatureVerifier.callback?.let { it(e) }
                     null
                 }
                 )?.secretKey ?: keyGenerator.generateKey()
@@ -50,7 +48,6 @@ internal class AesEncryptor @VisibleForTesting constructor(
             keyStore?.load(null)
         } catch (ex: Exception) {
             Log.d(TAG, "Error loading the keystore", ex)
-            SignatureVerifier.callback?.let { it(ex) }
         }
     }
 
@@ -67,7 +64,6 @@ internal class AesEncryptor @VisibleForTesting constructor(
                 ).toJsonString()
             } catch (e: Exception) {
                 Log.d(TAG, "Error encrypting the data", e)
-                SignatureVerifier.callback?.let { it(e) }
             }
         }
 
@@ -88,7 +84,6 @@ internal class AesEncryptor @VisibleForTesting constructor(
                 return String(decryptedData)
             } catch (e: Exception) {
                 Log.d(TAG, "Error decrypting the data", e)
-                SignatureVerifier.callback?.let { it(e) }
             }
         }
 
@@ -125,7 +120,6 @@ internal class AesKeyGenerator(
             keyGenerator.generateKey()
         } catch (e: Exception) {
             Log.d(TAG, "Error generating the secret key", e)
-            SignatureVerifier.callback?.let { it(e) }
             null
         }
     }
@@ -149,7 +143,6 @@ internal data class AesEncryptedData(
             Gson().fromJson(body, AesEncryptedData::class.java)
         } catch (ex: JsonParseException) {
             Log.d(TAG, ex.localizedMessage, ex)
-            SignatureVerifier.callback?.let { it(ex) }
             AesEncryptedData("", "")
         }
     }

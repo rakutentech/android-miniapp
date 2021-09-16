@@ -6,7 +6,6 @@ import androidx.appcompat.widget.AppCompatButton
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import kotlinx.android.synthetic.main.custom_button_view_with_arrow.view.*
 
 /**
  * This is custom Button.

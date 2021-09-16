@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import java.io.IOException
 
-internal class PublicKeyFetcher(private val client: ApiClient) {
+internal class PublicKeyFetcher(private val client: SignatureApiClient) {
 
     @Throws(IOException::class)
     fun fetch(keyId: String): String {
