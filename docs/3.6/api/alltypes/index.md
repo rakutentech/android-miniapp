@@ -142,6 +142,11 @@ the lifecycle, it automatically clears up the view state and any services regist
 
 |
 
+##### [com.rakuten.tech.mobile.miniapp.display.MiniAppDownloadedFileProvider](../com.rakuten.tech.mobile.miniapp.display/-mini-app-downloaded-file-provider/index.md)
+
+
+|
+
 ##### [com.rakuten.tech.mobile.miniapp.navigator.MiniAppDownloadNavigator](../com.rakuten.tech.mobile.miniapp.navigator/-mini-app-download-navigator/index.md)
 
 File download controller for mini app view.
