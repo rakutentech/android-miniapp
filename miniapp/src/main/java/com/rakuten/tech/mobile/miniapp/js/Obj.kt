@@ -89,17 +89,3 @@ internal data class SendContactIdCallbackObj(val param: MessageParamId) {
     )
 }
 // end region
-
-// HostEnvironmentInfo region
-@Keep
-data class HostEnvironmentInfo(
-        val hostVersion: String
-)
-
-@Keep
-internal data class HostEnvironmentInfoCallbackObj(val param: HostEnvironmentInfoParam) {
-
-    @Keep
-    internal data class HostEnvironmentInfoParam(val hostEnvironmentInfo: HostEnvironmentInfo)
-}
-// end region

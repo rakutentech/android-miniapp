@@ -12,9 +12,10 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_HOST_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostAppInfo.HostEnvironmentBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostAppInfo.HostEnvironmentInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -41,6 +42,7 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
+    private val hostEnvironmentInfoBridge = HostEnvironmentInfoBridge()
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -64,6 +66,7 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
+        hostEnvironmentInfoBridge.setMiniAppComponents(bridgeExecutor)
 
         miniAppViewInitialized = true
     }
@@ -130,27 +133,6 @@ open class MiniAppMessageBridge {
         }
     }
 
-    /**
-     * Get HostEnvironmentInfo from mini app.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
-     */
-    fun getHostEnvironmentInfo(
-            info: HostEnvironmentInfo,
-            callback: (message: String?) -> Unit
-    ) {
-        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
-    }
-
-    private fun onGetHostEnvironmentInfo(callbackId: String, jsonStr: String) = try {
-        val callbackObj = Gson().fromJson(jsonStr, HostEnvironmentInfoCallbackObj::class.java)
-
-        getHostEnvironmentInfo(callbackObj.param.hostEnvironmentInfo) { message ->
-            bridgeExecutor.postValue(callbackId, message ?: SUCCESS)
-        }
-    } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId, "$ERR_GET_HOST_ENVIRONMENT_INFO ${e.message}")
-    }
-
     @SuppressWarnings("UndocumentedPublicFunction")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -177,7 +159,7 @@ open class MiniAppMessageBridge {
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
                 callbackObj.id, jsonStr
             )
-            ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id, jsonStr)
+            ActionType.GET_HOST_ENVIRONMENT_INFO.action -> hostEnvironmentInfoBridge.onGetHostEnvironmentInfo(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -199,6 +181,13 @@ open class MiniAppMessageBridge {
      **/
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
+
+    /**
+     * Set implemented hostEnvironmentBridgeDispatcher.
+     * Can use the default provided class from sdk [HostEnvironmentBridgeDispatcher].
+     **/
+    fun setUserInfoBridgeDispatcher(hostEnvironmentBridgeDispatcher: HostEnvironmentBridgeDispatcher) =
+            hostEnvironmentInfoBridge.setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher)
 
     private fun onGetUniqueId(callbackObj: CallbackObj) = try {
         val successCallback = { uniqueId: String ->
@@ -321,5 +310,4 @@ internal object ErrorBridgeMessage {
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
-    const val ERR_GET_HOST_ENVIRONMENT_INFO = "Cannot get host environment info:"
 }
