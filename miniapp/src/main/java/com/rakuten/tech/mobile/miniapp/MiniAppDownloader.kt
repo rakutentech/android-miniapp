@@ -208,7 +208,7 @@ internal class MiniAppDownloader(
         when {
             doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    if (isSignatureValid(apiClient.downloadFile(file)?.byteStream(), versionId, manifest)) {
+                    if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
                         miniAppAnalytics.sendAnalytics(
                             eType = Etype.CLICK,
                             actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
@@ -254,10 +254,8 @@ internal class MiniAppDownloader(
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 
-    @Suppress("SENSELESS_COMPARISON")
     @VisibleForTesting
-    internal fun doesManifestFileExist(manifest: ManifestEntity) =
-        manifest != null && manifest.files != null && manifest.files.isNotEmpty()
+    internal fun doesManifestFileExist(manifest: ManifestEntity) = manifest.files.isNotEmpty()
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient

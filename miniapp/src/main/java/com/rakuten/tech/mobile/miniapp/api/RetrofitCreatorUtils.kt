@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.util.Patterns
 import androidx.annotation.VisibleForTesting
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig
@@ -66,14 +67,13 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
 
 private fun createCertificatePinner(baseUrl: String, pubKey: String): CertificatePinner {
     return CertificatePinner.Builder()
-        .add(extractBaseUrl(baseUrl), pubKey)
+        .add(baseUrl.extractAuthority(), pubKey)
         .build()
 }
 
-private fun extractBaseUrl(baseUrl: String): String {
+fun String.extractAuthority(): String {
     return try {
-        val url = URI.create(baseUrl).toURL()
-        url.authority
+        URI.create(this).toURL().authority
     } catch (e: MalformedURLException) {
         ""
     }
