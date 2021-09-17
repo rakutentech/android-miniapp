@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
+import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
@@ -215,6 +216,11 @@ abstract class MiniApp internal constructor() {
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig.key, apiClient)
             }
+            val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
+                context = context,
+                baseUrl = miniAppSdkConfig.baseUrl + "keys/",
+                subscriptionKey = miniAppSdkConfig.subscriptionKey
+            )
             val miniAppAnalytics = MiniAppAnalytics(
                 miniAppSdkConfig.rasProjectId,
                 miniAppSdkConfig.miniAppAnalyticsConfigList
@@ -224,10 +230,13 @@ abstract class MiniApp internal constructor() {
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(
                     apiClient = apiClient,
+                    miniAppAnalytics = miniAppAnalytics,
+                    requireSignatureVerification = miniAppSdkConfig.requireSignatureVerification,
                     initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
                     initStatus = { MiniAppStatus(context) },
                     initVerifier = { CachedMiniAppVerifier(context) },
-                    initManifestApiCache = { ManifestApiCache(context) }
+                    initManifestApiCache = { ManifestApiCache(context) },
+                    initSignatureVerifier = { signatureVerifier }
                 ),
                 miniAppInfoFetcher = MiniAppInfoFetcher(apiClient),
                 initCustomPermissionCache = { MiniAppCustomPermissionCache(context) },

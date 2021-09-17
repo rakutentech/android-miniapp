@@ -1,16 +1,19 @@
 ## CHANGELOG
 
-### 3.6.0 (2021-MM-DD)
+### 3.X.X (YYYY-MM-DD)
 **SDK**
+- **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
 - **Feature:** Added optional public key pinning through meta data.
 - **Feature:** Added additional rat events to track sdk feature usage.
+- **Feature:** Added signature verification process before downloading a MiniApp. HostApp also can enable the settings of SDK to verify signature. Please see user-guide.
 
 **Sample App**
 - **Feature:** User can edit contact name and email in App Settings.
 - **Feature:** User can see access token scopes requested for the RAE audience in first-time screen.
 - **Feature:** User can scan qr code and preview miniapp in demo app.
 - **Feature:** Added deeplink support to open miniapp in demo app by qrcode scan.
+- **Feature:** Added signature verification requirement enabling option in App Settings.
 
 ### 3.5.0 (2021-07-27)
 **SDK**
@@ -18,7 +21,6 @@
 - **Feature:** Added support for using `".jpg"` and multiple types e.g. `".jpg,.png"` in the accept field of the file input.
 - **Update:** Updated `MessageToContact` to support an optional message to the user for the contact picker capability.
 - **Update:** Included technical improvement in manifest file verification process.
-- **Feature:** Added `admob-latest` module to support latest admob sdk. 
 
 **Sample App**
 - **Feature:** Added a screen to input user's points which can be invoked using `getPoints` interface.

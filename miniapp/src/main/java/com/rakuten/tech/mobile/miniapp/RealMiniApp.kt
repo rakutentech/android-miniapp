@@ -152,6 +152,8 @@ internal class RealMiniApp(
             miniAppInfoFetcher.updateApiClient(it)
         }
 
+        miniAppDownloader.updateRequireSignatureVerification(newConfig.requireSignatureVerification)
+
         if (setConfigAsDefault)
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)

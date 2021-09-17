@@ -60,18 +60,17 @@ internal class ApiClient @VisibleForTesting constructor(
             hostId = hostId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        return requestExecutor.executeRequest(request).body() as List<MiniAppInfo>
     }
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchInfo(appId: String): MiniAppInfo {
-
         val request = appInfoApi.fetchInfo(
             hostId = hostId,
             miniAppId = appId,
             testPath = testPath
         )
-        val info = requestExecutor.executeRequest(request)
+        val info = requestExecutor.executeRequest(request).body() as List<MiniAppInfo>
 
         if (info.isNotEmpty()) {
             return info.first()
@@ -86,24 +85,21 @@ internal class ApiClient @VisibleForTesting constructor(
             hostId = hostId,
             previewCode = previewCode
         )
-        val info = requestExecutor.executeRequest(request)
-
-        if (info.miniapp != null) {
-            return info
-        } else {
-            throw MiniAppNotFoundException("")
-        }
+        return requestExecutor.executeRequest(request).body() as PreviewMiniAppInfo
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchFileList(miniAppId: String, versionId: String): ManifestEntity {
+    suspend fun fetchFileList(miniAppId: String, versionId: String): Pair<ManifestEntity, ManifestHeader> {
         val request = manifestApi.fetchFileListFromManifest(
             hostId = hostId,
             miniAppId = miniAppId,
             versionId = versionId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        val response = requestExecutor.executeRequest(request)
+        val manifestEntity = response.body() as ManifestEntity
+        val manifestHeader = ManifestHeader(response.headers()["signature"])
+        return Pair(manifestEntity, manifestHeader)
     }
 
     @Throws(MiniAppSdkException::class)
@@ -114,12 +110,16 @@ internal class ApiClient @VisibleForTesting constructor(
             versionId = versionId,
             testPath = testPath
         )
-        return requestExecutor.executeRequest(request)
+        return requestExecutor.executeRequest(request).body() as MetadataEntity
     }
 
     suspend fun downloadFile(@Url url: String): ResponseBody {
         val request = downloadApi.downloadFile(url)
-        return requestExecutor.executeRequest(request)
+        requestExecutor.executeRequest(request).body()?.let { body ->
+            return body
+        } ?: run {
+            throw sdkExceptionForInternalServerError()
+        }
     }
 }
 
@@ -129,14 +129,18 @@ internal class RetrofitRequestExecutor(
     private inline fun <reified T : ErrorResponse> createErrorConverter(retrofit: Retrofit) =
         retrofit.responseBodyConverter<T>(T::class.java, arrayOfNulls<Annotation>(0))
 
-    @Suppress("TooGenericExceptionCaught", "ThrowsCount")
-    suspend fun <T> executeRequest(call: Call<T>): T = try {
+    @Suppress("TooGenericExceptionCaught", "ThrowsCount", "ComplexMethod")
+    suspend fun <T> executeRequest(call: Call<T>): Response<T> = try {
         val response = executeWithRetry(call)
 
         when {
             response.isSuccessful -> {
                 // Body shouldn't be null if request was successful
-                response.body() ?: throw sdkExceptionForInternalServerError()
+                response.body()?.let {
+                    response
+                } ?: run {
+                    throw sdkExceptionForInternalServerError()
+                }
             }
             else -> throw exceptionForHttpError(response)
         }

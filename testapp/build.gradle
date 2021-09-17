@@ -48,6 +48,7 @@ android {
     def debugManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
+            requireSignatureVerification : property("REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
             projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
@@ -61,6 +62,7 @@ android {
     def prodManifestPlaceholders = [
             baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
+            requireSignatureVerification : property("PROD_REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
             projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
             subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",

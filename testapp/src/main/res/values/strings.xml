@@ -5,6 +5,7 @@
     <string name="lb_app_url">URL</string>
     <string name="lb_app_settings">App Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
+    <string name="lb_require_signature_verification">Require Signature Verification</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_user_details">User Details</string>
     <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>

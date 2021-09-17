@@ -2,8 +2,6 @@ package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.annotation.NonNull
-import androidx.appcompat.widget.AppCompatButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
