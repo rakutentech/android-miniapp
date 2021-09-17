@@ -186,7 +186,7 @@ open class MiniAppMessageBridge {
      * Set implemented hostEnvironmentBridgeDispatcher.
      * Can use the default provided class from sdk [HostEnvironmentBridgeDispatcher].
      **/
-    fun setUserInfoBridgeDispatcher(hostEnvironmentBridgeDispatcher: HostEnvironmentBridgeDispatcher) =
+    fun setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher: HostEnvironmentBridgeDispatcher) =
             hostEnvironmentInfoBridge.setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher)
 
     private fun onGetUniqueId(callbackObj: CallbackObj) = try {

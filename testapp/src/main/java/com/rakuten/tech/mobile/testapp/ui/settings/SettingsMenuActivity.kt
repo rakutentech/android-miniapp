@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -139,12 +140,6 @@ class SettingsMenuActivity : BaseActivity() {
         validateInputIDs()
     }
 
-    private fun createBuildInfo(): String {
-        val sdkVersion = getString(R.string.miniapp_sdk_version)
-        val buildVersion = getString(R.string.build_version)
-        return "Build $sdkVersion - $buildVersion"
-    }
-
     private fun validateInputIDs() {
         val isAppIdInvalid = binding.editProjectId.text.toString().isInvalidUuid()
 
@@ -159,6 +154,12 @@ class SettingsMenuActivity : BaseActivity() {
         if (isInputEmpty(binding.editSubscriptionKey))
             binding.inputSubscriptionKey.error = getString(R.string.error_invalid_input)
         else binding.inputSubscriptionKey.error = null
+    }
+
+    private fun createBuildInfo(): String {
+        val sdkVersion = getString(R.string.miniapp_sdk_version)
+        val buildVersion = getString(R.string.build_version)
+        return "Build $sdkVersion - $buildVersion"
     }
 
     private fun updateSettings(
