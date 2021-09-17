@@ -25,9 +25,9 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentInfo
-import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator

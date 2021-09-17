@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
+package com.rakuten.tech.mobile.miniapp.js.hostenvironment
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
@@ -15,6 +15,7 @@ internal class HostEnvironmentInfoBridge {
         isMiniAppComponentReady = true
     }
 
+    @SuppressWarnings("FunctionMaxLength")
     fun setHostEnvironmentBridgeDispatcher(dispatcher: HostEnvironmentBridgeDispatcher) {
         this.dispatcher = dispatcher
     }
@@ -28,6 +29,7 @@ internal class HostEnvironmentInfoBridge {
         }
     }
 
+    @SuppressWarnings("TooGenericExceptionCaught")
     fun onGetHostEnvironmentInfo(callbackId: String) = whenReady(callbackId) {
         try {
             val successCallback = { info: HostEnvironmentInfo ->

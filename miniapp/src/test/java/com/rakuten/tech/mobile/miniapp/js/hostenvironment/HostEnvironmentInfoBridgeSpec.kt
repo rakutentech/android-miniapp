@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
+package com.rakuten.tech.mobile.miniapp.js.hostenvironment
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
@@ -30,15 +30,13 @@ class HostEnvironmentInfoBridgeSpec {
     private val hostEnvironmentInfo = HostEnvironmentInfo("Android 30", "012345", "X.X.X")
     private val infoErrMessage = "{\"type\":\"${HostEnvironmentInfoBridge.ERR_GET_ENVIRONMENT_INFO} $TEST_ERROR_MSG\"}"
     private val testEnvironmentError = HostEnvironmentInfoError(null, infoErrMessage)
-    private fun createEnvironmentImpl(
-            canGetInfo: Boolean,
-            isImplemented: Boolean
-    ): HostEnvironmentBridgeDispatcher {
+    private fun createEnvironmentImpl(canGetInfo: Boolean, isImplemented: Boolean): HostEnvironmentBridgeDispatcher {
         return if (isImplemented) {
             object : HostEnvironmentBridgeDispatcher {
                 override fun getHostEnvironmentInfo(
-                        onSuccess: (info: HostEnvironmentInfo) -> Unit,
-                        onError: (infoError: HostEnvironmentInfoError) -> Unit) {
+                    onSuccess: (info: HostEnvironmentInfo) -> Unit,
+                    onError: (infoError: HostEnvironmentInfoError) -> Unit
+                ) {
                     if (canGetInfo)
                         onSuccess.invoke(hostEnvironmentInfo)
                     else
@@ -65,10 +63,12 @@ class HostEnvironmentInfoBridgeSpec {
     }
 
     @Test
+    @SuppressWarnings("MaximumLineLength")
     fun `postError should be called when there is no get environment info retrieval implementation`() {
         val dispatcher = Mockito.spy(createEnvironmentImpl(false, false))
         miniAppBridge.setHostEnvironmentBridgeDispatcher(dispatcher)
-        val errMsg = "{\"type\":\"${HostEnvironmentInfoBridge.ERR_GET_ENVIRONMENT_INFO} ${ErrorBridgeMessage.NO_IMPL}\"}"
+        val errMsg = "{\"type\":\"${HostEnvironmentInfoBridge.ERR_GET_ENVIRONMENT_INFO}" +
+                " ${ErrorBridgeMessage.NO_IMPL}\"}"
         miniAppBridge.postMessage(Gson().toJson(hostEnvCallbackObj))
 
         verify(bridgeExecutor).postError(hostEnvCallbackObj.id, errMsg)

@@ -14,8 +14,8 @@ import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentInfoBridge
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -29,7 +29,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
-    "ComplexMethod", "LongParameterList", " MaximumLineLength"
+    "ComplexMethod", "LongParameterList", " MaximumLineLength", "FunctionMaxLength"
 )
 /** Bridge interface for communicating with mini app. **/
 open class MiniAppMessageBridge {
@@ -159,7 +159,8 @@ open class MiniAppMessageBridge {
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
                 callbackObj.id, jsonStr
             )
-            ActionType.GET_HOST_ENVIRONMENT_INFO.action -> hostEnvironmentInfoBridge.onGetHostEnvironmentInfo(callbackObj.id)
+            ActionType.GET_HOST_ENVIRONMENT_INFO.action ->
+                hostEnvironmentInfoBridge.onGetHostEnvironmentInfo(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
