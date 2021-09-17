@@ -83,6 +83,7 @@ dependencies {
     testImplementation "org.json:json:$json_test"
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
+    implementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads"
