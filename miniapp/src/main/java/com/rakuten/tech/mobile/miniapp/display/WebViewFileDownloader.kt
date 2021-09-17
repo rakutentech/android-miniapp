@@ -68,6 +68,8 @@ internal class WebViewFileDownloader(
     }
 }
 
+class MiniAppDownloadedFileProvider : FileProvider()
+
 internal class DownloadedFileProvider(
     private val context: Context
 ) {

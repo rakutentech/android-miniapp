@@ -22,7 +22,7 @@
             tools:replace="android:initOrder" />
 
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="com.rakuten.tech.mobile.miniapp.display.MiniAppDownloadedFileProvider"
             android:authorities="${applicationId}.miniapp.downloadedfileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
