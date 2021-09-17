@@ -237,6 +237,12 @@ The `ChatBridgeDispatcher`:
 | sendMessageToContactId       | 🚫       |
 | sendMessageToMultipleContacts| 🚫       |
 
+The `HostEnvironmentBridgeDispatcher`:
+
+| Method                       | Default  |
+|------------------------------|----------|
+| getHostEnvironmentInfo         | 🚫       |
+
 The sections below explain each feature in more detail.
 
 The following is a full code example of using `MiniAppMessageBridge`.
@@ -415,6 +421,24 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
 // set ChatBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+
+val hostEnvironmentBridgeDispatcher = object : HostEnvironmentBridgeDispatcher {
+
+    override fun getHostEnvironmentInfo(
+        onSuccess: (info: HostEnvironmentInfo) -> Unit,
+        onError: (infoError: HostEnvironmentInfoError) -> Unit
+    ) {
+        // Check if there is any environment info in HostApp
+        if (hasInfo) {
+            // allow miniapp to invoke the host environment info
+            onSuccess(hostEnvironmentInfo)
+        }
+        else
+            onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
+    }
+}
+// set HostEnvironmentBridgeDispatcher object to miniAppMessageBridge
+miniAppMessageBridge.setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher)
 ```
 </details>
 
@@ -885,7 +909,7 @@ Some keystores within devices are tampered or OEM were shipped with broken keyst
 
 This build error could occur if you are using older versions of other libraries from `com.rakuten.tech.mobile`.
 Some of the dependencies in this SDK have changed to a new Group ID of `io.github.rakutentech` (due to the [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)).
-This means that if you have another library in your project which depends on the older dependencies using the Gropu ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
+This means that if you have another library in your project which depends on the older dependencies using the Group ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
 
 To avoid this, please add the following to your `build.gradle` in order to exclude the old `com.rakuten.tech.mobile` dependencies from your project.
 

@@ -1,7 +1,8 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppInfo
+package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
 
 import androidx.annotation.Keep
 
+/** HostEnvironmentInfo object for miniapp. */
 @Keep
 data class HostEnvironmentInfo(
         val platformVersion: String,

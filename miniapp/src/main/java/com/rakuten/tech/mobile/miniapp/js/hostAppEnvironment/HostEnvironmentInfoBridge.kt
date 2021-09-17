@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppInfo
+package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
@@ -10,7 +10,7 @@ internal class HostEnvironmentInfoBridge {
     private var isMiniAppComponentReady = false
     private lateinit var dispatcher: HostEnvironmentBridgeDispatcher
 
-    fun setMiniAppComponents(bridgeExecutor: MiniAppBridgeExecutor) {
+    fun setMiniAppComponent(bridgeExecutor: MiniAppBridgeExecutor) {
         this.bridgeExecutor = bridgeExecutor
         isMiniAppComponentReady = true
     }

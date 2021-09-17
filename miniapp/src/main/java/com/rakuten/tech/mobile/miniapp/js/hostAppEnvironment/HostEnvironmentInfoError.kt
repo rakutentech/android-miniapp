@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppInfo
+package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
 
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeError
 

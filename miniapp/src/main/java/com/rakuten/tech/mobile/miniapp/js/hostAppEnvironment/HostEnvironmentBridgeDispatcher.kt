@@ -1,15 +1,15 @@
-package com.rakuten.tech.mobile.miniapp.js.hostAppInfo
+package com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment
 
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 
 /**
- * A class to provide the interfaces for providing host environment info.
+ * A class to provide the interface for providing host environment info.
  */
 interface HostEnvironmentBridgeDispatcher {
 
     /**
-     * Get host environment info from host app.
+     * Get environment info from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
     fun getHostEnvironmentInfo(

@@ -14,8 +14,8 @@ import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppInfo.HostEnvironmentBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostAppInfo.HostEnvironmentInfoBridge
+import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostAppEnvironment.HostEnvironmentInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -66,7 +66,7 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        hostEnvironmentInfoBridge.setMiniAppComponents(bridgeExecutor)
+        hostEnvironmentInfoBridge.setMiniAppComponent(bridgeExecutor)
 
         miniAppViewInitialized = true
     }
