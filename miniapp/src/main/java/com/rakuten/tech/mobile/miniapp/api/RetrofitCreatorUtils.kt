@@ -70,7 +70,8 @@ private fun createCertificatePinner(baseUrl: String, pubKey: String): Certificat
         .build()
 }
 
-private fun String.extractAuthority(): String {
+@VisibleForTesting
+internal fun String.extractAuthority(): String {
     return try {
         URI.create(this).toURL().authority
     } catch (e: MalformedURLException) {
