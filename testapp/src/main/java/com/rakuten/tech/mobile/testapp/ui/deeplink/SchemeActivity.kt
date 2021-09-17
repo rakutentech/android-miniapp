@@ -89,6 +89,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
             subscriptionKey = subscriptionKey,
             hostAppUserAgentInfo = AppSettings.instance.miniAppSettings.hostAppUserAgentInfo,
             isPreviewMode = AppSettings.instance.miniAppSettings.isPreviewMode,
+            requireSignatureVerification = AppSettings.instance.miniAppSettings.requireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(

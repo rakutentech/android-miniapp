@@ -21,11 +21,11 @@ open class MetadataApiSpec private constructor(
     private lateinit var baseUrl: String
     internal lateinit var retrofit: Retrofit
 
-    val requiredPermissionObj =
+    private val requiredPermissionObj =
         listOf(MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"))
-    val optionalPermissionObj =
+    private val optionalPermissionObj =
         listOf(MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason"))
-    val metadataResponse = MetadataResponse(requiredPermissionObj, optionalPermissionObj, TEST_ATP_LIST, hashMapOf())
+    internal val metadataResponse = MetadataResponse(requiredPermissionObj, optionalPermissionObj, TEST_ATP_LIST, hashMapOf())
 
     @Before
     fun baseSetup() {

@@ -27,6 +27,12 @@ class AppSettings private constructor(context: Context) {
             cache.isPreviewMode = isPreviewMode
         }
 
+    var requireSignatureVerification: Boolean
+        get() = cache.requireSignatureVerification ?: manifestConfig.requireSignatureVerification()
+        set(isRequired) {
+            cache.requireSignatureVerification = isRequired
+        }
+
     var projectId: String
         get() = cache.projectId ?: manifestConfig.rasProjectId()
         set(projectId) {
@@ -124,6 +130,7 @@ class AppSettings private constructor(context: Context) {
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
+            requireSignatureVerification = requireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(
@@ -158,6 +165,14 @@ private class Settings(context: Context) {
             else
                 null
         set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
+
+    var requireSignatureVerification: Boolean?
+        get() =
+            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
+                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
+            else
+                null
+        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!).apply()
 
     var projectId: String?
         get() = prefs.getString(APP_ID, null)
@@ -231,6 +246,7 @@ private class Settings(context: Context) {
 
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
+        private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

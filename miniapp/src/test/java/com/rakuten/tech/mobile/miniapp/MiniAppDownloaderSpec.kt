@@ -1,8 +1,10 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
@@ -24,12 +26,14 @@ import kotlin.test.assertTrue
 @Suppress("LargeClass")
 open class MiniAppDownloaderBaseSpec {
     internal val apiClient: ApiClient = mock()
+    private val miniAppAnalytics: MiniAppAnalytics = mock()
     internal val storage: MiniAppStorage = mock()
     internal val miniAppStatus: MiniAppStatus = mock()
     internal val verifier: CachedMiniAppVerifier = mock()
     internal val manifestApiCache: ManifestApiCache = mock()
+    private val signatureVerifier: SignatureVerifier = mock()
     internal lateinit var downloader: MiniAppDownloader
-    internal val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = TestCoroutineDispatcher()
     internal val testMiniApp = TEST_MA.copy(
         id = TEST_ID_MINIAPP,
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
@@ -49,15 +53,18 @@ open class MiniAppDownloaderBaseSpec {
         downloader = spy(
             MiniAppDownloader(
                 apiClient = apiClient,
+                miniAppAnalytics = miniAppAnalytics,
+                requireSignatureVerification = false,
                 initStorage = { storage },
                 initStatus = { miniAppStatus },
                 initVerifier = { verifier },
                 initManifestApiCache = { manifestApiCache },
+                initSignatureVerifier = { signatureVerifier },
                 coroutineDispatcher = dispatcher
             )
         )
         downloader.updateApiClient(apiClient)
-
+        downloader.updateRequireSignatureVerification(false)
         When calling verifier.verify(any(), any()) itReturns true
     }
 
@@ -76,6 +83,7 @@ open class MiniAppDownloaderBaseSpec {
 @ExperimentalCoroutinesApi
 @SuppressWarnings("LargeClass")
 class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
+
     @Test
     fun `when downloading a mini app then downloader should fetch manifest at first`() {
         runBlocking {
@@ -95,32 +103,38 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             When calling downloader.fetchManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
-            ) itReturns ManifestEntity(emptyList())
+            ) itReturns Pair(
+                ManifestEntity(emptyList(), TEST_PUBLIC_KEY_ID),
+                ManifestHeader(TEST_MANIFEST_SIGNATURE)
+            )
             downloader.startDownload(testMiniApp)
         }
 
     @Test
-    fun `isManifestValid returns true for valid Manifest`() {
-        val manifestEntity = ManifestEntity(files = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2))
-        assertTrue { downloader.isManifestValid(manifestEntity) }
+    fun `doesManifestFileExist returns true for valid Manifest`() {
+        val manifestEntity = ManifestEntity(
+            files = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2),
+            publicKeyId = TEST_PUBLIC_KEY_ID
+        )
+        assertTrue { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
-    fun `isManifestValid returns false when Manifest has empty list`() {
-        val manifestEntity = ManifestEntity(emptyList())
-        assertFalse { downloader.isManifestValid(manifestEntity) }
+    fun `doesManifestFileExist returns false when Manifest has empty list`() {
+        val manifestEntity = ManifestEntity(emptyList(), TEST_PUBLIC_KEY_ID)
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
-    fun `isManifestValid returns false when manifest is null`() {
+    fun `doesManifestFileExist returns false when manifest is null`() {
         val manifestEntity = Gson().fromJson("{}", ManifestEntity::class.java)
-        assertFalse { downloader.isManifestValid(manifestEntity) }
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
-    fun `isManifestValid returns false when files list in manifest is null`() {
+    fun `doesManifestFileExist returns false when files list in manifest is null`() {
         val manifestEntity = Gson().fromJson("""{"files": null}""", ManifestEntity::class.java)
-        assertFalse { downloader.isManifestValid(manifestEntity) }
+        assertFalse { downloader.doesManifestFileExist(manifestEntity) }
     }
 
     @Test
@@ -498,7 +512,10 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         When calling downloader.fetchManifest(
             TEST_ID_MINIAPP,
             TEST_ID_MINIAPP_VERSION
-        ) itReturns ManifestEntity(listOf(TEST_URL_HTTPS_1))
+        ) itReturns Pair(
+                ManifestEntity(listOf(TEST_URL_HTTPS_1), TEST_PUBLIC_KEY_ID),
+                ManifestHeader(TEST_MANIFEST_SIGNATURE)
+        )
 
         val mockResponseBody = TEST_BODY_CONTENT.toResponseBody(null)
         When calling apiClient.downloadFile(TEST_URL_HTTPS_1) itReturns mockResponseBody

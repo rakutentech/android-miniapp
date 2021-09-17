@@ -9,6 +9,8 @@ internal enum class Actype(val value: String) {
     HOST_LAUNCH("mini_app_host_launch"),
     OPEN("mini_app_open"),
     CLOSE("mini_app_close"),
+    SIGNATURE_VALIDATION_SUCCESS("mini_app_signature_validation_success"),
+    SIGNATURE_VALIDATION_FAIL("mini_app_signature_validation_fail"),
     GET_UNIQUE_ID("mini_app_get_unique_id"),
     REQUEST_PERMISSION("mini_app_request_permission"),
     REQUEST_CUSTOM_PERMISSIONS("mini_app_request_custom_permissions"),
