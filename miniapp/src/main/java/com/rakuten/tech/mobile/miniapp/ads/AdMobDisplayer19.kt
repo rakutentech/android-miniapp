@@ -16,7 +16,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-@Deprecated("Use AdMobDisplayer19 if you're using Google Ads SDK 19. If you're using Google Ads SDK 20 or higher, use AdMobDisplyer20 from the admob-latest module.")
+@Deprecated(
+        "Use AdMobDisplayer19 if you're using Google Ads SDK 19. " +
+                "If you're using Google Ads SDK 20 or higher, " +
+                "use AdMobDisplyer20 from the admob-latest module."
+)
 typealias AdMobDisplayer = AdMobDisplayer19
 
 /**

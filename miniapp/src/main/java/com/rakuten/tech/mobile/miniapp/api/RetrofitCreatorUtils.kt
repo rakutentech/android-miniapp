@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Patterns
 import androidx.annotation.VisibleForTesting
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.BuildConfig
@@ -71,7 +70,7 @@ private fun createCertificatePinner(baseUrl: String, pubKey: String): Certificat
         .build()
 }
 
-fun String.extractAuthority(): String {
+private fun String.extractAuthority(): String {
     return try {
         URI.create(this).toURL().authority
     } catch (e: MalformedURLException) {
