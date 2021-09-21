@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.signatureverifier.api
 
 import androidx.test.core.app.ApplicationProvider
+import com.rakuten.tech.mobile.miniapp.signatureverifier.PublicKeyFetcher
 import junit.framework.TestCase
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -19,7 +20,7 @@ open class PublicKeyFetcherSpec {
     internal val mockApiClient = Mockito.mock(SignatureApiClient::class.java)
 
     internal fun createFetcher() =
-        PublicKeyFetcher(mockApiClient)
+            PublicKeyFetcher(mockApiClient)
 
     internal fun enqueueResponse(
         body: String,
@@ -159,11 +160,11 @@ class PublicKeyFetcherErrorSpec : PublicKeyFetcherSpec() {
         enqueueErrorResponse(code = 404)
 
         val fetcher = PublicKeyFetcher(
-            SignatureApiClient(
-                "https://www.example.com",
-                "key",
-                ApplicationProvider.getApplicationContext()
-            )
+                SignatureApiClient(
+                        "https://www.example.com",
+                        "key",
+                        ApplicationProvider.getApplicationContext()
+                )
         )
 
         fetcher.fetch("test_key_id")

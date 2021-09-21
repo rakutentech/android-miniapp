@@ -2,8 +2,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier
 
 import android.content.Context
 import android.util.Base64
-import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
-import com.rakuten.tech.mobile.miniapp.signatureverifier.api.SignatureApiClient
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +46,7 @@ internal class SignatureVerifier(
     ) = withContext(dispatcher) {
         // always return false when EncryptedSharedPreferences was not initialized
         // due to keystore validation.
-        val key = cache[publicKeyId] ?: return@withContext false
+        val key = cache.getKey(publicKeyId) ?: return@withContext false
 
         // preparing hash using miniapp zip file
         val zipFile = MiniAppFileUtil(basePath).createFile(inputStream)
@@ -57,29 +56,33 @@ internal class SignatureVerifier(
 
         // preparing data byte stream
         val data = (versionId + hash).byteInputStream()
+        val publicKey = rawToEncodedECPublicKey(key)
 
-        // verifying signature
-        val isVerified = Signature.getInstance("SHA256withECDSA").apply {
-            initVerify(rawToEncodedECPublicKey(key))
+        if (publicKey != null) {
+            // verifying signature
+            val isVerified = Signature.getInstance("SHA256withECDSA").apply {
+                initVerify(rawToEncodedECPublicKey(key))
 
-            val buffer = ByteArray(SIXTEEN_KILOBYTES)
-            var read = data.read(buffer)
-            while (read != -1) {
-                update(buffer, 0, read)
+                val buffer = ByteArray(SIXTEEN_KILOBYTES)
+                var read = data.read(buffer)
+                while (read != -1) {
+                    update(buffer, 0, read)
 
-                read = data.read(buffer)
+                    read = data.read(buffer)
+                }
+            }.verify(Base64.decode(signature, Base64.DEFAULT))
+
+            if (!isVerified) {
+                cache.remove(publicKeyId)
             }
-        }.verify(Base64.decode(signature, Base64.DEFAULT))
 
-        if (!isVerified) {
-            cache.remove(publicKeyId)
+            return@withContext isVerified
         }
-
-        return@withContext isVerified
+        return@withContext false
     }
 
-    private fun rawToEncodedECPublicKey(key: String): ECPublicKey {
-        val parameters = ecParameterSpecForCurve("secp256r1")
+    private fun rawToEncodedECPublicKey(key: String): ECPublicKey?  = try {
+        val parameters = ecParameterSpecForCurve()
         val keySizeBytes = parameters.order.bitLength() / java.lang.Byte.SIZE
         val pubKey = Base64.decode(key, Base64.DEFAULT)
 
@@ -93,12 +96,15 @@ internal class SignatureVerifier(
 
         val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
         val keyFactory = KeyFactory.getInstance("EC")
-        return keyFactory.generatePublic(keySpec) as ECPublicKey
+        keyFactory.generatePublic(keySpec) as ECPublicKey
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+        null
     }
 
-    private fun ecParameterSpecForCurve(curveName: String): ECParameterSpec {
+    private fun ecParameterSpecForCurve(): ECParameterSpec {
         val kpg = KeyPairGenerator.getInstance("EC")
-        kpg.initialize(ECGenParameterSpec(curveName))
+        kpg.initialize(ECGenParameterSpec("secp256r1"))
 
         return (kpg.generateKeyPair().public as ECPublicKey).params
     }
@@ -130,30 +136,22 @@ internal class SignatureVerifier(
          * Initializes an instance of the Signature Verifier SDK based on the provided parameters.
          *
          * @param [context] application context
-         * @param [baseUrl] endpoint used for public key fetching
-         * @param [subscriptionKey] authorization key for the public key fetching endpoint
+         * @param [apiUrl] used for file path
          *
          * @return `instance` of [SignatureVerifier] if initialization is successful, and `null` otherwise.
          */
         @SuppressWarnings("LongMethod", "TooGenericExceptionCaught", "PrintStackTrace")
         fun init(
             context: Context,
-            baseUrl: String,
-            subscriptionKey: String
+            apiUrl: String,
+            apiClient: ApiClient
         ): SignatureVerifier? {
             return try {
-
-                val client = SignatureApiClient(
-                    baseUrl = baseUrl,
-                    subscriptionKey = subscriptionKey,
-                    context = context
-                )
-
                 SignatureVerifier(
                     PublicKeyCache(
-                        keyFetcher = PublicKeyFetcher(client),
+                        keyFetcher = PublicKeyFetcher(apiClient),
                         context = context,
-                        baseUrl = baseUrl
+                        apiUrl = apiUrl
                     ),
                     context.filesDir
                 )

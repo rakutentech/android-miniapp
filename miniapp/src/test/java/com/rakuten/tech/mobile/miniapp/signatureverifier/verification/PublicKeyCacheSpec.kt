@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier.verification
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
-import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
+import com.rakuten.tech.mobile.miniapp.signatureverifier.PublicKeyFetcher
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -89,9 +89,9 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
     }
 
     private fun createCache(
-        fetcher: PublicKeyFetcher = mockFetcher,
-        context: Context = ApplicationProvider.getApplicationContext(),
-        encryptor: AesEncryptor? = mockEncryptor,
-        map: MutableMap<String, String>? = null
+            fetcher: PublicKeyFetcher = mockFetcher,
+            context: Context = ApplicationProvider.getApplicationContext(),
+            encryptor: AesEncryptor? = mockEncryptor,
+            map: MutableMap<String, String>? = null
     ) = PublicKeyCache(fetcher, context, "test", encryptor, map)
 }

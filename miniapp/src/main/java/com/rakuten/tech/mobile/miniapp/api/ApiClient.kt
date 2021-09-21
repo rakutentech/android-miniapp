@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -30,6 +31,7 @@ internal class ApiClient @VisibleForTesting constructor(
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
     private val metadataApi: MetadataApi = retrofit.create(MetadataApi::class.java),
+    private val publicKeyApi: PublicKeyApi = retrofit.create(PublicKeyApi::class.java),
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
@@ -118,6 +120,14 @@ internal class ApiClient @VisibleForTesting constructor(
         } ?: run {
             throw sdkExceptionForInternalServerError()
         }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchPublicKey(keyId: String): String {
+        val request = publicKeyApi.fetchPath(keyId)
+        return PublicKeyResponse.fromJsonString(
+                requestExecutor.executeRequest(request).body().toString()
+        ).ecKey
     }
 }
 
