@@ -764,6 +764,24 @@ mini app scheme and should close external webview.
 
 Using `#ExternalResultHandler.emitResult(String)` to transmit the url string to mini app view.
 
+#### Downloading files in a Mini App
+
+You can also optionally use your `MiniAppNavigator` to intercept file download requests from the Mini App. Note that this will only receive files that the Mini App downloaded with XHR, so the URL you receive will be a Base64 data URI. If you do not override the file download functionality, then the SDK will use default functionality to create an Intent for sharing the file to another App.
+
+To use this, you must implement the `MiniAppDownloadNavigator` interface in your `MiniAppNavigator` implementation.
+
+```kotlin
+miniAppNavigator = object : MiniAppNavigator, MiniAppDownloadNavigator {
+    // Override MiniAppNavigator functions here
+    // ...
+
+    // Override MiniAppDownloadNavigator functions
+    fun onFileDownloadStart(url: String, userAgent: String, contentDisposition: String, mimetype: String, contentLength: Long) {
+        // Decode URL as Base 64 and then use it somehow - i.e. save to device, share to another App, etc.
+    }
+}
+```
+
 ### File choosing
 **API Docs:** [MiniAppFileChooser](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-chooser/)
 
