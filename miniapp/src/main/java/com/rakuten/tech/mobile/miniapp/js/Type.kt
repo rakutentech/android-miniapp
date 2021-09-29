@@ -16,6 +16,7 @@ internal enum class ActionType(val action: String) {
     SEND_MESSAGE_TO_CONTACT_ID("sendMessageToContactId"),
     SEND_MESSAGE_TO_MULTIPLE_CONTACTS("sendMessageToMultipleContacts"),
     GET_POINTS("getPoints"),
+    EXTERNAL_WEBVIEW_CLOSE("setSecondaryWebviewClose"),
 }
 
 internal enum class DialogType {

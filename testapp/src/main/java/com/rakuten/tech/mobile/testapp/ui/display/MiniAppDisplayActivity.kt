@@ -21,6 +21,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
+import com.rakuten.tech.mobile.miniapp.js.ExternalWebviewDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -282,7 +283,20 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+
+        val externalWebviewDispatcher = object : ExternalWebviewDispatcher{
+            override fun onExternalWebViewClose(
+                onSuccess: (info: String) -> Unit,
+                onError: (infoError: String) -> Unit
+            ) {
+                onExternalWebviewClose = onSuccess
+            }
+        }
+
+        miniAppMessageBridge.setExternalWebviewDispatcher(externalWebviewDispatcher)
     }
+
+    var onExternalWebviewClose: ((info: String) -> Unit)? = null
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -307,6 +321,9 @@ class MiniAppDisplayActivity : BaseActivity() {
             data?.let { intent ->
                 miniAppFileChooser.onReceivedFiles(intent)
             }
+        }
+        onExternalWebviewClose?.let {
+            it("webview closed")
         }
     }
 

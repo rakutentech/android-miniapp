@@ -40,6 +40,7 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
+    private val externalWebViewBridge = ExternalWebViewBridge()
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -63,9 +64,17 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
+        externalWebViewBridge.setMiniAppComponent(bridgeExecutor)
 
         miniAppViewInitialized = true
     }
+
+    /**
+     * Set implemented ExternalWebviewDispatcher.
+     * Can use the default provided class from sdk [ExternalWebviewDispatcher].
+     **/
+    fun setExternalWebviewDispatcher(externalWebviewDispatcher: ExternalWebviewDispatcher) =
+        externalWebViewBridge.setExternalWebviewDispatcher(externalWebviewDispatcher)
 
     @VisibleForTesting
     internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
@@ -154,6 +163,9 @@ open class MiniAppMessageBridge {
             )
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
                 callbackObj.id, jsonStr
+            )
+            ActionType.EXTERNAL_WEBVIEW_CLOSE.action -> externalWebViewBridge.onExternalWebViewClose(
+                callbackObj.id
             )
         }
         if (this::ratDispatcher.isInitialized)
