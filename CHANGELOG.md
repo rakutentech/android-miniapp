@@ -4,7 +4,7 @@
 **SDK**
 - **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
-- **Feature:** Added optional public key pinning through meta data.
+- **Feature:** Added optional public key pinning through `MiniAppSdkConfig`.
 - **Feature:** Added additional rat events to track sdk feature usage.
 - **Feature:** Added signature verification process before downloading a MiniApp. HostApp also can enable the settings of SDK to verify signature. Please see user-guide.
 

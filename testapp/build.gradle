@@ -55,7 +55,6 @@ android {
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName + " DEBUG",
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -69,7 +68,6 @@ android {
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName,
             ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: ""
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
@@ -84,6 +82,7 @@ android {
             debuggable true
             minifyEnabled false
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'false'
+            buildConfigField "String", "STG_CERTIFICATE_PUBLIC_KEY", property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
 
             manifestPlaceholders = debugManifestPlaceholders
         }
@@ -95,6 +94,7 @@ android {
             minifyEnabled true
             shrinkResources true
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
+            buildConfigField "String", "PROD_CERTIFICATE_PUBLIC_KEY", property("PROD_CERTIFICATE_PUBLIC_KEY") ?: ""
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             manifestPlaceholders = prodManifestPlaceholders
@@ -105,6 +105,7 @@ android {
             versionNameSuffix "-STG-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             matchingFallbacks = ['release', 'debug']
+            buildConfigField "String", "STG_CERTIFICATE_PUBLIC_KEY", property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
 
             manifestPlaceholders = stagingManifestPlaceholders
         }
@@ -114,6 +115,7 @@ android {
             versionNameSuffix "-RC-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
             matchingFallbacks = ['release', 'debug']
+            buildConfigField "String", "PROD_CERTIFICATE_PUBLIC_KEY", property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
 
             manifestPlaceholders = stagingManifestPlaceholders
         }

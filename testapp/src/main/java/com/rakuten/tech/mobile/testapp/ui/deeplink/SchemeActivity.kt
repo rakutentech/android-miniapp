@@ -22,34 +22,47 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private var miniAppInfo: MiniAppInfo? = null
     private var previewMiniAppInfo: PreviewMiniAppInfo? = null
-    private var miniAppSdkConfig: MiniAppSdkConfig = AppSettings.instance.miniAppSettings
+    private var miniAppSdkConfig: MiniAppSdkConfig? = null
+    private var miniApp: MiniApp? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         miniAppInfo = null
+        miniAppSdkConfig = createSdkConfig(
+            AppSettings.instance.miniAppSettings.rasProjectId,
+            AppSettings.instance.miniAppSettings.subscriptionKey
+        )
+        miniAppSdkConfig?.let { config ->
+            miniApp = MiniApp.instance(config, setConfigAsDefault = false)
+        }
+
         intent?.data?.let { data ->
             if (data.pathSegments.size > 1) {
                 val code = data.pathSegments[1]
                 Coroutines.IO {
                     try {
                         previewMiniAppInfo =
-                            MiniApp.instance().getMiniAppInfoByPreviewCode(previewCode = code)
+                            miniApp?.getMiniAppInfoByPreviewCode(previewCode = code)
                         miniAppInfo = previewMiniAppInfo?.miniapp
                         previewMiniAppInfo?.host?.let {
                             miniAppSdkConfig = createSdkConfig(
                                 hostId = it.id,
                                 subscriptionKey = it.subscriptionKey
                             )
+                            miniApp =
+                                MiniApp.instance(miniAppSdkConfig!!, setConfigAsDefault = false)
                         }
                         Coroutines.main {
-                            miniAppInfo?.let {
-                                preloadMiniAppWindow.initiate(
-                                    it,
-                                    it.id,
-                                    it.version.versionId,
-                                    this@SchemeActivity,
-                                    MiniApp.instance(miniAppSdkConfig, setConfigAsDefault = false)
-                                )
+                            miniAppInfo?.let { miniAppInfo ->
+                                miniApp?.let { miniApp ->
+                                    preloadMiniAppWindow.initiate(
+                                        miniAppInfo,
+                                        miniAppInfo.id,
+                                        miniAppInfo.version.versionId,
+                                        this@SchemeActivity,
+                                        miniApp = miniApp
+                                    )
+                                }
                             }
                         }
                     } catch (e: MiniAppNotFoundException) {
@@ -78,9 +91,9 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         finish()
     }
 
-    private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = ""){
+    private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = "") {
         Coroutines.main {
-            QRErrorWindow.getInstance(this@SchemeActivity).showMiniAppQRCodeError(errorType = type){
+            QRErrorWindow.getInstance(this).showMiniAppQRCodeError(errorType = type) {
                 finish()
             }
         }
@@ -101,7 +114,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            sslPinningPublicKey = AppSettings.instance.miniAppSettings.sslPinningPublicKey
+            sslPinningPublicKey = BuildConfig.STG_CERTIFICATE_PUBLIC_KEY
         )
     }
 }

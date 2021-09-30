@@ -140,11 +140,11 @@ internal class RealMiniApp(
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean) {
-        var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
+        var nextApiClient = apiClientRepository.getApiClientFor(newConfig)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
             if (setConfigAsDefault)
-                apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
+                apiClientRepository.registerApiClient(newConfig, nextApiClient)
         }
 
         nextApiClient.also {

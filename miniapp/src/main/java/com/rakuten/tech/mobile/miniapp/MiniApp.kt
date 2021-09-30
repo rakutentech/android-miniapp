@@ -214,7 +214,7 @@ abstract class MiniApp internal constructor() {
                 sslPublicKey = miniAppSdkConfig.sslPinningPublicKey
             )
             val apiClientRepository = ApiClientRepository().apply {
-                registerApiClient(defaultConfig.key, apiClient)
+                registerApiClient(defaultConfig, apiClient)
             }
             val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
                 context = context,
