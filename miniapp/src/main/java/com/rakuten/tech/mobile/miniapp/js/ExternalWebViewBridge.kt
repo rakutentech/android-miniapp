@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 
 internal class ExternalWebViewBridge {
@@ -30,23 +31,27 @@ internal class ExternalWebViewBridge {
     @SuppressWarnings("TooGenericExceptionCaught")
     fun onExternalWebViewClose(callbackId: String) = whenReady(callbackId) {
         try {
-            val successCallback = { info: String ->
-                bridgeExecutor.postValue(callbackId, Gson().toJson(info))
+            val successCallback = { message: String ->
+                bridgeExecutor.postValue(callbackId, Gson().toJson(message))
             }
-            val errorCallback = { callback: String ->
-                bridgeExecutor.postError(callbackId, Gson().toJson(ERR_GET_ENVIRONMENT_INFO))
+            val errorCallback = { errorMsg: String ->
+                val errorBridgeModel = MiniAppBridgeErrorModel(message = errorMsg)
+                bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
             }
 
             dispatcher.onExternalWebViewClose(successCallback, errorCallback)
         } catch (e: Exception) {
             bridgeExecutor.postError(
-                callbackId,
-                ERR_GET_ENVIRONMENT_INFO
+                callbackId, Gson().toJson(
+                    MiniAppBridgeErrorModel(
+                        "$ERR_EXTERNAL_WEBVIEW_CLOSE ${e.message}"
+                    )
+                )
             )
         }
     }
 
     internal companion object {
-        const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
+        const val ERR_EXTERNAL_WEBVIEW_CLOSE = "Error closing on external webview:"
     }
 }

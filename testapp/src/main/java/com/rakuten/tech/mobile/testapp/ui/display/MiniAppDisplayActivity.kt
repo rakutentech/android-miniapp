@@ -53,6 +53,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val fileChoosingReqCode = 10101
     private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
 
+    private var miniappExternalWebvieCloseCallback: ((message: String) -> Unit)? = null
+
     companion object {
         private val appIdTag = "app_id_tag"
         private val miniAppTag = "mini_app_tag"
@@ -286,17 +288,15 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val externalWebviewDispatcher = object : ExternalWebviewDispatcher{
             override fun onExternalWebViewClose(
-                onSuccess: (info: String) -> Unit,
-                onError: (infoError: String) -> Unit
+                isClosed: (message: String) -> Unit,
+                onError: (error: String) -> Unit
             ) {
-                onExternalWebviewClose = onSuccess
+                miniappExternalWebvieCloseCallback = isClosed
             }
         }
 
         miniAppMessageBridge.setExternalWebviewDispatcher(externalWebviewDispatcher)
     }
-
-    var onExternalWebviewClose: ((info: String) -> Unit)? = null
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -316,14 +316,16 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
+            data?.let { intent ->
+                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
+                miniappExternalWebvieCloseCallback?.let { it("External webview closed.") }
+                if(!isClosedByBackPressed)
+                    sampleWebViewExternalResultHandler.emitResult(intent)
+            }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 miniAppFileChooser.onReceivedFiles(intent)
             }
-        }
-        onExternalWebviewClose?.let {
-            it("webview closed")
         }
     }
 
