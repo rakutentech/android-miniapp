@@ -469,8 +469,6 @@ You can also choose to override the default functionality and instead share the 
 
 The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
 
-You can also choose to override the default functionality and instead share the text content to some feature within your own App.
-
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
 
