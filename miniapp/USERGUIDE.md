@@ -218,6 +218,7 @@ There are some methods have a default implementation but the host app can overri
 | requestDevicePermission      | 🚫       |
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
+| getHostEnvironmentInfo       | ✅       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -236,12 +237,6 @@ The `ChatBridgeDispatcher`:
 | sendMessageToContact         | 🚫       |
 | sendMessageToContactId       | 🚫       |
 | sendMessageToMultipleContacts| 🚫       |
-
-The `HostEnvironmentBridgeDispatcher`:
-
-| Method                       | Default  |
-|------------------------------|----------|
-| getHostEnvironmentInfo         | 🚫       |
 
 The sections below explain each feature in more detail.
 
@@ -289,6 +284,19 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // .. .. ..
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
+
+    override fun getHostEnvironmentInfo(
+        onSuccess: (info: HostEnvironmentInfo) -> Unit,
+        onError: (infoError: HostEnvironmentInfoError) -> Unit
+    ) {
+        // Check if there is any environment info in HostApp
+        if (hasInfo) {
+            // allow miniapp to invoke the host environment info
+            onSuccess(hostEnvironmentInfo)
+        }
+        else
+            onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
     }
 }
 
@@ -421,24 +429,6 @@ val chatBridgeDispatcher = object : ChatBridgeDispatcher {
 
 // set ChatBridgeDispatcher object to miniAppMessageBridge
 miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
-
-val hostEnvironmentBridgeDispatcher = object : HostEnvironmentBridgeDispatcher {
-
-    override fun getHostEnvironmentInfo(
-        onSuccess: (info: HostEnvironmentInfo) -> Unit,
-        onError: (infoError: HostEnvironmentInfoError) -> Unit
-    ) {
-        // Check if there is any environment info in HostApp
-        if (hasInfo) {
-            // allow miniapp to invoke the host environment info
-            onSuccess(hostEnvironmentInfo)
-        }
-        else
-            onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
-    }
-}
-// set HostEnvironmentBridgeDispatcher object to miniAppMessageBridge
-miniAppMessageBridge.setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher)
 ```
 </details>
 
@@ -468,9 +458,16 @@ Mini apps are able to make requests for custom permission types which are define
 **Note:** The Mini App SDK has a default UI built-in for the custom permission dialog, but you can choose to override this and use a custom UI. The Mini App SDK will handle caching the permission accept/deny state, and your `requestCustomPermission` function will only receive permissions which have not yet been granted to the mini app.
 
 ### Share Content
-**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
+**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/share-content.html)
 
 The mini app can share text content to either your App or another App. The default functionality for this will create a `text` type `Intent` which shows the Android chooser and allows the user to share the content to any App which accepts text.
+
+You can also choose to override the default functionality and instead share the text content to some feature within your own App.
+
+### Host Environment Info
+**API Docs:** [MiniAppMessageBridge.getHostEnvironmentInfo](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-environment.html)
+
+The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
 
 You can also choose to override the default functionality and instead share the text content to some feature within your own App.
 

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -25,9 +24,6 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
@@ -286,23 +282,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
-
-        // setup HostEnvironmentBridgeDispatcher
-        val hostEnvironmentBridgeDispatcher = object : HostEnvironmentBridgeDispatcher {
-
-            override fun getHostEnvironmentInfo(
-                    onSuccess: (info: HostEnvironmentInfo) -> Unit,
-                    onError: (infoError: HostEnvironmentInfoError) -> Unit) {
-                val hostEnvironmentInfo = HostEnvironmentInfo(
-                        platformVersion = "Android " + Build.VERSION.SDK_INT,
-                        hostVersion = getString(R.string.build_version),
-                        sdkVersion = getString(R.string.miniapp_sdk_version)
-                )
-
-                onSuccess.invoke(hostEnvironmentInfo)
-            }
-        }
-        miniAppMessageBridge.setHostEnvironmentBridgeDispatcher(hostEnvironmentBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(

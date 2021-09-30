@@ -14,6 +14,9 @@ import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.ads.AdMobClassName
 import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -48,6 +51,14 @@ open class BridgeCommon {
                 callback.invoke(true, SUCCESS)
                 callback.invoke(false, null)
                 callback.invoke(false, TEST_ERROR_MSG)
+            }
+
+            override fun getHostEnvironmentInfo(
+                onSuccess: (info: HostEnvironmentInfo) -> Unit,
+                onError: (infoError: HostEnvironmentInfoError) -> Unit
+            ) {
+                val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
+                onError.invoke(HostEnvironmentInfoError(infoErrMessage))
             }
         }
 
@@ -209,6 +220,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("Cannot load ad:", ErrorBridgeMessage.ERR_LOAD_AD)
         assertEquals("Cannot show ad:", ErrorBridgeMessage.ERR_SHOW_AD)
         assertEquals("Cannot request screen action:", ErrorBridgeMessage.ERR_SCREEN_ACTION)
+        assertEquals("Cannot get host environment info:", ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO)
     }
 }
 
