@@ -143,7 +143,7 @@ internal class SignatureVerifier(
         @SuppressWarnings("LongMethod", "TooGenericExceptionCaught", "PrintStackTrace")
         fun init(
             context: Context,
-            apiUrl: String,
+            baseUrl: String,
             apiClient: ApiClient
         ): SignatureVerifier? {
             return try {
@@ -151,7 +151,7 @@ internal class SignatureVerifier(
                     PublicKeyCache(
                         keyFetcher = PublicKeyFetcher(apiClient),
                         context = context,
-                        apiUrl = apiUrl
+                        baseUrl = baseUrl
                     ),
                     context.filesDir
                 )

@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniappDownloadedList
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModel
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 
@@ -82,8 +83,9 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
 
     private fun loadList() {
         settingsProgressDialog.show()
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
         viewModel =
-            ViewModelProvider.NewInstanceFactory().create(MiniAppListViewModel::class.java).apply {
+                ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
                 settingsProgressDialog.cancel()
                 miniAppListData.observe(
                     this@MiniAppDownloadedListActivity,

@@ -9,40 +9,36 @@ import java.io.File
 
 internal class PublicKeyCache(
         private val keyFetcher: PublicKeyFetcher,
-        context: Context,
-        apiUrl: String,
-        encryptor: AesEncryptor? = null,
-        testKeys: MutableMap<String, String>? = null
+        private val context: Context,
+        private var baseUrl: String
 ) {
 
-    private val encryptor: AesEncryptor by lazy { encryptor ?: AesEncryptor() }
+    private val testKeys: MutableMap<String, String>? = null
+    private val encryptor = AesEncryptor()
 
     private val file: File by lazy {
         // replace all non-alphanumeric characters to '.':
         // - multiple/group of non-alphanumeric will be replace by one '.'
         // - trailing period is removed
-        val filepath = apiUrl.replace(Regex("[^a-zA-Z0-9]+"), ".").replace(Regex(".$"), "")
-        File(
-                context.noBackupFilesDir,
-                ("signature.keys.$filepath").take(MAX_PATH)
-        )
+        baseUrl += "keys/"
+        val filepath = baseUrl.replace(Regex("[^a-zA-Z0-9]+"), ".").replace(Regex(".$"), "")
+        File(context.noBackupFilesDir, ("signature.keys.$filepath").take(MAX_PATH))
     }
 
     @VisibleForTesting
     internal val keys: MutableMap<String, String> by lazy {
-        testKeys
-                ?: if (file.exists()) {
-                    val text = file.readText()
+        testKeys ?: if (file.exists()) {
+            val text = file.readText()
 
-                    if (text.isNotBlank()) {
-                        val type = object : TypeToken<MutableMap<String, String>>() {}.type
-                        Gson().fromJson(text, type)
-                    } else {
-                        mutableMapOf()
-                    }
-                } else {
-                    mutableMapOf()
-                }
+            if (text.isNotBlank()) {
+                val type = object : TypeToken<MutableMap<String, String>>() {}.type
+                Gson().fromJson(text, type)
+            } else {
+                mutableMapOf()
+            }
+        } else {
+            mutableMapOf()
+        }
     }
 
     suspend fun getKey(keyId: String): String? {
