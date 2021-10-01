@@ -211,7 +211,7 @@ abstract class MiniApp internal constructor() {
                 rasProjectId = miniAppSdkConfig.rasProjectId,
                 subscriptionKey = miniAppSdkConfig.subscriptionKey,
                 isPreviewMode = miniAppSdkConfig.isPreviewMode,
-                sslPublicKey = miniAppSdkConfig.sslPinningPublicKey
+                sslPublicKeyList = miniAppSdkConfig.sslPinningPublicKeyList
             )
             val apiClientRepository = ApiClientRepository().apply {
                 registerApiClient(defaultConfig, apiClient)

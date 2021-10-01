@@ -40,11 +40,11 @@ internal class ApiClient @VisibleForTesting constructor(
         rasProjectId: String,
         subscriptionKey: String,
         isPreviewMode: Boolean = false,
-        sslPublicKey: String = ""
+        sslPublicKeyList: List<String> = emptyList()
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
-            pubKey = sslPublicKey,
+            pubKeyList = sslPublicKeyList,
             rasProjectId = rasProjectId,
             subscriptionKey = subscriptionKey
         ),

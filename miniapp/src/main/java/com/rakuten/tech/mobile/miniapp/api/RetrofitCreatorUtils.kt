@@ -15,12 +15,12 @@ import java.net.URI
 
 internal fun createRetrofitClient(
     baseUrl: String,
-    pubKey: String,
+    pubKeyList: List<String>,
     rasProjectId: String,
     subscriptionKey: String
 ) = createRetrofitClient(
     baseUrl = baseUrl,
-    pubKey = pubKey,
+    pubKeyList = pubKeyList,
     headers = RasSdkHeaders(
         appId = rasProjectId,
         subscriptionKey = subscriptionKey,
@@ -32,18 +32,18 @@ internal fun createRetrofitClient(
 @VisibleForTesting
 internal fun createRetrofitClient(
     baseUrl: String,
-    pubKey: String,
+    pubKeyList: List<String>,
     headers: RasSdkHeaders
 ): Retrofit {
     @Suppress("SpreadOperator")
     val httpClientBuilder = OkHttpClient.Builder()
         .addHeaderInterceptor(*headers.asArray())
         .addInterceptor(provideHeaderInterceptor())
-    if (pubKey != "") {
+    if (pubKeyList.isNotEmpty()) {
         httpClientBuilder.certificatePinner(
             createCertificatePinner(
                 baseUrl = baseUrl,
-                pubKey = pubKey
+                pubKeyList = pubKeyList
             )
         )
     }
@@ -64,10 +64,12 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
     chain.proceed(request)
 }
 
-private fun createCertificatePinner(baseUrl: String, pubKey: String): CertificatePinner {
-    return CertificatePinner.Builder()
-        .add(extractBaseUrl(baseUrl), pubKey)
-        .build()
+private fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>): CertificatePinner {
+    val certificatePinnerBuilder = CertificatePinner.Builder()
+    for (pubKey in pubKeyList){
+        certificatePinnerBuilder.add(extractBaseUrl(baseUrl), pubKey)
+    }
+    return certificatePinnerBuilder.build()
 }
 
 private fun extractBaseUrl(baseUrl: String): String {

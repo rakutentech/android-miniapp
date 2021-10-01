@@ -212,6 +212,6 @@ internal class RealMiniApp(
         rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
         isPreviewMode = newConfig.isPreviewMode,
-        sslPublicKey = newConfig.sslPinningPublicKey
+        sslPublicKeyList = newConfig.sslPinningPublicKeyList
     )
 }

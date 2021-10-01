@@ -11,6 +11,7 @@ import com.rakuten.tech.mobile.testapp.ui.display.error.QRCodeErrorType
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.miniapp.testapp.R
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -114,7 +115,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            sslPinningPublicKey = BuildConfig.STG_CERTIFICATE_PUBLIC_KEY
+            sslPinningPublicKeyList = listOf(
+                getString(R.string.sslPublicKey),
+                getString(R.string.sslPublicKeyBackup)
+            )
         )
     }
 }

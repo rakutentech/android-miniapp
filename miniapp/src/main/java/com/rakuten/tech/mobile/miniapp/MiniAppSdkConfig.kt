@@ -25,7 +25,7 @@ data class MiniAppSdkConfig(
     val isPreviewMode: Boolean,
     val requireSignatureVerification: Boolean,
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
-    val sslPinningPublicKey: String = ""
+    val sslPinningPublicKeyList: List<String> = emptyList()
 ) : Parcelable {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 
