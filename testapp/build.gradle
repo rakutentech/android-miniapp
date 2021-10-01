@@ -55,8 +55,8 @@ android {
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName + " DEBUG",
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPublicKey            : property("STG_CERTIFICATE_PUBLIC_KEY") ?: "",
-            sslPublicKeyBackup      : property("STG_CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
+            sslPublicKey            : property("CERTIFICATE_PUBLIC_KEY") ?: "",
+            sslPublicKeyBackup      : property("CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
