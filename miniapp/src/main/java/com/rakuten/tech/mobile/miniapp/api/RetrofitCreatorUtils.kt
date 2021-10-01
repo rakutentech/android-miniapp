@@ -66,7 +66,7 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
 
 private fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>): CertificatePinner {
     val certificatePinnerBuilder = CertificatePinner.Builder()
-    for (pubKey in pubKeyList){
+    for (pubKey in pubKeyList) {
         certificatePinnerBuilder.add(extractBaseUrl(baseUrl), pubKey)
     }
     return certificatePinnerBuilder.build()
