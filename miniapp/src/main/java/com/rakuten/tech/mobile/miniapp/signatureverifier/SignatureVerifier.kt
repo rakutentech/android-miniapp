@@ -22,6 +22,7 @@ import java.security.spec.ECGenParameterSpec
 import java.security.spec.ECParameterSpec
 import java.security.spec.ECPoint
 import java.security.spec.ECPublicKeySpec
+import java.util.*
 
 /**
  * Main entry point for the Signature Verifier.
@@ -54,14 +55,19 @@ internal class SignatureVerifier(
 
         // verifying signature
         val isVerified = Signature.getInstance("SHA256withECDSA").apply {
-            initVerify(rawToEncodedECPublicKey(key))
+            val rawKey = rawToEncodedECPublicKey(key)
+            if (rawKey != null) {
+                initVerify(rawKey)
 
-            val buffer = ByteArray(SIXTEEN_KILOBYTES)
-            var read = data.read(buffer)
-            while (read != -1) {
-                update(buffer, 0, read)
+                val buffer = ByteArray(SIXTEEN_KILOBYTES)
+                var read = data.read(buffer)
+                while (read != -1) {
+                    update(buffer, 0, read)
 
-                read = data.read(buffer)
+                    read = data.read(buffer)
+                }
+            } else {
+                return@withContext false
             }
         }.verify(Base64.decode(signature, Base64.DEFAULT))
 
@@ -72,22 +78,28 @@ internal class SignatureVerifier(
         return@withContext isVerified
     }
 
-    private fun rawToEncodedECPublicKey(key: String): ECPublicKey {
-        val parameters = ecParameterSpecForCurve("secp256r1")
-        val keySizeBytes = parameters.order.bitLength() / java.lang.Byte.SIZE
-        val pubKey = Base64.decode(key, Base64.DEFAULT)
+    private fun rawToEncodedECPublicKey(key: String): ECPublicKey? {
+        try {
+            val parameters = ecParameterSpecForCurve("secp256r1")
+            val keySizeBytes = (parameters.order.bitLength()) / java.lang.Byte.SIZE
+            val pubKey = Base64.decode(key, Base64.DEFAULT)
 
-        // First Byte represents compressed/uncompressed status
-        // We're expecting it to always be uncompressed (04)
-        var offset = UNCOMPRESSED_OFFSET
-        val x = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+            // First Byte represents compressed/uncompressed status
+            // We're expecting it to always be uncompressed (04)
 
-        offset += keySizeBytes
-        val y = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+            var offset = UNCOMPRESSED_OFFSET
+            val x = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
 
-        val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
-        val keyFactory = KeyFactory.getInstance("EC")
-        return keyFactory.generatePublic(keySpec) as ECPublicKey
+            offset += keySizeBytes
+            val y = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+
+            val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
+            val keyFactory = KeyFactory.getInstance("EC")
+            return keyFactory.generatePublic(keySpec) as ECPublicKey
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
 
     private fun ecParameterSpecForCurve(curveName: String): ECParameterSpec {
