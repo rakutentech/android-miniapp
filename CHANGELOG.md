@@ -15,6 +15,12 @@
 - **Feature:** Added deeplink support to open miniapp in demo app by qrcode scan.
 - **Feature:** Added signature verification requirement enabling option in App Settings.
 
+### 3.6.1 (2021-09-17)
+- **Fix:** Prevent manifest merger failure when Host App already has implemented a FileProvider.
+
+### 3.6.0 (2021-09-16)
+- **Feature:** Added support for downloading files in a Mini App, and added `MiniAppDownloadNavigator` interface for overriding the default file download behavior.
+
 ### 3.5.0 (2021-07-27)
 **SDK**
 - **Feature:** Added `getPoints` interface in `UserInfoBridgeDispatcher` to request for user's point with checking `rakuten.miniapp.user.POINTS` custom permission.
