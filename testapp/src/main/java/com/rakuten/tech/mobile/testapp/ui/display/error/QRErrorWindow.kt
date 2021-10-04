@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display.error
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.text.SpannableString
@@ -58,7 +59,7 @@ class QRErrorWindow {
      * [errorType] type of error.
      * [onClosed] callback when the window closes.
      */
-    fun showMiniAppQRCodeError(errorType: QRCodeErrorType, onClosed: (()->Unit)? = null) {
+    fun showMiniAppQRCodeError(errorType: QRCodeErrorType, onClosed: (() -> Unit)? = null) {
         if (instance != null) {
             renderScreen(errorType)
             this.onClosed = onClosed
@@ -80,7 +81,9 @@ class QRErrorWindow {
         binding.tvErrorDescription.movementMethod = LinkMovementMethod.getInstance()
         binding.btnClose.setOnClickListener(listener)
         dialog.setCancelable(false)
-        dialog.show()
+        if (!(context as Activity).isFinishing) {
+            dialog.show()
+        }
     }
 
     /** return the thumb image res id. */
@@ -92,7 +95,7 @@ class QRErrorWindow {
     }
 
     /** return the error title and error description for specific error type. */
-    private fun getTitleDescription(type: QRCodeErrorType, versionCode: String? = null): Pair<String,SpannableString>{
+    private fun getTitleDescription(type: QRCodeErrorType, versionCode: String? = null): Pair<String, SpannableString>{
         when (type) {
             QRCodeErrorType.MiniAppNoLongerExist -> {
                 return Pair(
@@ -114,13 +117,19 @@ class QRErrorWindow {
             }
             QRCodeErrorType.MiniAppNoPreview -> {
                 return Pair(
-                    context.resources.getString(R.string.error_title_miniapp_no_preview,versionCode ?: ""),
+                    context.resources.getString(
+                        R.string.error_title_miniapp_no_preview,
+                        versionCode ?: ""
+                    ),
                     spanDescription(context.resources.getString(R.string.error_desc_miniapp_no_preview))
                 )
             }
             QRCodeErrorType.MiniAppVersionMisMatch -> {
                 return Pair(
-                    context.resources.getString(R.string.error_title_miniapp_version_mismatch,versionCode ?: ""),
+                    context.resources.getString(
+                        R.string.error_title_miniapp_version_mismatch,
+                        versionCode ?: ""
+                    ),
                     spanDescription(context.resources.getString(R.string.error_desc_miniapp_version_mismatch))
                 )
             }
@@ -130,7 +139,12 @@ class QRErrorWindow {
     /** return the description with added listener which can open support link */
     private fun spanDescription(des: String): SpannableString{
         val ss = SpannableString(des)
-        ss.setSpan(spanListener, getSpanIndex(des).first, getSpanIndex(des).second, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        ss.setSpan(
+            spanListener,
+            getSpanIndex(des).first,
+            getSpanIndex(des).second,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
         return ss
     }
 
