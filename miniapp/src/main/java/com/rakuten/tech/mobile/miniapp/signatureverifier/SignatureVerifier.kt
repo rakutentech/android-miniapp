@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.SignatureApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
@@ -22,7 +23,6 @@ import java.security.spec.ECGenParameterSpec
 import java.security.spec.ECParameterSpec
 import java.security.spec.ECPoint
 import java.security.spec.ECPublicKeySpec
-import java.util.*
 
 /**
  * Main entry point for the Signature Verifier.
@@ -97,7 +97,7 @@ internal class SignatureVerifier(
             val keyFactory = KeyFactory.getInstance("EC")
             return keyFactory.generatePublic(keySpec) as ECPublicKey
         } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+            Log.e(TAG, e.message.toString())
             return null
         }
     }
@@ -109,7 +109,7 @@ internal class SignatureVerifier(
         return (kpg.generateKeyPair().public as ECPublicKey).params
     }
 
-    @SuppressWarnings("MagicNumber", "PrintStackTrace")
+    @SuppressWarnings("MagicNumber")
     private fun calculateSha256Hash(byteArray: ByteArray): String {
         var generated: String? = null
         try {
@@ -121,12 +121,13 @@ internal class SignatureVerifier(
             }
             generated = sb.toString()
         } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
+            Log.e(TAG, e.message.toString())
         }
         return generated.toString()
     }
 
     companion object {
+        private const val TAG = "SignatureVerifier"
         private const val SIXTEEN_KILOBYTES = 16 * 1024
 
         private const val UNCOMPRESSED_OFFSET = 1
