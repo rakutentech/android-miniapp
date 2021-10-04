@@ -107,6 +107,8 @@ android {
         }
         staging {
             initWith release
+            resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
             applicationIdSuffix '.staging'
             versionNameSuffix "-STG-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
@@ -116,6 +118,8 @@ android {
         }
         rc {
             initWith release
+            resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
             applicationIdSuffix '.rc'
             versionNameSuffix "-RC-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
