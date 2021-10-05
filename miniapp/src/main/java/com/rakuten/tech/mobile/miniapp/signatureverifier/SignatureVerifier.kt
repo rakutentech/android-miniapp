@@ -37,13 +37,11 @@ internal class SignatureVerifier(
      * Verifies the [signature] of the data from [inputStream] using the [publicKeyId].
      * @return true if [signature] associated with the data from [inputStream] is valid.
      */
-    @SuppressWarnings("LabeledExpression")
-    suspend fun verify(
-        publicKeyId: String,
-        versionId: String,
-        inputStream: InputStream,
-        signature: String
-    ) = withContext(dispatcher) {
+    @SuppressWarnings("LabeledExpression", "MaxLineLength")
+    suspend fun verify(publicKeyId: String,
+                       versionId: String,
+                       inputStream: InputStream,
+                       signature: String) = withContext(dispatcher) {
         // always return false when EncryptedSharedPreferences was not initialized
         // due to keystore validation.
         val key = cache.getKey(publicKeyId) ?: return@withContext false
@@ -56,12 +54,12 @@ internal class SignatureVerifier(
 
         // preparing data byte stream
         val data = (versionId + hash).byteInputStream()
-        val publicKey = rawToEncodedECPublicKey(key)
 
-        if (publicKey != null) {
-            // verifying signature
-            val isVerified = Signature.getInstance("SHA256withECDSA").apply {
-                initVerify(rawToEncodedECPublicKey(key))
+        // verifying signature
+        val isVerified = Signature.getInstance("SHA256withECDSA").apply {
+            val rawKey = rawToEncodedECPublicKey(key)
+            if (rawKey != null) {
+                initVerify(rawKey)
 
                 val buffer = ByteArray(SIXTEEN_KILOBYTES)
                 var read = data.read(buffer)
@@ -70,15 +68,16 @@ internal class SignatureVerifier(
 
                     read = data.read(buffer)
                 }
-            }.verify(Base64.decode(signature, Base64.DEFAULT))
-
-            if (!isVerified) {
-                cache.remove(publicKeyId)
+            } else {
+                return@withContext false
             }
+        }.verify(Base64.decode(signature, Base64.DEFAULT))
 
-            return@withContext isVerified
+        if (!isVerified) {
+            cache.remove(publicKeyId)
         }
-        return@withContext false
+
+        return@withContext isVerified
     }
 
     private fun rawToEncodedECPublicKey(key: String): ECPublicKey?  = try {

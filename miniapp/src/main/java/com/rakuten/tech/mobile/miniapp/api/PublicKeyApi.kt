@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import retrofit2.Call
@@ -14,6 +15,7 @@ internal interface PublicKeyApi {
     ): Call<PublicKeyResponse>
 }
 
+@Keep
 internal data class PublicKeyResponse(
         val id: String = "",
         val ecKey: String = "",
