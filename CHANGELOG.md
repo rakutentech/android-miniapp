@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.X.X (YYYY-MM-DD)
+### 3.7.0 (2021-10-07)
 **SDK**
 - **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
