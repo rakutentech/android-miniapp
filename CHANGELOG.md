@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.X.X (YYYY-MM-DD)
+### 3.7.0 (2021-10-07)
 **SDK**
 - **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
@@ -13,6 +13,7 @@
 - **Feature:** User can see access token scopes requested for the RAE audience in first-time screen.
 - **Feature:** User can scan qr code and preview miniapp in demo app.
 - **Feature:** Added deeplink support to open miniapp in demo app by qrcode scan.
+- **Feature:** Added additional rat events to track the demo app by adding custom views.
 - **Feature:** Added signature verification requirement enabling option in App Settings.
 
 ### 3.6.1 (2021-09-17)
