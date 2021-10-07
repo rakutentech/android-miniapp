@@ -23,7 +23,7 @@ data class MiniAppSdkConfig(
     val hostAppVersionId: String = "",
     val hostAppUserAgentInfo: String,
     val isPreviewMode: Boolean,
-    val requireSignatureVerification: Boolean,
+    val requireSignatureVerification: Boolean = false,
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
     val sslPinningPublicKeyList: List<String> = emptyList()
 ) : Parcelable {
