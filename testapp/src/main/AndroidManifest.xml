@@ -116,9 +116,6 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
             android:value="${ratEndpoint}" />
-        <meta-data
-            android:name="com.rakuten.tech.mobile.ras.SSLPinningPublicKey"
-            android:value="${sslPinningPublicKey}" />
     </application>
 
 </manifest>
