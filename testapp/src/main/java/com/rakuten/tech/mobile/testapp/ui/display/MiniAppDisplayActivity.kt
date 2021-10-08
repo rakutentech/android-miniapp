@@ -21,9 +21,9 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
-import com.rakuten.tech.mobile.miniapp.js.ExternalWebviewDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -52,8 +52,6 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
     private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
-
-    private var miniappExternalWebvieCloseCallback: ((message: String) -> Unit)? = null
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -285,17 +283,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
-
-        val externalWebviewDispatcher = object : ExternalWebviewDispatcher{
-            override fun onExternalWebViewClose(
-                isClosed: (message: String) -> Unit,
-                onError: (error: String) -> Unit
-            ) {
-                miniappExternalWebvieCloseCallback = isClosed
-            }
-        }
-
-        miniAppMessageBridge.setExternalWebviewDispatcher(externalWebviewDispatcher)
     }
 
     override fun onRequestPermissionsResult(
@@ -318,7 +305,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniappExternalWebvieCloseCallback?.let { it("External webview closed.") }
+                miniAppMessageBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "External webview closed")
                 if(!isClosedByBackPressed)
                     sampleWebViewExternalResultHandler.emitResult(intent)
             }
@@ -338,5 +325,10 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (!viewModel.canGoBackwards()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
     }
 }

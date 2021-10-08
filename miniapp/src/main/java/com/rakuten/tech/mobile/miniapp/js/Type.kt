@@ -16,7 +16,6 @@ internal enum class ActionType(val action: String) {
     SEND_MESSAGE_TO_CONTACT_ID("sendMessageToContactId"),
     SEND_MESSAGE_TO_MULTIPLE_CONTACTS("sendMessageToMultipleContacts"),
     GET_POINTS("getPoints"),
-    EXTERNAL_WEBVIEW_CLOSE("setSecondaryWebviewClose"),
 }
 
 internal enum class DialogType {
@@ -34,4 +33,10 @@ internal enum class ScreenOrientation(val value: String) {
     LOCK_PORTRAIT("rakuten.miniapp.screen.LOCK_PORTRAIT"),
     LOCK_LANDSCAPE("rakuten.miniapp.screen.LOCK_LANDSCAPE"),
     LOCK_RELEASE("rakuten.miniapp.screen.LOCK_RELEASE"),
+}
+
+/** Types of native events can be dispatched to miniapp. **/
+enum class NativeEventType(val value: String) {
+    EXTERNAL_WEBVIEW_CLOSE("miniAppWebviewClosed"),
+    MINIAPP_ON_PAUSE("miniAppOnPause")
 }

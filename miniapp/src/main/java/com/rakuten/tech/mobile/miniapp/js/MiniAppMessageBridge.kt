@@ -40,7 +40,6 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
-    private val externalWebViewBridge = ExternalWebViewBridge()
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -64,17 +63,9 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        externalWebViewBridge.setMiniAppComponent(bridgeExecutor)
 
         miniAppViewInitialized = true
     }
-
-    /**
-     * Set implemented ExternalWebviewDispatcher.
-     * Can use the default provided class from sdk [ExternalWebviewDispatcher].
-     **/
-    fun setExternalWebviewDispatcher(externalWebviewDispatcher: ExternalWebviewDispatcher) =
-        externalWebViewBridge.setExternalWebviewDispatcher(externalWebviewDispatcher)
 
     @VisibleForTesting
     internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
@@ -164,9 +155,6 @@ open class MiniAppMessageBridge {
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
                 callbackObj.id, jsonStr
             )
-            ActionType.EXTERNAL_WEBVIEW_CLOSE.action -> externalWebViewBridge.onExternalWebViewClose(
-                callbackObj.id
-            )
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -188,6 +176,14 @@ open class MiniAppMessageBridge {
      **/
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
+
+    /**
+     * Dispatch Native events to miniapp.
+     **/
+    fun dispatchNativeEvent(eventType: NativeEventType, value: String = "") {
+        if (this::bridgeExecutor.isInitialized)
+            bridgeExecutor.dispatchEvent(eventType = eventType.value, value = value)
+    }
 
     private fun onGetUniqueId(callbackObj: CallbackObj) = try {
         val successCallback = { uniqueId: String ->
