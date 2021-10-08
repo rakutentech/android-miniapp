@@ -331,4 +331,9 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onPause()
         miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
     }
+
+    override fun onResume() {
+        super.onResume()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
+    }
 }

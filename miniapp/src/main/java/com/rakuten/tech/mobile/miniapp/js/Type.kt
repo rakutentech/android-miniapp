@@ -37,6 +37,7 @@ internal enum class ScreenOrientation(val value: String) {
 
 /** Types of native events can be dispatched to miniapp. **/
 enum class NativeEventType(val value: String) {
-    EXTERNAL_WEBVIEW_CLOSE("miniAppWebviewClosed"),
-    MINIAPP_ON_PAUSE("miniAppOnPause")
+    EXTERNAL_WEBVIEW_CLOSE("miniappwebviewclosed"),
+    MINIAPP_ON_PAUSE("miniapppause"),
+    MINIAPP_ON_RESUME("miniappresume"),
 }

@@ -32,9 +32,6 @@ class SampleWebViewClient(private val miniAppExternalUrlLoader: MiniAppExternalU
 
 class SampleWebChromeClient(val context: Context) : WebChromeClient() {
 
-    override fun onCloseWindow(window: WebView?) {
-        super.onCloseWindow(window)
-    }
     override fun onCreateWindow(
         view: WebView?,
         isDialog: Boolean,
