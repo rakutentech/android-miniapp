@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.signatureverifier.api
 
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import java.io.IOException
@@ -20,6 +21,7 @@ internal class PublicKeyFetcher(private val client: SignatureApiClient) {
     }
 }
 
+@Keep
 internal data class PublicKeyResponse(
     val id: String = "",
     val ecKey: String = "",

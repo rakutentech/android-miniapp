@@ -1,14 +1,14 @@
 ## CHANGELOG
 
-### 3.X.X (After v3.7.0)
+### 3.X.X
 **SDK**
 - **Feature:** Added `getHostEnvironmentInfo` function in `MiniAppMessageBridge` to provide environment information to Mini App.
 
-### 3.X.X (YYYY-MM-DD)
+### 3.7.0 (2021-10-07)
 **SDK**
 - **Feature:** Added `admob-latest` module to support latest admob sdk.
 - **Feature:** Added `getMiniAppInfoByPreviewCode` interface to get MiniAppInfo by preview code.
-- **Feature:** Added optional public key pinning through meta data.
+- **Feature:** Added optional public key pinning through `MiniAppSdkConfig`.
 - **Feature:** Added additional rat events to track sdk feature usage.
 - **Feature:** Added signature verification process before downloading a MiniApp. HostApp also can enable the settings of SDK to verify signature. Please see user-guide.
 
@@ -17,6 +17,7 @@
 - **Feature:** User can see access token scopes requested for the RAE audience in first-time screen.
 - **Feature:** User can scan qr code and preview miniapp in demo app.
 - **Feature:** Added deeplink support to open miniapp in demo app by qrcode scan.
+- **Feature:** Added additional rat events to track the demo app by adding custom views.
 - **Feature:** Added signature verification requirement enabling option in App Settings.
 
 ### 3.6.1 (2021-09-17)

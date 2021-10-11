@@ -60,7 +60,7 @@ open class BaseRealMiniAppSpec {
                 ratDispatcher = ratDispatcher
             ))
 
-        When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
+        When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
         When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
         When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
     }
