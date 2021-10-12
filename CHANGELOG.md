@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 3.X.X
+**SDK**
+- **Feature:** Added `getHostEnvironmentInfo` function in `MiniAppMessageBridge` to provide environment information to Mini App.
+
 ### 3.7.0 (2021-10-07)
 **SDK**
 - **Feature:** Added `admob-latest` module to support latest admob sdk.
