@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.PublicKeyFetcher
 import com.rakuten.tech.mobile.miniapp.signatureverifier.api.SignatureApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
@@ -59,14 +60,19 @@ internal class SignatureVerifier(
 
         // verifying signature
         val isVerified = Signature.getInstance("SHA256withECDSA").apply {
-            initVerify(rawToEncodedECPublicKey(key))
+            val rawKey = rawToEncodedECPublicKey(key)
+            if (rawKey != null) {
+                initVerify(rawKey)
 
-            val buffer = ByteArray(SIXTEEN_KILOBYTES)
-            var read = data.read(buffer)
-            while (read != -1) {
-                update(buffer, 0, read)
+                val buffer = ByteArray(SIXTEEN_KILOBYTES)
+                var read = data.read(buffer)
+                while (read != -1) {
+                    update(buffer, 0, read)
 
-                read = data.read(buffer)
+                    read = data.read(buffer)
+                }
+            } else {
+                return@withContext false
             }
         }.verify(Base64.decode(signature, Base64.DEFAULT))
 
@@ -77,22 +83,28 @@ internal class SignatureVerifier(
         return@withContext isVerified
     }
 
-    private fun rawToEncodedECPublicKey(key: String): ECPublicKey {
-        val parameters = ecParameterSpecForCurve("secp256r1")
-        val keySizeBytes = parameters.order.bitLength() / java.lang.Byte.SIZE
-        val pubKey = Base64.decode(key, Base64.DEFAULT)
+    private fun rawToEncodedECPublicKey(key: String): ECPublicKey? {
+        try {
+            val parameters = ecParameterSpecForCurve("secp256r1")
+            val keySizeBytes = (parameters.order.bitLength()) / java.lang.Byte.SIZE
+            val pubKey = Base64.decode(key, Base64.DEFAULT)
 
-        // First Byte represents compressed/uncompressed status
-        // We're expecting it to always be uncompressed (04)
-        var offset = UNCOMPRESSED_OFFSET
-        val x = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+            // First Byte represents compressed/uncompressed status
+            // We're expecting it to always be uncompressed (04)
 
-        offset += keySizeBytes
-        val y = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+            var offset = UNCOMPRESSED_OFFSET
+            val x = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
 
-        val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
-        val keyFactory = KeyFactory.getInstance("EC")
-        return keyFactory.generatePublic(keySpec) as ECPublicKey
+            offset += keySizeBytes
+            val y = BigInteger(POSITIVE_BIG_INTEGER, pubKey.copyOfRange(offset, offset + keySizeBytes))
+
+            val keySpec = ECPublicKeySpec(ECPoint(x, y), parameters)
+            val keyFactory = KeyFactory.getInstance("EC")
+            return keyFactory.generatePublic(keySpec) as ECPublicKey
+        } catch (e: java.lang.Exception) {
+            Log.e(TAG, e.message.toString())
+            return null
+        }
     }
 
     private fun ecParameterSpecForCurve(curveName: String): ECParameterSpec {
@@ -102,7 +114,7 @@ internal class SignatureVerifier(
         return (kpg.generateKeyPair().public as ECPublicKey).params
     }
 
-    @SuppressWarnings("MagicNumber", "PrintStackTrace")
+    @SuppressWarnings("MagicNumber")
     private fun calculateSha256Hash(byteArray: ByteArray): String {
         var generated: String? = null
         try {
@@ -114,12 +126,13 @@ internal class SignatureVerifier(
             }
             generated = sb.toString()
         } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
+            Log.e(TAG, e.message.toString())
         }
         return generated.toString()
     }
 
     companion object {
+        private const val TAG = "SignatureVerifier"
         private const val SIXTEEN_KILOBYTES = 16 * 1024
 
         private const val UNCOMPRESSED_OFFSET = 1

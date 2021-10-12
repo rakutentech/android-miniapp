@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import com.rakuten.tech.mobile.miniapp.TEST_PUBLIC_KEY_SSL
+import com.rakuten.tech.mobile.miniapp.TEST_LIST_PUBLIC_KEY_SSL
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.TEST_VALUE
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
@@ -62,7 +62,7 @@ class RetrofitCreatorUtilsSpec private constructor(
 
     private fun createClient() = createRetrofitClient(
         baseUrl = baseUrl,
-        pubKey = TEST_PUBLIC_KEY_SSL,
+        pubKeyList = TEST_LIST_PUBLIC_KEY_SSL,
         headers = mockRasSdkHeaders
     )
 }

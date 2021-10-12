@@ -55,7 +55,8 @@ android {
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName + " DEBUG",
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("STG_CERTIFICATE_PUBLIC_KEY") ?: ""
+            sslPublicKey            : property("CERTIFICATE_PUBLIC_KEY") ?: "",
+            sslPublicKeyBackup      : property("CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -69,7 +70,8 @@ android {
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName,
             ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
-            sslPinningPublicKey     : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: ""
+            sslPublicKey            : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: "",
+            sslPublicKeyBackup      : property("PROD_CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
@@ -81,6 +83,8 @@ android {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
+            resValue "string", "sslPublicKey", debugManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", debugManifestPlaceholders.sslPublicKeyBackup
             debuggable true
             minifyEnabled false
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'false'
@@ -91,6 +95,8 @@ android {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
+            resValue "string", "sslPublicKey", prodManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", prodManifestPlaceholders.sslPublicKeyBackup
             debuggable true
             minifyEnabled true
             shrinkResources true
@@ -101,6 +107,8 @@ android {
         }
         staging {
             initWith release
+            resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
             applicationIdSuffix '.staging'
             versionNameSuffix "-STG-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
@@ -110,6 +118,8 @@ android {
         }
         rc {
             initWith release
+            resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
             applicationIdSuffix '.rc'
             versionNameSuffix "-RC-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'
