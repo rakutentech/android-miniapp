@@ -2,18 +2,24 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -27,7 +33,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
-    "ComplexMethod", "LongParameterList", " MaximumLineLength"
+    "ComplexMethod", "LongParameterList", " MaximumLineLength", "FunctionMaxLength"
 )
 /** Bridge interface for communicating with mini app. **/
 open class MiniAppMessageBridge {
@@ -129,6 +135,25 @@ open class MiniAppMessageBridge {
         }
     }
 
+    /**
+     * Get environment info from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getHostEnvironmentInfo(
+        onSuccess: (info: HostEnvironmentInfo) -> Unit,
+        onError: (infoError: HostEnvironmentInfoError) -> Unit
+    ) {
+        val hostEnvironmentInfo = HostEnvironmentInfo(
+                platformVersion = Build.VERSION.RELEASE,
+                hostVersion = activity.packageManager.getPackageInfo(
+                        activity.packageName, 0
+                ).versionName,
+                sdkVersion = BuildConfig.VERSION_NAME
+        )
+
+        onSuccess.invoke(hostEnvironmentInfo)
+    }
+
     @SuppressWarnings("UndocumentedPublicFunction")
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
@@ -155,6 +180,7 @@ open class MiniAppMessageBridge {
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> chatBridge.onSendMessageToMultipleContacts(
                 callbackObj.id, jsonStr
             )
+            ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -270,6 +296,23 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
     }
 
+    @SuppressWarnings("TooGenericExceptionCaught")
+    private fun onGetHostEnvironmentInfo(callbackId: String) = try {
+        val successCallback = { info: HostEnvironmentInfo ->
+            bridgeExecutor.postValue(callbackId, Gson().toJson(info))
+        }
+        val errorCallback = { callback: HostEnvironmentInfoError ->
+            val errorBridgeModel = MiniAppBridgeErrorModel(callback.type, callback.message)
+            bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
+        }
+
+        getHostEnvironmentInfo(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId,
+                Gson().toJson(MiniAppBridgeErrorModel("$ERR_GET_ENVIRONMENT_INFO ${e.message}"))
+        )
+    }
+
     @VisibleForTesting
     @Suppress("FunctionMaxLength")
     /** Inform the permission request result to MiniApp. **/
@@ -306,4 +349,5 @@ internal object ErrorBridgeMessage {
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
+    const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
 }

@@ -217,6 +217,7 @@ There are some methods have a default implementation but the host app can overri
 | requestDevicePermission      | 🚫       |
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
+| getHostEnvironmentInfo       | ✅       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -282,6 +283,19 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // .. .. ..
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
+
+    override fun getHostEnvironmentInfo(
+        onSuccess: (info: HostEnvironmentInfo) -> Unit,
+        onError: (infoError: HostEnvironmentInfoError) -> Unit
+    ) {
+        // Check if there is any environment info in HostApp
+        if (hasInfo) {
+            // allow miniapp to invoke the host environment info
+            onSuccess(hostEnvironmentInfo)
+        }
+        else
+            onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
     }
 }
 
@@ -443,11 +457,16 @@ Mini apps are able to make requests for custom permission types which are define
 **Note:** The Mini App SDK has a default UI built-in for the custom permission dialog, but you can choose to override this and use a custom UI. The Mini App SDK will handle caching the permission accept/deny state, and your `requestCustomPermission` function will only receive permissions which have not yet been granted to the mini app.
 
 ### Share Content
-**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
+**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/share-content.html)
 
 The mini app can share text content to either your App or another App. The default functionality for this will create a `text` type `Intent` which shows the Android chooser and allows the user to share the content to any App which accepts text.
 
 You can also choose to override the default functionality and instead share the text content to some feature within your own App.
+
+### Host Environment Info
+**API Docs:** [MiniAppMessageBridge.getHostEnvironmentInfo](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-environment.html)
+
+The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
@@ -902,7 +921,7 @@ Some keystores within devices are tampered or OEM were shipped with broken keyst
 
 This build error could occur if you are using older versions of other libraries from `com.rakuten.tech.mobile`.
 Some of the dependencies in this SDK have changed to a new Group ID of `io.github.rakutentech` (due to the [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)).
-This means that if you have another library in your project which depends on the older dependencies using the Gropu ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
+This means that if you have another library in your project which depends on the older dependencies using the Group ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
 
 To avoid this, please add the following to your `build.gradle` in order to exclude the old `com.rakuten.tech.mobile` dependencies from your project.
 
