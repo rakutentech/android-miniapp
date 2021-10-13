@@ -35,3 +35,10 @@ internal enum class ScreenOrientation(val value: String) {
     LOCK_LANDSCAPE("rakuten.miniapp.screen.LOCK_LANDSCAPE"),
     LOCK_RELEASE("rakuten.miniapp.screen.LOCK_RELEASE"),
 }
+
+/** Types of native events can be dispatched to miniapp. **/
+enum class NativeEventType(val value: String) {
+    EXTERNAL_WEBVIEW_CLOSE("miniappwebviewclosed"),
+    MINIAPP_ON_PAUSE("miniapppause"),
+    MINIAPP_ON_RESUME("miniappresume"),
+}
