@@ -39,7 +39,12 @@ internal class SignatureVerifier(
      * @return true if [signature] associated with the data from [inputStream] is valid.
      */
     @SuppressWarnings("LabeledExpression", "MaxLineLength")
-    suspend fun verify(publicKeyId: String, versionId: String, inputStream: InputStream, signature: String) = withContext(dispatcher) {
+    suspend fun verify(
+        publicKeyId: String,
+        versionId: String,
+        inputStream: InputStream,
+        signature: String
+    ) = withContext(dispatcher) {
         // always return false when EncryptedSharedPreferences was not initialized
         // due to keystore validation.
         val key = cache[publicKeyId] ?: return@withContext false

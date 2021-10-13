@@ -165,6 +165,14 @@ internal open class MiniAppWebView(
         }
     }
 
+    override fun runNativeEventCallback(eventType: String, value: String) {
+        post {
+            evaluateJavascript(
+                "MiniAppBridge.execCustomEventsCallback(`$eventType`, `${value.replace("`", "\\`")}`)"
+            ) {}
+        }
+    }
+
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
         .setDomain(miniAppScheme.miniAppDomain)
         .addPathHandler(
@@ -198,4 +206,5 @@ internal open class MiniAppWebView(
 internal interface WebViewListener {
     fun runSuccessCallback(callbackId: String, value: String)
     fun runErrorCallback(callbackId: String, errorMessage: String)
+    fun runNativeEventCallback(eventType: String, value: String)
 }

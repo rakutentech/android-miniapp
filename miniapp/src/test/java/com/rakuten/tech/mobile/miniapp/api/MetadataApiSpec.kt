@@ -25,7 +25,9 @@ open class MetadataApiSpec private constructor(
         listOf(MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason"))
     private val optionalPermissionObj =
         listOf(MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason"))
-    internal val metadataResponse = MetadataResponse(requiredPermissionObj, optionalPermissionObj, TEST_ATP_LIST, hashMapOf())
+    internal val metadataResponse = MetadataResponse(
+            requiredPermissionObj, optionalPermissionObj, TEST_ATP_LIST, hashMapOf()
+    )
 
     @Before
     fun baseSetup() {
