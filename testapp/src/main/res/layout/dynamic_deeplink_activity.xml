@@ -16,32 +16,32 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/status_no_deeplink"
+                android:id="@+id/statusNoDeepLink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/bg_section"
                 android:gravity="center"
                 android:padding="@dimen/small_4"
-                android:text="No deeplink has been saved yet"
+                android:text="@string/deeplink_activity_not_saved"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_medium_14"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listDeeplink"
+                android:id="@+id/listDeepLink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingBottom="@dimen/large_72"
-                tools:listitem="@layout/item_list_deeplink" />
+                tools:listitem="@layout/item_list_dynamic_deeplink" />
 
             <TextView
-                android:id="@+id/viewEmptyDeeplink"
+                android:id="@+id/viewEmptyDeepLink"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="No deeplink available!"
+                android:text="@string/deeplink_activity_no_deeplink"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_large_18"
                 android:visibility="gone"
@@ -49,7 +49,7 @@
         </LinearLayout>
 
         <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATFloatingActionButton
-            android:id="@+id/fabAddDeeplink"
+            android:id="@+id/fabAddDeepLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"

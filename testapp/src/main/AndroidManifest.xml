@@ -86,8 +86,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.DeeplinkListActivity"
-            android:label="Deeplink" />
+            android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity"
+            android:label="@string/action_dynamic_deeplinks" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"

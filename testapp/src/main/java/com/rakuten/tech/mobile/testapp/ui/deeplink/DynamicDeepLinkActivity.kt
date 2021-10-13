@@ -17,41 +17,47 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.miniapp.testapp.databinding.DeeplinksActivityBinding
+import com.rakuten.tech.mobile.miniapp.testapp.databinding.DynamicDeeplinkActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactInputDialog
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
-class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
+class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
-    private lateinit var binding: DeeplinksActivityBinding
-    private val adapter = DeeplinkListAdapter(this)
-    private var deeplinkListPrefs: SharedPreferences? = null
+    private lateinit var binding: DynamicDeeplinkActivityBinding
+    private val adapter = DeepLinkListAdapter(this)
+    private var deepLinksPrefs: SharedPreferences? = null
     private var isFirstLaunch: Boolean
-        get() = deeplinkListPrefs?.getBoolean(IS_FIRST_TIME, true) ?: true
+        get() = deepLinksPrefs?.getBoolean(IS_FIRST_TIME, true) ?: true
         set(value) {
-            deeplinkListPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
+            deepLinksPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
         }
-
-    private val fakeDeeplinks = arrayOf("miniappdemo://miniapp", "miniappdemo://miniapp2", "miniappdemo://miniapp3")
+    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
+        if (new != old) {
+            invalidateOptionsMenu()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        deeplinkListPrefs = getSharedPreferences(
-                "com.rakuten.tech.mobile.miniapp.sample.deeplinks", Context.MODE_PRIVATE
+        deepLinksPrefs = getSharedPreferences(
+                "com.rakuten.tech.mobile.miniapp.sample.dynamic_deeplinks", Context.MODE_PRIVATE
         )
         settings = AppSettings.instance
         showBackIcon()
-        binding = DataBindingUtil.setContentView(this, R.layout.deeplinks_activity)
-        renderRandomDeeplinkList()
-        binding.fabAddDeeplink.setOnClickListener { onAddAction() }
+        binding = DataBindingUtil.setContentView(this, R.layout.dynamic_deeplink_activity)
+        binding.fabAddDeepLink.setOnClickListener { onAddAction() }
+        renderAdapter(settings.deeplinks)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
+        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
@@ -71,7 +77,7 @@ class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
     }
 
     private fun onSaveAction() {
-        settings.deeplinks = adapter.provideDeeplinkEntries()
+        settings.deeplinks = adapter.provideDeepLinkEntries()
         finish()
     }
 
@@ -80,33 +86,30 @@ class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
     }
 
     private fun showDialog(isUpdate: Boolean, position: Int? = null) {
-        val deeplinkView = layoutInflater.inflate(R.layout.dialog_add_deeplink, null)
-        val edtDeeplink = deeplinkView.findViewById<AppCompatEditText>(R.id.edtDeeplink)
+        val deepLinkView = layoutInflater.inflate(R.layout.dialog_add_dynamic_deeplink, null)
+        val edtDeepLink = deepLinkView.findViewById<AppCompatEditText>(R.id.edtDeepLink)
 
         ContactInputDialog.Builder().build(this).apply {
-            val randomDeeplink = createRandomDeeplinkList()
-            edtDeeplink.setText("")
-
-            setView(deeplinkView)
+            setView(deepLinkView)
 
             if (isUpdate) {
                 setPositiveButton(getString(R.string.action_update))
-                setDialogTitle("Deeplink Update")
+                setDialogTitle("Update Deeplink")
                 position?.let {
-                    val existingDeeplink = adapter.provideDeeplinkEntries()[it]
-                    edtDeeplink.setText(existingDeeplink)
+                    val existingDeepLink = adapter.provideDeepLinkEntries()[it]
+                    edtDeepLink.setText(existingDeepLink)
                 }
             } else {
                 setPositiveButton(getString(R.string.action_add))
-                setDialogTitle("Deeplink Input")
+                setDialogTitle("Add New Deeplink")
             }
 
             setPositiveListener(View.OnClickListener {
-                val deeplink: String = edtDeeplink.text.toString().trim()
+                val deepLink: String = edtDeepLink.text.toString().trim()
 
-                if (isVerifiedDeeplink(deeplink)) {
-                    if (isUpdate) position?.let { adapter.updateDeeplink(it, deeplink) }
-                    else adapter.addDeeplink(adapter.itemCount, deeplink)
+                if (isVerifiedDeepLink(deepLink)) {
+                    if (isUpdate) position?.let { adapter.updateDeepLink(it, deepLink) }
+                    else adapter.addDeepLink(adapter.itemCount, deepLink)
 
                     this.dialog?.cancel()
                 }
@@ -114,13 +117,13 @@ class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
         }.show()
     }
 
-    private fun isVerifiedDeeplink(deeplink: String): Boolean {
+    private fun isVerifiedDeepLink(deepLink: String): Boolean {
         var isVerified = true
 
-        if (deeplink.isEmpty()) {
+        if (deepLink.isEmpty()) {
             isVerified = false
 
-            Toast.makeText(this@DeeplinkListActivity, "Empty deeplink", Toast.LENGTH_LONG)
+            Toast.makeText(this@DynamicDeepLinkActivity, getString(R.string.deeplink_activity_error_empty), Toast.LENGTH_LONG)
                     .apply { setGravity(Gravity.TOP, 0, 100) }
                     .show()
         }
@@ -133,28 +136,11 @@ class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
         if (isFirstLaunch) isFirstLaunch = false
     }
 
-    private fun renderRandomDeeplinkList() {
-        if (!isFirstLaunch && settings.isDeeplinksSaved) {
-            if (settings.deeplinks.isEmpty()) {
-                renderAdapter(arrayListOf())
-            } else renderAdapter(settings.deeplinks)
-        } else {
-            val randomList = createRandomDeeplinkList()
-            renderAdapter(randomList)
-        }
-    }
-
-    private fun createRandomDeeplinkList(): ArrayList<String> = ArrayList<String>().apply {
-        for (i in 1..10) {
-            this.add("random deep link")
-        }
-    }
-
-    private fun renderAdapter(deeplinks: ArrayList<String>) {
-        adapter.addDeeplinkList(deeplinks)
-        binding.listDeeplink.adapter = adapter
-        binding.listDeeplink.layoutManager = LinearLayoutManager(applicationContext)
-        binding.listDeeplink.addItemDecoration(
+    private fun renderAdapter(deepLinks: ArrayList<String>) {
+        adapter.addDeepLinkList(deepLinks)
+        binding.listDeepLink.adapter = adapter
+        binding.listDeepLink.layoutManager = LinearLayoutManager(applicationContext)
+        binding.listDeepLink.addItemDecoration(
                 DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -182,28 +168,29 @@ class DeeplinkListActivity : BaseActivity(), DeeplinkListener {
     private fun observeUIState() {
         when {
             adapter.itemCount == 0 -> {
-                binding.viewEmptyDeeplink.visibility = View.VISIBLE
-                binding.statusNoDeeplink.visibility = View.GONE
+                binding.viewEmptyDeepLink.visibility = View.VISIBLE
+                binding.statusNoDeepLink.visibility = View.GONE
             }
             adapter.itemCount != 0 && !settings.isDeeplinksSaved -> {
-                binding.viewEmptyDeeplink.visibility = View.GONE
-                binding.statusNoDeeplink.visibility = View.VISIBLE
+                binding.viewEmptyDeepLink.visibility = View.GONE
+                binding.statusNoDeepLink.visibility = View.VISIBLE
             }
             else -> {
-                binding.viewEmptyDeeplink.visibility = View.GONE
-                binding.statusNoDeeplink.visibility = View.GONE
+                binding.viewEmptyDeepLink.visibility = View.GONE
+                binding.statusNoDeepLink.visibility = View.GONE
             }
         }
+        saveViewEnabled = !(adapter.itemCount != 0 && !settings.isDeeplinksSaved)
     }
 
     companion object {
         private const val IS_FIRST_TIME = "is_first_time"
         fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, DeeplinkListActivity::class.java))
+            activity.startActivity(Intent(activity, DynamicDeepLinkActivity::class.java))
         }
     }
 
-    override fun onDeeplinkItemClick(position: Int) {
+    override fun onDeepLinkItemClick(position: Int) {
         showDialog(isUpdate = true, position = position)
     }
 }

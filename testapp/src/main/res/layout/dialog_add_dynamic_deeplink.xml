@@ -6,7 +6,7 @@
     android:padding="@dimen/small_12">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilDeeplink"
+        android:id="@+id/tilDeepLink"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:endIconMode="clear_text"
@@ -15,11 +15,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edtDeeplink"
+            android:id="@+id/edtDeepLink"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/small_4"
-            android:hint="Deeplink"
+            android:hint="@string/deeplink_activity_input_hint"
             android:imeOptions="actionDone"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -39,6 +39,9 @@ internal class MiniAppWebViewClient(
             } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
                 shouldCancelLoading = true
+            } else {
+                // dynamic deeplinks
+
             }
         }
         return shouldCancelLoading

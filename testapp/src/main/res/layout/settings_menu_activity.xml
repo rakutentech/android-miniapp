@@ -120,8 +120,7 @@
                     android:paddingStart="@dimen/medium_16"
                     android:paddingTop="@dimen/small_4"
                     android:paddingEnd="@dimen/medium_16"
-                    android:paddingBottom="@dimen/small_4"
-                    android:text="@string/lb_features" />
+                    android:paddingBottom="@dimen/small_4" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
@@ -203,7 +202,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="Deeplink"
+                    app:titleLabel="@string/action_dynamic_deeplinks"
                     app:actionType="open"
                     app:pageName="Settings"
                     app:siteSection="Top"/>
