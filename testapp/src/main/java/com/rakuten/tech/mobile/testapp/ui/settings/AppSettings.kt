@@ -122,6 +122,13 @@ class AppSettings private constructor(context: Context) {
             cache.points = points
         }
 
+    var deeplinks: ArrayList<String>
+        get() = cache.deeplinks ?: arrayListOf()
+        set(deeplinks) { cache.deeplinks = deeplinks }
+
+    val isDeeplinksSaved: Boolean
+        get() = cache.isDeeplinksSaved
+
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = manifestConfig.baseUrl(),
@@ -243,6 +250,16 @@ private class Settings(context: Context) {
         set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
                 .apply()
 
+    var deeplinks: ArrayList<String>?
+        get() = Gson().fromJson(
+                prefs.getString(DEEPLINKS, null),
+                object : TypeToken<ArrayList<String>>() {}.type
+        )
+        set(deeplinks) = prefs.edit().putString(DEEPLINKS, Gson().toJson(deeplinks)).apply()
+
+    val isDeeplinksSaved: Boolean
+        get() = prefs.contains(DEEPLINKS)
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
@@ -260,5 +277,6 @@ private class Settings(context: Context) {
         private const val ANALYTIC_CONFIGS = "analytic_configs"
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
         private const val POINTS = "points"
+        private const val DEEPLINKS = "deeplinks"
     }
 }
