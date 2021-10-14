@@ -24,20 +24,20 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ParameterListWrapping")
 internal class RealMiniAppDisplay(
-        private val basePath: String,
-        val miniAppInfo: MiniAppInfo,
-        val miniAppMessageBridge: MiniAppMessageBridge,
-        val miniAppNavigator: MiniAppNavigator?,
-        private val miniAppFileChooser: MiniAppFileChooser?,
-        val hostAppUserAgentInfo: String,
-        val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-        val downloadedManifestCache: DownloadedManifestCache,
-        val queryParams: String,
-        val miniAppAnalytics: MiniAppAnalytics,
-        val ratDispatcher: MessageBridgeRatDispatcher,
-        private val dynamicDeepLinksList: List<String>
+    private val basePath: String,
+    val miniAppInfo: MiniAppInfo,
+    val miniAppMessageBridge: MiniAppMessageBridge,
+    val miniAppNavigator: MiniAppNavigator?,
+    private val miniAppFileChooser: MiniAppFileChooser?,
+    val hostAppUserAgentInfo: String,
+    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+    val downloadedManifestCache: DownloadedManifestCache,
+    val queryParams: String,
+    val miniAppAnalytics: MiniAppAnalytics,
+    val ratDispatcher: MessageBridgeRatDispatcher,
+    private val dynamicDeepLinksList: List<String>
 ) : MiniAppDisplay {
 
     var appUrl: String? = null

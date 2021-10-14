@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp
 import android.content.Context
 import android.content.Intent
 import android.net.MailTo
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 

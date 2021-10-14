@@ -1,7 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
-import android.webkit.*
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebResourceError
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
@@ -29,7 +33,7 @@ internal class MiniAppWebViewClient(
             val requestUrl = request.url.toString()
             val deepLink = requestUrl.substring(requestUrl.lastIndexOf("/") + 1)
             if (miniAppScheme.isDynamicDeepLink(deepLink, dynamicDeepLinksList)) {
-                // TODO: specific action
+                // specific action
             } else {
                 if (requestUrl.startsWith("tel:")) {
                     miniAppScheme.openPhoneDialer(context, requestUrl)
