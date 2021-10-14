@@ -29,7 +29,7 @@
 
     <string name="menu_title_search">Search</string>
     <string name="menu_title_settings">Settings</string>
-    <string name="menu_title_change_settings">Change App Settings</string>
+    <string name="menu_title_change_settings">Setting</string>
     <string name="menu_hint_search_miniapps">Search by Name or ID</string>
 
     <string name="userdata_edit_photo">Edit Photo</string>
