@@ -122,12 +122,12 @@ class AppSettings private constructor(context: Context) {
             cache.points = points
         }
 
-    var deeplinks: ArrayList<String>
-        get() = cache.deeplinks ?: arrayListOf()
-        set(deeplinks) { cache.deeplinks = deeplinks }
+    var dynamicDeeplinks: ArrayList<String>
+        get() = cache.dynamicDeeplinks ?: arrayListOf()
+        set(deeplinks) { cache.dynamicDeeplinks = deeplinks }
 
-    val isDeeplinksSaved: Boolean
-        get() = cache.isDeeplinksSaved
+    val isDynamicDeeplinksSaved: Boolean
+        get() = cache.isDynamicDeeplinksSaved
 
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
@@ -250,15 +250,15 @@ private class Settings(context: Context) {
         set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
                 .apply()
 
-    var deeplinks: ArrayList<String>?
+    var dynamicDeeplinks: ArrayList<String>?
         get() = Gson().fromJson(
-                prefs.getString(DEEPLINKS, null),
+                prefs.getString(DYNAMIC_DEEPLINKS, null),
                 object : TypeToken<ArrayList<String>>() {}.type
         )
-        set(deeplinks) = prefs.edit().putString(DEEPLINKS, Gson().toJson(deeplinks)).apply()
+        set(deeplinks) = prefs.edit().putString(DYNAMIC_DEEPLINKS, Gson().toJson(deeplinks)).apply()
 
-    val isDeeplinksSaved: Boolean
-        get() = prefs.contains(DEEPLINKS)
+    val isDynamicDeeplinksSaved: Boolean
+        get() = prefs.contains(DYNAMIC_DEEPLINKS)
 
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
@@ -277,6 +277,6 @@ private class Settings(context: Context) {
         private const val ANALYTIC_CONFIGS = "analytic_configs"
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
         private const val POINTS = "points"
-        private const val DEEPLINKS = "deeplinks"
+        private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
     }
 }

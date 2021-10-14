@@ -155,7 +155,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
-                AppSettings.instance.urlParameters
+                AppSettings.instance.urlParameters,
+                AppSettings.instance.dynamicDeeplinks
             )
         } else
             viewModel.obtainMiniAppDisplay(
@@ -165,7 +166,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
-                AppSettings.instance.urlParameters
+                AppSettings.instance.urlParameters,
+                AppSettings.instance.dynamicDeeplinks
             )
     }
 

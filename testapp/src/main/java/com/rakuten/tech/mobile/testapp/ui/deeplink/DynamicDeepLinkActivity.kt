@@ -18,12 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.DynamicDeeplinkActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactInputDialog
 import kotlin.collections.ArrayList
-import kotlin.properties.Delegates
 
 class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
     override val pageName: String = this::class.simpleName ?: ""
@@ -37,11 +35,6 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
         set(value) {
             deepLinksPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
         }
-    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
-        if (new != old) {
-            invalidateOptionsMenu()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,12 +45,11 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.dynamic_deeplink_activity)
         binding.fabAddDeepLink.setOnClickListener { onAddAction() }
-        renderAdapter(settings.deeplinks)
+        renderAdapter(settings.dynamicDeeplinks)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.settings_menu, menu)
-        menu.findItem(R.id.settings_menu_save).isEnabled = saveViewEnabled
         return true
     }
 
@@ -77,7 +69,7 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
     }
 
     private fun onSaveAction() {
-        settings.deeplinks = adapter.provideDeepLinkEntries()
+        settings.dynamicDeeplinks = adapter.provideDeepLinkEntries()
         finish()
     }
 
@@ -171,7 +163,7 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
                 binding.viewEmptyDeepLink.visibility = View.VISIBLE
                 binding.statusNoDeepLink.visibility = View.GONE
             }
-            adapter.itemCount != 0 && !settings.isDeeplinksSaved -> {
+            adapter.itemCount != 0 && !settings.isDynamicDeeplinksSaved -> {
                 binding.viewEmptyDeepLink.visibility = View.GONE
                 binding.statusNoDeepLink.visibility = View.VISIBLE
             }
@@ -180,7 +172,6 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
                 binding.statusNoDeepLink.visibility = View.GONE
             }
         }
-        saveViewEnabled = !(adapter.itemCount != 0 && !settings.isDeeplinksSaved)
     }
 
     companion object {

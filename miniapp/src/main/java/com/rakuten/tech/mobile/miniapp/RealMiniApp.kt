@@ -62,7 +62,8 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String
+        queryParams: String,
+        dynamicDeepLinksList: List<String>
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -78,7 +79,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                dynamicDeepLinksList
             )
         }
     }
@@ -88,7 +90,8 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String
+        queryParams: String,
+        dynamicDeepLinksList: List<String>
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -104,7 +107,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                dynamicDeepLinksList
             )
         }
     }
@@ -114,7 +118,8 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String
+        queryParams: String,
+        dynamicDeepLinksList: List<String>
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -128,7 +133,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                dynamicDeepLinksList
             )
         }
     }

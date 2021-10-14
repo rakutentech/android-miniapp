@@ -26,17 +26,18 @@ import kotlinx.coroutines.withContext
 
 @SuppressLint("SetJavaScriptEnabled")
 internal class RealMiniAppDisplay(
-    private val basePath: String,
-    val miniAppInfo: MiniAppInfo,
-    val miniAppMessageBridge: MiniAppMessageBridge,
-    val miniAppNavigator: MiniAppNavigator?,
-    private val miniAppFileChooser: MiniAppFileChooser?,
-    val hostAppUserAgentInfo: String,
-    val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    val downloadedManifestCache: DownloadedManifestCache,
-    val queryParams: String,
-    val miniAppAnalytics: MiniAppAnalytics,
-    val ratDispatcher: MessageBridgeRatDispatcher
+        private val basePath: String,
+        val miniAppInfo: MiniAppInfo,
+        val miniAppMessageBridge: MiniAppMessageBridge,
+        val miniAppNavigator: MiniAppNavigator?,
+        private val miniAppFileChooser: MiniAppFileChooser?,
+        val hostAppUserAgentInfo: String,
+        val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        val downloadedManifestCache: DownloadedManifestCache,
+        val queryParams: String,
+        val miniAppAnalytics: MiniAppAnalytics,
+        val ratDispatcher: MessageBridgeRatDispatcher,
+        private val dynamicDeepLinksList: List<String>
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -56,7 +57,8 @@ internal class RealMiniAppDisplay(
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        dynamicDeepLinksList: List<String>
     ) : this(
         "",
         MiniAppInfo.forUrl(),
@@ -68,7 +70,8 @@ internal class RealMiniAppDisplay(
         downloadedManifestCache,
         queryParams,
         miniAppAnalytics,
-        ratDispatcher
+        ratDispatcher,
+        dynamicDeepLinksList
     ) {
         this.appUrl = appUrl
     }
@@ -136,7 +139,8 @@ internal class RealMiniAppDisplay(
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
-                    ratDispatcher = ratDispatcher
+                    ratDispatcher = ratDispatcher,
+                    dynamicDeepLinksList = dynamicDeepLinksList
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -150,7 +154,8 @@ internal class RealMiniAppDisplay(
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
-                    ratDispatcher = ratDispatcher
+                    ratDispatcher = ratDispatcher,
+                    dynamicDeepLinksList = dynamicDeepLinksList
                 )
             }
 

@@ -38,14 +38,15 @@ class MiniAppDisplayViewModel constructor(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooser,
-        appParameters: String
+        appParameters: String,
+        dynamicDeepLinksList: List<String>
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
             else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -67,12 +68,13 @@ class MiniAppDisplayViewModel constructor(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooser,
-        appParameters: String
+        appParameters: String,
+        dynamicDeepLinksList: List<String>
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()

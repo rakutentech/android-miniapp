@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp
 import android.content.Context
 import android.content.Intent
 import android.net.MailTo
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
 
@@ -34,6 +35,8 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
     } else {
         url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
     }
+
+    fun isDynamicDeepLink(deepLink: String, hostDeepLinks: List<String>) = hostDeepLinks.contains(deepLink)
 
     fun appendParametersToUrl(url: String, queryParams: String): String {
         return if (queryParams.isEmpty()) url

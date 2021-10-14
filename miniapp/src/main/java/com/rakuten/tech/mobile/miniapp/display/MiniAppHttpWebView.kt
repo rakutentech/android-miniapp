@@ -28,7 +28,8 @@ internal class MiniAppHttpWebView(
         miniAppFileChooser
     ),
     queryParams: String,
-    ratDispatcher: MessageBridgeRatDispatcher
+    ratDispatcher: MessageBridgeRatDispatcher,
+    dynamicDeepLinksList: List<String>
 ) : MiniAppWebView(
     context,
     "",
@@ -41,7 +42,8 @@ internal class MiniAppHttpWebView(
     downloadedManifestCache,
     miniAppWebChromeClient,
     queryParams,
-    ratDispatcher
+    ratDispatcher,
+    dynamicDeepLinksList
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)
@@ -53,7 +55,8 @@ internal class MiniAppHttpWebView(
         null,
         miniAppNavigator!!,
         externalResultHandler,
-        miniAppScheme
+        miniAppScheme,
+        dynamicDeepLinksList
     )
 
     override fun getLoadUrl(): String = appUrl

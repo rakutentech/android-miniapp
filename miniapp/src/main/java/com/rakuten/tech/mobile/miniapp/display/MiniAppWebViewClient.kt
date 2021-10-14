@@ -1,11 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.webkit.WebResourceError
+import android.webkit.*
 import androidx.annotation.VisibleForTesting
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
@@ -17,7 +13,8 @@ internal class MiniAppWebViewClient(
     @VisibleForTesting internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
-    private val miniAppScheme: MiniAppScheme
+    private val miniAppScheme: MiniAppScheme,
+    private val dynamicDeepLinksList: List<String>
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
@@ -30,18 +27,20 @@ internal class MiniAppWebViewClient(
         var shouldCancelLoading = super.shouldOverrideUrlLoading(view, request)
         if (request.url != null) {
             val requestUrl = request.url.toString()
-            if (requestUrl.startsWith("tel:")) {
-                miniAppScheme.openPhoneDialer(context, requestUrl)
-                shouldCancelLoading = true
-            } else if (requestUrl.startsWith("mailto:")) {
-                miniAppScheme.openMailComposer(context, requestUrl)
-                shouldCancelLoading = true
-            } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
-                miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
-                shouldCancelLoading = true
+            val deepLink = requestUrl.substring(requestUrl.lastIndexOf("/") + 1)
+            if (miniAppScheme.isDynamicDeepLink(deepLink, dynamicDeepLinksList)) {
+                // TODO: specific action
             } else {
-                // dynamic deeplinks
-
+                if (requestUrl.startsWith("tel:")) {
+                    miniAppScheme.openPhoneDialer(context, requestUrl)
+                    shouldCancelLoading = true
+                } else if (requestUrl.startsWith("mailto:")) {
+                    miniAppScheme.openMailComposer(context, requestUrl)
+                    shouldCancelLoading = true
+                } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
+                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
+                    shouldCancelLoading = true
+                }
             }
         }
         return shouldCancelLoading
