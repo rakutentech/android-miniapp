@@ -80,7 +80,8 @@ open class BaseWebViewSpec {
         miniAppCustomPermissionCache = miniAppCustomPermissionCache,
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS,
-        ratDispatcher = mock()
+        ratDispatcher = mock(),
+        dynamicDeepLinksList = mock()
     )
 }
 
@@ -101,7 +102,8 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                 downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                dynamicDeepLinksList = mock()
         )
     }
 
@@ -177,7 +179,8 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             miniAppCustomPermissionCache = mock(),
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
-            ratDispatcher = mock()
+            ratDispatcher = mock(),
+            dynamicDeepLinksList = mock()
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -230,12 +233,13 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             mock(),
             mock(),
             TEST_URL_PARAMS,
+            mock(),
             mock()
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
             miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS,
-            mock())
+            mock(), mock())
         miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
@@ -292,7 +296,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webAssetLoader: WebViewAssetLoader? =
             Mockito.spy((miniAppWebView.webViewClient as MiniAppWebViewClient).loader)
         val webViewClient = MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme)
+            externalResultHandler, miniAppScheme, mock())
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
         webViewClient.shouldInterceptRequest(miniAppWebView, webResourceRequest)
@@ -306,7 +310,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme))
+            externalResultHandler, miniAppScheme, mock()))
 
         val displayer = Mockito.spy(miniAppWebView)
 
@@ -321,7 +325,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open phone dialer when there is telephone scheme`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme))
+            externalResultHandler, miniAppScheme, mock()))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
@@ -334,7 +338,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open mail composer when there is mail scheme`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-                externalResultHandler, miniAppScheme))
+                externalResultHandler, miniAppScheme, mock()))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
@@ -357,12 +361,13 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             miniAppCustomPermissionCache = miniAppCustomPermissionCache,
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
-            ratDispatcher = mock()
+            ratDispatcher = mock(),
+            dynamicDeepLinksList = mock()
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader? = (displayer.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator!!,
-            externalResultHandler, miniAppScheme))
+            externalResultHandler, miniAppScheme, mock()))
 
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
@@ -374,7 +379,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open external url loader when there is the config for navigation`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme))
+            externalResultHandler, miniAppScheme, mock()))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))

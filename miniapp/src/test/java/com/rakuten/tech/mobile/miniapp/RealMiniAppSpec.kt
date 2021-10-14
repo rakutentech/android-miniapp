@@ -48,6 +48,7 @@ open class BaseRealMiniAppSpec {
     )
 
     internal var ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
+    internal var dynamicDeepLinks: List<String> = emptyList()
 
     @Before
     fun setup() {
@@ -132,7 +133,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                dynamicDeepLinks
             )
         }
 
@@ -156,7 +158,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                dynamicDeepLinks
             )
         }
 
@@ -175,7 +178,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher, dynamicDeepLinks
             )
         }
 
