@@ -82,6 +82,10 @@ open class BridgeCommon {
             override fun runErrorCallback(callbackId: String, errorMessage: String) {
                 Assert.assertEquals(errorMessage, errMsg)
             }
+
+            override fun runNativeEventCallback(eventType: String, value: String) {
+                throw Exception()
+            }
         }
 }
 

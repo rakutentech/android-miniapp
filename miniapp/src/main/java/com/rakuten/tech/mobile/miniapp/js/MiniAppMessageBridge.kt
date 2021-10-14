@@ -203,6 +203,14 @@ open class MiniAppMessageBridge {
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
 
+    /**
+     * Dispatch Native events to miniapp.
+     **/
+    fun dispatchNativeEvent(eventType: NativeEventType, value: String = "") {
+        if (this::bridgeExecutor.isInitialized)
+            bridgeExecutor.dispatchEvent(eventType = eventType.value, value = value)
+    }
+
     private fun onGetUniqueId(callbackObj: CallbackObj) = try {
         val successCallback = { uniqueId: String ->
             bridgeExecutor.postValue(callbackObj.id, uniqueId)

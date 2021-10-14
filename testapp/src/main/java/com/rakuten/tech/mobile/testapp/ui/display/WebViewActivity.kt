@@ -50,6 +50,8 @@ class WebViewActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
+            val returnIntent = Intent().apply { putExtra("isClosedByBackPressed", true) }
+            setResult(Activity.RESULT_OK, returnIntent)
             finish()
             true
         }
@@ -59,7 +61,10 @@ class WebViewActivity : BaseActivity() {
     override fun onBackPressed() {
         if (sampleExternalWebView.canGoBack())
             sampleExternalWebView.goBack()
-        else
+        else {
+            val returnIntent = Intent().apply { putExtra("isClosedByBackPressed", true) }
+            setResult(Activity.RESULT_OK, returnIntent)
             super.onBackPressed()
+        }
     }
 }

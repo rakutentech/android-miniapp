@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -302,7 +303,12 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
+            data?.let { intent ->
+                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
+                miniAppMessageBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "External webview closed")
+                if(!isClosedByBackPressed)
+                    sampleWebViewExternalResultHandler.emitResult(intent)
+            }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 miniAppFileChooser.onReceivedFiles(intent)
@@ -319,5 +325,15 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (!viewModel.canGoBackwards()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
     }
 }
