@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.getAdapterDataObserver
 import com.rakuten.tech.mobile.testapp.helper.isEmailValid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -194,25 +195,7 @@ class ContactListActivity : BaseActivity(), ContactListener {
         binding.listContacts.addItemDecoration(
             DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            @SuppressLint("SyntheticAccessor")
-            override fun onChanged() {
-                super.onChanged()
-                observeUIState()
-            }
-
-            @SuppressLint("SyntheticAccessor")
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-                observeUIState()
-            }
-
-            @SuppressLint("SyntheticAccessor")
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                super.onItemRangeRemoved(positionStart, itemCount)
-                observeUIState()
-            }
-        })
+        adapter.registerAdapterDataObserver(getAdapterDataObserver { observeUIState() })
         observeUIState()
     }
 
