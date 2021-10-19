@@ -11,13 +11,17 @@ import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 
 internal class MiniAppWebViewClient(
     private val context: Context,
     @VisibleForTesting internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
-    private val miniAppScheme: MiniAppScheme
+    private val miniAppScheme: MiniAppScheme,
+    private val customPermissionCache: MiniAppCustomPermissionCache,
+    private val miniAppId: String
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
@@ -39,6 +43,15 @@ internal class MiniAppWebViewClient(
             } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
                 shouldCancelLoading = true
+            } else if (miniAppScheme.isBase64(requestUrl)) {
+                if (customPermissionCache.hasPermission(
+                        miniAppId,
+                        MiniAppCustomPermissionType.DOWNLOAD_ATTACHMENT
+                    )
+                ) {
+                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
+                    shouldCancelLoading = true
+                }
             }
         }
         return shouldCancelLoading

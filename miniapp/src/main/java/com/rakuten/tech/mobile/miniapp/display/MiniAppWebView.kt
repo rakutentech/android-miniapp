@@ -199,7 +199,9 @@ internal open class MiniAppWebView(
         getWebViewAssetLoader(),
         miniAppNavigator!!,
         externalResultHandler,
-        miniAppScheme
+        miniAppScheme,
+        miniAppCustomPermissionCache,
+        miniAppId
     )
 }
 

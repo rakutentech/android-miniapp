@@ -53,7 +53,9 @@ internal class MiniAppHttpWebView(
         null,
         miniAppNavigator!!,
         externalResultHandler,
-        miniAppScheme
+        miniAppScheme,
+        miniAppCustomPermissionCache,
+        miniAppId
     )
 
     override fun getLoadUrl(): String = appUrl
