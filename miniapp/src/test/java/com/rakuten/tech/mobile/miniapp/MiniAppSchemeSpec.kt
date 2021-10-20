@@ -5,8 +5,8 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldEqual
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldNotBeEqualTo
+import org.amshove.kluent.shouldEqualTo
+import org.amshove.kluent.shouldNotEqual
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,41 +27,41 @@ internal class MiniAppSchemeSpec {
 
     @Test
     fun `miniAppDomain with AppId should return the expected value`() {
-        schemeWithAppId.miniAppDomain shouldBeEqualTo "mscheme.$TEST_ID_MINIAPP"
-        schemeWithAppId.appUrl shouldBeEqualTo null
+        schemeWithAppId.miniAppDomain shouldEqual "mscheme.$TEST_ID_MINIAPP"
+        schemeWithAppId.appUrl shouldEqual null
     }
 
     @Test
     fun `miniAppCustomScheme with AppId should return the expected value`() {
-        schemeWithAppId.miniAppCustomScheme shouldBeEqualTo "mscheme.$TEST_ID_MINIAPP://"
-        schemeWithAppId.appUrl shouldBeEqualTo null
+        schemeWithAppId.miniAppCustomScheme shouldEqual "mscheme.$TEST_ID_MINIAPP://"
+        schemeWithAppId.appUrl shouldEqual null
     }
 
     @Test
     fun `miniAppCustomDomain with AppId should return the expected value`() {
-        schemeWithAppId.miniAppCustomDomain shouldBeEqualTo "https://mscheme.$TEST_ID_MINIAPP/"
-        schemeWithAppId.appUrl shouldBeEqualTo null
+        schemeWithAppId.miniAppCustomDomain shouldEqual "https://mscheme.$TEST_ID_MINIAPP/"
+        schemeWithAppId.appUrl shouldEqual null
     }
 
     @Test
     fun `miniAppScheme with custom url should return the expected values`() {
-        schemeWithCustomUrl.appUrl shouldBeEqualTo TEST_URL_HTTPS_1
-        schemeWithCustomUrl.miniAppDomain shouldNotBeEqualTo "mscheme.$TEST_ID_MINIAPP"
-        schemeWithCustomUrl.miniAppCustomScheme shouldNotBeEqualTo "mscheme.$TEST_ID_MINIAPP://"
-        schemeWithCustomUrl.miniAppCustomDomain shouldNotBeEqualTo "https://mscheme.$TEST_ID_MINIAPP/"
+        schemeWithCustomUrl.appUrl shouldEqual TEST_URL_HTTPS_1
+        schemeWithCustomUrl.miniAppDomain shouldNotEqual "mscheme.$TEST_ID_MINIAPP"
+        schemeWithCustomUrl.miniAppCustomScheme shouldNotEqual "mscheme.$TEST_ID_MINIAPP://"
+        schemeWithCustomUrl.miniAppCustomDomain shouldNotEqual "https://mscheme.$TEST_ID_MINIAPP/"
     }
 
     /** region: isMiniAppUrl */
     @Test
     fun `isMiniAppUrl with AppId should return the expected values`() {
-        schemeWithAppId.isMiniAppUrl("mscheme.$TEST_ID_MINIAPP://") shouldBeEqualTo true
-        schemeWithAppId.isMiniAppUrl("https://mscheme.$TEST_ID_MINIAPP/") shouldBeEqualTo true
+        schemeWithAppId.isMiniAppUrl("mscheme.$TEST_ID_MINIAPP://") shouldEqualTo true
+        schemeWithAppId.isMiniAppUrl("https://mscheme.$TEST_ID_MINIAPP/") shouldEqualTo true
     }
 
     @Test
     fun `isMiniAppUrl with custom url should return the expected values`() {
         schemeWithCustomUrl.appUrl shouldEqual TEST_URL_HTTPS_1
-        schemeWithCustomUrl.isMiniAppUrl(TEST_URL_HTTPS_1) shouldBeEqualTo true
+        schemeWithCustomUrl.isMiniAppUrl(TEST_URL_HTTPS_1) shouldEqualTo true
     }
     /** end region */
 
@@ -69,7 +69,7 @@ internal class MiniAppSchemeSpec {
     @Test
     fun `appendParametersToUrl should return the url when query is empty`() {
         val expectedUrl = "mscheme.$TEST_ID_MINIAPP://"
-        schemeWithAppId.appendParametersToUrl(expectedUrl, "") shouldBeEqualTo expectedUrl
+        schemeWithAppId.appendParametersToUrl(expectedUrl, "") shouldEqual expectedUrl
     }
 
     @Test
@@ -79,7 +79,7 @@ internal class MiniAppSchemeSpec {
         schemeWithAppId.appendParametersToUrl(
             expectedUrl,
             expectedQuery
-        ) shouldBeEqualTo "$expectedUrl?$expectedQuery"
+        ) shouldEqual "$expectedUrl?$expectedQuery"
     }
 
     /** end region */
@@ -87,7 +87,7 @@ internal class MiniAppSchemeSpec {
     @Test
     fun `resolveParameters should append qus mark prior to the parameters`() {
         val query = "param1=value1&param2=value2"
-        schemeWithAppId.resolveParameters(query) shouldBeEqualTo "?$query"
+        schemeWithAppId.resolveParameters(query) shouldEqual "?$query"
     }
 
     @Test
