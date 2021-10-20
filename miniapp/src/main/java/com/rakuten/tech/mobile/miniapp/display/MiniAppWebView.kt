@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
@@ -25,7 +24,7 @@ import java.io.File
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
-@SuppressLint("SetJavaScriptEnabled")
+@Suppress("SetJavaScriptEnabled", "TooManyFunctions")
 internal open class MiniAppWebView(
     context: Context,
     val basePath: String,
