@@ -46,7 +46,7 @@ internal class MiniAppWebViewClient(
             } else if (miniAppScheme.isBase64(requestUrl)) {
                 if (customPermissionCache.hasPermission(
                         miniAppId,
-                        MiniAppCustomPermissionType.DOWNLOAD_ATTACHMENT
+                        MiniAppCustomPermissionType.FILE_DOWNLOAD
                     )
                 ) {
                     miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
