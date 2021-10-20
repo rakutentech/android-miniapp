@@ -35,8 +35,6 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
     }
 
-    fun isDynamicDeepLink(deepLink: String, hostDeepLinks: List<String>) = hostDeepLinks.contains(deepLink)
-
     fun appendParametersToUrl(url: String, queryParams: String): String {
         return if (queryParams.isEmpty()) url
         else "$url${resolveParameters(queryParams)}"

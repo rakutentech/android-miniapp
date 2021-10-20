@@ -17,8 +17,7 @@ internal class MiniAppWebViewClient(
     @VisibleForTesting internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
-    private val miniAppScheme: MiniAppScheme,
-    private val dynamicDeepLinksList: List<String>
+    private val miniAppScheme: MiniAppScheme
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
@@ -31,20 +30,15 @@ internal class MiniAppWebViewClient(
         var shouldCancelLoading = super.shouldOverrideUrlLoading(view, request)
         if (request.url != null) {
             val requestUrl = request.url.toString()
-            val deepLink = requestUrl.substring(requestUrl.lastIndexOf("/") + 1)
-            if (miniAppScheme.isDynamicDeepLink(deepLink, dynamicDeepLinksList)) {
-                // specific action
-            } else {
-                if (requestUrl.startsWith("tel:")) {
-                    miniAppScheme.openPhoneDialer(context, requestUrl)
-                    shouldCancelLoading = true
-                } else if (requestUrl.startsWith("mailto:")) {
-                    miniAppScheme.openMailComposer(context, requestUrl)
-                    shouldCancelLoading = true
-                } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
-                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
-                    shouldCancelLoading = true
-                }
+            if (requestUrl.startsWith("tel:")) {
+                miniAppScheme.openPhoneDialer(context, requestUrl)
+                shouldCancelLoading = true
+            } else if (requestUrl.startsWith("mailto:")) {
+                miniAppScheme.openMailComposer(context, requestUrl)
+                shouldCancelLoading = true
+            } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
+                miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
+                shouldCancelLoading = true
             }
         }
         return shouldCancelLoading

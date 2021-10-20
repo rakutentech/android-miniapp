@@ -3,7 +3,10 @@ package com.rakuten.tech.mobile.miniapp
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import org.amshove.kluent.*
+import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldNotBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,20 +65,6 @@ internal class MiniAppSchemeSpec {
     }
     /** end region */
 
-    /** region: isDynamicDeepLink */
-    @Test
-    fun `isDynamicDeepLink should return true if deeplink is existed in hostapp`() {
-        val testDynamicDeeplinks = listOf("test-dynamic-deeplink", "test-dynamic-deeplink-2")
-        schemeWithAppId.isDynamicDeepLink("test-dynamic-deeplink", testDynamicDeeplinks) shouldBe true
-    }
-
-    @Test
-    fun `isDynamicDeepLink should return false if deeplink is existed in hostapp`() {
-        val testDynamicDeeplinks = listOf("test-dynamic-deeplink", "test-dynamic-deeplink-2")
-        schemeWithAppId.isDynamicDeepLink("test-dynamic-deeplink-3", testDynamicDeeplinks) shouldBe false
-    }
-    /** end region */
-
     /** region: appendParametersToUrl */
     @Test
     fun `appendParametersToUrl should return the url when query is empty`() {
@@ -90,7 +79,7 @@ internal class MiniAppSchemeSpec {
         schemeWithAppId.appendParametersToUrl(
             expectedUrl,
             expectedQuery
-        ) shouldEqual "$expectedUrl?$expectedQuery"
+        ) shouldBeEqualTo "$expectedUrl?$expectedQuery"
     }
 
     /** end region */

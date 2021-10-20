@@ -43,8 +43,7 @@ internal open class MiniAppWebView(
         miniAppFileChooser
     ),
     val queryParams: String,
-    val ratDispatcher: MessageBridgeRatDispatcher,
-    val dynamicDeepLinksList: List<String>
+    val ratDispatcher: MessageBridgeRatDispatcher
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -199,8 +198,7 @@ internal open class MiniAppWebView(
         getWebViewAssetLoader(),
         miniAppNavigator!!,
         externalResultHandler,
-        miniAppScheme,
-        dynamicDeepLinksList
+        miniAppScheme
     )
 }
 

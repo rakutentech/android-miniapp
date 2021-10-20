@@ -62,8 +62,7 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String,
-        dynamicDeepLinksList: List<String>
+        queryParams: String
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -79,8 +78,7 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher,
-                dynamicDeepLinksList
+                ratDispatcher
             )
         }
     }
@@ -90,8 +88,7 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String,
-        dynamicDeepLinksList: List<String>
+        queryParams: String
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -107,8 +104,7 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher,
-                dynamicDeepLinksList
+                ratDispatcher
             )
         }
     }
@@ -118,8 +114,7 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String,
-        dynamicDeepLinksList: List<String>
+        queryParams: String
     ): MiniAppDisplay = when {
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
@@ -133,8 +128,7 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher,
-                dynamicDeepLinksList
+                ratDispatcher
             )
         }
     }

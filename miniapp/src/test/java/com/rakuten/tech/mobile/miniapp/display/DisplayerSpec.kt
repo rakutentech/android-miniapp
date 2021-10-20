@@ -53,8 +53,7 @@ class DisplayerSpec {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             miniAppAnalytics = mock(),
-            ratDispatcher = mock(),
-            dynamicDeepLinksList = mock()
+            ratDispatcher = mock()
         )
 
     private fun getMiniAppDisplayUrl(): MiniAppDisplay = Displayer(TEST_HA_NAME).createMiniAppDisplay(
@@ -66,7 +65,6 @@ class DisplayerSpec {
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS,
         miniAppAnalytics = mock(),
-        ratDispatcher = mock(),
-        dynamicDeepLinksList = mock()
+        ratDispatcher = mock()
     )
 }

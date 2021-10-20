@@ -26,7 +26,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
  * by which operations in the mini app ecosystem are exposed.
  * Should be accessed via [MiniApp.instance].
  */
-@Suppress("UnnecessaryAbstractClass", "LongMethod", "TooManyFunctions", "LongParameterList")
+@Suppress("UnnecessaryAbstractClass", "LongMethod", "TooManyFunctions")
 abstract class MiniApp internal constructor() {
 
     /**
@@ -53,7 +53,6 @@ abstract class MiniApp internal constructor() {
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
-     * @param dynamicDeepLinksList List of dynamic deeplinks.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -72,8 +71,7 @@ abstract class MiniApp internal constructor() {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
         miniAppFileChooser: MiniAppFileChooser? = null,
-        queryParams: String = "",
-        dynamicDeepLinksList: List<String> = emptyList()
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -85,7 +83,6 @@ abstract class MiniApp internal constructor() {
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
-     * @param dynamicDeepLinksList List of dynamic deeplinks.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -104,8 +101,7 @@ abstract class MiniApp internal constructor() {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
         miniAppFileChooser: MiniAppFileChooser? = null,
-        queryParams: String = "",
-        dynamicDeepLinksList: List<String> = emptyList()
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**
@@ -117,7 +113,6 @@ abstract class MiniApp internal constructor() {
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
-     * @param dynamicDeepLinksList List of dynamic deeplinks.
      * @throws [MiniAppNotFoundException] when the specified Mini App URL cannot be reached.
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
@@ -127,8 +122,7 @@ abstract class MiniApp internal constructor() {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
         miniAppFileChooser: MiniAppFileChooser? = null,
-        queryParams: String = "",
-        dynamicDeepLinksList: List<String> = emptyList()
+        queryParams: String = ""
     ): MiniAppDisplay
 
     /**

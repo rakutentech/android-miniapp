@@ -53,8 +53,7 @@ class RealMiniAppDisplaySpec {
                 downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS,
                 miniAppAnalytics = mock(),
-                ratDispatcher = mock(),
-                dynamicDeepLinksList = mock()
+                ratDispatcher = mock()
             )
         }
     }
@@ -76,8 +75,7 @@ class RealMiniAppDisplaySpec {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             miniAppAnalytics = mock(),
-            ratDispatcher = mock(),
-            dynamicDeepLinksList = mock()
+            ratDispatcher = mock()
         )
 
         realDisplay.miniAppInfo.apply {

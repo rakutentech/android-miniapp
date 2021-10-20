@@ -23,8 +23,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher,
-        dynamicDeepLinksList: List<String>
+        ratDispatcher: MessageBridgeRatDispatcher
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
         miniAppInfo = miniAppInfo,
@@ -36,8 +35,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
-        ratDispatcher = ratDispatcher,
-        dynamicDeepLinksList = dynamicDeepLinksList
+        ratDispatcher = ratDispatcher
     )
 
     fun createMiniAppDisplay(
@@ -49,8 +47,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher,
-        dynamicDeepLinksList: List<String>
+        ratDispatcher: MessageBridgeRatDispatcher
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
@@ -61,7 +58,6 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
-        ratDispatcher = ratDispatcher,
-        dynamicDeepLinksList = dynamicDeepLinksList
+        ratDispatcher = ratDispatcher
     )
 }
