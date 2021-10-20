@@ -15,7 +15,8 @@ Mini App SDK also facilitates communication between a mini app and the host app 
 
 ## Requirements
 
-- **Minimum Android Version**: This SDK supports Android 7.0+ (API level 24+).
+- **Minimum Android Version**: This SDK supports Android 9.0+ (API level 28+).
+    - Note: Currently this SDK is set to `minSdkVersion 24`, however support for versions 24 to 27 is deprecated and could be removed in a later release.
 - **Base URL, App ID, Subscription Key**: We don't currently provide a public API for use with this SDK. You must provide a URL for your API as well as an App ID and Subscription Key for the API.
 
 ## Getting Started
