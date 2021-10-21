@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -142,9 +143,13 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppNavigator = object : MiniAppNavigator {
 
             override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                sampleWebViewExternalResultHandler = externalResultHandler
-                WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                    appId, appUrl, externalWebViewReqCode)
+                if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                } else {
+                    sampleWebViewExternalResultHandler = externalResultHandler
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                            appId, appUrl, externalWebViewReqCode)
+                }
             }
         }
 
@@ -155,8 +160,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
-                AppSettings.instance.urlParameters,
-                AppSettings.instance.dynamicDeeplinks
+                AppSettings.instance.urlParameters
             )
         } else
             viewModel.obtainMiniAppDisplay(
@@ -166,8 +170,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
-                AppSettings.instance.urlParameters,
-                AppSettings.instance.dynamicDeeplinks
+                AppSettings.instance.urlParameters
             )
     }
 

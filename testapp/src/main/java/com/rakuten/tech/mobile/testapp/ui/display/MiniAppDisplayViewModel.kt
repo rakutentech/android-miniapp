@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -38,15 +37,14 @@ class MiniAppDisplayViewModel constructor(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooser,
-        appParameters: String,
-        dynamicDeepLinksList: List<String>
+        appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
+                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
+                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -68,13 +66,12 @@ class MiniAppDisplayViewModel constructor(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooser,
-        appParameters: String,
-        dynamicDeepLinksList: List<String>
+        appParameters: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, dynamicDeepLinksList)
+                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
