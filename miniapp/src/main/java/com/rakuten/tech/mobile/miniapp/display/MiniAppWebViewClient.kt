@@ -19,9 +19,7 @@ internal class MiniAppWebViewClient(
     @VisibleForTesting internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
-    private val miniAppScheme: MiniAppScheme,
-    private val customPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppId: String
+    private val miniAppScheme: MiniAppScheme
 ) : WebViewClient() {
 
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
@@ -43,15 +41,6 @@ internal class MiniAppWebViewClient(
             } else if (!miniAppScheme.isMiniAppUrl(requestUrl)) {
                 miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
                 shouldCancelLoading = true
-            } else if (miniAppScheme.isBase64(requestUrl)) {
-                if (customPermissionCache.hasPermission(
-                        miniAppId,
-                        MiniAppCustomPermissionType.FILE_DOWNLOAD
-                    )
-                ) {
-                    miniAppNavigator.openExternalUrl(requestUrl, externalResultHandler)
-                    shouldCancelLoading = true
-                }
             }
         }
         return shouldCancelLoading

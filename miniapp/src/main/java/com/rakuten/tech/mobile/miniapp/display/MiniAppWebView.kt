@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppDownloadNavigator
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.io.File
 
@@ -63,17 +64,27 @@ internal open class MiniAppWebView(
         if (this::class == MiniAppWebView::class)
             commonInit()
 
+
+    }
+
+    private fun setFileDownloadListener() {
         setDownloadListener { url: String, userAgent: String, contentDisposition: String,
                               mimetype: String, contentLength: Long ->
-            if (miniAppNavigator is MiniAppDownloadNavigator) {
-                (miniAppNavigator as MiniAppDownloadNavigator)
-                    .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
-            } else {
-                defaultFileDownloader.onDownloadStart(
-                    url = url,
-                    mimetype = mimetype,
-                    onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
+            if (miniAppScheme.isBase64(url) && miniAppCustomPermissionCache.hasPermission(
+                    miniAppId,
+                    MiniAppCustomPermissionType.FILE_DOWNLOAD
                 )
+            ) {
+                if (miniAppNavigator is MiniAppDownloadNavigator) {
+                    (miniAppNavigator as MiniAppDownloadNavigator)
+                        .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+                } else {
+                    defaultFileDownloader.onDownloadStart(
+                        url = url,
+                        mimetype = mimetype,
+                        onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
+                    )
+                }
             }
         }
     }
