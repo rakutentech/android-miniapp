@@ -64,16 +64,16 @@ internal open class MiniAppWebView(
         if (this::class == MiniAppWebView::class)
             commonInit()
 
-
+        setFileDownloadListener()
     }
 
     private fun setFileDownloadListener() {
         setDownloadListener { url: String, userAgent: String, contentDisposition: String,
                               mimetype: String, contentLength: Long ->
-            if (miniAppScheme.isBase64(url) && miniAppCustomPermissionCache.hasPermission(
-                    miniAppId,
-                    MiniAppCustomPermissionType.FILE_DOWNLOAD
-                )
+            if (miniAppCustomPermissionCache.hasPermission(
+                            miniAppId,
+                            MiniAppCustomPermissionType.FILE_DOWNLOAD
+                    )
             ) {
                 if (miniAppNavigator is MiniAppDownloadNavigator) {
                     (miniAppNavigator as MiniAppDownloadNavigator)
@@ -208,9 +208,7 @@ internal open class MiniAppWebView(
         getWebViewAssetLoader(),
         miniAppNavigator!!,
         externalResultHandler,
-        miniAppScheme,
-        miniAppCustomPermissionCache,
-        miniAppId
+        miniAppScheme
     )
 }
 

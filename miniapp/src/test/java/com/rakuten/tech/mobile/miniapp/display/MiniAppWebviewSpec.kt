@@ -292,7 +292,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webAssetLoader: WebViewAssetLoader? =
             Mockito.spy((miniAppWebView.webViewClient as MiniAppWebViewClient).loader)
         val webViewClient = MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID)
+            externalResultHandler, miniAppScheme)
         val webResourceRequest = getWebResReq(TEST_URL_HTTPS_1.toUri())
 
         webViewClient.shouldInterceptRequest(miniAppWebView, webResourceRequest)
@@ -306,7 +306,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val customDomain = "https://mscheme.${miniAppWebView.miniAppInfo.id}/"
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+            externalResultHandler, miniAppScheme))
 
         val displayer = Mockito.spy(miniAppWebView)
 
@@ -321,7 +321,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open phone dialer when there is telephone scheme`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+            externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
@@ -334,7 +334,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open mail composer when there is mail scheme`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-                externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+                externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
@@ -362,7 +362,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader? = (displayer.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator!!,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+            externalResultHandler, miniAppScheme))
 
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
 
@@ -374,7 +374,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open external url loader when there is the config for navigation`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+            externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_URL_HTTPS_1.toUri()))
@@ -386,7 +386,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     fun `should open external url loader when there is the config for base64 url`() {
         val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
         val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme, miniAppCustomPermissionCache, TEST_MA_ID))
+            externalResultHandler, miniAppScheme))
         val displayer = Mockito.spy(miniAppWebView)
 
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_PROFILE_PHOTO.toUri()))

@@ -5,8 +5,6 @@ import android.content.Intent
 import android.net.MailTo
 import androidx.annotation.VisibleForTesting
 import androidx.core.net.toUri
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 internal class MiniAppScheme private constructor(miniAppId: String) {
 
@@ -35,16 +33,6 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
         }
     } else {
         url.startsWith(miniAppCustomDomain) || url.startsWith(miniAppCustomScheme)
-    }
-
-    fun isBase64(path: String): Boolean {
-        val dataUrlPattern: Pattern =
-            Pattern.compile("^data:image/(.+?);base64,\\s*", Pattern.CASE_INSENSITIVE)
-        if (path.startsWith("data:")) {
-            val matcher: Matcher = dataUrlPattern.matcher(path)
-            return matcher.find()
-        }
-        return false
     }
 
     fun appendParametersToUrl(url: String, queryParams: String): String {

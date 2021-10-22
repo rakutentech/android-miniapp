@@ -64,21 +64,6 @@ internal class MiniAppSchemeSpec {
     }
     /** end region */
 
-    /** region: isBase64 */
-    @Test
-    fun `isBase64 should return true if url has base64 format`() {
-        schemeWithAppId.isBase64(TEST_PROFILE_PHOTO) shouldBeEqualTo true
-    }
-
-    @Test
-    fun `isBase64 should return false if url has base64 format`() {
-        schemeWithAppId.isBase64(TEST_URL_HTTPS_1) shouldBeEqualTo false
-        schemeWithAppId.isBase64(TEST_MA_URL) shouldBeEqualTo false
-        schemeWithAppId.isBase64(TEST_URL_FILE) shouldBeEqualTo false
-        schemeWithAppId.isBase64("unknown") shouldBeEqualTo false
-    }
-    /** end region */
-
     /** region: appendParametersToUrl */
     @Test
     fun `appendParametersToUrl should return the url when query is empty`() {
