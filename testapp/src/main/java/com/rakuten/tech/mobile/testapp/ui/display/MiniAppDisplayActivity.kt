@@ -143,8 +143,14 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppNavigator = object : MiniAppNavigator {
 
             override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                val urlScheme = Uri.parse(url).scheme
+
+                // probably, demo app settings should add restriction to input only "abc://def" formatted deeplink url.
+                if (AppSettings.instance.dynamicDeeplinks.contains("$urlScheme://")) {
+                    val urlAuthority = Uri.parse(url).authority
+                    if (!urlAuthority.isNullOrEmpty()) {
+                        // perform specific actions
+                    }
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
                     WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,

@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.deeplink
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -15,7 +14,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.DynamicDeeplinkActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.getAdapterDataObserver
@@ -115,13 +113,16 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
 
         if (deepLink.isEmpty()) {
             isVerified = false
-
-            Toast.makeText(this@DynamicDeepLinkActivity, getString(R.string.deeplink_activity_error_empty), Toast.LENGTH_LONG)
-                    .apply { setGravity(Gravity.TOP, 0, 100) }
-                    .show()
+            showWarning(getString(R.string.deeplink_activity_error_empty))
         }
 
         return isVerified
+    }
+
+    private fun showWarning(message: String) {
+        Toast.makeText(this@DynamicDeepLinkActivity, message, Toast.LENGTH_LONG)
+                .apply { setGravity(Gravity.TOP, 0, 100) }
+                .show()
     }
 
     override fun onResume() {
