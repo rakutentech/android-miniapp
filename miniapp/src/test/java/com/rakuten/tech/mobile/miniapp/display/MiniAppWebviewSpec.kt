@@ -383,18 +383,6 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
     }
 
     @Test
-    fun `should open external url loader when there is the config for base64 url`() {
-        val webAssetLoader: WebViewAssetLoader? = (miniAppWebView.webViewClient as MiniAppWebViewClient).loader
-        val webViewClient = Mockito.spy(MiniAppWebViewClient(context, webAssetLoader, miniAppNavigator,
-            externalResultHandler, miniAppScheme))
-        val displayer = Mockito.spy(miniAppWebView)
-
-        webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_PROFILE_PHOTO.toUri()))
-
-        verify(miniAppNavigator).openExternalUrl(TEST_PROFILE_PHOTO, externalResultHandler)
-    }
-
-    @Test
     fun `should not intercept mime type for regular cases`() {
         val webResourceResponse = WebResourceResponse("", "utf-8", ByteArrayInputStream("".toByteArray()))
         val webClient = miniAppWebView.webViewClient as MiniAppWebViewClient
