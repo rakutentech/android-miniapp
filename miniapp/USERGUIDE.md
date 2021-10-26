@@ -497,6 +497,17 @@ Set the `AdMobDisplayer19` provided by MiniApp SDK. This controller will handle 
 miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer19(activityContext))
 ```
 
+### Send Native Events
+**API Docs:** [miniAppMessageBridge.dispatchNativeEvent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/dispatch-native-event.html)
+
+Mini apps are able to get events for custom event types which are defined by the Mini App SDK. These events include things like external webview close, pause, resume.
+
+- External webview close (`NativeEventType.EXTERNAL_WEBVIEW_CLOSE`)
+- Pause (`NativeEventType.MINIAPP_ON_PAUSE`)
+- Resume (`NativeEventType.MINIAPP_ON_RESUME`)
+
+**Note:** Host app can send these events whenever these events occur and MiniApp will be able to get those events.
+
 #### Admob Version
 In case the host app wants to use the latest admob sdk, Add the following to your `build.gradle` file:
 ```groovy
