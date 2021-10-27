@@ -4,6 +4,7 @@
 **SDK**
 - **Feature:** Added `getHostEnvironmentInfo` function in `MiniAppMessageBridge` to provide environment information to Mini App.
 - **Feature:** Added `dispatchNativeEvent` function in `MiniAppMessageBridge` to send events to Mini App.
+- **Feature:** Added `rakuten.miniapp.device.FILE_DOWNLOAD` custom permission before downloading file attachment in MiniApp.
 
 ### 3.7.0 (2021-10-07)
 **SDK**

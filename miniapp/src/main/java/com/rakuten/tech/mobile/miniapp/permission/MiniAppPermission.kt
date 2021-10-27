@@ -23,6 +23,7 @@ enum class MiniAppCustomPermissionType(val type: String) {
     SEND_MESSAGE("rakuten.miniapp.user.action.SEND_MESSAGE"),
     LOCATION("rakuten.miniapp.device.LOCATION"),
     POINTS("rakuten.miniapp.user.POINTS"),
+    FILE_DOWNLOAD("rakuten.miniapp.device.FILE_DOWNLOAD"),
     UNKNOWN("UNKNOWN");
 
     internal companion object {
