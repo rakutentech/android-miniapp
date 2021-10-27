@@ -18,12 +18,12 @@ import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppDownloadNavigator
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
-private const val TAG = "MiniAppWebView"
 
 @Suppress("SetJavaScriptEnabled", "TooManyFunctions")
 internal open class MiniAppWebView(
@@ -64,17 +64,27 @@ internal open class MiniAppWebView(
         if (this::class == MiniAppWebView::class)
             commonInit()
 
+        setFileDownloadListener()
+    }
+
+    private fun setFileDownloadListener() {
         setDownloadListener { url: String, userAgent: String, contentDisposition: String,
                               mimetype: String, contentLength: Long ->
-            if (miniAppNavigator is MiniAppDownloadNavigator) {
-                (miniAppNavigator as MiniAppDownloadNavigator)
-                    .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
-            } else {
-                defaultFileDownloader.onDownloadStart(
-                    url = url,
-                    mimetype = mimetype,
-                    onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
-                )
+            if (miniAppCustomPermissionCache.hasPermission(
+                            miniAppId,
+                            MiniAppCustomPermissionType.FILE_DOWNLOAD
+                    )
+            ) {
+                if (miniAppNavigator is MiniAppDownloadNavigator) {
+                    (miniAppNavigator as MiniAppDownloadNavigator)
+                        .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+                } else {
+                    defaultFileDownloader.onDownloadStart(
+                        url = url,
+                        mimetype = mimetype,
+                        onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
+                    )
+                }
             }
         }
     }

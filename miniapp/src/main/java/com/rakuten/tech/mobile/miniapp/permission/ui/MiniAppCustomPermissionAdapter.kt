@@ -96,6 +96,7 @@ internal class MiniAppCustomPermissionAdapter :
             MiniAppCustomPermissionType.SEND_MESSAGE -> "Send Message"
             MiniAppCustomPermissionType.LOCATION -> "Device Location"
             MiniAppCustomPermissionType.POINTS -> "Rakuten Points"
+            MiniAppCustomPermissionType.FILE_DOWNLOAD -> "File Download"
             else -> "Unknown"
         }
     }
