@@ -3,7 +3,7 @@
     <string name="lb_description">Description</string>
     <string name="lb_app_id_or_url">URL or App Id</string>
     <string name="lb_app_url">URL</string>
-    <string name="lb_app_settings">App Settings</string>
+    <string name="lb_app_settings">Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_require_signature_verification">Require Signature Verification</string>
     <string name="lb_ras">RAS</string>
