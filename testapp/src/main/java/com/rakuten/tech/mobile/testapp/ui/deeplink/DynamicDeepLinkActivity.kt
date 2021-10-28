@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.deeplink
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -31,6 +32,7 @@ class DynamicDeepLinkActivity : BaseActivity(), DeepLinkListener {
     private var deepLinksPrefs: SharedPreferences? = null
     private var isFirstLaunch: Boolean
         get() = deepLinksPrefs?.getBoolean(IS_FIRST_TIME, true) ?: true
+        @SuppressLint("CommitPrefEdits")
         set(value) {
             deepLinksPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
         }

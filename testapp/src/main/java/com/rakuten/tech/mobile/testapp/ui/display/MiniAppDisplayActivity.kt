@@ -16,9 +16,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
@@ -34,9 +34,11 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.net.URI
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -143,13 +145,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppNavigator = object : MiniAppNavigator {
 
             override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                val urlScheme = Uri.parse(url).scheme
-
-                // probably, demo app settings should add restriction to input only "abc://def" formatted deeplink url.
-                if (AppSettings.instance.dynamicDeeplinks.contains("$urlScheme://")) {
-                    val urlAuthority = Uri.parse(url).authority
-                    if (!urlAuthority.isNullOrEmpty()) {
-                        // perform specific actions
+                if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+                    } catch (e: Exception) {
+                        showAlertDialog(this@MiniAppDisplayActivity, "Warning!", e.message.toString())
                     }
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
