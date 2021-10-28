@@ -14,6 +14,7 @@ import kotlinx.android.parcel.Parcelize
  * @property isPreviewMode Whether the host app wants to use the API Endpoints under "Preview" mode.
  * @property requireSignatureVerification Whether the Mini App SDK verifies signature of a Mini App.
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
+ * @property sslPinningPublicKeyList List of SSL pinning public keys.
  */
 @Parcelize
 data class MiniAppSdkConfig(

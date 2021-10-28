@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
@@ -130,6 +131,10 @@ class SettingsMenuActivity : BaseActivity() {
 
         binding.buttonPoints.setOnClickListener {
             PointsActivity.start(this@SettingsMenuActivity)
+        }
+
+        binding.buttonDeeplink.setOnClickListener {
+            DynamicDeepLinkActivity.start(this@SettingsMenuActivity)
         }
 
         binding.buttonQA.setOnClickListener {
