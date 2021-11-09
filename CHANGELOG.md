@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 3.8.0 (release date TBD)
+### 3.8.0 (2021-11-09)
 **SDK**
 - **Feature:** Added `getHostEnvironmentInfo` function in `MiniAppMessageBridge` to provide environment information to Mini App.
 - **Feature:** Added `dispatchNativeEvent` function in `MiniAppMessageBridge` to send events to Mini App.
