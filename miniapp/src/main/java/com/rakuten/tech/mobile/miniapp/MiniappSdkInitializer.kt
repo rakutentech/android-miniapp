@@ -78,7 +78,8 @@ class MiniappSdkInitializer : ContentProvider() {
         return true
     }
 
-    private fun createMiniAppSdkConfig(manifestConfig: AppManifestConfig) = MiniAppSdkConfig(
+    @VisibleForTesting
+    internal fun createMiniAppSdkConfig(manifestConfig: AppManifestConfig) = MiniAppSdkConfig(
         baseUrl = manifestConfig.baseUrl(),
         rasProjectId = manifestConfig.rasProjectId(),
         subscriptionKey = manifestConfig.subscriptionKey(),

@@ -4,16 +4,18 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.mockito.kotlin.mock
-import org.amshove.kluent.shouldBe
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
+
 class MiniappSdkInitializerSpec {
     private val miniappSdkInitializer = MiniappSdkInitializer()
     private lateinit var context: Context
+    private val TEST_BASE_URL = "https://www.test.com"
 
     @Before
     fun setup() {
@@ -36,4 +38,22 @@ class MiniappSdkInitializerSpec {
         ) shouldBe 0
         miniappSdkInitializer.getType(uri) shouldBe null
     }
+
+    @Test
+    fun `createMiniAppSdkConfig should return the correct MiniAppSdkConfig`(){
+        val testManifestConfig: AppManifestConfig = mock()
+        When calling testManifestConfig.rasProjectId() itReturns TEST_HA_ID_PROJECT
+        When calling testManifestConfig.baseUrl() itReturns TEST_BASE_URL
+        When calling testManifestConfig.isPreviewMode() itReturns false
+        When calling testManifestConfig.requireSignatureVerification() itReturns false
+        When calling testManifestConfig.hostAppUserAgentInfo() itReturns ""
+        When calling testManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
+
+        val miniAppSdkConfig = miniappSdkInitializer.createMiniAppSdkConfig(testManifestConfig)
+        miniAppSdkConfig.rasProjectId shouldBeEqualTo TEST_HA_ID_PROJECT
+        miniAppSdkConfig.baseUrl shouldBeEqualTo TEST_BASE_URL
+        miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
+
+    }
+
 }
