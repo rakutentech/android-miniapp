@@ -8,6 +8,7 @@ import android.text.InputType
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -81,6 +82,10 @@ fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matche
 fun hideSoftKeyboard(view: View) {
     val imm: InputMethodManager? = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
     imm?.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun setResizableSoftInputMode(activity: Activity){
+    activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 }
 
 fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterDataObserver =
