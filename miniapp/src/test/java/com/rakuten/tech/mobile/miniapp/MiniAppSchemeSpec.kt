@@ -8,7 +8,6 @@ import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.notNull
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -97,7 +96,7 @@ internal class MiniAppSchemeSpec {
     @Test
     fun `should start activity when there is supported activity`() {
         val intent: Intent = mock()
-        When calling  intent.resolveActivity(context.packageManager) itReturns ComponentName("","")
+        When calling intent.resolveActivity(context.packageManager) itReturns ComponentName("", "")
         When calling intent.flags itReturns Intent.FLAG_ACTIVITY_NEW_TASK
         schemeWithAppId.startExportedActivity(intent, context) shouldBe true
     }

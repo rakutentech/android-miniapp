@@ -29,7 +29,6 @@ internal const val TEST_MA_VERSION_TAG = "test_vtag"
 internal const val TEST_MA_VERSION_ID = "test_vid"
 internal const val TEST_MA_PREVIEW_CODE = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
-
 internal const val TEST_HA_NAME = "test_hostapp_name"
 internal const val TEST_HA_ID_PROJECT = "test_project_id"
 internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subscription_key"

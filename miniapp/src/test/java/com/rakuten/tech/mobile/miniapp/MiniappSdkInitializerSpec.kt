@@ -40,7 +40,7 @@ class MiniappSdkInitializerSpec {
     }
 
     @Test
-    fun `createMiniAppSdkConfig should return the correct MiniAppSdkConfig`(){
+    fun `createMiniAppSdkConfig should return the correct MiniAppSdkConfig`() {
         val testManifestConfig: AppManifestConfig = mock()
         When calling testManifestConfig.rasProjectId() itReturns TEST_HA_ID_PROJECT
         When calling testManifestConfig.baseUrl() itReturns TEST_BASE_URL
@@ -53,7 +53,5 @@ class MiniappSdkInitializerSpec {
         miniAppSdkConfig.rasProjectId shouldBeEqualTo TEST_HA_ID_PROJECT
         miniAppSdkConfig.baseUrl shouldBeEqualTo TEST_BASE_URL
         miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
-
     }
-
 }
