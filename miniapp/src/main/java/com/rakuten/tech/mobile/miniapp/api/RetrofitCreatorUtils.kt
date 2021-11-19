@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.IllegalArgumentException
-import java.net.MalformedURLException
 import java.net.URI
 
 internal fun createRetrofitClient(
@@ -80,8 +79,6 @@ internal fun extractBaseUrl(baseUrl: String): String {
         val url = URI.create(baseUrl).toURL()
         url.authority
     } catch (e: IllegalArgumentException) {
-        ""
-    } catch (e: MalformedURLException) {
         ""
     }
 }
