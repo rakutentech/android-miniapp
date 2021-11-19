@@ -10,6 +10,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.IllegalArgumentException
 import java.net.MalformedURLException
 import java.net.URI
 
@@ -64,7 +65,8 @@ private fun provideHeaderInterceptor(): Interceptor = Interceptor { chain ->
     chain.proceed(request)
 }
 
-private fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>): CertificatePinner {
+@VisibleForTesting
+internal fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>): CertificatePinner {
     val certificatePinnerBuilder = CertificatePinner.Builder()
     for (pubKey in pubKeyList) {
         certificatePinnerBuilder.add(extractBaseUrl(baseUrl), pubKey)
@@ -72,10 +74,13 @@ private fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>): 
     return certificatePinnerBuilder.build()
 }
 
-private fun extractBaseUrl(baseUrl: String): String {
+@VisibleForTesting
+internal fun extractBaseUrl(baseUrl: String): String {
     return try {
         val url = URI.create(baseUrl).toURL()
         url.authority
+    } catch (e: IllegalArgumentException) {
+        ""
     } catch (e: MalformedURLException) {
         ""
     }
