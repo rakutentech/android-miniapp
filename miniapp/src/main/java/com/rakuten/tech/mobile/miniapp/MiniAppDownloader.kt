@@ -152,7 +152,7 @@ internal class MiniAppDownloader(
     ) = apiClient.fetchFileList(appId, versionId)
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(appId: String, versionId: String): MiniAppManifest {
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String?): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
             return if (apiClient.isPreviewMode) {
