@@ -73,6 +73,12 @@ class RetrofitCreatorUtilsSpec private constructor(
         authority shouldBeEqualTo ""
     }
 
+    @Test
+    fun `extract base url should return empty string if malformed url passed`() {
+        val authority = extractBaseUrl("http://example.com:-80/")
+        authority shouldBeEqualTo ""
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `create certificate pinner should return exception for wrong public key format`() {
         createCertificatePinner(baseUrl = TEST_URL_HTTPS_1, pubKeyList = listOf(""))

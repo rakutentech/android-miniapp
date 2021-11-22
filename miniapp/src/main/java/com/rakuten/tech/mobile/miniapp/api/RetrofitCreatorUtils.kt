@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.IllegalArgumentException
+import java.net.MalformedURLException
 import java.net.URI
 
 internal fun createRetrofitClient(
@@ -74,11 +75,14 @@ internal fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>):
 }
 
 @VisibleForTesting
+@Suppress("TooGenericExceptionCaught")
 internal fun extractBaseUrl(baseUrl: String): String {
     return try {
         val url = URI.create(baseUrl).toURL()
         url.authority
     } catch (e: IllegalArgumentException) {
+        ""
+    } catch (e: MalformedURLException) {
         ""
     }
 }
