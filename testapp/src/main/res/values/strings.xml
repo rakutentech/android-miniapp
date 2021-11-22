@@ -6,6 +6,7 @@
     <string name="lb_app_settings">Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_require_signature_verification">Require Signature Verification</string>
+    <string name="lb_enable_prod_version">PRD</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>
     <string name="lb_access_token">Access Token</string>

@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
@@ -92,7 +93,8 @@ class SettingsMenuActivity : BaseActivity() {
             binding.editSubscriptionKey.text.toString(),
             binding.editParametersUrl.text.toString(),
             binding.switchPreviewMode.isChecked,
-            binding.switchSignatureVerification.isChecked
+            binding.switchSignatureVerification.isChecked,
+            binding.switchProdVersion.isChecked
         )
     }
 
@@ -109,6 +111,7 @@ class SettingsMenuActivity : BaseActivity() {
         binding.editParametersUrl.setText(settings.urlParameters)
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
+        binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -171,7 +174,8 @@ class SettingsMenuActivity : BaseActivity() {
         subscriptionKey: String,
         urlParameters: String,
         isPreviewMode: Boolean,
-        requireSignatureVerification: Boolean
+        requireSignatureVerification: Boolean,
+        isProdVersionEnabled: Boolean
     ) {
         val appIdHolder = settings.projectId
         val subscriptionKeyHolder = settings.subscriptionKey
@@ -183,6 +187,12 @@ class SettingsMenuActivity : BaseActivity() {
         settings.urlParameters = urlParameters
         settings.isPreviewMode = isPreviewMode
         settings.requireSignatureVerification = requireSignatureVerification
+
+        if (isProdVersionEnabled) {
+            settings.baseUrl = getString(R.string.prodBaseUrl)
+        } else {
+            settings.baseUrl = getString(R.string.defaultBaseUrl)
+        }
 
         launch {
             try {
