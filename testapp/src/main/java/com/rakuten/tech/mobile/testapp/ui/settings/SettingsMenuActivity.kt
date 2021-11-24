@@ -198,6 +198,7 @@ class SettingsMenuActivity : BaseActivity() {
         settings.urlParameters = urlParameters
         settings.isPreviewMode = isPreviewMode
         settings.requireSignatureVerification = requireSignatureVerification
+        settings.isProdVersionEnabled = isProdVersionEnabled
 
         if (isProdVersionEnabled) {
             settings.baseUrl = getString(R.string.prodBaseUrl)
