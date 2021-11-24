@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
+import com.rakuten.tech.mobile.testapp.BuildVariant
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
@@ -32,13 +33,6 @@ import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.properties.Delegates
-
-enum class BuildVariant(name: String){
-    DEBUG("debug"),
-    STAGING("staging"),
-    RC("rc"),
-    RELEASE("release")
-}
 
 class SettingsMenuActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
