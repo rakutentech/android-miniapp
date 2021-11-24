@@ -99,8 +99,6 @@ android {
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
             resValue "string", "sslPublicKey", prodManifestPlaceholders.sslPublicKey
             resValue "string", "sslPublicKeyBackup", prodManifestPlaceholders.sslPublicKeyBackup
-            resValue "string", "defaultBaseUrl", prodManifestPlaceholders.baseUrl
-            resValue "string", "prodBaseUrl", prodManifestPlaceholders.baseUrl
             debuggable true
             minifyEnabled true
             shrinkResources true
@@ -126,6 +124,8 @@ android {
             initWith release
             resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
             resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "defaultBaseUrl", stagingManifestPlaceholders.baseUrl
+            resValue "string", "prodBaseUrl", prodManifestPlaceholders.baseUrl
             applicationIdSuffix '.rc'
             versionNameSuffix "-RC-build-$buildVersion"
             buildConfigField 'boolean', 'ENABLE_APPCENTER_CRASHLYTICS', 'true'

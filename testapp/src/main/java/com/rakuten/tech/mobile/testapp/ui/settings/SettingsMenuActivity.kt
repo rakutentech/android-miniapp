@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -27,9 +28,17 @@ import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity.Companion.MENU_SCREEN_NAME
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
+import kotlinx.android.synthetic.main.settings_menu_activity.*
 import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.properties.Delegates
+
+enum class BuildVariant(name: String){
+    DEBUG("debug"),
+    STAGING("staging"),
+    RC("rc"),
+    RELEASE("release")
+}
 
 class SettingsMenuActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
@@ -112,7 +121,9 @@ class SettingsMenuActivity : BaseActivity() {
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
         binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-
+        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.name){
+            switchProdVersion.visibility = View.GONE
+        }
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 

@@ -55,7 +55,7 @@
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
-    <string name="action_cancel">Cancel</string>
+    <string name="action_cancel">CANCEL</string>
     <string name="action_update">Update</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
@@ -64,7 +64,7 @@
     <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Custom Permissions</string>
     <string name="action_first_time_accept">Accept</string>
-    <string name="action_message_send">Send</string>
+    <string name="action_message_send">SEND</string>
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
