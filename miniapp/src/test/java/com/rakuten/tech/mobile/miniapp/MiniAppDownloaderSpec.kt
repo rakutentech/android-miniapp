@@ -350,7 +350,9 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         )
         When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
         When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
-        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT) itReturns metadataEntity
+        When calling apiClient.fetchMiniAppManifest(
+            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT
+        ) itReturns metadataEntity
 
         val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
 
@@ -368,7 +370,9 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         When calling apiClient.isPreviewMode itReturns true
         When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
         When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
-        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT) itReturns metadataEntity
+        When calling apiClient.fetchMiniAppManifest(
+            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT
+        ) itReturns metadataEntity
 
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
 
@@ -406,8 +410,9 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when cannot get metadata from server`() = runBlockingTest {
-        When calling apiClient.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_LANG_MANIFEST_DEFAULT) doThrow
-                MiniAppSdkException(TEST_ERROR_MSG)
+        When calling apiClient.fetchMiniAppManifest(
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_LANG_MANIFEST_DEFAULT
+        ) doThrow MiniAppSdkException(TEST_ERROR_MSG)
 
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_LANG_MANIFEST_DEFAULT)
     }

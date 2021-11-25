@@ -173,7 +173,11 @@ abstract class MiniApp internal constructor() {
      * @return MiniAppManifest an object contains manifest information of a mini app.
      */
     @Throws(MiniAppSdkException::class)
-    abstract suspend fun getMiniAppManifest(appId: String, versionId: String, languageCode: String = "default"): MiniAppManifest
+    abstract suspend fun getMiniAppManifest(
+        appId: String,
+        versionId: String,
+        languageCode: String = "default"
+    ): MiniAppManifest
 
     /**
      * Get the currently downloaded manifest information e.g. required and optional permissions.
