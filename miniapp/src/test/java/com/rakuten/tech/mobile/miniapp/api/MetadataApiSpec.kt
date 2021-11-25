@@ -85,7 +85,8 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
             .fetchMetadata(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION,
+                lang = TEST_LANG_MANIFEST_DEFAULT
             ).execute()
     }
 }
@@ -101,7 +102,8 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
             .fetchMetadata(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION,
+                lang = TEST_LANG_MANIFEST_DEFAULT
             )
             .execute().body()!!
     }
