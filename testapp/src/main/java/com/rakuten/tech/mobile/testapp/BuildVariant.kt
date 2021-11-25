@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.testapp
 
-enum class BuildVariant(name: String){
+enum class BuildVariant(val value: String){
     DEBUG("debug"),
     STAGING("staging"),
     RC("rc"),

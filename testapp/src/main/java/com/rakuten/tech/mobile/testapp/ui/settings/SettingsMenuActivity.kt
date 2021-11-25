@@ -115,8 +115,8 @@ class SettingsMenuActivity : BaseActivity() {
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
         binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.name){
-            switchProdVersion.visibility = View.GONE
+        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
+            switchProdVersion.isChecked = true
         }
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -147,6 +147,20 @@ class SettingsMenuActivity : BaseActivity() {
 
         binding.buttonQA.setOnClickListener {
             QASettingsActivity.start(this@SettingsMenuActivity)
+        }
+
+        binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                settings.baseUrl = getString(R.string.prodBaseUrl)
+                settings.projectId = getString(R.string.prodProjectId)
+                settings.subscriptionKey = getString(R.string.prodSubscriptionKey)
+            } else {
+                settings.baseUrl = getString(R.string.stagingBaseUrl)
+                settings.projectId = getString(R.string.stagingProjectId)
+                settings.subscriptionKey = getString(R.string.stagingSubscriptionKey)
+            }
+            binding.editProjectId.setText(settings.projectId)
+            binding.editSubscriptionKey.setText(settings.subscriptionKey)
         }
 
         validateInputIDs()
@@ -193,12 +207,6 @@ class SettingsMenuActivity : BaseActivity() {
         settings.isPreviewMode = isPreviewMode
         settings.requireSignatureVerification = requireSignatureVerification
         settings.isProdVersionEnabled = isProdVersionEnabled
-
-        if (isProdVersionEnabled) {
-            settings.baseUrl = getString(R.string.prodBaseUrl)
-        } else {
-            settings.baseUrl = getString(R.string.defaultBaseUrl)
-        }
 
         launch {
             try {
