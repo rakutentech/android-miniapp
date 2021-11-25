@@ -73,7 +73,8 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                testPath = "test"
+                testPath = "test",
+                lang = "default"
             ).execute()
         mockServer.takeRequest().path!! shouldContain "test"
     }

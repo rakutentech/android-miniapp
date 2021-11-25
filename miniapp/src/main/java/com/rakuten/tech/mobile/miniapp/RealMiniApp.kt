@@ -133,7 +133,7 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getMiniAppManifest(appId: String, versionId: String, languageCode: String?): MiniAppManifest =
+    override suspend fun getMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest =
         miniAppDownloader.fetchMiniAppManifest(appId, versionId, languageCode)
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =

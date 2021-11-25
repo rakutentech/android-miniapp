@@ -152,19 +152,19 @@ internal class MiniAppDownloader(
     ) = apiClient.fetchFileList(appId, versionId)
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String?): MiniAppManifest {
+    suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
             return if (apiClient.isPreviewMode) {
                 // every version should have it's own manifest information and it can be changed
-                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
                 prepareMiniAppManifest(apiResponse, versionId)
             } else {
                 // every version should have it's own manifest information or null
                 val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
                 if (cachedLatestManifest != null) cachedLatestManifest
                 else {
-                    val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId)
+                    val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
                     val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
                     manifestApiCache.storeManifest(appId, versionId, latestManifest)
                     latestManifest

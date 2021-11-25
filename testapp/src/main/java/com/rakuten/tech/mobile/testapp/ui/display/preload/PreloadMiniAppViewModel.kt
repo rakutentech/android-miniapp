@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
@@ -22,7 +23,7 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
 
     fun checkMiniAppManifest(miniAppId: String, versionId: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
-            val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
+            val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId, Locale.getDefault().language)
             val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
             if (downloadedManifest != null && isManifestEqual(miniAppManifest, downloadedManifest) &&
                 isAcceptedRequiredPermissions(miniAppId, miniAppManifest))

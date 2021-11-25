@@ -405,6 +405,6 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     fun `api manifest should be fetched from MiniAppDownloader`() =
         runBlockingTest {
             realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
         }
 }

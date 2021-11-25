@@ -6,14 +6,16 @@ import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 internal interface MetadataApi {
-    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/metadata?lang=ja")
+    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/metadata")
     fun fetchMetadata(
         @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
-        @Path("testPath") testPath: String = ""
+        @Path("testPath") testPath: String = "",
+        @Query("lang") lang: String
     ): Call<MetadataEntity>
 }
 
