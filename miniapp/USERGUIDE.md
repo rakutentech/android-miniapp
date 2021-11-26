@@ -682,6 +682,7 @@ In Host App, we can get the internationalized manifest information as following:
 ```kotlin
 CoroutineScope(Dispatchers.IO).launch {
     try {
+        // HostApps can implement their own functionality to detect device's locale value for `languageCode` e.g. `en`, `ja`
         val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID", "ja")
     } catch(e: MiniAppSdkException) {
         Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)

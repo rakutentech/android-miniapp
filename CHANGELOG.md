@@ -2,7 +2,7 @@
 
 ### 3.9.0 (2021-XX-XX)
 **SDK**
-- **Feature:** Added `languageCode` parameter with a `default` value in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
+- **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
 
 ### 3.8.0 (2021-11-09)
 **SDK**

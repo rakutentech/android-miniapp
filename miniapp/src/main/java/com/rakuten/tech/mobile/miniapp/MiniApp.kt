@@ -176,7 +176,7 @@ abstract class MiniApp internal constructor() {
     abstract suspend fun getMiniAppManifest(
         appId: String,
         versionId: String,
-        languageCode: String = "default"
+        languageCode: String = ""
     ): MiniAppManifest
 
     /**
