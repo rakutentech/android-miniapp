@@ -87,6 +87,7 @@ internal class MiniAppCustomPermissionAdapter :
     }
 
     @VisibleForTesting
+    @SuppressWarnings("ComplexMethod")
     fun parsePermissionName(type: MiniAppCustomPermissionType?): String {
         return when (type) {
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
