@@ -162,8 +162,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             }
             currentPhotoPath != null ->{
                 var results = mutableListOf<Uri>()
-                val imageUri = Uri.fromFile(File(currentPhotoPath))
-                results.add(imageUri)
+                results.add(Uri.fromFile(File(currentPhotoPath)))
                 callback?.onReceiveValue((results.toTypedArray()))
             }
             else -> {
