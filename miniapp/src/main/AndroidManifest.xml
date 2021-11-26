@@ -30,6 +30,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/miniapp_downloaded_file_provider_paths" />
         </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.miniapp.imagefileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/miniapp_image_file_provider_path"></meta-data>
+        </provider>
     </application>
 
     <queries>

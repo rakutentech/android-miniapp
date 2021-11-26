@@ -3,12 +3,20 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -37,6 +45,7 @@ interface MiniAppFileChooser {
 class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
+    private var currentPhotoPath: String? = null
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
     override fun onShowFileChooser(
@@ -61,13 +70,55 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                     intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
                 }
             }
-            (context as Activity).startActivityForResult(intent, requestCode)
+            if (fileChooserParams?.isCaptureEnabled == true) {
+                dispatchTakePictureIntent(context)
+            } else {
+                (context as Activity).startActivityForResult(intent, requestCode)
+            }
         } catch (e: Exception) {
             resetCallback()
             Log.e(MiniAppFileChooser::class.java.simpleName, e.message.toString())
             return false
         }
         return true
+    }
+
+    private fun dispatchTakePictureIntent(context: Context) {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                createImageFile(context)
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName.toString() + ".miniapp.imagefileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                (context as Activity).startActivityForResult(takePictureIntent, requestCode)
+            }
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
     }
 
     /**
@@ -96,6 +147,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     fun onReceivedFiles(intent: Intent) {
         val data = intent.data
         val clipData = intent.clipData
+        //val captureData = intent.extras?.get("data") as Bitmap
         when {
             data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
@@ -107,6 +159,12 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 }
 
                 callback?.onReceiveValue((uriList.toTypedArray()))
+            }
+            currentPhotoPath != null ->{
+                var results = mutableListOf<Uri>()
+                val imageUri = Uri.fromFile(File(currentPhotoPath))
+                results.add(imageUri)
+                callback?.onReceiveValue((results.toTypedArray()))
             }
             else -> {
                 callback?.onReceiveValue(null)
