@@ -33,6 +33,18 @@ class AppSettings private constructor(context: Context) {
             cache.requireSignatureVerification = isRequired
         }
 
+    var isProdVersionEnabled: Boolean
+        get() = cache.isProdVersionEnabled ?: false
+        set(isRequired) {
+            cache.isProdVersionEnabled = isRequired
+        }
+
+    var baseUrl: String
+        get() = cache.baseUrl ?: manifestConfig.baseUrl()
+        set(baseUrl) {
+            cache.baseUrl = baseUrl
+        }
+
     var projectId: String
         get() = cache.projectId ?: manifestConfig.rasProjectId()
         set(projectId) {
@@ -131,7 +143,7 @@ class AppSettings private constructor(context: Context) {
 
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
-            baseUrl = manifestConfig.baseUrl(),
+            baseUrl = baseUrl,
             rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
@@ -179,6 +191,18 @@ private class Settings(context: Context) {
             else
                 null
         set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!).apply()
+
+    var isProdVersionEnabled: Boolean?
+        get() =
+            if (prefs.contains(IS_PROD_VERSION_ENABLED))
+                prefs.getBoolean(IS_PROD_VERSION_ENABLED, false)
+            else
+                null
+        set(isRequired) = prefs.edit().putBoolean(IS_PROD_VERSION_ENABLED, isRequired!!).apply()
+
+    var baseUrl: String?
+        get() = prefs.getString(BASE_URL, null)
+        set(baseUrl) = prefs.edit().putString(BASE_URL, baseUrl).apply()
 
     var projectId: String?
         get() = prefs.getString(APP_ID, null)
@@ -263,6 +287,8 @@ private class Settings(context: Context) {
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
+        private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
+        private const val BASE_URL = "base_url"
         private const val APP_ID = "app_id"
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"

@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 3.9.0 (2021-XX-XX)
+**Sample App**
+- **Feature:** Added production and staging toggle to change environments.
+
 ### 3.8.0 (2021-11-09)
 **SDK**
 - **Feature:** Added `getHostEnvironmentInfo` function in `MiniAppMessageBridge` to provide environment information to Mini App.
@@ -7,7 +11,7 @@
 - **Feature:** Added `rakuten.miniapp.device.FILE_DOWNLOAD` custom permission before downloading file attachment in MiniApp.
 
 **Sample App**
-- Feature: Added dynamic deeplink support to test deeplink urls from Mini App.
+- **Feature:** Added dynamic deeplink support to test deeplink urls from Mini App.
 
 ### 3.7.0 (2021-10-07)
 **SDK**
