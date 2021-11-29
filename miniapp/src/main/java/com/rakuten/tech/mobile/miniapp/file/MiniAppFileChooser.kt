@@ -59,20 +59,20 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
-            // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
-            fileChooserParams?.acceptTypes?.let { acceptTypes ->
-                if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
-                    // Accept all first.
-                    intent?.type = "*/*"
-                    // Convert to valid MimeType if with dot.
-                    val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
-                    // filter mime types by Intent.EXTRA_MIME_TYPES.
-                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
-                }
-            }
             if (fileChooserParams?.isCaptureEnabled == true) {
                 dispatchTakePictureIntent(context)
             } else {
+                // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
+                fileChooserParams?.acceptTypes?.let { acceptTypes ->
+                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
+                        // Accept all first.
+                        intent?.type = "*/*"
+                        // Convert to valid MimeType if with dot.
+                        val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
+                        // filter mime types by Intent.EXTRA_MIME_TYPES.
+                        intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
+                    }
+                }
                 (context as Activity).startActivityForResult(intent, requestCode)
             }
         } catch (e: Exception) {
