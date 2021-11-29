@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -16,7 +15,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -47,7 +46,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     internal var callback: ValueCallback<Array<Uri>>? = null
     private var currentPhotoPath: String? = null
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
@@ -83,6 +82,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         return true
     }
 
+    @Suppress("SwallowedException")
     private fun dispatchTakePictureIntent(context: Context) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
@@ -147,7 +147,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     fun onReceivedFiles(intent: Intent) {
         val data = intent.data
         val clipData = intent.clipData
-        //val captureData = intent.extras?.get("data") as Bitmap
+        // val captureData = intent.extras?.get("data") as Bitmap
         when {
             data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
@@ -160,7 +160,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
                 callback?.onReceiveValue((uriList.toTypedArray()))
             }
-            currentPhotoPath != null ->{
+            currentPhotoPath != null -> {
                 var results = mutableListOf<Uri>()
                 results.add(Uri.fromFile(File(currentPhotoPath)))
                 callback?.onReceiveValue((results.toTypedArray()))
