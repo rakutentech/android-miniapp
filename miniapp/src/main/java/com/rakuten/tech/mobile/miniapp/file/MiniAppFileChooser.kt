@@ -44,7 +44,7 @@ interface MiniAppFileChooser {
 class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
-    private var currentPhotoPath: String? = null
+    internal var currentPhotoPath: String? = null
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
@@ -147,7 +147,6 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     fun onReceivedFiles(intent: Intent) {
         val data = intent.data
         val clipData = intent.clipData
-        // val captureData = intent.extras?.get("data") as Bitmap
         when {
             data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
@@ -183,5 +182,6 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     @VisibleForTesting
     internal fun resetCallback() {
         callback = null
+        currentPhotoPath = null
     }
 }

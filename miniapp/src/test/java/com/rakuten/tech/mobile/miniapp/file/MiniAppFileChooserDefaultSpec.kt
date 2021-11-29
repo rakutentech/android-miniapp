@@ -104,6 +104,28 @@ class MiniAppFileChooserDefaultSpec {
     }
 
     @Test
+    fun `onReceivedFiles should invoke value when photo path is available`() {
+        val intent: Intent = mock()
+        val uriList = mutableListOf<Uri>()
+        miniAppFileChooser.currentPhotoPath = "test-photo-path"
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
+        verify(miniAppFileChooser).resetCallback()
+        verify(callback)?.onReceiveValue(any())
+    }
+
+    @Test
+    fun `onReceivedFiles should not invoke value when photo path is null`() {
+        val intent: Intent = mock()
+        val uriList = mutableListOf<Uri>()
+        miniAppFileChooser.currentPhotoPath = null
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
+        verify(miniAppFileChooser).resetCallback()
+        verify(callback, times(0))?.onReceiveValue(any())
+    }
+
+    @Test
     fun `onReceivedFiles should invoke null when no data in intent after onShowFileChooser`() {
         val intent: Intent = mock()
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
