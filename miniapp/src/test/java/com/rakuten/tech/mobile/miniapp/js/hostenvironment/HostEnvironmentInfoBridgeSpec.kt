@@ -17,6 +17,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
@@ -48,7 +49,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
             val hostEnvironmentInfo = HostEnvironmentInfo(
                     platformVersion = Build.VERSION.RELEASE,
                     hostVersion = activity.packageManager.getPackageInfo(activity.packageName, 0).versionName,
-                    sdkVersion = BuildConfig.VERSION_NAME
+                    sdkVersion = BuildConfig.VERSION_NAME,
+                    hostLocale = Locale.getDefault().toLanguageTag()
             )
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor

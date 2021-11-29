@@ -7,5 +7,6 @@ import androidx.annotation.Keep
 data class HostEnvironmentInfo(
     val platformVersion: String,
     val hostVersion: String,
-    val sdkVersion: String
+    val sdkVersion: String,
+    val hostLocale: String
 )
