@@ -17,7 +17,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import java.util.*
+import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
