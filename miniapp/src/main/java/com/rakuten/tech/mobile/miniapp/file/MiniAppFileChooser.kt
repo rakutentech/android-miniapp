@@ -11,7 +11,6 @@ import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.FileProvider
 import com.rakuten.tech.mobile.miniapp.display.DefaultFileProvider
 import java.io.File
 import java.io.IOException
