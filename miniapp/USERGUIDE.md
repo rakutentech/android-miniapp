@@ -626,7 +626,11 @@ In Host App, we can get the manifest information as following:
 ```kotlin
 CoroutineScope(Dispatchers.IO).launch {
     try {
-        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+        val miniAppManifest = MiniApp.instance().getMiniAppManifest(
+                                    appId = "MINI_APP_ID",
+                                    versionId = "VERSION_ID",
+                                    languageCode = "ja"
+                              )
 
         // Host App can set it's own metadata key in manifest.json to retrieve the value
         miniAppManifest.customMetaData["hostAppRandomTestKey"]
@@ -635,60 +639,8 @@ CoroutineScope(Dispatchers.IO).launch {
     }
 }
 ```
-
-### Fetching internationalized Mini App Meta data
-**API Docs:** [MiniApp.getMiniAppManifest](api/com.rakuten.tech.mobile.miniapp/-mini-app/fetching-internationalized-mini-app-meta-data.html)
-
-Mini App developers able to localize text in the manifest by providing alternative text for each language which they wish to support.
-To fetch the internationalized manifest MiniApp developers need to add the following attributes in their MiniApp.
-
-```json
-{
-    "reqPermissions": [
-        {
-            "name": "rakuten.miniapp.user.USER_NAME",
-            "reason": "__MANIFEST_userNameReason__"
-        }
-    ],
-    "optPermissions": [
-        {
-          "name": "rakuten.miniapp.user.CONTACT_LIST",
-          "reason": "__MANIFEST_contactList__"
-        }
-      ],
-    "customMetaData": {
-        "exampleKey": "__MANIFEST_exampleText__",
-        "notTranslatedKey": "This key has no translations."
-    }
-}
-
-// _locale/default/manifest.json:
-{
-  "userNameReason": "Default text.",
-  "contactList": "Default contactList text.",
-  "exampleText": "Default text."
-}
-
-// _locale/ja/manifest.json:
-{
-  "userNameReason": "Japanese text.",
-  "contactList": "Japanese contactList text.",
-  "exampleText": "Japanese text."
-}
-```
-
-In Host App, we can get the internationalized manifest information as following:
-
-```kotlin
-CoroutineScope(Dispatchers.IO).launch {
-    try {
-        // HostApps can implement their own functionality to detect device's locale value for `languageCode` e.g. `en`, `ja`
-        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID", "ja")
-    } catch(e: MiniAppSdkException) {
-        Log.e("MiniApp", "There was an error when retrieving the Mini App manifest", e)
-    }
-}
-```
+By passing the `languageCode` e.g. `en`, `ja` in the above `getMiniAppManifest` method, you can get the localized description/reason for the permission from the platform API.
+If there is no localized description/reason is available, it will return the default value given in the `manifest.json`.
 
 ## Getting downloaded Mini App Meta data
 
