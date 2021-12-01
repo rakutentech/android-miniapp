@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEndWith
 import org.amshove.kluent.shouldEqual
@@ -73,9 +74,17 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                testPath = "test"
+                testPath = "test",
+                lang = TEST_LANG_MANIFEST_DEFAULT
             ).execute()
         mockServer.takeRequest().path!! shouldContain "test"
+    }
+
+    @Test
+    fun `should fetch metadata of a mini app using the 'lang' query`() {
+        executeMetadataCallByRetrofit()
+        val requestUrl = mockServer.takeRequest().requestUrl!!
+        requestUrl.encodedQuery shouldBeEqualTo "lang=$TEST_LANG_MANIFEST_DEFAULT"
     }
 
     private fun executeMetadataCallByRetrofit() {
@@ -84,7 +93,8 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
             .fetchMetadata(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION,
+                lang = TEST_LANG_MANIFEST_DEFAULT
             ).execute()
     }
 }
@@ -100,7 +110,8 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
             .fetchMetadata(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
-                versionId = TEST_ID_MINIAPP_VERSION
+                versionId = TEST_ID_MINIAPP_VERSION,
+                lang = TEST_LANG_MANIFEST_DEFAULT
             )
             .execute().body()!!
     }
