@@ -92,6 +92,21 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         }
     /** end region */
 
+    /** region: RealMiniApp.getMiniAppInfoByPreviewCode */
+    @Test(expected = MiniAppSdkException::class)
+    fun `getMiniAppInfoByPreviewCode should throw exception when preview code is invalid`() = runBlockingTest {
+        realMiniApp.getMiniAppInfoByPreviewCode("")
+    }
+
+    @Test
+    fun `should invoke from MiniAppInfoFetcher when calling get  by preview code`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
+
+            verify(miniAppInfoFetcher).getInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
+        }
+    /** end region */
+
     /** region: RealMiniApp.create */
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when app id is blank while miniapp creation`() =
@@ -399,12 +414,25 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         )
         realMiniApp.isManifestEqual(dummyApiManifest, dummyManifest) shouldEqual false
     }
+
+    @Test
+    fun `isManifestEqual will return false when api and downloaded manifest are null`() {
+        realMiniApp.isManifestEqual(null, null) shouldEqual false
+    }
     /** end region */
 
     @Test
     fun `api manifest should be fetched from MiniAppDownloader`() =
         runBlockingTest {
             realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
+        }
+
+    @Test
+    fun `api manifest should not be fetched from MiniAppDownloader when different languageCode`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+            verify(miniAppDownloader, times(0))
+                .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }
 }

@@ -33,6 +33,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
             ActionType.SEND_MESSAGE_TO_CONTACT.action -> Actype.SEND_MESSAGE_TO_CONTACT
             ActionType.SEND_MESSAGE_TO_CONTACT_ID.action -> Actype.SEND_MESSAGE_TO_CONTACT_ID
             ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action -> Actype.SEND_MESSAGE_TO_MULTIPLE_CONTACTS
+            ActionType.GET_HOST_ENVIRONMENT_INFO.action -> Actype.GET_HOST_ENVIRONMENT_INFO
             else -> Actype.DEFAULT
         }
     }
