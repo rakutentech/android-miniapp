@@ -1,6 +1,9 @@
 ## CHANGELOG
 
 ### 3.9.0 (2021-XX-XX)
+**SDK**
+- **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
+
 **Sample App**
 - **Feature:** Added production and staging toggle to change environments.
 
