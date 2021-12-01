@@ -92,6 +92,21 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         }
     /** end region */
 
+    /** region: RealMiniApp.getMiniAppInfoByPreviewCode */
+    @Test(expected = MiniAppSdkException::class)
+    fun `getMiniAppInfoByPreviewCode should throw exception when preview code is invalid`() = runBlockingTest {
+        realMiniApp.getMiniAppInfoByPreviewCode("")
+    }
+
+    @Test
+    fun `should invoke from MiniAppInfoFetcher when calling get  by preview code`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
+
+            verify(miniAppInfoFetcher).getInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
+        }
+    /** end region */
+
     /** region: RealMiniApp.create */
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when app id is blank while miniapp creation`() =
@@ -398,6 +413,11 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
                 TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         realMiniApp.isManifestEqual(dummyApiManifest, dummyManifest) shouldEqual false
+    }
+
+    @Test
+    fun `isManifestEqual will return false when api and downloaded manifest are null`() {
+        realMiniApp.isManifestEqual(null, null) shouldEqual false
     }
     /** end region */
 

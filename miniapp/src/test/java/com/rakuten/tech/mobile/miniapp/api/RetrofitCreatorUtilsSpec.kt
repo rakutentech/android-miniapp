@@ -1,16 +1,17 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.rakuten.tech.mobile.miniapp.TEST_LIST_PUBLIC_KEY_SSL
+import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.TEST_VALUE
 import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
+import okhttp3.CertificatePinner
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.times
+import java.lang.IllegalArgumentException
 
 class RetrofitCreatorUtilsSpec private constructor(
     private val mockServer: MockWebServer
@@ -58,6 +59,38 @@ class RetrofitCreatorUtilsSpec private constructor(
         val response = executeCreateClient()
 
         response.body()!!.testKey shouldEqual TEST_VALUE
+    }
+
+    @Test
+    fun `extract base url should return the authority correctly`() {
+        val authority = extractBaseUrl(TEST_URL_HTTPS_1)
+        authority shouldBeEqualTo "www.example.com"
+    }
+
+    @Test
+    fun `extract base url should return empty string if invalid url passed`() {
+        val authority = extractBaseUrl("TEST_URL_HTTPS")
+        authority shouldBeEqualTo ""
+    }
+
+    @Test
+    fun `extract base url should return empty string if malformed url passed`() {
+        val authority = extractBaseUrl("http://example.com:-80/")
+        authority shouldBeEqualTo ""
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `create certificate pinner should return exception for wrong public key format`() {
+        createCertificatePinner(baseUrl = TEST_URL_HTTPS_1, pubKeyList = listOf(""))
+    }
+
+    @Test
+    fun `create certificate pinner should return correct certificate pinner`() {
+        val actualPinner = createCertificatePinner(baseUrl = TEST_URL_HTTPS_1, pubKeyList = listOf("sha1/XXX-XXX"))
+        val certificatePinnerBuilder = CertificatePinner.Builder()
+        certificatePinnerBuilder.add(extractBaseUrl(TEST_URL_HTTPS_1), "sha1/XXX-XXX")
+        val expectedPinner = certificatePinnerBuilder.build()
+        actualPinner shouldBeEqualTo expectedPinner
     }
 
     private fun createClient() = createRetrofitClient(
