@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -30,6 +31,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import java.util.Locale
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
@@ -143,12 +145,17 @@ open class MiniAppMessageBridge {
         onSuccess: (info: HostEnvironmentInfo) -> Unit,
         onError: (infoError: HostEnvironmentInfoError) -> Unit
     ) {
+        var locale = Locale.getDefault().toLanguageTag()
+        if (!locale.isValidLocale())
+            locale = ""
+
         val hostEnvironmentInfo = HostEnvironmentInfo(
                 platformVersion = Build.VERSION.RELEASE,
                 hostVersion = activity.packageManager.getPackageInfo(
                         activity.packageName, 0
                 ).versionName,
-                sdkVersion = BuildConfig.VERSION_NAME
+                sdkVersion = BuildConfig.VERSION_NAME,
+                hostLocale = locale
         )
 
         onSuccess.invoke(hostEnvironmentInfo)

@@ -3,6 +3,7 @@
 ### 3.9.0 (2021-XX-XX)
 **SDK**
 - **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
+- **Feature:** Added `hostLocale` in `HostEnvironmentInfo` to provide default language value from Host App.
 
 **Sample App**
 - **Feature:** Added production and staging toggle to change environments.
