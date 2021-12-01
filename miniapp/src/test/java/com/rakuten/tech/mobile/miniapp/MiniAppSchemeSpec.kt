@@ -1,11 +1,10 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldNotBeEqualTo
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -92,5 +91,13 @@ internal class MiniAppSchemeSpec {
     @Test
     fun `should not start activity when there is no supported activity`() {
         schemeWithAppId.startExportedActivity(Intent("TEST_ACTION"), context) shouldBe false
+    }
+
+    @Test
+    fun `should start activity when there is supported activity`() {
+        val intent: Intent = mock()
+        When calling intent.resolveActivity(context.packageManager) itReturns ComponentName("", "")
+        When calling intent.flags itReturns Intent.FLAG_ACTIVITY_NEW_TASK
+        schemeWithAppId.startExportedActivity(intent, context) shouldBe true
     }
 }

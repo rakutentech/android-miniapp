@@ -21,6 +21,7 @@ import com.rakuten.tech.mobile.miniapp.permission.*
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -274,6 +275,53 @@ class ShareContentBridgeSpec : BridgeCommon() {
 
             verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, SUCCESS)
         }
+    }
+
+    @Test
+    fun `dispatchEvent should not be called if bridge executor is not initialized`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            // When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
+
+            verify(bridgeExecutor, times(0))
+                .dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
+        }
+    }
+
+    @Test
+    fun `dispatchEvent should  be called if bridge executor is not initialized`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
+
+            verify(bridgeExecutor, times(1))
+                .dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
+        }
+    }
+
+    @Test
+    fun `native event type should return the correct value`() {
+        NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value shouldBeEqualTo "miniappwebviewclosed"
+        NativeEventType.MINIAPP_ON_PAUSE.value shouldBeEqualTo "miniapppause"
+        NativeEventType.MINIAPP_ON_RESUME.value shouldBeEqualTo "miniappresume"
     }
 
     @Test

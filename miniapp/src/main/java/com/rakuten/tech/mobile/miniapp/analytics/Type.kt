@@ -26,5 +26,6 @@ internal enum class Actype(val value: String) {
     SEND_MESSAGE_TO_CONTACT("mini_app_send_message_to_contact"),
     SEND_MESSAGE_TO_CONTACT_ID("mini_app_send_message_to_contact_id"),
     SEND_MESSAGE_TO_MULTIPLE_CONTACTS("mini_app_send_message_to_multiple_contacts"),
+    GET_HOST_ENVIRONMENT_INFO("mini_app_get_host_environment_info"),
     DEFAULT("")
 }
