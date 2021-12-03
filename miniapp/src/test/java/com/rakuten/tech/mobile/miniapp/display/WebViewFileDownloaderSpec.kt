@@ -26,7 +26,7 @@ class WebViewFileDownloaderSpec {
     val temporaryFolder = TemporaryFolder()
     private val context: Context = mock()
     private val scope = TestCoroutineScope()
-    private val fileProvider: DownloadedFileProvider = mock()
+    private val fileProvider: DefaultFileProvider = mock()
 
     private val base64Data = "iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAAAAABzQ+pjAAAAC0lEQVQI12NgQAAAAAwAA" +
             "eQ06mYAAAAASUVORK5CYII="

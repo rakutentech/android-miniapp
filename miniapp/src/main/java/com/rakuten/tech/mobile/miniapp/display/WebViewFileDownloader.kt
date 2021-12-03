@@ -20,7 +20,7 @@ internal class WebViewFileDownloader(
     private val cache: File,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO),
     private val mimeTypeMap: MimeTypeMap = MimeTypeMap.getSingleton(),
-    private val fileProvider: DownloadedFileProvider = DownloadedFileProvider(context)
+    private val fileProvider: DefaultFileProvider = DefaultFileProvider(context)
 ) {
     fun onDownloadStart(url: String, mimetype: String, onUnsupportedFile: () -> Unit) {
         if (url.startsWith("data:")) {
@@ -71,14 +71,14 @@ internal class WebViewFileDownloader(
 /**
  * @suppress
  */
-class MiniAppDownloadedFileProvider : FileProvider()
+class MiniAppDefaultFileProvider : FileProvider()
 
-internal class DownloadedFileProvider(
+internal class DefaultFileProvider(
     private val context: Context
 ) {
     fun getUriForFile(file: File): Uri = FileProvider.getUriForFile(
         context,
-        context.applicationContext.packageName.toString() + ".miniapp.downloadedfileprovider",
+        context.applicationContext.packageName.toString() + ".miniapp.defaultfileprovider",
         file
     )
 }
