@@ -1,6 +1,7 @@
 <resources>
-    <string name="miniapp_sdk_android_save">Save</string>
-    <string name="miniapp_sdk_android_close">Close</string>
+    <string name="miniapp_sdk_android_save" translatable="false">Save</string>
+    <string name="miniapp_sdk_android_close" translatable="false">Close</string>
     <!-- Permission resources -->
-    <string name="miniapp_sdk_android_permission_tutorial">MiniApp wants to access the following permissions. Please choose your preference accordingly.</string>
+    <string name="miniapp_sdk_android_permission_tutorial" translatable="false">MiniApp wants to access the following permissions. Please choose your preference accordingly.</string>
+    <string name="miniapp.sdk.android.locale">en-US</string>
 </resources>

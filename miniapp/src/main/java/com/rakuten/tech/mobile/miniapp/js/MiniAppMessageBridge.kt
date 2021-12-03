@@ -5,12 +5,12 @@ import android.content.Intent
 import android.os.Build
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -145,7 +145,7 @@ open class MiniAppMessageBridge {
         onSuccess: (info: HostEnvironmentInfo) -> Unit,
         onError: (infoError: HostEnvironmentInfoError) -> Unit
     ) {
-        var locale = Locale.getDefault().toLanguageTag()
+        var locale = activity.getString(R.string.miniapp_sdk_android_locale)
         if (!locale.isValidLocale())
             locale = ""
 
