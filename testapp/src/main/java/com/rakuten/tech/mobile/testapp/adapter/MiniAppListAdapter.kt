@@ -71,7 +71,7 @@ class MiniAppListAdapter(
 
     private fun addFooter() {
         if (miniApps.size > 0) {
-            val footerItem = MiniAppInfo("", "", "", Version("", ""))
+            val footerItem = MiniAppInfo("", "", "", Version("", ""), "", "")
             miniApps.add(itemCount, footerItem)
         }
     }

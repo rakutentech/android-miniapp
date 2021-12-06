@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
@@ -57,6 +58,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val fileChoosingReqCode = 10101
     private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
 
+    private var appInfo: MiniAppInfo? = null
+
     companion object {
         private val appIdTag = "app_id_tag"
         private val miniAppTag = "mini_app_tag"
@@ -98,8 +101,19 @@ class MiniAppDisplayActivity : BaseActivity() {
                 finish()
                 true
             }
+            R.id.share_mini_app -> {
+                appInfo?.let {
+                    MiniAppShareWindow.getInstance(this).show(miniAppInfo = it)
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        return true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,7 +126,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         //Three different ways to get miniapp.
-        val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)

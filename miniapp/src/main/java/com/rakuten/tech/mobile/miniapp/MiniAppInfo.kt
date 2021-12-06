@@ -18,10 +18,13 @@ data class MiniAppInfo(
     @SerializedName("id") val id: String,
     @SerializedName("displayName") val displayName: String,
     @SerializedName("icon") val icon: String,
-    @SerializedName("version") val version: Version
+    @SerializedName("version") val version: Version,
+    @SerializedName("promotionalImageUrl") val promotionalImageUrl: String,
+    @SerializedName("promotionalText") val promotionalText: String
 ) : Parcelable {
     companion object {
-        internal fun forUrl() = MiniAppInfo(UUID.randomUUID().toString(), "", "", Version("", ""))
+        internal fun forUrl() =
+            MiniAppInfo(UUID.randomUUID().toString(), "", "", Version("", ""), "", "")
     }
 }
 
