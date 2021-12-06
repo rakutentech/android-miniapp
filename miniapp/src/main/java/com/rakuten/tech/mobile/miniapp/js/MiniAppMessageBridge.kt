@@ -5,10 +5,11 @@ import android.content.Intent
 import android.os.Build
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
@@ -31,7 +32,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import java.util.Locale
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
