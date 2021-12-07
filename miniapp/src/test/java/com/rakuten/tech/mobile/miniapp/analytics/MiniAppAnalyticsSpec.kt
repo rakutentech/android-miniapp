@@ -11,7 +11,9 @@ class MiniAppAnalyticsSpec {
         id = "test_id",
         displayName = "test_mini_app",
         icon = "test_icon",
-        version = Version("test_version_tag", "test_version_id")
+        version = Version("test_version_tag", "test_version_id"),
+        promotionalImageUrl = TEST_PROMOTIONAL_URL,
+        promotionalText = TEST_PROMOTIONAL_TEXT
     )
 
     private val cp = JSONObject()
