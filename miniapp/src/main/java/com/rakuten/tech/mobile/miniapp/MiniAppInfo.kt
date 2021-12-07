@@ -11,6 +11,8 @@ import java.util.UUID
  * @property displayName Display name of the mini app.
  * @property icon Icon of the mini app, obtainable from the provided data for this resource.
  * @property version Version information of the mini app.
+ * @property promotionalImageUrl promotional image, obtainable from the provided data for this resource.
+ * @property promotionalText promotional details to share.
  */
 @Parcelize
 data class MiniAppInfo(
