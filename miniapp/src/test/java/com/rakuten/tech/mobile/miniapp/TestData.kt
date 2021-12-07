@@ -49,12 +49,16 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
 internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email")
+internal const val TEST_PROMOTIONAL_URL = "http://testImageurl.co"
+internal const val TEST_PROMOTIONAL_TEXT = "test_promotional_text"
 
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
     displayName = TEST_MA_DISPLAY_NAME,
     icon = TEST_MA_ICON,
-    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
+    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID),
+    promotionalImageUrl = TEST_PROMOTIONAL_URL,
+    promotionalText = TEST_PROMOTIONAL_TEXT
 )
 
 // ACCESS_TOKEN_PERMISSIONS

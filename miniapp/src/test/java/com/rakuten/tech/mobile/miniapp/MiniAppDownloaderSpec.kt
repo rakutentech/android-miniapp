@@ -76,7 +76,8 @@ open class MiniAppDownloaderBaseSpec {
         When calling apiClient.fetchInfo(appId) itReturns
                 MiniAppInfo(
                     id = appId, displayName = TEST_MA_DISPLAY_NAME, icon = "",
-                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId)
+                    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = versionId),
+                    promotionalImageUrl = TEST_PROMOTIONAL_URL, promotionalText = TEST_PROMOTIONAL_TEXT
                 )
     }
 }
