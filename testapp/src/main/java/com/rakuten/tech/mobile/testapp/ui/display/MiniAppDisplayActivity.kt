@@ -94,6 +94,11 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var viewModel: MiniAppDisplayViewModel
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
@@ -109,11 +114,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.miniapp_display_menu, menu)
-        return true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

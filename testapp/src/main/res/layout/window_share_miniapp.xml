@@ -22,23 +22,20 @@
                 <ImageView
                     android:id="@+id/img_promotional"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="200dp"
                     android:layout_margin="@dimen/margin_10"
-                    android:layout_marginBottom="@dimen/margin_30" />
+                    android:layout_marginBottom="@dimen/margin_20"
+                    android:scaleType="centerCrop" />
 
                 <TextView
                     android:id="@+id/tv_promotional_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_16"
-                    android:layout_marginEnd="@dimen/margin_20"
-                    android:layout_marginBottom="@dimen/margin_10"
+                    android:layout_margin="@dimen/margin_10"
                     android:gravity="center"
                     android:lineSpacingExtra="@dimen/line_space_1"
                     android:textColor="@color/qr_error_title"
-                    android:textSize="@dimen/text_large_22"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/text_large_16" />
             </LinearLayout>
 
             <LinearLayout

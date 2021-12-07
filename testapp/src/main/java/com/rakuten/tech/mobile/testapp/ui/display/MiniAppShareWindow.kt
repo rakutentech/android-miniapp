@@ -45,7 +45,7 @@ class MiniAppShareWindow {
 
     private fun renderScreen(miniAppInfo: MiniAppInfo) {
         if (dialog.isShowing) dismissDialog()
-        binding.imgPromotional.load(context, miniAppInfo.promotionalImageUrl ?: "")
+        binding.imgPromotional.load(context, miniAppInfo.promotionalImageUrl)
         binding.tvPromotionalText.text = miniAppInfo.promotionalText
         binding.btnClose.setOnClickListener(listener)
         dialog.setCancelable(false)
