@@ -323,9 +323,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     sampleWebViewExternalResultHandler.emitResult(intent)
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                miniAppFileChooser.onReceivedFiles(intent)
-            }
+            miniAppFileChooser.onReceivedFiles(data)
         }
     }
 

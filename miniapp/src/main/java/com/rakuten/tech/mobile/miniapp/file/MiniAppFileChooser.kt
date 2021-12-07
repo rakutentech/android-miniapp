@@ -136,9 +136,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * @param intent The data after successfully retrieved by [Activity.onActivityResult] in the HostApp.
      */
     @Suppress("OptionalWhenBraces", "LongMethod")
-    fun onReceivedFiles(intent: Intent) {
-        val data = intent.data
-        val clipData = intent.clipData
+    fun onReceivedFiles(intent: Intent?) {
+        val data = intent?.data
+        val clipData = intent?.clipData
         when {
             data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
