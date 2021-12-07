@@ -247,7 +247,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     fun `should return the correct result when listDownloadedWithCustomPermissions calls`() {
         val miniAppInfo = MiniAppInfo(
             "test_id", "display_name", "test_icon_url",
-            Version("test_version_tag", "test_version_id")
+            Version("test_version_tag", "test_version_id"),
+            TEST_PROMOTIONAL_URL, TEST_PROMOTIONAL_TEXT
         )
         val downloadedList = listOf(miniAppInfo)
         val miniAppCustomPermission = MiniAppCustomPermission(
