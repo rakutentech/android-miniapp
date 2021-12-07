@@ -106,7 +106,6 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `onReceivedFiles should invoke value when photo path is available`() {
         val intent: Intent = mock()
-        val uriList = mutableListOf<Uri>()
         miniAppFileChooser.currentPhotoPath = "test-photo-path"
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
@@ -117,7 +116,6 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `onReceivedFiles should not invoke value when photo path is null`() {
         val intent: Intent = mock()
-        val uriList = mutableListOf<Uri>()
         miniAppFileChooser.currentPhotoPath = null
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
@@ -149,9 +147,16 @@ class MiniAppFileChooserDefaultSpec {
     }
 
     @Test
+    fun `resetCallback should set null to appropriate properties`() {
+        miniAppFileChooser.resetCallback()
+        assertTrue(miniAppFileChooser.currentPhotoPath == null)
+        assertTrue(miniAppFileChooser.callback == null)
+    }
+
+    @Test
     fun `extractValidMimeTypes should return the correct MimeType`() {
-        val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".png", ".gif", ".pdf")
-        val expectedMimeTypes = listOf<String>("image/jpeg", "image/png", "image/gif", "application/pdf")
+        val invalidMimeTypes = listOf(".jpg", ".jpeg", ".png", ".gif", ".pdf")
+        val expectedMimeTypes = listOf("image/jpeg", "image/png", "image/gif", "application/pdf")
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())

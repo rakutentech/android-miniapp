@@ -101,7 +101,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     }
 
     private fun createImageFile(context: Context): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp: String = SimpleDateFormat(IMAGE_FILE_NAME_PATTERN).format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */
@@ -175,5 +175,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     internal fun resetCallback() {
         callback = null
         currentPhotoPath = null
+    }
+
+    private companion object {
+        const val IMAGE_FILE_NAME_PATTERN = "yyyyMMdd_HHmmss"
     }
 }
