@@ -197,7 +197,6 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `createImageFile should prepare file correctly as expected`() {
         val actualFile = miniAppFileChooser.createImageFile(context)
-        assertTrue(actualFile.absolutePath == "")
         miniAppFileChooser.currentPhotoPath shouldBe actualFile.absolutePath
     }
 }
