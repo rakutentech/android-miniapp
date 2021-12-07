@@ -8,9 +8,10 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -31,7 +32,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import java.util.Locale
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
@@ -145,7 +145,7 @@ open class MiniAppMessageBridge {
         onSuccess: (info: HostEnvironmentInfo) -> Unit,
         onError: (infoError: HostEnvironmentInfoError) -> Unit
     ) {
-        var locale = Locale.getDefault().toLanguageTag()
+        var locale = activity.getString(R.string.miniapp_sdk_android_locale)
         if (!locale.isValidLocale())
             locale = ""
 

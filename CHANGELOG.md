@@ -4,9 +4,11 @@
 **SDK**
 - **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
 - **Feature:** Added `hostLocale` in `HostEnvironmentInfo` to provide default language value from Host App.
+- **Feature:** Added `promotionalImageUrl` and `promotionalText` in MiniAppInfo model.
 
 **Sample App**
 - **Feature:** Added production and staging toggle to change environments.
+- **Feature:** Adding Sharing option to display the promotional content via `MiniAppDisplay`.
 
 ### 3.8.0 (2021-11-09)
 **SDK**

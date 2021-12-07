@@ -11,6 +11,8 @@ import java.util.UUID
  * @property displayName Display name of the mini app.
  * @property icon Icon of the mini app, obtainable from the provided data for this resource.
  * @property version Version information of the mini app.
+ * @property promotionalImageUrl promotional image, obtainable from the provided data for this resource.
+ * @property promotionalText promotional details to share.
  */
 @Parcelize
 data class MiniAppInfo(
@@ -18,10 +20,13 @@ data class MiniAppInfo(
     @SerializedName("id") val id: String,
     @SerializedName("displayName") val displayName: String,
     @SerializedName("icon") val icon: String,
-    @SerializedName("version") val version: Version
+    @SerializedName("version") val version: Version,
+    @SerializedName("promotionalImageUrl") val promotionalImageUrl: String,
+    @SerializedName("promotionalText") val promotionalText: String
 ) : Parcelable {
     companion object {
-        internal fun forUrl() = MiniAppInfo(UUID.randomUUID().toString(), "", "", Version("", ""))
+        internal fun forUrl() =
+            MiniAppInfo(UUID.randomUUID().toString(), "", "", Version("", ""), "", "")
     }
 }
 
