@@ -100,7 +100,8 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         }
     }
 
-    private fun createImageFile(context: Context): File {
+    @VisibleForTesting
+    internal fun createImageFile(context: Context): File {
         val timeStamp: String = SimpleDateFormat(IMAGE_FILE_NAME_PATTERN).format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(

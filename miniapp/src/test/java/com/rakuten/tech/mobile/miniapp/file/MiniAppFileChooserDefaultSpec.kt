@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +29,7 @@ class MiniAppFileChooserDefaultSpec {
     private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
     private lateinit var context: Context
     private val requestCode = 100
-    private val callback: ValueCallback<Array<Uri>>? = mock()
+    private val callback: ValueCallback<Array<Uri>> = mock()
     private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
 
@@ -88,7 +89,7 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback)?.onReceiveValue(arrayOf(uri))
+        verify(callback).onReceiveValue(arrayOf(uri))
     }
 
     @Test
@@ -100,7 +101,7 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback)?.onReceiveValue(uriList.toTypedArray())
+        verify(callback).onReceiveValue(uriList.toTypedArray())
     }
 
     @Test
@@ -110,7 +111,7 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback)?.onReceiveValue(any())
+        verify(callback).onReceiveValue(any())
     }
 
     @Test
@@ -120,7 +121,7 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback, times(0))?.onReceiveValue(any())
+        verify(callback, times(0)).onReceiveValue(any())
     }
 
     @Test
@@ -129,20 +130,20 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback)?.onReceiveValue(null)
+        verify(callback).onReceiveValue(null)
     }
 
     @Test
     fun `onReceivedFiles should not invoke onReceiveValue of file path callback is null`() {
         miniAppFileChooser.onShowFileChooser(null, fileChooserParams, context)
-        verify(callback, times(0))?.onReceiveValue(arrayOf())
+        verify(callback, times(0)).onReceiveValue(arrayOf())
     }
 
     @Test
     fun `onCancel should invoke null to file path callback`() {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onCancel()
-        verify(callback)?.onReceiveValue(null)
+        verify(callback).onReceiveValue(null)
         verify(miniAppFileChooser).resetCallback()
     }
 
@@ -165,8 +166,8 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `extractValidMimeTypes should remove duplicate MimeType`() {
-        val invalidMimeTypes = listOf<String>(".jpg", ".jpeg", ".jpg")
-        val expectedMimeTypes = listOf<String>("image/jpeg")
+        val invalidMimeTypes = listOf(".jpg", ".jpeg", ".jpg")
+        val expectedMimeTypes = listOf("image/jpeg")
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
@@ -175,8 +176,8 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `extractValidMimeTypes should remove bad MimeType`() {
-        val invalidMimeTypes = listOf<String>(".jpg", ".badMime")
-        val expectedMimeTypes = listOf<String>("image/jpeg")
+        val invalidMimeTypes = listOf(".jpg", ".badMime")
+        val expectedMimeTypes = listOf("image/jpeg")
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
@@ -185,11 +186,18 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `extractValidMimeTypes should not effect proper MimeType`() {
-        val invalidMimeTypes = listOf<String>(".png", "image/jpeg")
-        val expectedMimeTypes = listOf<String>("image/png", "image/jpeg")
+        val invalidMimeTypes = listOf(".png", "image/jpeg")
+        val expectedMimeTypes = listOf("image/png", "image/jpeg")
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
         )
+    }
+
+    @Test
+    fun `createImageFile should prepare file correctly as expected`() {
+        val actualFile = miniAppFileChooser.createImageFile(context)
+        assertTrue(actualFile.absolutePath == "")
+        miniAppFileChooser.currentPhotoPath shouldBe actualFile.absolutePath
     }
 }
