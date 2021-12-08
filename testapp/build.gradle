@@ -46,7 +46,7 @@ android {
             ratAid                  : property("ANALYTICS_AID") ?: "0"
     ]
     def debugManifestPlaceholders = [
-            baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+            baseUrl                 : property("MINIAPP_ONE_CLOUD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
             requireSignatureVerification : property("REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
@@ -61,7 +61,7 @@ android {
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
     def prodManifestPlaceholders = [
-            baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+            baseUrl                 : property("MINIAPP_ONE_CLOUD_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
             requireSignatureVerification : property("PROD_REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
