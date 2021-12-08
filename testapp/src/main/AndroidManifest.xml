@@ -85,6 +85,9 @@
                     android:scheme="@string/miniappdemo_scheme" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity"
+            android:label="@string/action_dynamic_deeplinks" />
 
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.BaseUrl"
@@ -116,9 +119,6 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
             android:value="${ratEndpoint}" />
-        <meta-data
-            android:name="com.rakuten.tech.mobile.ras.SSLPinningPublicKey"
-            android:value="${sslPinningPublicKey}" />
     </application>
 
 </manifest>

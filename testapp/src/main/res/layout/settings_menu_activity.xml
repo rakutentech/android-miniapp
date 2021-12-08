@@ -69,6 +69,24 @@
                     app:pageName="Settings"
                     app:siteSection="Top" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchProdVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_enable_prod_version"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -120,8 +138,7 @@
                     android:paddingStart="@dimen/medium_16"
                     android:paddingTop="@dimen/small_4"
                     android:paddingEnd="@dimen/medium_16"
-                    android:paddingBottom="@dimen/small_4"
-                    android:text="@string/lb_user_details" />
+                    android:paddingBottom="@dimen/small_4" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
@@ -189,6 +206,21 @@
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
                     app:titleLabel="@string/action_points"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonDeeplink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_dynamic_deeplinks"
                     app:actionType="open"
                     app:pageName="Settings"
                     app:siteSection="Top"/>

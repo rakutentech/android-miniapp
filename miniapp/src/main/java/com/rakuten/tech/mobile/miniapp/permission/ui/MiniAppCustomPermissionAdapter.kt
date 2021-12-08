@@ -87,6 +87,7 @@ internal class MiniAppCustomPermissionAdapter :
     }
 
     @VisibleForTesting
+    @Suppress("ComplexMethod")
     fun parsePermissionName(type: MiniAppCustomPermissionType?): String {
         return when (type) {
             MiniAppCustomPermissionType.USER_NAME -> "User Name"
@@ -96,6 +97,7 @@ internal class MiniAppCustomPermissionAdapter :
             MiniAppCustomPermissionType.SEND_MESSAGE -> "Send Message"
             MiniAppCustomPermissionType.LOCATION -> "Device Location"
             MiniAppCustomPermissionType.POINTS -> "Rakuten Points"
+            MiniAppCustomPermissionType.FILE_DOWNLOAD -> "File Download"
             else -> "Unknown"
         }
     }

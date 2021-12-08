@@ -24,7 +24,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint("SetJavaScriptEnabled", "ParameterListWrapping")
 internal class RealMiniAppDisplay(
     private val basePath: String,
     val miniAppInfo: MiniAppInfo,

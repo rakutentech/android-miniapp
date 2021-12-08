@@ -37,4 +37,6 @@
 
     <dimen name="line_space_1">1sp</dimen>
     <dimen name="line_space_3">3sp</dimen>
+
+    <dimen name="menu_title_text_size">16sp</dimen>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <cache-path name="miniapp_downloaded_files_cache" path="./mini_app_download"/>
+    <external-files-path name="miniapp" path="Pictures" />
 </paths>

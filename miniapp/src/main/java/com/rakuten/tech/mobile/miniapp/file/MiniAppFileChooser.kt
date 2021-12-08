@@ -4,11 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.display.DefaultFileProvider
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -37,8 +44,9 @@ interface MiniAppFileChooser {
 class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
+    internal var currentPhotoPath: String? = null
 
-    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
@@ -50,24 +58,60 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
-            // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
-            fileChooserParams?.acceptTypes?.let { acceptTypes ->
-                if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
-                    // Accept all first.
-                    intent?.type = "*/*"
-                    // Convert to valid MimeType if with dot.
-                    val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
-                    // filter mime types by Intent.EXTRA_MIME_TYPES.
-                    intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
+            if (fileChooserParams?.isCaptureEnabled == true) {
+                dispatchTakePictureIntent(context)
+            } else {
+                // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
+                fileChooserParams?.acceptTypes?.let { acceptTypes ->
+                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
+                        // Accept all first.
+                        intent?.type = "*/*"
+                        // Convert to valid MimeType if with dot.
+                        val validMimeTypes = extractValidMimeTypes(acceptTypes).toTypedArray()
+                        // filter mime types by Intent.EXTRA_MIME_TYPES.
+                        intent?.putExtra(Intent.EXTRA_MIME_TYPES, validMimeTypes)
+                    }
                 }
+                (context as Activity).startActivityForResult(intent, requestCode)
             }
-            (context as Activity).startActivityForResult(intent, requestCode)
         } catch (e: Exception) {
             resetCallback()
             Log.e(MiniAppFileChooser::class.java.simpleName, e.message.toString())
             return false
         }
         return true
+    }
+
+    @Suppress("SwallowedException")
+    private fun dispatchTakePictureIntent(context: Context) {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                createImageFile(context)
+            } catch (ex: IOException) {
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = DefaultFileProvider(context).getUriForFile(it)
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                (context as Activity).startActivityForResult(takePictureIntent, requestCode)
+            }
+        }
+    }
+
+    @VisibleForTesting
+    internal fun createImageFile(context: Context): File {
+        val timeStamp: String = SimpleDateFormat(IMAGE_FILE_NAME_PATTERN).format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
     }
 
     /**
@@ -93,9 +137,9 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
      * @param intent The data after successfully retrieved by [Activity.onActivityResult] in the HostApp.
      */
     @Suppress("OptionalWhenBraces", "LongMethod")
-    fun onReceivedFiles(intent: Intent) {
-        val data = intent.data
-        val clipData = intent.clipData
+    fun onReceivedFiles(intent: Intent?) {
+        val data = intent?.data
+        val clipData = intent?.clipData
         when {
             data != null && clipData == null -> {
                 callback?.onReceiveValue((arrayOf(data)))
@@ -107,6 +151,11 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 }
 
                 callback?.onReceiveValue((uriList.toTypedArray()))
+            }
+            currentPhotoPath != null -> {
+                val results = mutableListOf<Uri>()
+                results.add(Uri.fromFile(File(currentPhotoPath)))
+                callback?.onReceiveValue((results.toTypedArray()))
             }
             else -> {
                 callback?.onReceiveValue(null)
@@ -126,5 +175,10 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     @VisibleForTesting
     internal fun resetCallback() {
         callback = null
+        currentPhotoPath = null
+    }
+
+    private companion object {
+        const val IMAGE_FILE_NAME_PATTERN = "yyyyMMdd_HHmmss"
     }
 }

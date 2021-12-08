@@ -15,7 +15,8 @@ Mini App SDK also facilitates communication between a mini app and the host app 
 
 ## Requirements
 
-- **Minimum Android Version**: This SDK supports Android 7.0+ (API level 24+).
+- **Minimum Android Version**: This SDK supports Android 9.0+ (API level 28+).
+    - Note: Currently this SDK is set to `minSdkVersion 24`, however support for versions 24 to 27 is deprecated and could be removed in a later release.
 - **Base URL, App ID, Subscription Key**: We don't currently provide a public API for use with this SDK. You must provide a URL for your API as well as an App ID and Subscription Key for the API.
 
 ## Getting Started
@@ -48,7 +49,6 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
-| Public Key For SSL Pinning   | String  | `com.rakuten.tech.mobile.ras.SSLPinningPublicKey`      | ✅         | 🚫        |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
@@ -218,6 +218,7 @@ There are some methods have a default implementation but the host app can overri
 | requestDevicePermission      | 🚫       |
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
+| getHostEnvironmentInfo       | ✅       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -283,6 +284,19 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         // .. .. ..
         
         callback.invoke(true, null) // or callback.invoke(false, "error message")
+    }
+
+    override fun getHostEnvironmentInfo(
+        onSuccess: (info: HostEnvironmentInfo) -> Unit,
+        onError: (infoError: HostEnvironmentInfoError) -> Unit
+    ) {
+        // Check if there is any environment info in HostApp
+        if (hasInfo) {
+            // allow miniapp to invoke the host environment info
+            onSuccess(hostEnvironmentInfo)
+        }
+        else
+            onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
     }
 }
 
@@ -444,11 +458,16 @@ Mini apps are able to make requests for custom permission types which are define
 **Note:** The Mini App SDK has a default UI built-in for the custom permission dialog, but you can choose to override this and use a custom UI. The Mini App SDK will handle caching the permission accept/deny state, and your `requestCustomPermission` function will only receive permissions which have not yet been granted to the mini app.
 
 ### Share Content
-**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/request-custom-permissions.html)
+**API Docs:** [MiniAppMessageBridge.shareContent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/share-content.html)
 
 The mini app can share text content to either your App or another App. The default functionality for this will create a `text` type `Intent` which shows the Android chooser and allows the user to share the content to any App which accepts text.
 
 You can also choose to override the default functionality and instead share the text content to some feature within your own App.
+
+### Host Environment Info
+**API Docs:** [MiniAppMessageBridge.getHostEnvironmentInfo](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-environment.html)
+
+The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
@@ -478,6 +497,17 @@ Set the `AdMobDisplayer19` provided by MiniApp SDK. This controller will handle 
 ```kotlin
 miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer19(activityContext))
 ```
+
+### Send Native Events
+**API Docs:** [miniAppMessageBridge.dispatchNativeEvent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/dispatch-native-event.html)
+
+Mini apps are able to get events for custom event types which are defined by the Mini App SDK. These events include things like external webview close, pause, resume.
+
+- External webview close (`NativeEventType.EXTERNAL_WEBVIEW_CLOSE`)
+- Pause (`NativeEventType.MINIAPP_ON_PAUSE`)
+- Resume (`NativeEventType.MINIAPP_ON_RESUME`)
+
+**Note:** Host app can send these events whenever these events occur and MiniApp will be able to get those events.
 
 #### Admob Version
 In case the host app wants to use the latest admob sdk, Add the following to your `build.gradle` file:
@@ -596,7 +626,11 @@ In Host App, we can get the manifest information as following:
 ```kotlin
 CoroutineScope(Dispatchers.IO).launch {
     try {
-        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+        val miniAppManifest = MiniApp.instance().getMiniAppManifest(
+                                    appId = "MINI_APP_ID",
+                                    versionId = "VERSION_ID",
+                                    languageCode = "ja"
+                              )
 
         // Host App can set it's own metadata key in manifest.json to retrieve the value
         miniAppManifest.customMetaData["hostAppRandomTestKey"]
@@ -605,6 +639,8 @@ CoroutineScope(Dispatchers.IO).launch {
     }
 }
 ```
+By passing the `languageCode` e.g. `en`, `ja` in the above `getMiniAppManifest` method, you can get the localized description/reason for the permission from the platform API.
+If there is no localized description/reason is available, it will return the default value given in the `manifest.json`.
 
 ## Getting downloaded Mini App Meta data
 
@@ -903,7 +939,7 @@ Some keystores within devices are tampered or OEM were shipped with broken keyst
 
 This build error could occur if you are using older versions of other libraries from `com.rakuten.tech.mobile`.
 Some of the dependencies in this SDK have changed to a new Group ID of `io.github.rakutentech` (due to the [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)).
-This means that if you have another library in your project which depends on the older dependencies using the Gropu ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
+This means that if you have another library in your project which depends on the older dependencies using the Group ID `com.rakuten.tech.mobile`, then you will have duplicate classes.
 
 To avoid this, please add the following to your `build.gradle` in order to exclude the old `com.rakuten.tech.mobile` dependencies from your project.
 

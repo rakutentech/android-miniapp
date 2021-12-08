@@ -13,4 +13,9 @@ internal class MiniAppBridgeExecutor(private val webViewListener: WebViewListene
     fun postError(callbackId: String, errorMessage: String) {
         webViewListener.runErrorCallback(callbackId, errorMessage)
     }
+
+    /** Emit an event to mini app. **/
+    fun dispatchEvent(eventType: String, value: String = "") {
+        webViewListener.runNativeEventCallback(eventType = eventType, value = value)
+    }
 }

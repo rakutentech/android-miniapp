@@ -30,7 +30,14 @@ open class ApiClientSpec {
         id = TEST_MA_ID,
         displayName = TEST_MA_DISPLAY_NAME,
         icon = TEST_MA_ICON,
-        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID),
+        promotionalImageUrl = TEST_PROMOTIONAL_URL,
+        promotionalText = TEST_PROMOTIONAL_TEXT
+    )
+
+    private val previewMiniAppInfo = PreviewMiniAppInfo(
+        host = Host(id = TEST_HA_ID_PROJECT, subscriptionKey = TEST_HA_SUBSCRIPTION_KEY),
+        miniapp = miniAppInfo
     )
 
     @Test
@@ -148,6 +155,18 @@ open class ApiClientSpec {
             val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
             apiClient.fetchInfo("test-app-id")
         }
+
+    @Test
+    fun `should fetch preview miniapp info data for a given preview code`() = runBlockingTest {
+        val mockCall: Call<PreviewMiniAppInfo> = mock()
+        val response: Response<PreviewMiniAppInfo> = Response.success(previewMiniAppInfo)
+
+        When calling mockAppInfoApi.fetchInfoByPreviewCode(TEST_HA_ID_PROJECT, TEST_MA_PREVIEW_CODE) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfoByPreviewCode(TEST_MA_PREVIEW_CODE) shouldBeEqualTo previewMiniAppInfo
+    }
 
     @Test
     fun `custom error response should extend the same error class`() {

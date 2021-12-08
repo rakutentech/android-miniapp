@@ -169,10 +169,15 @@ abstract class MiniApp internal constructor() {
      * Get the manifest information e.g. required and optional permissions.
      * @param appId mini app id.
      * @param versionId of mini app.
-     * @return MiniAppManifest an object contains manifest information of a miniapp.
+     * @param languageCode of mini app.
+     * @return MiniAppManifest an object contains manifest information of a mini app.
      */
     @Throws(MiniAppSdkException::class)
-    abstract suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest
+    abstract suspend fun getMiniAppManifest(
+        appId: String,
+        versionId: String,
+        languageCode: String = ""
+    ): MiniAppManifest
 
     /**
      * Get the currently downloaded manifest information e.g. required and optional permissions.
@@ -211,10 +216,10 @@ abstract class MiniApp internal constructor() {
                 rasProjectId = miniAppSdkConfig.rasProjectId,
                 subscriptionKey = miniAppSdkConfig.subscriptionKey,
                 isPreviewMode = miniAppSdkConfig.isPreviewMode,
-                sslPublicKey = miniAppSdkConfig.sslPinningPublicKey
+                sslPublicKeyList = miniAppSdkConfig.sslPinningPublicKeyList
             )
             val apiClientRepository = ApiClientRepository().apply {
-                registerApiClient(defaultConfig.key, apiClient)
+                registerApiClient(defaultConfig, apiClient)
             }
             val signatureVerifier: SignatureVerifier? = SignatureVerifier.init(
                 context = context,

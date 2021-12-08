@@ -60,7 +60,7 @@ open class BaseRealMiniAppSpec {
                 ratDispatcher = ratDispatcher
             ))
 
-        When calling apiClientRepository.getApiClientFor(miniAppSdkConfig.key) itReturns apiClient
+        When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
         When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
         When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
     }
@@ -89,6 +89,21 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             realMiniApp.fetchInfo(TEST_MA_ID)
 
             verify(miniAppInfoFetcher).getInfo(TEST_MA_ID)
+        }
+    /** end region */
+
+    /** region: RealMiniApp.getMiniAppInfoByPreviewCode */
+    @Test(expected = MiniAppSdkException::class)
+    fun `getMiniAppInfoByPreviewCode should throw exception when preview code is invalid`() = runBlockingTest {
+        realMiniApp.getMiniAppInfoByPreviewCode("")
+    }
+
+    @Test
+    fun `should invoke from MiniAppInfoFetcher when calling get  by preview code`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
+
+            verify(miniAppInfoFetcher).getInfoByPreviewCode(TEST_MA_PREVIEW_CODE)
         }
     /** end region */
 
@@ -232,7 +247,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     fun `should return the correct result when listDownloadedWithCustomPermissions calls`() {
         val miniAppInfo = MiniAppInfo(
             "test_id", "display_name", "test_icon_url",
-            Version("test_version_tag", "test_version_id")
+            Version("test_version_tag", "test_version_id"),
+            TEST_PROMOTIONAL_URL, TEST_PROMOTIONAL_TEXT
         )
         val downloadedList = listOf(miniAppInfo)
         val miniAppCustomPermission = MiniAppCustomPermission(
@@ -399,12 +415,25 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         )
         realMiniApp.isManifestEqual(dummyApiManifest, dummyManifest) shouldEqual false
     }
+
+    @Test
+    fun `isManifestEqual will return false when api and downloaded manifest are null`() {
+        realMiniApp.isManifestEqual(null, null) shouldEqual false
+    }
     /** end region */
 
     @Test
     fun `api manifest should be fetched from MiniAppDownloader`() =
         runBlockingTest {
             realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppDownloader).fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
+        }
+
+    @Test
+    fun `api manifest should not be fetched from MiniAppDownloader when different languageCode`() =
+        runBlockingTest {
+            realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+            verify(miniAppDownloader, times(0))
+                .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }
 }

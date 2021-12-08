@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.display
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
@@ -19,14 +18,14 @@ import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppDownloadNavigator
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
-private const val TAG = "MiniAppWebView"
 
-@SuppressLint("SetJavaScriptEnabled")
+@Suppress("SetJavaScriptEnabled", "TooManyFunctions", "LargeClass")
 internal open class MiniAppWebView(
     context: Context,
     val basePath: String,
@@ -65,17 +64,27 @@ internal open class MiniAppWebView(
         if (this::class == MiniAppWebView::class)
             commonInit()
 
+        setFileDownloadListener()
+    }
+
+    private fun setFileDownloadListener() {
         setDownloadListener { url: String, userAgent: String, contentDisposition: String,
                               mimetype: String, contentLength: Long ->
-            if (miniAppNavigator is MiniAppDownloadNavigator) {
-                (miniAppNavigator as MiniAppDownloadNavigator)
-                    .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
-            } else {
-                defaultFileDownloader.onDownloadStart(
-                    url = url,
-                    mimetype = mimetype,
-                    onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
-                )
+            if (miniAppCustomPermissionCache.hasPermission(
+                            miniAppId,
+                            MiniAppCustomPermissionType.FILE_DOWNLOAD
+                    )
+            ) {
+                if (miniAppNavigator is MiniAppDownloadNavigator) {
+                    (miniAppNavigator as MiniAppDownloadNavigator)
+                        .onFileDownloadStart(url, userAgent, contentDisposition, mimetype, contentLength)
+                } else {
+                    defaultFileDownloader.onDownloadStart(
+                        url = url,
+                        mimetype = mimetype,
+                        onUnsupportedFile = { miniAppNavigator?.openExternalUrl(url, externalResultHandler) }
+                    )
+                }
             }
         }
     }
@@ -165,6 +174,14 @@ internal open class MiniAppWebView(
         }
     }
 
+    override fun runNativeEventCallback(eventType: String, value: String) {
+        post {
+            evaluateJavascript(
+                "MiniAppBridge.execCustomEventsCallback(`$eventType`, `${value.replace("`", "\\`")}`)"
+            ) {}
+        }
+    }
+
     private fun getWebViewAssetLoader() = WebViewAssetLoader.Builder()
         .setDomain(miniAppScheme.miniAppDomain)
         .addPathHandler(
@@ -198,4 +215,5 @@ internal open class MiniAppWebView(
 internal interface WebViewListener {
     fun runSuccessCallback(callbackId: String, value: String)
     fun runErrorCallback(callbackId: String, errorMessage: String)
+    fun runNativeEventCallback(eventType: String, value: String)
 }

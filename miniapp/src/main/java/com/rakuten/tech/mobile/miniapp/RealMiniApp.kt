@@ -133,18 +133,18 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+    override suspend fun getMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest =
+        miniAppDownloader.fetchMiniAppManifest(appId, versionId, languageCode)
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
 
     override fun updateConfiguration(newConfig: MiniAppSdkConfig, setConfigAsDefault: Boolean) {
-        var nextApiClient = apiClientRepository.getApiClientFor(newConfig.key)
+        var nextApiClient = apiClientRepository.getApiClientFor(newConfig)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
             if (setConfigAsDefault)
-                apiClientRepository.registerApiClient(newConfig.key, nextApiClient)
+                apiClientRepository.registerApiClient(newConfig, nextApiClient)
         }
 
         nextApiClient.also {
@@ -212,6 +212,6 @@ internal class RealMiniApp(
         rasProjectId = newConfig.rasProjectId,
         subscriptionKey = newConfig.subscriptionKey,
         isPreviewMode = newConfig.isPreviewMode,
-        sslPublicKey = newConfig.sslPinningPublicKey
+        sslPublicKeyList = newConfig.sslPinningPublicKeyList
     )
 }

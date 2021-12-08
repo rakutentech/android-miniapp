@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.helper
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -7,11 +8,13 @@ import android.text.InputType
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
@@ -80,3 +83,28 @@ fun hideSoftKeyboard(view: View) {
     val imm: InputMethodManager? = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
     imm?.hideSoftInputFromWindow(view.windowToken, 0)
 }
+
+fun setResizableSoftInputMode(activity: Activity){
+    activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+}
+
+fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterDataObserver =
+        object : RecyclerView.AdapterDataObserver() {
+            @SuppressLint("SyntheticAccessor")
+            override fun onChanged() {
+                super.onChanged()
+                observeUIState()
+            }
+
+            @SuppressLint("SyntheticAccessor")
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                observeUIState()
+            }
+
+            @SuppressLint("SyntheticAccessor")
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                observeUIState()
+            }
+        }

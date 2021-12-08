@@ -263,6 +263,15 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
     }
 
     @Test
+    fun `should send events for the specified event type over the mini app bridge`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+        spyMiniAppWebView.runNativeEventCallback("test_event_type", "test_value")
+
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""MiniAppBridge.execCustomEventsCallback(`test_event_type`""") }, any())
+    }
+
+    @Test
     fun `should send response with escaped backtick characters`() {
         val spyMiniAppWebView = spy(miniAppWebView)
 

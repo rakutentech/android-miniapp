@@ -42,11 +42,11 @@ internal class ApiClient @VisibleForTesting constructor(
         rasProjectId: String,
         subscriptionKey: String,
         isPreviewMode: Boolean = false,
-        sslPublicKey: String = ""
+        sslPublicKeyList: List<String> = emptyList()
     ) : this(
         retrofit = createRetrofitClient(
             baseUrl = baseUrl,
-            pubKey = sslPublicKey,
+            pubKeyList = sslPublicKeyList,
             rasProjectId = rasProjectId,
             subscriptionKey = subscriptionKey
         ),
@@ -105,12 +105,13 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String): MetadataEntity {
+    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String, languageCode: String): MetadataEntity {
         val request = metadataApi.fetchMetadata(
             hostId = hostId,
             miniAppId = miniAppId,
             versionId = versionId,
-            testPath = testPath
+            testPath = testPath,
+            lang = languageCode
         )
         return requestExecutor.executeRequest(request).body() as MetadataEntity
     }

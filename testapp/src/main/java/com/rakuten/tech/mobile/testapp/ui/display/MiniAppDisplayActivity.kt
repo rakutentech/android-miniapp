@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
@@ -15,14 +17,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.*
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -32,9 +35,12 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
+import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.net.URI
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -51,6 +57,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
     private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+
+    private var appInfo: MiniAppInfo? = null
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -86,11 +94,22 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var viewModel: MiniAppDisplayViewModel
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
+                true
+            }
+            R.id.share_mini_app -> {
+                appInfo?.let {
+                    MiniAppShareWindow.getInstance(this).show(miniAppInfo = it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -100,13 +119,14 @@ class MiniAppDisplayActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showBackIcon()
+        setResizableSoftInputMode(activity = this)
 
         if (!(intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag) || intent.hasExtra(appUrlTag))) {
             return
         }
 
         //Three different ways to get miniapp.
-        val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
@@ -141,9 +161,17 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppNavigator = object : MiniAppNavigator {
 
             override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
-                sampleWebViewExternalResultHandler = externalResultHandler
-                WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                    appId, appUrl, externalWebViewReqCode)
+                if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+                    } catch (e: Exception) {
+                        showAlertDialog(this@MiniAppDisplayActivity, "Warning!", e.message.toString())
+                    }
+                } else {
+                    sampleWebViewExternalResultHandler = externalResultHandler
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                            appId, appUrl, externalWebViewReqCode)
+                }
             }
         }
 
@@ -302,11 +330,14 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent -> sampleWebViewExternalResultHandler.emitResult(intent) }
-        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
-                miniAppFileChooser.onReceivedFiles(intent)
+                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
+                miniAppMessageBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "External webview closed")
+                if(!isClosedByBackPressed)
+                    sampleWebViewExternalResultHandler.emitResult(intent)
             }
+        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
+            miniAppFileChooser.onReceivedFiles(data)
         }
     }
 
@@ -319,5 +350,15 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (!viewModel.canGoBackwards()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
     }
 }

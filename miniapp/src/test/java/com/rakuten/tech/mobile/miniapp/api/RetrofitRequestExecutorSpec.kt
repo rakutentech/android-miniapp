@@ -58,7 +58,7 @@ open class RetrofitRequestExecutorSpec private constructor(
         AppInfo.instance = mock()
         val retrofit = createRetrofitClient(
             baseUrl = TEST_URL_HTTPS_2,
-            pubKey = TEST_PUBLIC_KEY_SSL,
+            pubKeyList = TEST_LIST_PUBLIC_KEY_SSL,
             rasProjectId = TEST_HA_ID_PROJECT,
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY
         )

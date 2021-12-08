@@ -66,7 +66,9 @@ class UserInfoBridgeSpec {
         id = TEST_MA_ID,
         displayName = TEST_MA_DISPLAY_NAME,
         icon = TEST_MA_ICON,
-        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID),
+        promotionalImageUrl = TEST_PROMOTIONAL_URL,
+        promotionalText = TEST_PROMOTIONAL_TEXT
     )
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
