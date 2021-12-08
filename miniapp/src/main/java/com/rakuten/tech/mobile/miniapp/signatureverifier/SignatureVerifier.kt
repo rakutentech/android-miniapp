@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,11 +38,13 @@ internal class SignatureVerifier(
      * Verifies the [signature] of the data from [inputStream] using the [publicKeyId].
      * @return true if [signature] associated with the data from [inputStream] is valid.
      */
-    @SuppressWarnings("LabeledExpression", "MaxLineLength")
-    suspend fun verify(publicKeyId: String,
-                       versionId: String,
-                       inputStream: InputStream,
-                       signature: String) = withContext(dispatcher) {
+    @SuppressWarnings("LabeledExpression", "MaxLineLength", "ParameterListWrapping")
+    suspend fun verify(
+        publicKeyId: String,
+        versionId: String,
+        inputStream: InputStream,
+        signature: String
+    ) = withContext(dispatcher) {
         // always return false when EncryptedSharedPreferences was not initialized
         // due to keystore validation.
         val key = cache.getKey(publicKeyId) ?: return@withContext false
@@ -80,7 +83,7 @@ internal class SignatureVerifier(
         return@withContext isVerified
     }
 
-    private fun rawToEncodedECPublicKey(key: String): ECPublicKey?  = try {
+    private fun rawToEncodedECPublicKey(key: String): ECPublicKey? = try {
         val parameters = ecParameterSpecForCurve()
         val keySizeBytes = parameters.order.bitLength() / java.lang.Byte.SIZE
         val pubKey = Base64.decode(key, Base64.DEFAULT)
@@ -97,7 +100,7 @@ internal class SignatureVerifier(
         val keyFactory = KeyFactory.getInstance("EC")
         keyFactory.generatePublic(keySpec) as ECPublicKey
     } catch (e: java.lang.Exception) {
-        e.printStackTrace()
+        Log.d(SignatureVerifier::class.java.simpleName, e.message.toString())
         null
     }
 

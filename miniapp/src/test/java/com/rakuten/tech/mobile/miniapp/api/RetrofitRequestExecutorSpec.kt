@@ -24,7 +24,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import kotlin.test.assertEquals
 
 open class RetrofitRequestExecutorSpec private constructor(
     internal val mockServer: MockWebServer

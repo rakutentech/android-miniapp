@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException

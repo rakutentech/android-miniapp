@@ -7,12 +7,12 @@ import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.signatureverifier.PublicKeyFetcher
 import java.io.File
 
+@SuppressWarnings("ParameterListWrapping")
 internal class PublicKeyCache(
-        private val keyFetcher: PublicKeyFetcher,
-        private val context: Context,
-        private var baseUrl: String
+    private val keyFetcher: PublicKeyFetcher,
+    private val context: Context,
+    private var baseUrl: String
 ) {
-
     private val testKeys: MutableMap<String, String>? = null
     private val encryptor = AesEncryptor()
 

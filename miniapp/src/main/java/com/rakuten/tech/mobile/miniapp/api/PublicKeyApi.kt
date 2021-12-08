@@ -11,16 +11,18 @@ internal interface PublicKeyApi {
 
     @GET("keys/{keyId}")
     fun fetchPath(
-            @Path("keyId") keyId: String
+        @Path("keyId") keyId: String
     ): Call<PublicKeyResponse>
 }
 
+@SuppressWarnings("ParameterListWrapping")
 @Keep
 internal data class PublicKeyResponse(
-        val id: String = "",
-        val ecKey: String = "",
-        val pemKey: String = ""
+    val id: String = "",
+    val ecKey: String = "",
+    val pemKey: String = ""
 ) {
+
     companion object {
         @SuppressWarnings("SwallowedException")
         fun fromJsonString(body: String): PublicKeyResponse {

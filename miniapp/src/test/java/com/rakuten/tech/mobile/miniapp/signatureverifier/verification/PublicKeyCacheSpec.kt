@@ -89,9 +89,9 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
     }
 
     private fun createCache(
-            fetcher: PublicKeyFetcher = mockFetcher,
-            context: Context = ApplicationProvider.getApplicationContext(),
-            encryptor: AesEncryptor? = mockEncryptor,
-            map: MutableMap<String, String>? = null
+        fetcher: PublicKeyFetcher = mockFetcher,
+        context: Context = ApplicationProvider.getApplicationContext(),
+        encryptor: AesEncryptor? = mockEncryptor,
+        map: MutableMap<String, String>? = null
     ) = PublicKeyCache(fetcher, context, "test", encryptor, map)
 }
