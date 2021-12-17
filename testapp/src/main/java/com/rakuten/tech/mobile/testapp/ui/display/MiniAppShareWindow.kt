@@ -45,8 +45,8 @@ class MiniAppShareWindow {
 
     private fun renderScreen(miniAppInfo: MiniAppInfo) {
         if (dialog.isShowing) dismissDialog()
-        binding.imgPromotional.load(context, miniAppInfo.promotionalImageUrl)
-        binding.tvPromotionalText.text = miniAppInfo.promotionalText
+        binding.imgPromotional.load(context, miniAppInfo.promotionalImageUrl ?: "", android.R.color.darker_gray)
+        binding.tvPromotionalText.text = miniAppInfo.promotionalText ?: context.getText(R.string.error_desc_promotional_text_missing)
         binding.btnClose.setOnClickListener(listener)
         dialog.setCancelable(false)
         if (!(context as Activity).isFinishing) {
