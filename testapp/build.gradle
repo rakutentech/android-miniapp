@@ -46,12 +46,12 @@ android {
             ratAid                  : property("ANALYTICS_AID") ?: "0"
     ]
     def debugManifestPlaceholders = [
-            baseUrl                 : property("MINIAPP_SERVER_BASE_URL") ?: "https://www.example.com/",
+            baseUrl                 : property("MINIAPP_ONE_CLOUD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("IS_PREVIEW_MODE") ?: true,
             requireSignatureVerification : property("REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_UA_INFO") ?: "MiniApp Demo App/$project.version",
-            projectId               : property("HOST_PROJECT_ID") ?: "test-host-project-id",
-            subscriptionKey         : property("HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
+            projectId               : property("ONE_CLOUD_HOST_PROJECT_ID") ?: "test-host-project-id",
+            subscriptionKey         : property("ONE_CLOUD_HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName + " DEBUG",
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
@@ -61,12 +61,12 @@ android {
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
     def prodManifestPlaceholders = [
-            baseUrl                 : property("MINIAPP_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
+            baseUrl                 : property("MINIAPP_ONE_CLOUD_PROD_SERVER_BASE_URL") ?: "https://www.example.com/",
             isPreviewMode           : property("PROD_IS_PREVIEW_MODE") ?: true,
             requireSignatureVerification : property("PROD_REQUIRE_SIGNATURE_VERIFICATION") ?: false,
             hostAppUserAgentInfo    : property("HOST_APP_PROD_UA_INFO") ?: "MiniApp Demo App/$project.version",
-            projectId               : property("HOST_PROJECT_PROD_ID") ?: "test-host-project-id",
-            subscriptionKey         : property("HOST_APP_PROD_SUBSCRIPTION_KEY") ?: "test-subs-key",
+            projectId               : property("ONE_CLOUD_HOST_PROJECT_ID") ?: "test-host-project-id",
+            subscriptionKey         : property("ONE_CLOUD_HOST_APP_SUBSCRIPTION_KEY") ?: "test-subs-key",
             adMobAppId              : property("PROD_ADMOB_APP_ID") ?: "",
             appName                 : defaultAppName,
             ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/",

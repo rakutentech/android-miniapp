@@ -21,8 +21,8 @@ data class MiniAppInfo(
     @SerializedName("displayName") val displayName: String,
     @SerializedName("icon") val icon: String,
     @SerializedName("version") val version: Version,
-    @SerializedName("promotionalImageUrl") val promotionalImageUrl: String,
-    @SerializedName("promotionalText") val promotionalText: String
+    @SerializedName("promotionalImageUrl") val promotionalImageUrl: String?,
+    @SerializedName("promotionalText") val promotionalText: String?
 ) : Parcelable {
     companion object {
         internal fun forUrl() =

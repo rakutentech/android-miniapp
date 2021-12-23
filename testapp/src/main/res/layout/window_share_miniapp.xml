@@ -22,10 +22,9 @@
                 <ImageView
                     android:id="@+id/img_promotional"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="250dp"
                     android:layout_margin="@dimen/margin_10"
-                    android:layout_marginBottom="@dimen/margin_20"
-                    android:scaleType="centerCrop" />
+                    android:layout_marginBottom="@dimen/margin_20" />
 
                 <TextView
                     android:id="@+id/tv_promotional_text"
