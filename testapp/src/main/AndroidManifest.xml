@@ -20,7 +20,8 @@
 
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
@@ -70,6 +71,7 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
             android:launchMode="singleTop"
+            android:exported="true"
             android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter
                 android:autoVerify="true"

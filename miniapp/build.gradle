@@ -28,8 +28,6 @@ android {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
     }
-
-    buildToolsVersion = androidBuildTool
 }
 
 androidExtensions {

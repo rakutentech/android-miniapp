@@ -1,4 +1,13 @@
 ## CHANGELOG
+### 4.0.0 (In progress)
+**SDK**
+- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** SDK dependencies to new versions
+    - com.google.android.gms:play-services-ads:20.5.0
+    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
+
+**Sample App**
+- **Upgraded:** Target SDK is now API 31
 
 ### 3.9.1 (2021-12-20)
 
