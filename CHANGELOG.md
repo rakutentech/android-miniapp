@@ -1,5 +1,10 @@
 ## CHANGELOG
 
+### 3.9.1 (2021-12-20)
+
+**SDK**
+- **Fix:** Unable to launch a mini app while the device is offline
+
 ### 3.9.0 (2021-12-17)
 **SDK**
 - **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
