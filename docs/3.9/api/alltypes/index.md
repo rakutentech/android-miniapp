@@ -245,6 +245,13 @@ You can optionally pass an implementation of this when creating a mini app using
 
 |
 
+##### [com.rakuten.tech.mobile.miniapp.MiniAppNetException](../com.rakuten.tech.mobile.miniapp/-mini-app-net-exception/index.md)
+
+Exception indicating that there was an issue with network connectivity.
+
+
+|
+
 ##### [com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException](../com.rakuten.tech.mobile.miniapp/-mini-app-not-found-exception/index.md)
 
 Exception which is thrown when the provided project ID
