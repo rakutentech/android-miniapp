@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 4.0.0 (In progress)
+**SDK**
+- **Removed:** Deprecated `getUniqueId` from `MiniAppMessageBridge` and `getAccessToken` from `UserInfoBridgeDispatcher`.
+
 ### 3.9.1 (2021-12-20)
 
 **SDK**
