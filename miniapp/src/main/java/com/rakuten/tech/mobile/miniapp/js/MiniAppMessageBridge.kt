@@ -78,20 +78,13 @@ open class MiniAppMessageBridge {
     @VisibleForTesting
     internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
 
-    /**
-     * Get provided id of mini app for any purpose.
-     * You can also throw an [Exception] from this method to pass an error message to the mini app.
-     */
-    @Deprecated("This function has been deprecated.",
-            ReplaceWith("getUniqueId(onSuccess: (uniqueId: String) -> Unit," +
-                            "onError: (message: String) -> Unit)"
-            )
-    )
-    open fun getUniqueId(): String = throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
-
     /** Get provided id of mini app for any purpose. **/
-    open fun getUniqueId(onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit) =
-        onSuccess(getUniqueId())
+    open fun getUniqueId(
+        onSuccess: (uniqueId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
 
     /** Post device permission request from external. **/
     open fun requestDevicePermission(

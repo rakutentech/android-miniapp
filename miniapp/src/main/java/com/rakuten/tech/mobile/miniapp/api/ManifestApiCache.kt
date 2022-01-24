@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.api
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -41,6 +42,7 @@ internal class ManifestApiCache(context: Context) {
      * @param [versionId] the second half of key provided to store manifest.
      * @return [MiniAppManifest] an object to contain the manifest information.
      */
+    @SuppressLint("CommitPrefEdits")
     fun storeManifest(miniAppId: String, versionId: String, miniAppManifest: MiniAppManifest) {
         val jsonToStore: String = Gson().toJson(miniAppManifest)
         prefs.edit().clear().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
