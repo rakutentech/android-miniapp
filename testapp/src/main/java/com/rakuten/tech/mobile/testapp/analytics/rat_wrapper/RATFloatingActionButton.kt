@@ -41,6 +41,7 @@ class RATFloatingActionButton @JvmOverloads constructor(
                 pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
                 it.recycle()
             }
+
         DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
             RATEvent(
                 event = EventType.APPEAR,
@@ -52,5 +53,4 @@ class RATFloatingActionButton @JvmOverloads constructor(
             )
         )
     }
-
 }

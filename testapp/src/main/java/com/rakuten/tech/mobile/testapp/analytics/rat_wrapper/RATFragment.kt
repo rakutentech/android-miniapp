@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-abstract class RATFragment: Fragment(), RatComponent {
+abstract class RATFragment : Fragment(), RatComponent {
     override fun onResume() {
         DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
             RATEvent(
@@ -16,5 +16,3 @@ abstract class RATFragment: Fragment(), RatComponent {
         super.onResume()
     }
 }
-
-

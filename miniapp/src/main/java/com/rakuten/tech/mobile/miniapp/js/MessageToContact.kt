@@ -13,5 +13,5 @@ data class MessageToContact(
 ) {
     /** Returns true when all the properties are empty, otherwise returns false. */
     val isEmpty: Boolean =
-        image.isEmpty() && text.isEmpty() && caption.isEmpty() && action.isEmpty()
+        image.isEmpty() && text.isEmpty() && caption.isEmpty() && action.isEmpty() && bannerMessage?.isEmpty() == true
 }
