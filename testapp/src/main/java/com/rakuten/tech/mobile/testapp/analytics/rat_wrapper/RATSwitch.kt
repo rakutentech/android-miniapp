@@ -9,6 +9,9 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+/**
+ * This is a custom Switch to handle rat analytics.
+ */
 class RATSwitch : SwitchCompat {
     private var passedlistener: OnCheckedChangeListener? = null
     private var siteSection = ""

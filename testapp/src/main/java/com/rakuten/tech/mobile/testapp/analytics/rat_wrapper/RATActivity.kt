@@ -11,6 +11,9 @@ enum class MenuItemDefaults {
     BACK,
 }
 
+/**
+ * This is a custom Activity to handle rat analytics.
+ */
 abstract class RATActivity : AppCompatActivity(), RatComponent {
     private var menuItemLabel = ""
 

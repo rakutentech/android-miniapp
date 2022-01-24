@@ -28,6 +28,8 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
 
+    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
+
     private lateinit var adapter: MiniAppDownloadedListAdapter
     private lateinit var binding: MiniappDownloadedListActivityBinding
     private lateinit var viewModel: MiniAppListViewModel

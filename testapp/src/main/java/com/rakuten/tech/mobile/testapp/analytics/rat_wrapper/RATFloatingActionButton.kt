@@ -7,6 +7,9 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+/**
+ * This is a FloatingActionButton to handle rat analytics.
+ */
 class RATFloatingActionButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
