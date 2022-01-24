@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -40,7 +41,6 @@ import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.net.URI
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -142,8 +142,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                 if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                     WebView.setWebContentsDebuggingEnabled(true)
+
                 //action: display webview
                 addLifeCycleObserver(lifecycle)
+                (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
             })
 

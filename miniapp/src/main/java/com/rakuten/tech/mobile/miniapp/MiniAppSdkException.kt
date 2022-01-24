@@ -67,7 +67,13 @@ class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
     MiniAppSdkException("Mini App has not been granted all of the required permissions " +
             "for the provided Mini App Id: $appId and the version id: $versionId")
 
-internal class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
+/**
+ * Exception indicating that there was an issue with network connectivity.
+ *
+ * This usually means the device doesn't have internet access currently,
+ * so you should display the cached mini app version.
+ */
+class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
 
     constructor(e: Exception) : this("Found some problem, ${e.message}", e)
 
