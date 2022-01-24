@@ -68,6 +68,9 @@ internal class WebViewFileDownloader(
     }
 }
 
+/**
+ * Default FileProvider of MiniApp SDK.
+ */
 class MiniAppDefaultFileProvider : FileProvider()
 
 internal class DefaultFileProvider(

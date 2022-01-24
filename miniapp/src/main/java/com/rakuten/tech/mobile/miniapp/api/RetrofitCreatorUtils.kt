@@ -75,7 +75,7 @@ internal fun createCertificatePinner(baseUrl: String, pubKeyList: List<String>):
 }
 
 @VisibleForTesting
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 internal fun extractBaseUrl(baseUrl: String): String {
     return try {
         val url = URI.create(baseUrl).toURL()
