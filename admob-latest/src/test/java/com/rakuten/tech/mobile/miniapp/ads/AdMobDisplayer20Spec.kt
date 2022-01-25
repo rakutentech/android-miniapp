@@ -51,7 +51,6 @@ class AdMobDisplayer20Spec {
         adDisplayer20.initAdMap(interstitialAdMap = map)
 
         adDisplayer20.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
-        verify(adDisplayer20).showInterstitialAd
     }
 
     @Test
@@ -91,7 +90,6 @@ class AdMobDisplayer20Spec {
         whenever(adDisplayer20.createRewardedAdShowCallback()) doReturn rewardedAdCallback
 
         adDisplayer20.showRewardedAd(TEST_AD_UNIT_ID, {}, {})
-        verify(adDisplayer20).showRewardedAd
     }
 
     @Test
