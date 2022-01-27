@@ -149,14 +149,7 @@ open class MiniAppMessageBridge {
         if (!locale.isValidLocale())
             locale = ""
 
-        val hostEnvironmentInfo = HostEnvironmentInfo(
-                platformVersion = Build.VERSION.RELEASE,
-                hostVersion = activity.packageManager.getPackageInfo(
-                        activity.packageName, 0
-                ).versionName,
-                sdkVersion = BuildConfig.VERSION_NAME,
-                hostLocale = locale
-        )
+        val hostEnvironmentInfo = HostEnvironmentInfo(activity = activity, hostLocale = locale)
 
         onSuccess.invoke(hostEnvironmentInfo)
     }
