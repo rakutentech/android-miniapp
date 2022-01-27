@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +25,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
+import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -51,6 +54,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
 
@@ -159,6 +163,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         setupMiniAppMessageBridge()
+        setupMiniAppCameraPermissionDispatcher()
 
         miniAppNavigator = object : MiniAppNavigator {
 
@@ -196,6 +201,39 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
+    }
+
+    private fun setupMiniAppCameraPermissionDispatcher(){
+        val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+            override fun getCameraPermission(
+                onSuccess: (isGranted: Boolean) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                if (ContextCompat.checkSelfPermission(
+                        this@MiniAppDisplayActivity,
+                        Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    onSuccess(true)
+                } else {
+                    onError("Camera Permission not granted")
+                }
+            }
+
+            override fun requestCameraPermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                miniappCameraPermissionCallback = callback
+                ActivityCompat.requestPermissions(
+                    this@MiniAppDisplayActivity,
+                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                )
+            }
+        }
+
+        miniAppFileChooser.setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher)
     }
 
     private fun setupMiniAppMessageBridge() {
@@ -321,7 +359,10 @@ class MiniAppDisplayActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
-        miniappPermissionCallback.invoke(isGranted)
+        when(requestCode){
+            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            else -> miniappPermissionCallback.invoke(isGranted)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -20,7 +19,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 /**
  * The file chooser of a miniapp with `onShowFileChooser` function.
@@ -42,16 +41,23 @@ interface MiniAppFileChooser {
 }
 
 /**
- * A class to check or request camera permission of host app.
+ * A class to provide the interfaces for getting and requesting camera permission.
  */
 interface MiniAppCameraPermissionDispatcher {
+    /**
+     * Get camera permission from host app.
+     * You can also throw an [Exception] from this method.
+     */
     fun getCameraPermission(
-        onSuccess: (result: Int) -> Unit,
+        onSuccess: (isGranted: Boolean) -> Unit,
         onError: (message: String) -> Unit
-    ){
+    ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
-
+    /**
+     * Request camera permission from host app.
+     * You can also throw an [Exception] from this method.
+     */
     fun requestCameraPermission(
         miniAppPermissionType: MiniAppDevicePermissionType,
         permissionRequestCallback: (isGranted: Boolean) -> Unit
@@ -65,6 +71,7 @@ interface MiniAppCameraPermissionDispatcher {
  * @param requestCode of file choosing using an intent inside sdk, which will also be used
  * to retrieve the data by [Activity.onActivityResult] in the HostApp.
  **/
+@Suppress("LargeClass", "TooManyFunctions")
 class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
@@ -72,6 +79,10 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     private lateinit var miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher
     private var context: Context? = null
 
+    /**
+     * Set implemented miniAppCameraPermissionDispatcher.
+     * Can use the default provided class from sdk [MiniAppCameraPermissionDispatcher].
+     **/
     fun setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher) {
         this.miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
     }
@@ -80,10 +91,10 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
         if (this::miniAppCameraPermissionDispatcher.isInitialized)
             callback.invoke()
     }
-
-    private fun checkPermissionAndLaunchPictureIntent() = whenReady() {
-        val successCallback = { result: Int ->
-            if (result == PackageManager.PERMISSION_GRANTED) {
+    @Suppress(" FunctionMaxLength")
+    private fun checkPermissionAndLaunchCameraIntent() = whenReady() {
+        val successCallback = { isGranted: Boolean ->
+            if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
             }
         }
@@ -119,7 +130,7 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
             if (fileChooserParams?.isCaptureEnabled == true) {
-                checkPermissionAndLaunchPictureIntent()
+                checkPermissionAndLaunchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
                 fileChooserParams?.acceptTypes?.let { acceptTypes ->
