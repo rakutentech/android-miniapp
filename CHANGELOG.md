@@ -4,8 +4,7 @@
 **SDK**
 - **Removed:** Deprecated `getUniqueId` from `MiniAppMessageBridge` and `getAccessToken` from `UserInfoBridgeDispatcher`
 
-### 3.9.1 (2021-12-20)
-
+### 3.9.1 (2022-01-20)
 **SDK**
 - **Fix:** Unable to launch a mini app while the device is offline
 
