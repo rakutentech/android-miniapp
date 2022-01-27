@@ -12,7 +12,7 @@ data class HostEnvironmentInfo constructor(
     val hostVersion: String,
     val sdkVersion: String,
     val hostLocale: String
-){
+) {
     constructor(
         activity: Activity,
         hostLocale: String
