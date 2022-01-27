@@ -842,6 +842,38 @@ val miniAppFileChooser = object : MiniAppFileChooser {
 
 In both case, HostApp needs to pass `MiniAppFileChooser` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFileChooser: MiniAppFileChooser)`.
 
+In case, MiniApp needs to check camera permission or request camera access from HostApp.
+
+```kotlin
+val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+            
+            override fun getCameraPermission(
+                onSuccess: (isGranted: Boolean) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+               // Check the camera permission of the Device and send it back - i.e. isGranted = true/false.
+               if (DeviceCameraPermissionGranted)
+                onSuccess(isGranted)
+               else
+                onError("your-error-message")
+            }
+
+            override fun requestCameraPermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                // Request the camera permission of the Device send send it back through callback.
+                callback.invoke(true)
+            }
+        }
+```
+
+Set the `miniAppCameraPermissionDispatcher` with the `MiniAppFileChooser`
+
+```kotlin
+miniAppFileChooser.setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher)
+```
+
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
 

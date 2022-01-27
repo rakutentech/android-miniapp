@@ -1,7 +1,10 @@
 ## CHANGELOG
 
-### 3.9.1 (2022-01-20)
+### 4.x.x (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added interface for requesting Camera permission.
 
+### 3.9.1 (2022-01-20)
 **SDK**
 - **Fix:** Unable to launch a mini app while the device is offline
 
