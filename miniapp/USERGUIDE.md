@@ -626,7 +626,11 @@ In Host App, we can get the manifest information as following:
 ```kotlin
 CoroutineScope(Dispatchers.IO).launch {
     try {
-        val miniAppManifest = MiniApp.instance().getMiniAppManifest("MINI_APP_ID", "VERSION_ID")
+        val miniAppManifest = MiniApp.instance().getMiniAppManifest(
+                                    appId = "MINI_APP_ID",
+                                    versionId = "VERSION_ID",
+                                    languageCode = "ja"
+                              )
 
         // Host App can set it's own metadata key in manifest.json to retrieve the value
         miniAppManifest.customMetaData["hostAppRandomTestKey"]
@@ -635,6 +639,8 @@ CoroutineScope(Dispatchers.IO).launch {
     }
 }
 ```
+By passing the `languageCode` e.g. `en`, `ja` in the above `getMiniAppManifest` method, you can get the localized description/reason for the permission from the platform API.
+If there is no localized description/reason is available, it will return the default value given in the `manifest.json`.
 
 ## Getting downloaded Mini App Meta data
 

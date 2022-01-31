@@ -8,9 +8,10 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer19
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -20,6 +21,7 @@ import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
@@ -143,12 +145,17 @@ open class MiniAppMessageBridge {
         onSuccess: (info: HostEnvironmentInfo) -> Unit,
         onError: (infoError: HostEnvironmentInfoError) -> Unit
     ) {
+        var locale = activity.getString(R.string.miniapp_sdk_android_locale)
+        if (!locale.isValidLocale())
+            locale = ""
+
         val hostEnvironmentInfo = HostEnvironmentInfo(
                 platformVersion = Build.VERSION.RELEASE,
                 hostVersion = activity.packageManager.getPackageInfo(
                         activity.packageName, 0
                 ).versionName,
-                sdkVersion = BuildConfig.VERSION_NAME
+                sdkVersion = BuildConfig.VERSION_NAME,
+                hostLocale = locale
         )
 
         onSuccess.invoke(hostEnvironmentInfo)

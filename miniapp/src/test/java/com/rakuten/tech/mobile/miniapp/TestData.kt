@@ -27,6 +27,7 @@ internal const val TEST_MA_DISPLAY_NAME = "test_name"
 internal const val TEST_MA_ICON = "test_icon"
 internal const val TEST_MA_VERSION_TAG = "test_vtag"
 internal const val TEST_MA_VERSION_ID = "test_vid"
+internal const val TEST_MA_PREVIEW_CODE = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 internal const val TEST_HA_NAME = "test_hostapp_name"
 internal const val TEST_HA_ID_PROJECT = "test_project_id"
@@ -48,12 +49,16 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
 internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email")
+internal const val TEST_PROMOTIONAL_URL = "http://testImageurl.co"
+internal const val TEST_PROMOTIONAL_TEXT = "test_promotional_text"
 
 internal val TEST_MA = MiniAppInfo(
     id = TEST_MA_ID,
     displayName = TEST_MA_DISPLAY_NAME,
     icon = TEST_MA_ICON,
-    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID)
+    version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_MA_VERSION_ID),
+    promotionalImageUrl = TEST_PROMOTIONAL_URL,
+    promotionalText = TEST_PROMOTIONAL_TEXT
 )
 
 // ACCESS_TOKEN_PERMISSIONS
@@ -76,3 +81,5 @@ internal val TEST_HA_ANALYTICS_CONFIGS = listOf(TEST_CONFIG1, TEST_CONFIG2)
 
 internal const val TEST_PUBLIC_KEY_ID = "test_public_key_id"
 internal const val TEST_MANIFEST_SIGNATURE = "test_manifest_signature"
+
+internal const val TEST_LANG_MANIFEST_DEFAULT = "default"

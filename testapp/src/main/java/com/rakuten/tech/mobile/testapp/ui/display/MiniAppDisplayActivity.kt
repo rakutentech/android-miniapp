@@ -7,8 +7,10 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -39,7 +41,6 @@ import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.net.URI
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -56,6 +57,8 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
     private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+
+    private var appInfo: MiniAppInfo? = null
 
     companion object {
         private val appIdTag = "app_id_tag"
@@ -91,11 +94,22 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var viewModel: MiniAppDisplayViewModel
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
+                true
+            }
+            R.id.share_mini_app -> {
+                appInfo?.let {
+                    MiniAppShareWindow.getInstance(this).show(miniAppInfo = it)
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -112,7 +126,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         //Three different ways to get miniapp.
-        val appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
@@ -128,8 +142,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                 if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                     WebView.setWebContentsDebuggingEnabled(true)
+
                 //action: display webview
                 addLifeCycleObserver(lifecycle)
+                (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
             })
 
@@ -323,9 +339,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     sampleWebViewExternalResultHandler.emitResult(intent)
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                miniAppFileChooser.onReceivedFiles(intent)
-            }
+            miniAppFileChooser.onReceivedFiles(data)
         }
     }
 

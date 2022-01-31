@@ -3,13 +3,14 @@ package com.rakuten.tech.mobile.testapp.ui.display.preload
 import androidx.lifecycle.*
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
@@ -21,16 +22,26 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
         get() = _manifestErrorData
 
     fun checkMiniAppManifest(miniAppId: String, versionId: String) = viewModelScope.launch(Dispatchers.IO) {
+        val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
         try {
-            val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId)
-            val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
+            val miniAppManifest = miniApp.getMiniAppManifest(miniAppId, versionId, Locale.getDefault().language)
             if (downloadedManifest != null && isManifestEqual(miniAppManifest, downloadedManifest) &&
                 isAcceptedRequiredPermissions(miniAppId, miniAppManifest))
                 _miniAppManifest.postValue(null)
             else
                 _miniAppManifest.postValue(miniAppManifest)
         } catch (error: MiniAppSdkException) {
-            _manifestErrorData.postValue(error.message)
+            when {
+                error is MiniAppNetException && downloadedManifest !== null -> {
+                    if (isAcceptedRequiredPermissions(miniAppId, downloadedManifest))
+                        _miniAppManifest.postValue(null)
+                    else
+                        _miniAppManifest.postValue(downloadedManifest)
+                }
+                else -> {
+                    _manifestErrorData.postValue(error.message)
+                }
+            }
         }
     }
 

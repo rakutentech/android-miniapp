@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -133,8 +134,8 @@ internal class RealMiniApp(
         }
     }
 
-    override suspend fun getMiniAppManifest(appId: String, versionId: String): MiniAppManifest =
-        miniAppDownloader.fetchMiniAppManifest(appId, versionId)
+    override suspend fun getMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest =
+        miniAppDownloader.fetchMiniAppManifest(appId, versionId, languageCode)
 
     override fun getDownloadedManifest(appId: String): MiniAppManifest? =
         downloadedManifestCache.readDownloadedManifest(appId)?.miniAppManifest
@@ -162,7 +163,14 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        checkToDownloadManifest(appId, versionId, cachedManifest)
+
+        try {
+            checkToDownloadManifest(appId, versionId, cachedManifest)
+        } catch (e: MiniAppNetException) {
+            Log.e("RealMiniApp", "Unable to retrieve latest manifest due to device being offline. " +
+                    "Skipping manifest download.", e)
+        }
+
         val manifestFile = downloadedManifestCache.getManifestFile(appId)
         if (cachedManifest != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)

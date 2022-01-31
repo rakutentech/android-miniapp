@@ -103,12 +103,13 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String): MetadataEntity {
+    suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String, languageCode: String): MetadataEntity {
         val request = metadataApi.fetchMetadata(
             hostId = hostId,
             miniAppId = miniAppId,
             versionId = versionId,
-            testPath = testPath
+            testPath = testPath,
+            lang = languageCode
         )
         return requestExecutor.executeRequest(request).body() as MetadataEntity
     }

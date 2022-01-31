@@ -30,7 +30,14 @@ open class ApiClientSpec {
         id = TEST_MA_ID,
         displayName = TEST_MA_DISPLAY_NAME,
         icon = TEST_MA_ICON,
-        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID)
+        version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID),
+        promotionalImageUrl = TEST_PROMOTIONAL_URL,
+        promotionalText = TEST_PROMOTIONAL_TEXT
+    )
+
+    private val previewMiniAppInfo = PreviewMiniAppInfo(
+        host = Host(id = TEST_HA_ID_PROJECT, subscriptionKey = TEST_HA_SUBSCRIPTION_KEY),
+        miniapp = miniAppInfo
     )
 
     @Test
@@ -150,6 +157,36 @@ open class ApiClientSpec {
         }
 
     @Test
+    fun `should fetch preview miniapp info data for a given preview code`() = runBlockingTest {
+        val mockCall: Call<PreviewMiniAppInfo> = mock()
+        val response: Response<PreviewMiniAppInfo> = Response.success(previewMiniAppInfo)
+
+        When calling mockAppInfoApi.fetchInfoByPreviewCode(TEST_HA_ID_PROJECT, TEST_MA_PREVIEW_CODE) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchInfoByPreviewCode(TEST_MA_PREVIEW_CODE) shouldBeEqualTo previewMiniAppInfo
+    }
+
+    @Test
+    fun `fetch miniapp manifest should return correct metadata entity`() = runBlockingTest {
+        val metadataEntity: MetadataEntity = mock()
+        val mockCall: Call<MetadataEntity> = mock()
+        val response: Response<MetadataEntity> = Response.success(metadataEntity)
+
+        When calling mockMetadataApi.fetchMetadata(TEST_HA_ID_PROJECT, TEST_MA_ID,
+            TEST_MA_VERSION_ID, "", TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(metadataApi = mockMetadataApi)
+        apiClient.fetchMiniAppManifest(
+            TEST_MA_ID,
+            TEST_MA_VERSION_ID,
+            TEST_LANG_MANIFEST_DEFAULT
+        ) shouldBeEqualTo metadataEntity
+    }
+
+    @Test
     fun `custom error response should extend the same error class`() {
         val errorClass = ErrorResponse::class.java
         HttpErrorResponse(0, "") shouldBeInstanceOf errorClass
@@ -164,6 +201,19 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
         ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `should throw exception when call body is null`() = runBlockingTest {
+        val mockCall: Call<ResponseBody> = mock()
+        val response: Response<ResponseBody> = mock()
+
+        When calling mockDownloadApi.downloadFile(TEST_URL_FILE) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+        When calling response.body() itReturns null
+
+        val apiClient = createApiClient(downloadApi = mockDownloadApi)
+        apiClient.downloadFile(TEST_URL_FILE)
     }
 
     @Test
