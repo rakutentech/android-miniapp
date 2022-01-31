@@ -29,7 +29,7 @@ ext {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.google.android.gms:play-services-ads:$google_ads_latest"
+    api "com.google.android.gms:play-services-ads:$google_ads_latest"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
     testImplementation "com.google.android.gms:play-services-ads:$google_ads_latest"
