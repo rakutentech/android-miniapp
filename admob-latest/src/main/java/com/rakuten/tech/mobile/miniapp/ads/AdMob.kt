@@ -7,7 +7,7 @@ import androidx.annotation.VisibleForTesting
  * If the dependency is provided then it means the AdMob app id has also been set from hostapp.
  */
 @Suppress("SwallowedException")
-internal fun isAdMobProvided(): Boolean =
+fun isAdMobProvided(): Boolean =
     try {
         Class.forName(AdMobClassName)
         true

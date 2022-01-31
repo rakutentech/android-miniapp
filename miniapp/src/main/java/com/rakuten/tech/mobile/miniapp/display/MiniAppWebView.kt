@@ -11,6 +11,7 @@ import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
+import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -117,7 +118,10 @@ internal open class MiniAppWebView(
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         setupMiniAppNavigator()
-        webViewClient = getMiniAppWebViewClient()
+        webViewClient = MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
+            this,
+            getMiniAppWebViewClient()
+        )
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())

@@ -55,7 +55,6 @@ dependencies {
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.webkit:webkit:$webkit"
     implementation "androidx.security:security-crypto:$androidx_crypto"
-    compileOnly "com.google.android.gms:play-services-ads:$google_ads"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
@@ -86,7 +85,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp"
-    testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 
     if (property("GITHUB_USERNAME") != null) {
         compileOnly ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
@@ -101,6 +99,8 @@ dependencies {
         compileOnly project(':analytics')
         testImplementation project(':analytics')
     }
+
+    implementation project(':admob-latest')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

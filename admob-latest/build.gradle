@@ -24,7 +24,7 @@ android {
 }
 
 ext {
-    google_ads_latest = '20.2.0'
+    google_ads_latest = '20.5.0'
 }
 
 dependencies {
@@ -40,8 +40,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "junit:junit:$junit"
-    implementation project(':miniapp')
-
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
