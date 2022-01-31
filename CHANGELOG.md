@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 4.x.x (xxxx-xx-xx)
+### 4.0.0 (In progress)
 **SDK**
 - **Feature:** Added interface for requesting Camera permission.
 
