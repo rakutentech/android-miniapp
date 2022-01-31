@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 4.0.0 (In progress)
+**SDK**
+- **Update:** Update `HostEnvironmentInfo` data class.
+
 ### 3.9.1 (2022-01-20)
 
 **SDK**
