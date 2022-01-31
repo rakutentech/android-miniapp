@@ -222,9 +222,9 @@ class MiniAppDisplayActivity : BaseActivity() {
 
             override fun requestCameraPermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
-                callback: (isGranted: Boolean) -> Unit
+                permissionRequestCallback: (isGranted: Boolean) -> Unit
             ) {
-                miniappCameraPermissionCallback = callback
+                miniappCameraPermissionCallback = permissionRequestCallback
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
