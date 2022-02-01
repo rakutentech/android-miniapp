@@ -44,7 +44,8 @@ internal open class MiniAppWebView(
         miniAppFileChooser
     ),
     val queryParams: String,
-    val ratDispatcher: MessageBridgeRatDispatcher
+    val ratDispatcher: MessageBridgeRatDispatcher,
+    val requireAdPlacementBeta: Boolean
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -118,10 +119,16 @@ internal open class MiniAppWebView(
                 String.format("%s %s", settings.userAgentString, hostAppUserAgentInfo)
 
         setupMiniAppNavigator()
-        webViewClient = MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
-            this,
+
+        webViewClient = if (requireAdPlacementBeta) {
+            MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
+                this,
+                getMiniAppWebViewClient()
+            )
+        } else {
             getMiniAppWebViewClient()
-        )
+        }
+
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())

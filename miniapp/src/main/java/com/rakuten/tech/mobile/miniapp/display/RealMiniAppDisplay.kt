@@ -36,7 +36,8 @@ internal class RealMiniAppDisplay(
     val downloadedManifestCache: DownloadedManifestCache,
     val queryParams: String,
     val miniAppAnalytics: MiniAppAnalytics,
-    val ratDispatcher: MessageBridgeRatDispatcher
+    val ratDispatcher: MessageBridgeRatDispatcher,
+    val requireAdPlacementBeta: Boolean
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -56,7 +57,8 @@ internal class RealMiniAppDisplay(
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        requireAdPlacementBeta: Boolean
     ) : this(
         "",
         MiniAppInfo.forUrl(),
@@ -68,7 +70,8 @@ internal class RealMiniAppDisplay(
         downloadedManifestCache,
         queryParams,
         miniAppAnalytics,
-        ratDispatcher
+        ratDispatcher,
+        requireAdPlacementBeta
     ) {
         this.appUrl = appUrl
     }
@@ -136,7 +139,8 @@ internal class RealMiniAppDisplay(
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
-                    ratDispatcher = ratDispatcher
+                    ratDispatcher = ratDispatcher,
+                    requireAdPlacementBeta = requireAdPlacementBeta
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -150,7 +154,8 @@ internal class RealMiniAppDisplay(
                     miniAppCustomPermissionCache = miniAppCustomPermissionCache,
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
-                    ratDispatcher = ratDispatcher
+                    ratDispatcher = ratDispatcher,
+                    requireAdPlacementBeta = requireAdPlacementBeta
                 )
             }
 

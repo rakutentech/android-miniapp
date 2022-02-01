@@ -15,6 +15,7 @@ import kotlinx.android.parcel.Parcelize
  * @property requireSignatureVerification Whether the Mini App SDK verifies signature of a Mini App.
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  * @property sslPinningPublicKeyList List of SSL pinning public keys.
+ * @property requireAdPlacementBeta Whether the host app wants to enable ad placement beta.
  */
 @Parcelize
 data class MiniAppSdkConfig(
@@ -26,7 +27,8 @@ data class MiniAppSdkConfig(
     val isPreviewMode: Boolean,
     val requireSignatureVerification: Boolean = false,
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
-    val sslPinningPublicKeyList: List<String> = emptyList()
+    val sslPinningPublicKeyList: List<String> = emptyList(),
+    val requireAdPlacementBeta: Boolean = false
 ) : Parcelable {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 

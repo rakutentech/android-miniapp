@@ -28,7 +28,8 @@ internal class MiniAppHttpWebView(
         miniAppFileChooser
     ),
     queryParams: String,
-    ratDispatcher: MessageBridgeRatDispatcher
+    ratDispatcher: MessageBridgeRatDispatcher,
+    requireAdPlacementBeta: Boolean
 ) : MiniAppWebView(
     context,
     "",
@@ -41,7 +42,8 @@ internal class MiniAppHttpWebView(
     downloadedManifestCache,
     miniAppWebChromeClient,
     queryParams,
-    ratDispatcher
+    ratDispatcher,
+    requireAdPlacementBeta
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)

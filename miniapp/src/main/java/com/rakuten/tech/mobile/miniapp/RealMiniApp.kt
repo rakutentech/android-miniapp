@@ -26,7 +26,8 @@ internal class RealMiniApp(
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
     private var miniAppAnalytics: MiniAppAnalytics,
-    private var ratDispatcher: MessageBridgeRatDispatcher
+    private var ratDispatcher: MessageBridgeRatDispatcher,
+    private val requireAdPlacementBeta: Boolean
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
@@ -79,7 +80,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                requireAdPlacementBeta
             )
         }
     }
@@ -105,7 +107,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                requireAdPlacementBeta
             )
         }
     }
@@ -129,7 +132,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                requireAdPlacementBeta
             )
         }
     }
