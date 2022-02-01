@@ -151,7 +151,7 @@ class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, Corout
                 val adLoadCallback = object : RewardedAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         rewardedAdMap.remove(adUnitId)
-                        onFailed.invoke(adError.message ?: "")
+                        onFailed.invoke(adError.message)
                     }
 
                     override fun onAdLoaded(rewardedAd: RewardedAd) {

@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.ads
+package com.rakuten.tech.mobile.miniapp
 
 import androidx.annotation.VisibleForTesting
 

@@ -42,6 +42,3 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         throw Exception()
     }
 }
-
-@VisibleForTesting
-internal var AdMobClassName = "com.google.android.gms.ads.MobileAds"

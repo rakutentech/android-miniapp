@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
