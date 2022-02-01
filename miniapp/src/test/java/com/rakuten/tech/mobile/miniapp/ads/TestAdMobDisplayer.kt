@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.ads
 
-import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 
 @Suppress("TooGenericExceptionThrown")

@@ -193,7 +193,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher,false
+                ratDispatcher, false
             )
         }
 
