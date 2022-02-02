@@ -56,31 +56,31 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
         instance.shouldNotBeNull()
     }
 
-    @Test
-    fun `should return null initialization failed due to context`() {
-        val mockContext = Mockito.mock(Context::class.java)
-        SignatureVerifier.init(mockContext, BASE_URL, SUB_KEY).shouldBeNull()
-    }
+//    @Test
+//    fun `should return null initialization failed due to context`() {
+//        val mockContext = Mockito.mock(Context::class.java)
+//        SignatureVerifier.init(mockContext, BASE_URL, SUB_KEY).shouldBeNull()
+//    }
 
-    @Test
-    fun `should return null initialization failed due to invalid endpoint`() {
-        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
-    }
+//    @Test
+//    fun `should return null initialization failed due to invalid endpoint`() {
+//        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
+//    }
 
-    @Test
-    fun `should return null initialization failed due to invalid endpoint with callback`() {
-        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
-    }
+//    @Test
+//    fun `should return null initialization failed due to invalid endpoint with callback`() {
+//        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
+//    }
 
-    @Test
-    fun `should return null initialization failed due to invalid key`() {
-        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
-    }
+//    @Test
+//    fun `should return null initialization failed due to invalid key`() {
+//        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
+//    }
 
-    @Test
-    fun `should return null initialization failed due to invalid key with callback`() {
-        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
-    }
+//    @Test
+//    fun `should return null initialization failed due to invalid key with callback`() {
+//        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
+//    }
 
     @Test
     fun `should not verify the signature when message has been modified`() = runBlockingTest {
