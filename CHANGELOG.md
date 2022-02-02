@@ -9,7 +9,11 @@
 **Sample App**
 - **Upgraded:** Target SDK is now API 31
 
-### 3.9.1 (2021-12-20)
+### 4.0.0 (In progress)
+**SDK**
+- **Update:** Update `HostEnvironmentInfo` data class.
+
+### 3.9.1 (2022-01-20)
 
 **SDK**
 - **Fix:** Unable to launch a mini app while the device is offline
