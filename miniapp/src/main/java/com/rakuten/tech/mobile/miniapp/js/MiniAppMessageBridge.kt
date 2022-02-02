@@ -2,12 +2,10 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
@@ -142,14 +140,7 @@ open class MiniAppMessageBridge {
         if (!locale.isValidLocale())
             locale = ""
 
-        val hostEnvironmentInfo = HostEnvironmentInfo(
-                platformVersion = Build.VERSION.RELEASE,
-                hostVersion = activity.packageManager.getPackageInfo(
-                        activity.packageName, 0
-                ).versionName,
-                sdkVersion = BuildConfig.VERSION_NAME,
-                hostLocale = locale
-        )
+        val hostEnvironmentInfo = HostEnvironmentInfo(activity = activity, hostLocale = locale)
 
         onSuccess.invoke(hostEnvironmentInfo)
     }

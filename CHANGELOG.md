@@ -6,6 +6,7 @@
   - `MiniAppMessageBridge.getUniqueId()`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+- **Update:** Update `HostEnvironmentInfo` data class.
 
 ### 3.9.1 (2022-01-20)
 **SDK**
