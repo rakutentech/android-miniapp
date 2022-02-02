@@ -3,6 +3,7 @@
 ### 4.0.0 (In progress)
 **SDK**
 - **Feature:** Added interface for requesting Camera permission.
+- **Update:** Update `HostEnvironmentInfo` data class.
 
 ### 3.9.1 (2022-01-20)
 **SDK**
