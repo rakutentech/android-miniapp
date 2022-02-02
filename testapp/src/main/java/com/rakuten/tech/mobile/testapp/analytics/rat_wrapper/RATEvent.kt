@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
-
-
 enum class EventType(val value: String) {
     APPEAR("appear"),
     CLICK("click"),
@@ -60,15 +58,4 @@ class RATEvent {
         //{component_name}-{element_type}.{action}
         this.targetElement = "$componentName-$elementType.${action.value}"
     }
-
-    constructor(event: EventType, pageName: String, siteSection: String, componentName: String, elementType: String){
-        this.event = event
-        this.pageName = pageName
-        this.siteSection = siteSection
-        this.componentName = componentName
-        this.elementType = elementType
-        //{component_name}-{element_type}
-        this.targetElement = "$componentName-$elementType"
-    }
-
 }

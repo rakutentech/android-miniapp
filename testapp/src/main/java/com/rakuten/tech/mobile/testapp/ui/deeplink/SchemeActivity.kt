@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.AppCoroutines
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -40,7 +41,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         intent?.data?.let { data ->
             if (data.pathSegments.size > 1) {
                 val code = data.pathSegments[1]
-                Coroutines.IO {
+                AppCoroutines.io {
                     try {
                         previewMiniAppInfo =
                             miniApp?.getMiniAppInfoByPreviewCode(previewCode = code)
@@ -53,7 +54,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                             miniApp =
                                 MiniApp.instance(miniAppSdkConfig!!, setConfigAsDefault = false)
                         }
-                        Coroutines.main {
+                        AppCoroutines.main {
                             miniAppInfo?.let { miniAppInfo ->
                                 miniApp?.let { miniApp ->
                                     preloadMiniAppWindow.initiate(
@@ -93,7 +94,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
     }
 
     private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = "") {
-        Coroutines.main {
+        AppCoroutines.main {
             QRErrorWindow.getInstance(this).showMiniAppQRCodeError(errorType = type) {
                 finish()
             }

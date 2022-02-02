@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-enum class MenuItemDefaults() {
+enum class MenuItemDefaults {
     HOME,
     BACK,
 }
 
+/**
+ * This is a custom Activity to handle rat analytics.
+ */
 abstract class RATActivity : AppCompatActivity(), RatComponent {
     private var menuItemLabel = ""
 

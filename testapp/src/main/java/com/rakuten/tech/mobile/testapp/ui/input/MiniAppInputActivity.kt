@@ -34,9 +34,8 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         class Url(input: String): InputDisplay(input)
         class None: InputDisplay("")
     }
+
     private var display: InputDisplay = InputDisplay.None()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
