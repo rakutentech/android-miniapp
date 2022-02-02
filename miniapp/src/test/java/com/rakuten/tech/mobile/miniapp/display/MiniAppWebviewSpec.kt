@@ -14,7 +14,6 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
 import org.mockito.kotlin.*
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
@@ -23,7 +22,6 @@ import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppExternalUrlLoader
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
 import org.junit.After
 import org.junit.Before
