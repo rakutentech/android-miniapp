@@ -139,3 +139,7 @@ project.ext.docPublishing = [
         repoUri: 'git@github.com:rakutentech/android-miniapp.git'
 ]
 apply from: '../config/publish/documentation/gh-pages.gradle'
+
+tasks.withType(Test) {
+    jacoco.excludes = ['jdk.internal.*']
+}
