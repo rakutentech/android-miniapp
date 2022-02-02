@@ -2,7 +2,10 @@
 
 ### 4.0.0 (In progress)
 **SDK**
-- **Removed:** Deprecated `getUniqueId` from `MiniAppMessageBridge` and `getAccessToken` from `UserInfoBridgeDispatcher`
+- **Removed:** Functions which were deprecated in previous releases have been removed:
+  - `MiniAppMessageBridge.getUniqueId()`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
 
 ### 3.9.1 (2022-01-20)
 **SDK**
