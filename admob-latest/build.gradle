@@ -24,7 +24,7 @@ android {
 }
 
 ext {
-    google_ads_latest = '20.5.0'
+    google_ads_latest = '20.2.0'
 }
 
 dependencies {
