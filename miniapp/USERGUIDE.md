@@ -847,15 +847,12 @@ In case, MiniApp needs to check camera permission or request camera access from 
 ```kotlin
 val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
             
-            override fun getCameraPermission(
-                onSuccess: (isGranted: Boolean) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
+            override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
                // Check the camera permission of the Device and send it back - i.e. isGranted = true/false.
                if (DeviceCameraPermissionGranted)
-                onSuccess(isGranted)
+                permissionCallback(true)
                else
-                onError("your-error-message")
+                permissionCallback(false)
             }
 
             override fun requestCameraPermission(
@@ -868,11 +865,16 @@ val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatch
         }
 ```
 
-Set the `miniAppCameraPermissionDispatcher` with the `MiniAppFileChooser`
+Dispatch the `miniAppCameraPermissionDispatcher` with the `MiniAppFileChooserDefault`.
 
 ```kotlin
-miniAppFileChooser.setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher)
+val fileChoosingReqCode = REQUEST_CODE // define a request code in HostApp
+val miniAppFileChooser = MiniAppFileChooserDefault(
+        requestCode = fileChoosingReqCode,
+        miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+)
 ```
+`miniAppCameraPermissionDispatcher` is optional, No need to implement this if HostApp doesn't have camera permission in manifest or miniapp doesn't need to access camera.
 
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)

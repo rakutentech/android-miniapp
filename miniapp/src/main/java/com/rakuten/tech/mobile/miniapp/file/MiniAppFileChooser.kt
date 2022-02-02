@@ -48,10 +48,7 @@ interface MiniAppCameraPermissionDispatcher {
      * Get camera permission from host app.
      * You can also throw an [Exception] from this method.
      */
-    fun getCameraPermission(
-        onSuccess: (isGranted: Boolean) -> Unit,
-        onError: (message: String) -> Unit
-    ) {
+    fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
     /**
@@ -70,47 +67,49 @@ interface MiniAppCameraPermissionDispatcher {
  * The default file chooser of a miniapp.
  * @param requestCode of file choosing using an intent inside sdk, which will also be used
  * to retrieve the data by [Activity.onActivityResult] in the HostApp.
+ * @param miniAppCameraPermissionDispatcher needs to be implemented if HostApp want to
+ * access camera from miniapp and HostApp has camera permission in [manifest.xml]
  **/
 @Suppress("LargeClass", "TooManyFunctions")
-class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
+class MiniAppFileChooserDefault(
+    var requestCode: Int,
+    private var miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher? = null
+) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
     internal var currentPhotoPath: String? = null
-    private lateinit var miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher
     private var context: Context? = null
 
-    /**
-     * Set implemented miniAppCameraPermissionDispatcher.
-     * Can use the default provided class from sdk [MiniAppCameraPermissionDispatcher].
-     **/
-    fun setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher) {
-        this.miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+    private fun <T> whenReady(callback: () -> T) {
+        miniAppCameraPermissionDispatcher?.let {
+            callback.invoke()
+        } ?: run {
+            // Default implementation.
+            context?.let { dispatchTakePictureIntent(it) }
+        }
     }
 
-    private fun <T> whenReady(callback: () -> T) {
-        if (this::miniAppCameraPermissionDispatcher.isInitialized)
-            callback.invoke()
-    }
     @Suppress(" FunctionMaxLength")
     private fun checkPermissionAndLaunchCameraIntent() = whenReady() {
-        val successCallback = { isGranted: Boolean ->
+        val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
+            } else {
+                requestCameraPermissions()
             }
         }
-        val errorCallback = { message: String -> requestCameraPermissions() }
-        miniAppCameraPermissionDispatcher.getCameraPermission(successCallback, errorCallback)
+        miniAppCameraPermissionDispatcher?.getCameraPermission(permissionCallback)
     }
 
     private fun requestCameraPermissions() = whenReady() {
-        val permissionRequestCallback: (isGranted: Boolean) -> Unit = { isGranted: Boolean ->
+        val permissionRequestCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
             } else {
                 Log.e("Camera Permission", "Denied")
             }
         }
-        miniAppCameraPermissionDispatcher.requestCameraPermission(
+        miniAppCameraPermissionDispatcher?.requestCameraPermission(
             MiniAppDevicePermissionType.CAMERA,
             permissionRequestCallback
         )

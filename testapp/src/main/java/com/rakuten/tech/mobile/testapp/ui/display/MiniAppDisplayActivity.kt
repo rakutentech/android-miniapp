@@ -60,7 +60,35 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
-    private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+    private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+        override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
+            if (ContextCompat.checkSelfPermission(
+                    this@MiniAppDisplayActivity,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionCallback(true)
+            } else {
+                permissionCallback(false)
+            }
+        }
+
+        override fun requestCameraPermission(
+            miniAppPermissionType: MiniAppDevicePermissionType,
+            permissionRequestCallback: (isGranted: Boolean) -> Unit
+        ) {
+            miniappCameraPermissionCallback = permissionRequestCallback
+            ActivityCompat.requestPermissions(
+                this@MiniAppDisplayActivity,
+                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+            )
+        }
+    }
+    private val miniAppFileChooser = MiniAppFileChooserDefault(
+        requestCode = fileChoosingReqCode,
+        miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+    )
 
     private var appInfo: MiniAppInfo? = null
 
@@ -163,7 +191,6 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         setupMiniAppMessageBridge()
-        setupMiniAppCameraPermissionDispatcher()
 
         miniAppNavigator = object : MiniAppNavigator {
 
@@ -201,39 +228,6 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
-    }
-
-    private fun setupMiniAppCameraPermissionDispatcher(){
-        val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
-            override fun getCameraPermission(
-                onSuccess: (isGranted: Boolean) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                if (ContextCompat.checkSelfPermission(
-                        this@MiniAppDisplayActivity,
-                        Manifest.permission.CAMERA
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    onSuccess(true)
-                } else {
-                    onError("Camera Permission not granted")
-                }
-            }
-
-            override fun requestCameraPermission(
-                miniAppPermissionType: MiniAppDevicePermissionType,
-                permissionRequestCallback: (isGranted: Boolean) -> Unit
-            ) {
-                miniappCameraPermissionCallback = permissionRequestCallback
-                ActivityCompat.requestPermissions(
-                    this@MiniAppDisplayActivity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
-                )
-            }
-        }
-
-        miniAppFileChooser.setCameraPermissionDispatcher(miniAppCameraPermissionDispatcher)
     }
 
     private fun setupMiniAppMessageBridge() {
