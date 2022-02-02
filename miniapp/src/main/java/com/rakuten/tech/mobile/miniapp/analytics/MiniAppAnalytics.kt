@@ -89,14 +89,14 @@ internal class MiniAppAnalytics(
 
         // Send to all the external acc/aid added by host app
         for ((acc, aid) in configs) {
-            val params = createParams(
+            val hostAppParams = createParams(
                 rasProjectId = rasProjectId,
                 acc = acc,
                 aid = aid,
                 actype = actype,
                 miniAppInfo = miniAppInfo
             )
-            trackEvent(eType, params)
+            trackEvent(eType, hostAppParams)
         }
     } catch (e: Exception) {
         Log.e("MiniAppAnalytics", e.message.orEmpty())

@@ -225,7 +225,7 @@ class ChatWindow(private val activity: Activity) {
     }
 
     private fun onMessageSent() {
-        // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
+        // Note: Doesn't need to actually send a message because we don't have an interface for this in the demo app.
         showInstruction("The message has been sent successfully!")
     }
 

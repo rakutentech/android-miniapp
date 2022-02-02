@@ -16,9 +16,9 @@ class WebViewActivity : BaseActivity() {
     override val siteSection: String = this::class.simpleName ?: ""
 
     companion object {
-        val loadUrlTag = "load_url_tag"
-        val miniAppIdTag = "miniapp_id_tag"
-        val appUrlTag = "miniapp_url_tag"
+        private const val loadUrlTag = "load_url_tag"
+        private const val miniAppIdTag = "miniapp_id_tag"
+        private const val appUrlTag = "miniapp_url_tag"
 
         fun startForResult(activity: Activity, url: String, appId: String?, appUrl: String? = null, externalWebViewReqCode: Int) {
             val intent = Intent(activity, WebViewActivity::class.java).apply {
