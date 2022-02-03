@@ -109,7 +109,12 @@ dependencies {
 
 apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 apply from: '../config/documentation/dokka/android.gradle'
@@ -139,7 +144,3 @@ project.ext.docPublishing = [
         repoUri: 'git@github.com:rakutentech/android-miniapp.git'
 ]
 apply from: '../config/publish/documentation/gh-pages.gradle'
-
-tasks.withType(Test) {
-    jacoco.excludes = ['jdk.internal.*']
-}

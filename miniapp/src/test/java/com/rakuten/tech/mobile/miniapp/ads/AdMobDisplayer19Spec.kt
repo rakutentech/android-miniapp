@@ -8,7 +8,6 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
 import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import org.amshove.kluent.*

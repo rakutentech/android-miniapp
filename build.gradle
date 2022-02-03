@@ -110,4 +110,3 @@ tasks.withType(JavaCompile) {
     options.fork = true
     options.incremental = true
 }
-
