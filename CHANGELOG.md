@@ -7,7 +7,12 @@
   - `MiniAppMessageBridge.getUniqueId()`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+- **Removed:** Classes which were deprecated in this releases have been removed:
+  - `AdMobDisplayer19`
 - **Update:** Update `HostEnvironmentInfo` data class.
+- **Update:** Remove admob 19 support.
+- **Update:** Add Ad placement beta support.[this](https://developers.google.com/ad-placement).
+- **Update:** Rename `AdMobDisplayer20` to `AdMobDisplayer`.
 
 ### 3.9.1 (2022-01-20)
 **SDK**
