@@ -58,7 +58,7 @@ open class BaseRealMiniAppSpec {
                 initManifestVerifier = { manifestVerifier },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = ratDispatcher,
-                requireAdPlacementBeta = false
+                enableH5Ads = false
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
@@ -174,7 +174,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 "",
                 miniAppAnalytics,
                 ratDispatcher,
-                requireAdPlacementBeta = false
+                enableH5Ads = false
             )
         }
 

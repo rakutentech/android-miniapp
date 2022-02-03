@@ -101,7 +101,7 @@ dependencies {
         testImplementation project(':analytics')
     }
 
-    implementation project(':admob-latest')
+    compileOnly project(':admob-latest')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

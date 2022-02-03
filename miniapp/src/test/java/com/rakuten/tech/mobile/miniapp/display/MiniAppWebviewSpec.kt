@@ -81,7 +81,7 @@ open class BaseWebViewSpec {
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS,
         ratDispatcher = mock(),
-        requireAdPlacementBeta = false
+        enableH5Ads = false
     )
 }
 
@@ -103,7 +103,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS,
                 ratDispatcher = mock(),
-                requireAdPlacementBeta = false
+                enableH5Ads = false
         )
     }
 
@@ -180,7 +180,7 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
-            requireAdPlacementBeta = false
+            enableH5Ads = false
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -371,7 +371,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
-            requireAdPlacementBeta = false
+            enableH5Ads = false
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
         val webAssetLoader: WebViewAssetLoader? = (displayer.webViewClient as MiniAppWebViewClient).loader

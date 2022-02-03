@@ -15,5 +15,15 @@ fun isAdMobProvided(): Boolean =
         false
     }
 
+/** Check whether hostapp provides admob dependency. */
+@Suppress("EmptyCatchBlock", "SwallowedException")
+fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
+    try {
+        Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
+        callback.invoke()
+    } catch (e: ClassNotFoundException) {
+    }
+}
+
 @VisibleForTesting
 internal var AdMobClassName = "com.google.android.gms.ads.MobileAds"

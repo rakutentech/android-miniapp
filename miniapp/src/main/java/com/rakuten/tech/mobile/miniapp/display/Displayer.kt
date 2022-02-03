@@ -24,7 +24,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
-        requireAdPlacementBeta: Boolean
+        enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
         miniAppInfo = miniAppInfo,
@@ -37,7 +37,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
         ratDispatcher = ratDispatcher,
-        requireAdPlacementBeta = requireAdPlacementBeta
+        enableH5Ads = enableH5Ads
     )
 
     fun createMiniAppDisplay(
@@ -50,7 +50,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
-        requireAdPlacementBeta: Boolean
+        enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
@@ -62,6 +62,6 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
         ratDispatcher = ratDispatcher,
-        requireAdPlacementBeta = requireAdPlacementBeta
+        enableH5Ads = enableH5Ads
     )
 }

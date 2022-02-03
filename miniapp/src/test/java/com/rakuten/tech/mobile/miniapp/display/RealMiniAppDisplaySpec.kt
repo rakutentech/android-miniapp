@@ -54,7 +54,7 @@ class RealMiniAppDisplaySpec {
                 queryParams = TEST_URL_PARAMS,
                 miniAppAnalytics = mock(),
                 ratDispatcher = mock(),
-                requireAdPlacementBeta = false
+                enableH5Ads = false
             )
         }
     }
@@ -77,7 +77,7 @@ class RealMiniAppDisplaySpec {
             queryParams = TEST_URL_PARAMS,
             miniAppAnalytics = mock(),
             ratDispatcher = mock(),
-            requireAdPlacementBeta = false
+            enableH5Ads = false
         )
 
         realDisplay.miniAppInfo.apply {

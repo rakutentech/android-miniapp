@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
@@ -21,6 +22,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.whenHasH5AdsWebViewClient
 import java.io.File
 
 private const val SUB_DOMAIN_PATH = "miniapp"
@@ -45,7 +47,7 @@ internal open class MiniAppWebView(
     ),
     val queryParams: String,
     val ratDispatcher: MessageBridgeRatDispatcher,
-    val requireAdPlacementBeta: Boolean
+    val enableH5Ads: Boolean
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -120,13 +122,15 @@ internal open class MiniAppWebView(
 
         setupMiniAppNavigator()
 
-        webViewClient = if (requireAdPlacementBeta) {
-            MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
-                this,
-                getMiniAppWebViewClient()
-            )
+        if (enableH5Ads) {
+            whenHasH5AdsWebViewClient {
+                webViewClient = MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
+                    this,
+                    getMiniAppWebViewClient()
+                )
+            }
         } else {
-            getMiniAppWebViewClient()
+            webViewClient = getMiniAppWebViewClient()
         }
 
         webChromeClient = miniAppWebChromeClient

@@ -29,7 +29,7 @@ internal class MiniAppHttpWebView(
     ),
     queryParams: String,
     ratDispatcher: MessageBridgeRatDispatcher,
-    requireAdPlacementBeta: Boolean
+    enableH5Ads: Boolean
 ) : MiniAppWebView(
     context,
     "",
@@ -43,7 +43,7 @@ internal class MiniAppHttpWebView(
     miniAppWebChromeClient,
     queryParams,
     ratDispatcher,
-    requireAdPlacementBeta
+    enableH5Ads
 ) {
     init {
         miniAppScheme = MiniAppScheme.schemeWithCustomUrl(appUrl)

@@ -249,7 +249,7 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
-                requireAdPlacementBeta = miniAppSdkConfig.requireAdPlacementBeta
+                enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }
     }

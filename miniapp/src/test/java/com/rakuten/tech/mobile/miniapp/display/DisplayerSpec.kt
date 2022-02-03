@@ -54,7 +54,7 @@ class DisplayerSpec {
             queryParams = TEST_URL_PARAMS,
             miniAppAnalytics = mock(),
             ratDispatcher = mock(),
-            requireAdPlacementBeta = false
+            enableH5Ads = false
         )
 
     private fun getMiniAppDisplayUrl(): MiniAppDisplay = Displayer(TEST_HA_NAME).createMiniAppDisplay(
@@ -67,6 +67,6 @@ class DisplayerSpec {
         queryParams = TEST_URL_PARAMS,
         miniAppAnalytics = mock(),
         ratDispatcher = mock(),
-        requireAdPlacementBeta = false
+        enableH5Ads = false
     )
 }
