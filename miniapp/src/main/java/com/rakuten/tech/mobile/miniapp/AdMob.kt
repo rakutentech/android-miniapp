@@ -7,7 +7,7 @@ import androidx.annotation.VisibleForTesting
  * If the dependency is provided then it means the AdMob app id has also been set from hostapp.
  */
 @Suppress("SwallowedException")
-fun isAdMobProvided(): Boolean =
+internal fun isAdMobProvided(): Boolean =
     try {
         Class.forName(AdMobClassName)
         true
@@ -17,7 +17,7 @@ fun isAdMobProvided(): Boolean =
 
 /** Check whether hostapp provides admob dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
-fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
+internal fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
     try {
         Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
         callback.invoke()

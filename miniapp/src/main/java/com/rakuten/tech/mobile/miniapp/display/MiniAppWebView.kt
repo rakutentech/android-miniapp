@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
