@@ -2,6 +2,7 @@
 
 ### 4.0.0 (In progress)
 **SDK**
+- **Feature:** Added interface for requesting Camera permission.
 - **Removed:** Functions which were deprecated in previous releases have been removed:
   - `MiniAppMessageBridge.getUniqueId()`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
