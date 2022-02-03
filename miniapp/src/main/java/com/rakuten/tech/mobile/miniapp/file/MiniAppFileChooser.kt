@@ -11,7 +11,11 @@ import android.webkit.MimeTypeMap
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.display.DefaultFileProvider
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -37,14 +41,79 @@ interface MiniAppFileChooser {
 }
 
 /**
+ * A class to provide the interfaces for getting and requesting camera permission.
+ */
+interface MiniAppCameraPermissionDispatcher {
+    /**
+     * Get camera permission from host app.
+     * You can also throw an [Exception] from this method.
+     */
+    fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+    /**
+     * Request camera permission from host app.
+     * You can also throw an [Exception] from this method.
+     */
+    fun requestCameraPermission(
+        miniAppPermissionType: MiniAppDevicePermissionType,
+        permissionRequestCallback: (isGranted: Boolean) -> Unit
+    ) {
+        throw DevicePermissionsNotImplementedException()
+    }
+}
+
+/**
  * The default file chooser of a miniapp.
  * @param requestCode of file choosing using an intent inside sdk, which will also be used
  * to retrieve the data by [Activity.onActivityResult] in the HostApp.
+ * @param miniAppCameraPermissionDispatcher needs to be implemented if HostApp want to
+ * access camera from miniapp and HostApp has camera permission in [manifest.xml]
  **/
-class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
+@Suppress("LargeClass", "TooManyFunctions")
+class MiniAppFileChooserDefault(
+    var requestCode: Int,
+    private var miniAppCameraPermissionDispatcher: MiniAppCameraPermissionDispatcher? = null
+) : MiniAppFileChooser {
 
     internal var callback: ValueCallback<Array<Uri>>? = null
     internal var currentPhotoPath: String? = null
+    private var context: Context? = null
+
+    private fun <T> whenReady(callback: () -> T) {
+        miniAppCameraPermissionDispatcher?.let {
+            callback.invoke()
+        } ?: run {
+            // Default implementation.
+            context?.let { dispatchTakePictureIntent(it) }
+        }
+    }
+
+    @Suppress(" FunctionMaxLength")
+    private fun checkPermissionAndLaunchCameraIntent() = whenReady() {
+        val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
+            if (isGranted) {
+                context?.let { dispatchTakePictureIntent(it) }
+            } else {
+                requestCameraPermissions()
+            }
+        }
+        miniAppCameraPermissionDispatcher?.getCameraPermission(permissionCallback)
+    }
+
+    private fun requestCameraPermissions() = whenReady() {
+        val permissionRequestCallback: (Boolean) -> Unit = { isGranted: Boolean ->
+            if (isGranted) {
+                context?.let { dispatchTakePictureIntent(it) }
+            } else {
+                Log.e("Camera Permission", "Denied")
+            }
+        }
+        miniAppCameraPermissionDispatcher?.requestCameraPermission(
+            MiniAppDevicePermissionType.CAMERA,
+            permissionRequestCallback
+        )
+    }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
@@ -54,12 +123,13 @@ class MiniAppFileChooserDefault(var requestCode: Int) : MiniAppFileChooser {
     ): Boolean {
         try {
             callback = filePathCallback
+            this.context = context
             val intent = fileChooserParams?.createIntent()
             if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
             if (fileChooserParams?.isCaptureEnabled == true) {
-                dispatchTakePictureIntent(context)
+                checkPermissionAndLaunchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
                 fileChooserParams?.acceptTypes?.let { acceptTypes ->

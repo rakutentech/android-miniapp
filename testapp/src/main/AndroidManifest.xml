@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"
@@ -71,8 +72,8 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
             android:launchMode="singleTop"
-            android:exported="true"
-            android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
+            android:permission="android.permission.CAMERA"
+            android:exported="true"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter
                 android:autoVerify="true"
                 android:label="@string/lb_filter_view_miniapp">
