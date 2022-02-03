@@ -8,13 +8,13 @@ class MessageToContactSpec {
 
     @Test
     fun `should return true when all properties are empty in MessageToContact object`() {
-        val emptyMessage = MessageToContact("", "", "", "")
+        val emptyMessage = MessageToContact("", "", "", "", "")
         assertTrue(emptyMessage.isEmpty)
     }
 
     @Test
     fun `should return false when all properties are empty in MessageToContact object`() {
-        val message = MessageToContact("dummyImage", "dummyText", "", "")
+        val message = MessageToContact("dummyImage", "dummyText", "", "", "")
         assertFalse(message.isEmpty)
     }
 }

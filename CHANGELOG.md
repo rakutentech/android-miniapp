@@ -1,7 +1,15 @@
 ## CHANGELOG
 
-### 3.9.1 (2022-01-20)
+### 4.0.0 (In progress)
+**SDK**
+- **Feature:** Added interface for requesting Camera permission.
+- **Removed:** Functions which were deprecated in previous releases have been removed:
+  - `MiniAppMessageBridge.getUniqueId()`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+- **Update:** Update `HostEnvironmentInfo` data class.
 
+### 3.9.1 (2022-01-20)
 **SDK**
 - **Fix:** Unable to launch a mini app while the device is offline
 

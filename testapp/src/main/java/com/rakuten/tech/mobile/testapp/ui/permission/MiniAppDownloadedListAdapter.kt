@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.permission
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ class MiniAppDownloadedListAdapter(private val miniAppListener: MiniAppDownloade
 
     override fun getItemCount(): Int = miniApps.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addDownloadedList(apps: List<MiniAppInfo>, permissions: List<String>) {
         miniApps = apps
         miniAppPermissions = permissions

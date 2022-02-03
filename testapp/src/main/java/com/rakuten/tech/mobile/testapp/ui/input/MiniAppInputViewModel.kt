@@ -1,15 +1,15 @@
 package com.rakuten.tech.mobile.testapp.ui.input
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MiniAppInputViewModel constructor(private val miniApp: MiniApp) : ViewModel() {
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
-
     private val _miniAppVersionId = MutableLiveData<String>()
     private val _versionIdErrorData = MutableLiveData<String>()
 

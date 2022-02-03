@@ -27,7 +27,7 @@ import java.io.File
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
-@Suppress("SetJavaScriptEnabled", "TooManyFunctions", "LargeClass")
+@Suppress("SetJavaScriptEnabled", "TooManyFunctions", "LargeClass", "ViewConstructor")
 internal open class MiniAppWebView(
     context: Context,
     val basePath: String,

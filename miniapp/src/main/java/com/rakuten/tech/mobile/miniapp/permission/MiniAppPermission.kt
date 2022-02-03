@@ -5,7 +5,8 @@ import androidx.annotation.Keep
 /** Type of miniapp device permission. **/
 enum class MiniAppDevicePermissionType(val type: String) {
     UNKNOWN("unknown"),
-    LOCATION("location");
+    LOCATION("location"),
+    CAMERA("camera");
 
     internal companion object {
 

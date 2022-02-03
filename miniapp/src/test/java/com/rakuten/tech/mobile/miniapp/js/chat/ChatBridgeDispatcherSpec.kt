@@ -2,7 +2,8 @@ package com.rakuten.tech.mobile.miniapp.js.chat
 
 import com.google.gson.Gson
 import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.TestActivity
+import com.rakuten.tech.mobile.miniapp.TEST_CONTACT
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
@@ -120,10 +121,16 @@ open class BaseChatBridgeDispatcherSpec {
 
     private fun createMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
-            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun getUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
         }
 
-    protected val sendingMessageJsonStr = Gson().toJson(
+    protected val sendingMessageJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
             param = SendContactCallbackObj.MessageParam(messageToContact),
@@ -131,7 +138,7 @@ open class BaseChatBridgeDispatcherSpec {
         )
     )
 
-    protected val multipleMessageJsonStr = Gson().toJson(
+    protected val multipleMessageJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action,
             param = SendContactCallbackObj.MessageParam(messageToContact),
@@ -139,7 +146,7 @@ open class BaseChatBridgeDispatcherSpec {
         )
     )
 
-    protected val specificMessageJsonStr = Gson().toJson(
+    protected val specificMessageJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MESSAGE_TO_CONTACT_ID.action,
             param = SendContactIdCallbackObj.MessageParamId("contactId", messageToContact),

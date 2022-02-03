@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.chat
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,6 +74,7 @@ internal class ContactSelectionAdapter :
 
     override fun getItemCount(): Int = contactEntries.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addContactList(mode: ContactSelectionMode, contacts: ArrayList<Contact>) {
         contactSelectionMode = mode
         contacts.forEach {
