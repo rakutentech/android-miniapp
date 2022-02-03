@@ -17,11 +17,12 @@ internal fun isAdMobProvided(): Boolean =
 
 /** Check whether hostapp provides admob dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
-internal fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
+internal inline fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
     try {
         Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
         callback.invoke()
     } catch (e: ClassNotFoundException) {
+        e.printStackTrace()
     }
 }
 
