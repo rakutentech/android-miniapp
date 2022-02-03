@@ -36,7 +36,13 @@ open class BridgeCommon {
 
     protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
-            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun getUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
 
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
@@ -64,7 +70,13 @@ open class BridgeCommon {
         }
 
     protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
-        override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+        override fun getUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            onSuccess(TEST_CALLBACK_VALUE)
+        }
 
         override fun requestDevicePermission(
             miniAppPermissionType: MiniAppDevicePermissionType,

@@ -8,10 +8,8 @@ import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 /**
- * This is custom Button.
- * It can also handle rat analytics
+ * This is a custom Button to handle rat analytics.
  */
-
 class RATButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -9,6 +9,9 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.analytics.DemoAppAnalytics
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+/**
+ * This is a custom Switch to handle rat analytics.
+ */
 class RATSwitch : SwitchCompat {
     private var passedlistener: OnCheckedChangeListener? = null
     private var siteSection = ""
@@ -17,24 +20,24 @@ class RATSwitch : SwitchCompat {
 
     constructor(@NonNull context: Context) : super(context)
 
-    constructor(@NonNull context: Context, attrs: AttributeSet?) : super(context, attrs){
-        initialization(context= context, attrs = attrs)
+    constructor(@NonNull context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        initialization(context = context, attrs = attrs)
     }
 
     constructor(@NonNull context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,
         defStyleAttr
-    ){
-        initialization(context= context, attrs = attrs)
+    ) {
+        initialization(context = context, attrs = attrs)
     }
 
-    private fun initialization(context: Context, attrs: AttributeSet?){
+    private fun initialization(context: Context, attrs: AttributeSet?) {
         context.theme.obtainStyledAttributes(attrs, R.styleable.RatCustomAttributes, 0, 0)
             .let {
                 siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
                 pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
-                val index = it.getInt(R.styleable.RatCustomAttributes_actionType,0)
+                val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
                 if (index > -1) action = ActionType.values()[index]
                 it.recycle()
             }
@@ -79,4 +82,3 @@ class RATSwitch : SwitchCompat {
         }
     }
 }
-

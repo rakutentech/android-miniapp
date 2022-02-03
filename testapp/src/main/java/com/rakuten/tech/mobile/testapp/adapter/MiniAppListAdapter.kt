@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
@@ -51,6 +52,7 @@ class MiniAppListAdapter(
             else -> R.layout.item_list_miniapp
         }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addListWithSection(list: List<MiniAppInfo>) {
         miniApps.clear()
         sectionPos.clear()

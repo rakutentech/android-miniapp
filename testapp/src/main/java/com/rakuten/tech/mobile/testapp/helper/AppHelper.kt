@@ -17,10 +17,20 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
+
+private const val UUID_LENGTH = 36
+fun String.isInvalidUuid(): Boolean = try {
+    UUID.fromString(this)
+    this.length != UUID_LENGTH
+} catch (e: IllegalArgumentException) {
+    true
+}
 
 fun isInputEmpty(input: AppCompatEditText): Boolean {
     return input.text.toString().isEmpty() || input.text.toString().isBlank()
@@ -31,11 +41,10 @@ fun parseDateToString(format: String, date: Date): String {
     return dateFormat.format(date)
 }
 
-fun parseStringToDate(format: String, str: String): Date {
-    val format = SimpleDateFormat(format, Locale.getDefault())
+fun parseStringToDate(givenFormat: String, str: String): Date {
+    val format = SimpleDateFormat(givenFormat, Locale.getDefault())
     try {
-        val date = format.parse(str)
-        return date
+        return format.parse(str)
     } catch (e: ParseException) {
         e.printStackTrace()
     }

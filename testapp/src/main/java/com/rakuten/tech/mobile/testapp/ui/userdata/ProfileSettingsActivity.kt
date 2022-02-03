@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ProfileSettingsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers.IO
@@ -73,6 +74,7 @@ class ProfileSettingsActivity : BaseActivity() {
         settings.profilePictureUrl = profileUrl
         settings.profilePictureUrlBase64 = profileUrlBase64
         settings.profileName = name.trimEnd()
+        hideSoftKeyboard(binding.root)
         finish()
     }
 

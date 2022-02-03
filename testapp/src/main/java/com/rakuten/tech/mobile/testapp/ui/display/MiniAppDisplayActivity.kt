@@ -93,11 +93,11 @@ class MiniAppDisplayActivity : BaseActivity() {
     private var appInfo: MiniAppInfo? = null
 
     companion object {
-        private val appIdTag = "app_id_tag"
-        private val miniAppTag = "mini_app_tag"
-        private val appUrlTag = "app_url_tag"
-        private val sdkConfigTag = "sdk_config_tag"
-        private val updateTypeTag = "update_type_tag"
+        private const val appIdTag = "app_id_tag"
+        private const val miniAppTag = "mini_app_tag"
+        private const val appUrlTag = "app_url_tag"
+        private const val sdkConfigTag = "sdk_config_tag"
+        private const val updateTypeTag = "update_type_tag"
 
         fun start(context: Context, appId: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {

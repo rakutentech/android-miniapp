@@ -5,11 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 
 class ContactListAdapter(private val contactListener: ContactListener) : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
     ContactAdapterPresenter {
