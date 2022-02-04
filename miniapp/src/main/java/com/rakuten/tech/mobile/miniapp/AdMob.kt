@@ -23,7 +23,7 @@ internal inline fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
         Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
         callback.invoke()
     } catch (e: ClassNotFoundException) {
-        Log.e("Missing Dependency",":admob-latest")
+        Log.e("Missing Dependency", ":admob-latest")
     }
 }
 
