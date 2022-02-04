@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
@@ -64,17 +65,18 @@ class MiniAppCustomPermissionWindowSpec {
         verify(mockDialog, times(0)).show()
     }
 
-//    @Test
-//    fun `should not init anything while permissions are empty`() {
-//        val mockDialog: AlertDialog = mock()
-//        val emptyPermissions: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
-//        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-//
-//        permissionWindow.displayPermissions(miniAppId, emptyPermissions)
-//
-//        verify(permissionWindow, times(0)).initDefaultWindow()
-//        verify(permissionWindow, times(0)).prepareDataForAdapter(emptyPermissions)
-//        verify(permissionWindow, times(0)).addPermissionClickListeners()
-//        verify(mockDialog, times(0)).show()
-//    }
+    @Ignore
+    @Test
+    fun `should not init anything while permissions are empty`() {
+        val mockDialog: AlertDialog = mock()
+        val emptyPermissions: List<Pair<MiniAppCustomPermissionType, String>> = emptyList()
+        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+
+        permissionWindow.displayPermissions(miniAppId, emptyPermissions)
+
+        verify(permissionWindow, times(0)).initDefaultWindow()
+        verify(permissionWindow, times(0)).prepareDataForAdapter(emptyPermissions)
+        verify(permissionWindow, times(0)).addPermissionClickListeners()
+        verify(mockDialog, times(0)).show()
+    }
 }

@@ -100,13 +100,13 @@ class RealMiniAppDisplaySpec {
         realDisplay.miniAppWebView shouldBe null
     }
 
-//    @Test
-//    fun `should provide the exact context to MiniAppWebView`() = runBlockingTest {
-//        val displayer = Mockito.spy(realDisplay)
-//        val miniAppWebView = displayer.getMiniAppView(context) as MiniAppWebView
-//
-//        miniAppWebView.context shouldBe context
-//    }
+    @Test(expected = IllegalStateException::class)
+    fun `should provide the exact context to MiniAppWebView`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        val miniAppWebView = displayer.getMiniAppView(context) as MiniAppWebView
+
+        miniAppWebView.context shouldBe context
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when the context provider is not activity context`() =
@@ -119,23 +119,23 @@ class RealMiniAppDisplaySpec {
         realDisplay.getMiniAppView(Activity()) shouldBe miniAppWebView
     }
 
-//    @Test
-//    fun `should send analytics when open miniapp view`() = runBlockingTest {
-//        val displayer = Mockito.spy(realDisplay)
-//        When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
-//        displayer.getMiniAppView(context)
-//
-//        verify(miniAppAnalytics, times(0)).sendAnalytics(
-//            eType = Etype.APPEAR,
-//            actype = Actype.HOST_LAUNCH,
-//            miniAppInfo = null
-//        )
-//        verify(miniAppAnalytics).sendAnalytics(
-//            eType = Etype.CLICK,
-//            actype = Actype.OPEN,
-//            miniAppInfo = TEST_MA
-//        )
-//    }
+    @Test(expected = IllegalStateException::class)
+    fun `should send analytics when open miniapp view`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
+        displayer.getMiniAppView(context)
+
+        verify(miniAppAnalytics, times(0)).sendAnalytics(
+            eType = Etype.APPEAR,
+            actype = Actype.HOST_LAUNCH,
+            miniAppInfo = null
+        )
+        verify(miniAppAnalytics).sendAnalytics(
+            eType = Etype.CLICK,
+            actype = Actype.OPEN,
+            miniAppInfo = TEST_MA
+        )
+    }
 
     @Test
     fun `should send analytics when close miniapp view`() = runBlockingTest {
@@ -146,12 +146,12 @@ class RealMiniAppDisplaySpec {
         verify(miniAppAnalytics).sendAnalytics(eType = Etype.CLICK, actype = Actype.CLOSE, miniAppInfo = TEST_MA)
     }
 
-//    @Test
-//    fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
-//        runBlockingTest {
-//            val displayer = Mockito.spy(realDisplay)
-//            displayer.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
-//        }
+    @Test(expected = IllegalStateException::class)
+    fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
+        runBlockingTest {
+            val displayer = Mockito.spy(realDisplay)
+            displayer.getMiniAppView(context) shouldNotHaveTheSameClassAs WebView::class
+        }
 
     @Test
     fun `should not navigate when MiniAppWebView is null`() {
@@ -159,14 +159,14 @@ class RealMiniAppDisplaySpec {
         realDisplay.navigateForward() shouldBe false
     }
 
-//    @Test
-//    fun `should not navigate when MiniAppWebView cannot do navigation`() = runBlockingTest {
-//        val displayer = Mockito.spy(realDisplay)
-//        displayer.getMiniAppView(context)
-//
-//        displayer.navigateBackward() shouldBe false
-//        displayer.navigateForward() shouldBe false
-//    }
+    @Test(expected = IllegalStateException::class)
+    fun `should not navigate when MiniAppWebView cannot do navigation`() = runBlockingTest {
+        val displayer = Mockito.spy(realDisplay)
+        displayer.getMiniAppView(context)
+
+        displayer.navigateBackward() shouldBe false
+        displayer.navigateForward() shouldBe false
+    }
 
     @Test
     fun `should be able to do navigation when possible`() = runBlockingTest {

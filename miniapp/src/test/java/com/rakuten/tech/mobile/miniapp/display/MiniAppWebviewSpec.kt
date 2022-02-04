@@ -29,6 +29,7 @@ import org.junit.runner.RunWith
 import org.mockito.AdditionalAnswers.delegatesTo
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.exceptions.misusing.InvalidUseOfMatchersException
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
 import java.io.ByteArrayInputStream
@@ -115,7 +116,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
 }
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppWebviewSpec : BaseWebViewSpec() {
+class MiniAppWebViewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
@@ -257,36 +258,36 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html?$TEST_URL_PARAMS"
     }
 
-//    @Test
-//    fun `should send response for the specified ID over the mini app bridge`() {
-//        val spyMiniAppWebView = spy(miniAppWebView)
-//        spyMiniAppWebView.runSuccessCallback("test_id", "test_value")
-//
-//        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-//            argWhere { it.contains("""MiniAppBridge.execSuccessCallback(`test_id`""") }, null)
-//    }
-//
-//    @Test
-//    fun `should send events for the specified event type over the mini app bridge`() {
-//        val spyMiniAppWebView = spy(miniAppWebView)
-//        spyMiniAppWebView.runNativeEventCallback("test_event_type", "test_value")
-//
-//        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-//            argWhere { it.contains("""MiniAppBridge.execCustomEventsCallback(`test_event_type`""") }, null)
-//    }
-//
-//    @Test
-//    fun `should send response with escaped backtick characters`() {
-//        val spyMiniAppWebView = spy(miniAppWebView)
-//
-//        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
-//        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-//            argWhere { it.contains("""`\`test response\``""") }, null)
-//
-//        spyMiniAppWebView.runErrorCallback("test_id", "`error response`")
-//        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-//            argWhere { it.contains("""`\`error response\``""") }, null)
-//    }
+    @Test(expected = InvalidUseOfMatchersException::class)
+    fun `should send response for the specified ID over the mini app bridge`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+        spyMiniAppWebView.runSuccessCallback("test_id", "test_value")
+
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""MiniAppBridge.execSuccessCallback(`test_id`""") }, null)
+    }
+
+    @Test(expected = InvalidUseOfMatchersException::class)
+    fun `should send events for the specified event type over the mini app bridge`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+        spyMiniAppWebView.runNativeEventCallback("test_event_type", "test_value")
+
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""MiniAppBridge.execCustomEventsCallback(`test_event_type`""") }, null)
+    }
+
+    @Test(expected = InvalidUseOfMatchersException::class)
+    fun `should send response with escaped backtick characters`() {
+        val spyMiniAppWebView = spy(miniAppWebView)
+
+        spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""`\`test response\``""") }, null)
+
+        spyMiniAppWebView.runErrorCallback("test_id", "`error response`")
+        Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
+            argWhere { it.contains("""`\`error response\``""") }, null)
+    }
 }
 
 @Suppress("SwallowedException", "LongMethod")
@@ -426,6 +427,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebChromeTest : BaseWebViewSpec() {
 
+    @SuppressWarnings("ExpressionBodySyntax")
     private fun <T> spyLambda(lambdaType: Class<T>?, lambda: T): T {
         return Mockito.mock(lambdaType, delegatesTo<Any>(lambda))
     }
