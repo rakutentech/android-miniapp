@@ -248,7 +248,8 @@ abstract class MiniApp internal constructor() {
                 initDownloadedManifestCache = { DownloadedManifestCache(context) },
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
-                ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics)
+                ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
+                enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }
     }

@@ -61,6 +61,12 @@ class MiniappSdkInitializer : ContentProvider() {
          **/
         @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectSubscriptionKey")
         fun subscriptionKey(): String
+
+        /**
+         * Whether the sdk enables h5Ads in a Mini App.
+         **/
+        @MetaData(key = "com.rakuten.tech.mobile.miniapp.EnableH5Ads")
+        fun enableH5Ads(): Boolean
     }
 
     override fun onCreate(): Boolean {
@@ -85,7 +91,8 @@ class MiniappSdkInitializer : ContentProvider() {
         subscriptionKey = manifestConfig.subscriptionKey(),
         hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
         isPreviewMode = manifestConfig.isPreviewMode(),
-        requireSignatureVerification = manifestConfig.requireSignatureVerification()
+        requireSignatureVerification = manifestConfig.requireSignatureVerification(),
+        enableH5Ads = manifestConfig.enableH5Ads()
     )
 
     private fun executeMiniAppAnalytics(rasProjId: String) {

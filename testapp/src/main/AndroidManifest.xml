@@ -122,6 +122,9 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.analytics.RATEndpoint"
             android:value="${ratEndpoint}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.EnableH5Ads"
+            android:value="${enableH5Ads}" />
     </application>
 
 </manifest>
