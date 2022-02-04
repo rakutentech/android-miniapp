@@ -27,7 +27,7 @@ buildscript {
     ext.swipe_refresh_layout = '1.1.0'
     ext.recyclerview = '1.1.0'
     ext.gson = '2.8.6'
-    ext.google_ads = '19.4.0'
+    ext.google_ads = '20.2.0'
     ext.custom_tab = '1.2.0'
     ext.appCenterSdkVersion = '4.0.0'
     ext.analytics_sdk= '7.0.0'

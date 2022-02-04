@@ -11,7 +11,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.ads.AdMobClassName
+import com.rakuten.tech.mobile.miniapp.AdMobClassName
 import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO

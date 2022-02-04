@@ -40,8 +40,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "junit:junit:$junit"
-    implementation project(':miniapp')
-
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

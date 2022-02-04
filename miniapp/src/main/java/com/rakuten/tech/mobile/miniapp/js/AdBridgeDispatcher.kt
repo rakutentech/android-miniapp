@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.ads.isAdMobProvided
+import com.rakuten.tech.mobile.miniapp.isAdMobProvided
 
 @Suppress("TooGenericExceptionCaught", "LongMethod")
 internal class AdBridgeDispatcher {

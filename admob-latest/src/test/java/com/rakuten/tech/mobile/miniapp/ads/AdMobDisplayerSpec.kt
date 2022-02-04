@@ -18,10 +18,10 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 
 @RunWith(AndroidJUnit4::class)
-class AdMobDisplayer20Spec {
+class AdMobDisplayerSpec {
 
     private var context: Activity = mock()
-    private lateinit var adDisplayer20: AdMobDisplayer20
+    private lateinit var adDisplayer: AdMobDisplayer
     private var mockInterstitialAd: InterstitialAd = mock()
     private var mockRewardedAd: RewardedAd = mock()
     private var testLoadInterstitialAd: (
@@ -36,21 +36,22 @@ class AdMobDisplayer20Spec {
 
     @Before
     fun setup() {
-        adDisplayer20 = spy(AdMobDisplayer20(context))
-        whenever(adDisplayer20.loadInterstitialAd).thenReturn(testLoadInterstitialAd)
-        whenever(adDisplayer20.showInterstitialAd).thenReturn(testShowInterstitialAd)
-        whenever(adDisplayer20.loadRewardedAd).thenReturn(testLoadRewardedAd)
-        whenever(adDisplayer20.showRewardedAd).thenReturn(testShowRewardedAd)
+        adDisplayer = spy(AdMobDisplayer(context))
+        whenever(adDisplayer.loadInterstitialAd).thenReturn(testLoadInterstitialAd)
+        whenever(adDisplayer.showInterstitialAd).thenReturn(testShowInterstitialAd)
+        whenever(adDisplayer.loadRewardedAd).thenReturn(testLoadRewardedAd)
+        whenever(adDisplayer.showRewardedAd).thenReturn(testShowRewardedAd)
     }
 
     @Test
     fun `should show interstitial ads when it is ready`() {
-        adDisplayer20.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
         val map = HashMap<String, InterstitialAd>()
         map[TEST_AD_UNIT_ID] = mockInterstitialAd
-        adDisplayer20.initAdMap(interstitialAdMap = map)
+        adDisplayer.initAdMap(interstitialAdMap = map)
 
-        adDisplayer20.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        verify(adDisplayer).showInterstitialAd
     }
 
     @Test
@@ -58,10 +59,10 @@ class AdMobDisplayer20Spec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer20.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer20.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer20.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -69,27 +70,28 @@ class AdMobDisplayer20Spec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID already loaded."
         }
-        adDisplayer20.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, InterstitialAd>()
         map[TEST_AD_UNIT_ID] = mockInterstitialAd
-        adDisplayer20.initAdMap(interstitialAdMap = map)
+        adDisplayer.initAdMap(interstitialAdMap = map)
 
-        adDisplayer20.loadInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadInterstitialAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
     fun `should show rewarded ads when it is ready`() {
-        adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, RewardedAd>()
         map[TEST_AD_UNIT_ID] = mockRewardedAd
-        adDisplayer20.initAdMap(rewardedAdMap = map)
+        adDisplayer.initAdMap(rewardedAdMap = map)
 
-        val rewardedAdCallback = adDisplayer20.createRewardedAdShowCallback()
-        whenever(adDisplayer20.createRewardedAdShowCallback()) doReturn rewardedAdCallback
+        val rewardedAdCallback = adDisplayer.createRewardedAdShowCallback()
+        whenever(adDisplayer.createRewardedAdShowCallback()) doReturn rewardedAdCallback
 
-        adDisplayer20.showRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        verify(adDisplayer).showRewardedAd
     }
 
     @Test
@@ -97,10 +99,10 @@ class AdMobDisplayer20Spec {
         val onError: (msg: String) -> Unit = {
             it shouldBe "Ad is not loaded yet"
         }
-        adDisplayer20.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
 
-        adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
-        adDisplayer20.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.showRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 
     @Test
@@ -108,12 +110,12 @@ class AdMobDisplayer20Spec {
         val onError: (msg: String) -> Unit = {
             it shouldBeEqualTo "Previous $TEST_AD_UNIT_ID already loaded."
         }
-        adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, {})
 
         val map = HashMap<String, InterstitialAd>()
         map[TEST_AD_UNIT_ID] = mockInterstitialAd
-        adDisplayer20.initAdMap(interstitialAdMap = map)
+        adDisplayer.initAdMap(interstitialAdMap = map)
 
-        adDisplayer20.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
+        adDisplayer.loadRewardedAd(TEST_AD_UNIT_ID, {}, onError)
     }
 }
