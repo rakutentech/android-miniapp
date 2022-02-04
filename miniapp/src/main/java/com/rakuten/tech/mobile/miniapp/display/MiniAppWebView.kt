@@ -11,7 +11,7 @@ import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
-import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient
+import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -123,7 +123,8 @@ internal open class MiniAppWebView(
 
         if (enableH5Ads) {
             whenHasH5AdsWebViewClient {
-                webViewClient = MiniAppH5AdsWebViewClient(context).getH5AdsWebViewClient(
+                webViewClient = MiniAppH5AdsProvider().getH5AdsWebViewClient(
+                    context,
                     this,
                     getMiniAppWebViewClient()
                 )

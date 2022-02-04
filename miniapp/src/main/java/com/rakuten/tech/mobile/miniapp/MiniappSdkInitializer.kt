@@ -63,7 +63,7 @@ class MiniappSdkInitializer : ContentProvider() {
         fun subscriptionKey(): String
 
         /**
-         * Whether the sdk enable h5Ads in a Mini App.
+         * Whether the sdk enables h5Ads in a Mini App.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.EnableH5Ads")
         fun enableH5Ads(): Boolean

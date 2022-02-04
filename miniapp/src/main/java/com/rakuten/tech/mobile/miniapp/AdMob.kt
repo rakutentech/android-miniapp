@@ -20,7 +20,7 @@ internal fun isAdMobProvided(): Boolean =
 @Suppress("EmptyCatchBlock", "SwallowedException")
 internal inline fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
     try {
-        Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
+        Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider")
         callback.invoke()
     } catch (e: ClassNotFoundException) {
         Log.e("Missing Dependency", ":admob-latest")

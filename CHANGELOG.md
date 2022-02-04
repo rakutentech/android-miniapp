@@ -9,10 +9,10 @@
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
 - **Removed:** Classes which were deprecated in this releases have been removed:
   - `AdMobDisplayer19`
-- **Update:** Update `HostEnvironmentInfo` data class.
-- **Update:** Remove admob 19 support.
-- **Update:** Add Ad placement beta support.[this](https://developers.google.com/ad-placement).
-- **Update:** Rename `AdMobDisplayer20` to `AdMobDisplayer`.
+- **Update:** Added a new constructor to pass `hostLocale` info in `HostEnvironmentInfo` data class.
+- **Update:** Removed admob 19 support.
+- **Feature:** Added [Ad placement beta](https://developers.google.com/ad-placement) support. Please see user-guide.
+- **Update:** Renamed `AdMobDisplayer20` to `AdMobDisplayer`.
 
 ### 3.9.1 (2022-01-20)
 **SDK**
