@@ -24,7 +24,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@Suppress("LargeClass")
+@SuppressWarnings("LargeClass")
 @RunWith(AndroidJUnit4::class)
 class MiniAppFileChooserDefaultSpec {
     private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
