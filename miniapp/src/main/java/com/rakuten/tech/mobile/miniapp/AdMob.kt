@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 
 /**
@@ -22,7 +23,7 @@ internal inline fun <T> whenHasH5AdsWebViewClient(callback: () -> T) {
         Class.forName("com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsWebViewClient")
         callback.invoke()
     } catch (e: ClassNotFoundException) {
-        e.printStackTrace()
+        Log.e("Missing Dependency",":admob-latest")
     }
 }
 
