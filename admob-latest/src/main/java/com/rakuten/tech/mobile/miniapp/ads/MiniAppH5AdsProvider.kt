@@ -13,7 +13,7 @@ class MiniAppH5AdsProvider() {
      * The function to create a H5AdsWebViewClient.
      * @param context context of the webview.
      * @param webView the webview which needs to enable H5Ads.
-     * @param webViewClient comment here.
+     * @param webViewClient the WebViewClient for delegating to H5AdsWebViewClient.
      */
     fun getH5AdsWebViewClient(
         context: Context,
