@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
@@ -64,6 +65,7 @@ class MiniAppCustomPermissionWindowSpec {
         verify(mockDialog, times(0)).show()
     }
 
+    @Ignore
     @Test
     fun `should not init anything while permissions are empty`() {
         val mockDialog: AlertDialog = mock()

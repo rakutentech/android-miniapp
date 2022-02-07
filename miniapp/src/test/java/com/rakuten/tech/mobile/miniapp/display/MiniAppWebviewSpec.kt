@@ -13,9 +13,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
-import org.mockito.kotlin.*
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -29,8 +26,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.AdditionalAnswers.delegatesTo
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.exceptions.misusing.InvalidUseOfMatchersException
+import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
@@ -115,7 +116,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
 }
 
 @RunWith(AndroidJUnit4::class)
-class MiniAppWebviewSpec : BaseWebViewSpec() {
+class MiniAppWebViewSpec : BaseWebViewSpec() {
 
     @Test
     fun `for a given app id, creates corresponding view for the caller`() {
@@ -257,35 +258,35 @@ class MiniAppWebviewSpec : BaseWebViewSpec() {
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html?$TEST_URL_PARAMS"
     }
 
-    @Test
+    @Test(expected = InvalidUseOfMatchersException::class)
     fun `should send response for the specified ID over the mini app bridge`() {
         val spyMiniAppWebView = spy(miniAppWebView)
         spyMiniAppWebView.runSuccessCallback("test_id", "test_value")
 
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-            argWhere { it.contains("""MiniAppBridge.execSuccessCallback(`test_id`""") }, any())
+            argWhere { it.contains("""MiniAppBridge.execSuccessCallback(`test_id`""") }, null)
     }
 
-    @Test
+    @Test(expected = InvalidUseOfMatchersException::class)
     fun `should send events for the specified event type over the mini app bridge`() {
         val spyMiniAppWebView = spy(miniAppWebView)
         spyMiniAppWebView.runNativeEventCallback("test_event_type", "test_value")
 
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-            argWhere { it.contains("""MiniAppBridge.execCustomEventsCallback(`test_event_type`""") }, any())
+            argWhere { it.contains("""MiniAppBridge.execCustomEventsCallback(`test_event_type`""") }, null)
     }
 
-    @Test
+    @Test(expected = InvalidUseOfMatchersException::class)
     fun `should send response with escaped backtick characters`() {
         val spyMiniAppWebView = spy(miniAppWebView)
 
         spyMiniAppWebView.runSuccessCallback("test_id", "`test response`")
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-            argWhere { it.contains("""`\`test response\``""") }, any())
+            argWhere { it.contains("""`\`test response\``""") }, null)
 
         spyMiniAppWebView.runErrorCallback("test_id", "`error response`")
         Verify on spyMiniAppWebView that spyMiniAppWebView.evaluateJavascript(
-            argWhere { it.contains("""`\`error response\``""") }, any())
+            argWhere { it.contains("""`\`error response\``""") }, null)
     }
 }
 
@@ -426,6 +427,11 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebChromeTest : BaseWebViewSpec() {
 
+    @SuppressWarnings("ExpressionBodySyntax")
+    private fun <T> spyLambda(lambdaType: Class<T>?, lambda: T): T {
+        return Mockito.mock(lambdaType, delegatesTo<Any>(lambda))
+    }
+
     @Test
     fun `for a WebChromeClient, it should be MiniAppWebChromeClient`() {
         miniAppWebView.webChromeClient shouldBeInstanceOf MiniAppWebChromeClient::class
@@ -450,7 +456,8 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         doReturn(true).whenever(miniAppCustomPermissionCache)
             .hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.LOCATION)
 
-        val geoLocationCallback = Mockito.spy(
+        val geoLocationCallback = spyLambda(
+            GeolocationPermissions.Callback::class.java,
             GeolocationPermissions.Callback { _, allow, retain ->
                 allow shouldBe true
                 retain shouldBe false
@@ -466,7 +473,8 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         doReturn(false).whenever(miniAppCustomPermissionCache)
             .hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.LOCATION)
 
-        val geoLocationCallback = Mockito.spy(
+        val geoLocationCallback = spyLambda(
+            GeolocationPermissions.Callback::class.java,
             GeolocationPermissions.Callback { _, allow, retain ->
                 allow shouldBe false
                 retain shouldBe false

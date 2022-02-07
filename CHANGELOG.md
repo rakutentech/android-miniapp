@@ -1,7 +1,10 @@
 ## CHANGELOG
-
 ### 4.0.0 (In progress)
 **SDK**
+- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** SDK dependencies to new versions
+    - com.google.android.gms:play-services-ads:20.5.0
+    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
 - **Feature:** Added interface for requesting Camera permission.
 - **Removed:** Functions which were deprecated in previous releases have been removed:
   - `MiniAppMessageBridge.getUniqueId()`
@@ -13,6 +16,9 @@
 - **Update:** Removed admob 19 support.
 - **Feature:** Added [Ad placement beta](https://developers.google.com/ad-placement) support. Please see user-guide.
 - **Update:** Renamed `AdMobDisplayer20` to `AdMobDisplayer`.
+
+**Sample App**
+- **Upgraded:** Target SDK is now API 31
 
 ### 3.9.1 (2022-01-20)
 **SDK**

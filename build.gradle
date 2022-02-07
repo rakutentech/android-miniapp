@@ -1,6 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.androidBuildTool = '29.0.2'
     ext.androidx_appcompat = '1.2.0'
     ext.androidx_constraintLayout = '2.0.4'
     ext.androidx_coreKtx = '1.3.0'
@@ -13,17 +12,17 @@ buildscript {
     ext.glide = '4.11.0'
     ext.jsr250 = '1.0'
     ext.junit = '4.12'
-    ext.kluent_android = '1.59'
+    ext.kluent_android = '1.64'
     ext.kotlin_coroutines = '1.3.3'
-    ext.kotlin_version = '1.3.50'
+    ext.kotlin_version = '1.5.31'
     ext.material = '1.3.0'
     ext.mockito = '3.3.3'
     ext.okhttp = '4.9.0'
     ext.manifest_config = '0.2.0'
-    ext.mockito_kotlin = '2.2.11'
+    ext.mockito_kotlin = '3.2.0'
     ext.sdk_utils = '0.2.0'
     ext.retrofit = '2.9.0'
-    ext.robolectric = '4.3.1'
+    ext.robolectric = '4.7.3'
     ext.webkit = '1.1.0'
     ext.swipe_refresh_layout = '1.1.0'
     ext.recyclerview = '1.1.0'
@@ -37,6 +36,8 @@ buildscript {
 //  Build Config.
     apply from: 'config/index.gradle'
     CONFIG.versions.android.sdk.min = 24
+    CONFIG.versions.android.sdk.compile = 31
+    CONFIG.versions.android.sdk.target = 31
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'

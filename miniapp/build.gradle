@@ -28,8 +28,6 @@ android {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
     }
-
-    buildToolsVersion = androidBuildTool
 }
 
 androidExtensions {
@@ -113,7 +111,11 @@ dependencies {
 
 apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 apply from: '../config/documentation/dokka/android.gradle'
