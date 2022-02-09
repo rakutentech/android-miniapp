@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.chat
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 
 /**
- * Functionality related to Chatting with the contacts.
+ * Functionalities related to Chatting with the contacts.
  */
 interface ChatBridgeDispatcher {
 

@@ -49,6 +49,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | RAS Project ID               | String  | `com.rakuten.tech.mobile.ras.ProjectId`                | ❌         | 🚫        |
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
+| Enable [Ad Placement api](https://developers.google.com/ad-placement)      | Boolean | `com.rakuten.tech.mobile.miniapp.EnableH5Ads`          | ✅         | false     |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
@@ -481,6 +482,17 @@ The following user data types are supported. If your App does not support a cert
 - Access Token: OAuth 1.0 token including token data and expiration date. Your App will be provided with the ID of the mini app and [AccessTokenScope]((api/com.rakuten.tech.mobile.miniapp.permission/-access-token-scope)) which is requesting the Access Token, so you should verify that this mini app is allowed to use the access token. See [UserInfoBridgeDispatcher.getAccessToken](api/com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/get-access-token.html)
 
 ### Ads Integration
+In case the host app wants to use the admob sdk, Add the following to your `build.gradle` file:
+```groovy
+dependency {
+    implementation project(':admob-latest')
+}
+``` 
+
+**Admob Version**
+
+`admob-latest` module use Google Play Services Ads version 20.2.0.
+
 **API Docs:** [MiniAppMessageBridge.setAdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-ad-mob-displayer.html)
 
 It is optional to set AdMob for mini apps to show advertisement.
@@ -493,9 +505,9 @@ Configure the Android Ads SDK from [here](https://developers.google.com/admob/an
 #### AdMob
 **API Docs:** [AdMobDisplayer](api/com.rakuten.tech.mobile.miniapp.ads/-ad-mob-displayer/)
 
-Set the `AdMobDisplayer19` provided by MiniApp SDK. This controller will handle the display of ad so no work is required from host app.
+Set the `AdMobDisplayer` provided by `admob-latest`. This controller will handle the display of ad so no work is required from host app.
 ```kotlin
-miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer19(activityContext))
+miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
 ```
 
 ### Send Native Events
@@ -508,21 +520,6 @@ Mini apps are able to get events for custom event types which are defined by the
 - Resume (`NativeEventType.MINIAPP_ON_RESUME`)
 
 **Note:** Host app can send these events whenever these events occur and MiniApp will be able to get those events.
-
-#### Admob Version
-In case the host app wants to use the latest admob sdk, Add the following to your `build.gradle` file:
-```groovy
-dependency {
-    implementation project(':admob-latest')
-}
-``` 
-Default: Play Services Ads 19.x.x  
-admob-latest module: Play Services Ads 20+
-
-Set the `AdMobDisplayer20` provided by `admob-latest`. This controller will handle the display of ad for the latest admob sdk.
-```kotlin
-miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer20(this@MiniAppDisplayActivity))
-```
 
 #### Custom Ads Provider
 **API Docs:** [MiniAppAdDisplayer](com.rakuten.tech.mobile.miniapp.ads/-mini-app-ad-displayer/)
@@ -841,6 +838,40 @@ val miniAppFileChooser = object : MiniAppFileChooser {
 ```
 
 In both case, HostApp needs to pass `MiniAppFileChooser` through `MiniApp.create(appId: String, miniAppMessageBridge: MiniAppMessageBridge, miniAppFileChooser: MiniAppFileChooser)`.
+
+In case, MiniApp needs to check camera permission or request camera access from HostApp.
+
+```kotlin
+val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+            
+            override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
+               // Check the camera permission of the Device and send it back - i.e. isGranted = true/false.
+               if (DeviceCameraPermissionGranted)
+                permissionCallback(true)
+               else
+                permissionCallback(false)
+            }
+
+            override fun requestCameraPermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                // Request the camera permission of the Device send send it back through callback.
+                callback.invoke(true)
+            }
+        }
+```
+
+Dispatch the `miniAppCameraPermissionDispatcher` with the `MiniAppFileChooserDefault`.
+
+```kotlin
+val fileChoosingReqCode = REQUEST_CODE // define a request code in HostApp
+val miniAppFileChooser = MiniAppFileChooserDefault(
+        requestCode = fileChoosingReqCode,
+        miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+)
+```
+`miniAppCameraPermissionDispatcher` is optional, No need to implement this if HostApp doesn't have camera permission in manifest or miniapp doesn't need to access camera.
 
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)

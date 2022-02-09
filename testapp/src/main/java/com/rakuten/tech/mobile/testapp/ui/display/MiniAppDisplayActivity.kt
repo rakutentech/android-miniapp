@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,18 +11,21 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer20
+import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
+import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -40,7 +44,6 @@ import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.net.URI
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -51,21 +54,50 @@ class MiniAppDisplayActivity : BaseActivity() {
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
-    private val miniAppFileChooser = MiniAppFileChooserDefault(requestCode = fileChoosingReqCode)
+    private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+        override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
+            if (ContextCompat.checkSelfPermission(
+                    this@MiniAppDisplayActivity,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionCallback(true)
+            } else {
+                permissionCallback(false)
+            }
+        }
+
+        override fun requestCameraPermission(
+            miniAppPermissionType: MiniAppDevicePermissionType,
+            permissionRequestCallback: (isGranted: Boolean) -> Unit
+        ) {
+            miniappCameraPermissionCallback = permissionRequestCallback
+            ActivityCompat.requestPermissions(
+                this@MiniAppDisplayActivity,
+                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+            )
+        }
+    }
+    private val miniAppFileChooser = MiniAppFileChooserDefault(
+        requestCode = fileChoosingReqCode,
+        miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+    )
 
     private var appInfo: MiniAppInfo? = null
 
     companion object {
-        private val appIdTag = "app_id_tag"
-        private val miniAppTag = "mini_app_tag"
-        private val appUrlTag = "app_url_tag"
-        private val sdkConfigTag = "sdk_config_tag"
-        private val updateTypeTag = "update_type_tag"
+        private const val appIdTag = "app_id_tag"
+        private const val miniAppTag = "mini_app_tag"
+        private const val appUrlTag = "app_url_tag"
+        private const val sdkConfigTag = "sdk_config_tag"
+        private const val updateTypeTag = "update_type_tag"
 
         fun start(context: Context, appId: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
@@ -142,8 +174,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppView.observe(this@MiniAppDisplayActivity, Observer {
                 if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                     WebView.setWebContentsDebuggingEnabled(true)
+
                 //action: display webview
                 addLifeCycleObserver(lifecycle)
+                (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
             })
 
@@ -221,7 +255,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 )
             }
         }
-        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer20(this@MiniAppDisplayActivity))
+        miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
 
         miniAppMessageBridge.allowScreenOrientation(true)
 
@@ -319,7 +353,10 @@ class MiniAppDisplayActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
-        miniappPermissionCallback.invoke(isGranted)
+        when(requestCode){
+            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            else -> miniappPermissionCallback.invoke(isGranted)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

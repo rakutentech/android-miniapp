@@ -87,11 +87,11 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
         val verifier = SignatureVerifier(mockPublicKeyCache, mock(), TestCoroutineDispatcher())
 
         verifier.verify(
-                KEY_ID,
-                TEST_MA_VERSION_ID,
-                "wrong message".byteInputStream(),
-                SIGNATURE
-        ) shouldEqualTo false
+            KEY_ID,
+            TEST_MA_VERSION_ID,
+            "wrong message".byteInputStream(),
+            SIGNATURE
+        ) shouldBeEqualTo false
     }
 
     @Test
@@ -100,10 +100,10 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
         val verifier = SignatureVerifier(mockPublicKeyCache, mock(), TestCoroutineDispatcher())
 
         verifier.verify(
-                KEY_ID,
-                TEST_MA_VERSION_ID,
-                "wrong message".byteInputStream(),
-                SIGNATURE
-        ) shouldEqualTo false
+            KEY_ID,
+            TEST_MA_VERSION_ID,
+            "wrong message".byteInputStream(),
+            SIGNATURE
+        ) shouldBeEqualTo false
     }
 }

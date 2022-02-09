@@ -34,33 +34,6 @@ interface UserInfoBridgeDispatcher {
         throw MiniAppSdkException(NO_IMPL)
     }
 
-    /** Get access token from host app. **/
-    @Deprecated("This function has been deprecated.")
-    fun getAccessToken(
-        miniAppId: String,
-        onSuccess: (tokenData: TokenData) -> Unit,
-        onError: (message: String) -> Unit
-    ) {
-        throw MiniAppSdkException(NO_IMPL)
-    }
-
-    /**
-     * Get access token from host app.
-     * @param accessTokenScope contains audience and scope for permission validation.
-     **/
-    @JvmName("getAccessTokenDeprecated")
-    @Suppress("INAPPLICABLE_JVM_NAME")
-    @Deprecated(
-        "This function has been deprecated.",
-        ReplaceWith("getAccessToken(miniAppId, accessTokenScope,  onSuccess, onError)")
-    )
-    fun getAccessToken(
-        miniAppId: String,
-        accessTokenScope: AccessTokenScope,
-        onSuccess: (tokenData: TokenData) -> Unit,
-        onError: (message: String) -> Unit
-    ) = getAccessToken(miniAppId, onSuccess, onError)
-
     /**
      * Get access token from host app.
      * @param accessTokenScope contains audience and scope for permission validation.

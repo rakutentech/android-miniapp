@@ -1,10 +1,49 @@
 ## CHANGELOG
+### 4.0.0 (In progress)
+**SDK**
+- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** SDK dependencies to new versions
+    - androidx.core:core-ktx:1.6.0
+    - androidx.webkit:webkit:1.4.0
+    - com.google.android.gms:play-services-ads:20.5.0
+    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
+    - org.jetbrains.kotlin:kotlin-test:1.5.31
+    - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
+    - org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2
+    - com.squareup.okhttp3:okhttp:4.9.1
+    - androidx.appcompat:appcompat:1.3.0
+    - androidx.recyclerview:recyclerview:1.2.1
+- **Feature:** Added interface for requesting Camera permission.
+- **Removed:** Functions which were deprecated in previous releases have been removed:
+  - `MiniAppMessageBridge.getUniqueId()`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+  - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, accessTokenScope: AccessTokenScope, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
+- **Removed:** Classes which were deprecated in this releases have been removed:
+  - `AdMobDisplayer19`
+- **Update:** Added a new constructor to pass `hostLocale` info in `HostEnvironmentInfo` data class.
+- **Update:** Removed admob 19 support.
+- **Feature:** Added [Ad placement beta](https://developers.google.com/ad-placement) support. Please see user-guide.
+- **Update:** Renamed `AdMobDisplayer20` to `AdMobDisplayer`.
 
-### 3.9.0 (2021-XX-XX)
+**Sample App**
+- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** Sample App dependencies to new versions
+    - androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1
+    - androidx.activity:activity-ktx:1.2.4
+    - com.github.bumptech.glide:glide:4.12.0
+    - com.google.android.material:material:1.4.0
+    - com.google.code.gson:gson:2.8.9
+
+### 3.9.1 (2022-01-20)
+**SDK**
+- **Fix:** Unable to launch a mini app while the device is offline
+
+### 3.9.0 (2021-12-17)
 **SDK**
 - **Feature:** Added `languageCode` parameter in `MiniApp.getMiniAppManifest` to support for internationalized manifest.
 - **Feature:** Added `hostLocale` in `HostEnvironmentInfo` to provide default language value from Host App.
 - **Feature:** Added `promotionalImageUrl` and `promotionalText` in MiniAppInfo model.
+- **Feature:** Added support for taking picture from camera in Mini App.
 
 **Sample App**
 - **Feature:** Added production and staging toggle to change environments.

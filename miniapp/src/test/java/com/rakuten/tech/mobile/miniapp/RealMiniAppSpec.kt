@@ -57,7 +57,8 @@ open class BaseRealMiniAppSpec {
                 initDownloadedManifestCache = { downloadedManifestCache },
                 initManifestVerifier = { manifestVerifier },
                 miniAppAnalytics = miniAppAnalytics,
-                ratDispatcher = ratDispatcher
+                ratDispatcher = ratDispatcher,
+                enableH5Ads = false
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
@@ -147,7 +148,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                false
             )
         }
 
@@ -171,7 +173,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 downloadedManifestCache,
                 "",
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                enableH5Ads = false
             )
         }
 
@@ -190,7 +193,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher, false
             )
         }
 

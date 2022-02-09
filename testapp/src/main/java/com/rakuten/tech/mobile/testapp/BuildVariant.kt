@@ -6,4 +6,3 @@ enum class BuildVariant(val value: String){
     RC("rc"),
     RELEASE("release")
 }
-

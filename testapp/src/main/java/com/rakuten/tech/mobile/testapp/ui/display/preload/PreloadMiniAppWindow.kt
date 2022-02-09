@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +10,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -196,7 +193,6 @@ class PreloadMiniAppWindow(
     private companion object {
         const val LABEL_VERSION = "Version: "
         const val LABEL_CUSTOM_METADATA = "Custom MetaData: "
-        const val LABEL_RAE_SCOPES = "RAE Access Token Scopes: "
         const val ERR_NO_INFO = "No info found for this miniapp!"
     }
 }

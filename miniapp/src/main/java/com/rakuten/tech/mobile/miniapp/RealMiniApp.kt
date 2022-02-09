@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -25,7 +26,8 @@ internal class RealMiniApp(
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
     private var miniAppAnalytics: MiniAppAnalytics,
-    private var ratDispatcher: MessageBridgeRatDispatcher
+    private var ratDispatcher: MessageBridgeRatDispatcher,
+    private val enableH5Ads: Boolean
 ) : MiniApp() {
 
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
@@ -78,7 +80,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                enableH5Ads
             )
         }
     }
@@ -104,7 +107,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                enableH5Ads
             )
         }
     }
@@ -128,7 +132,8 @@ internal class RealMiniApp(
                 downloadedManifestCache,
                 queryParams,
                 miniAppAnalytics,
-                ratDispatcher
+                ratDispatcher,
+                enableH5Ads
             )
         }
     }
@@ -162,7 +167,14 @@ internal class RealMiniApp(
     @VisibleForTesting
     suspend fun verifyManifest(appId: String, versionId: String) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
-        checkToDownloadManifest(appId, versionId, cachedManifest)
+
+        try {
+            checkToDownloadManifest(appId, versionId, cachedManifest)
+        } catch (e: MiniAppNetException) {
+            Log.e("RealMiniApp", "Unable to retrieve latest manifest due to device being offline. " +
+                    "Skipping manifest download.", e)
+        }
+
         val manifestFile = downloadedManifestCache.getManifestFile(appId)
         if (cachedManifest != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)

@@ -57,6 +57,7 @@ android {
             ratEndpoint             : property("ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
             sslPublicKey            : property("CERTIFICATE_PUBLIC_KEY") ?: "",
             sslPublicKeyBackup      : property("CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
+            enableH5Ads             : property("ENABLE_H5_ADS") ?: true,
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -72,6 +73,7 @@ android {
             ratEndpoint             : property("PROD_ANALYTICS_ENDPOINT") ?: "https://www.example.com/",
             sslPublicKey            : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: "",
             sslPublicKeyBackup      : property("PROD_CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
+            enableH5Ads             : property("ENABLE_H5_ADS") ?: true,
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
@@ -171,8 +173,8 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_lifecycle"
-    implementation "androidx.activity:activity:$androidx_activity"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_lifecycle_viewmodel"
+    implementation "androidx.activity:activity-ktx:$androidx_activity"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson"

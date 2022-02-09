@@ -28,8 +28,6 @@ android {
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
     }
-
-    buildToolsVersion = androidBuildTool
 }
 
 androidExtensions {
@@ -86,7 +84,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "org.robolectric:robolectric:$robolectric"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp"
-    testImplementation "com.google.android.gms:play-services-ads:$google_ads"
 
     if (property("GITHUB_USERNAME") != null) {
         compileOnly ("com.rakuten.tech.mobile.analytics:analytics:$analytics_sdk") {
@@ -101,6 +98,9 @@ dependencies {
         compileOnly project(':analytics')
         testImplementation project(':analytics')
     }
+
+    compileOnly project(':admob-latest')
+    testImplementation project(':admob-latest')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"
@@ -111,7 +111,11 @@ dependencies {
 
 apply from: '../config/quality/jacoco/android.gradle'
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 apply from: '../config/documentation/dokka/android.gradle'

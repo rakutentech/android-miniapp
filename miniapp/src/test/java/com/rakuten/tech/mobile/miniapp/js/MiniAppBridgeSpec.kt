@@ -11,7 +11,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.ads.AdMobClassName
+import com.rakuten.tech.mobile.miniapp.AdMobClassName
 import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
@@ -36,7 +36,13 @@ open class BridgeCommon {
 
     protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
-            override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+            override fun getUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
 
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
@@ -64,7 +70,13 @@ open class BridgeCommon {
         }
 
     protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
-        override fun getUniqueId() = TEST_CALLBACK_VALUE
+
+        override fun getUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            onSuccess(TEST_CALLBACK_VALUE)
+        }
 
         override fun requestDevicePermission(
             miniAppPermissionType: MiniAppDevicePermissionType,

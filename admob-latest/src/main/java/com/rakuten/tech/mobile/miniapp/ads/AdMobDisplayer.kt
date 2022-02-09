@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  * Support Interstitial, Reward ads.
  */
-class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
+class AdMobDisplayer(private val context: Activity) : MiniAppAdDisplayer, CoroutineScope {
 
     @VisibleForTesting
     internal val loadInterstitialAd: (
@@ -151,7 +151,7 @@ class AdMobDisplayer20(private val context: Activity) : MiniAppAdDisplayer, Coro
                 val adLoadCallback = object : RewardedAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         rewardedAdMap.remove(adUnitId)
-                        onFailed.invoke(adError.message ?: "")
+                        onFailed.invoke(adError.message)
                     }
 
                     override fun onAdLoaded(rewardedAd: RewardedAd) {

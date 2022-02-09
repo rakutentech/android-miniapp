@@ -23,7 +23,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
         miniAppInfo = miniAppInfo,
@@ -35,7 +36,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
-        ratDispatcher = ratDispatcher
+        ratDispatcher = ratDispatcher,
+        enableH5Ads = enableH5Ads
     )
 
     fun createMiniAppDisplay(
@@ -47,7 +49,8 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache: DownloadedManifestCache,
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
         miniAppMessageBridge = miniAppMessageBridge,
@@ -58,6 +61,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         downloadedManifestCache = downloadedManifestCache,
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
-        ratDispatcher = ratDispatcher
+        ratDispatcher = ratDispatcher,
+        enableH5Ads = enableH5Ads
     )
 }
