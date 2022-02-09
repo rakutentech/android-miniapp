@@ -8,7 +8,7 @@ import com.google.android.gms.ads.h5.H5AdsWebViewClient
 /**
  * The class for providing functions related to H5AdsWebViewClient for using in a WebView.
  */
-class MiniAppH5AdsProvider() {
+class MiniAppH5AdsProvider {
     /**
      * The function to create a H5AdsWebViewClient.
      * @param context context of the webview.

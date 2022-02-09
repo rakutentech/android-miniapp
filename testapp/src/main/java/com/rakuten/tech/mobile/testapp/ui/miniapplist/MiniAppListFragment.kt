@@ -49,7 +49,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     private lateinit var binding: MiniAppListFragmentBinding
     private lateinit var miniAppListAdapter: MiniAppListAdapter
     private lateinit var searchView: SearchView
-    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(context!!, this) }
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(requireContext(), this) }
 
     private var fetchedMiniAppList: List<MiniAppInfo> = listOf()
     private var selectedMiniAppInfo: MiniAppInfo? = null
@@ -200,7 +200,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
         if (isAccepted)
-            selectedMiniAppInfo?.let { MiniAppDisplayActivity.start(context!!, it) }
+            selectedMiniAppInfo?.let { MiniAppDisplayActivity.start(requireContext(), it) }
     }
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {
