@@ -7,7 +7,6 @@ import android.view.View
 import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
@@ -39,7 +38,7 @@ internal class RealMiniAppDisplay(
     val miniAppAnalytics: MiniAppAnalytics,
     val ratDispatcher: MessageBridgeRatDispatcher,
     val enableH5Ads: Boolean
-) : MiniAppDisplay, DefaultLifecycleObserver {
+) : MiniAppDisplay {
 
     var appUrl: String? = null
         private set
