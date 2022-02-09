@@ -136,10 +136,8 @@ internal class SignatureVerifier(
 
         /**
          * Initializes an instance of the Signature Verifier SDK based on the provided parameters.
-         *
          * @param [context] application context
-         * @param [apiUrl] used for file path
-         *
+         * @param [baseUrl] used for file path
          * @return `instance` of [SignatureVerifier] if initialization is successful, and `null` otherwise.
          */
         @SuppressWarnings("LongMethod", "TooGenericExceptionCaught", "PrintStackTrace")

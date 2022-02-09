@@ -10,7 +10,6 @@ import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Timeout
-import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
@@ -191,16 +190,6 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         mockServer.enqueue(MockResponse().setResponseCode(404))
 
         createRequestExecutor().executeRequest(createApi().fetch())
-    }
-
-    @Test
-    fun `authority part should be extracted correctly from correct url`() {
-        TEST_URL_HTTPS_1.extractAuthority() shouldBeEqualTo "www.example.com"
-    }
-
-    @Test
-    fun `authority part should be extracted as empty from incorrect url`() {
-        "miniapp:fakeurl".extractAuthority() shouldBeEqualTo ""
     }
 
     private val standardErrorBody = { code: Int, message: String ->

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.signatureverifier.verification.PublicKeyCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -33,17 +34,18 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
 
     private val mockPublicKeyCache = Mockito.mock(PublicKeyCache::class.java)
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val function: (ex: Exception) -> Unit = {}
-    private val mockCb = Mockito.mock(function.javaClass)
+    val apiClient: ApiClient = org.mockito.kotlin.mock()
 
     @Before
     fun setup() {
-        When calling mockPublicKeyCache[KEY_ID] itReturns PUBLIC_KEY
+        runBlockingTest {
+            When calling mockPublicKeyCache.getKey(KEY_ID) itReturns PUBLIC_KEY
+        }
     }
 
     @Test
     fun `should initialize instance with correct parameters`() {
-        val instance = SignatureVerifier.init(context, BASE_URL, SUB_KEY)
+        val instance = SignatureVerifier.init(context, BASE_URL, apiClient = )
 
         instance.shouldNotBeNull()
         instance shouldBeInstanceOf SignatureVerifier::class
@@ -96,7 +98,7 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
 
     @Test
     fun `should not verify the signature cache returns null`() = runBlockingTest {
-        When calling mockPublicKeyCache[KEY_ID] itReturns null
+        When calling mockPublicKeyCache.getKey(KEY_ID) itReturns null
         val verifier = SignatureVerifier(mockPublicKeyCache, mock(), TestCoroutineDispatcher())
 
         verifier.verify(
