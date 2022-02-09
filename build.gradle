@@ -15,7 +15,7 @@ buildscript {
     ext.junit = '4.13.2'
     ext.kluent_android = '1.64'
     ext.kotlin_coroutines = '1.5.2'
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.5.31'
     ext.material = '1.5.0'
     ext.mockito = '3.11.2'
     ext.okhttp = '4.9.1'

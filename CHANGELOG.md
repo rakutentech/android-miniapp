@@ -3,17 +3,20 @@
 **SDK**
 - **Upgraded:** Target SDK is now API 31
 - **Upgraded:** SDK dependencies to new versions
-    - com.google.android.gms:play-services-ads:20.5.0
-    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10
     - androidx.core:core-ktx:1.7.0
     - androidx.webkit:webkit:1.4.0
     - androidx.security:security-crypto:1.1.4-alpha03
+    - com.google.android.gms:play-services-ads:20.5.0
+    - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31
+    - org.jetbrains.kotlin:kotlin-test:1.5.31
     - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
+    - org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2
+    - org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2
+    - com.squareup.okhttp3:okhttp:4.9.1
     - androidx.appcompat:appcompat:1.4.1
     - androidx.constraintlayout:constraintlayout:2.1.3
     - androidx.recyclerview:recyclerview:1.2.1
     - androidx.browser:browser:1.4.0
-    - com.squareup.okhttp3:okhttp:4.9.1
     - androidx.test.ext:junit:1.1.4-alpha03
     - org.mockito:mockito-android:3.11.2
     - org.mockito:mockito-core:3.11.2
