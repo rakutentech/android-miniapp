@@ -65,7 +65,6 @@ class MiniAppCustomPermissionWindowSpec {
         verify(mockDialog, times(0)).show()
     }
 
-    @Ignore
     @Test
     fun `should not init anything while permissions are empty`() {
         val mockDialog: AlertDialog = mock()

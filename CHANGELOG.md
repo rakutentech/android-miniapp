@@ -17,13 +17,6 @@
     - androidx.constraintlayout:constraintlayout:2.1.3
     - androidx.recyclerview:recyclerview:1.2.1
     - androidx.browser:browser:1.4.0
-    - androidx.test.ext:junit:1.1.4-alpha03
-    - org.mockito:mockito-android:3.11.2
-    - org.mockito:mockito-core:3.11.2
-    - org.mockito:mockito-inline:3.11.2
-- **Upgraded:** Following tools to new versions
-    - Gradle service distribution with gradle-6.9-all.zip
-    - Android Gradle plugin with 4.0.2
 - **Feature:** Added interface for requesting Camera permission.
 - **Removed:** Functions which were deprecated in previous releases have been removed:
   - `MiniAppMessageBridge.getUniqueId()`
@@ -44,7 +37,6 @@
     - com.google.code.gson:gson:2.8.9
     - com.github.bumptech.glide:glide:4.12.0
     - com.google.android.material:material:1.5.0
-    - junit:junit:4.13.2
 
 ### 3.9.1 (2022-01-20)
 **SDK**
