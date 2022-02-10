@@ -111,7 +111,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
     @Test
     fun `should remove cached permission data when window is closed`() {
         (miniAppWebView as MiniAppHttpWebView).callOnDetached()
-        verify(miniAppCustomPermissionCache, times(1)).removePermission(anyString())
+        verify(miniAppCustomPermissionCache).removePermission(anyString())
     }
 }
 
@@ -213,7 +213,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
         (context as Activity).setContentView(displayer)
         (context as Activity).setContentView(R.layout.browser_actions_context_menu_page)
 
-        verify(displayer, times(1)).onResume()
+        verify(displayer).onResume()
         verify(displayer).onPause()
         verify(displayer.miniAppWebChromeClient).onWebViewDetach()
         verify(miniAppMessageBridge).onWebViewDetach()

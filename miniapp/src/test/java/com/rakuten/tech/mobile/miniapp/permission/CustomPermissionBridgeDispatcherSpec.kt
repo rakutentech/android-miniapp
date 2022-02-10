@@ -226,7 +226,7 @@ class CustomPermissionBridgeDispatcherSpec {
             "{\"permissions\":[{\"name\":\"rakuten.miniapp.user.USER_NAME\",\"status\":\"DENIED\"}]}"
         customPermissionBridgeDispatcher.postCustomPermissionsValue(jsonResult)
 
-        verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, jsonResult)
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, jsonResult)
     }
 
     @Test
@@ -234,7 +234,7 @@ class CustomPermissionBridgeDispatcherSpec {
         val errMessage = "dummy error"
         customPermissionBridgeDispatcher.postCustomPermissionError(errMessage)
 
-        verify(bridgeExecutor, times(1)).postError(
+        verify(bridgeExecutor).postError(
             TEST_CALLBACK_ID,
             "${ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION} $errMessage"
         )

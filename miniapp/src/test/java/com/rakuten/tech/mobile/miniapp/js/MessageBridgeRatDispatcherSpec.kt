@@ -41,7 +41,7 @@ class MessageBridgeRatDispatcherSpec {
     fun `should send analytics with correct params`() = runBlockingTest {
         for (entry in testActionValues.entries) {
             ratDispatcher.sendAnalyticsSdkFeature(entry.key)
-            verify(miniAppAnalytics, times(1)).sendAnalytics(
+            verify(miniAppAnalytics).sendAnalytics(
                 eType = Etype.CLICK,
                 actype = ratDispatcher.getAcType(entry.key),
                 miniAppInfo = null

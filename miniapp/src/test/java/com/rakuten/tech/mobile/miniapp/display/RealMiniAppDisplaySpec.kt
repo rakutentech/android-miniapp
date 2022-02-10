@@ -97,7 +97,7 @@ class RealMiniAppDisplaySpec {
         realDisplay.miniAppWebView = miniAppWebView
         realDisplay.destroyView()
 
-        verify(miniAppWebView, times(1)).destroyView()
+        verify(miniAppWebView).destroyView()
         realDisplay.miniAppWebView shouldBe null
     }
 

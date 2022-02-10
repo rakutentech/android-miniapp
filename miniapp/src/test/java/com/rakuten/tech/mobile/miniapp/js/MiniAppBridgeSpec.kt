@@ -138,7 +138,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `should be able to return unique id to miniapp`() {
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
-        verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
     @Test
@@ -157,7 +157,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
 
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     /** region: device permission */
@@ -178,7 +178,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
         miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor, times(1)).postError(permissionCallbackObj.id, errMsg)
+        verify(bridgeExecutor).postError(permissionCallbackObj.id, errMsg)
     }
 
     @Test
@@ -198,7 +198,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
         miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor, times(1))
+        verify(bridgeExecutor)
             .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(isPermissionGranted).type)
     }
 
@@ -206,7 +206,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `postError should be called when device permission is denied`() {
         miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor, times(1))
+        verify(bridgeExecutor)
             .postError(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(false).type)
     }
     /** end region */
@@ -285,7 +285,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
-            verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, SUCCESS)
+            verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, SUCCESS)
         }
     }
 
@@ -324,8 +324,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
-            verify(bridgeExecutor, times(1))
-                .dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
+            verify(bridgeExecutor).dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
         }
     }
 
@@ -353,7 +352,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test

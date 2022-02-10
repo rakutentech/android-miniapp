@@ -91,7 +91,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             setupValidManifestResponse(downloader, apiClient)
             downloader.startDownload(testMiniApp)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -150,7 +150,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -215,7 +215,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         When calling apiClient.isPreviewMode itReturns true
         downloader.getMiniApp(TEST_ID_MINIAPP)
 
-        verify(storage, times(1)).removeVersions(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        verify(storage).removeVersions(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
     @Test

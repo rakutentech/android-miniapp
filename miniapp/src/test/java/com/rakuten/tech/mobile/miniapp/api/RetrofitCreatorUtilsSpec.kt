@@ -10,7 +10,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.times
 import java.lang.IllegalArgumentException
 
 class RetrofitCreatorUtilsSpec private constructor(
