@@ -58,7 +58,8 @@ internal class PublicKeyCache(
     }
 
     @SuppressWarnings("TooGenericExceptionCaught", "PrintStackTrace")
-    private suspend fun fetch(keyId: String): String? {
+    @VisibleForTesting
+    internal suspend fun fetch(keyId: String): String? {
         val key = try {
             keyFetcher.fetch(keyId)
         } catch (ex: Exception) {

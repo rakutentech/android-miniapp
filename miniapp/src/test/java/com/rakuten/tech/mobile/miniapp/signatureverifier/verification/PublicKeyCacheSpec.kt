@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
 import com.rakuten.tech.mobile.miniapp.signatureverifier.PublicKeyFetcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -12,6 +14,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 
+@ExperimentalCoroutinesApi
 class PublicKeyCacheSpec : RobolectricBaseSpec() {
 
     private val mockFetcher = Mockito.mock(PublicKeyFetcher::class.java)
@@ -21,77 +24,88 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
     @Before
     fun setup() {
         mockMap["test_key_id"] = "encrypted"
-        When calling mockFetcher.fetch("test_key_id") itReturns "test_public_key"
+        runBlockingTest {
+            When calling mockFetcher.fetch("test_key_id") itReturns "test_public_key"
+        }
         When calling mockEncryptor.encrypt(any(String::class), any()) itReturns "encrypted"
         When calling mockEncryptor.decrypt(eq("encrypted"), any()) itReturns "test_public_key"
     }
 
     @Test
     fun `should return cached key`() {
-        val cache = createCache(map = mockMap)
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
+        runBlockingTest {
+            val cache = createCache()
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
+        }
     }
 
     @Test
     fun `should call fetched when key is removed cached key`() {
-        val cache = createCache(map = mockMap)
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
+        runBlockingTest {
+            val cache = createCache()
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
 
-        cache.remove("test_key_id")
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+            cache.remove("test_key_id")
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+        }
     }
 
     @Test
     fun `should call fetcher for key id that is not cached`() {
-        val cache = createCache()
-
-        cache["test_key_id"]?.shouldBeEqualTo("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+        runBlockingTest {
+            val cache = createCache()
+            cache.getKey("test_key_id")?.shouldBeEqualTo("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+        }
     }
 
     @Test
     fun `should cache the public key between App launches`() {
-        val cache = createCache()
+        runBlockingTest {
+            val cache = createCache()
 
-        // fetched and cached
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+            // fetched and cached
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
 
-        val secondCache = createCache()
+            val secondCache = createCache()
 
-        secondCache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+            secondCache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+        }
     }
 
     @Test
     fun `should return cached key when using real encryptor`() {
-        TestKeyStore.setup
-        val cache = createCache(encryptor = null)
+        runBlockingTest {
+            TestKeyStore.setup
+            val cache = createCache()
 
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+        }
     }
 
     @Test
     fun `should return valid when used actual encryptor`() {
-        TestKeyStore.setup
-        val cache = createCache(encryptor = AesEncryptor())
+        runBlockingTest {
+            TestKeyStore.setup
+            val cache = createCache()
 
-        cache["test_key_id"] shouldBe ("test_public_key")
-        Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
 
-        cache["test_key_id"] shouldBe ("test_public_key")
-        // called again since encryption and decryption (keystore test) will fail and will fetch
-        Mockito.verify(mockFetcher, times(2)).fetch(eq("test_key_id"))
+            cache.getKey("test_key_id") shouldBe ("test_public_key")
+            // called again since encryption and decryption (keystore test) will fail and will fetch
+            Mockito.verify(mockFetcher, times(2)).fetch(eq("test_key_id"))
+        }
     }
 
     private fun createCache(
         fetcher: PublicKeyFetcher = mockFetcher,
         context: Context = ApplicationProvider.getApplicationContext(),
-        encryptor: AesEncryptor? = mockEncryptor,
-        map: MutableMap<String, String>? = null
-    ) = PublicKeyCache(fetcher, context, "test", encryptor, map)
+    ) = PublicKeyCache(fetcher, context, "test")
 }

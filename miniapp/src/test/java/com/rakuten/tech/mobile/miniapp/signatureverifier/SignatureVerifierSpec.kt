@@ -23,18 +23,16 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
         private const val PUBLIC_KEY =
             "BI2zZr56ghnMLXBMeC4bkIVg6zpFD2ICIS7V6cWo8p8LkibuershO+Hd5ru6oBFLlUk" +
                     "6IFFOIVfHKiOenHLBNIY="
-        private const val BODY = """{"testKey": "test_value"}"""
         private const val SIGNATURE =
             "MEUCIHRXIgQhyASpyCP1Lg0ZSn2/bUbTq6U7jpKBa9Ow/1OTAiEA4jAq48uDgNl7UM7" +
                     "LmxhiRhPPNnTolokScTq5ijbp5fU="
 
         private const val BASE_URL = "http://sample.com"
-        private const val SUB_KEY = "test_key"
     }
 
     private val mockPublicKeyCache = Mockito.mock(PublicKeyCache::class.java)
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    val apiClient: ApiClient = org.mockito.kotlin.mock()
+    private val apiClient: ApiClient = mock()
 
     @Before
     fun setup() {
@@ -45,7 +43,7 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
 
     @Test
     fun `should initialize instance with correct parameters`() {
-        val instance = SignatureVerifier.init(context, BASE_URL, apiClient = )
+        val instance = SignatureVerifier.init(context, BASE_URL, apiClient)
 
         instance.shouldNotBeNull()
         instance shouldBeInstanceOf SignatureVerifier::class
@@ -53,7 +51,7 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
 
     @Test
     fun `should initialize instance with correct parameters with callback`() {
-        val instance = SignatureVerifier.init(context, BASE_URL, SUB_KEY)
+        val instance = SignatureVerifier.init(context, BASE_URL, apiClient)
 
         instance.shouldNotBeNull()
     }
@@ -61,27 +59,27 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
     @Test
     fun `should return null initialization failed due to context`() {
         val mockContext = Mockito.mock(Context::class.java)
-        SignatureVerifier.init(mockContext, BASE_URL, SUB_KEY).shouldBeNull()
+        SignatureVerifier.init(mockContext, BASE_URL, apiClient).shouldBeNull()
     }
 
     @Test
     fun `should return null initialization failed due to invalid endpoint`() {
-        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
+        SignatureVerifier.init(context, "", apiClient).shouldBeNull()
     }
 
     @Test
     fun `should return null initialization failed due to invalid endpoint with callback`() {
-        SignatureVerifier.init(context, "", SUB_KEY).shouldBeNull()
+        SignatureVerifier.init(context, "", apiClient).shouldBeNull()
     }
 
     @Test
     fun `should return null initialization failed due to invalid key`() {
-        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
+        SignatureVerifier.init(context, BASE_URL, apiClient).shouldBeNull()
     }
 
     @Test
     fun `should return null initialization failed due to invalid key with callback`() {
-        SignatureVerifier.init(context, BASE_URL, "").shouldBeNull()
+        SignatureVerifier.init(context, BASE_URL, apiClient).shouldBeNull()
     }
 
     @Test

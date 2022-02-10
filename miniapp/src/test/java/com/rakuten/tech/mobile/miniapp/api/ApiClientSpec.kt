@@ -25,6 +25,7 @@ open class ApiClientSpec {
     private val mockManifestApi: ManifestApi = mock()
     private val mockMetadataApi: MetadataApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
+    private val mockPublicKeyApi: PublicKeyApi = mock()
 
     private val miniAppInfo = MiniAppInfo(
         id = TEST_MA_ID,
@@ -243,7 +244,8 @@ open class ApiClientSpec {
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         metadataApi: MetadataApi = mockMetadataApi,
-        downloadApi: DownloadApi = mockDownloadApi
+        downloadApi: DownloadApi = mockDownloadApi,
+        publicKeyApi: PublicKeyApi = mockPublicKeyApi
     ) = ApiClient(
         retrofit = retrofit,
         isPreviewMode = false,
@@ -252,6 +254,7 @@ open class ApiClientSpec {
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,
         metadataApi = metadataApi,
-        downloadApi = downloadApi
+        downloadApi = downloadApi,
+        publicKeyApi = publicKeyApi
     )
 }
