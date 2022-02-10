@@ -21,6 +21,11 @@ class MiniAppPermissionSpec {
         MiniAppCustomPermissionType.USER_NAME.type shouldBe "rakuten.miniapp.user.USER_NAME"
         MiniAppCustomPermissionType.PROFILE_PHOTO.type shouldBe "rakuten.miniapp.user.PROFILE_PHOTO"
         MiniAppCustomPermissionType.CONTACT_LIST.type shouldBe "rakuten.miniapp.user.CONTACT_LIST"
+        MiniAppCustomPermissionType.ACCESS_TOKEN.type shouldBe "rakuten.miniapp.user.ACCESS_TOKEN"
+        MiniAppCustomPermissionType.SEND_MESSAGE.type shouldBe "rakuten.miniapp.user.action.SEND_MESSAGE"
+        MiniAppCustomPermissionType.LOCATION.type shouldBe "rakuten.miniapp.device.LOCATION"
+        MiniAppCustomPermissionType.POINTS.type shouldBe "rakuten.miniapp.user.POINTS"
+        MiniAppCustomPermissionType.FILE_DOWNLOAD.type shouldBe "rakuten.miniapp.device.FILE_DOWNLOAD"
         MiniAppCustomPermissionType.UNKNOWN.type shouldBe "UNKNOWN"
     }
 

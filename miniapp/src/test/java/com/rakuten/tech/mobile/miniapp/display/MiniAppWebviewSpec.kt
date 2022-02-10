@@ -311,8 +311,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
 
         webViewClient.shouldInterceptRequest(miniAppWebView, webResourceRequest)
 
-        verify(webAssetLoader!!, times(1))
-            .shouldInterceptRequest(webResourceRequest.url)
+        verify(webAssetLoader!!).shouldInterceptRequest(webResourceRequest.url)
     }
 
     @Test
@@ -328,7 +327,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         webViewClient.onReceivedError(displayer,
             getWebResReq("mscheme.${miniAppWebView.miniAppInfo.id}://".toUri()), mock())
 
-        verify(webViewClient, times(1)).loadWithCustomDomain(displayer, customDomain)
+        verify(webViewClient).loadWithCustomDomain(displayer, customDomain)
     }
 
     @Test
@@ -341,7 +340,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_PHONE_URI.toUri()))
 
-        verify(miniAppScheme, times(1)).openPhoneDialer(context, TEST_PHONE_URI)
+        verify(miniAppScheme).openPhoneDialer(context, TEST_PHONE_URI)
     }
 
     @Test
@@ -354,7 +353,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
         webViewClient.shouldOverrideUrlLoading(displayer, webResourceRequest)
         webViewClient.shouldOverrideUrlLoading(displayer, getWebResReq(TEST_MAIL_URI.toUri()))
 
-        verify(miniAppScheme, times(1)).openMailComposer(context, TEST_MAIL_URI)
+        verify(miniAppScheme).openMailComposer(context, TEST_MAIL_URI)
     }
 
     @Test
@@ -442,7 +441,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         val webChromeClient = Mockito.spy(miniAppWebView.webChromeClient as MiniAppWebChromeClient)
         webChromeClient.onReceivedTitle(miniAppWebView, "web_title")
 
-        verify(webChromeClient, times(1)).doInjection(miniAppWebView)
+        verify(webChromeClient).doInjection(miniAppWebView)
     }
 
     @Test
@@ -465,7 +464,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         )
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
 
-        verify(geoLocationCallback, times(1)).invoke("", true, false)
+        verify(geoLocationCallback).invoke("", true, false)
     }
 
     @Test
@@ -482,7 +481,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         )
         webChromeClient.onGeolocationPermissionsShowPrompt("", geoLocationCallback)
 
-        verify(geoLocationCallback, times(1)).invoke("", false, false)
+        verify(geoLocationCallback).invoke("", false, false)
     }
 
     @Test

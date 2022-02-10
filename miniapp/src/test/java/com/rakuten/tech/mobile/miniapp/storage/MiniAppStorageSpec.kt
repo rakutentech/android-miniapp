@@ -120,6 +120,13 @@ class MiniAppStorageSpec {
         miniAppStorage.saveFile(file.path, file.path, mock())
     }
 
+    @Test
+    fun `deleteDirectory should delete file recursively`() {
+        val file = mock(File::class)
+        miniAppStorage.deleteDirectory(file)
+        verify(file).deleteRecursively()
+    }
+
     private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()
 
     @Suppress("NestedBlockDepth", "LongMethod")

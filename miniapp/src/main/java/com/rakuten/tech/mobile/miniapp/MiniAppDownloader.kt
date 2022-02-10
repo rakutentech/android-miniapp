@@ -241,7 +241,8 @@ internal class MiniAppDownloader(
         }
     }
 
-    private suspend fun isSignatureValid(
+    @VisibleForTesting
+    internal suspend fun isSignatureValid(
         inputStream: InputStream,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>

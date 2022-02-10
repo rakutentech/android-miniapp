@@ -90,7 +90,7 @@ class MiniAppFileChooserDefault(
     }
 
     @Suppress(" FunctionMaxLength")
-    private fun checkPermissionAndLaunchCameraIntent() = whenReady() {
+    private fun checkPermissionAndLaunchCameraIntent() = whenReady {
         val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
@@ -101,7 +101,7 @@ class MiniAppFileChooserDefault(
         miniAppCameraPermissionDispatcher?.getCameraPermission(permissionCallback)
     }
 
-    private fun requestCameraPermissions() = whenReady() {
+    private fun requestCameraPermissions() = whenReady {
         val permissionRequestCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }

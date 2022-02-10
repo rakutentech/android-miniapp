@@ -231,7 +231,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeVersions(
+            verify(storage).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -254,7 +254,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -358,7 +358,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
 
         assertEquals(dummyManifest, actual)
-        verify(manifestApiCache, times(1)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+        verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
     }
 
     @Test
