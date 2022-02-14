@@ -439,4 +439,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             verify(miniAppDownloader, times(0))
                 .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }
+
+    @Test
+    fun `getDownloadedManifest should read data from cache`() {
+        realMiniApp.getDownloadedManifest(TEST_MA_ID)
+        verify(downloadedManifestCache).readDownloadedManifest(TEST_MA_ID)
+    }
 }

@@ -39,4 +39,11 @@ class MiniAppInfoFetcherSpec {
     fun `MiniAppInfoFetcher should implement UpdatableApiClient`() {
         miniAppInfoFetcher shouldBeInstanceOf UpdatableApiClient::class.java
     }
+
+    @Test
+    fun `When fetching info by preview code then correct method of ApiClient is used`() =
+        runBlockingTest {
+            miniAppInfoFetcher.getInfoByPreviewCode("preview-code")
+            verify(apiClient).fetchInfoByPreviewCode("preview-code")
+        }
 }

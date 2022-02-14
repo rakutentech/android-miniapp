@@ -61,6 +61,11 @@ internal class MiniAppSchemeSpec {
         schemeWithCustomUrl.appUrl shouldBeEqualTo TEST_URL_HTTPS_1
         schemeWithCustomUrl.isMiniAppUrl(TEST_URL_HTTPS_1) shouldBeEqualTo true
     }
+
+    @Test
+    fun `isMiniAppUrl with invalid url should return the expected value`() {
+        schemeWithCustomUrl.isMiniAppUrl("www.example.com") shouldBeEqualTo false
+    }
     /** end region */
 
     /** region: appendParametersToUrl */

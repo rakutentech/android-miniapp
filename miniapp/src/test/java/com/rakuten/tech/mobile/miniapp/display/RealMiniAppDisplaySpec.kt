@@ -21,7 +21,6 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -101,8 +100,7 @@ class RealMiniAppDisplaySpec {
         realDisplay.miniAppWebView shouldBe null
     }
 
-    @Ignore
-    @Test
+    @Test(expected = IllegalStateException::class)
     fun `should provide the exact context to MiniAppWebView`() = runBlockingTest {
         val displayer = Mockito.spy(realDisplay)
         val miniAppWebView = displayer.getMiniAppView(context) as MiniAppWebView
@@ -121,8 +119,7 @@ class RealMiniAppDisplaySpec {
         realDisplay.getMiniAppView(Activity()) shouldBe miniAppWebView
     }
 
-    @Ignore
-    @Test
+    @Test(expected = IllegalStateException::class)
     fun `should send analytics when open miniapp view`() = runBlockingTest {
         val displayer = Mockito.spy(realDisplay)
         When calling displayer.getMiniAppAnalytics() itReturns miniAppAnalytics
@@ -149,8 +146,7 @@ class RealMiniAppDisplaySpec {
         verify(miniAppAnalytics).sendAnalytics(eType = Etype.CLICK, actype = Actype.CLOSE, miniAppInfo = TEST_MA)
     }
 
-    @Ignore
-    @Test
+    @Test(expected = IllegalStateException::class)
     fun `for a given basePath, getMiniAppView should not return WebView to the caller`() =
         runBlockingTest {
             val displayer = Mockito.spy(realDisplay)
@@ -163,8 +159,7 @@ class RealMiniAppDisplaySpec {
         realDisplay.navigateForward() shouldBe false
     }
 
-    @Ignore
-    @Test
+    @Test(expected = IllegalStateException::class)
     fun `should not navigate when MiniAppWebView cannot do navigation`() = runBlockingTest {
         val displayer = Mockito.spy(realDisplay)
         displayer.getMiniAppView(context)
