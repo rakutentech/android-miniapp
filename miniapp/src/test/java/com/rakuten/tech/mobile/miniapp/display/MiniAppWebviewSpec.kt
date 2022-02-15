@@ -125,14 +125,14 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
 
     @Test
     fun `should start with corrected load url format`() {
-        miniAppWebView.getLoadUrl() shouldEqual
+        miniAppWebView.getLoadUrl() shouldBeEqualTo
                 "https://mscheme.${miniAppWebView.miniAppInfo.id}/miniapp/index.html?$TEST_URL_PARAMS"
     }
 
     @Test
     fun `when MiniAppWebView is created then LayoutParams use MATCH_PARENT for dimensions`() {
-        miniAppWebView.layoutParams.width shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
-        miniAppWebView.layoutParams.height shouldEqualTo ViewGroup.LayoutParams.MATCH_PARENT
+        miniAppWebView.layoutParams.width shouldBeEqualTo ViewGroup.LayoutParams.MATCH_PARENT
+        miniAppWebView.layoutParams.height shouldBeEqualTo ViewGroup.LayoutParams.MATCH_PARENT
     }
 
     @Test

@@ -10,8 +10,8 @@ import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Timeout
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
-import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -74,7 +74,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
 
         val response = createRequestExecutor().executeRequest(createApi().fetch())
 
-        response.body()?.testKey shouldEqual TEST_VALUE
+        response.body()?.testKey shouldBeEqualTo TEST_VALUE
     }
 
     @Test
@@ -154,7 +154,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     fun `should return the correct value for waiting time`() {
         val executor = spyRetrofitExecutor()
         val actual = executor.getWaitingTime(4)
-        actual shouldEqual 8000
+        actual shouldBeEqualTo 8000
     }
 
     @Test(expected = MiniAppSdkException::class)

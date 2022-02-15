@@ -12,7 +12,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -87,7 +86,7 @@ class DownloadedManifestCacheSpec {
         val customPermission = createCustomPermission(false)
         doReturn(customPermission.pairValues).whenever(manifestCache)
             .getRequiredPermissions(customPermission)
-        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual true
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldBeEqualTo true
     }
 
     @Test
@@ -95,7 +94,7 @@ class DownloadedManifestCacheSpec {
         val customPermission = createCustomPermission(true)
         doReturn(customPermission.pairValues).whenever(manifestCache)
             .getRequiredPermissions(customPermission)
-        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual false
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldBeEqualTo false
     }
 
     @Test
@@ -149,12 +148,12 @@ class DownloadedManifestCacheSpec {
 
     @Test
     fun `should get access token permissions correctly`() {
-        manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
+        manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldBeEqualTo TEST_ATP_LIST
     }
 
     @Test
     fun `should get empty list of AccessTokenPermission when no cache`() {
-        DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
+        DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldBeEqualTo emptyList()
     }
 
     @Test
