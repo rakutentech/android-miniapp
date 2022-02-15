@@ -30,6 +30,13 @@ class MiniAppPermissionSpec {
     }
 
     @Test
+    fun `should keep the predefined type of device permissions in enum`() {
+        MiniAppDevicePermissionType.LOCATION.type shouldBe "location"
+        MiniAppDevicePermissionType.CAMERA.type shouldBe "camera"
+        MiniAppDevicePermissionType.UNKNOWN.type shouldBe "unknown"
+    }
+
+    @Test
     fun `should keep the predefined results of custom permissions in enum`() {
         MiniAppCustomPermissionResult.ALLOWED.name shouldBe "ALLOWED"
         MiniAppCustomPermissionResult.DENIED.name shouldBe "DENIED"

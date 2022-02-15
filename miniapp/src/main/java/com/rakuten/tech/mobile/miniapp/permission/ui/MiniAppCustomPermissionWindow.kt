@@ -118,7 +118,8 @@ internal class MiniAppCustomPermissionWindow(
         }
     }
 
-    private fun onNoPermissionsSaved() {
+    @VisibleForTesting
+    fun onNoPermissionsSaved() {
         customPermissionBridgeDispatcher.sendCachedCustomPermissions()
         customPermissionAlertDialog.dismiss()
     }

@@ -13,7 +13,7 @@ class MessageToContactSpec {
     }
 
     @Test
-    fun `should return false when all properties are empty in MessageToContact object`() {
+    fun `should return false when all properties are not empty in MessageToContact object`() {
         val message = MessageToContact("dummyImage", "dummyText", "", "", "")
         assertFalse(message.isEmpty)
     }

@@ -77,4 +77,13 @@ class MiniAppCustomPermissionWindowSpec {
         verify(permissionWindow, times(0)).addPermissionClickListeners()
         verify(mockDialog, times(0)).show()
     }
+
+    @Test
+    fun `onNoPermissionsSaved should send cached custom permissions`() {
+        val mockDialog: AlertDialog = mock()
+        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+        permissionWindow.onNoPermissionsSaved()
+        verify(dispatcher).sendCachedCustomPermissions()
+        verify(mockDialog).dismiss()
+    }
 }
