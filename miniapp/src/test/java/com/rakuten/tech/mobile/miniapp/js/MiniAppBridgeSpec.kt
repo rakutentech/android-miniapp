@@ -34,7 +34,7 @@ open class BridgeCommon {
     internal val webViewListener: WebViewListener = mock()
     internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
-    protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean): MiniAppMessageBridge =
+    protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean, hasEnvInfo: Boolean = false): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
             override fun getUniqueId(
@@ -64,8 +64,14 @@ open class BridgeCommon {
                 onSuccess: (info: HostEnvironmentInfo) -> Unit,
                 onError: (infoError: HostEnvironmentInfoError) -> Unit
             ) {
-                val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
-                onError.invoke(HostEnvironmentInfoError(infoErrMessage))
+                if (hasEnvInfo) {
+                    ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+                        onSuccess.invoke(HostEnvironmentInfo(activity, "en"))
+                    }
+                } else {
+                    val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
+                    onError.invoke(HostEnvironmentInfoError(infoErrMessage))
+                }
             }
         }
 
@@ -120,6 +126,12 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         param = Gson().toJson(DevicePermission(MiniAppDevicePermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID)
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
+
+    private val hostEnvInfoCallbackObj = CallbackObj(
+        action = ActionType.GET_HOST_ENVIRONMENT_INFO.action,
+        param = null,
+        id = TEST_CALLBACK_ID
+    )
 
     @Before
     fun setup() {
@@ -218,6 +230,35 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
+    /** region: host environment info */
+    @Test
+    fun `postError should be called when error callback invoked to get host environment info`() {
+        val errMsg = "{\"type\":\"{\\\"type\\\":\\\"Cannot get host environment info: error_message\\\"}\"}"
+        miniAppBridge.onGetHostEnvironmentInfo(hostEnvInfoCallbackObj.id)
+        verify(bridgeExecutor).postError(hostEnvInfoCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `postValue should be called when success callback invoked to get host environment info`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false, true))
+            val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = TestActivity(),
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            val info = HostEnvironmentInfo(activity, "en")
+            miniAppBridge.onGetHostEnvironmentInfo(hostEnvInfoCallbackObj.id)
+            verify(bridgeExecutor).postValue(hostEnvInfoCallbackObj.id, Gson().toJson(info))
+        }
+    }
+    /** end region */
+
     @Test
     fun `all error bridge messages should be expected`() {
         assertEquals("no implementation by the Host App.", ErrorBridgeMessage.NO_IMPL)
@@ -237,7 +278,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("Cannot load ad:", ErrorBridgeMessage.ERR_LOAD_AD)
         assertEquals("Cannot show ad:", ErrorBridgeMessage.ERR_SHOW_AD)
         assertEquals("Cannot request screen action:", ErrorBridgeMessage.ERR_SCREEN_ACTION)
-        assertEquals("Cannot get host environment info:", ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO)
+        assertEquals("Cannot get host environment info:", ERR_GET_ENVIRONMENT_INFO)
     }
 }
 

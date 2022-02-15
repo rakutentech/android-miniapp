@@ -9,7 +9,8 @@ class MiniAppSdkExceptionSpec {
     @Test
     fun `MiniAppHasNoPublishedVersionException should provide proper error message`() {
         val exception = MiniAppHasNoPublishedVersionException(TEST_MA_ID)
-        exception.message shouldBeEqualTo "Server returned no published version info for the provided Mini App Id: $TEST_MA_ID"
+        exception.message shouldBeEqualTo
+                "Server returned no published version info for the provided Mini App Id: $TEST_MA_ID"
     }
 
     @Test

@@ -9,7 +9,8 @@ class MiniAppErrorSpec {
 
     @Test
     fun `authorizationFailureError should have the custom message properly`() {
-        MiniAppAccessTokenError.authorizationFailureError("test_message") shouldBeInstanceOf MiniAppAccessTokenError::class
+        MiniAppAccessTokenError.authorizationFailureError("test_message") shouldBeInstanceOf
+                MiniAppAccessTokenError::class
     }
 
     @Test
