@@ -7,7 +7,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEndWith
-import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -118,6 +117,6 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
 
     @Test
     fun `should parse the metadata from response`() {
-        metadataEntity.metadata shouldEqual metadataResponse
+        metadataEntity.metadata shouldBeEqualTo metadataResponse
     }
 }

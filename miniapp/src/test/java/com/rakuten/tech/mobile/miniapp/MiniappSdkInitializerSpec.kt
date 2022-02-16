@@ -11,11 +11,9 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
-
 class MiniappSdkInitializerSpec {
     private val miniappSdkInitializer = MiniappSdkInitializer()
     private lateinit var context: Context
-    private val TEST_BASE_URL = "https://www.test.com"
 
     @Before
     fun setup() {

@@ -287,7 +287,8 @@ open class MiniAppMessageBridge {
     }
 
     @SuppressWarnings("TooGenericExceptionCaught")
-    private fun onGetHostEnvironmentInfo(callbackId: String) = try {
+    @VisibleForTesting
+    internal fun onGetHostEnvironmentInfo(callbackId: String) = try {
         val successCallback = { info: HostEnvironmentInfo ->
             bridgeExecutor.postValue(callbackId, Gson().toJson(info))
         }

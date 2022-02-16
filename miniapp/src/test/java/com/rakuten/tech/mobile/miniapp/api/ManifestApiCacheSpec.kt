@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -35,7 +35,7 @@ internal class ManifestApiCacheSpec {
     fun `readManifest should return null when it hasn't stored any data yet`() {
         val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         val expected = null
-        actual shouldEqual expected
+        actual shouldBeEqualTo expected
     }
 
     @Test
@@ -47,11 +47,11 @@ internal class ManifestApiCacheSpec {
         doReturn(cachedManifest).whenever(manifestCache)
             .readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-        actual shouldEqual cachedManifest
+        actual shouldBeEqualTo cachedManifest
     }
 
     @Test
-    fun `storeManifes will invoke putString while storing the latest manifest`() {
+    fun `storeManifest will invoke putString while storing the latest manifest`() {
         val newManifest = MiniAppManifest(
             listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID

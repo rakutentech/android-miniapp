@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -323,6 +324,14 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
         setSendMessagePermission(false)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
         verify(bridgeExecutor).postError(specificIdCallbackObj.id, errMsg)
+    }
+
+    @Test
+    fun `createMessage should produce proper data`() {
+        chatBridgeOnSuccess.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
+        val json = "{\"action\":\"sendMessage\",\"param\":{\"messageToContact\":{\"text\":\"Contact\"}}}"
+        val message = chatBridgeOnSuccess.createMessage(json)
+        message.apply { text shouldBeEqualTo "Contact" }
     }
 
     private fun setSendMessagePermission(isAllowed: Boolean) = whenever(

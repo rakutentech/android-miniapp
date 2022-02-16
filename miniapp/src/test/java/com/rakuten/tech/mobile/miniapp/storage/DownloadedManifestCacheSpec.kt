@@ -11,7 +11,7 @@ import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -48,7 +48,7 @@ class DownloadedManifestCacheSpec {
     @Test
     fun `readDownloadedManifest should return null when it hasn't stored any data yet`() {
         val actual = DownloadedManifestCache(mockContext).readDownloadedManifest(TEST_MA_ID)
-        actual shouldEqual null
+        actual shouldBeEqualTo null
     }
 
     @Test
@@ -56,7 +56,16 @@ class DownloadedManifestCacheSpec {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
         doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
         val actual = manifestCache.readDownloadedManifest(TEST_MA_ID)
-        actual shouldEqual cachedManifest
+        actual shouldBeEqualTo cachedManifest
+    }
+
+    @Test
+    fun `storeDownloadedManifest will store cached manifest in a new file`() {
+        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
+        doReturn(cachedManifest).whenever(manifestCache).readDownloadedManifest(TEST_MA_ID)
+        doNothing().whenever(manifestCache).storeNewFile(TEST_MA_ID, cachedManifest)
+        manifestCache.storeDownloadedManifest(TEST_MA_ID, cachedManifest)
+        verify(manifestCache).storeNewFile(TEST_MA_ID, cachedManifest)
     }
 
     @Test
@@ -77,7 +86,7 @@ class DownloadedManifestCacheSpec {
         val customPermission = createCustomPermission(false)
         doReturn(customPermission.pairValues).whenever(manifestCache)
             .getRequiredPermissions(customPermission)
-        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual true
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldBeEqualTo true
     }
 
     @Test
@@ -85,7 +94,7 @@ class DownloadedManifestCacheSpec {
         val customPermission = createCustomPermission(true)
         doReturn(customPermission.pairValues).whenever(manifestCache)
             .getRequiredPermissions(customPermission)
-        manifestCache.isRequiredPermissionDenied(customPermission) shouldEqual false
+        manifestCache.isRequiredPermissionDenied(customPermission) shouldBeEqualTo false
     }
 
     @Test
@@ -139,12 +148,22 @@ class DownloadedManifestCacheSpec {
 
     @Test
     fun `should get access token permissions correctly`() {
-        manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldEqual TEST_ATP_LIST
+        manifestCache.getAccessTokenPermissions(TEST_MA_ID) shouldBeEqualTo TEST_ATP_LIST
     }
 
     @Test
     fun `should get empty list of AccessTokenPermission when no cache`() {
-        DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldEqual emptyList()
+        DownloadedManifestCache(mockContext).getAccessTokenPermissions(TEST_MA_ID) shouldBeEqualTo emptyList()
+    }
+
+    @Test
+    fun `toCachedManifest should create correct CachedManifest`() {
+        val jsonStr = "{“miniAppManifest”:{“accessTokenPermissions”:[{“audience”:“aud”,“scopes”:[“scope1\",“scope2”]}],“optionalPermissions”:[{“first”:“CONTACT_LIST”,“second”:“reason here (optional).“}],“versionId”:“aaaa”},“versionId”:“bbbb”}"
+        manifestCache.toCachedManifest(jsonStr)?.apply {
+            versionId shouldBeEqualTo "bbbb"
+            miniAppManifest.accessTokenPermissions[0].audience shouldBeEqualTo "aud"
+            miniAppManifest.optionalPermissions[0].first shouldBeEqualTo MiniAppCustomPermissionType.CONTACT_LIST
+        }
     }
 
     @Test
