@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
 import android.text.InputType
 import android.util.Patterns
@@ -97,23 +98,41 @@ fun setResizableSoftInputMode(activity: Activity){
     activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 }
 
-fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterDataObserver =
-        object : RecyclerView.AdapterDataObserver() {
-            @SuppressLint("SyntheticAccessor")
-            override fun onChanged() {
-                super.onChanged()
-                observeUIState()
-            }
-
-            @SuppressLint("SyntheticAccessor")
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-                observeUIState()
-            }
-
-            @SuppressLint("SyntheticAccessor")
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                super.onItemRangeRemoved(positionStart, itemCount)
-                observeUIState()
+/**
+ * Return true if this [Context] is available.
+ * Availability is defined as the following:
+ * + [Context] is not null
+ * + [Context] is not destroyed/finishing (tested with [Activity.isDestroyed] && [Activity.isFinishing])
+ */
+val Context?.isAvailable: Boolean
+    get() {
+        if (this == null) {
+            return false
+        } else if (this !is Application) {
+            if (this is Activity) {
+                return !this.isDestroyed && !this.isFinishing
             }
         }
+        return true
+    }
+
+fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterDataObserver =
+    object : RecyclerView.AdapterDataObserver() {
+        @SuppressLint("SyntheticAccessor")
+        override fun onChanged() {
+            super.onChanged()
+            observeUIState()
+        }
+
+        @SuppressLint("SyntheticAccessor")
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            observeUIState()
+        }
+
+        @SuppressLint("SyntheticAccessor")
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            observeUIState()
+        }
+    }

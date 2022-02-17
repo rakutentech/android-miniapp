@@ -47,14 +47,23 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
 
     private fun isManifestEqual(apiManifest: MiniAppManifest, downloadedManifest: MiniAppManifest): Boolean {
         val changedRequiredPermissions =
-            (apiManifest.requiredPermissions + downloadedManifest.requiredPermissions).groupBy { it.first.type }
-                .filter { it.value.size == 1 }
-                .flatMap { it.value }
+            try {
+                (apiManifest.requiredPermissions + downloadedManifest.requiredPermissions)
+                    .groupBy { it.first.type }
+                    .filter { it.value.size == 1 }
+                    .flatMap { it.value }
+            } catch (e: Exception) {
+                emptyList()
+            }
 
         val changedOptionalPermissions =
-            (apiManifest.optionalPermissions + downloadedManifest.optionalPermissions).groupBy { it.first.type }
+            try {
+                (apiManifest.optionalPermissions + downloadedManifest.optionalPermissions).groupBy { it.first.type }
                 .filter { it.value.size == 1 }
                 .flatMap { it.value }
+            } catch (e: Exception) {
+                emptyList()
+            }
 
         return changedRequiredPermissions.isEmpty() && changedOptionalPermissions.isEmpty() &&
                 apiManifest.customMetaData == downloadedManifest.customMetaData
