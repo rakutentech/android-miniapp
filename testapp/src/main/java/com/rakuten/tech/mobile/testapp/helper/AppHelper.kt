@@ -109,9 +109,7 @@ val Context?.isAvailable: Boolean
         if (this == null) {
             return false
         } else if (this !is Application) {
-            if (this is Activity) {
-                return !this.isDestroyed && !this.isFinishing
-            }
+            return this is Activity && (!this.isDestroyed && !this.isFinishing)
         }
         return true
     }
