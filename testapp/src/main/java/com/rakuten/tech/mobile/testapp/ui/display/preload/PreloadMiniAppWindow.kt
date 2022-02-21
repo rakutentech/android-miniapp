@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
+import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.load
 import java.lang.StringBuilder
 
@@ -75,7 +76,11 @@ class PreloadMiniAppWindow(
 
         // set data to ui
         if (miniAppInfo != null) {
-            miniAppInfo?.icon?.let { binding.preloadAppIcon.load(context, it, R.drawable.r_logo) }
+            miniAppInfo?.icon?.let {
+                if (context.isAvailable) {
+                    binding.preloadAppIcon.load(context, it, R.drawable.r_logo)
+                }
+            }
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
             binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
