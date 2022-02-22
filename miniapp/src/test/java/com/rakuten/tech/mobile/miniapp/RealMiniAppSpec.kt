@@ -155,6 +155,47 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
     @Test
     @Suppress("LongMethod")
+    fun `should invoke getCachedMiniApp, Displayer and verifyCachedManifest while miniapp creation from cache`() = runBlockingTest {
+        val file: File = mock()
+        val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+        When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns true
+        When calling miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+
+        realMiniApp.create(TEST_MA_ID, miniAppMessageBridge, fromCache = true)
+
+        verify(miniAppDownloader).getCachedMiniApp(TEST_MA_ID)
+        verify(realMiniApp).verifyCachedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        verify(displayer).createMiniAppDisplay(
+            getMiniAppResult.first,
+            getMiniAppResult.second,
+            miniAppMessageBridge,
+            null,
+            null,
+            miniAppCustomPermissionCache,
+            downloadedManifestCache,
+            "",
+            miniAppAnalytics,
+            ratDispatcher,
+            false
+        )
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `verifyCachedManifest will throw exception if manifest can not verify with hash`() {
+        val file: File = mock()
+        When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns false
+        realMiniApp.verifyCachedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `verifyCachedManifest will throw exception if can not find cache manifest`() {
+        realMiniApp.verifyCachedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+    }
+
+    @Test
+    @Suppress("LongMethod")
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {
             onGettingManifestWhileCreate()
@@ -325,6 +366,16 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
 
             realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        }
+
+    @Test(expected = RequiredPermissionsNotGrantedException::class)
+    fun `verifyCachedManifest will throw exception when required permissions are denied`() =
+        runBlockingTest {
+            When calling realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID) itReturns dummyManifest
+            When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
+
+            realMiniApp.verifyCachedManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         }
 
     @Test

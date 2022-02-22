@@ -220,7 +220,8 @@ internal class RealMiniApp(
         } else checkToDownloadManifest(appId, versionId, cachedManifest)
     }
 
-    private fun verifyCachedManifest(appId: String, versionId: String) {
+    @VisibleForTesting
+    internal fun verifyCachedManifest(appId: String, versionId: String) {
         val manifestFile = downloadedManifestCache.getManifestFile(appId)
         if (manifestFile != null && manifestVerifier.verify(appId, manifestFile)) {
             val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
