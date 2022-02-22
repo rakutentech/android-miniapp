@@ -24,6 +24,7 @@
 - **Update:** Removed admob 19 support.
 - **Feature:** Added [Ad placement beta](https://developers.google.com/ad-placement) support. Please see user-guide.
 - **Update:** Renamed `AdMobDisplayer20` to `AdMobDisplayer`.
+- **Update:** Updated create method with optional fromCache variable that helps to load the mini-app from cache.
 
 **Sample App**
 - **Upgraded:** Target SDK is now API 31
