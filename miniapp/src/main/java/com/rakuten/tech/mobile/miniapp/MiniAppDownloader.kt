@@ -290,7 +290,8 @@ internal class MiniAppDownloader(
         return throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
     }
 
-    private fun onGetCachedMiniApp(appInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
+    @VisibleForTesting
+    internal fun onGetCachedMiniApp(appInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
         return Pair(
             storage.getMiniAppVersionPath(appId = appInfo.id, appInfo.version.versionId),
             appInfo
