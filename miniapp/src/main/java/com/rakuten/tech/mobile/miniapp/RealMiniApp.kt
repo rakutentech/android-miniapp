@@ -64,15 +64,32 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String
+        queryParams: String,
+        fromCache: Boolean
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> {
+        else -> if (!fromCache) {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
             verifyManifest(appId, miniAppInfo.version.versionId)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                queryParams,
+                miniAppAnalytics,
+                ratDispatcher,
+                enableH5Ads
+            )
+        } else {
+            val (cachedMiniAppBasePath, cachedMiniAppInfo) = miniAppDownloader.getCachedMiniApp(appId)
+            verifyCachedManifest(cachedMiniAppInfo.id, cachedMiniAppInfo.version.versionId)
+            displayer.createMiniAppDisplay(
+                cachedMiniAppBasePath,
+                cachedMiniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
@@ -91,15 +108,32 @@ internal class RealMiniApp(
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator?,
         miniAppFileChooser: MiniAppFileChooser?,
-        queryParams: String
+        queryParams: String,
+        fromCache: Boolean
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> {
+        else -> if (!fromCache) {
             val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
             verifyManifest(appInfo.id, appInfo.version.versionId)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                queryParams,
+                miniAppAnalytics,
+                ratDispatcher,
+                enableH5Ads
+            )
+        } else {
+            val (cachedMiniAppBasePath, cachedMiniAppInfo) = miniAppDownloader.getCachedMiniApp(appInfo)
+            verifyCachedManifest(cachedMiniAppInfo.id, cachedMiniAppInfo.version.versionId)
+            displayer.createMiniAppDisplay(
+                cachedMiniAppBasePath,
+                cachedMiniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
@@ -184,6 +218,18 @@ internal class RealMiniApp(
             if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
                 throw RequiredPermissionsNotGrantedException(appId, versionId)
         } else checkToDownloadManifest(appId, versionId, cachedManifest)
+    }
+
+    private fun verifyCachedManifest(appId: String, versionId: String) {
+        val manifestFile = downloadedManifestCache.getManifestFile(appId)
+        if (manifestFile != null && manifestVerifier.verify(appId, manifestFile)) {
+            val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
+            val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
+            miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
+
+            if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
+                throw RequiredPermissionsNotGrantedException(appId, versionId)
+        } else throw MiniAppNotFoundException(MiniAppDownloader.MINIAPP_NOT_FOUND_OR_CORRUPTED)
     }
 
     @VisibleForTesting
