@@ -179,6 +179,25 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             ratDispatcher,
             false
         )
+
+        When calling miniAppDownloader.getCachedMiniApp(TEST_MA) itReturns getMiniAppResult
+        realMiniApp.create(TEST_MA, miniAppMessageBridge, fromCache = true)
+
+        verify(miniAppDownloader).getCachedMiniApp(TEST_MA)
+        verify(realMiniApp, times(2)).verifyCachedManifest(TEST_MA.id, TEST_MA.version.versionId)
+        verify(displayer, times(2)).createMiniAppDisplay(
+            getMiniAppResult.first,
+            getMiniAppResult.second,
+            miniAppMessageBridge,
+            null,
+            null,
+            miniAppCustomPermissionCache,
+            downloadedManifestCache,
+            "",
+            miniAppAnalytics,
+            ratDispatcher,
+            false
+        )
     }
 
     @Test(expected = MiniAppNotFoundException::class)
