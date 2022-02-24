@@ -69,17 +69,15 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val miniApp: Pair<String, MiniAppInfo>
-            if (!fromCache) {
-                miniApp = miniAppDownloader.getMiniApp(appId)
-                verifyManifest(miniApp.second.id, miniApp.second.version.versionId)
+            val (basePath, miniAppInfo) = if (!fromCache) {
+                miniAppDownloader.getMiniApp(appId)
             } else {
-                miniApp = miniAppDownloader.getCachedMiniApp(appId)
-                verifyCachedManifest(miniApp.second.id, miniApp.second.version.versionId)
+                miniAppDownloader.getCachedMiniApp(appId)
             }
+            verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
             displayer.createMiniAppDisplay(
-                miniApp.first,
-                miniApp.second,
+                basePath,
+                miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
@@ -103,17 +101,15 @@ internal class RealMiniApp(
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
-            val miniApp: Pair<String, MiniAppInfo>
-            if (!fromCache) {
-                miniApp = miniAppDownloader.getMiniApp(appInfo)
-                verifyManifest(miniApp.second.id, miniApp.second.version.versionId)
+            val (basePath, miniAppInfo) = if (!fromCache) {
+                miniAppDownloader.getMiniApp(appInfo)
             } else {
-                miniApp = miniAppDownloader.getCachedMiniApp(appInfo)
-                verifyCachedManifest(miniApp.second.id, miniApp.second.version.versionId)
+                miniAppDownloader.getCachedMiniApp(appInfo)
             }
+            verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
             displayer.createMiniAppDisplay(
-                miniApp.first,
-                miniApp.second,
+                basePath,
+                miniAppInfo,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
@@ -179,11 +175,12 @@ internal class RealMiniApp(
     }
 
     @VisibleForTesting
-    suspend fun verifyManifest(appId: String, versionId: String) {
+    suspend fun verifyManifest(appId: String, versionId: String, fromCache: Boolean = false) {
         val cachedManifest = downloadedManifestCache.readDownloadedManifest(appId)
 
         try {
-            checkToDownloadManifest(appId, versionId, cachedManifest)
+            if (!fromCache)
+                checkToDownloadManifest(appId, versionId, cachedManifest)
         } catch (e: MiniAppNetException) {
             Log.e("RealMiniApp", "Unable to retrieve latest manifest due to device being offline. " +
                     "Skipping manifest download.", e)
@@ -197,20 +194,13 @@ internal class RealMiniApp(
 
             if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
                 throw RequiredPermissionsNotGrantedException(appId, versionId)
-        } else checkToDownloadManifest(appId, versionId, cachedManifest)
-    }
-
-    @VisibleForTesting
-    internal fun verifyCachedManifest(appId: String, versionId: String) {
-        val manifestFile = downloadedManifestCache.getManifestFile(appId)
-        if (manifestFile != null && manifestVerifier.verify(appId, manifestFile)) {
-            val customPermissions = miniAppCustomPermissionCache.readPermissions(appId)
-            val manifestPermissions = downloadedManifestCache.getAllPermissions(customPermissions)
-            miniAppCustomPermissionCache.removePermissionsNotMatching(appId, manifestPermissions)
-
-            if (downloadedManifestCache.isRequiredPermissionDenied(customPermissions))
-                throw RequiredPermissionsNotGrantedException(appId, versionId)
-        } else throw MiniAppNotFoundException(MiniAppDownloader.MINIAPP_NOT_FOUND_OR_CORRUPTED)
+        } else {
+            if (!fromCache) {
+                checkToDownloadManifest(appId, versionId, cachedManifest)
+            } else {
+                throw MiniAppNotFoundException(MiniAppDownloader.MINIAPP_NOT_FOUND_OR_CORRUPTED)
+            }
+        }
     }
 
     @VisibleForTesting
