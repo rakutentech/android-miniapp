@@ -68,28 +68,18 @@ internal class RealMiniApp(
         fromCache: Boolean
     ): MiniAppDisplay = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> if (!fromCache) {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appId)
-            verifyManifest(appId, miniAppInfo.version.versionId)
+        else -> {
+            val miniApp: Pair<String, MiniAppInfo>
+            if (!fromCache) {
+                miniApp = miniAppDownloader.getMiniApp(appId)
+                verifyManifest(miniApp.second.id, miniApp.second.version.versionId)
+            } else {
+                miniApp = miniAppDownloader.getCachedMiniApp(appId)
+                verifyCachedManifest(miniApp.second.id, miniApp.second.version.versionId)
+            }
             displayer.createMiniAppDisplay(
-                basePath,
-                miniAppInfo,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                miniAppFileChooser,
-                miniAppCustomPermissionCache,
-                downloadedManifestCache,
-                queryParams,
-                miniAppAnalytics,
-                ratDispatcher,
-                enableH5Ads
-            )
-        } else {
-            val (cachedMiniAppBasePath, cachedMiniAppInfo) = miniAppDownloader.getCachedMiniApp(appId)
-            verifyCachedManifest(cachedMiniAppInfo.id, cachedMiniAppInfo.version.versionId)
-            displayer.createMiniAppDisplay(
-                cachedMiniAppBasePath,
-                cachedMiniAppInfo,
+                miniApp.first,
+                miniApp.second,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
@@ -112,28 +102,18 @@ internal class RealMiniApp(
         fromCache: Boolean
     ): MiniAppDisplay = when {
         appInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> if (!fromCache) {
-            val (basePath, miniAppInfo) = miniAppDownloader.getMiniApp(appInfo)
-            verifyManifest(appInfo.id, appInfo.version.versionId)
+        else -> {
+            val miniApp: Pair<String, MiniAppInfo>
+            if (!fromCache) {
+                miniApp = miniAppDownloader.getMiniApp(appInfo)
+                verifyManifest(miniApp.second.id, miniApp.second.version.versionId)
+            } else {
+                miniApp = miniAppDownloader.getCachedMiniApp(appInfo)
+                verifyCachedManifest(miniApp.second.id, miniApp.second.version.versionId)
+            }
             displayer.createMiniAppDisplay(
-                basePath,
-                miniAppInfo,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                miniAppFileChooser,
-                miniAppCustomPermissionCache,
-                downloadedManifestCache,
-                queryParams,
-                miniAppAnalytics,
-                ratDispatcher,
-                enableH5Ads
-            )
-        } else {
-            val (cachedMiniAppBasePath, cachedMiniAppInfo) = miniAppDownloader.getCachedMiniApp(appInfo)
-            verifyCachedManifest(cachedMiniAppInfo.id, cachedMiniAppInfo.version.versionId)
-            displayer.createMiniAppDisplay(
-                cachedMiniAppBasePath,
-                cachedMiniAppInfo,
+                miniApp.first,
+                miniApp.second,
                 miniAppMessageBridge,
                 miniAppNavigator,
                 miniAppFileChooser,
