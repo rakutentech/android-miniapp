@@ -271,23 +271,16 @@ internal class MiniAppDownloader(
 
     fun getCachedMiniApp(appId: String): Pair<String, MiniAppInfo> {
         val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
-        return if (miniAppInfo != null) {
-            onGetCachedMiniApp(miniAppInfo)
-        } else {
-            throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
-        }
+        return if (miniAppInfo != null) onGetCachedMiniApp(miniAppInfo) else throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
     }
 
     fun getCachedMiniApp(appInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
-        if (miniAppStatus.isVersionDownloaded(
+        return if (miniAppStatus.isVersionDownloaded(
                 appId = appInfo.id,
                 versionId = appInfo.version.versionId,
                 versionPath = storage.getMiniAppVersionPath(appInfo.id, appInfo.version.versionId)
             )
-        ) {
-            return onGetCachedMiniApp(appInfo)
-        }
-        return throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
+        ) onGetCachedMiniApp(appInfo) else throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
     }
 
     @VisibleForTesting
