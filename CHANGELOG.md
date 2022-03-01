@@ -1,5 +1,5 @@
 ## CHANGELOG
-### 4.0.0 (In progress)
+### 4.0.0 (2022-03-01)
 **SDK**
 - **Upgraded:** Target SDK is now API 31
 - **Upgraded:** SDK dependencies to new versions
