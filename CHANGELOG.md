@@ -1,7 +1,7 @@
 ## CHANGELOG
 ### 4.0.0 (2022-03-01)
 **SDK**
-- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** Target SDK is now Android 12 (API level 31)
 - **Upgraded:** SDK dependencies to new versions
     - androidx.core:core-ktx:1.6.0
     - androidx.webkit:webkit:1.4.0
@@ -13,7 +13,7 @@
     - com.squareup.okhttp3:okhttp:4.9.1
     - androidx.appcompat:appcompat:1.3.0
     - androidx.recyclerview:recyclerview:1.2.1
-- **Feature:** Added interface for requesting Camera permission.
+- **Feature:** Added interface for requesting Camera permission e.g. `MiniAppCameraPermissionDispatcher`. Please see user-guide.
 - **Removed:** Functions which were deprecated in previous releases have been removed:
   - `MiniAppMessageBridge.getUniqueId()`
   - `UserInfoBridgeDispatcher.getAccessToken(miniAppId: String, onSuccess: (tokenData: TokenData) -> Unit, onError: (message: String) -> Unit)`
@@ -26,7 +26,7 @@
 - **Update:** Renamed `AdMobDisplayer20` to `AdMobDisplayer`.
 
 **Sample App**
-- **Upgraded:** Target SDK is now API 31
+- **Upgraded:** Target SDK is now Android 12 (API level 31)
 - **Upgraded:** Sample App dependencies to new versions
     - androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1
     - androidx.activity:activity-ktx:1.2.4
