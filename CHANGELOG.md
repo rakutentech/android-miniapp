@@ -1,4 +1,8 @@
 ## CHANGELOG
+### 4.x.x (In progress)
+**SDK**
+- **Update:** Updated create method with optional fromCache variable that helps to load the mini-app from cache.
+
 ### 4.0.0 (In progress)
 **SDK**
 - **Upgraded:** Target SDK is now API 31
