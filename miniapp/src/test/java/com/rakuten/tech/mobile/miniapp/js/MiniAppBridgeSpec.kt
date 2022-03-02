@@ -34,7 +34,10 @@ open class BridgeCommon {
     internal val webViewListener: WebViewListener = mock()
     internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
-    protected fun createMiniAppMessageBridge(isPermissionGranted: Boolean, hasEnvInfo: Boolean = false): MiniAppMessageBridge =
+    protected fun createMiniAppMessageBridge(
+        isPermissionGranted: Boolean,
+        hasEnvInfo: Boolean = false
+    ): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
             override fun getUniqueId(
