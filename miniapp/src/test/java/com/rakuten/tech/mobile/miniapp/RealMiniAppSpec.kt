@@ -155,6 +155,73 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
     @Test
     @Suppress("LongMethod")
+    fun `should invoke getCachedMiniApp, Displayer and verifyCachedManifest while miniapp creation from cache`() =
+        runBlockingTest {
+            val file: File = mock()
+            val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+            When calling downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+            When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns true
+            When calling miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+
+            realMiniApp.create(TEST_MA_ID, miniAppMessageBridge, fromCache = true)
+
+            verify(miniAppDownloader).getCachedMiniApp(TEST_MA_ID)
+            verify(realMiniApp).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
+            verify(displayer).createMiniAppDisplay(
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppMessageBridge,
+                null,
+                null,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                "",
+                miniAppAnalytics,
+                ratDispatcher,
+                false
+            )
+
+            When calling miniAppDownloader.getCachedMiniApp(TEST_MA) itReturns getMiniAppResult
+            realMiniApp.create(TEST_MA, miniAppMessageBridge, fromCache = true)
+
+            verify(miniAppDownloader).getCachedMiniApp(TEST_MA)
+            verify(realMiniApp, times(2)).verifyManifest(
+                TEST_MA.id,
+                TEST_MA.version.versionId,
+                true
+            )
+            verify(displayer, times(2)).createMiniAppDisplay(
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppMessageBridge,
+                null,
+                null,
+                miniAppCustomPermissionCache,
+                downloadedManifestCache,
+                "",
+                miniAppAnalytics,
+                ratDispatcher,
+                false
+            )
+        }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `MiniAppNotFoundException if manifest can not verify with hash when fromCache true`() = runBlockingTest {
+        val file: File = mock()
+        When calling downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling manifestVerifier.verify(TEST_MA_ID, file) itReturns false
+        realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `verifyManifest will throw exception if can not find cache manifest when fromCache true`() = runBlockingTest {
+        realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
+    }
+
+    @Test
+    @Suppress("LongMethod")
     fun `should create mini app display with correct passing external navigator`() =
         runBlockingTest {
             onGettingManifestWhileCreate()
@@ -325,6 +392,19 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
 
             realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        }
+
+    @Test(expected = RequiredPermissionsNotGrantedException::class)
+    fun `verifydManifest will throw exception when required permissions are denied when fromCache true`() =
+        runBlockingTest {
+            When calling realMiniApp.getMiniAppManifest(
+                TEST_MA_ID,
+                TEST_MA_VERSION_ID
+            ) itReturns dummyManifest
+            When calling miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling downloadedManifestCache.isRequiredPermissionDenied(deniedPermission) itReturns true
+
+            realMiniApp.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
         }
 
     @Test

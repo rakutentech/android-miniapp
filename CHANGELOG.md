@@ -1,6 +1,9 @@
 ## CHANGELOG
+
 ### 4.0.0 (2022-03-01)
+
 **SDK**
+- **Update:** Updated create method with optional fromCache variable that helps to load the mini-app from cache.
 - **Upgraded:** Target SDK is now Android 12 (API level 31)
 - **Upgraded:** SDK dependencies to new versions
     - androidx.core:core-ktx:1.6.0
