@@ -53,7 +53,22 @@ class MiniAppDisplayViewModel constructor(
                     _errorData.postValue("No published version for the provided Mini App ID.")
                 is MiniAppNotFoundException ->
                     _errorData.postValue("No Mini App found for the provided Project ID.")
-                else -> _errorData.postValue(e.message)
+                else ->{
+                    //try to load MiniApp from cache
+                    try {
+                        miniAppDisplay = if (appInfo != null)
+                            miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
+                        else
+                            miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
+                        _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
+                    } catch (e: MiniAppSdkException) {
+                        when (e) {
+                            is MiniAppNotFoundException ->
+                                _errorData.postValue("No Mini App found for the provided Project ID.")
+                            else -> _errorData.postValue(e.message)
+                        }
+                    }
+                }
             }
         } finally {
             _isLoading.postValue(false)
