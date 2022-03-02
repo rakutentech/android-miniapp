@@ -41,10 +41,7 @@ class MiniAppDisplayViewModel constructor(
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = if (appInfo != null)
-                miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
-            else
-                miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+            miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -56,10 +53,7 @@ class MiniAppDisplayViewModel constructor(
                 else ->{
                     //try to load MiniApp from cache
                     try {
-                        miniAppDisplay = if (appInfo != null)
-                            miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
-                        else
-                            miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
+                        miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
                         _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
                     } catch (e: MiniAppSdkException) {
                         when (e) {
@@ -74,6 +68,19 @@ class MiniAppDisplayViewModel constructor(
             _isLoading.postValue(false)
         }
     }
+
+    private suspend fun createMiniAppDisplay(
+        appInfo: MiniAppInfo?,
+        appId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooser,
+        appParameters: String,
+        fromCache: Boolean = false
+    ): MiniAppDisplay = if (appInfo != null)
+        miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
+    else
+        miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
 
     fun obtainMiniAppDisplayUrl(
         context: Context,
