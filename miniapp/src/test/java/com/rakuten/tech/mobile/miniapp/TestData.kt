@@ -20,6 +20,7 @@ internal const val TEST_URL_HTTPS_2 = "https://www.example.com/2/"
 internal const val TEST_PHONE_URI = "tel:123456"
 internal const val TEST_MAIL_URI = "mailto:test@example.com"
 internal const val TEST_URL_PARAMS = "param1=value1&param2=value2"
+internal const val TEST_BASE_URL = "https://www.test.com"
 
 internal const val TEST_MA_ID = "test_id"
 internal const val TEST_MA_URL = "https://miniapp"

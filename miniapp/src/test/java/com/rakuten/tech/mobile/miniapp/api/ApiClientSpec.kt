@@ -49,7 +49,7 @@ open class ApiClientSpec {
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
-        apiClient.list()[0] shouldEqual miniAppInfo
+        apiClient.list()[0] shouldBeEqualTo miniAppInfo
     }
 
     @Test
@@ -70,7 +70,7 @@ open class ApiClientSpec {
             fetchFileList(
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
-            ) shouldEqual Pair(manifestEntity, ManifestHeader(null))
+            ) shouldBeEqualTo Pair(manifestEntity, ManifestHeader(null))
         }
     }
 
@@ -95,7 +95,7 @@ open class ApiClientSpec {
             fetchFileList(
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION
-            ).second.signature shouldEqual TEST_MANIFEST_SIGNATURE
+            ).second.signature shouldBeEqualTo TEST_MANIFEST_SIGNATURE
         }
     }
 
@@ -113,8 +113,8 @@ open class ApiClientSpec {
 
         val apiClient = createApiClient()
         val response = apiClient
-            .downloadFile(TEST_URL_FILE) shouldEqual mockResponseBody
-        response.contentLength() shouldEqual mockResponseBody.contentLength()
+            .downloadFile(TEST_URL_FILE) shouldBeEqualTo mockResponseBody
+        response.contentLength() shouldBeEqualTo mockResponseBody.contentLength()
     }
 
     @Test
@@ -126,7 +126,7 @@ open class ApiClientSpec {
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
-        apiClient.fetchInfo(TEST_MA_ID) shouldEqual miniAppInfo
+        apiClient.fetchInfo(TEST_MA_ID) shouldBeEqualTo miniAppInfo
     }
 
     @Test

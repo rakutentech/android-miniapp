@@ -72,7 +72,7 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         server.takeRequest()
         client.fetchPath("test-path", null).body!!.string()
 
-        server.takeRequest().headers["If-None-Match"] shouldEqual "etag_value"
+        server.takeRequest().headers["If-None-Match"] shouldBeEqualTo "etag_value"
     }
 
     @Test

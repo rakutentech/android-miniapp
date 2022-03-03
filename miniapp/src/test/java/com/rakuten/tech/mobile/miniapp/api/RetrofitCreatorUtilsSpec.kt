@@ -10,7 +10,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.times
 import java.lang.IllegalArgumentException
 
 class RetrofitCreatorUtilsSpec private constructor(
@@ -37,14 +36,14 @@ class RetrofitCreatorUtilsSpec private constructor(
 
         executeCreateClient()
 
-        mockServer.takeRequest().getHeader("ras_header_name") shouldEqual "ras_header_value"
+        mockServer.takeRequest().getHeader("ras_header_name") shouldBeEqualTo "ras_header_value"
     }
 
     @Test
     fun `should attach the required Accept-Encoding type to requests`() {
         executeCreateClient()
 
-        mockServer.takeRequest().getHeader("Accept-Encoding") shouldEqual "identity"
+        mockServer.takeRequest().getHeader("Accept-Encoding") shouldBeEqualTo "identity"
     }
 
     private fun executeCreateClient() = createClient()
@@ -58,7 +57,7 @@ class RetrofitCreatorUtilsSpec private constructor(
 
         val response = executeCreateClient()
 
-        response.body()!!.testKey shouldEqual TEST_VALUE
+        response.body()!!.testKey shouldBeEqualTo TEST_VALUE
     }
 
     @Test

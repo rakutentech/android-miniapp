@@ -24,7 +24,7 @@ class MiniAppHasNoPublishedVersionException(appId: String) :
 /**
  * Exception which is thrown when the public key used for ssl pinning is mismatched.
  */
-class SSLCertificatePinnigException(serverMessage: String) :
+class SSLCertificatePinningException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: SSL public key mismatched.")
 
 /**

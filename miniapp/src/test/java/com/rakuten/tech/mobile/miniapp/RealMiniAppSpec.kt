@@ -485,7 +485,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
 
     @Test
     fun `isManifestEqual will return true when both api and downloaded manifest are equal`() {
-        realMiniApp.isManifestEqual(dummyManifest, dummyManifest) shouldEqual true
+        realMiniApp.isManifestEqual(dummyManifest, dummyManifest) shouldBeEqualTo true
     }
 
     @Test
@@ -496,12 +496,12 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
                 listOf(),
                 TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
-        realMiniApp.isManifestEqual(dummyApiManifest, dummyManifest) shouldEqual false
+        realMiniApp.isManifestEqual(dummyApiManifest, dummyManifest) shouldBeEqualTo false
     }
 
     @Test
     fun `isManifestEqual will return false when api and downloaded manifest are null`() {
-        realMiniApp.isManifestEqual(null, null) shouldEqual false
+        realMiniApp.isManifestEqual(null, null) shouldBeEqualTo false
     }
     /** end region */
 
@@ -519,4 +519,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
             verify(miniAppDownloader, times(0))
                 .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }
+
+    @Test
+    fun `getDownloadedManifest should read data from cache`() {
+        realMiniApp.getDownloadedManifest(TEST_MA_ID)
+        verify(downloadedManifestCache).readDownloadedManifest(TEST_MA_ID)
+    }
 }

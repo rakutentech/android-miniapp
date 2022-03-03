@@ -45,7 +45,7 @@ class MiniAppStorageSpec {
         val localUrlParser = getMockedLocalUrlParser()
         val miniAppStorage = MiniAppStorage(mock(), mock(), localUrlParser)
         miniAppStorage.getFileName(TEST_URL_FILE)
-        verify(localUrlParser, times(1)).getFileName(TEST_URL_FILE)
+        verify(localUrlParser).getFileName(TEST_URL_FILE)
     }
 
     @Test
@@ -94,7 +94,7 @@ class MiniAppStorageSpec {
         val inputStream: InputStream = mock()
         miniAppStorage.saveFile(file.path, file.path, inputStream)
 
-        verify(fileWriter, times(1))
+        verify(fileWriter)
             .unzip(inputStream, miniAppStorage.getAbsoluteWritePath(
                 file.path, miniAppStorage.getFileName(file.path)))
     }
@@ -118,6 +118,13 @@ class MiniAppStorageSpec {
     fun `should throw exception when file path is invalid`() = runBlockingTest {
         val file = File("")
         miniAppStorage.saveFile(file.path, file.path, mock())
+    }
+
+    @Test
+    fun `deleteDirectory should delete file recursively`() {
+        val file = mock(File::class)
+        miniAppStorage.deleteDirectory(file)
+        verify(file).deleteRecursively()
     }
 
     private fun getMockedLocalUrlParser() = mock<UrlToFileInfoParser>()

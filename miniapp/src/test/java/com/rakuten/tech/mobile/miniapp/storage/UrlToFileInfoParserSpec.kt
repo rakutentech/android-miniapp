@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 
 import com.rakuten.tech.mobile.miniapp.INVALID_FILE_URL_PATH
 import com.rakuten.tech.mobile.miniapp.VALID_FILE_URL_PATH
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Test
 
 class UrlToFileInfoParserSpec {
@@ -11,11 +11,11 @@ class UrlToFileInfoParserSpec {
 
     @Test
     fun shouldGetFileNameWithValidUrl() {
-        urlParser.getFileName(VALID_FILE_URL_PATH) shouldEqual "index.html"
+        urlParser.getFileName(VALID_FILE_URL_PATH) shouldBeEqualTo "index.html"
     }
 
     @Test
     fun shouldGetFileNameWithInvalidUrl() {
-        urlParser.getFileName(INVALID_FILE_URL_PATH) shouldEqual ""
+        urlParser.getFileName(INVALID_FILE_URL_PATH) shouldBeEqualTo ""
     }
 }

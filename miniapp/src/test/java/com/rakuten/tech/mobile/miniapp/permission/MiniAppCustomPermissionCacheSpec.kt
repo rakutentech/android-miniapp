@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +47,7 @@ class MiniAppCustomPermissionCacheSpec {
         val actual = miniAppCustomPermissionCache.readPermissions(TEST_MA_ID)
         val expected = MiniAppCustomPermission(TEST_MA_ID, emptyList())
 
-        actual shouldEqual expected
+        actual shouldBeEqualTo expected
     }
     /** end region */
 
@@ -93,10 +93,10 @@ class MiniAppCustomPermissionCacheSpec {
 
         val actual = miniAppCustomPermissionCache.sortedByDefault(unorderedPermission)
 
-        actual.pairValues[0].first shouldEqual MiniAppCustomPermissionType.USER_NAME
-        actual.pairValues[1].first shouldEqual MiniAppCustomPermissionType.PROFILE_PHOTO
-        actual.pairValues[2].first shouldEqual MiniAppCustomPermissionType.CONTACT_LIST
-        actual.pairValues[3].first shouldEqual MiniAppCustomPermissionType.LOCATION
+        actual.pairValues[0].first shouldBeEqualTo MiniAppCustomPermissionType.USER_NAME
+        actual.pairValues[1].first shouldBeEqualTo MiniAppCustomPermissionType.PROFILE_PHOTO
+        actual.pairValues[2].first shouldBeEqualTo MiniAppCustomPermissionType.CONTACT_LIST
+        actual.pairValues[3].first shouldBeEqualTo MiniAppCustomPermissionType.LOCATION
     }
 
     /**

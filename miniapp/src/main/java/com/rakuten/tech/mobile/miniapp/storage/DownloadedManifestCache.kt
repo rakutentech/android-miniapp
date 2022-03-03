@@ -103,7 +103,8 @@ internal class DownloadedManifestCache(context: Context) {
         return manifest?.miniAppManifest?.accessTokenPermissions ?: emptyList()
     }
 
-    private fun toCachedManifest(manifestJsonStr: String): CachedManifest? {
+    @VisibleForTesting
+    internal fun toCachedManifest(manifestJsonStr: String): CachedManifest? {
         return try {
             Gson().fromJson(manifestJsonStr, object : TypeToken<CachedManifest>() {}.type)
         } catch (e: Exception) {
@@ -121,7 +122,8 @@ internal class DownloadedManifestCache(context: Context) {
         }
     }
 
-    private fun storeNewFile(miniAppId: String, cachedManifest: CachedManifest?) {
+    @VisibleForTesting
+    internal fun storeNewFile(miniAppId: String, cachedManifest: CachedManifest?) {
         File(getManifestPath(miniAppId), DEFAULT_FILE_NAME).printWriter().use { out ->
             val jsonToStore: String = Gson().toJson(cachedManifest)
             out.println("$jsonToStore}")

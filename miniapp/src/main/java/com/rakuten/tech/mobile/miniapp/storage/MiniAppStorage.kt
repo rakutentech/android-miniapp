@@ -71,7 +71,8 @@ internal class MiniAppStorage(
     }
 
     @Suppress("TooGenericExceptionCaught")
-    private fun deleteDirectory(file: File) {
+    @VisibleForTesting
+    internal fun deleteDirectory(file: File) {
         try {
             file.deleteRecursively()
         } catch (e: Exception) {
