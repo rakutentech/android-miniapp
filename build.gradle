@@ -9,7 +9,7 @@ buildscript {
     ext.androidx_test_ext = '1.1.4-alpha03'
     ext.androidx_activity = '1.2.4'
     ext.detekt = '1.1.1'
-    ext.dokka_version = '0.10.0'
+    ext.dokka_version = '1.6.10'
     ext.glide = '4.12.0'
     ext.jsr250 = '1.0'
     ext.junit = '4.13.2'
