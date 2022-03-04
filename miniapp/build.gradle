@@ -119,10 +119,10 @@ tasks.withType(Test) {
 }
 
 apply from: '../config/documentation/dokka/android.gradle'
-dokka {
-    configuration {
-        sourceRoot {
-            path = "miniapp/src/main"
+dokkaGfm.configure {
+    dokkaSourceSets {
+        named("main") {
+            sourceRoots.from(file("src/main/java"))
         }
     }
 }
