@@ -13,6 +13,8 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridge
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -45,6 +47,7 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
+    private val inAppPurchaseBridge = InAppPurchaseBridge()
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -68,6 +71,7 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
+        inAppPurchaseBridge.setMiniAppComponents(bridgeExecutor, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -171,6 +175,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
+            ActionType.PURCHASE_ITEM.action -> inAppPurchaseBridge.onPurchaseItem(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -192,6 +197,13 @@ open class MiniAppMessageBridge {
      **/
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
+
+    /**
+     * Set implemented InAppPurchaseBridgeDispatcher.
+     * Can use the default provided class from sdk [InAppPurchaseBridgeDispatcher].
+     **/
+    fun setInAppPurchaseBridgeDispatcher(bridgeDispatcher: InAppPurchaseBridgeDispatcher) =
+        inAppPurchaseBridge.setIAPBridgeDispatcher(bridgeDispatcher)
 
     /**
      * Dispatch Native events to miniapp.
