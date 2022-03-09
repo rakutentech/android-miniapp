@@ -90,12 +90,17 @@ internal data class SendContactIdCallbackObj(val param: MessageParamId) {
 }
 // end region
 
+// In-App Purchase region
 @Keep
-internal data class PurchasedProductCallbackObj(val param: MessageParamId) {
+internal data class PurchasedProductCallbackObj(
+    val action: String,
+    val param: ProductItem,
+    var id: String
+) {
 
     @Keep
-    internal data class MessageParamId(
-        val contactId: String,
-        val messageToContact: MessageToContact
+    internal data class ProductItem(
+        val itemId: String
     )
 }
+// end region

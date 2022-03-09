@@ -3,7 +3,9 @@ package com.rakuten.tech.mobile.miniapp.iap
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.PurchasedProductCallbackObj
 
+@Suppress("TooGenericExceptionCaught")
 internal class InAppPurchaseBridge {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
@@ -35,10 +37,13 @@ internal class InAppPurchaseBridge {
     internal fun onPurchaseItem(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
+                val callbackObj: PurchasedProductCallbackObj =
+                    Gson().fromJson(jsonStr, PurchasedProductCallbackObj::class.java)
                 val successCallback = { purchasedProduct: PurchasedProduct ->
                     bridgeExecutor.postValue(callbackId, Gson().toJson(purchasedProduct))
                 }
                 inAppPurchaseBridgeDispatcher.purchaseItem(
+                    callbackObj.param.itemId,
                     successCallback,
                     createErrorCallback(callbackId)
                 )

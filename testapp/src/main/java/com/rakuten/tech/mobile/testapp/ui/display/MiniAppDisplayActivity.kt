@@ -27,6 +27,8 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
@@ -344,6 +346,17 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+
+        // setup InAppPurchaseBridgeDispatcher
+        val inAppPurchaseBridgeDispatcher = object: InAppPurchaseBridgeDispatcher {
+
+            override fun purchaseItem(
+                itemId: String,
+                onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
+                onError: (message: String) -> Unit
+            ) {}
+        }
+        miniAppMessageBridge.setInAppPurchaseBridgeDispatcher(inAppPurchaseBridgeDispatcher)
     }
 
     override fun onRequestPermissionsResult(
