@@ -28,6 +28,8 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.iap.Product
+import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
 import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -45,6 +47,7 @@ import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
+import com.rakuten.tech.mobile.testapp.ui.iap.IAPExecutor
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -55,8 +58,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
-    private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
-    private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniAppPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniAppCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
 
@@ -79,7 +82,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppPermissionType: MiniAppDevicePermissionType,
             permissionRequestCallback: (isGranted: Boolean) -> Unit
         ) {
-            miniappCameraPermissionCallback = permissionRequestCallback
+            miniAppCameraPermissionCallback = permissionRequestCallback
             ActivityCompat.requestPermissions(
                 this@MiniAppDisplayActivity,
                 AppPermission.getDevicePermissionRequest(miniAppPermissionType),
@@ -249,7 +252,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) {
-                miniappPermissionCallback = callback
+                miniAppPermissionCallback = callback
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
@@ -354,7 +357,25 @@ class MiniAppDisplayActivity : BaseActivity() {
                 itemId: String,
                 onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
                 onError: (message: String) -> Unit
-            ) {}
+            ) {
+                // purchasing In-App item using GooglePlay billing library
+                val iapExecutor = IAPExecutor(this@MiniAppDisplayActivity)
+                iapExecutor.startPurchasingProduct(itemId)
+
+                // prepare the product to be invoked using onSuccess
+                iapExecutor.getProductDetails()?.let {
+                    val productPrice = ProductPrice(
+                        it.priceAmountMicros.toInt(), it.priceCurrencyCode, it.price
+                    )
+                    val product = Product(
+                        itemId, it.title, it.description, productPrice
+                    )
+                    val purchasedProduct = PurchasedProduct(
+                        "", product, ""
+                    )
+                    onSuccess(purchasedProduct)
+                }
+            }
         }
         miniAppMessageBridge.setInAppPurchaseBridgeDispatcher(inAppPurchaseBridgeDispatcher)
     }
@@ -367,8 +388,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when(requestCode){
-            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
-            else -> miniappPermissionCallback.invoke(isGranted)
+            AppPermission.ReqCode.CAMERA -> miniAppCameraPermissionCallback.invoke(isGranted)
+            else -> miniAppPermissionCallback.invoke(isGranted)
         }
     }
 

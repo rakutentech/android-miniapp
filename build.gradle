@@ -33,6 +33,7 @@ buildscript {
     ext.appCenterSdkVersion = '4.0.0'
     ext.analytics_sdk= '7.0.0'
     ext.json_test = '20210307'
+    ext.billing_version = "4.1.0"
 
 //  Build Config.
     apply from: 'config/index.gradle'

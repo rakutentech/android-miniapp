@@ -34,6 +34,13 @@ class InAppPurchaseBridgeSpec {
     private val purchasedProduct = PurchasedProduct(
         "dummy_orderId", product, "dummy_token"
     )
+    private val purchaseJsonStr: String = Gson().toJson(
+        CallbackObj(
+            action = ActionType.PURCHASE_ITEM.action,
+            param = PurchasedProductCallbackObj.ProductItem("itemId"),
+            id = TEST_CALLBACK_ID
+        )
+    )
 
     @Before
     fun setup() {
@@ -54,7 +61,6 @@ class InAppPurchaseBridgeSpec {
         val errMsg = ErrorBridgeMessage.NO_IMPL
         miniAppBridge.postMessage(Gson().toJson(callbackObj))
         val miniAppBridge = Mockito.spy(createMessageBridge())
-        miniAppBridge.setInAppPurchaseBridgeDispatcher(createPurchaseDispatcher(true))
         miniAppBridge.postMessage(Gson().toJson(callbackObj))
 
         verify(bridgeExecutor).postError(callbackObj.id, errMsg)
@@ -62,7 +68,12 @@ class InAppPurchaseBridgeSpec {
 
     @Test
     fun `postError should be called when there is no purchaseItem implementation`() {
-        val dispatcher = Mockito.spy(createPurchaseDispatcher(false))
+        val dispatcher = Mockito.spy(
+            createPurchaseDispatcher(
+                shouldCreate = false,
+                canPurchase = false
+            )
+        )
         miniAppBridge.setInAppPurchaseBridgeDispatcher(dispatcher)
         val errMsg = "${InAppPurchaseBridge.ERR_IN_APP_PURCHASE} null"
         miniAppBridge.postMessage(Gson().toJson(callbackObj))
@@ -70,18 +81,63 @@ class InAppPurchaseBridgeSpec {
         verify(bridgeExecutor).postError(callbackObj.id, errMsg)
     }
 
-    private fun createPurchaseDispatcher(shouldCreate: Boolean): InAppPurchaseBridgeDispatcher {
+    @Test
+    fun `postError should be called when can't purchase item successfully`() {
+        val dispatcher = Mockito.spy(
+            createPurchaseDispatcher(
+                shouldCreate = true,
+                canPurchase = false
+            )
+        )
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(dispatcher))
+        wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            InAppPurchaseBridge.ERR_IN_APP_PURCHASE + " "
+        )
+    }
+
+    @Test
+    fun `postValue should be called when purchasing item successfully`() {
+        val dispatcher = Mockito.spy(
+            createPurchaseDispatcher(
+                shouldCreate = true,
+                canPurchase = true
+            )
+        )
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(dispatcher))
+        wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+
+        verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProduct))
+    }
+
+    private fun createPurchaseDispatcher(
+        shouldCreate: Boolean,
+        canPurchase: Boolean
+    ): InAppPurchaseBridgeDispatcher {
         return if (shouldCreate) object : InAppPurchaseBridgeDispatcher {
             override fun purchaseItem(
                 itemId: String,
                 onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                onSuccess(purchasedProduct)
+                if (canPurchase) onSuccess(purchasedProduct)
+                else onError("")
             }
         } else {
             object : InAppPurchaseBridgeDispatcher {}
         }
+    }
+
+    private fun createIAPBridgeWrapper(dispatcher: InAppPurchaseBridgeDispatcher): InAppPurchaseBridge {
+        val wrapper = InAppPurchaseBridge()
+        wrapper.setMiniAppComponents(
+            bridgeExecutor,
+            TEST_MA.id
+        )
+        wrapper.setIAPBridgeDispatcher(dispatcher)
+        return wrapper
     }
 
     private fun createMessageBridge(): MiniAppMessageBridge =
