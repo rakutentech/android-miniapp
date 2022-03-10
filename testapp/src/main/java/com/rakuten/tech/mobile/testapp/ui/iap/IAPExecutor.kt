@@ -33,7 +33,9 @@ class IAPExecutor(val activity: Activity) {
                 }
             }
 
-            override fun onBillingServiceDisconnected() {}
+            override fun onBillingServiceDisconnected() {
+                Log.d(TAG, "Billing service has been disconnected.")
+            }
         })
     }
 
