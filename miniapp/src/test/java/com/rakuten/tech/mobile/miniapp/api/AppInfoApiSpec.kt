@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEndWith
-import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -80,17 +80,17 @@ class AppInfoApiResponseSpec : AppInfoApiSpec() {
 
     @Test
     fun `should parse the 'id' from response`() {
-        miniAppInfo.id shouldEqual TEST_MA_ID
+        miniAppInfo.id shouldBeEqualTo TEST_MA_ID
     }
 
     @Test
     fun `should parse the 'displayName' from response`() {
-        miniAppInfo.displayName shouldEqual TEST_MA_DISPLAY_NAME
+        miniAppInfo.displayName shouldBeEqualTo TEST_MA_DISPLAY_NAME
     }
 
     @Test
     fun `should parse the 'icon' from response`() {
-        miniAppInfo.icon shouldEqual TEST_MA_ICON
+        miniAppInfo.icon shouldBeEqualTo TEST_MA_ICON
     }
 
     @Test

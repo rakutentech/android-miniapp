@@ -53,6 +53,7 @@ abstract class MiniApp internal constructor() {
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
+     * @param fromCache allow host app to load miniapp from cache.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -71,7 +72,8 @@ abstract class MiniApp internal constructor() {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
         miniAppFileChooser: MiniAppFileChooser? = null,
-        queryParams: String = ""
+        queryParams: String = "",
+        fromCache: Boolean = false
     ): MiniAppDisplay
 
     /**
@@ -83,6 +85,7 @@ abstract class MiniApp internal constructor() {
      * @param miniAppNavigator allow host app to handle specific urls such as external link.
      * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
+     * @param fromCache allow host app to load miniapp from cache.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -101,7 +104,8 @@ abstract class MiniApp internal constructor() {
         miniAppMessageBridge: MiniAppMessageBridge,
         miniAppNavigator: MiniAppNavigator? = null,
         miniAppFileChooser: MiniAppFileChooser? = null,
-        queryParams: String = ""
+        queryParams: String = "",
+        fromCache: Boolean = false
     ): MiniAppDisplay
 
     /**

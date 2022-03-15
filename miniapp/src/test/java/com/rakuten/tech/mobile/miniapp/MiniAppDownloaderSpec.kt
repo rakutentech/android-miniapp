@@ -91,7 +91,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             setupValidManifestResponse(downloader, apiClient)
             downloader.startDownload(testMiniApp)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -150,7 +150,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -215,7 +215,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         When calling apiClient.isPreviewMode itReturns true
         downloader.getMiniApp(TEST_ID_MINIAPP)
 
-        verify(storage, times(1)).removeVersions(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
+        verify(storage).removeVersions(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION)
     }
 
     @Test
@@ -231,7 +231,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(storage, times(1)).removeVersions(
+            verify(storage).removeVersions(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -254,7 +254,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP)
 
-            verify(apiClient, times(1)).fetchFileList(
+            verify(apiClient).fetchFileList(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION
             )
@@ -326,6 +326,42 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
 
             downloader.getMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
         }
+    @Test
+    fun `getCachedMiniApp should return the miniapp path and miniapp info`() {
+        When calling miniAppStatus.isVersionDownloaded(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION,
+            TEST_BASE_PATH
+        ) itReturns true
+        When calling storage.getMiniAppVersionPath(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION
+        ) itReturns TEST_BASE_PATH
+        downloader.getCachedMiniApp(testMiniApp).first shouldBe TEST_BASE_PATH
+
+        When calling miniAppStatus.getDownloadedMiniApp(TEST_ID_MINIAPP) itReturns testMiniApp
+        downloader.getCachedMiniApp(TEST_ID_MINIAPP).first shouldBe TEST_BASE_PATH
+    }
+
+    @Test
+    fun `onGetCachedMiniApp should return the base path of the cached miniapp`() {
+        When calling storage.getMiniAppVersionPath(
+            TEST_ID_MINIAPP,
+            TEST_ID_MINIAPP_VERSION
+        ) itReturns TEST_BASE_PATH
+
+        downloader.onGetCachedMiniApp(testMiniApp).first shouldBe TEST_BASE_PATH
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `should throw exception when cannot get miniapp by id from cache`() {
+        downloader.getCachedMiniApp(TEST_ID_MINIAPP)
+    }
+
+    @Test(expected = MiniAppNotFoundException::class)
+    fun `should throw exception when cannot get miniapp by miniapp info from cache`() {
+        downloader.getCachedMiniApp(testMiniApp)
+    }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when cannot get miniapp by id from server`() = runBlockingTest {
@@ -358,7 +394,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
 
         assertEquals(dummyManifest, actual)
-        verify(manifestApiCache, times(1)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+        verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
     }
 
     @Test

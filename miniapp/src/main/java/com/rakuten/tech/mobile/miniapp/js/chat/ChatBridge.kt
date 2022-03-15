@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
@@ -103,7 +104,8 @@ internal class ChatBridge {
             }
         }
 
-    private fun createMessage(jsonStr: String): MessageToContact {
+    @VisibleForTesting
+    internal fun createMessage(jsonStr: String): MessageToContact {
         val callbackObj = Gson().fromJson(jsonStr, SendContactCallbackObj::class.java)
         return callbackObj.param.messageToContact
     }

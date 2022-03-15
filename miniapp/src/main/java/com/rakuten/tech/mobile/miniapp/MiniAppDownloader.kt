@@ -115,7 +115,8 @@ internal class MiniAppDownloader(
 
         if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
                 miniAppInfo.id,
-                miniAppInfo.version.versionId, versionPath
+                miniAppInfo.version.versionId,
+                versionPath
             )
         ) {
             return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
@@ -266,8 +267,32 @@ internal class MiniAppDownloader(
         this.requireSignatureVerification = isRequired
     }
 
+    fun getCachedMiniApp(appId: String): Pair<String, MiniAppInfo> {
+        val miniAppInfo = miniAppStatus.getDownloadedMiniApp(appId)
+        return if (!apiClient.isPreviewMode && miniAppInfo != null) onGetCachedMiniApp(miniAppInfo)
+        else throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
+    }
+
+    fun getCachedMiniApp(appInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
+        return if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
+                appId = appInfo.id,
+                versionId = appInfo.version.versionId,
+                versionPath = storage.getMiniAppVersionPath(appInfo.id, appInfo.version.versionId)
+            )
+        ) onGetCachedMiniApp(appInfo) else throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
+    }
+
+    @VisibleForTesting
+    internal fun onGetCachedMiniApp(appInfo: MiniAppInfo): Pair<String, MiniAppInfo> {
+        return Pair(
+            storage.getMiniAppVersionPath(appId = appInfo.id, appInfo.version.versionId),
+            appInfo
+        )
+    }
+
     companion object {
         private const val TAG = "MiniAppDownloader"
         private const val SIGNATURE_VERIFICATION_ERR = "Failed to verify the signature of MiniApp's zip."
+        internal const val MINIAPP_NOT_FOUND_OR_CORRUPTED = "Mini app is not downloaded properly or corrupted"
     }
 }

@@ -10,7 +10,7 @@ import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
-import com.rakuten.tech.mobile.miniapp.SSLCertificatePinnigException
+import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -158,7 +158,7 @@ internal class RetrofitRequestExecutor(
         when (error) {
             is UnknownHostException,
             is SocketTimeoutException -> throw MiniAppNetException(error)
-            is SSLPeerUnverifiedException -> throw SSLCertificatePinnigException(error.message ?: "")
+            is SSLPeerUnverifiedException -> throw SSLCertificatePinningException(error.message ?: "")
             is MiniAppSdkException -> throw error
             else -> throw MiniAppSdkException(error) // when response is not Type T or malformed JSON is received
         }

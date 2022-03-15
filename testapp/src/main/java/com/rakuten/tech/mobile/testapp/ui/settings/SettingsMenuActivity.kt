@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityB
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.BuildVariant
+import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
@@ -88,7 +89,9 @@ class SettingsMenuActivity : BaseActivity() {
     }
 
     private fun onSaveAction() {
-        settingsProgressDialog.show()
+        if (this@SettingsMenuActivity.isAvailable) {
+            settingsProgressDialog.show()
+        }
 
         updateSettings(
             binding.editProjectId.text.toString(),
@@ -214,7 +217,9 @@ class SettingsMenuActivity : BaseActivity() {
 
                 settings.isSettingSaved = true
                 runOnUiThread {
-                    settingsProgressDialog.cancel()
+                    if (this@SettingsMenuActivity.isAvailable) {
+                        settingsProgressDialog.cancel()
+                    }
                     navigateToPreviousScreen()
                 }
             } catch (error: MiniAppSdkException) {
@@ -256,7 +261,9 @@ class SettingsMenuActivity : BaseActivity() {
         settings.isPreviewMode = isPreviewModeHolder
         settings.requireSignatureVerification = requireSignatureVerificationHolder
         runOnUiThread {
-            settingsProgressDialog.cancel()
+            if (this@SettingsMenuActivity.isAvailable) {
+                settingsProgressDialog.cancel()
+            }
             showAlertDialog(this@SettingsMenuActivity, errTitle, errMsg)
         }
     }
@@ -275,6 +282,13 @@ class SettingsMenuActivity : BaseActivity() {
                 raceExecutor.run { launchActivity<MiniAppInputActivity>() }
             }
             else -> finish()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (settingsProgressDialog != null && settingsProgressDialog.isShowing) {
+            settingsProgressDialog.dismiss()
         }
     }
 }

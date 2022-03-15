@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Test
 
 class MiniAppSdkConfigSpec {
@@ -15,7 +15,7 @@ class MiniAppSdkConfigSpec {
             subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
             hostAppUserAgentInfo = TEST_HA_NAME
         )
-        config.key shouldEqual "${config.baseUrl}-${config.isPreviewMode}" +
+        config.key shouldBeEqualTo "${config.baseUrl}-${config.isPreviewMode}" +
                 "-${config.rasProjectId}-${config.subscriptionKey}"
     }
 

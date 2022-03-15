@@ -186,7 +186,8 @@ internal class CustomPermissionBridgeDispatcher(
         }
     }
 
-    private val defaultUnknownPermissionPair = Pair(
+    @VisibleForTesting
+    internal val defaultUnknownPermissionPair = Pair(
         MiniAppCustomPermissionType.UNKNOWN,
         MiniAppCustomPermissionResult.PERMISSION_NOT_AVAILABLE
     )

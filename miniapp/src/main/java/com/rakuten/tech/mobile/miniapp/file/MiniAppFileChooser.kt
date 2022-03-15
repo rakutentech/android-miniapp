@@ -89,8 +89,7 @@ class MiniAppFileChooserDefault(
         }
     }
 
-    @Suppress(" FunctionMaxLength")
-    private fun checkPermissionAndLaunchCameraIntent() = whenReady() {
+    private fun launchCameraIntent() = whenReady {
         val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
@@ -101,7 +100,7 @@ class MiniAppFileChooserDefault(
         miniAppCameraPermissionDispatcher?.getCameraPermission(permissionCallback)
     }
 
-    private fun requestCameraPermissions() = whenReady() {
+    private fun requestCameraPermissions() = whenReady {
         val permissionRequestCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
@@ -129,7 +128,7 @@ class MiniAppFileChooserDefault(
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
             if (fileChooserParams?.isCaptureEnabled == true) {
-                checkPermissionAndLaunchCameraIntent()
+                launchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
                 fileChooserParams?.acceptTypes?.let { acceptTypes ->

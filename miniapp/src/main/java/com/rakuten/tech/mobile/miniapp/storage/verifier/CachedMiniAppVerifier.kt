@@ -1,10 +1,12 @@
 package com.rakuten.tech.mobile.miniapp.storage.verifier
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import java.io.File
 
 internal class CachedMiniAppVerifier(context: Context) {
-    private var storeHashVerifier =
+    @VisibleForTesting
+    internal var storeHashVerifier =
         StoreHashVerifier(context, "com.rakuten.tech.mobile.miniapp.cache.hash")
 
     /** Verifies that the cached files for the Mini App have not been modified. */
