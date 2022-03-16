@@ -2,17 +2,15 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.webkit.JavascriptInterface
-import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
-import com.rakuten.tech.mobile.miniapp.display.DefaultFileProvider
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
@@ -24,17 +22,14 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
 
 @Suppress(
     "TooGenericExceptionCaught", "TooManyFunctions", "LongMethod", "LargeClass",
@@ -262,6 +257,7 @@ open class MiniAppMessageBridge {
         }
     }
 
+    @Suppress("SwallowedException")
     private fun onFileDownload(jsonStr: String) {
         val callbackObj: CustomFileDownloadCallbackObj? = try {
             Gson().fromJson(jsonStr, CustomFileDownloadCallbackObj::class.java)
@@ -273,7 +269,7 @@ open class MiniAppMessageBridge {
         }
     }
 
-    internal fun clearFileDownloadCache(){
+    internal fun clearFileDownloadCache() {
         miniAppFileDownloader.cleanup()
     }
 

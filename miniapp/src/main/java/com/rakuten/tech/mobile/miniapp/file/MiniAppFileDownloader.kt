@@ -14,7 +14,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.*
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 internal class MiniAppFileDownloader {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -53,7 +56,7 @@ internal class MiniAppFileDownloader {
         headers: DownloadFileHeaderObj?,
         successCallback: (String) -> Unit,
         errorCallback: (String) -> Unit
-    ){
+    ) {
         val file = createFileDirectory(fileName = fileName)
         val extension = url.substring(url.lastIndexOf("."))
         val mimetype = mimeTypeMap.getMimeTypeFromExtension(extension)
@@ -85,7 +88,7 @@ internal class MiniAppFileDownloader {
         return builder.build()
     }
 
-    private fun createFileDirectory(fileName: String): File{
+    private fun createFileDirectory(fileName: String): File {
         val cacheDir = File("${activity.cacheDir}/mini_app_download")
         if (!cacheDir.exists()) {
             cacheDir.mkdirs()
@@ -94,6 +97,7 @@ internal class MiniAppFileDownloader {
         return File(cacheDir, fileName)
     }
 
+    @Suppress(" NestedBlockDepth", "MagicNumber")
     private fun writeInputStreamToFile(inputStream: InputStream, file: File) {
         inputStream.use { inputStream ->
             var size: Int
@@ -111,7 +115,7 @@ internal class MiniAppFileDownloader {
         }
     }
 
-    private fun openShareIntent(mimetype: String?, file: File){
+    private fun openShareIntent(mimetype: String?, file: File) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = mimetype
         intent.putExtra(
