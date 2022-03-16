@@ -14,6 +14,12 @@ internal data class CallbackObj(
 internal data class DevicePermission(val permission: String)
 
 @Keep
+internal data class FileDownloadParams(val filename: String, val url: String, val headers: DownloadFileHeaderObj)
+
+@Keep
+internal data class DownloadFileHeaderObj(val token: String?)
+
+@Keep
 internal data class Screen(val action: String)
 
 // custom permission region
@@ -21,6 +27,13 @@ internal data class Screen(val action: String)
 internal data class CustomPermissionCallbackObj(
     var action: String,
     val param: CustomPermission?,
+    var id: String
+)
+
+@Keep
+internal data class CustomFileDownloadCallbackObj(
+    var action: String,
+    val param: FileDownloadParams?,
     var id: String
 )
 

@@ -156,6 +156,7 @@ internal open class MiniAppWebView(
     fun destroyView() {
         stopLoading()
         defaultFileDownloader.cleanup()
+        miniAppMessageBridge.clearFileDownloadCache()
         destroy()
     }
 
