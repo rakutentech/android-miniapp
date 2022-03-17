@@ -37,11 +37,12 @@ internal class MiniAppFileDownloader {
         }
     }
 
-    internal fun onStartFileDownload(callbackObj: CustomFileDownloadCallbackObj) = whenReady() {
+    internal fun onStartFileDownload(callbackObj: CustomFileDownloadCallbackObj) = whenReady {
         val fileName = callbackObj.param?.filename ?: ""
         val url = callbackObj.param?.url ?: ""
         val headers = callbackObj.param?.headers
-        val successCallback = { fileName: String -> bridgeExecutor.postValue(callbackObj.id, fileName) }
+        val successCallback =
+            { fileName: String -> bridgeExecutor.postValue(callbackObj.id, fileName) }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(callbackObj.id, "$ERR_FILE_DOWNLOAD $message")
         }
