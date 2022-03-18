@@ -5,8 +5,9 @@ import android.content.Intent
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
+import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.display.DefaultFileProvider
-import com.rakuten.tech.mobile.miniapp.js.CustomFileDownloadCallbackObj
+import com.rakuten.tech.mobile.miniapp.js.FileDownloadCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.DownloadFileHeaderObj
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +38,24 @@ internal class MiniAppFileDownloader {
         }
     }
 
-    internal fun onStartFileDownload(callbackObj: CustomFileDownloadCallbackObj) = whenReady {
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    internal fun onFileDownload(callbackId: String, jsonStr: String) {
+        val callbackObj: FileDownloadCallbackObj? = try {
+            Gson().fromJson(jsonStr, FileDownloadCallbackObj::class.java)
+        } catch (e: Exception) {
+            null
+        }
+
+        if (callbackObj != null) {
+            onStartFileDownload(callbackObj)
+        } else {
+            whenReady {
+                bridgeExecutor.postError(callbackId, "$ERR_FILE_DOWNLOAD $ERR_WRONG_JSON_FORMAT")
+            }
+        }
+    }
+
+    private fun onStartFileDownload(callbackObj: FileDownloadCallbackObj) = whenReady {
         val fileName = callbackObj.param?.filename ?: ""
         val url = callbackObj.param?.url ?: ""
         val headers = callbackObj.param?.headers
@@ -100,12 +118,12 @@ internal class MiniAppFileDownloader {
 
     @Suppress(" NestedBlockDepth", "MagicNumber")
     private fun writeInputStreamToFile(inputStream: InputStream, file: File) {
-        inputStream.use { inputStream ->
+        inputStream.use { input ->
             var size: Int
             val buffer = ByteArray(2048)
             FileOutputStream(file).use { fos ->
                 BufferedOutputStream(fos, buffer.size).use { bos ->
-                    while (inputStream.read(buffer, 0, buffer.size)
+                    while (input.read(buffer, 0, buffer.size)
                             .also { size = it } != -1
                     ) {
                         bos.write(buffer, 0, size)
@@ -142,5 +160,6 @@ internal class MiniAppFileDownloader {
         private const val TAG = "MiniAppFileDownloader"
         const val ERR_FILE_DOWNLOAD = "DOWNLOAD FAILED:"
         const val ERR_EMPTY_RESPONSE_BODY = "Empty Response Body"
+        const val ERR_WRONG_JSON_FORMAT = "Can not parse file download json object"
     }
 }

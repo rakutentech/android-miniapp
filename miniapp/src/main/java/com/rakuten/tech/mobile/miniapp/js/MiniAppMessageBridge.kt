@@ -187,7 +187,10 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
-            ActionType.FILE_DOWNLOAD.action -> onFileDownload(jsonStr)
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloader.onFileDownload(
+                callbackObj.id,
+                jsonStr
+            )
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -254,18 +257,6 @@ open class MiniAppMessageBridge {
                 callbackObj.id,
                 "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
             )
-        }
-    }
-
-    @Suppress("SwallowedException")
-    private fun onFileDownload(jsonStr: String) {
-        val callbackObj: CustomFileDownloadCallbackObj? = try {
-            Gson().fromJson(jsonStr, CustomFileDownloadCallbackObj::class.java)
-        } catch (e: Exception) {
-            null
-        }
-        callbackObj?.let {
-            miniAppFileDownloader.onStartFileDownload(it)
         }
     }
 

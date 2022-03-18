@@ -31,7 +31,7 @@ internal data class CustomPermissionCallbackObj(
 )
 
 @Keep
-internal data class CustomFileDownloadCallbackObj(
+internal data class FileDownloadCallbackObj(
     var action: String,
     val param: FileDownloadParams?,
     var id: String
