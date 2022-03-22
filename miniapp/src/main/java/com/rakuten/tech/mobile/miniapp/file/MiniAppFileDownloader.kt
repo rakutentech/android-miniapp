@@ -20,9 +20,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
+@Suppress("TooManyFunctions")
 internal class MiniAppFileDownloader {
-    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
-    private lateinit var activity: Activity
+    @VisibleForTesting
+    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
+    internal lateinit var activity: Activity
     private val mimeTypeMap = MimeTypeMap.getSingleton()
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private lateinit var cache: File
@@ -32,49 +34,47 @@ internal class MiniAppFileDownloader {
         this.bridgeExecutor = bridgeExecutor
     }
 
-    private fun <T> whenReady(callback: () -> T) {
+    @VisibleForTesting
+    internal fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized && this::activity.isInitialized) {
             callback.invoke()
         }
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
-    internal fun onFileDownload(callbackId: String, jsonStr: String) {
-        val callbackObj: FileDownloadCallbackObj? = try {
-            Gson().fromJson(jsonStr, FileDownloadCallbackObj::class.java)
-        } catch (e: Exception) {
-            null
-        }
-
+    internal fun onFileDownload(callbackId: String, jsonStr: String) = whenReady {
+        val callbackObj: FileDownloadCallbackObj? = createFileDownloadCallbackObj(jsonStr)
         if (callbackObj != null) {
             onStartFileDownload(callbackObj)
         } else {
-            whenReady {
-                bridgeExecutor.postError(callbackId, "$ERR_FILE_DOWNLOAD $ERR_WRONG_JSON_FORMAT")
-            }
+            bridgeExecutor.postError(callbackId, "$ERR_FILE_DOWNLOAD $ERR_WRONG_JSON_FORMAT")
         }
     }
 
-    private fun onStartFileDownload(callbackObj: FileDownloadCallbackObj) = whenReady {
+    @VisibleForTesting
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    internal fun createFileDownloadCallbackObj(jsonStr: String): FileDownloadCallbackObj? = try {
+        Gson().fromJson(jsonStr, FileDownloadCallbackObj::class.java)
+    } catch (e: Exception) {
+        null
+    }
+
+    @VisibleForTesting
+    internal fun onStartFileDownload(callbackObj: FileDownloadCallbackObj) {
         val fileName = callbackObj.param?.filename ?: ""
-        val url = callbackObj.param?.url ?: ""
+        val url = "https://picsum.photos/200"
         val headers = callbackObj.param?.headers
-        val successCallback =
-            { fileName: String -> bridgeExecutor.postValue(callbackObj.id, fileName) }
-        val errorCallback = { message: String ->
-            bridgeExecutor.postError(callbackObj.id, "$ERR_FILE_DOWNLOAD $message")
-        }
         scope.launch {
-            startDownloading(fileName, url, headers, successCallback, errorCallback)
+            startDownloading(callbackObj.id, fileName, url, headers)
         }
     }
 
-    private fun startDownloading(
+    @VisibleForTesting
+    internal fun startDownloading(
+        callbackId: String,
         fileName: String,
         url: String,
         headers: DownloadFileHeaderObj?,
-        successCallback: (String) -> Unit,
-        errorCallback: (String) -> Unit
     ) {
         val file = createFileDirectory(fileName = fileName)
         val extension = url.substring(url.lastIndexOf("."))
@@ -86,12 +86,12 @@ internal class MiniAppFileDownloader {
             response.body?.let { responseBody ->
                 writeInputStreamToFile(inputStream = responseBody.byteStream(), file = file)
                 openShareIntent(mimetype, file)
-                successCallback(fileName)
+                bridgeExecutor.postValue(callbackId, fileName)
             } ?: run {
-                errorCallback(ERR_EMPTY_RESPONSE_BODY)
+                bridgeExecutor.postError(callbackId, "$ERR_FILE_DOWNLOAD $ERR_EMPTY_RESPONSE_BODY")
             }
         } else {
-            errorCallback("Error Code ${response.code}")
+            bridgeExecutor.postError(callbackId, "$ERR_FILE_DOWNLOAD ${response.code}")
         }
     }
 
@@ -107,7 +107,8 @@ internal class MiniAppFileDownloader {
         return builder.build()
     }
 
-    private fun createFileDirectory(fileName: String): File {
+    @VisibleForTesting
+    internal fun createFileDirectory(fileName: String): File {
         val cacheDir = File("${activity.cacheDir}/mini_app_download")
         if (!cacheDir.exists()) {
             cacheDir.mkdirs()
