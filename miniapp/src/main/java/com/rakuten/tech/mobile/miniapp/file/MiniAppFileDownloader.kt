@@ -19,15 +19,19 @@ import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.IOException
 
 @Suppress("TooManyFunctions")
 internal class MiniAppFileDownloader {
     @VisibleForTesting
-    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
     internal lateinit var activity: Activity
-    private val mimeTypeMap = MimeTypeMap.getSingleton()
+    @VisibleForTesting
+    internal lateinit var cache: File
+    @VisibleForTesting
+    internal var mimeTypeMap = MimeTypeMap.getSingleton()
+    @VisibleForTesting
+    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    private lateinit var cache: File
 
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
         this.activity = activity
@@ -95,7 +99,8 @@ internal class MiniAppFileDownloader {
         }
     }
 
-    private fun createHttpClient(headers: DownloadFileHeaderObj?): OkHttpClient {
+    @VisibleForTesting
+    internal fun createHttpClient(headers: DownloadFileHeaderObj?): OkHttpClient {
         val builder = OkHttpClient.Builder()
         headers?.token?.let { token ->
             builder.addNetworkInterceptor {
@@ -117,8 +122,9 @@ internal class MiniAppFileDownloader {
         return File(cacheDir, fileName)
     }
 
-    @Suppress(" NestedBlockDepth", "MagicNumber")
-    private fun writeInputStreamToFile(inputStream: InputStream, file: File) {
+    @VisibleForTesting
+    @Suppress("NestedBlockDepth", "MagicNumber")
+    internal fun writeInputStreamToFile(inputStream: InputStream, file: File) = try {
         inputStream.use { input ->
             var size: Int
             val buffer = ByteArray(2048)
@@ -133,9 +139,12 @@ internal class MiniAppFileDownloader {
                 }
             }
         }
+    } catch (e: IOException) {
+        Log.e(TAG, "Failed to write in the directory.", e)
     }
 
-    private fun openShareIntent(mimetype: String?, file: File) {
+    @VisibleForTesting
+    internal fun openShareIntent(mimetype: String?, file: File) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = mimetype
         intent.putExtra(
@@ -146,6 +155,7 @@ internal class MiniAppFileDownloader {
     }
 
     @Suppress("TooGenericExceptionCaught")
+    @VisibleForTesting
     internal fun cleanup() {
         scope.launch {
             try {
