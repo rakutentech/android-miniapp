@@ -62,7 +62,7 @@ internal class MiniAppFileDownloader {
     @VisibleForTesting
     internal fun onStartFileDownload(callbackObj: FileDownloadCallbackObj) {
         val fileName = callbackObj.param?.filename ?: ""
-        val url = "https://picsum.photos/200"
+        val url = callbackObj.param?.url ?: ""
         val headers = callbackObj.param?.headers
         scope.launch {
             startDownloading(callbackObj.id, fileName, url, headers)
