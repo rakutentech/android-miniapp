@@ -41,8 +41,10 @@ class MiniAppFileDownloaderSpec {
     fun setup() {
         fileDownloader.activity = activity
         fileDownloader.bridgeExecutor = bridgeExecutor
+        fileDownloader.mimeTypeMap = mockMimeTypeMap
 
-        When calling fileDownloader.createFileDirectory("test") itReturns mock()
+        When calling mockMimeTypeMap.getMimeTypeFromExtension(".jpg") itReturns TEST_MIME
+        When calling fileDownloader.createFileDirectory(TEST_FILENAME) itReturns File(TEST_FILE_PATH)
     }
 
     @Test
@@ -62,6 +64,12 @@ class MiniAppFileDownloaderSpec {
     @Test
     fun `startDownloading should be called when onStartFileDownload get correct callback`() = runBlockingTest {
         fileDownloader.onStartFileDownload(fileDownloadCallbackObj)
+        Mockito.doNothing().`when`(fileDownloader).startDownloading(
+            TEST_CALLBACK_ID,
+            TEST_FILENAME,
+            TEST_FILE_URL,
+            TEST_HEADER_OBJECT
+        )
         verify(fileDownloader).startDownloading(
             TEST_CALLBACK_ID,
             TEST_FILENAME,
@@ -77,9 +85,6 @@ class MiniAppFileDownloaderSpec {
         mockServer.start()
         val url: String = mockServer.url("/sample/com/test.jpg").toString()
 
-        fileDownloader.mimeTypeMap = mockMimeTypeMap
-        When calling mockMimeTypeMap.getMimeTypeFromExtension(".jpg") itReturns TEST_MIME
-        When calling fileDownloader.createFileDirectory(TEST_FILENAME) itReturns File(TEST_FILE_PATH)
         Mockito.doNothing().`when`(fileDownloader).openShareIntent(TEST_MIME, File(TEST_FILE_PATH))
 
         fileDownloader.startDownloading(
@@ -106,7 +111,6 @@ class MiniAppFileDownloaderSpec {
 
         fileDownloader.mimeTypeMap = mockMimeTypeMap
         When calling mockMimeTypeMap.getMimeTypeFromExtension(".jpg") itReturns TEST_MIME
-        When calling fileDownloader.createFileDirectory(TEST_FILENAME) itReturns File(TEST_FILE_PATH)
 
         fileDownloader.startDownloading(
             TEST_CALLBACK_ID,
