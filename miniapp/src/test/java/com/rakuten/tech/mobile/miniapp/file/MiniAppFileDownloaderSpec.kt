@@ -25,6 +25,7 @@ class MiniAppFileDownloaderSpec {
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private val activity = TestActivity()
     private val TEST_FILENAME = "test.jpg"
+    private val TEST_MIME = "image/jpg"
     private val TEST_FILE_PATH = "com/example/test"
     private val TEST_FILE_URL = "https://sample/com/test.jpg"
     private val TEST_HEADER_OBJECT = DownloadFileHeaderObj(null)
@@ -77,7 +78,7 @@ class MiniAppFileDownloaderSpec {
         val url: String = mockServer.url("/sample/com/test.jpg").toString()
 
         fileDownloader.mimeTypeMap = mockMimeTypeMap
-        When calling mockMimeTypeMap.getMimeTypeFromExtension(".jpg") itReturns "image/jpg"
+        When calling mockMimeTypeMap.getMimeTypeFromExtension(".jpg") itReturns TEST_MIME
         When calling fileDownloader.createFileDirectory(TEST_FILENAME) itReturns File(TEST_FILE_PATH)
         Mockito.doNothing().`when`(fileDownloader).openShareIntent("image/jpg", File(TEST_FILE_PATH))
 
