@@ -200,6 +200,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(MetadataApi::class.java) itReturns mockMetadataApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
+        When calling mockRetrofitClient.create(PublicKeyApi::class.java) itReturns mockPublicKeyApi
 
         ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
     }

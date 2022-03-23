@@ -63,26 +63,6 @@ open class SignatureVerifierSpec : RobolectricBaseSpec() {
     }
 
     @Test
-    fun `should return null initialization failed due to invalid endpoint`() {
-        SignatureVerifier.init(context, "", apiClient).shouldBeNull()
-    }
-
-    @Test
-    fun `should return null initialization failed due to invalid endpoint with callback`() {
-        SignatureVerifier.init(context, "", apiClient).shouldBeNull()
-    }
-
-    @Test
-    fun `should return null initialization failed due to invalid key`() {
-        SignatureVerifier.init(context, BASE_URL, apiClient).shouldBeNull()
-    }
-
-    @Test
-    fun `should return null initialization failed due to invalid key with callback`() {
-        SignatureVerifier.init(context, BASE_URL, apiClient).shouldBeNull()
-    }
-
-    @Test
     fun `should not verify the signature when message has been modified`() = runBlockingTest {
         val verifier = SignatureVerifier(mockPublicKeyCache, mock(), TestCoroutineDispatcher())
 

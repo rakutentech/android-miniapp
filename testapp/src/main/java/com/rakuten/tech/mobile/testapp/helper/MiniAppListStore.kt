@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.lang.IllegalStateException
 
 class MiniAppListStore private constructor(context: Context) {
 
@@ -40,7 +39,7 @@ class MiniAppListStore private constructor(context: Context) {
             prefs.getString(miniAppList, ""),
             object : TypeToken<List<MiniAppInfo>>() {}.type
         )
-    } catch (error: IllegalStateException) {
+    } catch (error: Exception) {
         emptyList()
     }
 }

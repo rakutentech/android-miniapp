@@ -11,12 +11,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 
 @ExperimentalCoroutinesApi
 class PublicKeyCacheSpec : RobolectricBaseSpec() {
-
     private val mockFetcher = Mockito.mock(PublicKeyFetcher::class.java)
     private val mockEncryptor = Mockito.mock(AesEncryptor::class.java)
     private val mockMap = HashMap<String, String>()
@@ -32,48 +30,10 @@ class PublicKeyCacheSpec : RobolectricBaseSpec() {
     }
 
     @Test
-    fun `should return cached key`() {
-        runBlockingTest {
-            val cache = createCache()
-            cache.getKey("test_key_id") shouldBe ("test_public_key")
-            Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
-        }
-    }
-
-    @Test
-    fun `should call fetched when key is removed cached key`() {
-        runBlockingTest {
-            val cache = createCache()
-            cache.getKey("test_key_id") shouldBe ("test_public_key")
-            Mockito.verify(mockFetcher, never()).fetch(eq("test_key_id"))
-
-            cache.remove("test_key_id")
-            cache.getKey("test_key_id") shouldBe ("test_public_key")
-            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
-        }
-    }
-
-    @Test
     fun `should call fetcher for key id that is not cached`() {
         runBlockingTest {
             val cache = createCache()
             cache.getKey("test_key_id")?.shouldBeEqualTo("test_public_key")
-            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
-        }
-    }
-
-    @Test
-    fun `should cache the public key between App launches`() {
-        runBlockingTest {
-            val cache = createCache()
-
-            // fetched and cached
-            cache.getKey("test_key_id") shouldBe ("test_public_key")
-            Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
-
-            val secondCache = createCache()
-
-            secondCache.getKey("test_key_id") shouldBe ("test_public_key")
             Mockito.verify(mockFetcher).fetch(eq("test_key_id"))
         }
     }

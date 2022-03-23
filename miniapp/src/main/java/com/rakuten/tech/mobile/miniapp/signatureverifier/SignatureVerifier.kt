@@ -50,7 +50,7 @@ internal class SignatureVerifier(
         val key = cache.getKey(publicKeyId) ?: return@withContext false
 
         // preparing hash using miniapp zip file
-        val zipFile = MiniAppFileUtil(basePath).createFile(inputStream)
+        val zipFile = SignatureVerifierUtil(basePath).createFile(inputStream)
         val hash = calculateSha256Hash(zipFile.inputStream().readBytes())
 
         zipFile.deleteRecursively()
@@ -138,6 +138,7 @@ internal class SignatureVerifier(
          * Initializes an instance of the Signature Verifier SDK based on the provided parameters.
          * @param [context] application context
          * @param [baseUrl] used for file path
+         * @param [apiClient] used for fetching public key via api
          * @return `instance` of [SignatureVerifier] if initialization is successful, and `null` otherwise.
          */
         @SuppressWarnings("LongMethod", "TooGenericExceptionCaught", "PrintStackTrace")

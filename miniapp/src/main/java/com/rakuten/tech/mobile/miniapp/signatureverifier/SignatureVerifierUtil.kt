@@ -6,7 +6,7 @@ import java.io.InputStream
 
 private const val SUB_DIR_MINIAPP_ZIP = "miniapp/temp_zip/"
 
-internal class MiniAppFileUtil(val basePath: File) {
+internal class SignatureVerifierUtil(val basePath: File) {
     private val hostAppBasePath = basePath.path
     private val miniAppZipBasePath
         get() = "$hostAppBasePath/$SUB_DIR_MINIAPP_ZIP/"

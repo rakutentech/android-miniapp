@@ -256,7 +256,8 @@ internal class MiniAppDownloader(
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
 
     @VisibleForTesting
-    internal fun doesManifestFileExist(manifest: ManifestEntity) = manifest.files.isNotEmpty()
+    internal fun doesManifestFileExist(manifest: ManifestEntity) =
+        manifest != null && manifest.files != null && manifest.files.isNotEmpty()
 
     override fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
