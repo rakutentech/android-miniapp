@@ -13,7 +13,9 @@ import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -46,7 +48,7 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
-    private val miniAppFileDownloader = MiniAppFileDownloader()
+    private val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
 
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
@@ -70,7 +72,7 @@ open class MiniAppMessageBridge {
             ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         this.ratDispatcher = ratDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-        miniAppFileDownloader.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,
@@ -187,7 +189,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
-            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloader.onFileDownload(
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
                 callbackObj.id,
                 jsonStr
             )
@@ -196,9 +198,13 @@ open class MiniAppMessageBridge {
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
 
-    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer19]. **/
+    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
     fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) =
         adBridgeDispatcher.setAdMobDisplayer(adDisplayer)
+
+    /** Set implemented file downloader. Can use the default provided class from sdk [MiniAppFileDownloaderDefault]. **/
+    fun setMiniAppFileDownloader(miniAppFileDownloader: MiniAppFileDownloader) =
+        miniAppFileDownloadDispatcher.setFileDownloader(miniAppFileDownloader)
 
     /**
      * Set implemented userInfoBridgeDispatcher.
@@ -261,7 +267,7 @@ open class MiniAppMessageBridge {
     }
 
     internal fun clearFileDownloadCache() {
-        miniAppFileDownloader.cleanup()
+        //miniAppFileDownloader.cleanup()
     }
 
     @Suppress("SwallowedException")

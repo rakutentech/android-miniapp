@@ -14,10 +14,7 @@ internal data class CallbackObj(
 internal data class DevicePermission(val permission: String)
 
 @Keep
-internal data class FileDownloadParams(val filename: String, val url: String, val headers: DownloadFileHeaderObj)
-
-@Keep
-internal data class DownloadFileHeaderObj(val token: String?)
+internal data class FileDownloadParams(val filename: String, val url: String, val headers: Map<String, String>)
 
 @Keep
 internal data class Screen(val action: String)
