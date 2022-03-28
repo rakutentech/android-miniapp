@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +96,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         openCreateDocIntent(activity, fileName)
     }
 
-    private fun openCreateDocIntent(activity: Activity, fileName: String) {
+    @VisibleForTesting
+    internal fun openCreateDocIntent(activity: Activity, fileName: String) {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = getMimeType(fileName)

@@ -50,6 +50,7 @@ internal class MiniAppFileDownloadDispatcher {
         }
     }
 
+    @VisibleForTesting
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
     internal fun createFileDownloadCallbackObj(jsonStr: String): FileDownloadCallbackObj? = try {
         Gson().fromJson(jsonStr, FileDownloadCallbackObj::class.java)
