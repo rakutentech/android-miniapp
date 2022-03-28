@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +12,19 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+/**
+ * The file downloader of a miniapp with `onStartFileDownload` function.
+ * To start file download on the device.
+ **/
 interface MiniAppFileDownloader {
+    /**
+     * For downloading the files which has been invoked by miniapp.
+     * @param fileName return the name of the file.
+     * @param url return the download url of the file.
+     * @param headers returns the header of the file if there is any.
+     * @param onDownloadSuccess contains file name send from host app to miniapp.
+     * @param onDownloadFailed contains custom error message send from host app.
+     **/
     fun onStartFileDownload(
         fileName: String,
         url: String,
@@ -23,6 +34,11 @@ interface MiniAppFileDownloader {
     )
 }
 
+/**
+ * The default file downloader of a miniapp.
+ * @param requestCode of file downloading using an intent inside sdk, which will also be used
+ * to retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
+ **/
 class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int) : MiniAppFileDownloader {
     private lateinit var fileName: String
     private lateinit var url: String
@@ -32,6 +48,9 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var okHttpClient: OkHttpClient? = null
 
+    /**
+     * Retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
+     **/
     fun onReceivedResult(destinationUri: Uri) {
         val client = okHttpClient ?: OkHttpClient.Builder().build().apply { okHttpClient = this }
         var request = createRequest(url, headers)
@@ -40,7 +59,7 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         }
     }
 
-    private fun startDownloading(destinationUri: Uri, client: OkHttpClient, request: Request){
+    private fun startDownloading(destinationUri: Uri, client: OkHttpClient, request: Request) {
         val response = client.newCall(request).execute()
         if (response.isSuccessful) {
             response.body?.let { responseBody ->
@@ -50,7 +69,7 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
                     onDownloadSuccess.invoke(fileName)
                 } ?: {
                     onDownloadFailed.invoke(MiniAppDownloadFileError.saveFailureError)
-                    Log.e("Downloader","Failed to download file: could not open OutputStream.")
+                    Log.e("Downloader", "Failed to download file: could not open OutputStream.")
                 }
             } ?: run {
                 onDownloadFailed.invoke(MiniAppDownloadFileError.downloadFailedError)
@@ -103,24 +122,5 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
             builder.addHeader(header.key, header.value)
         }
         return builder.url(url).build()
-    }
-
-//    @VisibleForTesting
-//    @Suppress("NestedBlockDepth", "MagicNumber")
-//    internal fun writeInputStreamToFile(inputStream: InputStream, file: File) = try {
-//        activity.contentResolver.openOutputStream(destinationUri)?.let { outputStream ->
-//            outputStream.write(responseBody.bytes())
-//            outputStream.close()
-//        } ?: Log.e("Downloader","Failed to download file: could not open OutputStream.")
-//    } catch (e: IOException) {
-//        Log.e(TAG, "Failed to write in the directory.", e)
-//    }
-
-    @VisibleForTesting
-    internal companion object {
-        private const val TAG = "MiniAppFileDownloader"
-        const val ERR_FILE_DOWNLOAD = "DOWNLOAD FAILED:"
-        const val ERR_EMPTY_RESPONSE_BODY = "Empty Response Body"
-        const val ERR_WRONG_JSON_FORMAT = "Can not parse file download json object"
     }
 }

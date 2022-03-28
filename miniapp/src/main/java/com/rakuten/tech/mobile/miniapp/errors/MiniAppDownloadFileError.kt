@@ -1,5 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
+/**
+ * A class to provide the custom errors specific for file download.
+ */
 class MiniAppDownloadFileError(val type: String? = null, val message: String? = null) :
     MiniAppBridgeError(type, message) {
 
@@ -21,16 +24,15 @@ class MiniAppDownloadFileError(val type: String? = null, val message: String? = 
          *  @property code error code send to miniapp.
          *  @property reason error message send to mini app.
          */
-        fun custom(code: String, reason: String) = MiniAppDownloadFileError(code,reason)
+        fun custom(code: String, reason: String) = MiniAppDownloadFileError(code, reason)
 
-        private fun errorDescription(error: String): String{
-            return when(error){
+        private fun errorDescription(error: String): String {
+            return when (error) {
                 DownloadFailedError -> "Failed to download the file."
                 InvalidUrlError -> "URL is invalid."
                 SaveFailureError -> "Save file temporarily failed"
-                else-> ""
+                else -> ""
             }
         }
     }
-
 }

@@ -13,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
@@ -264,10 +263,6 @@ open class MiniAppMessageBridge {
                 "${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} ${e.message}"
             )
         }
-    }
-
-    internal fun clearFileDownloadCache() {
-        //miniAppFileDownloader.cleanup()
     }
 
     @Suppress("SwallowedException")

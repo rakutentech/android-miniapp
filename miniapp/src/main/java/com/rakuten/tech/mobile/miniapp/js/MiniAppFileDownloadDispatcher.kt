@@ -3,10 +3,8 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.app.Activity
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 
 internal class MiniAppFileDownloadDispatcher {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -64,5 +62,4 @@ internal class MiniAppFileDownloadDispatcher {
         const val ERR_FILE_DOWNLOAD = "DOWNLOAD FAILED:"
         const val ERR_WRONG_JSON_FORMAT = "Can not parse file download json object"
     }
-
 }
