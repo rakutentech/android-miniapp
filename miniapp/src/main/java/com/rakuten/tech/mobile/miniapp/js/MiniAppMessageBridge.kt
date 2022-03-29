@@ -72,6 +72,7 @@ open class MiniAppMessageBridge {
         this.ratDispatcher = ratDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,

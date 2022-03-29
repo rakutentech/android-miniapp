@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
 
 /**
  * The file downloader of a miniapp with `onStartFileDownload` function.
@@ -41,13 +42,18 @@ interface MiniAppFileDownloader {
  * to retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
  **/
 class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int) : MiniAppFileDownloader {
-    private lateinit var fileName: String
-    private lateinit var url: String
-    private lateinit var headers: Map<String, String>
-    private lateinit var onDownloadSuccess: (String) -> Unit
-    private lateinit var onDownloadFailed: (MiniAppDownloadFileError) -> Unit
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var okHttpClient: OkHttpClient? = null
+    @VisibleForTesting
+    internal lateinit var fileName: String
+    @VisibleForTesting
+    internal lateinit var url: String
+    @VisibleForTesting
+    internal lateinit var headers: Map<String, String>
+    @VisibleForTesting
+    internal lateinit var onDownloadSuccess: (String) -> Unit
+    @VisibleForTesting
+    internal lateinit var onDownloadFailed: (MiniAppDownloadFileError) -> Unit
 
     /**
      * Retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
@@ -56,16 +62,24 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         val client = okHttpClient ?: OkHttpClient.Builder().build().apply { okHttpClient = this }
         var request = createRequest(url, headers)
         scope.launch {
-            startDownloading(destinationUri, client, request)
+            startDownloading(destinationUri, client, request, onDownloadSuccess, onDownloadFailed)
         }
     }
 
-    private fun startDownloading(destinationUri: Uri, client: OkHttpClient, request: Request) {
+    @VisibleForTesting
+    @Suppress("SwallowedException", "NestedBlockDepth")
+    internal fun startDownloading(
+        destinationUri: Uri,
+        client: OkHttpClient,
+        request: Request,
+        onDownloadSuccess: (String) -> Unit,
+        onDownloadFailed: (MiniAppDownloadFileError) -> Unit
+    ) = try {
         val response = client.newCall(request).execute()
         if (response.isSuccessful) {
-            response.body?.let { responseBody ->
-                activity.contentResolver.openOutputStream(destinationUri)?.let { outputStream ->
-                    outputStream.write(responseBody.bytes())
+            response.body?.use { responseBody ->
+                activity.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
+                    responseBody.byteStream().copyTo(outputStream)
                     outputStream.close()
                     onDownloadSuccess.invoke(fileName)
                 } ?: {
@@ -78,6 +92,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         } else {
             onDownloadFailed.invoke(MiniAppDownloadFileError.custom(response.code.toString(), response.message))
         }
+    } catch (e: IOException) {
+        onDownloadFailed.invoke(MiniAppDownloadFileError.downloadFailedError)
     }
 
     override fun onStartFileDownload(
@@ -106,7 +122,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         activity.startActivityForResult(intent, requestCode)
     }
 
-    private fun getMimeType(fileName: String): String {
+    @VisibleForTesting
+    internal fun getMimeType(fileName: String): String {
         val extension = if (fileName.contains('.'))
             fileName.split('.').last()
         else
@@ -118,7 +135,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
             "text/plain"
     }
 
-    private fun createRequest(url: String, headers: Map<String, String>): Request {
+    @VisibleForTesting
+    internal fun createRequest(url: String, headers: Map<String, String>): Request {
         val builder = Request.Builder()
         headers?.forEach { header ->
             builder.addHeader(header.key, header.value)
