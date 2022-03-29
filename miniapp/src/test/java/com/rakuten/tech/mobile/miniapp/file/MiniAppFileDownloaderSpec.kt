@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import com.rakuten.tech.mobile.miniapp.js.ActionType
 import com.rakuten.tech.mobile.miniapp.js.FileDownloadCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.FileDownloadParams
