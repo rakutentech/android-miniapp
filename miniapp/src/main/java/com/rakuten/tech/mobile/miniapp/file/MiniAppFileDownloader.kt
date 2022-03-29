@@ -42,8 +42,9 @@ interface MiniAppFileDownloader {
  * to retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
  **/
 class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int) : MiniAppFileDownloader {
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var okHttpClient: OkHttpClient? = null
+    @VisibleForTesting
+    internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     @VisibleForTesting
     internal lateinit var fileName: String
     @VisibleForTesting

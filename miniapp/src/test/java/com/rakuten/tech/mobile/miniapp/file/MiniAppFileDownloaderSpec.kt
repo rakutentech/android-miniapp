@@ -10,16 +10,17 @@ import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.js.ActionType
 import com.rakuten.tech.mobile.miniapp.js.FileDownloadCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.FileDownloadParams
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestCoroutineScope
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.kotlin.verify
 import org.robolectric.Shadows
 import kotlin.test.assertEquals
 
@@ -76,24 +77,48 @@ class MiniAppFileDownloaderSpec {
     }
 
     @Test
-    @ExperimentalCoroutinesApi
-    fun `startDownloading should invoke success callback if request is successful`() =
-        runBlockingTest {
+    fun `startDownloading should invoke success callback if request is successful`() {
             val mockServer = MockWebServer()
-            mockServer.enqueue(MockResponse().setResponseCode(400))
+            mockServer.enqueue(MockResponse().setBody(""))
             mockServer.start()
             val url: String = mockServer.url("/sample/com/test.jpg").toString()
 
             val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
-            miniAppFileDownloader.onDownloadSuccess = {}
+            miniAppFileDownloader.scope = TestCoroutineScope()
+            miniAppFileDownloader.onDownloadSuccess = {
+                it shouldBe TEST_FILENAME
+            }
             miniAppFileDownloader.onDownloadFailed = {}
             miniAppFileDownloader.url = url
             miniAppFileDownloader.headers = TEST_HEADER_OBJECT
             miniAppFileDownloader.fileName = TEST_FILENAME
 
             miniAppFileDownloader.onReceivedResult(TEST_DEST_URI)
-            // verify(miniAppFileDownloader).onDownloadFailed.invoke(any())
+            verify(miniAppFileDownloader).onDownloadSuccess
 
             mockServer.shutdown()
         }
+
+    @Test
+    fun `startDownloading should invoke fail callback if request isn't successful`() {
+        val mockServer = MockWebServer()
+        mockServer.enqueue(MockResponse().setResponseCode(400))
+        mockServer.start()
+        val url: String = mockServer.url("/sample/com/test.jpg").toString()
+
+        val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
+        miniAppFileDownloader.scope = TestCoroutineScope()
+        miniAppFileDownloader.onDownloadSuccess = {
+            it shouldBe TEST_FILENAME
+        }
+        miniAppFileDownloader.onDownloadFailed = {}
+        miniAppFileDownloader.url = url
+        miniAppFileDownloader.headers = TEST_HEADER_OBJECT
+        miniAppFileDownloader.fileName = TEST_FILENAME
+
+        miniAppFileDownloader.onReceivedResult(TEST_DEST_URI)
+        verify(miniAppFileDownloader).onDownloadFailed
+
+        mockServer.shutdown()
+    }
 }
