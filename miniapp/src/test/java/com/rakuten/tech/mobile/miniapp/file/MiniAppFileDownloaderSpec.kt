@@ -26,6 +26,7 @@ import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 class MiniAppFileDownloaderSpec {
+    private val TEST_IMAGE_MIME = "image/jpeg"
     private val TEST_FILENAME = "test.jpg"
     private val TEST_FILE_URL = "https://sample/com/test.jpg"
     private val TEST_HEADER_OBJECT: Map<String, String> = mapOf("auth" to "123", "token" to "abc")
@@ -46,17 +47,14 @@ class MiniAppFileDownloaderSpec {
 
         // setup for the MimeTypeMap
         val mtm = MimeTypeMap.getSingleton()
-        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
-        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
-        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
-        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
-        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
+        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("jpg", TEST_IMAGE_MIME)
+        Shadows.shadowOf(mtm).addExtensionMimeTypMapping("jpeg", TEST_IMAGE_MIME)
     }
 
     @Test
     fun `getMimeType should return the correct mimeType for correct extension`() {
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(activity, 100)
-        miniAppFileDownloader.getMimeType(TEST_FILENAME) shouldBeEqualTo "image/jpeg"
+        miniAppFileDownloader.getMimeType(TEST_FILENAME) shouldBeEqualTo TEST_IMAGE_MIME
     }
 
     @Test
@@ -88,10 +86,8 @@ class MiniAppFileDownloaderSpec {
             val url: String = mockServer.url("/sample/com/test.jpg").toString()
 
             val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
-            miniAppFileDownloader.onDownloadSuccess = { fileName: String ->
-            }
-            miniAppFileDownloader.onDownloadFailed = { error: MiniAppDownloadFileError ->
-            }
+            miniAppFileDownloader.onDownloadSuccess = {}
+            miniAppFileDownloader.onDownloadFailed = {}
             miniAppFileDownloader.url = url
             miniAppFileDownloader.headers = TEST_HEADER_OBJECT
             miniAppFileDownloader.fileName = TEST_FILENAME
