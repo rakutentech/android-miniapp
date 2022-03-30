@@ -874,6 +874,43 @@ val miniAppFileChooser = MiniAppFileChooserDefault(
 ```
 `miniAppCameraPermissionDispatcher` is optional, No need to implement this if HostApp doesn't have camera permission in manifest or miniapp doesn't need to access camera.
 
+### File Downloading
+**API Docs:** [MiniAppFileDownloader](api/com.rakuten.tech.mobile.miniapp.file/-mini-app-file-downloader/)
+
+The mini app is able to downlad a file on the local storage. HostApp can use a default class provided by the SDK e.g. `MiniAppFileDownloaderDefault` to download the files.
+- At first, HostApp needs to initiate `MiniAppFileDownloaderDefault` in the `Activity`.
+
+```kotlin
+val fileDownloadReqCode = REQUEST_CODE // define a request code in HostApp
+val MiniAppFileDownloader = MiniAppFileDownloaderDefault(activity, requestCode = fileDownloadReqCode)
+```
+
+- Then set the `miniappFileDownloader` with the `miniAppMessageBridge`.
+```kotlin
+miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+```
+- Then, HostApp activity can receive the file Uri on `onActivityResult` and pass the Uri to download the file.
+```kotlin
+if (requestCode == fileDownloadReqCode) {
+    intent?.data?.let { destinationUri ->
+        miniAppFileDownloader.onReceivedResult(destinationUri)
+    }
+}
+```
+Host app can also implement their own `miniAppFileDownloader` by implementing the `MiniAppFileDownloader` interface.
+```kotlin
+val miniAppFileDownloader = object : MiniAppFileDownloader{
+    override fun onStartFileDownload(
+        fileName: String,
+        url: String,
+        headers: Map<String, String>,
+        onDownloadSuccess: (String) -> Unit,
+        onDownloadFailed: (MiniAppDownloadFileError) -> Unit
+    ) {
+           //.. Download the file
+      }
+}
+```
 ### Custom Permissions
 **API Docs:** [MiniApp.getCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/get-custom-permissions.html), [MiniApp.setCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/set-custom-permissions.html), [MiniApp.listDownloadedWithCustomPermissions](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-downloaded-with-custom-permissions.html)
 
