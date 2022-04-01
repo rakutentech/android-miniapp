@@ -31,6 +31,7 @@ import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.iap.Product
 import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
 import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
@@ -58,13 +59,14 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
-    private var miniAppPermissionCallback: (isGranted: Boolean) -> Unit = {}
-    private var miniAppCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
+    private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
+    private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
             if (ContextCompat.checkSelfPermission(
@@ -82,7 +84,7 @@ class MiniAppDisplayActivity : BaseActivity() {
             miniAppPermissionType: MiniAppDevicePermissionType,
             permissionRequestCallback: (isGranted: Boolean) -> Unit
         ) {
-            miniAppCameraPermissionCallback = permissionRequestCallback
+            miniappCameraPermissionCallback = permissionRequestCallback
             ActivityCompat.requestPermissions(
                 this@MiniAppDisplayActivity,
                 AppPermission.getDevicePermissionRequest(miniAppPermissionType),
@@ -93,6 +95,11 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val miniAppFileChooser = MiniAppFileChooserDefault(
         requestCode = fileChoosingReqCode,
         miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+    )
+
+    private val miniAppFileDownloader = MiniAppFileDownloaderDefault(
+        activity = this,
+        requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
     )
 
     private var appInfo: MiniAppInfo? = null
@@ -157,7 +164,6 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         showBackIcon()
         setResizableSoftInputMode(activity = this)
-
         if (!(intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag) || intent.hasExtra(appUrlTag))) {
             return
         }
@@ -252,7 +258,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
             ) {
-                miniAppPermissionCallback = callback
+                miniappPermissionCallback = callback
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
@@ -350,6 +356,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 
+        miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+
         // setup InAppPurchaseBridgeDispatcher
         val inAppPurchaseBridgeDispatcher = object: InAppPurchaseBridgeDispatcher {
 
@@ -388,8 +396,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when(requestCode){
-            AppPermission.ReqCode.CAMERA -> miniAppCameraPermissionCallback.invoke(isGranted)
-            else -> miniAppPermissionCallback.invoke(isGranted)
+            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            else -> miniappPermissionCallback.invoke(isGranted)
         }
     }
 
@@ -409,6 +417,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             miniAppFileChooser.onReceivedFiles(data)
+        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
+            data?.data?.let { destinationUri ->
+                miniAppFileDownloader.onReceivedResult(destinationUri)
+            }
         }
     }
 
