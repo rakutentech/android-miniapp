@@ -12,6 +12,8 @@ internal enum class Actype(val value: String) {
     SIGNATURE_VALIDATION_SUCCESS("mini_app_signature_validation_success"),
     SIGNATURE_VALIDATION_FAIL("mini_app_signature_validation_fail"),
     GET_UNIQUE_ID("mini_app_get_unique_id"),
+    GET_CONTACT_ID("mini_app_get_contact_id"),
+    GET_MAUID("mini_app_get_mauid"),
     REQUEST_PERMISSION("mini_app_request_permission"),
     REQUEST_CUSTOM_PERMISSIONS("mini_app_request_custom_permissions"),
     SHARE_INFO("mini_app_share_info"),
@@ -27,5 +29,6 @@ internal enum class Actype(val value: String) {
     SEND_MESSAGE_TO_CONTACT_ID("mini_app_send_message_to_contact_id"),
     SEND_MESSAGE_TO_MULTIPLE_CONTACTS("mini_app_send_message_to_multiple_contacts"),
     GET_HOST_ENVIRONMENT_INFO("mini_app_get_host_environment_info"),
+    FILE_DOWNLOAD("mini_app_download_file"),
     DEFAULT("")
 }

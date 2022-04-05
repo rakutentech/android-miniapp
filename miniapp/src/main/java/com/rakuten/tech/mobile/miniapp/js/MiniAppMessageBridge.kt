@@ -88,9 +88,31 @@ open class MiniAppMessageBridge {
     internal fun createBridgeExecutor(webViewListener: WebViewListener) =
         MiniAppBridgeExecutor(webViewListener)
 
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith("getContactId(onSuccess: (contactId: String) -> Unit," +
+                    "onError: (message: String) -> Unit)"
+        )
+    )
     /** Get provided id of mini app for any purpose. **/
     open fun getUniqueId(
         onSuccess: (uniqueId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
+    open fun getContactId(
+        onSuccess: (contactId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
+    open fun getMauid(
+        onSuccess: (mauId: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -163,6 +185,8 @@ open class MiniAppMessageBridge {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
+            ActionType.GET_CONTACT_ID.action -> onGetContactId(callbackObj)
+            ActionType.GET_MAUID.action -> onGetMauid(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
@@ -241,6 +265,36 @@ open class MiniAppMessageBridge {
         getUniqueId(successCallback, errorCallback)
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
+    }
+
+    private fun onGetContactId(callbackObj: CallbackObj) = try {
+        val successCallback = { contactId: String ->
+            bridgeExecutor.postValue(callbackObj.id, contactId)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_CONTACT_ID} $message"
+            )
+        }
+
+        getContactId(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_CONTACT_ID} ${e.message}")
+    }
+
+    private fun onGetMauid(callbackObj: CallbackObj) = try {
+        val successCallback = { mauId: String ->
+            bridgeExecutor.postValue(callbackObj.id, mauId)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} $message"
+            )
+        }
+
+        getMauid(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} ${e.message}")
     }
 
     private fun onRequestDevicePermission(callbackObj: CallbackObj) {
@@ -369,6 +423,8 @@ internal object ErrorBridgeMessage {
     const val NO_IMPL = "no implementation by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
+    const val ERR_CONTACT_ID = "Cannot get contact id:"
+    const val ERR_MAUID = "Cannot get mauid:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =

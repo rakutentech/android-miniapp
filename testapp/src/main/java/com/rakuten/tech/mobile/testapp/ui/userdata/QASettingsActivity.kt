@@ -86,6 +86,13 @@ class QASettingsActivity : BaseActivity() {
         binding.edtUniqueIdError.isEnabled = settings.uniqueIdError.isNotEmpty()
         binding.edtUniqueIdError.setText(settings.uniqueIdError)
         binding.switchUniqueIdError.isChecked = settings.uniqueIdError.isNotEmpty()
+
+        // contact id
+        binding.edtContactIdError.setText(settings.contactIdError)
+
+        // mauid
+        binding.edtMauidError.setText(settings.mauIdError)
+
     }
 
     private fun startListeners(){
@@ -140,6 +147,20 @@ class QASettingsActivity : BaseActivity() {
                 return
             } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
         } else settings.uniqueIdError = ""
+
+        //Save contact ID error response
+        if (binding.edtContactIdError.text.isNullOrEmpty()) {
+            settings.contactIdError = ""
+        } else {
+            settings.contactIdError = binding.edtContactIdError.text.toString()
+        }
+
+        //Save mauID error response
+        if (binding.edtMauidError.text.isNullOrEmpty()) {
+            settings.mauIdError = ""
+        } else {
+            settings.mauIdError = binding.edtMauidError.text.toString()
+        }
 
         // post tasks
         hideSoftKeyboard(binding.root)
