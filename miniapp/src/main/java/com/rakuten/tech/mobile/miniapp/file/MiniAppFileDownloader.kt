@@ -113,6 +113,13 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         openCreateDocIntent(activity, fileName)
     }
 
+    /**
+     * Can be used when HostApp wants to cancel the file download operation.
+     */
+    fun onCancel() {
+        onDownloadSuccess.invoke("")
+    }
+
     @VisibleForTesting
     internal fun openCreateDocIntent(activity: Activity, fileName: String) {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {

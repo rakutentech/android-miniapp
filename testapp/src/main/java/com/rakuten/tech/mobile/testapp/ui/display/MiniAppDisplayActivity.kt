@@ -406,6 +406,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (Activity.RESULT_OK != resultCode) {
             miniAppFileChooser.onCancel()
+            miniAppFileDownloader.onCancel()
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
