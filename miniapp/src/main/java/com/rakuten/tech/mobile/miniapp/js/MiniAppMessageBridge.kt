@@ -7,12 +7,14 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -21,12 +23,12 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
@@ -45,6 +47,8 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
+    private val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
+
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -63,17 +67,26 @@ open class MiniAppMessageBridge {
         this.bridgeExecutor = createBridgeExecutor(webViewListener)
         this.customPermissionCache = customPermissionCache
         this.downloadedManifestCache = downloadedManifestCache
-        this.screenBridgeDispatcher = ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
+        this.screenBridgeDispatcher =
+            ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         this.ratDispatcher = ratDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-        userInfoBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId)
+        miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
+        userInfoBridge.setMiniAppComponents(
+            bridgeExecutor,
+            customPermissionCache,
+            downloadedManifestCache,
+            miniAppId
+        )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
 
         miniAppViewInitialized = true
     }
 
     @VisibleForTesting
-    internal fun createBridgeExecutor(webViewListener: WebViewListener) = MiniAppBridgeExecutor(webViewListener)
+    internal fun createBridgeExecutor(webViewListener: WebViewListener) =
+        MiniAppBridgeExecutor(webViewListener)
 
     /** Get provided id of mini app for any purpose. **/
     open fun getUniqueId(
@@ -157,9 +170,14 @@ open class MiniAppMessageBridge {
             ActionType.SHOW_AD.action -> adBridgeDispatcher.onShowAd(callbackObj.id, jsonStr)
             ActionType.GET_USER_NAME.action -> userInfoBridge.onGetUserName(callbackObj.id)
             ActionType.GET_PROFILE_PHOTO.action -> userInfoBridge.onGetProfilePhoto(callbackObj.id)
-            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridge.onGetAccessToken(callbackObj.id, jsonStr)
+            ActionType.GET_ACCESS_TOKEN.action -> userInfoBridge.onGetAccessToken(
+                callbackObj.id,
+                jsonStr
+            )
             ActionType.GET_POINTS.action -> userInfoBridge.onGetPoints(callbackObj.id)
-            ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(callbackObj)
+            ActionType.SET_SCREEN_ORIENTATION.action -> screenBridgeDispatcher.onScreenRequest(
+                callbackObj
+            )
             ActionType.GET_CONTACTS.action -> userInfoBridge.onGetContacts(callbackObj.id)
             ActionType.SEND_MESSAGE_TO_CONTACT.action -> chatBridge.onSendMessageToContact(
                 callbackObj.id, jsonStr
@@ -171,13 +189,22 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
+                callbackObj.id,
+                jsonStr
+            )
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
 
-    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer19]. **/
-    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) = adBridgeDispatcher.setAdMobDisplayer(adDisplayer)
+    /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
+    fun setAdMobDisplayer(adDisplayer: MiniAppAdDisplayer) =
+        adBridgeDispatcher.setAdMobDisplayer(adDisplayer)
+
+    /** Set implemented file downloader. Can use the default provided class from sdk [MiniAppFileDownloaderDefault]. **/
+    fun setMiniAppFileDownloader(miniAppFileDownloader: MiniAppFileDownloader) =
+        miniAppFileDownloadDispatcher.setFileDownloader(miniAppFileDownloader)
 
     /**
      * Set implemented userInfoBridgeDispatcher.
@@ -207,7 +234,7 @@ open class MiniAppMessageBridge {
         }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(
-                    callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} $message"
+                callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} $message"
             )
         }
 
@@ -225,10 +252,12 @@ open class MiniAppMessageBridge {
 
             requestDevicePermission(
                 MiniAppDevicePermissionType.getValue(permissionParam.permission)
-            ) { isGranted -> onRequestDevicePermissionsResult(
-                callbackId = callbackObj.id,
-                isGranted = isGranted
-            ) }
+            ) { isGranted ->
+                onRequestDevicePermissionsResult(
+                    callbackId = callbackObj.id,
+                    isGranted = isGranted
+                )
+            }
         } catch (e: Exception) {
             bridgeExecutor.postError(
                 callbackObj.id,
@@ -279,8 +308,11 @@ open class MiniAppMessageBridge {
             if (isSuccess)
                 bridgeExecutor.postValue(callbackId, message ?: SUCCESS)
             else
-                bridgeExecutor.postError(callbackId,
-                    message ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp.")
+                bridgeExecutor.postError(
+                    callbackId,
+                    message
+                        ?: "${ErrorBridgeMessage.ERR_SHARE_CONTENT} Unknown error message from hostapp."
+                )
         }
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
@@ -299,8 +331,9 @@ open class MiniAppMessageBridge {
 
         getHostEnvironmentInfo(successCallback, errorCallback)
     } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId,
-                Gson().toJson(MiniAppBridgeErrorModel("$ERR_GET_ENVIRONMENT_INFO ${e.message}"))
+        bridgeExecutor.postError(
+            callbackId,
+            Gson().toJson(MiniAppBridgeErrorModel("$ERR_GET_ENVIRONMENT_INFO ${e.message}"))
         )
     }
 
@@ -309,9 +342,15 @@ open class MiniAppMessageBridge {
     /** Inform the permission request result to MiniApp. **/
     internal fun onRequestDevicePermissionsResult(callbackId: String, isGranted: Boolean) {
         if (isGranted)
-            bridgeExecutor.postValue(callbackId, MiniAppDevicePermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postValue(
+                callbackId,
+                MiniAppDevicePermissionResult.getValue(isGranted).type
+            )
         else
-            bridgeExecutor.postError(callbackId, MiniAppDevicePermissionResult.getValue(isGranted).type)
+            bridgeExecutor.postError(
+                callbackId,
+                MiniAppDevicePermissionResult.getValue(isGranted).type
+            )
     }
 
     internal fun onWebViewDetach() {

@@ -27,6 +27,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
+import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
@@ -60,6 +61,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
+    private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
             if (ContextCompat.checkSelfPermission(
@@ -88,6 +90,11 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val miniAppFileChooser = MiniAppFileChooserDefault(
         requestCode = fileChoosingReqCode,
         miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+    )
+
+    private val miniAppFileDownloader = MiniAppFileDownloaderDefault(
+        activity = this,
+        requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
     )
 
     private var appInfo: MiniAppInfo? = null
@@ -152,7 +159,6 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         showBackIcon()
         setResizableSoftInputMode(activity = this)
-
         if (!(intent.hasExtra(miniAppTag) || intent.hasExtra(appIdTag) || intent.hasExtra(appUrlTag))) {
             return
         }
@@ -344,6 +350,8 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+
+        miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
     }
 
     override fun onRequestPermissionsResult(
@@ -364,6 +372,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         if (Activity.RESULT_OK != resultCode) {
             miniAppFileChooser.onCancel()
+            miniAppFileDownloader.onCancel()
         }
 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
@@ -375,6 +384,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             miniAppFileChooser.onReceivedFiles(data)
+        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
+            data?.data?.let { destinationUri ->
+                miniAppFileDownloader.onReceivedResult(destinationUri)
+            }
         }
     }
 
