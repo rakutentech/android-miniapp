@@ -102,14 +102,12 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
 
         // prepare the product to be invoked using onSuccess
         skuDetails?.let {
-            val productPrice = ProductPrice(
-                it.priceAmountMicros.toInt(), it.priceCurrencyCode, it.price
-            )
+            val productPrice = ProductPrice(it.priceCurrencyCode, it.price)
             val product = Product(
                 itemId, it.title, it.description, productPrice
             )
             val purchasedProduct = PurchasedProduct(
-                "", product, ""
+                product, "", ""
             )
             onSuccess(purchasedProduct)
         }

@@ -14,7 +14,6 @@ data class Product(
 /** An object to include the price information of a [Product]. */
 @Keep
 data class ProductPrice(
-    val amount: Int,
     val currencyCode: String,
     val price: String
 )
@@ -22,7 +21,7 @@ data class ProductPrice(
 /** An object to include the purchased [Product]. */
 @Keep
 data class PurchasedProduct(
-    val orderId: String,
     val product: Product,
-    val token: String
+    val transactionId: String,
+    val transactionDate: String
 )
