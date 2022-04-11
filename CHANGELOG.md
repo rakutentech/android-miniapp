@@ -1,8 +1,8 @@
 ## CHANGELOG
-### 4.x.x (In progress)
+### 4.1.0 (2022-04-11)
 **SDK**
 - **Feature:** Added interface `MiniAppFileDownloader` to download files in device from miniapp.
-- **Update:** Updated create method with optional fromCache variable that helps to load the mini-app from cache.
+- **Update:** Updated `MiniApp.create` method with optional `fromCache` variable that helps to load the mini-app from cache.
 
 ### 4.0.0 (2022-03-01)
 **SDK**
