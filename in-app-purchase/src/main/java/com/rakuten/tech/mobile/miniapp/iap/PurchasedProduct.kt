@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import androidx.annotation.Keep
 
-/** Product object for miniapp. */
+/** An object to include in-app purchase product's information. */
 @Keep
 data class Product(
     val id: String,
@@ -11,7 +11,7 @@ data class Product(
     val price: ProductPrice
 )
 
-/** ProductPrice object for miniapp. */
+/** An object to include the price information of a [Product]. */
 @Keep
 data class ProductPrice(
     val amount: Int,
@@ -19,7 +19,7 @@ data class ProductPrice(
     val price: String
 )
 
-/** PurchasedProduct object for miniapp. */
+/** An object to include the purchased [Product]. */
 @Keep
 data class PurchasedProduct(
     val orderId: String,

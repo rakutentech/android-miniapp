@@ -1,12 +1,9 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
-
 /**
  * Functionalities related to In-App purchase.
  */
-interface InAppPurchaseBridgeDispatcher {
+interface InAppPurchaseProvider {
 
     /**
      * Triggered when Mini App wants purchase an item.
@@ -17,7 +14,5 @@ interface InAppPurchaseBridgeDispatcher {
         itemId: String,
         onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
         onError: (message: String) -> Unit
-    ) {
-        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
-    }
+    )
 }

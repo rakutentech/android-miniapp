@@ -115,8 +115,8 @@ class InAppPurchaseBridgeSpec {
     private fun createPurchaseDispatcher(
         shouldCreate: Boolean,
         canPurchase: Boolean
-    ): InAppPurchaseBridgeDispatcher {
-        return if (shouldCreate) object : InAppPurchaseBridgeDispatcher {
+    ): InAppPurchaseProvider {
+        return if (shouldCreate) object : InAppPurchaseProvider {
             override fun purchaseItem(
                 itemId: String,
                 onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
@@ -126,11 +126,11 @@ class InAppPurchaseBridgeSpec {
                 else onError("")
             }
         } else {
-            object : InAppPurchaseBridgeDispatcher {}
+            object : InAppPurchaseProvider {}
         }
     }
 
-    private fun createIAPBridgeWrapper(dispatcher: InAppPurchaseBridgeDispatcher): InAppPurchaseBridge {
+    private fun createIAPBridgeWrapper(dispatcher: InAppPurchaseProvider): InAppPurchaseBridge {
         val wrapper = InAppPurchaseBridge()
         wrapper.setMiniAppComponents(
             bridgeExecutor,

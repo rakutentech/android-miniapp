@@ -15,8 +15,7 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridge
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -50,7 +49,7 @@ open class MiniAppMessageBridge {
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
     private val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
-    private val inAppPurchaseBridge = InAppPurchaseBridge()
+    private val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -82,7 +81,7 @@ open class MiniAppMessageBridge {
             miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        inAppPurchaseBridge.setMiniAppComponents(bridgeExecutor, miniAppId)
+        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId)
 
         miniAppViewInitialized = true
     }
@@ -196,7 +195,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id,
                 jsonStr
             )
-            ActionType.PURCHASE_ITEM.action -> inAppPurchaseBridge.onPurchaseItem(callbackObj.id, jsonStr)
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -225,11 +224,11 @@ open class MiniAppMessageBridge {
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
 
     /**
-     * Set implemented InAppPurchaseBridgeDispatcher.
-     * Can use the default provided class from sdk [InAppPurchaseBridgeDispatcher].
+     * Set implemented InAppPurchaseProvider.
+     * Can use the default provided class from sdk [InAppPurchaseProvider].
      **/
-    fun setInAppPurchaseBridgeDispatcher(bridgeDispatcher: InAppPurchaseBridgeDispatcher) =
-        inAppPurchaseBridge.setIAPBridgeDispatcher(bridgeDispatcher)
+    fun setInAppPurchaseProvider(iapProvider: InAppPurchaseProvider) =
+        iapBridgeDispatcher.setInAppPurchaseProvider(iapProvider)
 
     /**
      * Dispatch Native events to miniapp.

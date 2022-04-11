@@ -27,11 +27,8 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.iap.Product
-import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.iap.*
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
@@ -48,7 +45,7 @@ import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
-import com.rakuten.tech.mobile.testapp.ui.iap.IAPExecutor
+//import com.rakuten.tech.mobile.testapp.ui.iap.IAPExecutor
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -358,34 +355,8 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
 
-        // setup InAppPurchaseBridgeDispatcher
-        val inAppPurchaseBridgeDispatcher = object: InAppPurchaseBridgeDispatcher {
-
-            override fun purchaseItem(
-                itemId: String,
-                onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                // purchasing In-App item using GooglePlay billing library
-                val iapExecutor = IAPExecutor(this@MiniAppDisplayActivity)
-                iapExecutor.startPurchasingProduct(itemId)
-
-                // prepare the product to be invoked using onSuccess
-                iapExecutor.getProductDetails()?.let {
-                    val productPrice = ProductPrice(
-                        it.priceAmountMicros.toInt(), it.priceCurrencyCode, it.price
-                    )
-                    val product = Product(
-                        itemId, it.title, it.description, productPrice
-                    )
-                    val purchasedProduct = PurchasedProduct(
-                        "", product, ""
-                    )
-                    onSuccess(purchasedProduct)
-                }
-            }
-        }
-        miniAppMessageBridge.setInAppPurchaseBridgeDispatcher(inAppPurchaseBridgeDispatcher)
+        // setup InAppPurchaseProvider
+        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseExecutor(this@MiniAppDisplayActivity))
     }
 
     override fun onRequestPermissionsResult(

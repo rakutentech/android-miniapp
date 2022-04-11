@@ -193,8 +193,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "com.google.android.gms:play-services-ads:$google_ads"
     implementation "com.microsoft.appcenter:appcenter-crashes:$appCenterSdkVersion"
-    implementation "com.android.billingclient:billing-ktx:$billing_version"
-
+    implementation project(':in-app-purchase')
     testImplementation "junit:junit:$junit"
 }
 

@@ -1,23 +1,24 @@
-package com.rakuten.tech.mobile.testapp.ui.iap
+package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
 import android.util.Log
 import com.android.billingclient.api.*
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 
-class IAPExecutor(val activity: Activity) {
+/**
+ * The In-App purchase executor which acts as a default implementation of InAppPurchaseProvider.
+ * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
+ */
+class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvider {
     private var billingClient: BillingClient? = null
     private var skuDetails: SkuDetails? = null
 
-    fun startPurchasingProduct(itemID: String) {
+    private fun startPurchasingProduct(itemID: String) {
         setUpBillingClient(itemID)
         retrieveSkuDetails()
     }
 
-    fun getProductDetails() = skuDetails
-
     private fun setUpBillingClient(productID: String) {
-        billingClient = BillingClient.newBuilder(activity)
+        billingClient = BillingClient.newBuilder(context)
             .setListener(purchaseUpdateListener)
             .enablePendingPurchases()
             .build()
@@ -54,11 +55,7 @@ class IAPExecutor(val activity: Activity) {
                     this.skuDetails = skuDetails
                 }
             } else {
-                showAlertDialog(
-                    activity,
-                    "Warning!",
-                    "There is an error happened while purchasing item"
-                )
+                Log.e(TAG, "There is an error happened while purchasing item")
             }
         }
     }
@@ -68,7 +65,7 @@ class IAPExecutor(val activity: Activity) {
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(it)
                 .build()
-            billingClient?.launchBillingFlow(activity, billingFlowParams)?.responseCode
+            billingClient?.launchBillingFlow(context, billingFlowParams)?.responseCode
         }
     }
 
@@ -95,7 +92,30 @@ class IAPExecutor(val activity: Activity) {
         }
     }
 
+    override fun purchaseItem(
+        itemId: String,
+        onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        // purchasing In-App item using GooglePlay billing library
+        startPurchasingProduct(itemId)
+
+        // prepare the product to be invoked using onSuccess
+        skuDetails?.let {
+            val productPrice = ProductPrice(
+                it.priceAmountMicros.toInt(), it.priceCurrencyCode, it.price
+            )
+            val product = Product(
+                itemId, it.title, it.description, productPrice
+            )
+            val purchasedProduct = PurchasedProduct(
+                "", product, ""
+            )
+            onSuccess(purchasedProduct)
+        }
+    }
+
     private companion object {
-        val TAG: String? = IAPExecutor::class.java.canonicalName
+        val TAG: String? = InAppPurchaseExecutor::class.java.canonicalName
     }
 }

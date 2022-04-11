@@ -1,16 +1,15 @@
-package com.rakuten.tech.mobile.miniapp.iap
+package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
-import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
-import com.rakuten.tech.mobile.miniapp.js.PurchasedProductCallbackObj
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
 
 @Suppress("TooGenericExceptionCaught")
-internal class InAppPurchaseBridge {
+internal class InAppPurchaseBridgeDispatcher {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
     private var isMiniAppComponentReady = false
-    private lateinit var inAppPurchaseBridgeDispatcher: InAppPurchaseBridgeDispatcher
+    private lateinit var inAppPurchaseProvider: InAppPurchaseProvider
 
     fun setMiniAppComponents(
         bridgeExecutor: MiniAppBridgeExecutor,
@@ -21,20 +20,20 @@ internal class InAppPurchaseBridge {
         isMiniAppComponentReady = true
     }
 
-    fun setIAPBridgeDispatcher(dispatcher: InAppPurchaseBridgeDispatcher) {
-        this.inAppPurchaseBridgeDispatcher = dispatcher
+    fun setInAppPurchaseProvider(iapProvider: InAppPurchaseProvider) {
+        this.inAppPurchaseProvider = iapProvider
     }
 
     private fun <T> whenReady(callbackId: String, callback: () -> T) {
         if (isMiniAppComponentReady) {
-            if (this::inAppPurchaseBridgeDispatcher.isInitialized)
+            if (this::inAppPurchaseProvider.isInitialized)
                 callback.invoke()
             else
                 bridgeExecutor.postError(callbackId, ErrorBridgeMessage.NO_IMPL)
         }
     }
 
-    internal fun onPurchaseItem(callbackId: String, jsonStr: String) =
+    fun onPurchaseItem(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
                 val callbackObj: PurchasedProductCallbackObj =
@@ -42,7 +41,7 @@ internal class InAppPurchaseBridge {
                 val successCallback = { purchasedProduct: PurchasedProduct ->
                     bridgeExecutor.postValue(callbackId, Gson().toJson(purchasedProduct))
                 }
-                inAppPurchaseBridgeDispatcher.purchaseItem(
+                inAppPurchaseProvider.purchaseItem(
                     callbackObj.param.itemId,
                     successCallback,
                     createErrorCallback(callbackId)
@@ -56,7 +55,7 @@ internal class InAppPurchaseBridge {
         bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
     }
 
-    internal companion object {
+    companion object {
         const val ERR_IN_APP_PURCHASE = "Cannot purchase item:"
     }
 }
