@@ -2,7 +2,15 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
 import android.util.Log
-import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.SkuDetailsParams
 
 /**
  * The In-App purchase executor which acts as a default implementation of InAppPurchaseProvider.

@@ -1,11 +1,14 @@
-package com.rakuten.tech.mobile.miniapp.iap
+package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.Product
+import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
@@ -16,7 +19,7 @@ import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class InAppPurchaseBridgeSpec {
+class InAppPurchaseBridgeDispatcherSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val callbackObj = CallbackObj(
         action = ActionType.PURCHASE_ITEM.action,
@@ -26,13 +29,13 @@ class InAppPurchaseBridgeSpec {
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private val productPrice = ProductPrice(
-        123, "JPY", "1234"
+        "JPY", "1234"
     )
     private val product = Product(
         "itemId", "title", "description", productPrice
     )
     private val purchasedProduct = PurchasedProduct(
-        "dummy_orderId", product, "dummy_token"
+        product, "dummy_transactionId", "YYYY-MM-DD"
     )
     private val purchaseJsonStr: String = Gson().toJson(
         CallbackObj(
@@ -66,57 +69,54 @@ class InAppPurchaseBridgeSpec {
         verify(bridgeExecutor).postError(callbackObj.id, errMsg)
     }
 
-    @Test
+    @Test(expected = MiniAppSdkException::class)
     fun `postError should be called when there is no purchaseItem implementation`() {
-        val dispatcher = Mockito.spy(
-            createPurchaseDispatcher(
+        val provider = Mockito.spy(
+            createPurchaseProvider(
                 shouldCreate = false,
                 canPurchase = false
             )
         )
-        miniAppBridge.setInAppPurchaseBridgeDispatcher(dispatcher)
-        val errMsg = "${InAppPurchaseBridge.ERR_IN_APP_PURCHASE} null"
-        miniAppBridge.postMessage(Gson().toJson(callbackObj))
-
-        verify(bridgeExecutor).postError(callbackObj.id, errMsg)
+        miniAppBridge.setInAppPurchaseProvider(provider)
     }
 
     @Test
-    fun `postError should be called when can't purchase item successfully`() {
-        val dispatcher = Mockito.spy(
-            createPurchaseDispatcher(
+    fun `postError should be called when can't purchase item`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
                 shouldCreate = true,
                 canPurchase = false
             )
         )
-        val wrapper = Mockito.spy(createIAPBridgeWrapper(dispatcher))
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
 
         verify(bridgeExecutor).postError(
             callbackObj.id,
-            InAppPurchaseBridge.ERR_IN_APP_PURCHASE + " "
+            InAppPurchaseBridgeDispatcher.ERR_IN_APP_PURCHASE + " "
         )
     }
 
     @Test
     fun `postValue should be called when purchasing item successfully`() {
-        val dispatcher = Mockito.spy(
-            createPurchaseDispatcher(
+        val provider = Mockito.spy(
+            createPurchaseProvider(
                 shouldCreate = true,
                 canPurchase = true
             )
         )
-        val wrapper = Mockito.spy(createIAPBridgeWrapper(dispatcher))
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
 
         verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProduct))
     }
 
-    private fun createPurchaseDispatcher(
+    private fun createPurchaseProvider(
         shouldCreate: Boolean,
         canPurchase: Boolean
     ): InAppPurchaseProvider {
         return if (shouldCreate) object : InAppPurchaseProvider {
+
             override fun purchaseItem(
                 itemId: String,
                 onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
@@ -126,17 +126,17 @@ class InAppPurchaseBridgeSpec {
                 else onError("")
             }
         } else {
-            object : InAppPurchaseProvider {}
+            throw MiniAppSdkException("No method has been implemented.")
         }
     }
 
-    private fun createIAPBridgeWrapper(dispatcher: InAppPurchaseProvider): InAppPurchaseBridge {
-        val wrapper = InAppPurchaseBridge()
+    private fun createIAPBridgeWrapper(provider: InAppPurchaseProvider): InAppPurchaseBridgeDispatcher {
+        val wrapper = InAppPurchaseBridgeDispatcher()
         wrapper.setMiniAppComponents(
             bridgeExecutor,
             TEST_MA.id
         )
-        wrapper.setIAPBridgeDispatcher(dispatcher)
+        wrapper.setInAppPurchaseProvider(provider)
         return wrapper
     }
 

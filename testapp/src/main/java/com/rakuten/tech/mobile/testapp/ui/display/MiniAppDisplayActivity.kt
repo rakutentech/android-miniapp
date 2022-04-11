@@ -45,7 +45,6 @@ import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
-//import com.rakuten.tech.mobile.testapp.ui.iap.IAPExecutor
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
