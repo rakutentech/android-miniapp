@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.webkit.JavascriptInterface
@@ -17,7 +16,6 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_DEVICE_LOCATION_DISABLED
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -254,15 +252,6 @@ open class MiniAppMessageBridge {
                 object : TypeToken<DevicePermission>() {}.type
             )
 
-            if (permissionParam.permission == MiniAppDevicePermissionType.LOCATION.name) {
-                locationManager = activity.getSystemService(
-                    Context.LOCATION_SERVICE
-                ) as LocationManager
-                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    throw Exception(ERR_DEVICE_LOCATION_DISABLED)
-                }
-            }
-
             requestDevicePermission(
                 MiniAppDevicePermissionType.getValue(permissionParam.permission)
             ) { isGranted ->
@@ -384,7 +373,6 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
-    const val ERR_DEVICE_LOCATION_DISABLED = "Device location service is disabled."
     const val NO_IMPLEMENT_DEVICE_PERMISSION =
         "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
