@@ -117,7 +117,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
      * Can be used when HostApp wants to cancel the file download operation.
      */
     fun onCancel() {
-        onDownloadSuccess.invoke("")
+        if (this::onDownloadSuccess.isInitialized)
+            onDownloadSuccess.invoke("")
     }
 
     @VisibleForTesting
