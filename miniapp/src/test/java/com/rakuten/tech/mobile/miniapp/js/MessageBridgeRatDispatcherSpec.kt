@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import kotlin.test.assertEquals
 
@@ -37,7 +36,7 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.GET_HOST_ENVIRONMENT_INFO.action to Actype.GET_HOST_ENVIRONMENT_INFO,
         ActionType.FILE_DOWNLOAD.action to Actype.FILE_DOWNLOAD,
         ActionType.GET_UNIQUE_ID.action to Actype.GET_UNIQUE_ID,
-        ActionType.GET_CONTACT_ID.action to Actype.GET_CONTACT_ID,
+        ActionType.GET_CONTACT_ID.action to Actype.GET_MESSAGING_UNIQUE_ID,
         ActionType.GET_MAUID.action to Actype.GET_MAUID
 
     )

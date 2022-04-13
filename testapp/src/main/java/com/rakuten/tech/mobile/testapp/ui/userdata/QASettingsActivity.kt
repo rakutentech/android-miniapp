@@ -88,7 +88,7 @@ class QASettingsActivity : BaseActivity() {
         binding.switchUniqueIdError.isChecked = settings.uniqueIdError.isNotEmpty()
 
         // contact id
-        binding.edtContactIdError.setText(settings.contactIdError)
+        binding.edtContactIdError.setText(settings.messagingUniqueIdError)
 
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
@@ -150,9 +150,9 @@ class QASettingsActivity : BaseActivity() {
 
         //Save contact ID error response
         if (binding.edtContactIdError.text.isNullOrEmpty()) {
-            settings.contactIdError = ""
+            settings.messagingUniqueIdError = ""
         } else {
-            settings.contactIdError = binding.edtContactIdError.text.toString()
+            settings.messagingUniqueIdError = binding.edtContactIdError.text.toString()
         }
 
         //Save mauID error response

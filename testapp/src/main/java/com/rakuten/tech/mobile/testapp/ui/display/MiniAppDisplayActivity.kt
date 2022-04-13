@@ -249,13 +249,13 @@ class MiniAppDisplayActivity : BaseActivity() {
                 else onSuccess(AppSettings.instance.uniqueId)
             }
 
-            override fun getContactId(
-                onSuccess: (contactId: String) -> Unit,
+            override fun getMessagingUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
                 onError: (message: String) -> Unit
             ) {
                 val errorMsg = AppSettings.instance.uniqueIdError
                 if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess("TEST-CONTACT-ID-01234-56789")
+                else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
             }
 
             override fun getMauid(

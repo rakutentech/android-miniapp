@@ -12,7 +12,7 @@ internal enum class Actype(val value: String) {
     SIGNATURE_VALIDATION_SUCCESS("mini_app_signature_validation_success"),
     SIGNATURE_VALIDATION_FAIL("mini_app_signature_validation_fail"),
     GET_UNIQUE_ID("mini_app_get_unique_id"),
-    GET_CONTACT_ID("mini_app_get_contact_id"),
+    GET_MESSAGING_UNIQUE_ID("mini_app_get_messaging_unique_id"),
     GET_MAUID("mini_app_get_mauid"),
     REQUEST_PERMISSION("mini_app_request_permission"),
     REQUEST_CUSTOM_PERMISSIONS("mini_app_request_custom_permissions"),

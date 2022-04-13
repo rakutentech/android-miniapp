@@ -73,10 +73,10 @@ class AppSettings private constructor(context: Context) {
             cache.uniqueIdError = uniqueIdError
         }
 
-    var contactIdError: String
-        get() = cache.contactIdError ?: ""
-        set(contactIdError) {
-            cache.contactIdError = contactIdError
+    var messagingUniqueIdError: String
+        get() = cache.messagingUniqueIdError ?: ""
+        set(messagingUniqueIdError) {
+            cache.messagingUniqueIdError = messagingUniqueIdError
         }
 
     var mauIdError: String
@@ -232,7 +232,7 @@ private class Settings(context: Context) {
         get() = prefs.getString(UNIQUE_ID_ERROR, null)
         set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
 
-    var contactIdError: String?
+    var messagingUniqueIdError: String?
         get() = prefs.getString(CONTACT_ID_ERROR, null)
         set(contactIdError) = prefs.edit().putString(CONTACT_ID_ERROR, contactIdError).apply()
 

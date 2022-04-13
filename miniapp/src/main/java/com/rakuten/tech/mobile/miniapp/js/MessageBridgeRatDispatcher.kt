@@ -19,7 +19,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
     internal fun getAcType(action: String): Actype {
         return when (action) {
             ActionType.GET_UNIQUE_ID.action -> Actype.GET_UNIQUE_ID
-            ActionType.GET_CONTACT_ID.action -> Actype.GET_CONTACT_ID
+            ActionType.GET_MESSAGING_UNIQUE_ID.action -> Actype.GET_MESSAGING_UNIQUE_ID
             ActionType.GET_MAUID.action -> Actype.GET_MAUID
             ActionType.REQUEST_PERMISSION.action -> Actype.REQUEST_PERMISSION
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> Actype.REQUEST_CUSTOM_PERMISSIONS
