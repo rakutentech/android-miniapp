@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
 import android.content.Intent
-import android.location.LocationManager
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -274,13 +273,13 @@ open class MiniAppMessageBridge {
         }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(
-                callbackObj.id, "${ErrorBridgeMessage.ERR_CONTACT_ID} $message"
+                callbackObj.id, "${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} $message"
             )
         }
 
         getMessagingUniqueId(successCallback, errorCallback)
     } catch (e: Exception) {
-        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_CONTACT_ID} ${e.message}")
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} ${e.message}")
     }
 
     private fun onGetMauid(callbackObj: CallbackObj) = try {
@@ -424,7 +423,7 @@ internal object ErrorBridgeMessage {
     const val NO_IMPL = "no implementation by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
-    const val ERR_CONTACT_ID = "Cannot get contact id:"
+    const val ERR_MESSAGING_UNIQUE_ID = "Cannot get messaging unique id:"
     const val ERR_MAUID = "Cannot get mauid:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"

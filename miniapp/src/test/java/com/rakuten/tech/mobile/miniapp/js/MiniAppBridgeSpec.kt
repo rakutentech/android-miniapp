@@ -47,8 +47,8 @@ open class BridgeCommon {
                 onSuccess(TEST_CALLBACK_VALUE)
             }
 
-            override fun getContactId(
-                onSuccess: (contactId: String) -> Unit,
+            override fun getMessagingUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
                 onError: (message: String) -> Unit
             ) {
                 onSuccess(TEST_CALLBACK_VALUE)
@@ -100,8 +100,9 @@ open class BridgeCommon {
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
-        override fun getContactId(
-            onSuccess: (contactId: String) -> Unit,
+
+        override fun getMessagingUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
@@ -151,11 +152,11 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         id = TEST_CALLBACK_ID)
     private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
 
-    private val contactIdCallbackObj = CallbackObj(
-        action = ActionType.GET_CONTACT_ID.action,
+    private val messagingUniqueIdCallbackObj = CallbackObj(
+        action = ActionType.GET_MESSAGING_UNIQUE_ID.action,
         param = null,
         id = TEST_CALLBACK_ID)
-    private val contactIdJsonStr = Gson().toJson(contactIdCallbackObj)
+    private val messagingUniqueIdJsonStr = Gson().toJson(messagingUniqueIdCallbackObj)
 
     private val mauIdCallbackObj = CallbackObj(
         action = ActionType.GET_MAUID.action,
@@ -216,15 +217,15 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `should be able to return contact id to miniapp`() {
-        miniAppBridge.postMessage(contactIdJsonStr)
+        miniAppBridge.postMessage(messagingUniqueIdJsonStr)
 
         verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
     @Test
     fun `postError should be called when cannot get contact id`() {
-        val errMsg = "Cannot get contact id: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_CONTACT_ID} null")
+        val errMsg = "Cannot get messaging unique id: null"
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} null")
         val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
@@ -235,7 +236,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             miniAppId = TEST_MA_ID,
             ratDispatcher = mock()
         )
-        miniAppBridge.postMessage(contactIdJsonStr)
+        miniAppBridge.postMessage(messagingUniqueIdJsonStr)
 
         verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }

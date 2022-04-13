@@ -36,7 +36,7 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.GET_HOST_ENVIRONMENT_INFO.action to Actype.GET_HOST_ENVIRONMENT_INFO,
         ActionType.FILE_DOWNLOAD.action to Actype.FILE_DOWNLOAD,
         ActionType.GET_UNIQUE_ID.action to Actype.GET_UNIQUE_ID,
-        ActionType.GET_CONTACT_ID.action to Actype.GET_MESSAGING_UNIQUE_ID,
+        ActionType.GET_MESSAGING_UNIQUE_ID.action to Actype.GET_MESSAGING_UNIQUE_ID,
         ActionType.GET_MAUID.action to Actype.GET_MAUID
 
     )
