@@ -233,8 +233,9 @@ private class Settings(context: Context) {
         set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
 
     var messagingUniqueIdError: String?
-        get() = prefs.getString(CONTACT_ID_ERROR, null)
-        set(contactIdError) = prefs.edit().putString(CONTACT_ID_ERROR, contactIdError).apply()
+        get() = prefs.getString(MESSAGING_UNIQUE_ID_ERROR, null)
+        set(messagingUniqueIdError) = prefs.edit()
+            .putString(MESSAGING_UNIQUE_ID_ERROR, messagingUniqueIdError).apply()
 
     var mauIdError: String?
         get() = prefs.getString(MAUID_ERROR, null)
@@ -313,7 +314,7 @@ private class Settings(context: Context) {
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
         private const val UNIQUE_ID_ERROR = "unique_id_error"
-        private const val CONTACT_ID_ERROR = "contact_id_error"
+        private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
         private const val MAUID_ERROR = "mauid_error"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"

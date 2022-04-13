@@ -121,10 +121,10 @@
             android:padding="@dimen/small_4">
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtContactIdError"
+                android:id="@+id/edtMessagingUniqueIdError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_contact_id_error"
+                android:hint="@string/hint_messaging_unique_id_error"
                 android:imeOptions="actionDone"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
