@@ -45,7 +45,6 @@ open class MiniAppMessageBridge {
     private lateinit var downloadedManifestCache: DownloadedManifestCache
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
-    private lateinit var locationManager: LocationManager
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
