@@ -47,6 +47,20 @@ open class BridgeCommon {
                 onSuccess(TEST_CALLBACK_VALUE)
             }
 
+            override fun getMessagingUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
+
+            override fun getMauid(
+                onSuccess: (mauId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
+
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
@@ -82,6 +96,20 @@ open class BridgeCommon {
 
         override fun getUniqueId(
             onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            onSuccess(TEST_CALLBACK_VALUE)
+        }
+
+        override fun getMessagingUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            onSuccess(TEST_CALLBACK_VALUE)
+        }
+
+        override fun getMauid(
+            onSuccess: (mauId: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
@@ -123,6 +151,18 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         param = null,
         id = TEST_CALLBACK_ID)
     private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
+
+    private val messagingUniqueIdCallbackObj = CallbackObj(
+        action = ActionType.GET_MESSAGING_UNIQUE_ID.action,
+        param = null,
+        id = TEST_CALLBACK_ID)
+    private val messagingUniqueIdJsonStr = Gson().toJson(messagingUniqueIdCallbackObj)
+
+    private val mauIdCallbackObj = CallbackObj(
+        action = ActionType.GET_MAUID.action,
+        param = null,
+        id = TEST_CALLBACK_ID)
+    private val mauIdJsonStr = Gson().toJson(mauIdCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
@@ -171,6 +211,58 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             ratDispatcher = mock()
         )
         miniAppBridge.postMessage(uniqueIdJsonStr)
+
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `should be able to return contact id to miniapp`() {
+        miniAppBridge.postMessage(messagingUniqueIdJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when cannot get contact id`() {
+        val errMsg = "Cannot get messaging unique id: null"
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} null")
+        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
+        )
+        miniAppBridge.postMessage(messagingUniqueIdJsonStr)
+
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+    }
+
+    @Test
+    fun `should be able to return mauid to miniapp`() {
+        miniAppBridge.postMessage(mauIdJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+    }
+
+    @Test
+    fun `postError should be called when cannot get mauid`() {
+        val errMsg = "Cannot get mauid: null"
+        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MAUID} null")
+        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        miniAppBridge.init(
+            activity = TestActivity(),
+            webViewListener = webViewListener,
+            customPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            miniAppId = TEST_MA_ID,
+            ratDispatcher = mock()
+        )
+        miniAppBridge.postMessage(mauIdJsonStr)
 
         verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }

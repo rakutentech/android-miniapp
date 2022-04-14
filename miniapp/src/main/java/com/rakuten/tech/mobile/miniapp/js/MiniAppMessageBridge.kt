@@ -6,9 +6,9 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -90,9 +90,31 @@ open class MiniAppMessageBridge {
     internal fun createBridgeExecutor(webViewListener: WebViewListener) =
         MiniAppBridgeExecutor(webViewListener)
 
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith("getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit," +
+                    "onError: (message: String) -> Unit)"
+        )
+    )
     /** Get provided id of mini app for any purpose. **/
     open fun getUniqueId(
         onSuccess: (uniqueId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
+    open fun getMessagingUniqueId(
+        onSuccess: (uniqueId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
+    open fun getMauid(
+        onSuccess: (mauId: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -165,6 +187,8 @@ open class MiniAppMessageBridge {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
+            ActionType.GET_MESSAGING_UNIQUE_ID.action -> onGetMessagingUniqueId(callbackObj)
+            ActionType.GET_MAUID.action -> onGetMauid(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
             ActionType.REQUEST_CUSTOM_PERMISSIONS.action -> onRequestCustomPermissions(jsonStr)
             ActionType.SHARE_INFO.action -> onShareContent(callbackObj.id, jsonStr)
@@ -251,6 +275,36 @@ open class MiniAppMessageBridge {
         getUniqueId(successCallback, errorCallback)
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
+    }
+
+    private fun onGetMessagingUniqueId(callbackObj: CallbackObj) = try {
+        val successCallback = { uniqueId: String ->
+            bridgeExecutor.postValue(callbackObj.id, uniqueId)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} $message"
+            )
+        }
+
+        getMessagingUniqueId(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} ${e.message}")
+    }
+
+    private fun onGetMauid(callbackObj: CallbackObj) = try {
+        val successCallback = { mauId: String ->
+            bridgeExecutor.postValue(callbackObj.id, mauId)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} $message"
+            )
+        }
+
+        getMauid(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} ${e.message}")
     }
 
     private fun onRequestDevicePermission(callbackObj: CallbackObj) {
@@ -379,6 +433,8 @@ internal object ErrorBridgeMessage {
     const val NO_IMPL = "no implementation by the Host App."
     const val ERR_NO_SUPPORT_HOSTAPP = "No support from hostapp"
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
+    const val ERR_MESSAGING_UNIQUE_ID = "Cannot get messaging unique id:"
+    const val ERR_MAUID = "Cannot get mauid:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =

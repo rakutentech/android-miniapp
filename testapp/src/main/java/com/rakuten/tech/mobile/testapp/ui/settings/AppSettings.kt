@@ -73,6 +73,18 @@ class AppSettings private constructor(context: Context) {
             cache.uniqueIdError = uniqueIdError
         }
 
+    var messagingUniqueIdError: String
+        get() = cache.messagingUniqueIdError ?: ""
+        set(messagingUniqueIdError) {
+            cache.messagingUniqueIdError = messagingUniqueIdError
+        }
+
+    var mauIdError: String
+        get() = cache.mauIdError ?: ""
+        set(mauIdError) {
+            cache.mauIdError = mauIdError
+        }
+
     var isSettingSaved: Boolean
         get() = cache.isSettingSaved
         set(isSettingSaved) {
@@ -220,6 +232,15 @@ private class Settings(context: Context) {
         get() = prefs.getString(UNIQUE_ID_ERROR, null)
         set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
 
+    var messagingUniqueIdError: String?
+        get() = prefs.getString(MESSAGING_UNIQUE_ID_ERROR, null)
+        set(messagingUniqueIdError) = prefs.edit()
+            .putString(MESSAGING_UNIQUE_ID_ERROR, messagingUniqueIdError).apply()
+
+    var mauIdError: String?
+        get() = prefs.getString(MAUID_ERROR, null)
+        set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
+
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
         set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
@@ -293,6 +314,8 @@ private class Settings(context: Context) {
         private const val SUBSCRIPTION_KEY = "subscription_key"
         private const val UNIQUE_ID = "unique_id"
         private const val UNIQUE_ID_ERROR = "unique_id_error"
+        private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
+        private const val MAUID_ERROR = "mauid_error"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"

@@ -250,6 +250,24 @@ class MiniAppDisplayActivity : BaseActivity() {
                 else onSuccess(AppSettings.instance.uniqueId)
             }
 
+            override fun getMessagingUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val errorMsg = AppSettings.instance.uniqueIdError
+                if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
+            }
+
+            override fun getMauid(
+                onSuccess: (mauid: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val errorMsg = AppSettings.instance.mauIdError
+                if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess("TEST-MAUID-01234-56789")
+            }
+
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit
