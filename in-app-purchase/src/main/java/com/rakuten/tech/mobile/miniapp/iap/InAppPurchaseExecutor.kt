@@ -17,25 +17,22 @@ import com.android.billingclient.api.SkuDetailsParams
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  */
 class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvider {
-    private var billingClient: BillingClient? = null
+    private val billingClient: BillingClient by lazy {
+        BillingClient.newBuilder(context)
+            .setListener(purchaseUpdateListener)
+            .build()
+    }
+
     private var skuDetails: SkuDetails? = null
 
     private fun startPurchasingProduct(itemID: String) {
-        setUpBillingClient(itemID)
+        startConnection(itemID)
         retrieveSkuDetails()
     }
 
-    private fun setUpBillingClient(productID: String) {
-        billingClient = BillingClient.newBuilder(context)
-            .setListener(purchaseUpdateListener)
-            .enablePendingPurchases()
-            .build()
-
-        startConnection(productID)
-    }
-
     private fun startConnection(productID: String) {
-        billingClient?.startConnection(object : BillingClientStateListener {
+        billingClient.startConnection(object : BillingClientStateListener {
+
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     queryAvailableProducts(productID)
@@ -56,7 +53,7 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
         // proceed with In-App type
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
 
-        billingClient?.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
+        billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
             // Process the result.
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !skuDetailsList.isNullOrEmpty()) {
                 for (skuDetails in skuDetailsList) {
@@ -73,7 +70,7 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(it)
                 .build()
-            billingClient?.launchBillingFlow(context, billingFlowParams)?.responseCode
+            billingClient.launchBillingFlow(context, billingFlowParams)?.responseCode
         }
     }
 
@@ -88,7 +85,7 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
 
     private fun handlePurchases(purchase: Purchase) {
         val params = ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
-        billingClient?.consumeAsync(params) { billingResult, _ ->
+        billingClient.consumeAsync(params) { billingResult, _ ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
                     Log.d(TAG, " Update the appropriate dataset")
@@ -114,9 +111,7 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
             val product = Product(
                 itemId, it.title, it.description, productPrice
             )
-            val purchasedProduct = PurchasedProduct(
-                product, "", ""
-            )
+            val purchasedProduct = PurchasedProduct(product, "", "")
             onSuccess(purchasedProduct)
         }
     }

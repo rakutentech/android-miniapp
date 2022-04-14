@@ -1,8 +1,9 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.iap
 
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.PurchasedProductCallbackObj
 
 @Suppress("TooGenericExceptionCaught")
 internal class InAppPurchaseBridgeDispatcher {

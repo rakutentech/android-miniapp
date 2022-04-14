@@ -1,14 +1,11 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.iap
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
-import com.rakuten.tech.mobile.miniapp.iap.Product
-import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct
+import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
