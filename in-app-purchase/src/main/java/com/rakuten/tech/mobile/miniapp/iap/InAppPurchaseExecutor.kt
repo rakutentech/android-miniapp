@@ -1,80 +1,14 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
-import android.util.Log
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.BillingResult
-import com.android.billingclient.api.ConsumeParams
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.*
 
 /**
  * The In-App purchase executor which acts as a default implementation of InAppPurchaseProvider.
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  */
 class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvider {
-    private val billingClient: BillingClient by lazy {
-        BillingClient.newBuilder(context)
-            .setListener(purchaseUpdateListener)
-            .build()
-    }
-
-    private var skuDetails: SkuDetails? = null
-
-    private fun startPurchasingProduct(itemID: String) {
-        startConnection(itemID)
-        retrieveSkuDetails()
-    }
-
-    private fun startConnection(productID: String) {
-        billingClient.startConnection(object : BillingClientStateListener {
-
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    queryAvailableProducts(productID)
-                }
-            }
-
-            override fun onBillingServiceDisconnected() {
-                Log.d(TAG, "Billing service has been disconnected.")
-            }
-        })
-    }
-
-    private fun queryAvailableProducts(productID: String) {
-        val skuList = ArrayList<String>()
-        skuList.add(productID)
-        val params = SkuDetailsParams.newBuilder()
-
-        // proceed with In-App type
-        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
-
-        billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
-            // Process the result.
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !skuDetailsList.isNullOrEmpty()) {
-                for (skuDetails in skuDetailsList) {
-                    this.skuDetails = skuDetails
-                }
-            } else {
-                Log.e(TAG, "There is an error happened while purchasing item")
-            }
-        }
-    }
-
-    private fun retrieveSkuDetails() {
-        skuDetails?.let {
-            val billingFlowParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(it)
-                .build()
-            billingClient.launchBillingFlow(context, billingFlowParams)?.responseCode
-        }
-    }
-
-    private val purchaseUpdateListener =
+    private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                 for (purchase in purchases) {
@@ -83,15 +17,81 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
             }
         }
 
+    private val billingClient: BillingClient by lazy {
+        BillingClient.newBuilder(context)
+            .setListener(purchasesUpdatedListener)
+            .enablePendingPurchases()
+            .build()
+    }
+
+    private var skuDetails: SkuDetails? = null
+    private lateinit var onSuccessEx: (purchasedProduct: PurchasedProduct) -> Unit
+    private lateinit var onErrorEx: (message: String) -> Unit
+
+    private fun startPurchasingProduct(itemID: String) {
+        startConnection(itemID)
+    }
+
+    private fun startConnection(productID: String) {
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    querySkuDetails(productID)
+                }
+            }
+
+            override fun onBillingServiceDisconnected() {
+                onErrorEx("Billing service has been disconnected.")
+            }
+        })
+    }
+
+    private fun querySkuDetails(productID: String) {
+        val skuList = ArrayList<String>()
+        skuList.add(productID)
+        val params = SkuDetailsParams.newBuilder()
+
+        // proceed with In-App type
+        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+
+        billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !skuDetailsList.isNullOrEmpty()) {
+                for (skuDetails in skuDetailsList) {
+                    this.skuDetails = skuDetails
+                }
+                launchPurchaseFlow()
+            } else {
+                onErrorEx("There is an error happened while purchasing item.")
+            }
+        }
+    }
+
+    private fun launchPurchaseFlow() {
+        skuDetails?.let {
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(it)
+                .build()
+            billingClient.launchBillingFlow(context, billingFlowParams).responseCode
+        }
+    }
+
     private fun handlePurchases(purchase: Purchase) {
         val params = ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
         billingClient.consumeAsync(params) { billingResult, _ ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    Log.d(TAG, " Update the appropriate dataset")
+                    // prepare the product to be invoked using onSuccess
+                    skuDetails?.let {
+                        val productPrice = ProductPrice(it.priceCurrencyCode, it.price)
+                        val product = Product(
+                            it.sku, it.title, it.description, productPrice
+                        )
+                        val purchasedProduct = PurchasedProduct(product, "", "")
+                        onSuccessEx(purchasedProduct)
+                    }
                 }
                 else -> {
-                    Log.w(TAG, billingResult.debugMessage)
+                    onErrorEx(billingResult.debugMessage)
                 }
             }
         }
@@ -102,21 +102,8 @@ class InAppPurchaseExecutor(private val context: Activity) : InAppPurchaseProvid
         onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        // purchasing In-App item using GooglePlay billing library
+        onSuccessEx = onSuccess
+        onErrorEx = onError
         startPurchasingProduct(itemId)
-
-        // prepare the product to be invoked using onSuccess
-        skuDetails?.let {
-            val productPrice = ProductPrice(it.priceCurrencyCode, it.price)
-            val product = Product(
-                itemId, it.title, it.description, productPrice
-            )
-            val purchasedProduct = PurchasedProduct(product, "", "")
-            onSuccess(purchasedProduct)
-        }
-    }
-
-    private companion object {
-        val TAG: String? = InAppPurchaseExecutor::class.java.canonicalName
     }
 }

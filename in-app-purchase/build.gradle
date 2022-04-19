@@ -20,7 +20,7 @@ android {
 }
 
 ext {
-    billing_version = '3.0.0'
+    billing_version = '4.1.0'
 }
 
 dependencies {

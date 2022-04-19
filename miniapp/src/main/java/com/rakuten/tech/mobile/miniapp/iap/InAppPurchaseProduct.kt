@@ -25,3 +25,22 @@ data class PurchasedProduct(
     val transactionId: String,
     val transactionDate: String
 )
+
+/** An object to include the [PurchasedProduct] with response status. */
+@Keep
+data class PurchasedProductResponse(
+    val status: PurchasedProductResponseStatus,
+    val purchasedProduct: PurchasedProduct
+)
+
+/** Status of Purchased Product Response. **/
+enum class PurchasedProductResponseStatus(val type: String) {
+    PURCHASED("PURCHASED"),
+    FAILED("FAILED"),
+    RESTORED("RESTORED"),
+    UNKNOWN("UNKNOWN");
+
+    internal companion object {
+        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
+    }
+}
