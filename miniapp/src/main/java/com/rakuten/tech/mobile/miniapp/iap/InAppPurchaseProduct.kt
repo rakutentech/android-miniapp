@@ -34,6 +34,7 @@ data class PurchasedProductResponse(
 )
 
 /** Status of Purchased Product Response. **/
+@Keep
 enum class PurchasedProductResponseStatus(val type: String) {
     PURCHASED("PURCHASED"),
     FAILED("FAILED"),
