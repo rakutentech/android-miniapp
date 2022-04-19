@@ -373,7 +373,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
 
         // setup InAppPurchaseProvider
-        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseExecutor(this@MiniAppDisplayActivity))
+        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseProviderDefault(this@MiniAppDisplayActivity))
     }
 
     override fun onRequestPermissionsResult(

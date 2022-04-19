@@ -7,12 +7,17 @@ interface InAppPurchaseProvider {
 
     /**
      * Triggered when user wants to purchase an item.
-     * Should invoke [onSuccess] with PurchasedProduct when user can purchase an item successfully.
+     * Should invoke [onSuccess] with [PurchasedProductResponse] when user can purchase an item successfully.
      * Should invoke [onError] when there was an error.
      */
     fun purchaseItem(
         itemId: String,
-        onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
+        onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     )
+
+    /**
+     * Triggered when user wants to end the connection with billing client.
+     */
+    fun onEndConnection()
 }

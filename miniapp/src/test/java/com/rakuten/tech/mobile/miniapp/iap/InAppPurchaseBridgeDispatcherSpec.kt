@@ -34,6 +34,9 @@ class InAppPurchaseBridgeDispatcherSpec {
     private val purchasedProduct = PurchasedProduct(
         product, "dummy_transactionId", "YYYY-MM-DD"
     )
+    private val purchasedProductResponse = PurchasedProductResponse(
+        PurchasedProductResponseStatus.UNKNOWN, purchasedProduct
+    )
     private val purchaseJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.PURCHASE_ITEM.action,
@@ -105,7 +108,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
 
-        verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProduct))
+        verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProductResponse))
     }
 
     private fun createPurchaseProvider(
@@ -116,12 +119,14 @@ class InAppPurchaseBridgeDispatcherSpec {
 
             override fun purchaseItem(
                 itemId: String,
-                onSuccess: (purchasedProduct: PurchasedProduct) -> Unit,
+                onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
                 onError: (message: String) -> Unit
             ) {
-                if (canPurchase) onSuccess(purchasedProduct)
+                if (canPurchase) onSuccess(purchasedProductResponse)
                 else onError("")
             }
+
+            override fun onEndConnection() {}
         } else {
             throw MiniAppSdkException("No method has been implemented.")
         }

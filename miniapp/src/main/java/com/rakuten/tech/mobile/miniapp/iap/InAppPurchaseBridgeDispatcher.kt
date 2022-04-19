@@ -39,8 +39,8 @@ internal class InAppPurchaseBridgeDispatcher {
             try {
                 val callbackObj: PurchasedProductCallbackObj =
                     Gson().fromJson(jsonStr, PurchasedProductCallbackObj::class.java)
-                val successCallback = { purchasedProduct: PurchasedProduct ->
-                    bridgeExecutor.postValue(callbackId, Gson().toJson(purchasedProduct))
+                val successCallback = { response: PurchasedProductResponse ->
+                    bridgeExecutor.postValue(callbackId, Gson().toJson(response))
                 }
                 inAppPurchaseProvider.purchaseItem(
                     callbackObj.param.itemId,
