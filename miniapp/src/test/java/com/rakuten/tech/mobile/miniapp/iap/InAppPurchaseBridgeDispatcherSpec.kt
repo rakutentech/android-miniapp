@@ -111,6 +111,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProductResponse))
     }
 
+    @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
         shouldCreate: Boolean,
         canPurchase: Boolean

@@ -67,6 +67,7 @@ class InAppPurchaseProviderDefault(
         }
     }
 
+    @Suppress("FunctionParameterNaming")
     private suspend fun retryConnection(productID: String, _retryCount: Int = 0) {
         startConnection(productID)
 
@@ -80,6 +81,7 @@ class InAppPurchaseProviderDefault(
         }
     }
 
+    @Suppress("MagicNumber")
     private fun getWaitingTime(retryCount: Int): Long {
         val backOff = 2.0
         val waitTime = 1000 * 0.5 * backOff.pow(retryCount.toDouble())
@@ -98,6 +100,7 @@ class InAppPurchaseProviderDefault(
                 for (skuDetails in skuDetailsList) {
                     this.skuDetails = skuDetails
                 }
+
                 launchPurchaseFlow()
             } else {
                 onError(ERR_PURCHASING_ITEM)
@@ -132,10 +135,7 @@ class InAppPurchaseProviderDefault(
                         )
                         onSuccess(purchasedProductResponse)
                     }
-                }
-                else -> {
-                    onError(billingResult.debugMessage)
-                }
+                } else -> onError(billingResult.debugMessage)
             }
         }
     }
