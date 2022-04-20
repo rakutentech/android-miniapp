@@ -2,8 +2,14 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
 import com.android.billingclient.api.*
-import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
 /**
@@ -43,18 +49,20 @@ class InAppPurchaseProviderDefault(
     private lateinit var onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit
     private lateinit var onError: (message: String) -> Unit
 
-    private fun startPurchasingProduct(itemID: String) {
-        startConnection(itemID)
-    }
+    private fun startPurchasingProduct(itemID: String) = startConnection(itemID)
 
     private fun startConnection(productID: String) {
         if (billingClient.isReady) {
-            querySkuDetails(productID)
+            launch {
+                querySkuDetails(productID)
+            }
         } else {
             billingClient.startConnection(object : BillingClientStateListener {
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        querySkuDetails(productID)
+                        launch {
+                            querySkuDetails(productID)
+                        }
                     }
                 }
 
@@ -88,16 +96,18 @@ class InAppPurchaseProviderDefault(
         return waitTime.toLong()
     }
 
-    private fun querySkuDetails(productID: String) {
+    private suspend fun querySkuDetails(productID: String) {
         val skuList = ArrayList<String>()
         skuList.add(productID)
         val params = SkuDetailsParams.newBuilder()
-
         // proceed with In-App type
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
-        billingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !skuDetailsList.isNullOrEmpty()) {
-                for (skuDetails in skuDetailsList) {
+
+        withContext(Dispatchers.IO) {
+            billingClient.querySkuDetails(params.build())
+        }.let {
+            if (it.billingResult.responseCode == BillingClient.BillingResponseCode.OK && !it.skuDetailsList.isNullOrEmpty()) {
+                for (skuDetails in it.skuDetailsList!!) {
                     this.skuDetails = skuDetails
                 }
 
@@ -110,10 +120,10 @@ class InAppPurchaseProviderDefault(
 
     private fun launchPurchaseFlow() {
         skuDetails?.let {
-            val billingFlowParams = BillingFlowParams.newBuilder()
+            val flowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(it)
                 .build()
-            billingClient.launchBillingFlow(context, billingFlowParams).responseCode
+            billingClient.launchBillingFlow(context, flowParams).responseCode
         }
     }
 
