@@ -35,7 +35,7 @@ class InAppPurchaseProviderDefault(
                 onError(ERR_ITEM_UNAVAILABLE)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 onError(ERR_USER_CANCELLED)
-            }
+            } else onError(ERR_PURCHASING_ITEM)
         }
 
     private val billingClient: BillingClient by lazy {
@@ -155,6 +155,8 @@ class InAppPurchaseProviderDefault(
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
+        if (itemId.isEmpty()) return
+
         this.onSuccess = onSuccess
         this.onError = onError
         startPurchasingProduct(itemId)
