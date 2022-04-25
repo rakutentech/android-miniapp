@@ -48,6 +48,7 @@ open class MiniAppMessageBridge {
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
     private val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
+    private val miniAppSecureStorageDispatcher = MiniAppSecureStorageDispatcher()
 
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
@@ -73,6 +74,8 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
+        miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,
@@ -183,6 +186,7 @@ open class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
+        callbackObj.action = ActionType.STORAGE_GET_ITEM.action
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.GET_MESSAGING_UNIQUE_ID.action -> onGetMessagingUniqueId(callbackObj)
@@ -217,6 +221,11 @@ open class MiniAppMessageBridge {
                 callbackObj.id,
                 jsonStr
             )
+            ActionType.STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher.onSetItems(callbackObj.id, jsonStr)
+            ActionType.STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher.onGetItem(callbackObj.id, jsonStr)
+            ActionType.STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher.onRemoveItems(callbackObj.id, jsonStr)
+            ActionType.STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(callbackObj.id)
+            ActionType.STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)

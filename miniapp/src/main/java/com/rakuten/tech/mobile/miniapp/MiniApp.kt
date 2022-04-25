@@ -170,6 +170,17 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
+     * Clears all secure storage items for all mini apps.
+     * Host App should call this when they want to clear all sensitive and session data such as when a user logs out.
+     */
+    abstract fun clearSecureStorage()
+
+    /**
+     * Clears the secure storage for a particular Mini App ID.
+     */
+    abstract fun clearSecureStorage(miniAppId: String)
+
+    /**
      * Get the manifest information e.g. required and optional permissions.
      * @param appId mini app id.
      * @param versionId of mini app.
