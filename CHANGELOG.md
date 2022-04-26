@@ -1,4 +1,9 @@
 ## CHANGELOG
+
+### 4.2.0 (in progress)
+**SDK**
+- **Feature:** Added support for base64 `data:` URIs to the File Download feature in `MiniAppFileDownloader`.
+
 ### 4.1.0 (2022-04-11)
 **SDK**
 - **Feature:** Added interface `MiniAppFileDownloader` to download files in device from miniapp.
