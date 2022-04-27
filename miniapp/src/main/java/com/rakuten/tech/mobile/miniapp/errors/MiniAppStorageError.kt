@@ -16,25 +16,30 @@ class MiniAppStorageError(val type: String? = null, val message: String? = null)
         private const val StorageOccupiedError = "StorageOccupiedError"
 
         // Secure Storage is full.
-        val secureStorageFullError = MiniAppStorageError(SecureStorageFullError, errorDescription(SecureStorageFullError))
+        val secureStorageFullError =
+            MiniAppStorageError(SecureStorageFullError, errorDescription(SecureStorageFullError))
 
         // Failed to read/write secure storage.
         val ioError = MiniAppStorageError(IOError, errorDescription(IOError))
 
         // Secure storage unavailable.
-        val unavailableStorage = MiniAppStorageError(UnavailableStorage, errorDescription(UnavailableStorage))
+        val unavailableStorage =
+            MiniAppStorageError(UnavailableStorage, errorDescription(UnavailableStorage))
 
         // Item unavailable.
-        val unavailableItem = MiniAppStorageError(UnavailableItem, errorDescription(UnavailableItem))
+        val unavailableItem =
+            MiniAppStorageError(UnavailableItem, errorDescription(UnavailableItem))
 
         // Storage has no item.
         val emptyStorage = MiniAppStorageError(EmptyStorage, errorDescription(EmptyStorage))
 
         // Failed to delete storage.
-        val failedDeleteError = MiniAppStorageError(FailedDeleteError, errorDescription(FailedDeleteError))
+        val failedDeleteError =
+            MiniAppStorageError(FailedDeleteError, errorDescription(FailedDeleteError))
 
         // Failed to delete storage.
-        val storageOccupiedError = MiniAppStorageError(StorageOccupiedError, errorDescription(StorageOccupiedError))
+        val storageOccupiedError =
+            MiniAppStorageError(StorageOccupiedError, errorDescription(StorageOccupiedError))
 
         /**
          *  send custom error message from host app.
@@ -56,4 +61,3 @@ class MiniAppStorageError(val type: String? = null, val message: String? = null)
         }
     }
 }
-

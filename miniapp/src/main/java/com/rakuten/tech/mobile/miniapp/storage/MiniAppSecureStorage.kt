@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.app.Activity
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.security.crypto.EncryptedFile
@@ -9,7 +8,9 @@ import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -17,12 +18,13 @@ import java.nio.charset.StandardCharsets
 private const val SUB_DIR_MINIAPP = "miniapp"
 private const val SUB_DIR_SECURE_STORAGE = "secure-storage"
 
-enum class StorageState {
+internal enum class StorageState {
     DEFAULT,
     LOCK,
     UNLOCK
 }
 
+@Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorage(private val activity: Activity) {
     private val hostAppBasePath = activity.filesDir
     private val miniAppBasePath
@@ -32,18 +34,19 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     var storageState: MutableLiveData<StorageState> = MutableLiveData<StorageState>()
 
-    private fun makeDirectoryAvailable(){
+    private fun makeDirectoryAvailable() {
         val storageDir = File(secureStorageBasePath)
         if (!storageDir.exists()) {
             storageDir.mkdir()
         }
     }
 
-    private fun isStorageAvailable(miniAppId: String): Boolean{
+    private fun isStorageAvailable(miniAppId: String): Boolean {
         val securedStorageFile = File(secureStorageBasePath, "$miniAppId.txt")
         return securedStorageFile.exists()
     }
 
+    @Suppress("MagicNumber")
     fun secureStorageSize(
         miniAppId: String,
         onSuccess: (String) -> Unit,
@@ -57,6 +60,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     private fun writeToEncryptedFile(
         miniAppId: String,
         content: String,
@@ -87,6 +91,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     }
 
     @VisibleForTesting
+    @Suppress("SwallowedException", "TooGenericExceptionCaught", "ReturnCount")
     private fun readFromEncryptedFile(miniAppId: String): Map<String, String>? {
         try {
             if (isStorageAvailable(miniAppId)) {
@@ -128,7 +133,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
                 file.delete()
                 if (!file.exists()) {
                     onSuccess()
-                }else{
+                } else {
                     onFailed(MiniAppStorageError.failedDeleteError)
                 }
             }
@@ -238,8 +243,5 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         )
     }
 
-    private fun serializedItems(items: Map<String, String>): String {
-        return Gson().toJson(items)
-    }
+    private fun serializedItems(items: Map<String, String>): String = Gson().toJson(items)
 }
-

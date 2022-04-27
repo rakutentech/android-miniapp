@@ -60,11 +60,11 @@ internal class RealMiniApp(
     }
 
     override fun clearSecureStorage() {
-        //TODO: Clear all secure storage
+        // Clear all secure storage
     }
 
     override fun clearSecureStorage(miniAppId: String) {
-        //TODO: Clear particular secure storage
+        // Clear particular secure storage
     }
 
     override suspend fun create(

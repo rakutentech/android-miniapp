@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
@@ -45,10 +44,10 @@ internal class MiniAppSecureStorageDispatcher {
     private fun onLoad() {
         val onSuccess = { items: Map<String, String> ->
             cachedItems = items
-            //TODO: Callback event
+            // Callback event
         }
         val onFailed = { error: MiniAppStorageError ->
-            //TODO: Callback error event
+            // Callback error event
         }
         secureStorage.loadSecureStorage(miniAppId, onSuccess, onFailed)
     }
@@ -97,7 +96,7 @@ internal class MiniAppSecureStorageDispatcher {
                 secureStorage.getItem(miniAppId, callbackObj.param, onSuccess, onFailed)
             }
         } else {
-            bridgeExecutor.postError(callbackId, "$ERR_SECURE_STORAGE $ERR_WRONG_JSON_FORMAT")
+            bridgeExecutor.postError(callbackId, "$ERR_WRONG_JSON_FORMAT")
         }
     }
 
@@ -125,7 +124,7 @@ internal class MiniAppSecureStorageDispatcher {
                     Gson().toJson(MiniAppStorageError.storageOccupiedError)
                 )
         } else {
-            bridgeExecutor.postError(callbackId, "$ERR_SECURE_STORAGE $ERR_WRONG_JSON_FORMAT")
+            bridgeExecutor.postError(callbackId, "$ERR_WRONG_JSON_FORMAT")
         }
     }
 
@@ -154,7 +153,6 @@ internal class MiniAppSecureStorageDispatcher {
     }
 
     internal companion object {
-        const val ERR_SECURE_STORAGE = "STORAGE FAILED:"
         const val ERR_WRONG_JSON_FORMAT = "Can not parse secure storage json object"
         const val SAVE_SUCCESS_SECURE_STORAGE = "Items saved successfully."
         const val REMOVE_ITEMS_SUCCESS_SECURE_STORAGE = "Items removed successfully."
