@@ -1,33 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 @Keep
 internal data class CallbackObj(
     var action: String,
     var param: Any?,
-    var id: String
-)
-
-@Keep
-internal data class DevicePermission(val permission: String)
-
-@Keep
-internal data class FileDownloadParams(
-    val filename: String,
-    val url: String,
-    val headers: Map<String, String>
-)
-
-@Keep
-internal data class Screen(val action: String)
-
-// custom permission region
-@Keep
-internal data class CustomPermissionCallbackObj(
-    var action: String,
-    val param: CustomPermission?,
     var id: String
 )
 
@@ -56,6 +36,33 @@ internal data class DeleteItemsCallbackObj(
 internal data class GetItemCallbackObj(
     var action: String,
     val param: String,
+    var id: String
+)
+
+@Keep
+internal data class SecureStorageReadyCallback(
+    var success: Boolean,
+    var error: MiniAppStorageError? = null
+)
+
+@Keep
+internal data class DevicePermission(val permission: String)
+
+@Keep
+internal data class FileDownloadParams(
+    val filename: String,
+    val url: String,
+    val headers: Map<String, String>
+)
+
+@Keep
+internal data class Screen(val action: String)
+
+// custom permission region
+@Keep
+internal data class CustomPermissionCallbackObj(
+    var action: String,
+    val param: CustomPermission?,
     var id: String
 )
 

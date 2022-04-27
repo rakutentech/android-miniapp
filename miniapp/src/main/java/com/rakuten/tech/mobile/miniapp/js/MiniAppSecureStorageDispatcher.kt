@@ -44,10 +44,16 @@ internal class MiniAppSecureStorageDispatcher {
     private fun onLoad() = whenReady {
         val onSuccess = { items: Map<String, String> ->
             cachedItems = items
-            // Callback event
+            bridgeExecutor.dispatchEvent(
+                eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value,
+                value = Gson().toJson(SecureStorageReadyCallback(true))
+            )
         }
-        val onFailed = { _: MiniAppStorageError ->
-            // Callback error event
+        val onFailed = { error: MiniAppStorageError ->
+            bridgeExecutor.dispatchEvent(
+                eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value,
+                value = Gson().toJson(SecureStorageReadyCallback(false, error))
+            )
         }
         secureStorage.loadSecureStorage(miniAppId, onSuccess, onFailed)
     }
