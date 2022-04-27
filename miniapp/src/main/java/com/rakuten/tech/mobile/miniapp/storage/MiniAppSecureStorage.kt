@@ -1,22 +1,27 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.app.Activity
+import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.MutableLiveData
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.charset.StandardCharsets
 
 private const val SUB_DIR_MINIAPP = "miniapp"
 private const val SUB_DIR_SECURE_STORAGE = "secure-storage"
+
+enum class StorageState {
+    DEFAULT,
+    LOCK,
+    UNLOCK
+}
 
 internal class MiniAppSecureStorage(private val activity: Activity) {
     private val hostAppBasePath = activity.filesDir
@@ -25,6 +30,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     private val secureStorageBasePath
         get() = "$miniAppBasePath/$SUB_DIR_SECURE_STORAGE/"
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    var storageState: MutableLiveData<StorageState> = MutableLiveData<StorageState>()
 
     private fun makeDirectoryAvailable(){
         val storageDir = File(secureStorageBasePath)
@@ -44,8 +50,8 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         onFailed: (MiniAppStorageError) -> Unit
     ) {
         if (isStorageAvailable(miniAppId)) {
-            val sizeInMb = File(secureStorageBasePath, "$miniAppId.txt").length() / (1024.0 * 1024)
-            onSuccess("%.2f".format(sizeInMb))
+            val sizeInKb = File(secureStorageBasePath, "$miniAppId.txt").length() / (1024.0)
+            onSuccess("%.2f".format(sizeInKb))
         } else {
             onFailed(MiniAppStorageError.unavailableStorage)
         }
@@ -54,7 +60,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     private fun writeToEncryptedFile(
         miniAppId: String,
         content: String,
-        onSuccess: () -> Unit,
+        onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
     ) = try {
         makeDirectoryAvailable()
@@ -75,8 +81,9 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
             flush()
             close()
         }
-        onSuccess()
+        onSuccess(deSerializeItems(content))
     } catch (e: Exception) {
+        Log.e("e", e.message.toString())
         onFailed(MiniAppStorageError.ioError)
     }
 
@@ -132,17 +139,18 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     fun deleteSecureStorageItems(
         miniAppId: String,
         keySet: Set<String>,
-        onSuccess: () -> Unit,
+        onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
     ) {
         scope.launch {
+            storageState.postValue(StorageState.LOCK)
             if (isStorageAvailable(miniAppId)) {
                 val storedItems = readFromEncryptedFile(miniAppId)
                 storedItems?.let { items ->
                     val filterItems = items.filter { !keySet.contains(it.key) }
                     writeToEncryptedFile(
                         miniAppId,
-                        serializeItems(filterItems),
+                        serializedItems(filterItems),
                         onSuccess,
                         onFailed
                     )
@@ -152,6 +160,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
             } else {
                 onFailed(MiniAppStorageError.unavailableStorage)
             }
+            storageState.postValue(StorageState.UNLOCK)
         }
     }
 
@@ -177,23 +186,23 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     fun insertSecureStorageItem(
         miniAppId: String,
         items: Map<String, String>,
-        onSuccess: () -> Unit,
+        onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
-    ){
+    ) {
         scope.launch {
+            storageState.postValue(StorageState.LOCK)
             if (isStorageAvailable(miniAppId)) {
-                val storedItems = async {
-                    readFromEncryptedFile(miniAppId)
-                }.await()
+                val storedItems = readFromEncryptedFile(miniAppId)
                 storedItems?.let {
                     val allItems = it.toMutableMap().apply { putAll(items) }
-                    writeToEncryptedFile(miniAppId, serializeItems(allItems), onSuccess, onFailed)
+                    writeToEncryptedFile(miniAppId, serializedItems(allItems), onSuccess, onFailed)
                 } ?: kotlin.run {
-                    writeToEncryptedFile(miniAppId, serializeItems(items), onSuccess, onFailed)
+                    writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
                 }
             } else {
-                writeToEncryptedFile(miniAppId, serializeItems(items), onSuccess, onFailed)
+                writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
             }
+            storageState.postValue(StorageState.UNLOCK)
         }
     }
 
@@ -228,7 +237,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         )
     }
 
-    private fun serializeItems(items: Map<String, String>): String {
+    private fun serializedItems(items: Map<String, String>): String {
         return Gson().toJson(items)
     }
 }

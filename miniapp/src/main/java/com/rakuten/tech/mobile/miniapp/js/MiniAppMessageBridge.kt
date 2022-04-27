@@ -75,7 +75,7 @@ open class MiniAppMessageBridge {
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
         miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
-        miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
+        miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,
@@ -186,7 +186,6 @@ open class MiniAppMessageBridge {
     @JavascriptInterface
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
-        callbackObj.action = ActionType.STORAGE_GET_ITEM.action
         when (callbackObj.action) {
             ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.GET_MESSAGING_UNIQUE_ID.action -> onGetMessagingUniqueId(callbackObj)
@@ -425,6 +424,13 @@ open class MiniAppMessageBridge {
         allowScreenOrientation = isAllowed
         if (this::screenBridgeDispatcher.isInitialized)
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
+    }
+
+    /**
+     * Clear the cached secure-storage.
+     **/
+    internal fun clearSecureStorageCache(){
+        miniAppSecureStorageDispatcher.onClearSecureStorage()
     }
 }
 

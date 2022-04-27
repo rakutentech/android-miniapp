@@ -14,7 +14,11 @@ internal data class CallbackObj(
 internal data class DevicePermission(val permission: String)
 
 @Keep
-internal data class FileDownloadParams(val filename: String, val url: String, val headers: Map<String, String>)
+internal data class FileDownloadParams(
+    val filename: String,
+    val url: String,
+    val headers: Map<String, String>
+)
 
 @Keep
 internal data class Screen(val action: String)
@@ -31,6 +35,27 @@ internal data class CustomPermissionCallbackObj(
 internal data class FileDownloadCallbackObj(
     var action: String,
     val param: FileDownloadParams?,
+    var id: String
+)
+
+@Keep
+internal data class SecureStorageCallbackObj(
+    var action: String,
+    val param: Map<String, String>,
+    var id: String
+)
+
+@Keep
+internal data class DeleteItemsCallbackObj(
+    var action: String,
+    val param: Set<String>,
+    var id: String
+)
+
+@Keep
+internal data class GetItemCallbackObj(
+    var action: String,
+    val param: String,
     var id: String
 )
 
