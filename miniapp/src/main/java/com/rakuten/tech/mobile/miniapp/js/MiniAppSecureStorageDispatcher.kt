@@ -76,7 +76,7 @@ internal class MiniAppSecureStorageDispatcher {
                     Gson().toJson(MiniAppStorageError.storageOccupiedError)
                 )
         } else {
-            bridgeExecutor.postError(callbackId, "$ERR_WRONG_JSON_FORMAT")
+            bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
 
@@ -96,7 +96,7 @@ internal class MiniAppSecureStorageDispatcher {
                 secureStorage.getItem(miniAppId, callbackObj.param, onSuccess, onFailed)
             }
         } else {
-            bridgeExecutor.postError(callbackId, "$ERR_WRONG_JSON_FORMAT")
+            bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
 
