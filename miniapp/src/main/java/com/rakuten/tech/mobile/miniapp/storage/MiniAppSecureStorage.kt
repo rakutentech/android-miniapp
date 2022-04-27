@@ -83,7 +83,6 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
         onSuccess(deSerializeItems(content))
     } catch (e: Exception) {
-        Log.e("e", e.message.toString())
         onFailed(MiniAppStorageError.ioError)
     }
 
@@ -133,6 +132,8 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
                     onFailed(MiniAppStorageError.failedDeleteError)
                 }
             }
+        } else {
+            onFailed(MiniAppStorageError.unavailableStorage)
         }
     }
 

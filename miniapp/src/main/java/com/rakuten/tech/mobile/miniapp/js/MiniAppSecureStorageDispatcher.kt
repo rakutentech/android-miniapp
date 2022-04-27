@@ -28,7 +28,6 @@ internal class MiniAppSecureStorageDispatcher {
         onLoad()
         secureStorage.storageState.observe(activity as LifecycleOwner, Observer { state ->
             storageState = state
-            Log.e("state", storageState.toString())
         })
     }
 
