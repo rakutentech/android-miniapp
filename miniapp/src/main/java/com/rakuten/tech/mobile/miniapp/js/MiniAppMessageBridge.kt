@@ -220,11 +220,11 @@ open class MiniAppMessageBridge {
                 callbackObj.id,
                 jsonStr
             )
-            ActionType.STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher.onSetItems(callbackObj.id, jsonStr)
-            ActionType.STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher.onGetItem(callbackObj.id, jsonStr)
-            ActionType.STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher.onRemoveItems(callbackObj.id, jsonStr)
-            ActionType.STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(callbackObj.id)
-            ActionType.STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(callbackObj.id)
+            ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher.onSetItems(callbackObj.id, jsonStr)
+            ActionType.SECURE_STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher.onGetItem(callbackObj.id, jsonStr)
+            ActionType.SECURE_STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher.onRemoveItems(callbackObj.id, jsonStr)
+            ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(callbackObj.id)
+            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)

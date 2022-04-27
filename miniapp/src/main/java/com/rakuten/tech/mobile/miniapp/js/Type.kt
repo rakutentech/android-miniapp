@@ -20,11 +20,11 @@ internal enum class ActionType(val action: String) {
     GET_POINTS("getPoints"),
     GET_HOST_ENVIRONMENT_INFO("getHostEnvironmentInfo"),
     FILE_DOWNLOAD("downloadFile"),
-    STORAGE_SET_ITEMS("setItems"),
-    STORAGE_GET_ITEM("getItem"),
-    STORAGE_REMOVE_ITEMS("removeItems"),
-    STORAGE_CLEAR("clear"),
-    STORAGE_SIZE("size"),
+    SECURE_STORAGE_SET_ITEMS("setSecureStorageItems"),
+    SECURE_STORAGE_GET_ITEM("getSecureStorageItem"),
+    SECURE_STORAGE_REMOVE_ITEMS("removeSecureStorageItems"),
+    SECURE_STORAGE_CLEAR("clearSecureStorage"),
+    SECURE_STORAGE_SIZE("getSecureStorageSize"),
 }
 
 internal enum class DialogType {
