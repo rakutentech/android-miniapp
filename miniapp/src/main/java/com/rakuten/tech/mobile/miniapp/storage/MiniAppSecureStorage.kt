@@ -176,6 +176,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         onFailed: (MiniAppStorageError) -> Unit
     ) {
         scope.launch {
+            storageState.postValue(StorageState.LOCK)
             if (isStorageAvailable(miniAppId)) {
                 val storedItems = readFromEncryptedFile(miniAppId)
                 storedItems?.let {
@@ -186,6 +187,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
             } else {
                 onFailed(MiniAppStorageError.unavailableStorage)
             }
+            storageState.postValue(StorageState.UNLOCK)
         }
     }
 

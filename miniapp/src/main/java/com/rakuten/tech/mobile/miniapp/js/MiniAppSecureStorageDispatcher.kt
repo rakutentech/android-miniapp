@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
@@ -15,6 +14,9 @@ internal class MiniAppSecureStorageDispatcher {
     private lateinit var secureStorage: MiniAppSecureStorage
     private var cachedItems: Map<String, String>? = null
     private var storageState: StorageState = StorageState.DEFAULT
+    private val stateObserver = Observer<StorageState> { state ->
+        storageState = state
+    }
 
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
         this.activity = activity
@@ -24,10 +26,8 @@ internal class MiniAppSecureStorageDispatcher {
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.secureStorage = MiniAppSecureStorage(activity)
+        secureStorage.storageState.observeForever(stateObserver)
         onLoad()
-        secureStorage.storageState.observe(activity as LifecycleOwner, Observer { state ->
-            storageState = state
-        })
     }
 
     @Suppress("ComplexCondition")
@@ -41,7 +41,7 @@ internal class MiniAppSecureStorageDispatcher {
         }
     }
 
-    private fun onLoad() {
+    private fun onLoad() = whenReady {
         val onSuccess = { items: Map<String, String> ->
             cachedItems = items
             // Callback event
@@ -150,6 +150,7 @@ internal class MiniAppSecureStorageDispatcher {
 
     fun onClearSecureStorage() {
         cachedItems = null
+        secureStorage.storageState.removeObserver(stateObserver)
     }
 
     internal companion object {
