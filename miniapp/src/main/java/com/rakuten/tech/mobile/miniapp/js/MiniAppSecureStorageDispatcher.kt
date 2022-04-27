@@ -46,7 +46,7 @@ internal class MiniAppSecureStorageDispatcher {
             cachedItems = items
             // Callback event
         }
-        val onFailed = { error: MiniAppStorageError ->
+        val onFailed = { _: MiniAppStorageError ->
             // Callback error event
         }
         secureStorage.loadSecureStorage(miniAppId, onSuccess, onFailed)
@@ -76,7 +76,7 @@ internal class MiniAppSecureStorageDispatcher {
                     Gson().toJson(MiniAppStorageError.storageOccupiedError)
                 )
         } else {
-            bridgeExecutor.postError(callbackId, "$ERR_SECURE_STORAGE $ERR_WRONG_JSON_FORMAT")
+            bridgeExecutor.postError(callbackId, "$ERR_WRONG_JSON_FORMAT")
         }
     }
 
