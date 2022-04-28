@@ -25,15 +25,17 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
 
     @Before
     fun setup() {
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-                activity = TestActivity(),
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock()
-        )
+            )
+        }
     }
 
     private val hostEnvCallbackObj = CallbackObj(
@@ -69,22 +71,25 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when cannot retrieve environment info`() {
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
-        val infoErrMessage = "{\"type\":\"{\\\"type\\\":\\\"Cannot get host environment info: error_message\\\"}\"}"
-        val webViewListener = createErrorWebViewListener(infoErrMessage)
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-                activity = TestActivity(),
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+            val infoErrMessage =
+                "{\"type\":\"{\\\"type\\\":\\\"Cannot get host environment info: error_message\\\"}\"}"
+            val webViewListener = createErrorWebViewListener(infoErrMessage)
+            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock()
-        )
-        miniAppBridge.postMessage(hostEnvJsonStr)
+            )
+            miniAppBridge.postMessage(hostEnvJsonStr)
 
-        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, infoErrMessage)
+            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, infoErrMessage)
+        }
     }
 
     @Test

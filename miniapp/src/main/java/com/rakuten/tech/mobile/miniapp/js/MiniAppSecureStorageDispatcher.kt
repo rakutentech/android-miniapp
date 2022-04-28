@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError

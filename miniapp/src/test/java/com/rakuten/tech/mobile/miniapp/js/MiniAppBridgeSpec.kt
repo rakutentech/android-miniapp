@@ -175,11 +175,10 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         param = null,
         id = TEST_CALLBACK_ID
     )
-    private val activityScenario = ActivityScenario.launch(TestActivity::class.java)
 
     @Before
     fun setup() {
-        activityScenario.onActivity { activity ->
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.init(
                 activity = activity,
@@ -218,6 +217,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
+
     }
 
     @Test
@@ -229,21 +229,24 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when cannot get contact id`() {
-        val errMsg = "Cannot get messaging unique id: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} null")
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
-        miniAppBridge.postMessage(messagingUniqueIdJsonStr)
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val errMsg = "Cannot get messaging unique id: null"
+            val webViewListener =
+                createErrorWebViewListener("${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} null")
+            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.postMessage(messagingUniqueIdJsonStr)
 
-        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+        }
     }
 
     @Test
@@ -255,63 +258,74 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when cannot get mauid`() {
-        val errMsg = "Cannot get mauid: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MAUID} null")
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
-        miniAppBridge.postMessage(mauIdJsonStr)
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
 
-        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+            val errMsg = "Cannot get mauid: null"
+            val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MAUID} null")
+            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.postMessage(mauIdJsonStr)
+
+            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+        }
     }
 
     /** region: device permission */
     @Test
     fun `postError should be called when device permission granted is false`() {
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
-        val errMsg = "Denied"
-        val webViewListener = createErrorWebViewListener("dummy message")
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+            val errMsg = "Denied"
+            val webViewListener = createErrorWebViewListener("dummy message")
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
 
-        miniAppBridge.postMessage(permissionJsonStr)
+            miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor).postError(permissionCallbackObj.id, errMsg)
+            verify(bridgeExecutor).postError(permissionCallbackObj.id, errMsg)
+        }
     }
 
     @Test
     fun `postValue should be called when device permission is granted`() {
-        val isPermissionGranted = true
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val isPermissionGranted = true
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(isPermissionGranted))
+            val webViewListener =
+                createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
 
-        miniAppBridge.postMessage(permissionJsonStr)
+            miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor)
-            .postValue(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(isPermissionGranted).type)
+            verify(bridgeExecutor)
+                .postValue(
+                    permissionCallbackObj.id,
+                    MiniAppDevicePermissionResult.getValue(isPermissionGranted).type
+                )
+        }
     }
 
     @Test
@@ -388,15 +402,17 @@ class ShareContentBridgeSpec : BridgeCommon() {
 
     @Before
     fun setupShareInfo() {
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+        }
     }
 
     private val shareContentJsonStr = createShareCallbackJsonStr("This is content")
@@ -478,26 +494,36 @@ class ShareContentBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when cannot share content`() {
-        val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
-        val errMsg = "${ErrorBridgeMessage.ERR_SHARE_CONTENT} null"
-        val webViewListener = createErrorWebViewListener(errMsg)
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false))
+            val errMsg = "${ErrorBridgeMessage.ERR_SHARE_CONTENT} null"
+            val webViewListener = createErrorWebViewListener(errMsg)
+            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.postMessage(shareContentJsonStr)
+
+            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+        }
+    }
+
+    @Test
+    fun `postValue should not be called when using default method without Activity`() {
         miniAppBridge.init(
-            activity = TestActivity(),
+            activity = TestFilesDirActivity(),
             webViewListener = webViewListener,
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID,
             ratDispatcher = mock()
         )
-        miniAppBridge.postMessage(shareContentJsonStr)
-
-        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
-    }
-
-    @Test
-    fun `postValue should not be called when using default method without Activity`() {
         miniAppBridge.postMessage(shareContentJsonStr)
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
@@ -512,6 +538,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
     }
 }
 
+@RunWith(AndroidJUnit4::class)
 class AdBridgeSpec : BridgeCommon() {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private lateinit var miniAppBridgeWithAdMob: MiniAppMessageBridge
@@ -534,14 +561,16 @@ class AdBridgeSpec : BridgeCommon() {
         AdMobClassName = adMobCheckedClass
         val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+        }
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
         return miniAppBridge
     }
@@ -592,16 +621,18 @@ class ScreenBridgeSpec : BridgeCommon() {
 
     @Before
     fun setupScreenBridgeDispatcher() {
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.allowScreenOrientation(false)
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.allowScreenOrientation(false)
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+        }
     }
 
     private fun createCallbackJsonStr(orientation: ScreenOrientation) = Gson().toJson(
