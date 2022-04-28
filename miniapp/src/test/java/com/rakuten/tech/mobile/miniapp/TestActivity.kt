@@ -4,8 +4,7 @@ import android.app.Activity
 import java.io.File
 
 class TestActivity : Activity()
+
 class TestFilesDirActivity : Activity() {
-    override fun getFilesDir(): File {
-        return File("")
-    }
+    override fun getFilesDir(): File = File("")
 }

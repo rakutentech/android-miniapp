@@ -41,6 +41,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
+    @Suppress("StringLiteralDuplication")
     private fun isStorageAvailable(miniAppId: String): Boolean {
         val securedStorageFile = File(secureStorageBasePath, "$miniAppId.txt")
         return securedStorageFile.exists()
@@ -49,12 +50,12 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     @Suppress("MagicNumber")
     fun secureStorageSize(
         miniAppId: String,
-        onSuccess: (String) -> Unit,
+        onSuccess: (Double) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
     ) {
         if (isStorageAvailable(miniAppId)) {
             val sizeInKb = File(secureStorageBasePath, "$miniAppId.txt").length() / (1024.0)
-            onSuccess("%.2f".format(sizeInKb))
+            onSuccess(sizeInKb)
         } else {
             onFailed(MiniAppStorageError.unavailableStorage)
         }
@@ -85,7 +86,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
             flush()
             close()
         }
-        onSuccess(deSerializeItems(content))
+        onSuccess(deserializeItems(content))
     } catch (e: Exception) {
         onFailed(MiniAppStorageError.ioError)
     }
@@ -113,7 +114,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
 
                 val plaintext: ByteArray = byteArrayOutputStream.toByteArray()
                 val jsonToRead = plaintext.toString(Charsets.UTF_8)
-                return deSerializeItems(jsonToRead)
+                return deserializeItems(jsonToRead)
             } else {
                 return null
             }
@@ -122,7 +123,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
-    fun deleteSecureStorage(
+    fun delete(
         miniAppId: String,
         onSuccess: () -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
@@ -142,7 +143,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
-    fun deleteSecureStorageItems(
+    fun deleteItems(
         miniAppId: String,
         keySet: Set<String>,
         onSuccess: (Map<String, String>) -> Unit,
@@ -170,7 +171,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
-    fun loadSecureStorage(
+    fun load(
         miniAppId: String,
         onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
@@ -191,7 +192,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
-    fun insertSecureStorageItem(
+    fun insertItems(
         miniAppId: String,
         items: Map<String, String>,
         onSuccess: (Map<String, String>) -> Unit,
@@ -238,7 +239,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
-    private fun deSerializeItems(jsonToRead: String): Map<String, String> {
+    private fun deserializeItems(jsonToRead: String): Map<String, String> {
         return Gson().fromJson(
             jsonToRead,
             object : TypeToken<Map<String, String>>() {}.type
@@ -246,4 +247,29 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     }
 
     private fun serializedItems(items: Map<String, String>): String = Gson().toJson(items)
+
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
+     * @param miniAppId will be used to find the file to be deleted.
+     */
+    fun clearSecureStorage(miniAppId: String) {
+        if (isStorageAvailable(miniAppId)) {
+            scope.launch {
+                val file = File(secureStorageBasePath, "$miniAppId.txt")
+                file.delete()
+            }
+        }
+    }
+
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage.
+     */
+    fun clearSecureStorage() {
+        val storageDir = File(secureStorageBasePath)
+        if (storageDir.exists()) {
+            scope.launch {
+                storageDir.deleteRecursively()
+            }
+        }
+    }
 }

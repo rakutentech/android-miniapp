@@ -48,12 +48,12 @@ open class MiniAppMessageBridge {
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
     private val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
-    private val miniAppSecureStorageDispatcher = MiniAppSecureStorageDispatcher()
 
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
+    private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     internal fun init(
         activity: Activity,
@@ -61,7 +61,8 @@ open class MiniAppMessageBridge {
         customPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -71,6 +72,7 @@ open class MiniAppMessageBridge {
         this.screenBridgeDispatcher =
             ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         this.ratDispatcher = ratDispatcher
+        this.miniAppSecureStorageDispatcher = secureStorageDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
@@ -437,13 +439,6 @@ open class MiniAppMessageBridge {
         allowScreenOrientation = isAllowed
         if (this::screenBridgeDispatcher.isInitialized)
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
-    }
-
-    /**
-     * Clear the cached secure-storage.
-     **/
-    internal fun clearSecureStorageCache() {
-        miniAppSecureStorageDispatcher.onClearSecureStorage()
     }
 }
 

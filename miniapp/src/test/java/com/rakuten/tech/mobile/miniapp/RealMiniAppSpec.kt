@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
@@ -48,6 +49,7 @@ open class BaseRealMiniAppSpec {
     )
 
     internal var ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
+    internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher = mock()
 
     @Before
     fun setup() {
@@ -58,6 +60,7 @@ open class BaseRealMiniAppSpec {
                 initManifestVerifier = { manifestVerifier },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = ratDispatcher,
+                secureStorageDispatcher = secureStorageDispatcher,
                 enableH5Ads = false
             ))
 
@@ -149,6 +152,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 "",
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 false
             )
         }
@@ -180,6 +184,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 "",
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 false
             )
 
@@ -203,6 +208,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 "",
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 false
             )
         }
@@ -241,6 +247,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 "",
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 enableH5Ads = false
             )
         }
@@ -260,7 +267,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher, false
+                ratDispatcher, secureStorageDispatcher, false
             )
         }
 
@@ -524,5 +531,17 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     fun `getDownloadedManifest should read data from cache`() {
         realMiniApp.getDownloadedManifest(TEST_MA_ID)
         verify(downloadedManifestCache).readDownloadedManifest(TEST_MA_ID)
+    }
+
+    @Test
+    fun `clearSecureStorage should clear storage using dispatcher per MiniApp id`() {
+        realMiniApp.clearSecureStorage(TEST_MA_ID)
+        verify(secureStorageDispatcher).clearSecureStorage(TEST_MA_ID)
+    }
+
+    @Test
+    fun `clearSecureStorage should clear whole storage using dispatcher`() {
+        realMiniApp.clearSecureStorage()
+        verify(secureStorageDispatcher).clearSecureStorage()
     }
 }

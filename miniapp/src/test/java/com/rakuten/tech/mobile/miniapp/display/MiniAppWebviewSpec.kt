@@ -82,6 +82,7 @@ open class BaseWebViewSpec {
         downloadedManifestCache = mock(),
         queryParams = TEST_URL_PARAMS,
         ratDispatcher = mock(),
+        secureStorageDispatcher = mock(),
         enableH5Ads = false
     )
 }
@@ -104,6 +105,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
                 downloadedManifestCache = mock(),
                 queryParams = TEST_URL_PARAMS,
                 ratDispatcher = mock(),
+                secureStorageDispatcher = mock(),
                 enableH5Ads = false
         )
     }
@@ -181,6 +183,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
+            secureStorageDispatcher = mock(),
             enableH5Ads = false
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
@@ -235,12 +238,13 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             mock(),
             TEST_URL_PARAMS,
             mock(),
+            mock(),
             false
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context, miniAppWebView.basePath, TEST_MA.copy(id = "app-id-2"), miniAppMessageBridge,
             miniAppNavigator, miniAppFileChooser, TEST_HA_NAME, mock(), mock(), mock(), TEST_URL_PARAMS,
-            mock(), false)
+            mock(), mock(), false)
         miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
 
@@ -371,6 +375,7 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
             downloadedManifestCache = mock(),
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
+            secureStorageDispatcher = mock(),
             enableH5Ads = false
         ))
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)

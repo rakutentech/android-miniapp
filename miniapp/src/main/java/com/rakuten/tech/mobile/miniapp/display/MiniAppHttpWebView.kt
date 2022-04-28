@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -29,6 +30,7 @@ internal class MiniAppHttpWebView(
     ),
     queryParams: String,
     ratDispatcher: MessageBridgeRatDispatcher,
+    secureStorageDispatcher: MiniAppSecureStorageDispatcher,
     enableH5Ads: Boolean
 ) : MiniAppWebView(
     context,
@@ -43,6 +45,7 @@ internal class MiniAppHttpWebView(
     miniAppWebChromeClient,
     queryParams,
     ratDispatcher,
+    secureStorageDispatcher,
     enableH5Ads
 ) {
     init {

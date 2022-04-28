@@ -186,7 +186,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
         }
     }
@@ -211,13 +212,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.postMessage(uniqueIdJsonStr)
 
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
-
     }
 
     @Test
@@ -241,7 +242,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.postMessage(messagingUniqueIdJsonStr)
 
@@ -270,7 +272,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.postMessage(mauIdJsonStr)
 
@@ -292,7 +295,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
 
             miniAppBridge.postMessage(permissionJsonStr)
@@ -315,7 +319,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
 
             miniAppBridge.postMessage(permissionJsonStr)
@@ -364,7 +369,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             val info = HostEnvironmentInfo(activity, "en")
             miniAppBridge.onGetHostEnvironmentInfo(hostEnvInfoCallbackObj.id)
@@ -410,7 +416,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
         }
     }
@@ -438,7 +445,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -457,7 +465,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
@@ -477,7 +486,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
@@ -506,7 +516,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -522,7 +533,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
+            ratDispatcher = mock(),
+            secureStorageDispatcher = mock()
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -568,7 +580,8 @@ class AdBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
         }
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
@@ -630,7 +643,8 @@ class ScreenBridgeSpec : BridgeCommon() {
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
         }
     }
@@ -649,7 +663,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock())
+            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock())
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))

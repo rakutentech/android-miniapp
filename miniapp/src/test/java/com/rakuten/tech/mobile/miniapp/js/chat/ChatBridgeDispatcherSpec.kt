@@ -59,7 +59,8 @@ open class BaseChatBridgeDispatcherSpec {
                 customPermissionCache = customPermissionCache,
                 downloadedManifestCache = downloadedManifestCache,
                 miniAppId = TEST_MA.id,
-                ratDispatcher = mock()
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
             )
         }
     }
