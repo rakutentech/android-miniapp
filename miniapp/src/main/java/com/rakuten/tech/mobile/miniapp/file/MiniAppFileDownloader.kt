@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
+import java.io.InputStream
 
 /**
  * The file downloader of a miniapp with `onStartFileDownload` function.
@@ -60,17 +62,37 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
      * Retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
      **/
     fun onReceivedResult(destinationUri: Uri) {
-        val client = okHttpClient ?: OkHttpClient.Builder().build().apply { okHttpClient = this }
-        var request = createRequest(url, headers)
-        scope.launch {
-            startDownloading(destinationUri, client, request, onDownloadSuccess, onDownloadFailed)
+        if (url.isHttpUrl) {
+            scope.launch {
+                val client = okHttpClient ?: OkHttpClient.Builder().build().apply { okHttpClient = this }
+                val request = createRequest(url, headers)
+                startDownloading(
+                    destinationUri = destinationUri,
+                    fileName = fileName,
+                    client = client,
+                    request = request,
+                    onDownloadSuccess = onDownloadSuccess,
+                    onDownloadFailed = onDownloadFailed
+                )
+            }
+        } else if (url.isDataUri) {
+            saveDataUri(
+                destinationUri = destinationUri,
+                url = url,
+                fileName = fileName,
+                onDownloadSuccess = onDownloadSuccess,
+                onDownloadFailed = onDownloadFailed
+            )
+        } else {
+            onDownloadFailed.invoke(MiniAppDownloadFileError.invalidUrlError)
         }
     }
 
     @VisibleForTesting
-    @Suppress("SwallowedException", "NestedBlockDepth")
+    @Suppress("SwallowedException", "NestedBlockDepth", "LongParameterList")
     internal fun startDownloading(
         destinationUri: Uri,
+        fileName: String,
         client: OkHttpClient,
         request: Request,
         onDownloadSuccess: (String) -> Unit,
@@ -79,19 +101,18 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         val response = client.newCall(request).execute()
         if (response.isSuccessful) {
             response.body?.use { responseBody ->
-                activity.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
-                    responseBody.byteStream().copyTo(outputStream)
-                    outputStream.close()
-                    onDownloadSuccess.invoke(fileName)
-                } ?: {
-                    onDownloadFailed.invoke(MiniAppDownloadFileError.saveFailureError)
-                    Log.e("Downloader", "Failed to download file: could not open OutputStream.")
-                }
+                saveFile(
+                    destinationUri = destinationUri,
+                    data = responseBody.byteStream(),
+                    fileName = fileName,
+                    onDownloadSuccess = onDownloadSuccess,
+                    onDownloadFailed = onDownloadFailed
+                )
             } ?: run {
                 onDownloadFailed.invoke(MiniAppDownloadFileError.downloadFailedError)
             }
         } else {
-            onDownloadFailed.invoke(MiniAppDownloadFileError.custom(response.code.toString(), response.message))
+            onDownloadFailed.invoke(MiniAppDownloadFileError.httpError(response.code, response.message))
         }
     } catch (e: IOException) {
         onDownloadFailed.invoke(MiniAppDownloadFileError.downloadFailedError)
@@ -104,6 +125,11 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         onDownloadSuccess: (String) -> Unit,
         onDownloadFailed: (MiniAppDownloadFileError) -> Unit
     ) {
+        if (!url.isValidUrl) {
+            onDownloadFailed.invoke(MiniAppDownloadFileError.invalidUrlError)
+            return
+        }
+
         this.fileName = fileName
         this.url = url
         this.headers = headers
@@ -118,7 +144,7 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
      */
     fun onCancel() {
         if (this::onDownloadSuccess.isInitialized)
-            onDownloadSuccess.invoke("")
+            onDownloadSuccess.invoke("null")
     }
 
     @VisibleForTesting
@@ -151,5 +177,53 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
             builder.addHeader(header.key, header.value)
         }
         return builder.url(url).build()
+    }
+
+    private val String.isHttpUrl get() = this.startsWith("https:") || this.startsWith("http:")
+    private val String.isDataUri get() = this.startsWith("data:")
+    private val String.isValidUrl get() = this.isHttpUrl || this.isDataUri
+
+    private fun saveDataUri(
+        destinationUri: Uri,
+        url: String,
+        fileName: String,
+        onDownloadSuccess: (String) -> Unit,
+        onDownloadFailed: (MiniAppDownloadFileError) -> Unit
+    ) {
+        try {
+            val decodedBytes = Base64.decode(
+                url.substring(url.indexOf(",") + 1),
+                Base64.DEFAULT
+            )
+            saveFile(
+                destinationUri = destinationUri,
+                data = decodedBytes.inputStream(),
+                fileName = fileName,
+                onDownloadSuccess = onDownloadSuccess,
+                onDownloadFailed = onDownloadFailed
+            )
+        } catch (e: IllegalArgumentException) {
+            Log.e("MiniAppFileDownloader", "Failed to download file: Error occurred while " +
+                    "decoding the Base64 string URI.")
+            onDownloadFailed.invoke(MiniAppDownloadFileError.saveFailureError)
+        }
+    }
+
+    private fun saveFile(
+        destinationUri: Uri,
+        data: InputStream,
+        fileName: String,
+        onDownloadSuccess: (String) -> Unit,
+        onDownloadFailed: (MiniAppDownloadFileError) -> Unit
+    ) {
+        activity.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
+            data.copyTo(outputStream)
+            outputStream.close()
+            onDownloadSuccess.invoke(fileName)
+        } ?: run {
+            onDownloadFailed.invoke(MiniAppDownloadFileError.saveFailureError)
+            Log.e("MiniAppFileDownloader", "Failed to download file: Error occurred while " +
+                    "opening the OutputStream to download the file.")
+        }
     }
 }
