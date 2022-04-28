@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
@@ -27,6 +28,7 @@ internal class RealMiniApp(
     initManifestVerifier: () -> MiniAppManifestVerifier,
     private var miniAppAnalytics: MiniAppAnalytics,
     private var ratDispatcher: MessageBridgeRatDispatcher,
+    private var secureStorageDispatcher: MiniAppSecureStorageDispatcher,
     private val enableH5Ads: Boolean
 ) : MiniApp() {
 
@@ -60,7 +62,7 @@ internal class RealMiniApp(
     }
 
     override fun clearSecureStorage() {
-        // Clear all secure storage
+
     }
 
     override fun clearSecureStorage(miniAppId: String) {
@@ -94,6 +96,7 @@ internal class RealMiniApp(
                 queryParams,
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 enableH5Ads
             )
         }
@@ -126,6 +129,7 @@ internal class RealMiniApp(
                 queryParams,
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 enableH5Ads
             )
         }
@@ -151,6 +155,7 @@ internal class RealMiniApp(
                 queryParams,
                 miniAppAnalytics,
                 ratDispatcher,
+                secureStorageDispatcher,
                 enableH5Ads
             )
         }

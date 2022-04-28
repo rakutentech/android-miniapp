@@ -175,18 +175,21 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         param = null,
         id = TEST_CALLBACK_ID
     )
+    private val activityScenario = ActivityScenario.launch(TestActivity::class.java)
 
     @Before
     fun setup() {
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
+        activityScenario.onActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+        }
     }
 
     @Test
@@ -198,21 +201,23 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when cannot get unique id`() {
-        val errMsg = "Cannot get unique id: null"
-        val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
-        val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            miniAppId = TEST_MA_ID,
-            ratDispatcher = mock()
-        )
-        miniAppBridge.postMessage(uniqueIdJsonStr)
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val errMsg = "Cannot get unique id: null"
+            val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
+            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock()
+            )
+            miniAppBridge.postMessage(uniqueIdJsonStr)
 
-        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
+        }
     }
 
     @Test
@@ -340,7 +345,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.init(
-                activity = TestActivity(),
+                activity = activity,
                 webViewListener = webViewListener,
                 customPermissionCache = mock(),
                 downloadedManifestCache = mock(),

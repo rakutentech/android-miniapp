@@ -49,12 +49,12 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     @Suppress("MagicNumber")
     fun secureStorageSize(
         miniAppId: String,
-        onSuccess: (String) -> Unit,
+        onSuccess: (Double) -> Unit,
         onFailed: (MiniAppStorageError) -> Unit
     ) {
         if (isStorageAvailable(miniAppId)) {
             val sizeInKb = File(secureStorageBasePath, "$miniAppId.txt").length() / (1024.0)
-            onSuccess("%.2f".format(sizeInKb))
+            onSuccess(sizeInKb)
         } else {
             onFailed(MiniAppStorageError.unavailableStorage)
         }

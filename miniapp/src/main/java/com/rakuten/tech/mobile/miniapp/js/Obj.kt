@@ -18,25 +18,41 @@ internal data class FileDownloadCallbackObj(
     var id: String
 )
 
+// region: Secure Storage
 @Keep
 internal data class SecureStorageCallbackObj(
     var action: String,
-    val param: Map<String, String>,
+    val param: SecureStorageItems,
     var id: String
+)
+
+@Keep
+internal data class SecureStorageItems(
+    val secureStorageItems: Map<String, String>
 )
 
 @Keep
 internal data class DeleteItemsCallbackObj(
     var action: String,
-    val param: Set<String>,
+    val param: SecureStorageKeyList,
     var id: String
+)
+
+@Keep
+internal data class SecureStorageKeyList(
+    val secureStorageKeyList: Set<String>
 )
 
 @Keep
 internal data class GetItemCallbackObj(
     var action: String,
-    val param: String,
+    val param: SecureStorageKey,
     var id: String
+)
+
+@Keep
+internal data class SecureStorageKey(
+    val secureStorageKey: String
 )
 
 @Keep
@@ -44,6 +60,13 @@ internal data class SecureStorageReadyCallback(
     var success: Boolean,
     var error: MiniAppStorageError? = null
 )
+
+@Keep
+internal data class MiniAppSecureStorageSize(
+    val used: Double,
+    val max: Double
+)
+// end region
 
 @Keep
 internal data class DevicePermission(val permission: String)
