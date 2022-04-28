@@ -115,9 +115,9 @@ internal class MiniAppSecureStorageDispatcher(
                             it[callbackObj.param.secureStorageKey] ?: ""
                         )
                     } else {
-                        bridgeExecutor.postError(
+                        bridgeExecutor.postValue(
                             callbackId,
-                            Gson().toJson(MiniAppStorageError.unavailableItem)
+                            "null"
                         )
                     }
                 } ?: kotlin.run {
