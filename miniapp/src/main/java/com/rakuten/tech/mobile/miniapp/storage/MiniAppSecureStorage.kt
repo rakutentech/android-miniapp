@@ -142,6 +142,31 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String)
+     * @param miniAppId will be used to find the file to be deleted.
+     */
+    fun clearSecureStorage(miniAppId: String) {
+        if (isStorageAvailable(miniAppId)) {
+            scope.launch {
+                val file = File(secureStorageBasePath, "$miniAppId.txt")
+                file.delete()
+            }
+        }
+    }
+
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage
+     */
+    fun clearSecureStorage() {
+        val storageDir = File(secureStorageBasePath)
+        if (storageDir.exists()) {
+            scope.launch {
+                storageDir.deleteRecursively()
+            }
+        }
+    }
+
     fun deleteSecureStorageItems(
         miniAppId: String,
         keySet: Set<String>,

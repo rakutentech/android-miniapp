@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
@@ -162,6 +161,11 @@ internal class MiniAppSecureStorageDispatcher(
         cachedItems = null
         secureStorage.storageState.removeObserver(stateObserver)
     }
+
+    fun clearSecureStorage(miniAppId: String) =
+        whenReady { secureStorage.clearSecureStorage(miniAppId) }
+
+    fun clearSecureStorage() = whenReady { secureStorage.clearSecureStorage() }
 
     internal companion object {
         const val ERR_WRONG_JSON_FORMAT = "Can not parse secure storage json object"

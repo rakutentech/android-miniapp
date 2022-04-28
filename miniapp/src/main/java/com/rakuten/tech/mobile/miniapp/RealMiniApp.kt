@@ -15,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 
 @Suppress("TooManyFunctions", "LongMethod", "LargeClass")
@@ -62,13 +61,10 @@ internal class RealMiniApp(
         }
     }
 
-    override fun clearSecureStorage() {
+    override fun clearSecureStorage() = secureStorageDispatcher.clearSecureStorage()
 
-    }
-
-    override fun clearSecureStorage(miniAppId: String) {
-        // Clear particular secure storage
-    }
+    override fun clearSecureStorage(miniAppId: String) =
+        secureStorageDispatcher.clearSecureStorage(miniAppId)
 
     override suspend fun create(
         appId: String,
