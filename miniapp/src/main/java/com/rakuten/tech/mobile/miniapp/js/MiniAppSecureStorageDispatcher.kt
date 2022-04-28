@@ -7,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.StorageState
 
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
 ) {
@@ -47,92 +47,130 @@ internal class MiniAppSecureStorageDispatcher(
     private fun onLoad() = whenReady {
         val onSuccess = { items: Map<String, String> ->
             cachedItems = items
-            bridgeExecutor.dispatchEvent(
-                eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value,
-                value = Gson().toJson(SecureStorageReadyCallback(true))
-            )
+            bridgeExecutor.dispatchEvent(eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value)
         }
         val onFailed = { error: MiniAppStorageError ->
             bridgeExecutor.dispatchEvent(
-                eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value,
-                value = Gson().toJson(SecureStorageReadyCallback(false, error))
+                eventType = NativeEventType.MINIAPP_SECURE_STORAGE_LOAD_ERROR.value,
+                value = Gson().toJson(error)
             )
         }
         secureStorage.load(miniAppId, onSuccess, onFailed)
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")
     fun onSetItems(callbackId: String, jsonStr: String) = whenReady {
-        val callbackObj: SecureStorageCallbackObj? =
-            Gson().fromJson(jsonStr, SecureStorageCallbackObj::class.java)
-        if (callbackObj != null) {
-            val onSuccess = { items: Map<String, String> ->
-                cachedItems = items
-                bridgeExecutor.postValue(callbackId, SAVE_SUCCESS_SECURE_STORAGE)
-            }
-            val onFailed = { error: MiniAppStorageError ->
-                bridgeExecutor.postError(callbackId, Gson().toJson(error))
-            }
-            if (storageState != StorageState.LOCK)
-                secureStorage.insertItems(
-                    miniAppId,
-                    callbackObj.param.secureStorageItems,
-                    onSuccess,
-                    onFailed
-                )
-            else
-                bridgeExecutor.postError(
-                    callbackId,
-                    Gson().toJson(MiniAppStorageError.storageOccupiedError)
-                )
-        } else {
-            bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
-        }
-    }
-
-    fun onGetItem(callbackId: String, jsonStr: String) = whenReady {
-        val callbackObj: GetItemCallbackObj? =
-            Gson().fromJson(jsonStr, GetItemCallbackObj::class.java)
-        if (callbackObj != null) {
-            if (!cachedItems.isNullOrEmpty() && cachedItems!!.containsKey(callbackObj.param.secureStorageKey)) {
-                bridgeExecutor.postValue(callbackId, cachedItems!![callbackObj.param.secureStorageKey] ?: "")
-            } else {
-                val onSuccess = { itemValue: String ->
-                    bridgeExecutor.postValue(callbackId, itemValue)
+        try {
+            val callbackObj: SecureStorageCallbackObj? =
+                Gson().fromJson(jsonStr, SecureStorageCallbackObj::class.java)
+            if (callbackObj != null) {
+                val onSuccess = { items: Map<String, String> ->
+                    cachedItems = items
+                    bridgeExecutor.postValue(callbackId, SAVE_SUCCESS_SECURE_STORAGE)
                 }
                 val onFailed = { error: MiniAppStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(error))
                 }
-                secureStorage.getItem(miniAppId, callbackObj.param.secureStorageKey, onSuccess, onFailed)
+                if (storageState != StorageState.LOCK) {
+                    cachedItems?.let {
+                        val mergedItems = it.toMutableMap().apply { putAll(callbackObj.param.secureStorageItems) }
+                        secureStorage.insertItems(
+                            miniAppId,
+                            mergedItems,
+                            onSuccess,
+                            onFailed
+                        )
+                    } ?: kotlin.run {
+                        secureStorage.insertItems(
+                            miniAppId,
+                            callbackObj.param.secureStorageItems,
+                            onSuccess,
+                            onFailed
+                        )
+                    }
+                } else {
+                    bridgeExecutor.postError(
+                        callbackId,
+                        Gson().toJson(MiniAppStorageError.storageOccupiedError)
+                    )
+                }
+            } else {
+                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
             }
-        } else {
+        } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun onGetItem(callbackId: String, jsonStr: String) = whenReady {
+        try {
+            val callbackObj: GetItemCallbackObj? =
+                Gson().fromJson(jsonStr, GetItemCallbackObj::class.java)
+            if (callbackObj != null) {
+                cachedItems?.let {
+                    if (it.containsKey(callbackObj.param.secureStorageKey)) {
+                        bridgeExecutor.postValue(
+                            callbackId,
+                            it[callbackObj.param.secureStorageKey] ?: ""
+                        )
+                    } else {
+                        bridgeExecutor.postError(
+                            callbackId,
+                            Gson().toJson(MiniAppStorageError.unavailableItem)
+                        )
+                    }
+                } ?: kotlin.run {
+                    val onSuccess = { itemValue: String ->
+                        bridgeExecutor.postValue(callbackId, itemValue)
+                    }
+                    val onFailed = { error: MiniAppStorageError ->
+                        bridgeExecutor.postError(callbackId, Gson().toJson(error))
+                    }
+                    secureStorage.getItem(
+                        miniAppId,
+                        callbackObj.param.secureStorageKey,
+                        onSuccess,
+                        onFailed
+                    )
+                }
+            } else {
+                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
+            }
+        } catch (e: Exception) {
+            bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun onRemoveItems(callbackId: String, jsonStr: String) = whenReady {
-        val callbackObj: DeleteItemsCallbackObj? =
-            Gson().fromJson(jsonStr, DeleteItemsCallbackObj::class.java)
-        if (callbackObj != null) {
-            val onSuccess = { items: Map<String, String> ->
-                cachedItems = items
-                bridgeExecutor.postValue(callbackId, REMOVE_ITEMS_SUCCESS_SECURE_STORAGE)
+        try {
+            val callbackObj: DeleteItemsCallbackObj? =
+                Gson().fromJson(jsonStr, DeleteItemsCallbackObj::class.java)
+            if (callbackObj != null) {
+                val onSuccess = { items: Map<String, String> ->
+                    cachedItems = items
+                    bridgeExecutor.postValue(callbackId, REMOVE_ITEMS_SUCCESS_SECURE_STORAGE)
+                }
+                val onFailed = { error: MiniAppStorageError ->
+                    bridgeExecutor.postError(callbackId, Gson().toJson(error))
+                }
+                if (storageState != StorageState.LOCK)
+                    secureStorage.deleteItems(
+                        miniAppId,
+                        callbackObj.param.secureStorageKeyList,
+                        onSuccess,
+                        onFailed
+                    )
+                else
+                    bridgeExecutor.postError(
+                        callbackId,
+                        Gson().toJson(MiniAppStorageError.storageOccupiedError)
+                    )
+            } else {
+                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
             }
-            val onFailed = { error: MiniAppStorageError ->
-                bridgeExecutor.postError(callbackId, Gson().toJson(error))
-            }
-            if (storageState != StorageState.LOCK)
-                secureStorage.deleteItems(
-                    miniAppId,
-                    callbackObj.param.secureStorageKeyList,
-                    onSuccess,
-                    onFailed
-                )
-            else
-                bridgeExecutor.postError(
-                    callbackId,
-                    Gson().toJson(MiniAppStorageError.storageOccupiedError)
-                )
-        } else {
+        } catch (e: Exception) {
             bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }

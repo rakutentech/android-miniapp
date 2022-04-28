@@ -49,5 +49,6 @@ enum class NativeEventType(val value: String) {
     EXTERNAL_WEBVIEW_CLOSE("miniappwebviewclosed"),
     MINIAPP_ON_PAUSE("miniapppause"),
     MINIAPP_ON_RESUME("miniappresume"),
-    MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready")
+    MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready"),
+    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror")
 }

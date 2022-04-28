@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.charset.StandardCharsets
 
@@ -105,14 +104,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
                 ).build()
 
                 val inputStream = encryptedFile.openFileInput()
-                val byteArrayOutputStream = ByteArrayOutputStream()
-                var nextByte: Int = inputStream.read()
-                while (nextByte != -1) {
-                    byteArrayOutputStream.write(nextByte)
-                    nextByte = inputStream.read()
-                }
-
-                val plaintext: ByteArray = byteArrayOutputStream.toByteArray()
+                val plaintext: ByteArray = inputStream.readBytes()
                 val jsonToRead = plaintext.toString(Charsets.UTF_8)
                 return deserializeItems(jsonToRead)
             } else {
@@ -200,17 +192,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     ) {
         scope.launch {
             storageState.postValue(StorageState.LOCK)
-            if (isStorageAvailable(miniAppId)) {
-                val storedItems = readFromEncryptedFile(miniAppId)
-                storedItems?.let {
-                    val allItems = it.toMutableMap().apply { putAll(items) }
-                    writeToEncryptedFile(miniAppId, serializedItems(allItems), onSuccess, onFailed)
-                } ?: kotlin.run {
-                    writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
-                }
-            } else {
-                writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
-            }
+            writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
             storageState.postValue(StorageState.UNLOCK)
         }
     }
