@@ -219,7 +219,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
-
     }
 
     @Test

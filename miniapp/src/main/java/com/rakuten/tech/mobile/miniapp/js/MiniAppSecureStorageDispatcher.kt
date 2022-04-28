@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.StorageState
 
+@Suppress("TooManyFunctions")
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
 ) {
@@ -57,7 +58,7 @@ internal class MiniAppSecureStorageDispatcher(
                 value = Gson().toJson(SecureStorageReadyCallback(false, error))
             )
         }
-        secureStorage.loadSecureStorage(miniAppId, onSuccess, onFailed)
+        secureStorage.load(miniAppId, onSuccess, onFailed)
     }
 
     fun onSetItems(callbackId: String, jsonStr: String) = whenReady {
@@ -72,7 +73,7 @@ internal class MiniAppSecureStorageDispatcher(
                 bridgeExecutor.postError(callbackId, Gson().toJson(error))
             }
             if (storageState != StorageState.LOCK)
-                secureStorage.insertSecureStorageItem(
+                secureStorage.insertItems(
                     miniAppId,
                     callbackObj.param.secureStorageItems,
                     onSuccess,
@@ -120,7 +121,7 @@ internal class MiniAppSecureStorageDispatcher(
                 bridgeExecutor.postError(callbackId, Gson().toJson(error))
             }
             if (storageState != StorageState.LOCK)
-                secureStorage.deleteSecureStorageItems(
+                secureStorage.deleteItems(
                     miniAppId,
                     callbackObj.param.secureStorageKeyList,
                     onSuccess,
@@ -143,7 +144,7 @@ internal class MiniAppSecureStorageDispatcher(
         val onFailed = { error: MiniAppStorageError ->
             bridgeExecutor.postError(callbackId, Gson().toJson(error))
         }
-        secureStorage.deleteSecureStorage(miniAppId, onSuccess, onFailed)
+        secureStorage.delete(miniAppId, onSuccess, onFailed)
     }
 
     fun onSize(callbackId: String) = whenReady {
@@ -157,14 +158,21 @@ internal class MiniAppSecureStorageDispatcher(
         secureStorage.secureStorageSize(miniAppId, onSuccess, onFailed)
     }
 
-    fun onClearSecureStorage() {
+    fun cleanupSecureStorage() {
         cachedItems = null
         secureStorage.storageState.removeObserver(stateObserver)
     }
 
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
+     * @param miniAppId will be used to find the file to be deleted.
+     */
     fun clearSecureStorage(miniAppId: String) =
         whenReady { secureStorage.clearSecureStorage(miniAppId) }
 
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage.
+     */
     fun clearSecureStorage() = whenReady { secureStorage.clearSecureStorage() }
 
     internal companion object {

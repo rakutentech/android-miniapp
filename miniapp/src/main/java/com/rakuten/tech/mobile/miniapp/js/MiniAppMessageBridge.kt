@@ -53,7 +53,7 @@ open class MiniAppMessageBridge {
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
-    private lateinit var miniAppSecureStorageDispatcher : MiniAppSecureStorageDispatcher
+    private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     internal fun init(
         activity: Activity,
@@ -439,13 +439,6 @@ open class MiniAppMessageBridge {
         allowScreenOrientation = isAllowed
         if (this::screenBridgeDispatcher.isInitialized)
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
-    }
-
-    /**
-     * Clear the cached secure-storage.
-     **/
-    internal fun clearSecureStorageCache() {
-        miniAppSecureStorageDispatcher.onClearSecureStorage()
     }
 }
 
