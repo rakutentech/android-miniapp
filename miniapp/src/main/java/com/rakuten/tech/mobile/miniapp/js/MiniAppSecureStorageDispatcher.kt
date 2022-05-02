@@ -184,6 +184,7 @@ internal class MiniAppSecureStorageDispatcher(
 
     fun onClearAll(callbackId: String) = whenReady {
         val onSuccess = {
+            cachedItems = null
             bridgeExecutor.postValue(callbackId, REMOVE_SUCCESS_SECURE_STORAGE)
         }
         val onFailed = { errorSecure: MiniAppSecureStorageError ->
