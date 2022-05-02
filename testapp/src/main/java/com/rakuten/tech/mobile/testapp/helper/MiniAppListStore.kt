@@ -40,7 +40,7 @@ class MiniAppListStore private constructor(context: Context) {
             prefs.getString(miniAppList, ""),
             object : TypeToken<List<MiniAppInfo>>() {}.type
         )
-    } catch (error: IllegalStateException) {
+    } catch (error: Exception) {
         emptyList()
     }
 }

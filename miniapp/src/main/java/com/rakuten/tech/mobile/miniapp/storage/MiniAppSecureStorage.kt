@@ -181,6 +181,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         }
     }
 
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     fun load(
         miniAppId: String,
         onSuccess: (Map<String, String>) -> Unit,
@@ -188,14 +189,18 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     ) {
         scope.launch {
             storageState.postValue(StorageState.LOCK)
-            if (isStorageAvailable(miniAppId)) {
-                val storedItems = readFromEncryptedFile(miniAppId)
-                storedItems?.let {
-                    onSuccess(storedItems)
-                } ?: kotlin.run {
-                    onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+            try {
+                if (isStorageAvailable(miniAppId)) {
+                    val storedItems = readFromEncryptedFile(miniAppId)
+                    storedItems?.let {
+                        onSuccess(storedItems)
+                    } ?: kotlin.run {
+                        onSuccess(emptyMap())
+                    }
+                } else {
+                    onSuccess(emptyMap())
                 }
-            } else {
+            } catch (e: Exception) {
                 onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
             }
             storageState.postValue(StorageState.UNLOCK)
