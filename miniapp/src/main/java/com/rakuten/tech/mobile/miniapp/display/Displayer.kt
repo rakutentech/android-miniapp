@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
@@ -24,6 +25,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
         enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         basePath = basePath,
@@ -37,6 +39,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
         ratDispatcher = ratDispatcher,
+        secureStorageDispatcher = secureStorageDispatcher,
         enableH5Ads = enableH5Ads
     )
 
@@ -50,6 +53,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
         enableH5Ads: Boolean
     ): MiniAppDisplay = RealMiniAppDisplay(
         appUrl = appUrl,
@@ -62,6 +66,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         queryParams = queryParams,
         miniAppAnalytics = miniAppAnalytics,
         ratDispatcher = ratDispatcher,
+        secureStorageDispatcher = secureStorageDispatcher,
         enableH5Ads = enableH5Ads
     )
 }

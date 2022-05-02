@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.userinfo
 
+import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import org.mockito.kotlin.*
@@ -76,16 +77,19 @@ class UserInfoBridgeSpec {
 
     @Before
     fun setup() {
-        miniAppBridge = Mockito.spy(createMessageBridge())
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = customPermissionCache,
-            downloadedManifestCache = downloadedManifestCache,
-            miniAppId = TEST_MA.id,
-            ratDispatcher = ratDispatcher
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            miniAppBridge = Mockito.spy(createMessageBridge())
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = customPermissionCache,
+                downloadedManifestCache = downloadedManifestCache,
+                miniAppId = TEST_MA.id,
+                ratDispatcher = ratDispatcher,
+                secureStorageDispatcher = mock()
+            )
+        }
 
         whenever(customPermissionCache.hasPermission(
             miniAppInfo.id, MiniAppCustomPermissionType.USER_NAME)
