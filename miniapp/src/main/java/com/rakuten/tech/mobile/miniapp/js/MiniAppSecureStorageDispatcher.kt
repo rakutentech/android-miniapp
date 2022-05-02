@@ -184,6 +184,7 @@ internal class MiniAppSecureStorageDispatcher(
 
     fun onClearAll(callbackId: String) = whenReady {
         val onSuccess = {
+            cachedItems = null
             bridgeExecutor.postValue(callbackId, REMOVE_SUCCESS_SECURE_STORAGE)
         }
         val onFailed = { errorSecure: MiniAppSecureStorageError ->
@@ -212,15 +213,14 @@ internal class MiniAppSecureStorageDispatcher(
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
-     * @param miniAppId will be used to find the file to be deleted.
+     * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String) =
-        whenReady { secureStorage.clearSecureStorage(miniAppId) }
+    fun clearSecureStorage(miniAppId: String) = secureStorage.clearSecureStorage(miniAppId)
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() = whenReady { secureStorage.clearSecureStorage() }
+    fun clearSecureStorage() = secureStorage.clearSecureStorage()
 
     internal companion object {
         const val ERR_WRONG_JSON_FORMAT = "Can not parse secure storage json object"

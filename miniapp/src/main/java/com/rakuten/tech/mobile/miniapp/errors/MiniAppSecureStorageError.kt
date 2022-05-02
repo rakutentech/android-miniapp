@@ -30,25 +30,19 @@ internal class MiniAppSecureStorageError(val type: String? = null, val message: 
                 errorDescription(SecureStorageUnavailableError)
             )
 
-        // Failed to delete storage.
+        // Error when storage is busy.
         val secureStorageBusyError =
             MiniAppSecureStorageError(
                 SecureStorageBusyError,
                 errorDescription(SecureStorageBusyError)
             )
 
-        /**
-         *  send custom error message from host app.
-         *  @property reason error message send to mini app.
-         */
-        fun custom(reason: String) = MiniAppSecureStorageError(reason)
-
         private fun errorDescription(error: String): String {
             return when (error) {
                 SecureStorageFullError -> "Secure storage is full."
                 SecureStorageIOError -> "Failed to read/write secure storage."
                 SecureStorageUnavailableError -> "Secure storage unavailable."
-                SecureStorageBusyError -> "Storage is occupied."
+                SecureStorageBusyError -> "Storage is busy."
                 else -> ""
             }
         }
