@@ -58,7 +58,7 @@ android {
             sslPublicKey            : property("CERTIFICATE_PUBLIC_KEY") ?: "",
             sslPublicKeyBackup      : property("CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
             enableH5Ads             : property("ENABLE_H5_ADS") ?: true,
-            storageMaxSizeKB        : property("STORAGE_MAX_SIZE_KB") ?: 5120,
+            storageMaxSizeKB        : property("STORAGE_MAX_SIZE_KB") ?: 5000,
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
@@ -75,7 +75,7 @@ android {
             sslPublicKey            : property("PROD_CERTIFICATE_PUBLIC_KEY") ?: "",
             sslPublicKeyBackup      : property("PROD_CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
             enableH5Ads             : property("ENABLE_H5_ADS") ?: true,
-            storageMaxSizeKB        : property("STORAGE_MAX_SIZE_KB") ?: 5120,
+            storageMaxSizeKB        : property("STORAGE_MAX_SIZE_KB") ?: 5000,
     ] + commonPlaceholders
 
     def buildVersion = System.getenv("CIRCLE_BUILD_NUM") ?: new Date().format('yyMMddHHmm')
