@@ -32,8 +32,8 @@ internal enum class Actype(val value: String) {
     FILE_DOWNLOAD("mini_app_download_file"),
     SECURE_STORAGE_SET_ITEMS("mini_app_secure_storage_set_items"),
     SECURE_STORAGE_GET_ITEM("mini_app_secure_storage_get_item"),
-    SECURE_STORAGE_REMOVE_ITEMS("secure_storage_remove_items"),
-    SECURE_STORAGE_CLEAR("secure_storage_clear"),
-    SECURE_STORAGE_SIZE("secure_storage_size"),
+    SECURE_STORAGE_REMOVE_ITEMS("mini_app_secure_storage_remove_items"),
+    SECURE_STORAGE_CLEAR("mini_app_secure_storage_clear"),
+    SECURE_STORAGE_SIZE("mini_app_secure_storage_size"),
     DEFAULT("")
 }

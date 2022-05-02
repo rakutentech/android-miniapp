@@ -212,7 +212,7 @@ internal class MiniAppSecureStorageDispatcher(
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
-     * @param miniAppId will be used to find the file to be deleted.
+     * @param miniAppId will be used to find the storage to be deleted.
      */
     fun clearSecureStorage(miniAppId: String) =
         whenReady { secureStorage.clearSecureStorage(miniAppId) }
