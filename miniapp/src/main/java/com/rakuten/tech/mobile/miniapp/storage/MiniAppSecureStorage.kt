@@ -50,13 +50,12 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
     fun secureStorageSize(
         miniAppId: String,
         onSuccess: (Long) -> Unit,
-        onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         if (isStorageAvailable(miniAppId)) {
             val sizeInBytes = File(secureStorageBasePath, "$miniAppId.txt").length()
             onSuccess(sizeInBytes)
         } else {
-            onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+            onSuccess(0)
         }
     }
 
@@ -145,7 +144,7 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
                 }
             }
         } else {
-            onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+            onSuccess()
         }
     }
 
