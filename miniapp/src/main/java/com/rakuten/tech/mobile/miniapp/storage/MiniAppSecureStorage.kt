@@ -223,7 +223,6 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
         miniAppId: String,
         key: String,
         onSuccess: (String) -> Unit,
-        onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
             if (isStorageAvailable(miniAppId)) {
@@ -232,13 +231,13 @@ internal class MiniAppSecureStorage(private val activity: Activity) {
                     if (storedItems.containsKey(key)) {
                         onSuccess(storedItems[key] ?: "")
                     } else {
-                        onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                        onSuccess("null")
                     }
                 } ?: kotlin.run {
-                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                    onSuccess("null")
                 }
             } else {
-                onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                onSuccess("null")
             }
         }
     }
