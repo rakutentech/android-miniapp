@@ -131,14 +131,10 @@ internal class MiniAppSecureStorageDispatcher(
                     val onSuccess = { itemValue: String ->
                         bridgeExecutor.postValue(callbackId, itemValue)
                     }
-                    val onFailed = { errorSecure: MiniAppSecureStorageError ->
-                        bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
-                    }
                     secureStorage.getItem(
                         miniAppId,
                         callbackObj.param.secureStorageKey,
-                        onSuccess,
-                        onFailed
+                        onSuccess
                     )
                 }
             } else {
