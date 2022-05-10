@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
+import android.util.Log
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -42,6 +43,7 @@ internal class InAppPurchaseBridgeDispatcher {
                 val successCallback = { response: PurchasedProductResponse ->
                     bridgeExecutor.postValue(callbackId, Gson().toJson(response))
                 }
+                Log.d("AAAA jsonStr", jsonStr)
                 inAppPurchaseProvider.purchaseItem(
                     callbackObj.param.itemId,
                     successCallback,

@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
+import android.util.Log
 import android.app.Activity
 import com.android.billingclient.api.*
 import kotlin.coroutines.CoroutineContext
@@ -61,6 +62,7 @@ class InAppPurchaseProviderDefault(
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         launch {
+                            Log.d("AAAA billingResult.responseCode", billingResult.responseCode.toString())
                             querySkuDetails(productID)
                         }
                     }
@@ -103,12 +105,16 @@ class InAppPurchaseProviderDefault(
         // proceed with In-App type
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
 
+        Log.d("AAAA productID", productID)
+
         withContext(Dispatchers.IO) {
             billingClient.querySkuDetails(params.build())
         }.let {
             if (it.billingResult.responseCode == BillingClient.BillingResponseCode.OK && !it.skuDetailsList.isNullOrEmpty()) {
                 for (skuDetails in it.skuDetailsList!!) {
                     this.skuDetails = skuDetails
+
+                    Log.d("AAAA SkuDetails", skuDetails.description)
                 }
 
                 launchPurchaseFlow()
@@ -120,6 +126,7 @@ class InAppPurchaseProviderDefault(
 
     private fun launchPurchaseFlow() {
         skuDetails?.let {
+            Log.d("AAAA launchPurchaseFlow", "enter")
             val flowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(it)
                 .build()
