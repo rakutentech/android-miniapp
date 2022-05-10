@@ -14,6 +14,7 @@
     <string name="lb_display_input">Display by Input</string>
     <string name="lb_unique_id">Unique ID</string>
     <string name="lb_filter_view_miniapp">Open MiniApp</string>
+    <string name="lb_secure_storage">Secure Storage</string>
 
     <string name="lb_auth_failure_error">Always Generate Authorization Error</string>
     <string name="lb_other_error">Always Generate Custom Error</string>
@@ -67,6 +68,7 @@
     <string name="action_custom_permissions">Custom Permissions</string>
     <string name="action_first_time_accept">Accept</string>
     <string name="action_message_send">SEND</string>
+    <string name="action_clear_all">Clear All</string>
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>

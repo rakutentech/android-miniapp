@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -37,6 +38,7 @@ internal class RealMiniAppDisplay(
     val queryParams: String,
     val miniAppAnalytics: MiniAppAnalytics,
     val ratDispatcher: MessageBridgeRatDispatcher,
+    val secureStorageDispatcher: MiniAppSecureStorageDispatcher,
     val enableH5Ads: Boolean
 ) : MiniAppDisplay {
 
@@ -58,6 +60,7 @@ internal class RealMiniAppDisplay(
         queryParams: String,
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
         enableH5Ads: Boolean
     ) : this(
         "",
@@ -71,6 +74,7 @@ internal class RealMiniAppDisplay(
         queryParams,
         miniAppAnalytics,
         ratDispatcher,
+        secureStorageDispatcher,
         enableH5Ads
     ) {
         this.appUrl = appUrl
@@ -140,7 +144,8 @@ internal class RealMiniAppDisplay(
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
                     ratDispatcher = ratDispatcher,
-                    enableH5Ads = enableH5Ads
+                    secureStorageDispatcher = secureStorageDispatcher,
+                    enableH5Ads = enableH5Ads,
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -155,6 +160,7 @@ internal class RealMiniAppDisplay(
                     downloadedManifestCache = downloadedManifestCache,
                     queryParams = queryParams,
                     ratDispatcher = ratDispatcher,
+                    secureStorageDispatcher = secureStorageDispatcher,
                     enableH5Ads = enableH5Ads
                 )
             }

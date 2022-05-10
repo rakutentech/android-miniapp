@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
+import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -170,6 +171,18 @@ abstract class MiniApp internal constructor() {
     abstract fun listDownloadedWithCustomPermissions(): List<Pair<MiniAppInfo, MiniAppCustomPermission>>
 
     /**
+     * Clears all secure storage items for all mini apps.
+     * Host App should call this when they want to clear all sensitive and session data such as when a user logs out.
+     */
+    abstract fun clearSecureStorage()
+
+    /**
+     * Clears the secure storage for a particular Mini App ID.
+     * @param miniAppId will be used to find the storage to be deleted.
+     */
+    abstract fun clearSecureStorage(miniAppId: String)
+
+    /**
      * Get the manifest information e.g. required and optional permissions.
      * @param appId mini app id.
      * @param versionId of mini app.
@@ -253,6 +266,7 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
+                secureStorageDispatcher = MiniAppSecureStorageDispatcher(miniAppSdkConfig.storageMaxSizeKB),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }

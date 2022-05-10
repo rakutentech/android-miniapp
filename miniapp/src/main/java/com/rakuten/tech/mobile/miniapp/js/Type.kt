@@ -20,6 +20,11 @@ internal enum class ActionType(val action: String) {
     GET_POINTS("getPoints"),
     GET_HOST_ENVIRONMENT_INFO("getHostEnvironmentInfo"),
     FILE_DOWNLOAD("downloadFile"),
+    SECURE_STORAGE_SET_ITEMS("setSecureStorageItems"),
+    SECURE_STORAGE_GET_ITEM("getSecureStorageItem"),
+    SECURE_STORAGE_REMOVE_ITEMS("removeSecureStorageItems"),
+    SECURE_STORAGE_CLEAR("clearSecureStorage"),
+    SECURE_STORAGE_SIZE("getSecureStorageSize"),
     PURCHASE_ITEM("purchaseItem"),
 }
 
@@ -45,4 +50,6 @@ enum class NativeEventType(val value: String) {
     EXTERNAL_WEBVIEW_CLOSE("miniappwebviewclosed"),
     MINIAPP_ON_PAUSE("miniapppause"),
     MINIAPP_ON_RESUME("miniappresume"),
+    MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready"),
+    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror")
 }

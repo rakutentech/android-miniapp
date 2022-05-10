@@ -55,6 +55,7 @@ open class MiniAppMessageBridge {
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
+    private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     internal fun init(
         activity: Activity,
@@ -62,7 +63,8 @@ open class MiniAppMessageBridge {
         customPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String,
-        ratDispatcher: MessageBridgeRatDispatcher
+        ratDispatcher: MessageBridgeRatDispatcher,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -72,9 +74,12 @@ open class MiniAppMessageBridge {
         this.screenBridgeDispatcher =
             ScreenBridgeDispatcher(activity, bridgeExecutor, allowScreenOrientation)
         this.ratDispatcher = ratDispatcher
+        this.miniAppSecureStorageDispatcher = secureStorageDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
+        miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
             customPermissionCache,
@@ -219,6 +224,24 @@ open class MiniAppMessageBridge {
             ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
                 callbackObj.id,
                 jsonStr
+            )
+            ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher.onSetItems(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.SECURE_STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher.onGetItem(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.SECURE_STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher.onRemoveItems(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(
+                callbackObj.id
+            )
+            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
+                callbackObj.id
             )
             ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(callbackObj.id, jsonStr)
         }

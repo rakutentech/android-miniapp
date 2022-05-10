@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.chat
 
+import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.TestActivity
@@ -21,6 +23,7 @@ import org.amshove.kluent.itReturns
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 open class BaseChatBridgeDispatcherSpec {
@@ -48,15 +51,18 @@ open class BaseChatBridgeDispatcherSpec {
     @Before
     fun setup() {
         miniAppBridge = Mockito.spy(createMessageBridge())
-        When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-        miniAppBridge.init(
-            activity = TestActivity(),
-            webViewListener = webViewListener,
-            customPermissionCache = customPermissionCache,
-            downloadedManifestCache = downloadedManifestCache,
-            miniAppId = TEST_MA.id,
-            ratDispatcher = mock()
-        )
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = customPermissionCache,
+                downloadedManifestCache = downloadedManifestCache,
+                miniAppId = TEST_MA.id,
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
+            )
+        }
     }
 
     protected fun createChatMessageBridgeDispatcher(
@@ -164,6 +170,7 @@ open class BaseChatBridgeDispatcherSpec {
     )
 }
 
+@RunWith(AndroidJUnit4::class)
 class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     @Test
     fun `postError should be called when hostapp doesn't implement the chat dispatcher for single chat`() {

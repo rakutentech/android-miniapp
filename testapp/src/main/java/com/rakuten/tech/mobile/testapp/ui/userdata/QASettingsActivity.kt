@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,6 +10,7 @@ import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
@@ -21,6 +24,7 @@ class QASettingsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
+    private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
 
     companion object {
         fun start(activity: Activity) {
@@ -92,7 +96,6 @@ class QASettingsActivity : BaseActivity() {
 
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
-
     }
 
     private fun startListeners(){
@@ -101,6 +104,31 @@ class QASettingsActivity : BaseActivity() {
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
             binding.edtUniqueIdError.isEnabled = isChecked
         }
+        binding.btnClearAllSecureStorage.setOnClickListener {
+            clearAllSecureStorage()
+        }
+    }
+
+    private fun clearAllSecureStorage() {
+        val dialogClickListener =
+            DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        miniApp.clearSecureStorage()
+                        Toast.makeText(
+                            this@QASettingsActivity,
+                            "Successfully cleared all secured storage!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                dialog.dismiss()
+            }
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@QASettingsActivity)
+        builder.setMessage("Are you sure to clear all secure storage?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener).show()
     }
 
     private val accessTokenListener =
