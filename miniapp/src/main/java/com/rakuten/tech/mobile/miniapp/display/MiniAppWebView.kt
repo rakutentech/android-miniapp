@@ -43,7 +43,8 @@ internal open class MiniAppWebView(
         context,
         miniAppInfo,
         miniAppCustomPermissionCache,
-        miniAppFileChooser
+        miniAppFileChooser,
+        miniAppMessageBridge
     ),
     val queryParams: String,
     val ratDispatcher: MessageBridgeRatDispatcher,

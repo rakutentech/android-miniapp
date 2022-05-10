@@ -89,6 +89,10 @@ open class MiniAppMessageBridge {
         miniAppViewInitialized = true
     }
 
+    internal fun onJsInjectionDone() {
+        miniAppSecureStorageDispatcher.onLoad()
+    }
+
     @VisibleForTesting
     internal fun createBridgeExecutor(webViewListener: WebViewListener) =
         MiniAppBridgeExecutor(webViewListener)
