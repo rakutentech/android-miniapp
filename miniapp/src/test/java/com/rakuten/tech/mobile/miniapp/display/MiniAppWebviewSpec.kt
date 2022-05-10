@@ -57,7 +57,8 @@ open class BaseWebViewSpec {
                     context,
                     TEST_MA,
                     miniAppCustomPermissionCache,
-                    miniAppFileChooser
+                    miniAppFileChooser,
+                    mock()
                 )
             )
             miniAppWebView = createMiniAppWebView()
@@ -451,7 +452,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `bridge js should be null when js asset is inaccessible`() {
-        val webClient = MiniAppWebChromeClient(mock(), TEST_MA, mock(), mock())
+        val webClient = MiniAppWebChromeClient(mock(), TEST_MA, mock(), mock(), mock())
         webClient.bridgeJs shouldBe null
     }
 
@@ -504,7 +505,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
     @Test
     fun `should close custom view when exit`() {
         val context = getApplicationContext<Context>()
-        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
+        webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock(), mock()))
         webChromeClient.onShowCustomView(null, mock())
         webChromeClient.customView = mock()
         webChromeClient.onShowCustomView(mock(), mock())
@@ -514,7 +515,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should execute custom view flow without error`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock(), mock()))
 
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.updateControls()
@@ -524,7 +525,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
 
     @Test
     fun `should exit fullscreen when destroy miniapp view`() {
-        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock()))
+        val webChromeClient = Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), mock(), mock()))
         webChromeClient.onShowCustomView(View(context), mock())
         webChromeClient.onWebViewDetach()
 
@@ -536,7 +537,7 @@ class MiniAppWebChromeTest : BaseWebViewSpec() {
         val callback: ValueCallback<Array<Uri>>? = mock()
         val fileChooserParams: WebChromeClient.FileChooserParams? = mock()
         val webChromeClient =
-            Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), miniAppFileChooser))
+            Mockito.spy(MiniAppWebChromeClient(context, TEST_MA, mock(), miniAppFileChooser, mock()))
         webChromeClient.onShowFileChooser(miniAppWebView, callback, fileChooserParams)
         verify(miniAppFileChooser).onShowFileChooser(callback, fileChooserParams, context)
     }

@@ -30,7 +30,6 @@ internal class MiniAppSecureStorageDispatcher(
         this.miniAppId = miniAppId
         this.secureStorage = MiniAppSecureStorage(activity)
         secureStorage.storageState.observeForever(stateObserver)
-        onLoad()
     }
 
     @Suppress("ComplexCondition")
@@ -44,7 +43,7 @@ internal class MiniAppSecureStorageDispatcher(
         }
     }
 
-    private fun onLoad() = whenReady {
+    fun onLoad() = whenReady {
         val onSuccess = { items: Map<String, String> ->
             cachedItems = items
             bridgeExecutor.dispatchEvent(eventType = NativeEventType.MINIAPP_SECURE_STORAGE_READY.value)
