@@ -1,8 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
+import androidx.annotation.Keep
+
 /**
  * A class to provide the custom errors specific for file download.
  */
+@Keep
 class MiniAppDownloadFileError(val type: String? = null, val message: String? = null, val code: Int? = null) :
     MiniAppBridgeError(type, message) {
 

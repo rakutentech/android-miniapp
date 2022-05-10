@@ -1,8 +1,11 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
+import androidx.annotation.Keep
+
 /**
  * A class to provide the custom errors specific for access token.
  */
+@Keep
 class MiniAppAccessTokenError(val type: String? = null, val message: String? = null) :
     MiniAppBridgeError(type, message) {
 
