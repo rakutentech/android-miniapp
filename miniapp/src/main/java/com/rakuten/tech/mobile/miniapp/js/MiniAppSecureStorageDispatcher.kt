@@ -200,10 +200,7 @@ internal class MiniAppSecureStorageDispatcher(
             val storageSize = Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
             bridgeExecutor.postValue(callbackId, storageSize)
         }
-        val onFailed = { errorSecure: MiniAppSecureStorageError ->
-            bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
-        }
-        secureStorage.secureStorageSize(miniAppId, onSuccess, onFailed)
+        secureStorage.secureStorageSize(miniAppId, onSuccess)
     }
 
     fun cleanupSecureStorage() {
