@@ -1,5 +1,5 @@
 ## CHANGELOG
-### 4.1.1 (release date TBD)
+### 4.1.1 (2022-05-16)
 **SDK**
 - **Remove:** Removed `io.github.rakutentech.sdkutils` dependency and adopted the related changes to MiniApp SDK.
 
