@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rakuten.tech.mobile.miniapp"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.rakuten.tech.mobile.miniapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,14 +11,6 @@
             android:authorities="${applicationId}.MiniappSdkInitializer"
             android:exported="false"
             android:initOrder="99" />
-
-        <!-- Change init order for sdk-utils so it's initialized first -->
-        <provider
-            android:name="com.rakuten.tech.mobile.sdkutils.SdkUtilsInitProvider"
-            android:authorities="${applicationId}.SdkUtilsInitProvider"
-            android:exported="false"
-            android:initOrder="100"
-            tools:replace="android:initOrder" />
 
         <provider
             android:name="com.rakuten.tech.mobile.miniapp.display.MiniAppDefaultFileProvider"

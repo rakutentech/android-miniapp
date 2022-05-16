@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.sdkutils.AppInfo
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -53,7 +52,6 @@ open class RetrofitRequestExecutorSpec private constructor(
     )
 
     internal fun spyRetrofitExecutor(): RetrofitRequestExecutor {
-        AppInfo.instance = mock()
         val retrofit = createRetrofitClient(
             baseUrl = TEST_URL_HTTPS_2,
             pubKeyList = TEST_LIST_PUBLIC_KEY_SSL,
