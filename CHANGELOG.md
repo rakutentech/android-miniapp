@@ -1,4 +1,8 @@
 ## CHANGELOG
+### 4.1.1 (release date TBD)
+**SDK**
+- **Remove:** Removed `io.github.rakutentech.sdkutils` dependency and adopted the related changes to MiniApp SDK.
+
 ### 4.1.0 (2022-04-11)
 **SDK**
 - **Feature:** Added interface `MiniAppFileDownloader` to download files in device from miniapp.

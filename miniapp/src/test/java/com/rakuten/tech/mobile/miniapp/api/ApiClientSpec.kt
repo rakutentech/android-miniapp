@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.api
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
@@ -218,7 +217,6 @@ open class ApiClientSpec {
 
     @Test
     fun `should create ApiClient without error`() {
-        AppInfo.instance = mock()
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
             rasProjectId = TEST_HA_ID_PROJECT,

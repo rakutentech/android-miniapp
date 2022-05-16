@@ -1016,7 +1016,6 @@ To avoid this, please add the following to your `build.gradle` in order to exclu
 configurations.all {
     exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-processor'
     exclude group: 'com.rakuten.tech.mobile', module: 'manifest-config-annotations'
-    exclude group: 'com.rakuten.tech.mobile.sdkutils', module: 'sdk-utils'
 }
 
 ```
