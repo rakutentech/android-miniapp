@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.app.Activity
 import android.content.Context
+import android.location.LocationManager
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +14,11 @@ import android.webkit.WebView
 import android.webkit.ValueCallback
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
+import androidx.core.location.LocationManagerCompat
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.DialogType
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
@@ -25,8 +28,11 @@ internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppFileChooser: MiniAppFileChooser?
+    private val miniAppFileChooser: MiniAppFileChooser?,
+    private val miniAppMessageBridge: MiniAppMessageBridge
 ) : WebChromeClient() {
+
+    private lateinit var locationManager: LocationManager
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     @VisibleForTesting
@@ -47,10 +53,12 @@ internal class MiniAppWebChromeClient(
         origin: String?,
         callback: GeolocationPermissions.Callback?
     ) {
+        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isLocationEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
         if (miniAppCustomPermissionCache.hasPermission(
                 miniAppInfo.id,
                 MiniAppCustomPermissionType.LOCATION
-            )
+            ) && isLocationEnabled
         ) callback?.invoke(origin, true, false)
         else callback?.invoke(origin, false, false)
     }
@@ -101,7 +109,7 @@ internal class MiniAppWebChromeClient(
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {
         if (bridgeJs !== null) {
-            webView.evaluateJavascript(bridgeJs) {}
+            webView.evaluateJavascript(bridgeJs) { miniAppMessageBridge.onJsInjectionDone() }
         }
     }
 

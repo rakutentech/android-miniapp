@@ -54,6 +54,7 @@ class DisplayerSpec {
             queryParams = TEST_URL_PARAMS,
             miniAppAnalytics = mock(),
             ratDispatcher = mock(),
+            secureStorageDispatcher = mock(),
             enableH5Ads = false
         )
 
@@ -67,6 +68,7 @@ class DisplayerSpec {
         queryParams = TEST_URL_PARAMS,
         miniAppAnalytics = mock(),
         ratDispatcher = mock(),
+        secureStorageDispatcher = mock(),
         enableH5Ads = false
     )
 }

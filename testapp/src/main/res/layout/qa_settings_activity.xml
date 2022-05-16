@@ -103,7 +103,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/small_8">
+            android:padding="@dimen/small_4">
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtUniqueIdError"
@@ -114,6 +114,59 @@
                 android:imeOptions="actionDone"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_4">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtMessagingUniqueIdError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_messaging_unique_id_error"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_4">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtMauidError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_mauid_error"
+                android:imeOptions="actionDone"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_section"
+            android:paddingStart="@dimen/medium_16"
+            android:paddingTop="@dimen/small_4"
+            android:paddingEnd="@dimen/medium_16"
+            android:paddingBottom="@dimen/small_4"
+            android:text="@string/lb_secure_storage" />
+
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+            android:id="@+id/btnClearAllSecureStorage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/large_44"
+            android:layout_margin="@dimen/medium_16"
+            android:background="@drawable/bg_red_curve"
+            android:gravity="center"
+            android:padding="@dimen/small_4"
+            android:text="@string/action_clear_all"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings" />
 
     </LinearLayout>
 </layout>

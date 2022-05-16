@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,6 +10,7 @@ import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
@@ -21,6 +24,7 @@ class QASettingsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
+    private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
 
     companion object {
         fun start(activity: Activity) {
@@ -86,6 +90,12 @@ class QASettingsActivity : BaseActivity() {
         binding.edtUniqueIdError.isEnabled = settings.uniqueIdError.isNotEmpty()
         binding.edtUniqueIdError.setText(settings.uniqueIdError)
         binding.switchUniqueIdError.isChecked = settings.uniqueIdError.isNotEmpty()
+
+        // messaging unique id
+        binding.edtMessagingUniqueIdError.setText(settings.messagingUniqueIdError)
+
+        // mauid
+        binding.edtMauidError.setText(settings.mauIdError)
     }
 
     private fun startListeners(){
@@ -94,6 +104,31 @@ class QASettingsActivity : BaseActivity() {
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
             binding.edtUniqueIdError.isEnabled = isChecked
         }
+        binding.btnClearAllSecureStorage.setOnClickListener {
+            clearAllSecureStorage()
+        }
+    }
+
+    private fun clearAllSecureStorage() {
+        val dialogClickListener =
+            DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        miniApp.clearSecureStorage()
+                        Toast.makeText(
+                            this@QASettingsActivity,
+                            "Successfully cleared all secured storage!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                dialog.dismiss()
+            }
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@QASettingsActivity)
+        builder.setMessage("Are you sure to clear all secure storage?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener).show()
     }
 
     private val accessTokenListener =
@@ -140,6 +175,20 @@ class QASettingsActivity : BaseActivity() {
                 return
             } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
         } else settings.uniqueIdError = ""
+
+        //Save contact ID error response
+        if (binding.edtMessagingUniqueIdError.text.isNullOrEmpty()) {
+            settings.messagingUniqueIdError = ""
+        } else {
+            settings.messagingUniqueIdError = binding.edtMessagingUniqueIdError.text.toString()
+        }
+
+        //Save mauID error response
+        if (binding.edtMauidError.text.isNullOrEmpty()) {
+            settings.mauIdError = ""
+        } else {
+            settings.mauIdError = binding.edtMauidError.text.toString()
+        }
 
         // post tasks
         hideSoftKeyboard(binding.root)

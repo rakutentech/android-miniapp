@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 @Keep
@@ -11,10 +12,71 @@ internal data class CallbackObj(
 )
 
 @Keep
+internal data class FileDownloadCallbackObj(
+    var action: String,
+    val param: FileDownloadParams?,
+    var id: String
+)
+
+// region: Secure Storage
+@Keep
+internal data class SecureStorageCallbackObj(
+    var action: String,
+    val param: SecureStorageItems,
+    var id: String
+)
+
+@Keep
+internal data class SecureStorageItems(
+    val secureStorageItems: Map<String, String>
+)
+
+@Keep
+internal data class DeleteItemsCallbackObj(
+    var action: String,
+    val param: SecureStorageKeyList,
+    var id: String
+)
+
+@Keep
+internal data class SecureStorageKeyList(
+    val secureStorageKeyList: Set<String>
+)
+
+@Keep
+internal data class GetItemCallbackObj(
+    var action: String,
+    val param: SecureStorageKey,
+    var id: String
+)
+
+@Keep
+internal data class SecureStorageKey(
+    val secureStorageKey: String
+)
+
+@Keep
+internal data class SecureStorageReadyCallback(
+    var success: Boolean,
+    var errorSecure: MiniAppSecureStorageError? = null
+)
+
+@Keep
+internal data class MiniAppSecureStorageSize(
+    val used: Long,
+    val max: Long
+)
+// end region
+
+@Keep
 internal data class DevicePermission(val permission: String)
 
 @Keep
-internal data class FileDownloadParams(val filename: String, val url: String, val headers: Map<String, String>)
+internal data class FileDownloadParams(
+    val filename: String,
+    val url: String,
+    val headers: Map<String, String>
+)
 
 @Keep
 internal data class Screen(val action: String)
@@ -24,13 +86,6 @@ internal data class Screen(val action: String)
 internal data class CustomPermissionCallbackObj(
     var action: String,
     val param: CustomPermission?,
-    var id: String
-)
-
-@Keep
-internal data class FileDownloadCallbackObj(
-    var action: String,
-    val param: FileDownloadParams?,
     var id: String
 )
 

@@ -1,4 +1,13 @@
 ## CHANGELOG
+
+### 4.2.0 (release date TBD)
+**SDK**
+- **Feature:** Added support for base64 `data:` URIs to the File Download feature in `MiniAppFileDownloader`.
+- **Feature:** Added secure storage support for storing, getting and removing data for MiniApps safely. HostApp can clear secured data using `MiniApp.clearSecureStorage`.
+
+**Sample App**
+- **Feature:** Added a `Clear All` button to Settings/QA to remove all secure storages.
+
 ### 4.1.1 (2022-05-16)
 **SDK**
 - **Remove:** Removed `io.github.rakutentech.sdkutils` dependency and adopted the related changes to MiniApp SDK.

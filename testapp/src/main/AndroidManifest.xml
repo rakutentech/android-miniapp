@@ -125,6 +125,9 @@
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.EnableH5Ads"
             android:value="${enableH5Ads}" />
+        <meta-data
+            android:name="com.rakuten.tech.mobile.miniapp.StorageMaxSizeKB"
+            android:value="${storageMaxSizeKB}" />
     </application>
 
 </manifest>
