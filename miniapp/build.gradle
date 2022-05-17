@@ -70,7 +70,6 @@ dependencies {
 
     kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
     implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
-    implementation "io.github.rakutentech.sdkutils:sdk-utils:$sdk_utils"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"

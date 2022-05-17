@@ -12,7 +12,6 @@ import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
@@ -293,7 +292,6 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
     @Test
     fun `should create a new ApiClient when there is no cache`() {
-        AppInfo.instance = mock()
         val miniApp = Mockito.spy(realMiniApp)
         val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,

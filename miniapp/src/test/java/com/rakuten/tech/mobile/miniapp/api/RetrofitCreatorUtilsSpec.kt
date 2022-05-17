@@ -4,7 +4,6 @@ import com.rakuten.tech.mobile.miniapp.TEST_LIST_PUBLIC_KEY_SSL
 import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.TEST_VALUE
-import com.rakuten.tech.mobile.sdkutils.RasSdkHeaders
 import okhttp3.CertificatePinner
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*

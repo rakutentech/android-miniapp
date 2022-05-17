@@ -43,6 +43,7 @@ interface MiniAppFileDownloader {
  * @param requestCode of file downloading using an intent inside sdk, which will also be used
  * to retrieve the Uri of the file by [Activity.onActivityResult] in the HostApp.
  **/
+@SuppressWarnings("LargeClass")
 class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int) : MiniAppFileDownloader {
     private var okHttpClient: OkHttpClient? = null
     @VisibleForTesting
