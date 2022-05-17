@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import android.app.Activity
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
@@ -11,10 +12,14 @@ import com.rakuten.tech.mobile.miniapp.storage.StorageState
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
 ) {
-    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
-    private lateinit var activity: Activity
-    private lateinit var miniAppId: String
-    private lateinit var secureStorage: MiniAppSecureStorage
+    @VisibleForTesting
+    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
+    @VisibleForTesting
+    internal lateinit var activity: Activity
+    @VisibleForTesting
+    internal lateinit var miniAppId: String
+    @VisibleForTesting
+    internal lateinit var secureStorage: MiniAppSecureStorage
     private var cachedItems: Map<String, String>? = null
     private var storageState: StorageState = StorageState.DEFAULT
     private val stateObserver = Observer<StorageState> { state ->
