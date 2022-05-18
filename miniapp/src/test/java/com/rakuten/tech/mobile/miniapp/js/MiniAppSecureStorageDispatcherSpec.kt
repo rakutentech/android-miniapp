@@ -54,6 +54,7 @@ class MiniAppSecureStorageDispatcherSpec {
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
     private val MAX_STORAGE_SIZE_KB = 1000
     private val miniAppSecureStorage: MiniAppSecureStorage = mock()
+    private val JSON_ERROR = "Can not parse secure storage json object"
 
     @Before
     fun setUp() {
@@ -104,7 +105,7 @@ class MiniAppSecureStorageDispatcherSpec {
 
     @Test
     fun `postError should be called if can not parse the jsonStr`() {
-        val errMsg = "Can not parse secure storage json object"
+        val errMsg = JSON_ERROR
         miniAppSecureStorageDispatcher.secureStorage = miniAppSecureStorage
         When calling miniAppSecureStorageDispatcher.secureStorage.isSecureStorageAvailable(
             TEST_MA_ID, MAX_STORAGE_SIZE_KB
@@ -141,13 +142,6 @@ class MiniAppSecureStorageDispatcherSpec {
         )
     }
 
-//    @Test
-//    fun `postError should be called if failed to write`() = runBlockingTest {
-//        val errMsg = Gson().toJson(MiniAppSecureStorageError.secureStorageIOError)
-//        miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
-//        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
-//    }
-
     /** end region */
 
     /** region: get item to secure storage */
@@ -164,7 +158,7 @@ class MiniAppSecureStorageDispatcherSpec {
 
     @Test
     fun `postError should be called if can not parse the jsonStr for getItem`() {
-        val errMsg = "Can not parse secure storage json object"
+        val errMsg = JSON_ERROR
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, "")
         verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
@@ -175,7 +169,7 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.secureStorage, times(1)).getItem(
             TEST_MA_ID,
-            "key",
+            TEST_KEY,
             miniAppSecureStorageDispatcher.onSuccessGetItem
         )
     }
@@ -224,7 +218,7 @@ class MiniAppSecureStorageDispatcherSpec {
 
     @Test
     fun `postError should be called if can not parse the jsonStr for removeItems`() {
-        val errMsg = "Can not parse secure storage json object"
+        val errMsg = JSON_ERROR
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, "")
         verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
     }
