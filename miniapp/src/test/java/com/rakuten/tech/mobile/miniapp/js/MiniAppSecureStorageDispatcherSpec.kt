@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.shouldBe
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -262,6 +263,29 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher.onSuccessClearSecureStorage,
             miniAppSecureStorageDispatcher.onFailed
         )
+    }
+
+    @Test
+    fun `clearSecureStorage should be called with the same mini app id`() {
+        miniAppSecureStorageDispatcher.secureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.clearSecureStorage(TEST_MA_ID)
+        verify(miniAppSecureStorageDispatcher.secureStorage, times(1)).clearSecureStorage(
+            TEST_MA_ID
+        )
+    }
+
+    @Test
+    fun `clearSecureStorage should be called without the mini app id`() {
+        miniAppSecureStorageDispatcher.secureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.clearSecureStorage()
+        verify(miniAppSecureStorageDispatcher.secureStorage, times(1)).clearSecureStorage()
+    }
+
+    @Test
+    fun `cleanupSecureStorage should clear the cache`() {
+        miniAppSecureStorageDispatcher.cachedItems = TEST_ITEMS
+        miniAppSecureStorageDispatcher.cleanupSecureStorage()
+        miniAppSecureStorageDispatcher.cachedItems shouldBe null
     }
 
     /** end region */
