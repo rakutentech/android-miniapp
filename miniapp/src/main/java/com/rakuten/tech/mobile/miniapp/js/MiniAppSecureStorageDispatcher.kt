@@ -12,12 +12,9 @@ import com.rakuten.tech.mobile.miniapp.storage.StorageState
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
 ) {
-    @VisibleForTesting
-    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
-    @VisibleForTesting
-    internal lateinit var activity: Activity
-    @VisibleForTesting
-    internal lateinit var miniAppId: String
+    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
+    private lateinit var activity: Activity
+    private lateinit var miniAppId: String
     @VisibleForTesting
     internal lateinit var secureStorage: MiniAppSecureStorage
     @VisibleForTesting
