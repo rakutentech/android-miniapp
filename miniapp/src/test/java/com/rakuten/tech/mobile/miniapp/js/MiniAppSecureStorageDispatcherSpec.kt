@@ -288,6 +288,15 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.cachedItems shouldBe null
     }
 
+    @Test
+    fun `postValue should return on onClearAll if the file is not available`() {
+        miniAppSecureStorageDispatcher.onClearAll(TEST_CALLBACK_ID)
+        verify(bridgeExecutor, times(1)).postValue(
+            TEST_CALLBACK_ID,
+            "Storage removed successfully."
+        )
+    }
+
     /** end region */
 
     /** region: size of secure storage */
@@ -309,6 +318,15 @@ class MiniAppSecureStorageDispatcherSpec {
         verify(miniAppSecureStorageDispatcher.secureStorage, times(1)).secureStorageSize(
             TEST_MA_ID,
             miniAppSecureStorageDispatcher.onSuccessFileSize
+        )
+    }
+
+    @Test
+    fun `postValue should return 0 from if the file is not available`() {
+        miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
+        verify(bridgeExecutor, times(1)).postValue(
+            TEST_CALLBACK_ID,
+            Gson().toJson(MiniAppSecureStorageSize(0, (MAX_STORAGE_SIZE_KB * 1024).toLong()))
         )
     }
     /** end region */
