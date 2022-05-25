@@ -244,6 +244,7 @@ open class MiniAppMessageBridge {
             ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
                 callbackObj.id
             )
+            ActionType.SET_CLOSE_ALERT.action -> onSetCloseAlert(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -443,6 +444,22 @@ open class MiniAppMessageBridge {
         allowScreenOrientation = isAllowed
         if (this::screenBridgeDispatcher.isInitialized)
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
+    }
+
+    private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
+        val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
+        val shouldClose = miniAppShouldClose(callbackObj.param.alertInfo)
+        if (shouldClose)
+            bridgeExecutor.postValue(callbackId, "success")
+        else
+            bridgeExecutor.postError(callbackId, "error")
+    } catch (e: Exception) {
+        // TODO: Error model
+        bridgeExecutor.postError(callbackId, "error")
+    }
+
+    open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo): Boolean {
+        throw (MiniAppSdkException("miniAppShouldClose function is not implemented by hostapp."))
     }
 }
 

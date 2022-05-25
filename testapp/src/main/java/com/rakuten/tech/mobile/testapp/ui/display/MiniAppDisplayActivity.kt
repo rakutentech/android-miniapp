@@ -2,7 +2,9 @@ package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -29,6 +31,7 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
+import com.rakuten.tech.mobile.miniapp.js.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -46,6 +49,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
+
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -277,6 +281,29 @@ class MiniAppDisplayActivity : BaseActivity() {
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
+            }
+
+            override fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo): Boolean {
+                var miniAppShouldClose = false
+                if (alertInfo.shouldDisplay) {
+                    val dialogClickListener =
+                        DialogInterface.OnClickListener { _, which ->
+                            when (which) {
+                                DialogInterface.BUTTON_POSITIVE -> {
+                                    miniAppShouldClose = true
+                                }
+                                DialogInterface.BUTTON_NEGATIVE -> {
+                                    miniAppShouldClose = false
+                                }
+                            }
+                        }
+
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
+                    builder.setMessage("Are you sure to close MiniApp?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show()
+                }
+                return miniAppShouldClose
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))

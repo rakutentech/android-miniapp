@@ -154,3 +154,12 @@ internal data class SendContactIdCallbackObj(val param: MessageParamId) {
     )
 }
 // end region
+
+// close alert region
+@Keep
+internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam) {
+
+    @Keep
+    internal data class CloseAlertInfoParam(val alertInfo: MiniAppCloseAlertInfo)
+}
+// end region
