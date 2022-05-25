@@ -16,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_SHOULD_CLOSE
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
@@ -449,6 +450,7 @@ open class MiniAppMessageBridge {
     private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
         val shouldClose = miniAppShouldClose(callbackObj.param.alertInfo)
+        // TODO: persist shouldClose value
         if (shouldClose)
             bridgeExecutor.postValue(callbackId, "success")
         else
@@ -459,7 +461,7 @@ open class MiniAppMessageBridge {
     }
 
     open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo): Boolean {
-        throw (MiniAppSdkException("miniAppShouldClose function is not implemented by hostapp."))
+        throw (MiniAppSdkException(NO_IMPLEMENT_SHOULD_CLOSE))
     }
 }
 
@@ -480,4 +482,6 @@ internal object ErrorBridgeMessage {
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
+    const val NO_IMPLEMENT_SHOULD_CLOSE =
+        "The `MiniAppMessageBridge.miniAppShouldClose` $NO_IMPL"
 }

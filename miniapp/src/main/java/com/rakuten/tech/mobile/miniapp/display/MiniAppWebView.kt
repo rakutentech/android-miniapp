@@ -158,6 +158,7 @@ internal open class MiniAppWebView(
     }
 
     fun destroyView() {
+        // TODO: check value for shouldClose e.g. if true then send close callback and destroy webview
         stopLoading()
         defaultFileDownloader.cleanup()
         secureStorageDispatcher.cleanupSecureStorage()

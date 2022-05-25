@@ -299,7 +299,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                         }
 
                     val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    builder.setMessage("Are you sure to close MiniApp?")
+                    builder.setMessage("Do you want to close the MiniApp?")
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show()
                 }
