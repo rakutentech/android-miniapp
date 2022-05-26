@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
 
 /**
  * A class to provide the custom errors specific for secure storage.
@@ -10,42 +11,42 @@ internal class MiniAppSecureStorageError(val type: String? = null, val message: 
     MiniAppBridgeError(type, message) {
 
     companion object {
-        private const val SecureStorageFullError = "SecureStorageFullError"
-        private const val SecureStorageIOError = "SecureStorageIOError"
-        private const val SecureStorageUnavailableError = "SecureStorageUnavailableError"
-        private const val SecureStorageBusyError = "SecureStorageBusyError"
-
-        // Secure Storage is full.
-        val secureStorageFullError =
-            MiniAppSecureStorageError(
-                SecureStorageFullError,
-                errorDescription(SecureStorageFullError)
-            )
+        private const val SecureStorageNoSpaceAvailableError = "SecureStorageNoSpaceAvailableError"
+        private const val SecureStorageInsertItemsFailedError = "SecureStorageInsertItemsFailedError"
+        private const val SecureStorageDeleteItemsFailedError = "SecureStorageDeleteItemsFailedError"
+        private const val SecureStorageFatalDatabaseRuntimeError = "SecureStorageFatalDatabaseRuntimeError"
 
         // Failed to read/write secure storage.
-        val secureStorageIOError =
-            MiniAppSecureStorageError(SecureStorageIOError, errorDescription(SecureStorageIOError))
-
-        // Secure storage unavailable.
-        val secureStorageUnavailableError =
+        val secureStorageFatalDatabaseRuntimeError =
             MiniAppSecureStorageError(
-                SecureStorageUnavailableError,
-                errorDescription(SecureStorageUnavailableError)
+                SecureStorageFatalDatabaseRuntimeError,
+                errorDescription(SecureStorageFatalDatabaseRuntimeError)
             )
 
-        // Error when storage is busy.
-        val secureStorageBusyError =
+        val secureStorageNoSpaceAvailableError =
             MiniAppSecureStorageError(
-                SecureStorageBusyError,
-                errorDescription(SecureStorageBusyError)
+                SecureStorageNoSpaceAvailableError,
+                errorDescription(SecureStorageNoSpaceAvailableError)
+            )
+
+        val secureStorageInsertItemsFailedError =
+            MiniAppSecureStorageError(
+                SecureStorageInsertItemsFailedError,
+                errorDescription(SecureStorageInsertItemsFailedError)
+            )
+
+        val secureStorageDeleteItemsFailedError =
+            MiniAppSecureStorageError(
+                SecureStorageDeleteItemsFailedError,
+                errorDescription(SecureStorageDeleteItemsFailedError)
             )
 
         private fun errorDescription(error: String): String {
             return when (error) {
-                SecureStorageFullError -> "Secure storage is full."
-                SecureStorageIOError -> "Failed to read/write secure storage."
-                SecureStorageUnavailableError -> "Secure storage unavailable."
-                SecureStorageBusyError -> "Storage is busy."
+                SecureStorageNoSpaceAvailableError -> MAX_DB_SPACE_LIMIT_REACHED_ERROR
+                SecureStorageInsertItemsFailedError -> "Error occurred. Failed to insert items."
+                SecureStorageDeleteItemsFailedError -> "Failed to delete Items. Could not find the items."
+                SecureStorageFatalDatabaseRuntimeError -> "Fatal runtime error occurred during I/O operation with database."
                 else -> ""
             }
         }
