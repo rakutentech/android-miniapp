@@ -8,10 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper
 import java.io.File
 import java.sql.SQLException
 
+private const val DB_HEADER_SIZE = 100
 private const val TABLE_NAME = "MiniAppCache"
 private const val FIRST_COLUMN_NAME = "first"
 private const val SECOND_COLUMN_NAME = "second"
-private const val DB_HEADER_SIZE = 100
+
+private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
+private const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
+private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
+private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME ($FIRST_COLUMN_NAME text, $SECOND_COLUMN_NAME text)"
 
 internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't Insert New Items. Database reached to max space limit."
 
@@ -23,9 +28,7 @@ internal class MiniAppDatabase(
 
     override fun onCreate(db: SQLiteDatabase?) {
         try {
-            val query =
-                "create table if not exists $TABLE_NAME ($FIRST_COLUMN_NAME text, $SECOND_COLUMN_NAME text)"
-            db?.execSQL(query)
+            db?.execSQL(CREATE_TABLE_QUERY)
             db?.maximumSize = maxDatabaseSize
         } catch (e: SQLException) {
             // May never occur so ignoring.
@@ -34,8 +37,7 @@ internal class MiniAppDatabase(
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         try {
-            val query = "DROP TABLE IF EXISTS $TABLE_NAME"
-            db?.execSQL(query);
+            db?.execSQL(DROP_TABLE_QUERY);
             onCreate(db);
         } catch (e: SQLException) {
             // May never occur so ignoring.
@@ -102,7 +104,7 @@ internal class MiniAppDatabase(
             val db = this.readableDatabase
             db.beginTransaction()
 
-            val query = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME=\"$key\""
+            val query = "$GET_ITEM_QUERY_PREFIX\"$key\""
             val cursor = db.rawQuery(query, null)
             cursor.moveToFirst();
 
@@ -130,8 +132,7 @@ internal class MiniAppDatabase(
             val db = this.readableDatabase
             db.beginTransaction()
 
-            val query = "select * from $TABLE_NAME"
-            val cursor = db.rawQuery(query, null)
+            val cursor = db.rawQuery(GET_ALL_ITEMS_QUERY, null)
             cursor.moveToFirst();
 
             while(!cursor.isAfterLast) {
@@ -175,8 +176,7 @@ internal class MiniAppDatabase(
         try {
             val db = this.writableDatabase
             db.beginTransaction()
-            val query = "DROP TABLE IF EXISTS $TABLE_NAME"
-            db.execSQL(query);
+            db.execSQL(DROP_TABLE_QUERY);
             db.setTransactionSuccessful()
             db.endTransaction()
         } catch (e: SQLException) {
