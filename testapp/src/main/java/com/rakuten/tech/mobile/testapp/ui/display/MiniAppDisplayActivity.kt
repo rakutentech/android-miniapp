@@ -50,7 +50,6 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
-
 class MiniAppDisplayActivity : BaseActivity() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -299,7 +298,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                         }
 
                     val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
-                    builder.setMessage("Do you want to close the MiniApp?")
+                    builder.setTitle(alertInfo.title.toString())
+                        .setMessage(alertInfo.description.toString())
                         .setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show()
                 }

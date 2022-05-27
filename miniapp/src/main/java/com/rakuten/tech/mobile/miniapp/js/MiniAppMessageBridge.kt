@@ -449,15 +449,14 @@ open class MiniAppMessageBridge {
 
     private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
-        val shouldClose = miniAppShouldClose(callbackObj.param.alertInfo)
-        // TODO: persist shouldClose value
-        if (shouldClose)
-            bridgeExecutor.postValue(callbackId, "success")
-        else
-            bridgeExecutor.postError(callbackId, "error")
+        val alertInfo = callbackObj.param.alertInfo
+        miniAppShouldClose(alertInfo)
+
+        // persist close confirmation details
+        val cache = CloseAlertInfoCache(activity)
+        cache.store(alertInfo, callbackId, miniAppId)
     } catch (e: Exception) {
-        // TODO: Error model
-        bridgeExecutor.postError(callbackId, "error")
+        bridgeExecutor.postError(callbackId, "There is an error happened.")
     }
 
     open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo): Boolean {
