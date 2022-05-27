@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage
 import android.app.Activity
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
-import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppDatabase
+import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecuredDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,14 +19,14 @@ internal class MiniAppSecureStorage(
 
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var miniAppDatabases: MutableMap<String, MiniAppDatabase> = HashMap()
+    private var miniAppSecuredDatabases: MutableMap<String, MiniAppSecuredDatabase> = HashMap()
 
-    private fun initOrGetDB(miniAppId: String) : MiniAppDatabase {
+    private fun initOrGetDB(miniAppId: String) : MiniAppSecuredDatabase {
         val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
-        return miniAppDatabases.putIfAbsent(
+        return miniAppSecuredDatabases.putIfAbsent(
             miniAppId,
-            MiniAppDatabase(activity, miniAppId, databaseVersion, maxDBSize)
-        ) ?: MiniAppDatabase(activity, miniAppId, databaseVersion, maxDBSize)
+            MiniAppSecuredDatabase(activity, miniAppId, databaseVersion, maxDBSize)
+        ) ?: MiniAppSecuredDatabase(activity, miniAppId, databaseVersion, maxDBSize)
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
@@ -198,8 +198,8 @@ internal class MiniAppSecureStorage(
         val miniAppDatabase = initOrGetDB(miniAppId)
         miniAppDatabase.deleteAllRecords()
         miniAppDatabase.deleteWholeDB(miniAppId)
-        if (miniAppDatabases.isNotEmpty()) {
-            miniAppDatabases.clear()
+        if (miniAppSecuredDatabases.isNotEmpty()) {
+            miniAppSecuredDatabases.clear()
         }
     }
 }

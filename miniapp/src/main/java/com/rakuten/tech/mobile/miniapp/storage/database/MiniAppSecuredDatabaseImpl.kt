@@ -13,7 +13,7 @@ import java.sql.SQLException
 /**
  * Database Implementation Wrapper
  */
-abstract class MiniAppDatabaseImpl(
+abstract class MiniAppSecuredDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
     var dbVersion: Int

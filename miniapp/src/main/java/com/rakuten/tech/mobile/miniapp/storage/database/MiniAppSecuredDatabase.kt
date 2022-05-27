@@ -11,6 +11,7 @@ import java.io.IOException
 import java.sql.SQLException
 
 private const val DB_HEADER_SIZE = 100
+private const val PAGE_SIZE_MULTIPLIER = 3
 private const val TABLE_NAME = "MiniAppCache"
 private const val FIRST_COLUMN_NAME = "first"
 private const val SECOND_COLUMN_NAME = "second"
@@ -26,12 +27,12 @@ internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't Insert New Items. D
 /**
  * Concrete Database Implementation
  */
-internal class MiniAppDatabase(
+internal class MiniAppSecuredDatabase(
     @NonNull private var context: Context,
     dbName: String, // MiniAppId will be the dbName
     dbVersion: Int,
     private var maxDatabaseSize: Long
-) : MiniAppDatabaseImpl(context, dbName, dbVersion) {
+) : MiniAppSecuredDatabaseImpl(context, dbName, dbVersion) {
 
     private val database: SupportSQLiteDatabase = this.getDatabase()
 
@@ -82,12 +83,20 @@ internal class MiniAppDatabase(
      * For the future usage, just in case
      */
     override fun getDatabaseAvailableSize(): Long {
-        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 2) - DB_HEADER_SIZE)
+        val actualMaxSize = (
+                getDatabaseMaxsize() - (
+                    getDatabasePageSize() * PAGE_SIZE_MULTIPLIER
+                ) - DB_HEADER_SIZE
+            )
         return actualMaxSize - getDatabaseUsedSize()
     }
 
     override fun isDatabaseFull(): Boolean {
-        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 2) - DB_HEADER_SIZE)
+        val actualMaxSize = (
+                getDatabaseMaxsize() - (
+                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER
+                    ) - DB_HEADER_SIZE
+                )
         return getDatabaseUsedSize() >= actualMaxSize
     }
 
