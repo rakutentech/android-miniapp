@@ -10,13 +10,16 @@ import net.sqlcipher.database.SupportFactory
 import java.io.IOException
 import java.sql.SQLException
 
+/**
+ * Database Implementation Wrapper
+ */
 abstract class MiniAppDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
     var dbVersion: Int
 ): SupportSQLiteOpenHelper.Callback(dbVersion) {
 
-    lateinit var database: SupportSQLiteDatabase
+    private lateinit var database: SupportSQLiteDatabase
     private lateinit var sqliteHelper: SupportSQLiteOpenHelper
 
     init {
@@ -40,6 +43,8 @@ abstract class MiniAppDatabaseImpl(
      * with a passcode and the passcode will be encrypted and
      * stored to preferences to decrypt again.
      * The passcode will be the MiniAppId which is the database name too.
+     * If needed in the future then this passcode can be taken from the user
+     * with a enter passcode UI screen
      */
     private fun getSqliteOpenHelperFactory(): SupportSQLiteOpenHelper.Factory {
         return SupportFactory(
@@ -102,7 +107,7 @@ abstract class MiniAppDatabaseImpl(
     @Throws(RuntimeException::class)
     internal abstract fun deleteItems(keys: Set<String>) : Boolean
 
-    @Throws(SQLException::class)
+    @Throws(SQLException::class, IOException::class)
     internal abstract fun deleteAllRecords()
 
     internal abstract fun deleteWholeDB(dbName: String)

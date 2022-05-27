@@ -3,12 +3,9 @@ package com.rakuten.tech.mobile.miniapp.storage.util
 import android.content.Context
 import android.os.Build
 import android.util.Base64
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import java.security.AlgorithmParameters
-import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import javax.crypto.Cipher
@@ -25,8 +22,13 @@ import javax.crypto.spec.SecretKeySpec
  * @param key encrypted database key
  * @param salt cryptographic salt
  */
-private data class Storable(val iv: String, val key: String, val salt: String)
+private data class EncryptedPasscodeHolder(
+    val iv: String,
+    val key: String,
+    val salt: String
+)
 
+private const val IV = "bVQzNFNhRkQ1Njc4UUFaWA=="
 private const val SHARED_PREFERENCE_KEY = "PASSCODE"
 private const val SHARED_PREFERENCE_NAME = "MiniAppDatabase"
 private const val CIPHER_TRANSFORMATION = "AES/GCM/NoPadding"
@@ -72,13 +74,13 @@ object DatabaseEncryptionUtil {
         return encryptedPasscode
     }
 
-    fun initKey(context: Context, passcode: CharArray) {
-        val storable = getStorable(context)
-        if (storable == null) {
+    private fun initKey(context: Context, passcode: CharArray) {
+        val holder = getPasscodeHolder(context)
+        if (holder == null) {
             createNewKey()
-            persistRawKey(context, passcode)
+            encryptAndPersistPasscode(context, passcode)
         } else {
-            rawByteKey = getRawByteKey(passcode, storable)
+            rawByteKey = decryptPasscode(passcode, holder)
             encryptedPasscode = rawByteKey.toHex()
         }
     }
@@ -108,12 +110,12 @@ object DatabaseEncryptionUtil {
         }
 
     /**
-     * Retrieves the [Storable] instance from prefs.
+     * Retrieves the [EncryptedPasscodeHolder] instance from prefs.
      *
      * @param context the caller's context
      * @return the storable instance
      */
-    private fun getStorable(context: Context): Storable? {
+    private fun getPasscodeHolder(context: Context): EncryptedPasscodeHolder? {
         val prefs = context.getSharedPreferences(
             SHARED_PREFERENCE_NAME,
             Context.MODE_PRIVATE)
@@ -125,16 +127,16 @@ object DatabaseEncryptionUtil {
 
         return try {
             Gson().fromJson(serialized,
-                object: TypeToken<Storable>() {}.type)
+                object: TypeToken<EncryptedPasscodeHolder>() {}.type)
         } catch (ex: JsonSyntaxException) {
             null
         }
     }
 
-    private fun persistRawKey(context: Context, userPasscode: CharArray) {
-        val storable = toStorable(rawByteKey, userPasscode)
+    private fun encryptAndPersistPasscode(context: Context, userPasscode: CharArray) {
+        val encryptedPasscode = encryptPasscode(rawByteKey, userPasscode)
         // Implementation explained in next step
-        saveToPrefs(context, storable)
+        saveToPreferences(context, encryptedPasscode)
     }
 
     /**
@@ -142,7 +144,7 @@ object DatabaseEncryptionUtil {
      *
      * @param storable a storable instance
      */
-    private fun saveToPrefs(context: Context, storable: Storable) {
+    private fun saveToPreferences(context: Context, storable: EncryptedPasscodeHolder) {
         val serialized = Gson().toJson(storable)
         val prefs = context.getSharedPreferences(
             SHARED_PREFERENCE_NAME,
@@ -151,13 +153,17 @@ object DatabaseEncryptionUtil {
     }
 
     /**
-     * Returns a [Storable] instance with the db key encrypted using PBE.
+     * Returns a [EncryptedPasscodeHolder] instance with the db key encrypted using PBE.
      *
      * @param rawDbKey the raw database key
      * @param userPasscode the user's passcode
      * @return storable instance
      */
-    private fun toStorable(rawDbKey: ByteArray, userPasscode: CharArray): Storable {
+    private fun encryptPasscode(
+        rawDbKey: ByteArray,
+        userPasscode: CharArray
+    ): EncryptedPasscodeHolder {
+
         // Generate a random 8 byte salt
         val salt = ByteArray(8).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -170,17 +176,19 @@ object DatabaseEncryptionUtil {
         // Now encrypt the database key with PBE
         val cipher: Cipher = Cipher.getInstance(CIPHER_TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secret)
-        val params: AlgorithmParameters = cipher.parameters
-        //val iv: ByteArray = params.getParameterSpec(IvParameterSpec::class.java).iv
+        //val params: AlgorithmParameters = cipher.parameters
+        //val iv: ByteArray = params.getParameterSpec(IvParameterSpec::class.java).iv // Not working
         /**
          * Using some random static iv
-         * Since above code isn't working.
+         * Since the above code isn't working
+         * to fetch the iv.
+         * TODO: Debug above code and fetch dynamic iv
          */
-        val iv = "bVQzNFNhRkQ1Njc4UUFaWA==".toByteArray()
+        val iv = IV.toByteArray()
         val ciphertext: ByteArray = cipher.doFinal(rawDbKey)
 
         // Return the IV and CipherText which can be stored to disk
-        return Storable(
+        return EncryptedPasscodeHolder(
             Base64.encodeToString(iv, Base64.DEFAULT),
             Base64.encodeToString(ciphertext, Base64.DEFAULT),
             Base64.encodeToString(salt, Base64.DEFAULT)
@@ -196,13 +204,13 @@ object DatabaseEncryptionUtil {
     }
 
     /**
-     * Decrypts the [Storable] instance using the [passcode].
+     * Decrypts the [EncryptedPasscodeHolder] instance using the [passcode].
      *
      * @pararm passcode the user's passcode
-     * @param storable the storable instance previously saved with [saveToPrefs]
+     * @param storable the storable instance previously saved with [saveToPreferences]
      * @return the raw byte key previously generated with [generateRandomKey]
      */
-    private fun getRawByteKey(passcode: CharArray, storable: Storable): ByteArray {
+    private fun decryptPasscode(passcode: CharArray, storable: EncryptedPasscodeHolder): ByteArray {
         val aesWrappedKey = Base64.decode(storable.key, Base64.DEFAULT)
         val iv = Base64.decode(storable.iv, Base64.DEFAULT)
         val salt = Base64.decode(storable.salt, Base64.DEFAULT)

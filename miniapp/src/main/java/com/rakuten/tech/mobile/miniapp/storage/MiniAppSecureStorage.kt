@@ -4,10 +4,10 @@ import android.app.Activity
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppDatabase
-import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppDatabaseImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.sql.SQLException
 
 @Suppress("TooManyFunctions", "LargeClass")
@@ -156,6 +156,8 @@ internal class MiniAppSecureStorage(
             try {
                 clearDatabase(miniAppId)
                 onSuccess()
+            } catch (e: IOException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             } catch (e: SQLException) {
                 onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             }
@@ -170,6 +172,8 @@ internal class MiniAppSecureStorage(
     fun clearSecureStorage(miniAppId: String) {
         try {
             clearDatabase(miniAppId)
+        } catch (e: IOException) {
+            // No callback needed. So Ignoring.
         } catch (e: SQLException) {
             // No callback needed. So Ignoring.
         }
@@ -182,6 +186,8 @@ internal class MiniAppSecureStorage(
         databasesCreatedForMiniAppsSet.forEach {
             try {
                 clearDatabase(it)
+            } catch (e: IOException) {
+                // No callback needed. So Ignoring.
             } catch (e: SQLException) {
                 // No callback needed. So Ignoring.
             }
