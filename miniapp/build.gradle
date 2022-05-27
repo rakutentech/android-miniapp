@@ -75,6 +75,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_db")
 
     implementation("androidx.sqlite:sqlite-ktx:$sqlite_db")
+    implementation "net.zetetic:android-database-sqlcipher:4.5.0"
 
     testImplementation "androidx.test.ext:junit:$androidx_test_ext"
     testImplementation "org.mockito:mockito-android:$mockito"

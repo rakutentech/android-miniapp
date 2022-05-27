@@ -4,8 +4,13 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
+import androidx.annotation.NonNull
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import com.rakuten.tech.mobile.miniapp.storage.util.DatabaseEncryptionUtil
+import net.sqlcipher.database.SupportFactory
 import java.io.File
+import java.io.IOException
 import java.sql.SQLException
 
 private const val DB_HEADER_SIZE = 100
@@ -21,32 +26,72 @@ private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (
 internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't Insert New Items. Database reached to max space limit."
 
 internal class MiniAppDatabase(
-    var context: Context,
-    var dbName: String,
+    @NonNull private var context: Context,
+    private var dbName: String, // MiniAppId will be the dbName
+    private var dbVersion: Int,
     private var maxDatabaseSize: Long
-) : SQLiteOpenHelper(context, dbName, null, 1) {
+) : SupportSQLiteOpenHelper.Callback(dbVersion) {
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        try {
-            db?.execSQL(CREATE_TABLE_QUERY)
-            db?.maximumSize = maxDatabaseSize
-        } catch (e: SQLException) {
-            // May never occur so ignoring.
-        }
+    private lateinit var database: SupportSQLiteDatabase
+    private lateinit var sqliteHelper: SupportSQLiteOpenHelper
+
+    init {
+        createAndOpenDatabase()
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        try {
-            db?.execSQL(DROP_TABLE_QUERY);
-            onCreate(db);
-        } catch (e: SQLException) {
-            // May never occur so ignoring.
-        }
+    private fun createAndOpenDatabase() {
+        // Creating database here.
+        val configuration =
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(dbName)
+                .callback(this)
+                .build()
+        sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
+        // Opening database here.
+        database = sqliteHelper.writableDatabase
+    }
+
+    /**
+     * Using SQLCipher support factory to protect the database
+     * with a passcode and the passcode will be encrypted and
+     * stored to preferences to decrypt again.
+     * The passcode will be the MiniAppId which is the database name too.
+     */
+    private fun getSqliteOpenHelperFactory(): SupportSQLiteOpenHelper.Factory {
+        return SupportFactory(
+            DatabaseEncryptionUtil.encryptDatabasePasscode(
+                context,
+                dbName // MiniAppId will be the passcode & dbName
+            )?.toByteArray()
+        )
     }
 
     private fun getDatabasePageSize(): Long {
-        return this.readableDatabase.pageSize
+        return database.pageSize
     }
+
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        try {
+            db.execSQL(CREATE_TABLE_QUERY)
+            db.maximumSize = maxDatabaseSize
+        } catch (e: SQLException) {
+            // Ignoring.
+        }
+    }
+
+    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        try {
+            db.execSQL(DROP_TABLE_QUERY);
+            onCreate(db);
+        } catch (e: SQLException) {
+            // Ignoring.
+        }
+    }
+
+    /**
+     * For the future usage, just in case
+     */
+    internal fun getDatabaseVersion(): Int = dbVersion
 
     internal fun getDatabaseMaxsize(): Long = maxDatabaseSize
 
@@ -66,32 +111,46 @@ internal class MiniAppDatabase(
      * For the future usage, just in case
      */
     internal fun getDatabaseAvailableSize(): Long {
-        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 4) - DB_HEADER_SIZE)
+        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 2) - DB_HEADER_SIZE)
         return actualMaxSize - getDatabaseUsedSize()
     }
 
     internal fun isDatabaseFull(): Boolean {
-        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 4) - DB_HEADER_SIZE)
+        val actualMaxSize = (getDatabaseMaxsize() - (getDatabasePageSize() * 2) - DB_HEADER_SIZE)
         return getDatabaseUsedSize() >= actualMaxSize
     }
 
-    @Throws(RuntimeException::class)
+    @Throws(IOException::class)
+    internal fun closeDatabase() {
+        try {
+            if (database.isOpen) {
+                database.close()
+            }
+        } catch (e: IOException) {
+            throw e
+        }
+    }
+
+    @Throws(SQLException::class)
     internal fun insert(items: Map<String, String>) : Boolean {
         var result: Long = -1
         try {
             if (isDatabaseFull()) {
-                throw RuntimeException(MAX_DB_SPACE_LIMIT_REACHED_ERROR)
+                throw SQLException(MAX_DB_SPACE_LIMIT_REACHED_ERROR)
             }
-            val db = this.writableDatabase
+            database.beginTransaction()
             val contentValues = ContentValues()
             items.entries.forEach {
                 contentValues.put(FIRST_COLUMN_NAME, it.key)
                 contentValues.put(SECOND_COLUMN_NAME, it.value)
-                result = db.insert(TABLE_NAME, null, contentValues)
+                result = database.insert(TABLE_NAME, SQLiteDatabase.CONFLICT_REPLACE, contentValues)
             }
-            db.close()
-        } catch (e: RuntimeException) {
-            throw e
+            if (result > -1) {
+                database.setTransactionSuccessful()
+            }
+            database.endTransaction()
+        } catch (ex: SQLException) {
+            throw ex
         }
         return (result > -1);
     }
@@ -101,11 +160,9 @@ internal class MiniAppDatabase(
     internal fun getItem(key: String) : String {
         var result = "null"
         try {
-            val db = this.readableDatabase
-            db.beginTransaction()
-
+            database.beginTransaction()
             val query = "$GET_ITEM_QUERY_PREFIX\"$key\""
-            val cursor = db.rawQuery(query, null)
+            val cursor = database.query(query)
             cursor.moveToFirst();
 
             while(!cursor.isAfterLast) {
@@ -113,11 +170,10 @@ internal class MiniAppDatabase(
                 cursor.moveToNext()
             }
             if (result != "null") {
-                db.setTransactionSuccessful()
+                database.setTransactionSuccessful()
             }
-            db.endTransaction()
+            database.endTransaction()
             cursor.close()
-            db.close()
         } catch (e: RuntimeException) {
             throw e
         }
@@ -129,10 +185,8 @@ internal class MiniAppDatabase(
     internal fun getAllItems() : Map<String, String> {
         var result = HashMap<String, String>();
         try {
-            val db = this.readableDatabase
-            db.beginTransaction()
-
-            val cursor = db.rawQuery(GET_ALL_ITEMS_QUERY, null)
+            database.beginTransaction()
+            val cursor = database.query(GET_ALL_ITEMS_QUERY)
             cursor.moveToFirst();
 
             while(!cursor.isAfterLast) {
@@ -142,11 +196,10 @@ internal class MiniAppDatabase(
                 cursor.moveToNext()
             }
             if (result.isNotEmpty()) {
-                db.setTransactionSuccessful()
+                database.setTransactionSuccessful()
             }
-            db.endTransaction()
+            database.endTransaction()
             cursor.close()
-            db.close()
         } catch (e: RuntimeException) {
             throw e
         }
@@ -157,14 +210,12 @@ internal class MiniAppDatabase(
     internal fun deleteItems(keys: Set<String>) : Boolean {
         var totalDeleted: Int = 0
         try {
-            val db = this.writableDatabase
-            db.beginTransaction()
-            totalDeleted = db.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
+            database.beginTransaction()
+            totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
             if (totalDeleted > 0) {
-                db.setTransactionSuccessful()
+                database.setTransactionSuccessful()
             }
-            db.endTransaction()
-            db.close()
+            database.endTransaction()
         } catch (e: RuntimeException) {
             throw e
         }
@@ -174,11 +225,11 @@ internal class MiniAppDatabase(
     @Throws(SQLException::class)
     internal fun deleteAllRecords() {
         try {
-            val db = this.writableDatabase
-            db.beginTransaction()
-            db.execSQL(DROP_TABLE_QUERY);
-            db.setTransactionSuccessful()
-            db.endTransaction()
+            database.beginTransaction()
+            database.execSQL(DROP_TABLE_QUERY);
+            database.setTransactionSuccessful()
+            database.endTransaction()
+            closeDatabase()
         } catch (e: SQLException) {
             throw e
         }

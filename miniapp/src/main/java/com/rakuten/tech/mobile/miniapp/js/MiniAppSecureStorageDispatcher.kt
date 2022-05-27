@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
 ) {
+    private val databaseVersion = 1
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
@@ -34,7 +35,7 @@ internal class MiniAppSecureStorageDispatcher(
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.databasesCreatedForMiniAppsSet.add(miniAppId)
-        this.secureStorage = MiniAppSecureStorage(storageMaxSizeKB, activity)
+        this.secureStorage = MiniAppSecureStorage(databaseVersion, storageMaxSizeKB, activity)
     }
 
     @Suppress("ComplexCondition")

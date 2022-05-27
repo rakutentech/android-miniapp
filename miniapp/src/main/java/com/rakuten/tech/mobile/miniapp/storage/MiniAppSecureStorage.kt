@@ -4,6 +4,7 @@ import android.app.Activity
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppDatabase
+import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppDatabaseImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,6 +12,7 @@ import java.sql.SQLException
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorage(
+    private val databaseVersion: Int,
     private val maxDatabaseSizeInKB: Int,
     private val activity: Activity
 ) {
@@ -23,8 +25,8 @@ internal class MiniAppSecureStorage(
         val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
         return miniAppDatabases.putIfAbsent(
             miniAppId,
-            MiniAppDatabase(activity, miniAppId, maxDBSize)
-        ) ?: MiniAppDatabase(activity, miniAppId, maxDBSize)
+            MiniAppDatabase(activity, miniAppId, databaseVersion, maxDBSize)
+        ) ?: MiniAppDatabase(activity, miniAppId, databaseVersion, maxDBSize)
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
@@ -66,7 +68,7 @@ internal class MiniAppSecureStorage(
                 else {
                     onFailed(MiniAppSecureStorageError.secureStorageInsertItemsFailedError)
                 }
-            } catch (e: RuntimeException) {
+            } catch (e: SQLException) {
                 if (e.message == MAX_DB_SPACE_LIMIT_REACHED_ERROR) {
                     onFailed(MiniAppSecureStorageError.secureStorageNoSpaceAvailableError)
                 }
