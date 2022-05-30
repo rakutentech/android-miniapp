@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import androidx.annotation.NonNull
 import androidx.sqlite.db.SupportSQLiteDatabase
 import java.io.File
@@ -22,7 +23,8 @@ private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRS
 private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
         "$FIRST_COLUMN_NAME text primary key, $SECOND_COLUMN_NAME text)"
 
-internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't Insert New Items. Database reached to max space limit."
+internal const val DATABASE_DOES_NOT_EXIST_ERROR = "Database does not exist."
+internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't insert new items. Database reached to max space limit."
 
 /**
  * Concrete Database Implementation
@@ -34,7 +36,7 @@ internal class MiniAppSecuredDatabase(
     private var maxDatabaseSize: Long
 ) : MiniAppSecuredDatabaseImpl(context, dbName, dbVersion) {
 
-    private val database: SupportSQLiteDatabase = this.getDatabase()
+    private lateinit var database: SupportSQLiteDatabase
 
     private fun getDatabasePageSize(): Long {
         return database.pageSize
@@ -60,6 +62,18 @@ internal class MiniAppSecuredDatabase(
 
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {}
 
+    internal fun isDatabaseReady(): Boolean {
+        return database.isOpen
+    }
+
+    override fun onDatabaseReady(database: SupportSQLiteDatabase) {
+        this.database = database
+    }
+
+    override fun isDatabaseAvailable(dbName: String): Boolean {
+        return context.databaseList().contains(dbName)
+    }
+
     /**
      * For the future usage, just in case
      */
@@ -75,8 +89,9 @@ internal class MiniAppSecuredDatabase(
     }
 
     override fun getDatabaseUsedSize(): Long {
-        val file = File(context.getDatabasePath(dbName).toURI())
-        return file.length()
+        //val file = File(context.getDatabasePath(dbName).toURI())
+        val dbFile = context.getDatabasePath(dbName)
+        return dbFile.length()
     }
 
     /**
@@ -111,7 +126,11 @@ internal class MiniAppSecuredDatabase(
         }
     }
 
-    @Throws(SQLException::class)
+    override fun deleteWholeDB(dbName: String) {
+        context.deleteDatabase(dbName)
+    }
+
+    @Throws(SQLException::class, SQLiteException::class)
     override fun insert(items: Map<String, String>) : Boolean {
         var result: Long = -1
         try {
@@ -131,15 +150,20 @@ internal class MiniAppSecuredDatabase(
             database.endTransaction()
         } catch (ex: SQLException) {
             throw ex
+        } catch (e: SQLiteException) {
+            throw e
         }
         return (result > -1);
     }
 
     @SuppressLint("Range")
-    @Throws(RuntimeException::class)
+    @Throws(SQLException::class)
     override fun getItem(key: String) : String {
         var result = "null"
         try {
+            if (!isDatabaseAvailable(dbName)) {
+                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+            }
             database.beginTransaction()
             val query = "$GET_ITEM_QUERY_PREFIX\"$key\""
             val cursor = database.query(query)
@@ -161,10 +185,13 @@ internal class MiniAppSecuredDatabase(
     }
 
     @SuppressLint("Range")
-    @Throws(RuntimeException::class)
+    @Throws(SQLException::class)
     override fun getAllItems() : Map<String, String> {
         var result = HashMap<String, String>();
         try {
+            if (!isDatabaseAvailable(dbName)) {
+                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+            }
             database.beginTransaction()
             val cursor = database.query(GET_ALL_ITEMS_QUERY)
             cursor.moveToFirst();
@@ -186,10 +213,13 @@ internal class MiniAppSecuredDatabase(
         return result;
     }
 
-    @Throws(RuntimeException::class)
+    @Throws(SQLException::class)
     override fun deleteItems(keys: Set<String>) : Boolean {
         var totalDeleted: Int = 0
         try {
+            if (!isDatabaseAvailable(dbName)) {
+                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+            }
             database.beginTransaction()
             totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
             if (totalDeleted > 0) {
@@ -202,9 +232,12 @@ internal class MiniAppSecuredDatabase(
         return totalDeleted > 0
     }
 
-    @Throws(SQLException::class)
+    @Throws(IOException::class, SQLException::class)
     override fun deleteAllRecords() {
         try {
+            if (!isDatabaseAvailable(dbName)) {
+                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+            }
             database.beginTransaction()
             database.execSQL(DROP_TABLE_QUERY);
             database.setTransactionSuccessful()
@@ -215,9 +248,5 @@ internal class MiniAppSecuredDatabase(
         } catch (e: SQLException) {
             throw e
         }
-    }
-
-    override fun deleteWholeDB(dbName: String) {
-        context.deleteDatabase(dbName)
     }
 }

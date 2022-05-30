@@ -15,8 +15,6 @@ internal class MiniAppSecureStorageDispatcher(
     private lateinit var activity: Activity
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     @VisibleForTesting
-    internal lateinit var secureStorage: MiniAppSecureStorage
-    @VisibleForTesting
     internal lateinit var onSuccess: () -> Unit
     @VisibleForTesting
     internal lateinit var onFailed: (MiniAppSecureStorageError) -> Unit
@@ -27,6 +25,15 @@ internal class MiniAppSecureStorageDispatcher(
 
     private val databasesCreatedForMiniAppsSet: MutableSet<String> = HashSet()
 
+    private var miniAppSecuredStorage: MutableMap<String, MiniAppSecureStorage> = HashMap()
+
+    private fun initOrGetSecureStorage(miniAppId: String) : MiniAppSecureStorage {
+        return miniAppSecuredStorage.putIfAbsent(
+            miniAppId,
+            MiniAppSecureStorage(activity, databaseVersion, storageMaxSizeKB)
+        ) ?: MiniAppSecureStorage(activity, databaseVersion, storageMaxSizeKB)
+    }
+
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
         this.activity = activity
         this.bridgeExecutor = bridgeExecutor
@@ -35,15 +42,15 @@ internal class MiniAppSecureStorageDispatcher(
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.databasesCreatedForMiniAppsSet.add(miniAppId)
-        this.secureStorage = MiniAppSecureStorage(databaseVersion, storageMaxSizeKB, activity)
+        initOrGetSecureStorage(miniAppId)
     }
 
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
             this::activity.isInitialized &&
-            this::miniAppId.isInitialized &&
-            this::secureStorage.isInitialized
+            this::miniAppId.isInitialized
+            //this::secureStorage.isInitialized
         ) {
             callback.invoke()
         }
@@ -59,7 +66,7 @@ internal class MiniAppSecureStorageDispatcher(
                 value = Gson().toJson(errorSecure)
             )
         }
-        secureStorage.load(miniAppId, onSuccess, onFailed)
+        initOrGetSecureStorage(miniAppId).load(miniAppId, onSuccess, onFailed)
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")
@@ -74,7 +81,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                secureStorage.insertItems(
+                initOrGetSecureStorage(miniAppId).insertItems(
                     miniAppId,
                     callbackObj.param.secureStorageItems,
                     onSuccess,
@@ -100,7 +107,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                secureStorage.getItem(
+                initOrGetSecureStorage(miniAppId).getItem(
                     miniAppId,
                     callbackObj.param.secureStorageKey,
                     onSuccessGetItem,
@@ -126,7 +133,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                secureStorage.deleteItems(
+                initOrGetSecureStorage(miniAppId).deleteItems(
                     miniAppId,
                     callbackObj.param.secureStorageKeyList,
                     onSuccess,
@@ -142,12 +149,13 @@ internal class MiniAppSecureStorageDispatcher(
 
     fun onClearAll(callbackId: String) = whenReady {
         onSuccess = {
+//            miniAppSecuredStorage.remove(miniAppId)
             bridgeExecutor.postValue(callbackId, REMOVE_SUCCESS_SECURE_STORAGE)
         }
         onFailed = { errorSecure: MiniAppSecureStorageError ->
             bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
         }
-        secureStorage.delete(miniAppId, onSuccess, onFailed)
+        initOrGetSecureStorage(miniAppId).delete(miniAppId, onSuccess, onFailed)
     }
 
     @Suppress("MagicNumber")
@@ -159,7 +167,7 @@ internal class MiniAppSecureStorageDispatcher(
                 Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
             bridgeExecutor.postValue(callbackId, storageSize)
         }
-        secureStorage.getDatabaseUsedSize(miniAppId, onSuccessDBSize)
+        initOrGetSecureStorage(miniAppId).getDatabaseUsedSize(miniAppId, onSuccessDBSize)
     }
 
     fun cleanupSecureStorage() {}
@@ -169,15 +177,17 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the storage to be deleted.
      */
     fun clearSecureStorage(miniAppId: String) = whenReady {
-        secureStorage.clearSecureStorage(miniAppId)
+        initOrGetSecureStorage(miniAppId).clearSecureStorage(miniAppId)
+        miniAppSecuredStorage.remove(miniAppId)
     }
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
     fun clearSecureStorage() = whenReady {
-        secureStorage.clearSecureStorage(databasesCreatedForMiniAppsSet)
-        databasesCreatedForMiniAppsSet.clear()
+        databasesCreatedForMiniAppsSet.forEach {
+            clearSecureStorage(it)
+        }
     }
 
     internal companion object {

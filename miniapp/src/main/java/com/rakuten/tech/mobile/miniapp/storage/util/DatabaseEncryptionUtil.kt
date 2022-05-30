@@ -6,6 +6,7 @@ import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import java.security.AlgorithmParameters
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import javax.crypto.Cipher
@@ -43,7 +44,7 @@ private const val ENCRYPTION_ALGORITHM = "PBKDF2WithHmacSHA256"
 object DatabaseEncryptionUtil {
     private val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
-    private lateinit var rawByteKey: ByteArray
+    private var rawByteKey: ByteArray? = null
     private var encryptedPasscode: String? = null
 
     /**
@@ -81,7 +82,7 @@ object DatabaseEncryptionUtil {
             encryptAndPersistPasscode(context, passcode)
         } else {
             rawByteKey = decryptPasscode(passcode, holder)
-            encryptedPasscode = rawByteKey.toHex()
+            encryptedPasscode = rawByteKey!!.toHex()
         }
     }
 
@@ -92,7 +93,7 @@ object DatabaseEncryptionUtil {
         // This is the raw key that we'll be encrypting + storing
         rawByteKey = generateRandomKey()
         // This is the key that will be used by Database
-        encryptedPasscode = rawByteKey.toHex()
+        encryptedPasscode = rawByteKey!!.toHex()
     }
 
     /**
@@ -134,9 +135,11 @@ object DatabaseEncryptionUtil {
     }
 
     private fun encryptAndPersistPasscode(context: Context, userPasscode: CharArray) {
-        val encryptedPasscode = encryptPasscode(rawByteKey, userPasscode)
+        val encryptedPasscode = rawByteKey?.let { encryptPasscode(it, userPasscode) }
         // Implementation explained in next step
-        saveToPreferences(context, encryptedPasscode)
+        if (encryptedPasscode != null) {
+            saveToPreferences(context, encryptedPasscode)
+        }
     }
 
     /**
@@ -150,6 +153,20 @@ object DatabaseEncryptionUtil {
             SHARED_PREFERENCE_NAME,
             Context.MODE_PRIVATE)
         prefs.edit().putString(SHARED_PREFERENCE_KEY, serialized).apply()
+    }
+
+    private fun generateSecretKey(passcode: CharArray, salt: ByteArray): SecretKey {
+        // Initialize PBE with password
+        val factory: SecretKeyFactory = SecretKeyFactory.getInstance(ENCRYPTION_ALGORITHM)
+        val spec: KeySpec = PBEKeySpec(passcode, salt, 65536, 256)
+        val tmp: SecretKey = factory.generateSecret(spec)
+        return SecretKeySpec(tmp.encoded, "AES")
+    }
+
+    private fun generateIv(): IvParameterSpec? {
+        val iv = ByteArray(16)
+        SecureRandom().nextBytes(iv)
+        return IvParameterSpec(iv)
     }
 
     /**
@@ -176,15 +193,16 @@ object DatabaseEncryptionUtil {
         // Now encrypt the database key with PBE
         val cipher: Cipher = Cipher.getInstance(CIPHER_TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secret)
-        //val params: AlgorithmParameters = cipher.parameters
+        val params: AlgorithmParameters = cipher.parameters
         //val iv: ByteArray = params.getParameterSpec(IvParameterSpec::class.java).iv // Not working
+        val iv: ByteArray = generateIv()?.iv ?: IV.toByteArray()
         /**
          * Using some random static iv
          * Since the above code isn't working
          * to fetch the iv.
          * TODO: Debug above code and fetch dynamic iv
          */
-        val iv = IV.toByteArray()
+        //val iv = IV.toByteArray()
         val ciphertext: ByteArray = cipher.doFinal(rawDbKey)
 
         // Return the IV and CipherText which can be stored to disk
@@ -193,14 +211,6 @@ object DatabaseEncryptionUtil {
             Base64.encodeToString(ciphertext, Base64.DEFAULT),
             Base64.encodeToString(salt, Base64.DEFAULT)
         )
-    }
-
-    private fun generateSecretKey(passcode: CharArray, salt: ByteArray): SecretKey {
-        // Initialize PBE with password
-        val factory: SecretKeyFactory = SecretKeyFactory.getInstance(ENCRYPTION_ALGORITHM)
-        val spec: KeySpec = PBEKeySpec(passcode, salt, 65536, 256)
-        val tmp: SecretKey = factory.generateSecret(spec)
-        return SecretKeySpec(tmp.encoded, "AES")
     }
 
     /**

@@ -19,15 +19,15 @@ abstract class MiniAppSecuredDatabaseImpl(
     var dbVersion: Int
 ): SupportSQLiteOpenHelper.Callback(dbVersion) {
 
-    private lateinit var database: SupportSQLiteDatabase
     private lateinit var sqliteHelper: SupportSQLiteOpenHelper
 
-    init {
-        createAndOpenDatabase()
-    }
+//    init {
+//        createAndOpenDatabase()
+//    }
 
-    private fun createAndOpenDatabase() {
+    internal fun createAndOpenDatabase(): Boolean {
         // Creating database here.
+        var status = false
         val configuration =
             SupportSQLiteOpenHelper.Configuration.builder(context)
                 .name(dbName)
@@ -35,7 +35,11 @@ abstract class MiniAppSecuredDatabaseImpl(
                 .build()
         sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
         // Opening database here.
-        database = sqliteHelper.writableDatabase
+        if (sqliteHelper != null) {
+            onDatabaseReady(sqliteHelper.writableDatabase)
+            status = true
+        }
+        return status
     }
 
     /**
@@ -48,17 +52,13 @@ abstract class MiniAppSecuredDatabaseImpl(
      */
     private fun getSqliteOpenHelperFactory(): SupportSQLiteOpenHelper.Factory {
         return SupportFactory(
-            DatabaseEncryptionUtil.encryptDatabasePasscode(
-                context,
-                dbName // MiniAppId will be the passcode & dbName
-            )?.toByteArray()
+            "test123".toByteArray()
+//            DatabaseEncryptionUtil.encryptDatabasePasscode(
+//                context,
+//                dbName // MiniAppId will be the passcode & dbName
+//            )?.toByteArray()
         )
     }
-
-    /**
-     * Opening Database here
-     */
-    internal fun getDatabase() = database
 
     override fun onCreate(db: SupportSQLiteDatabase) {
         onCreateDatabase(db)
@@ -72,11 +72,15 @@ abstract class MiniAppSecuredDatabaseImpl(
         onDatabaseCorrupted(db)
     }
 
-    internal abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
+    protected abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
 
-    internal abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
+    protected abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
 
-    internal abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)
+    protected abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)
+
+    protected abstract fun onDatabaseReady(database: SupportSQLiteDatabase)
+
+    internal abstract fun isDatabaseAvailable(dbName: String): Boolean
 
     internal abstract fun getDatabaseVersion(): Int
 
@@ -92,6 +96,8 @@ abstract class MiniAppSecuredDatabaseImpl(
 
     @Throws(IOException::class)
     internal abstract fun closeDatabase()
+
+    internal abstract fun deleteWholeDB(dbName: String)
 
     @Throws(SQLException::class)
     internal abstract fun insert(items: Map<String, String>) : Boolean
@@ -109,6 +115,4 @@ abstract class MiniAppSecuredDatabaseImpl(
 
     @Throws(SQLException::class, IOException::class)
     internal abstract fun deleteAllRecords()
-
-    internal abstract fun deleteWholeDB(dbName: String)
 }

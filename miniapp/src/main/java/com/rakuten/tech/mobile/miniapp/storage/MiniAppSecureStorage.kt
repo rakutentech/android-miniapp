@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.app.Activity
+import android.database.sqlite.SQLiteException
+import androidx.annotation.NonNull
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecuredDatabase
@@ -12,21 +14,25 @@ import java.sql.SQLException
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorage(
+    @NonNull private val activity: Activity,
     private val databaseVersion: Int,
-    private val maxDatabaseSizeInKB: Int,
-    private val activity: Activity
+    private val maxDatabaseSizeInKB: Int
 ) {
 
     private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var miniAppSecuredDatabases: MutableMap<String, MiniAppSecuredDatabase> = HashMap()
+    private lateinit var miniAppSecuredDatabase: MiniAppSecuredDatabase
 
-    private fun initOrGetDB(miniAppId: String) : MiniAppSecuredDatabase {
-        val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
-        return miniAppSecuredDatabases.putIfAbsent(
-            miniAppId,
-            MiniAppSecuredDatabase(activity, miniAppId, databaseVersion, maxDBSize)
-        ) ?: MiniAppSecuredDatabase(activity, miniAppId, databaseVersion, maxDBSize)
+    private fun checkAndInitSecuredDatabase(miniAppId: String) {
+        if (!this::miniAppSecuredDatabase.isInitialized) {
+            val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
+            miniAppSecuredDatabase =
+                MiniAppSecuredDatabase(activity, miniAppId, databaseVersion, maxDBSize)
+        }
+    }
+
+    private fun createOrOpenAndUnlockDatabase() {
+        miniAppSecuredDatabase.createAndOpenDatabase()
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
@@ -37,7 +43,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                initOrGetDB(miniAppId)
+                checkAndInitSecuredDatabase(miniAppId)
                 onSuccess()
             } catch (e: Exception) {
                 onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
@@ -49,8 +55,7 @@ internal class MiniAppSecureStorage(
         miniAppId: String,
         onSuccess: (Long) -> Unit
     ) {
-        val miniAppDatabase = initOrGetDB(miniAppId)
-        onSuccess(miniAppDatabase.getDatabaseUsedSize())
+        onSuccess(miniAppSecuredDatabase.getDatabaseUsedSize())
     }
 
     fun insertItems(
@@ -61,8 +66,11 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                val miniAppDatabase = initOrGetDB(miniAppId)
-                if (miniAppDatabase.insert(items)) {
+                if (!miniAppSecuredDatabase.isDatabaseAvailable(miniAppId)) {
+                    createOrOpenAndUnlockDatabase()
+                }
+
+                if (miniAppSecuredDatabase.insert(items)) {
                     onSuccess()
                 }
                 else {
@@ -75,6 +83,8 @@ internal class MiniAppSecureStorage(
                 else {
                     onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
                 }
+            } catch (e: SQLiteException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             }
         }
     }
@@ -85,11 +95,15 @@ internal class MiniAppSecureStorage(
         onSuccess: (String) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
+
         scope.launch {
             try {
-                val miniAppDatabase = initOrGetDB(miniAppId)
-                val value = miniAppDatabase.getItem(key)
-                onSuccess(value)
+                val value = miniAppSecuredDatabase.getItem(key)
+                if (value != null) {
+                    onSuccess(value)
+                }
+            } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             }
@@ -106,14 +120,16 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                val miniAppDatabase = initOrGetDB(miniAppId)
-                val value = miniAppDatabase.getAllItems()
-                if (value.isNotEmpty()) {
-                    onSuccess(value)
+                val value = miniAppSecuredDatabase.getAllItems()
+                if (value != null) {
+                    if (value.isNotEmpty()) {
+                        onSuccess(value)
+                    } else {
+                        onSuccess(emptyMap())
+                    }
                 }
-                else {
-                    onSuccess(emptyMap())
-                }
+            } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             }
@@ -131,13 +147,14 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                val miniAppDatabase = initOrGetDB(miniAppId)
-                if (miniAppDatabase.deleteItems(keySet)) {
+                if (miniAppSecuredDatabase.deleteItems(keySet)) {
                     onSuccess()
                 }
                 else {
                     onFailed(MiniAppSecureStorageError.secureStorageDeleteItemsFailedError)
                 }
+            } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
             }
@@ -195,11 +212,7 @@ internal class MiniAppSecureStorage(
     }
 
     private fun clearDatabase(miniAppId: String) {
-        val miniAppDatabase = initOrGetDB(miniAppId)
-        miniAppDatabase.deleteAllRecords()
-        miniAppDatabase.deleteWholeDB(miniAppId)
-        if (miniAppSecuredDatabases.isNotEmpty()) {
-            miniAppSecuredDatabases.clear()
-        }
+        miniAppSecuredDatabase.deleteAllRecords()
+        miniAppSecuredDatabase.deleteWholeDB(miniAppId)
     }
 }
