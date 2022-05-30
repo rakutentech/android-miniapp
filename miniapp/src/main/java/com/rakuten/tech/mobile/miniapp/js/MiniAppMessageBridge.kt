@@ -11,12 +11,13 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_CLOSE_ALERT
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPLEMENT_SHOULD_CLOSE
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
@@ -449,18 +450,13 @@ open class MiniAppMessageBridge {
 
     private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
-        val alertInfo = callbackObj.param.alertInfo
+        val alertInfo = callbackObj.param.closeAlertInfo
         miniAppShouldClose(alertInfo)
-
-        // persist close confirmation details
-        val cache = CloseAlertInfoCache(activity)
-        cache.store(alertInfo, callbackId, miniAppId)
     } catch (e: Exception) {
-        bridgeExecutor.postError(callbackId, "There is an error happened.")
+        bridgeExecutor.postError(callbackId, ERR_CLOSE_ALERT)
     }
 
-    open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo): Boolean {
-        throw (MiniAppSdkException(NO_IMPLEMENT_SHOULD_CLOSE))
+    open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo) {
     }
 }
 
@@ -481,6 +477,5 @@ internal object ErrorBridgeMessage {
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
-    const val NO_IMPLEMENT_SHOULD_CLOSE =
-        "The `MiniAppMessageBridge.miniAppShouldClose` $NO_IMPL"
+    const val ERR_CLOSE_ALERT = "There is an error occurred when setting close alert info."
 }

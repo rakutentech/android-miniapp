@@ -13,7 +13,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.js.CloseAlertInfoCache
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
@@ -56,7 +55,6 @@ internal open class MiniAppWebView(
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
     protected var miniAppId = miniAppInfo.id
     private val defaultFileDownloader = WebViewFileDownloader(context, File("${context.cacheDir}/mini_app_download"))
-    private val closeAlertCache = CloseAlertInfoCache(context)
 
     @VisibleForTesting
     internal val externalResultHandler = ExternalResultHandler().apply {
@@ -160,17 +158,10 @@ internal open class MiniAppWebView(
     }
 
     fun destroyView() {
-        if (canClose()) {
-            stopLoading()
-            defaultFileDownloader.cleanup()
-            secureStorageDispatcher.cleanupSecureStorage()
-            closeAlertCache.remove(miniAppId)
-            destroy()
-        }
-    }
-
-    private fun canClose(): Boolean {
-        return closeAlertCache.get(miniAppId)?.shouldDisplay ?: true
+        stopLoading()
+        defaultFileDownloader.cleanup()
+        secureStorageDispatcher.cleanupSecureStorage()
+        destroy()
     }
 
     @VisibleForTesting
