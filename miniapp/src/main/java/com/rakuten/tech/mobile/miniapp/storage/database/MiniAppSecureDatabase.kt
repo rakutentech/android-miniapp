@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import androidx.annotation.NonNull
 import androidx.sqlite.db.SupportSQLiteDatabase
-import java.io.File
 import java.io.IOException
 import java.sql.SQLException
 
@@ -24,17 +23,18 @@ private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (
         "$FIRST_COLUMN_NAME text primary key, $SECOND_COLUMN_NAME text)"
 
 internal const val DATABASE_DOES_NOT_EXIST_ERROR = "Database does not exist."
-internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR = "Can't insert new items. Database reached to max space limit."
+internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR =
+    "Can't insert new items. Database reached to max space limit."
 
 /**
- * Concrete Database Implementation
+ * Concrete MiniApp Database Implementation.
  */
-internal class MiniAppSecuredDatabase(
+internal class MiniAppSecureDatabase(
     @NonNull private var context: Context,
-    dbName: String, // MiniAppId will be the dbName
-    dbVersion: Int,
-    private var maxDatabaseSize: Long
-) : MiniAppSecuredDatabaseImpl(context, dbName, dbVersion) {
+    @NonNull dbName: String, // MiniAppId will be the dbName
+    @NonNull dbVersion: Int,
+    @NonNull private var maxDatabaseSize: Long
+) : MiniAppSecureDatabaseImpl(context, dbName, dbVersion) {
 
     private lateinit var database: SupportSQLiteDatabase
 
@@ -62,13 +62,11 @@ internal class MiniAppSecuredDatabase(
 
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {}
 
-    internal fun isDatabaseReady(): Boolean {
-        return database.isOpen
-    }
-
     override fun onDatabaseReady(database: SupportSQLiteDatabase) {
         this.database = database
     }
+
+    override fun isDatabaseOpen(): Boolean = database.isOpen
 
     override fun isDatabaseAvailable(dbName: String): Boolean {
         return context.databaseList().contains(dbName)
@@ -82,35 +80,32 @@ internal class MiniAppSecuredDatabase(
     override fun getDatabaseMaxsize(): Long = maxDatabaseSize
 
     /**
-     * For the future usage, just in case
+     * Kept For the future reference, Just in case.
      */
     override fun resetDatabaseMaxSize(changedDBMaxSize: Long) {
         maxDatabaseSize = changedDBMaxSize
     }
 
     override fun getDatabaseUsedSize(): Long {
-        //val file = File(context.getDatabasePath(dbName).toURI())
         val dbFile = context.getDatabasePath(dbName)
         return dbFile.length()
     }
 
     /**
-     * For the future usage, just in case
+     * Kept For the future reference, Just in case.
      */
     override fun getDatabaseAvailableSize(): Long {
         val actualMaxSize = (
                 getDatabaseMaxsize() - (
-                    getDatabasePageSize() * PAGE_SIZE_MULTIPLIER
-                ) - DB_HEADER_SIZE
-            )
+                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER) - DB_HEADER_SIZE
+                )
         return actualMaxSize - getDatabaseUsedSize()
     }
 
     override fun isDatabaseFull(): Boolean {
         val actualMaxSize = (
                 getDatabaseMaxsize() - (
-                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER
-                    ) - DB_HEADER_SIZE
+                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER) - DB_HEADER_SIZE
                 )
         return getDatabaseUsedSize() >= actualMaxSize
     }
@@ -126,12 +121,12 @@ internal class MiniAppSecuredDatabase(
         }
     }
 
-    override fun deleteWholeDB(dbName: String) {
+    override fun deleteWholeDatabase(dbName: String) {
         context.deleteDatabase(dbName)
     }
 
     @Throws(SQLException::class, SQLiteException::class)
-    override fun insert(items: Map<String, String>) : Boolean {
+    override fun insert(items: Map<String, String>): Boolean {
         var result: Long = -1
         try {
             if (isDatabaseFull()) {
@@ -158,7 +153,7 @@ internal class MiniAppSecuredDatabase(
 
     @SuppressLint("Range")
     @Throws(SQLException::class)
-    override fun getItem(key: String) : String {
+    override fun getItem(key: String): String {
         var result = "null"
         try {
             if (!isDatabaseAvailable(dbName)) {
@@ -169,7 +164,7 @@ internal class MiniAppSecuredDatabase(
             val cursor = database.query(query)
             cursor.moveToFirst();
 
-            while(!cursor.isAfterLast) {
+            while (!cursor.isAfterLast) {
                 result = cursor.getString(cursor.getColumnIndex(SECOND_COLUMN_NAME))
                 cursor.moveToNext()
             }
@@ -184,9 +179,12 @@ internal class MiniAppSecuredDatabase(
         return result
     }
 
+    /**
+     * Kept For the future reference, Just in case.
+     */
     @SuppressLint("Range")
     @Throws(SQLException::class)
-    override fun getAllItems() : Map<String, String> {
+    override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>();
         try {
             if (!isDatabaseAvailable(dbName)) {
@@ -196,7 +194,7 @@ internal class MiniAppSecuredDatabase(
             val cursor = database.query(GET_ALL_ITEMS_QUERY)
             cursor.moveToFirst();
 
-            while(!cursor.isAfterLast) {
+            while (!cursor.isAfterLast) {
                 val first = cursor.getString(cursor.getColumnIndex(FIRST_COLUMN_NAME))
                 val second = cursor.getString(cursor.getColumnIndex(SECOND_COLUMN_NAME))
                 result[first] = second
@@ -214,14 +212,15 @@ internal class MiniAppSecuredDatabase(
     }
 
     @Throws(SQLException::class)
-    override fun deleteItems(keys: Set<String>) : Boolean {
-        var totalDeleted: Int = 0
+    override fun deleteItems(keys: Set<String>): Boolean {
+        var totalDeleted: Int
         try {
             if (!isDatabaseAvailable(dbName)) {
                 throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
             }
             database.beginTransaction()
-            totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
+            totalDeleted =
+                database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
             if (totalDeleted > 0) {
                 database.setTransactionSuccessful()
             }

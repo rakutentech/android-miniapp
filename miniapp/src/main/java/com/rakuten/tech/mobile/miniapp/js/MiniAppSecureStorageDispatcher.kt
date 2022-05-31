@@ -6,6 +6,8 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 
+internal const val DB_NAME_PREFIX = "rakuten-"
+
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
     private val storageMaxSizeKB: Int
@@ -14,25 +16,20 @@ internal class MiniAppSecureStorageDispatcher(
     private lateinit var miniAppId: String
     private lateinit var activity: Activity
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
+
     @VisibleForTesting
     internal lateinit var onSuccess: () -> Unit
+
     @VisibleForTesting
     internal lateinit var onFailed: (MiniAppSecureStorageError) -> Unit
+
     @VisibleForTesting
     internal lateinit var onSuccessGetItem: (String) -> Unit
+
     @VisibleForTesting
     internal lateinit var onSuccessDBSize: (Long) -> Unit
 
-    private val databasesCreatedForMiniAppsSet: MutableSet<String> = HashSet()
-
-    private var miniAppSecuredStorage: MutableMap<String, MiniAppSecureStorage> = HashMap()
-
-    private fun initOrGetSecureStorage(miniAppId: String) : MiniAppSecureStorage {
-        return miniAppSecuredStorage.putIfAbsent(
-            miniAppId,
-            MiniAppSecureStorage(activity, databaseVersion, storageMaxSizeKB)
-        ) ?: MiniAppSecureStorage(activity, databaseVersion, storageMaxSizeKB)
-    }
+    private lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
         this.activity = activity
@@ -41,16 +38,19 @@ internal class MiniAppSecureStorageDispatcher(
 
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
-        this.databasesCreatedForMiniAppsSet.add(miniAppId)
-        initOrGetSecureStorage(miniAppId)
+        this.miniAppSecureStorage = MiniAppSecureStorage(
+            activity,
+            databaseVersion,
+            storageMaxSizeKB
+        )
     }
 
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
             this::activity.isInitialized &&
-            this::miniAppId.isInitialized
-            //this::secureStorage.isInitialized
+            this::miniAppId.isInitialized &&
+            this::miniAppSecureStorage.isInitialized
         ) {
             callback.invoke()
         }
@@ -66,7 +66,7 @@ internal class MiniAppSecureStorageDispatcher(
                 value = Gson().toJson(errorSecure)
             )
         }
-        initOrGetSecureStorage(miniAppId).load(miniAppId, onSuccess, onFailed)
+        miniAppSecureStorage.load(miniAppId, onSuccess, onFailed)
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")
@@ -81,8 +81,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                initOrGetSecureStorage(miniAppId).insertItems(
-                    miniAppId,
+                miniAppSecureStorage.insertItems(
                     callbackObj.param.secureStorageItems,
                     onSuccess,
                     onFailed
@@ -107,8 +106,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                initOrGetSecureStorage(miniAppId).getItem(
-                    miniAppId,
+                miniAppSecureStorage.getItem(
                     callbackObj.param.secureStorageKey,
                     onSuccessGetItem,
                     onFailed
@@ -133,8 +131,7 @@ internal class MiniAppSecureStorageDispatcher(
                 onFailed = { errorSecure: MiniAppSecureStorageError ->
                     bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
                 }
-                initOrGetSecureStorage(miniAppId).deleteItems(
-                    miniAppId,
+                miniAppSecureStorage.deleteItems(
                     callbackObj.param.secureStorageKeyList,
                     onSuccess,
                     onFailed
@@ -149,13 +146,12 @@ internal class MiniAppSecureStorageDispatcher(
 
     fun onClearAll(callbackId: String) = whenReady {
         onSuccess = {
-//            miniAppSecuredStorage.remove(miniAppId)
             bridgeExecutor.postValue(callbackId, REMOVE_SUCCESS_SECURE_STORAGE)
         }
         onFailed = { errorSecure: MiniAppSecureStorageError ->
             bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
         }
-        initOrGetSecureStorage(miniAppId).delete(miniAppId, onSuccess, onFailed)
+        miniAppSecureStorage.delete(onSuccess, onFailed)
     }
 
     @Suppress("MagicNumber")
@@ -167,7 +163,7 @@ internal class MiniAppSecureStorageDispatcher(
                 Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
             bridgeExecutor.postValue(callbackId, storageSize)
         }
-        initOrGetSecureStorage(miniAppId).getDatabaseUsedSize(miniAppId, onSuccessDBSize)
+        miniAppSecureStorage.getDatabaseUsedSize(miniAppId, onSuccessDBSize)
     }
 
     fun cleanupSecureStorage() {}
@@ -177,16 +173,42 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the storage to be deleted.
      */
     fun clearSecureStorage(miniAppId: String) = whenReady {
-        initOrGetSecureStorage(miniAppId).clearSecureStorage(miniAppId)
-        miniAppSecuredStorage.remove(miniAppId)
+        clearSecureDatabase(miniAppId)
     }
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
     fun clearSecureStorage() = whenReady {
-        databasesCreatedForMiniAppsSet.forEach {
-            clearSecureStorage(it)
+        clearAllSecureDatabases()
+    }
+
+    /**
+     * It will delete all the records as well as the whole DB related to the given mini app id
+     * Will be invoked with MiniApp.clearSecureStorage(miniAppId: String).
+     * @param miniAppId will be used to find the file to be deleted.
+     */
+    private fun clearSecureDatabase(miniAppId: String) {
+        try {
+            val dbName = DB_NAME_PREFIX + miniAppId
+            activity.deleteDatabase(dbName)
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
+        }
+    }
+
+    /**
+     * Will be invoked by MiniApp.clearSecureStorage.
+     */
+    private fun clearAllSecureDatabases() {
+        try {
+            activity.databaseList().forEach {
+                if (it.startsWith(DB_NAME_PREFIX)) {
+                    activity.deleteDatabase(it)
+                }
+            }
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
         }
     }
 

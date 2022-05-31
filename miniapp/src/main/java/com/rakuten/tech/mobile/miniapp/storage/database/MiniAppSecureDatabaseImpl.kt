@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.annotation.NonNull
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
-import com.rakuten.tech.mobile.miniapp.storage.util.DatabaseEncryptionUtil
+import com.rakuten.tech.mobile.miniapp.storage.util.MiniAppDatabaseEncryptionUtil
 import net.sqlcipher.database.SupportFactory
 import java.io.IOException
 import java.sql.SQLException
@@ -13,18 +13,18 @@ import java.sql.SQLException
 /**
  * Database Implementation Wrapper
  */
-abstract class MiniAppSecuredDatabaseImpl(
+abstract class MiniAppSecureDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
     var dbVersion: Int
-): SupportSQLiteOpenHelper.Callback(dbVersion) {
+) : SupportSQLiteOpenHelper.Callback(dbVersion) {
 
     private lateinit var sqliteHelper: SupportSQLiteOpenHelper
 
-//    init {
-//        createAndOpenDatabase()
-//    }
-
+    /**
+     * Method to create and open the secured database
+     * for the mini apps to store the data.
+     */
     internal fun createAndOpenDatabase(): Boolean {
         // Creating database here.
         var status = false
@@ -43,20 +43,16 @@ abstract class MiniAppSecuredDatabaseImpl(
     }
 
     /**
-     * Using SQLCipher support factory to protect the database
-     * with a passcode and the passcode will be encrypted and
-     * stored to preferences to decrypt again.
+     * Using SQLCipher support factory to lock and protect the database
+     * with a passcode.
      * The passcode will be the MiniAppId which is the database name too.
-     * If needed in the future then this passcode can be taken from the user
-     * with a enter passcode UI screen
      */
     private fun getSqliteOpenHelperFactory(): SupportSQLiteOpenHelper.Factory {
         return SupportFactory(
-            "test123".toByteArray()
-//            DatabaseEncryptionUtil.encryptDatabasePasscode(
-//                context,
-//                dbName // MiniAppId will be the passcode & dbName
-//            )?.toByteArray()
+            MiniAppDatabaseEncryptionUtil.encryptPasscode(
+                context,
+                dbName // DB_NAME will be the passcode too.
+            ).toByteArray()
         )
     }
 
@@ -80,6 +76,8 @@ abstract class MiniAppSecuredDatabaseImpl(
 
     protected abstract fun onDatabaseReady(database: SupportSQLiteDatabase)
 
+    internal abstract fun isDatabaseOpen(): Boolean
+
     internal abstract fun isDatabaseAvailable(dbName: String): Boolean
 
     internal abstract fun getDatabaseVersion(): Int
@@ -97,21 +95,21 @@ abstract class MiniAppSecuredDatabaseImpl(
     @Throws(IOException::class)
     internal abstract fun closeDatabase()
 
-    internal abstract fun deleteWholeDB(dbName: String)
+    internal abstract fun deleteWholeDatabase(dbName: String)
 
     @Throws(SQLException::class)
-    internal abstract fun insert(items: Map<String, String>) : Boolean
+    internal abstract fun insert(items: Map<String, String>): Boolean
 
     @SuppressLint("Range")
     @Throws(RuntimeException::class)
-    internal abstract fun getItem(key: String) : String
+    internal abstract fun getItem(key: String): String
 
     @SuppressLint("Range")
     @Throws(RuntimeException::class)
-    internal abstract fun getAllItems() : Map<String, String>
+    internal abstract fun getAllItems(): Map<String, String>
 
     @Throws(RuntimeException::class)
-    internal abstract fun deleteItems(keys: Set<String>) : Boolean
+    internal abstract fun deleteItems(keys: Set<String>): Boolean
 
     @Throws(SQLException::class, IOException::class)
     internal abstract fun deleteAllRecords()
