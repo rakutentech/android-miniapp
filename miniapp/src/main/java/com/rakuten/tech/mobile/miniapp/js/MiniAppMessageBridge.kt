@@ -448,6 +448,7 @@ open class MiniAppMessageBridge {
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
     }
 
+    @SuppressWarnings("SwallowedException")
     private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
         val alertInfo = callbackObj.param.closeAlertInfo
@@ -456,7 +457,9 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, ERR_CLOSE_ALERT)
     }
 
+    /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
     open fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
 }
 
