@@ -71,9 +71,6 @@ dependencies {
     kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
     implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
 
-    implementation("androidx.room:room-runtime:$room_db")
-    annotationProcessor("androidx.room:room-compiler:$room_db")
-
     implementation("androidx.sqlite:sqlite-ktx:$sqlite_db")
     implementation "net.zetetic:android-database-sqlcipher:4.5.0"
 
@@ -111,6 +108,7 @@ dependencies {
 apply from: "../config/quality/checkstyle/android.gradle"
 apply from: '../config/quality/detekt/android.gradle'
 dependencies {
+    testImplementation project(path: ':miniapp')
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.9.1"
 }
 

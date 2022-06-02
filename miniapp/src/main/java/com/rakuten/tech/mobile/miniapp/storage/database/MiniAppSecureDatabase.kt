@@ -22,8 +22,10 @@ private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRS
 private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
         "$FIRST_COLUMN_NAME text primary key, $SECOND_COLUMN_NAME text)"
 
-internal const val DATABASE_DOES_NOT_EXIST_ERROR = "Database does not exist."
-internal const val MAX_DB_SPACE_LIMIT_REACHED_ERROR =
+internal const val DATABASE_IO_ERROR = "Database I/O operation failed."
+internal const val DATABASE_UNAVAILABLE_ERROR = "Database does not exist."
+internal const val DATABASE_BUSY_ERROR = "Database is busy doing another operation."
+internal const val DATABASE_SPACE_LIMIT_REACHED_ERROR =
     "Can't insert new items. Database reached to max space limit."
 
 /**
@@ -38,6 +40,12 @@ internal class MiniAppSecureDatabase(
 
     private lateinit var database: SupportSQLiteDatabase
 
+    private var miniAppDatabaseStatus = MiniAppDatabaseStatus.DEFAULT
+
+    init {
+        miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
+    }
+
     private fun getDatabasePageSize(): Long {
         return database.pageSize
     }
@@ -47,7 +55,8 @@ internal class MiniAppSecureDatabase(
             db.execSQL(CREATE_TABLE_QUERY)
             db.maximumSize = maxDatabaseSize
         } catch (e: SQLException) {
-            // Ignoring.
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         }
     }
 
@@ -56,7 +65,8 @@ internal class MiniAppSecureDatabase(
             db.execSQL(DROP_TABLE_QUERY);
             onCreate(db);
         } catch (e: SQLException) {
-            // Ignoring.
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         }
     }
 
@@ -64,6 +74,7 @@ internal class MiniAppSecureDatabase(
 
     override fun onDatabaseReady(database: SupportSQLiteDatabase) {
         this.database = database
+        MiniAppDatabaseStatus.OPENED
     }
 
     override fun isDatabaseOpen(): Boolean = database.isOpen
@@ -78,6 +89,8 @@ internal class MiniAppSecureDatabase(
     override fun getDatabaseVersion(): Int = dbVersion
 
     override fun getDatabaseMaxsize(): Long = maxDatabaseSize
+
+    override fun getDatabaseStatus(): MiniAppDatabaseStatus = miniAppDatabaseStatus
 
     /**
      * Kept For the future reference, Just in case.
@@ -117,7 +130,10 @@ internal class MiniAppSecureDatabase(
                 database.close()
             }
         } catch (e: IOException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } finally {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.CLOSED
         }
     }
 
@@ -129,10 +145,14 @@ internal class MiniAppSecureDatabase(
     override fun insert(items: Map<String, String>): Boolean {
         var result: Long = -1
         try {
+            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                throw SQLException(DATABASE_BUSY_ERROR)
+            }
             if (isDatabaseFull()) {
-                throw SQLException(MAX_DB_SPACE_LIMIT_REACHED_ERROR)
+                throw SQLException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
             }
             database.beginTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val contentValues = ContentValues()
             items.entries.forEach {
                 contentValues.put(FIRST_COLUMN_NAME, it.key)
@@ -143,10 +163,14 @@ internal class MiniAppSecureDatabase(
                 database.setTransactionSuccessful()
             }
             database.endTransaction()
-        } catch (ex: SQLException) {
-            throw ex
-        } catch (e: SQLiteException) {
+        } catch (e: SQLException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } catch (e: SQLiteException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } finally {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
         return (result > -1);
     }
@@ -156,10 +180,14 @@ internal class MiniAppSecureDatabase(
     override fun getItem(key: String): String {
         var result = "null"
         try {
+            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                throw SQLException(DATABASE_BUSY_ERROR)
+            }
             if (!isDatabaseAvailable(dbName)) {
-                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+                throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
             database.beginTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val query = "$GET_ITEM_QUERY_PREFIX\"$key\""
             val cursor = database.query(query)
             cursor.moveToFirst();
@@ -174,7 +202,10 @@ internal class MiniAppSecureDatabase(
             database.endTransaction()
             cursor.close()
         } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } finally {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
         return result
     }
@@ -187,10 +218,14 @@ internal class MiniAppSecureDatabase(
     override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>();
         try {
+            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                throw SQLException(DATABASE_BUSY_ERROR)
+            }
             if (!isDatabaseAvailable(dbName)) {
-                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+                throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
             database.beginTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val cursor = database.query(GET_ALL_ITEMS_QUERY)
             cursor.moveToFirst();
 
@@ -206,7 +241,10 @@ internal class MiniAppSecureDatabase(
             database.endTransaction()
             cursor.close()
         } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } finally {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
         return result;
     }
@@ -215,10 +253,14 @@ internal class MiniAppSecureDatabase(
     override fun deleteItems(keys: Set<String>): Boolean {
         var totalDeleted: Int
         try {
+            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                throw SQLException(DATABASE_BUSY_ERROR)
+            }
             if (!isDatabaseAvailable(dbName)) {
-                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+                throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
             database.beginTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             totalDeleted =
                 database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
             if (totalDeleted > 0) {
@@ -226,7 +268,10 @@ internal class MiniAppSecureDatabase(
             }
             database.endTransaction()
         } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } finally {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
         return totalDeleted > 0
     }
@@ -235,16 +280,19 @@ internal class MiniAppSecureDatabase(
     override fun deleteAllRecords() {
         try {
             if (!isDatabaseAvailable(dbName)) {
-                throw SQLException(DATABASE_DOES_NOT_EXIST_ERROR)
+                throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
             database.beginTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             database.execSQL(DROP_TABLE_QUERY);
             database.setTransactionSuccessful()
             database.endTransaction()
             closeDatabase()
         } catch (e: IOException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } catch (e: SQLException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         }
     }

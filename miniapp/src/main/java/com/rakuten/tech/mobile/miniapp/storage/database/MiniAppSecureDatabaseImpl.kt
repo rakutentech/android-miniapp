@@ -10,6 +10,16 @@ import net.sqlcipher.database.SupportFactory
 import java.io.IOException
 import java.sql.SQLException
 
+internal enum class MiniAppDatabaseStatus {
+    DEFAULT,
+    INITIATED,
+    OPENED,
+    CLOSED,
+    READY,
+    BUSY,
+    FAILED
+}
+
 /**
  * Database Implementation Wrapper
  */
@@ -83,6 +93,8 @@ abstract class MiniAppSecureDatabaseImpl(
     internal abstract fun getDatabaseVersion(): Int
 
     internal abstract fun getDatabaseMaxsize(): Long
+
+    internal abstract fun getDatabaseStatus(): MiniAppDatabaseStatus
 
     internal abstract fun resetDatabaseMaxSize(changedDBMaxSize: Long)
 

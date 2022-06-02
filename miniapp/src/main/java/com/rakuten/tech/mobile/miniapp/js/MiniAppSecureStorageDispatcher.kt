@@ -163,7 +163,7 @@ internal class MiniAppSecureStorageDispatcher(
                 Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
             bridgeExecutor.postValue(callbackId, storageSize)
         }
-        miniAppSecureStorage.getDatabaseUsedSize(miniAppId, onSuccessDBSize)
+        miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
     }
 
     fun cleanupSecureStorage() {}

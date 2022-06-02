@@ -5,7 +5,9 @@ import android.database.sqlite.SQLiteException
 import androidx.annotation.NonNull
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
-import com.rakuten.tech.mobile.miniapp.storage.database.MAX_DB_SPACE_LIMIT_REACHED_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_BUSY_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_UNAVAILABLE_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_SPACE_LIMIT_REACHED_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,14 +56,13 @@ internal class MiniAppSecureStorage(
                 checkAndInitSecuredDatabase(miniAppId)
                 createOrOpenAndUnlockDatabase()
                 onSuccess()
-            } catch (e: Exception) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+            } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
 
     fun getDatabaseUsedSize(
-        miniAppId: String,
         onSuccess: (Long) -> Unit
     ) {
         onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
@@ -82,17 +83,16 @@ internal class MiniAppSecureStorage(
                     onSuccess()
                 }
                 else {
-                    onFailed(MiniAppSecureStorageError.secureStorageInsertItemsFailedError)
+                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             } catch (e: SQLException) {
-                if (e.message == MAX_DB_SPACE_LIMIT_REACHED_ERROR) {
-                    onFailed(MiniAppSecureStorageError.secureStorageNoSpaceAvailableError)
-                }
-                else {
-                    onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                when(e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_SPACE_LIMIT_REACHED_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageFullError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             } catch (e: SQLiteException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -110,9 +110,13 @@ internal class MiniAppSecureStorage(
                     onSuccess(value)
                 }
             } catch (e: SQLException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                when(e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
             } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -135,9 +139,13 @@ internal class MiniAppSecureStorage(
                     }
                 }
             } catch (e: SQLException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                when(e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
             } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -156,12 +164,16 @@ internal class MiniAppSecureStorage(
                     onSuccess()
                 }
                 else {
-                    onFailed(MiniAppSecureStorageError.secureStorageDeleteItemsFailedError)
+                    onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                 }
             } catch (e: SQLException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                when(e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
             } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -178,9 +190,9 @@ internal class MiniAppSecureStorage(
                 clearDatabase(databaseName)
                 onSuccess()
             } catch (e: IOException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
-                onFailed(MiniAppSecureStorageError.secureStorageFatalDatabaseRuntimeError)
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }

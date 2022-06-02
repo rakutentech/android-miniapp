@@ -32,7 +32,6 @@ buildscript {
     ext.appCenterSdkVersion = '4.0.0'
     ext.analytics_sdk= '7.0.0'
     ext.json_test = '20210307'
-    ext.room_db = '2.4.2'
     ext.sqlite_db = '2.2.0'
 
 //  Build Config.
@@ -44,7 +43,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.2'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 
