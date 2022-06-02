@@ -440,7 +440,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                     .setMessage(closeAlertInfo?.description.toString())
                     .setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show()
-            }
+            } else finish()
         } catch (e: NullPointerException) {
             finish()
         }
