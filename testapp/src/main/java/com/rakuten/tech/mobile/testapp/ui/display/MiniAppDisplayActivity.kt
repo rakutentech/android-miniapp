@@ -31,7 +31,6 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
-import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
@@ -102,7 +101,6 @@ class MiniAppDisplayActivity : BaseActivity() {
     )
 
     private var appInfo: MiniAppInfo? = null
-    private var closeAlertInfo: MiniAppCloseAlertInfo? = null
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -283,13 +281,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
-
-            override fun miniAppShouldClose(alertInfo: MiniAppCloseAlertInfo) {
-                closeAlertInfo = alertInfo
-            }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
-
         miniAppMessageBridge.allowScreenOrientation(true)
 
         // setup UserInfoBridgeDispatcher
@@ -425,6 +418,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private fun checkCloseAlert() {
         try {
+            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose
             if (closeAlertInfo?.shouldDisplay!!) {
                 val dialogClickListener =
                     DialogInterface.OnClickListener { _, which ->
@@ -436,8 +430,8 @@ class MiniAppDisplayActivity : BaseActivity() {
                     }
 
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
-                builder.setTitle(closeAlertInfo?.title.toString())
-                    .setMessage(closeAlertInfo?.description.toString())
+                builder.setTitle(closeAlertInfo.title)
+                    .setMessage(closeAlertInfo.description)
                     .setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show()
             } else finish()
