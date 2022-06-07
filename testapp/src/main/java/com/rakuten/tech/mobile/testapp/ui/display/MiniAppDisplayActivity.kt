@@ -418,7 +418,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     private fun checkCloseAlert() {
         try {
-            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose
+            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
             if (closeAlertInfo?.shouldDisplay!!) {
                 val dialogClickListener =
                     DialogInterface.OnClickListener { _, which ->

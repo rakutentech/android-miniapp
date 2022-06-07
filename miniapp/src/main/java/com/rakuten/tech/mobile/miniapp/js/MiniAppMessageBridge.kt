@@ -57,8 +57,9 @@ open class MiniAppMessageBridge {
     private var allowScreenOrientation = false
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
+    private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
     /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
-    var miniAppShouldClose: MiniAppCloseAlertInfo? = null
+    fun miniAppShouldClose() = miniAppCloseAlertInfo
 
     internal fun init(
         activity: Activity,
@@ -456,7 +457,7 @@ open class MiniAppMessageBridge {
     internal fun onMiniAppShouldClose(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
         val alertInfo = callbackObj.param.closeAlertInfo
-        this.miniAppShouldClose = alertInfo
+        this.miniAppCloseAlertInfo = alertInfo
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, ERR_CLOSE_ALERT)
     }

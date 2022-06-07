@@ -694,7 +694,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `miniAppShouldClose should be assigned when close alert action is requested`() {
+    fun `miniAppShouldClose value should be assigned properly`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock())
@@ -707,7 +707,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                 )
             )
             miniAppBridge.onMiniAppShouldClose(TEST_CALLBACK_ID, closeAlertJsonStr)
-            miniAppBridge.miniAppShouldClose shouldBeEqualTo alertInfo
+            miniAppBridge.miniAppShouldClose() shouldBeEqualTo alertInfo
         }
     }
 }
