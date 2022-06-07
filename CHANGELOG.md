@@ -4,6 +4,7 @@
 **SDK**
 - **Feature:** Added support for base64 `data:` URIs to the File Download feature in `MiniAppFileDownloader`.
 - **Feature:** Added secure storage support for storing, getting and removing data for MiniApps safely. HostApp can clear secured data using `MiniApp.clearSecureStorage`.
+- **Feature:** Added `MiniAppMessageBridge.miniAppShouldClose` property which would help the host app to check if any alert need to be displayed before closing the MiniApp.
 
 **Sample App**
 - **Feature:** Added a `Clear All` button to Settings/QA to remove all secure storages.

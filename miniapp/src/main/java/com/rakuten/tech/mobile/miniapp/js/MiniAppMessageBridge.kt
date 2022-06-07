@@ -452,7 +452,8 @@ open class MiniAppMessageBridge {
     }
 
     @SuppressWarnings("SwallowedException")
-    private fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
+    @VisibleForTesting
+    internal fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
         val alertInfo = callbackObj.param.closeAlertInfo
         onMiniAppShouldClose(alertInfo)
