@@ -706,7 +706,7 @@ class ScreenBridgeSpec : BridgeCommon() {
                     id = TEST_CALLBACK_ID
                 )
             )
-            miniAppBridge.onSetCloseAlert(TEST_CALLBACK_ID, closeAlertJsonStr)
+            miniAppBridge.onMiniAppShouldClose(TEST_CALLBACK_ID, closeAlertJsonStr)
             miniAppBridge.miniAppShouldClose shouldBeEqualTo alertInfo
         }
     }

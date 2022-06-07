@@ -249,7 +249,7 @@ open class MiniAppMessageBridge {
             ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
                 callbackObj.id
             )
-            ActionType.SET_CLOSE_ALERT.action -> onSetCloseAlert(callbackObj.id, jsonStr)
+            ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized)
             ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -453,16 +453,12 @@ open class MiniAppMessageBridge {
 
     @SuppressWarnings("SwallowedException")
     @VisibleForTesting
-    internal fun onSetCloseAlert(callbackId: String, jsonStr: String) = try {
+    internal fun onMiniAppShouldClose(callbackId: String, jsonStr: String) = try {
         val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
         val alertInfo = callbackObj.param.closeAlertInfo
-        onMiniAppShouldClose(alertInfo)
+        this.miniAppShouldClose = alertInfo
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackId, ERR_CLOSE_ALERT)
-    }
-
-    private fun onMiniAppShouldClose(alertInfo: MiniAppCloseAlertInfo) {
-        this.miniAppShouldClose = alertInfo
     }
 }
 
