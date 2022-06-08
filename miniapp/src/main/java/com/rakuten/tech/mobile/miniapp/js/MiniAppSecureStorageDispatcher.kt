@@ -29,7 +29,7 @@ internal class MiniAppSecureStorageDispatcher(
     @VisibleForTesting
     internal lateinit var onSuccessDBSize: (Long) -> Unit
 
-    private lateinit var miniAppSecureStorage: MiniAppSecureStorage
+    internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
         this.activity = activity

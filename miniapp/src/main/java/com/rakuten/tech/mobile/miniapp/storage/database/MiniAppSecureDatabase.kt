@@ -50,6 +50,10 @@ internal class MiniAppSecureDatabase(
         return database.pageSize
     }
 
+    internal fun isDatabaseBusy(): Boolean {
+        return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
+    }
+
     override fun onCreateDatabase(db: SupportSQLiteDatabase) {
         try {
             db.execSQL(CREATE_TABLE_QUERY)
@@ -145,7 +149,7 @@ internal class MiniAppSecureDatabase(
     override fun insert(items: Map<String, String>): Boolean {
         var result: Long = -1
         try {
-            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+            if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
             }
             if (isDatabaseFull()) {
@@ -176,11 +180,11 @@ internal class MiniAppSecureDatabase(
     }
 
     @SuppressLint("Range")
-    @Throws(SQLException::class)
+    @Throws(SQLException::class, RuntimeException::class)
     override fun getItem(key: String): String {
         var result = "null"
         try {
-            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+            if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
             }
             if (!isDatabaseAvailable(dbName)) {
@@ -218,7 +222,7 @@ internal class MiniAppSecureDatabase(
     override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>();
         try {
-            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+            if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
             }
             if (!isDatabaseAvailable(dbName)) {
@@ -251,9 +255,9 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class)
     override fun deleteItems(keys: Set<String>): Boolean {
-        var totalDeleted: Int
+        var totalDeleted = 0
         try {
-            if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+            if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
             }
             if (!isDatabaseAvailable(dbName)) {
@@ -261,8 +265,9 @@ internal class MiniAppSecureDatabase(
             }
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
-            totalDeleted =
-                database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME = ? ", keys.toTypedArray())
+            keys.forEach {
+                totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME='$it'", null)
+            }
             if (totalDeleted > 0) {
                 database.setTransactionSuccessful()
             }
