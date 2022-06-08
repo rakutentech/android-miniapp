@@ -40,7 +40,18 @@ internal class RealMiniApp(
 
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> miniAppInfoFetcher.getInfo(appId)
+        else -> {
+            try {
+                miniAppInfoFetcher.getInfo(appId)
+            } catch (error: MiniAppTooManyRequestsError) {
+                miniAppDownloader.removeMiniApp(
+                    appId,
+                    "",
+                    MiniAppDownloader.TOO_MANY_REQUEST_ERR_LOG
+                )
+                throw MiniAppTooManyRequestsError(error.message)
+            }
+        }
     }
 
     override suspend fun getMiniAppInfoByPreviewCode(previewCode: String): PreviewMiniAppInfo = when {

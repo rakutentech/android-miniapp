@@ -19,7 +19,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -44,6 +43,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivit
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
+import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -167,7 +167,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         //Three different ways to get miniapp.
-        appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
@@ -180,7 +180,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
         viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
-            miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+            miniAppView.observe(this@MiniAppDisplayActivity) {
                 if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                     WebView.setWebContentsDebuggingEnabled(true)
 
@@ -188,15 +188,22 @@ class MiniAppDisplayActivity : BaseActivity() {
                 addLifeCycleObserver(lifecycle)
                 (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
-            })
+            }
 
-            errorData.observe(this@MiniAppDisplayActivity, Observer {
+            errorData.observe(this@MiniAppDisplayActivity) {
                 Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-            })
+            }
 
-            isLoading.observe(this@MiniAppDisplayActivity, Observer {
+            isLoading.observe(this@MiniAppDisplayActivity) {
                 toggleProgressLoading(it)
-            })
+            }
+
+            containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
+                showErrorDialog(
+                    this@MiniAppDisplayActivity,
+                    getString(R.string.error_desc_miniapp_too_many_request)
+                )
+            }
         }
 
         setupMiniAppMessageBridge()

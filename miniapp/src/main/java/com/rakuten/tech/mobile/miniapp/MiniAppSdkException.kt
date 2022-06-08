@@ -80,6 +80,12 @@ class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkExcept
     constructor(message: String) : this(message, null)
 }
 
+/**
+ * Exception which is thrown when there are too many requests for a MiniApp.
+ */
+class MiniAppTooManyRequestsError(message: String?) :
+    MiniAppSdkException("Too many requests for this MiniApp: $message")
+
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Internal server error")
 

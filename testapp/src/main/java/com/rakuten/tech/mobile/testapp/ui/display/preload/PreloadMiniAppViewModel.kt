@@ -1,10 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.display.preload
 
 import androidx.lifecycle.*
-import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
-import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -15,11 +12,14 @@ import java.util.Locale
 class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
     private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
     private val _manifestErrorData = MutableLiveData<String>()
+    private val _containTooManyRequestsError = MutableLiveData<Boolean>()
 
     val miniAppManifest: LiveData<MiniAppManifest>
         get() = _miniAppManifest
     val manifestErrorData: LiveData<String>
         get() = _manifestErrorData
+    val containTooManyRequestsError: LiveData<Boolean>
+        get() = _containTooManyRequestsError
 
     fun checkMiniAppManifest(miniAppId: String, versionId: String) = viewModelScope.launch(Dispatchers.IO) {
         val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
@@ -38,6 +38,8 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
                     else
                         _miniAppManifest.postValue(downloadedManifest)
                 }
+                error is MiniAppTooManyRequestsError ->
+                    _containTooManyRequestsError.postValue(true)
                 else -> {
                     _manifestErrorData.postValue(error.message)
                 }
