@@ -38,6 +38,7 @@ internal class RealMiniApp(
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
+    @SuppressWarnings("SwallowedException", "OptionalWhenBraces")
     override suspend fun fetchInfo(appId: String): MiniAppInfo = when {
         appId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {

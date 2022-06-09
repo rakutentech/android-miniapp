@@ -159,6 +159,7 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
+    @SuppressWarnings("NestedBlockDepth")
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
@@ -210,7 +211,7 @@ internal class MiniAppDownloader(
         return pairs
     }
 
-    @SuppressWarnings("LongMethod", "NestedBlockDepth")
+    @SuppressWarnings("LongMethod", "NestedBlockDepth", "ComplexMethod", "ThrowsCount")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
         manifest: Pair<ManifestEntity, ManifestHeader>
