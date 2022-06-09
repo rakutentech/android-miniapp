@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
 import com.rakuten.tech.mobile.miniapp.AdMobClassName
 import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
+import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
@@ -690,5 +691,23 @@ class ScreenBridgeSpec : BridgeCommon() {
         screenDispatcher.releaseLock()
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
+    }
+
+    @Test
+    fun `miniAppShouldClose value should be assigned properly`() {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock())
+            val alertInfo = MiniAppCloseAlertInfo(true, "title", "desc")
+            val closeAlertJsonStr = Gson().toJson(
+                CallbackObj(
+                    action = ActionType.SET_CLOSE_ALERT.action,
+                    param = CloseAlertInfoCallbackObj.CloseAlertInfoParam(alertInfo),
+                    id = TEST_CALLBACK_ID
+                )
+            )
+            miniAppBridge.onMiniAppShouldClose(TEST_CALLBACK_ID, closeAlertJsonStr)
+            miniAppBridge.miniAppShouldClose() shouldBeEqualTo alertInfo
+        }
     }
 }
