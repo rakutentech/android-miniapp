@@ -157,6 +157,7 @@ class DownloadedManifestCacheSpec {
     }
 
     @Test
+    @SuppressWarnings("MaximumLineLength")
     fun `toCachedManifest should create correct CachedManifest`() {
         val jsonStr = "{“miniAppManifest”:{“accessTokenPermissions”:[{“audience”:“aud”,“scopes”:[“scope1\",“scope2”]}],“optionalPermissions”:[{“first”:“CONTACT_LIST”,“second”:“reason here (optional).“}],“versionId”:“aaaa”},“versionId”:“bbbb”}"
         manifestCache.toCachedManifest(jsonStr)?.apply {
