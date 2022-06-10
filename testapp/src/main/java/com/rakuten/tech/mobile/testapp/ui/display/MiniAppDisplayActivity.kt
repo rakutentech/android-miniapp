@@ -2,7 +2,9 @@ package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -45,6 +47,7 @@ import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.lang.NullPointerException
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -142,7 +145,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                checkCloseAlert()
                 true
             }
             R.id.share_mini_app -> {
@@ -280,7 +283,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
-
         miniAppMessageBridge.allowScreenOrientation(true)
 
         // setup UserInfoBridgeDispatcher
@@ -412,6 +414,30 @@ class MiniAppDisplayActivity : BaseActivity() {
     private fun toggleProgressLoading(isOn: Boolean) = when (isOn) {
         true -> binding.pb.visibility = View.VISIBLE
         false -> binding.pb.visibility = View.GONE
+    }
+
+    private fun checkCloseAlert() {
+        try {
+            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
+            if (closeAlertInfo?.shouldDisplay!!) {
+                val dialogClickListener =
+                    DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                finish()
+                            }
+                        }
+                    }
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
+                builder.setTitle(closeAlertInfo.title)
+                    .setMessage(closeAlertInfo.description)
+                    .setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show()
+            } else finish()
+        } catch (e: NullPointerException) {
+            finish()
+        }
     }
 
     override fun onBackPressed() {
