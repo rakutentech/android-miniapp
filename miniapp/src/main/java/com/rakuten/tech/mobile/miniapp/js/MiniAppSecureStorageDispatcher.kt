@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 
-internal const val DB_NAME_PREFIX = "rakuten-"
+internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
@@ -29,6 +29,7 @@ internal class MiniAppSecureStorageDispatcher(
     @VisibleForTesting
     internal lateinit var onSuccessDBSize: (Long) -> Unit
 
+    @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
     fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
@@ -200,7 +201,8 @@ internal class MiniAppSecureStorageDispatcher(
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    private fun clearAllSecureDatabases() {
+    @VisibleForTesting
+    internal fun clearAllSecureDatabases() {
         try {
             activity.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {

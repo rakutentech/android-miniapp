@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage.util
 import android.content.Context
 import android.os.Build
 import android.util.Base64
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -47,9 +48,10 @@ private const val PASSCODE_DECRYPTION_ERROR = "Failed to decrypt database key"
  * If needed in the future then this passcode can be taken from
  * the user with a enter passcode UI screen to access the Database.
  */
-object MiniAppDatabaseEncryptionUtil {
+internal object MiniAppDatabaseEncryptionUtil {
 
-    private fun getKeyFromPassword(password: String, salt: ByteArray): SecretKey {
+    @VisibleForTesting
+    internal fun getSecretKeyFromPassword(password: String, salt: ByteArray): SecretKey {
         val factory: SecretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM)
         val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 256)
         return SecretKeySpec(
@@ -58,13 +60,15 @@ object MiniAppDatabaseEncryptionUtil {
         )
     }
 
-    private fun generateIv(): IvParameterSpec {
+    @VisibleForTesting
+    internal fun generateIv(): IvParameterSpec {
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)
         return IvParameterSpec(iv)
     }
 
-    private fun generateSalt(): ByteArray {
+    @VisibleForTesting
+    internal fun generateSalt(): ByteArray {
         val salt = ByteArray(8).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 SecureRandom.getInstanceStrong().nextBytes(this)
@@ -104,7 +108,8 @@ object MiniAppDatabaseEncryptionUtil {
         prefs.edit().putString(SHARED_PREFERENCE_KEY, serialized).apply()
     }
 
-    private fun encrypt(
+    @VisibleForTesting
+    internal fun encrypt(
         passcode: String,
         key: SecretKey,
         iv: IvParameterSpec
@@ -112,10 +117,12 @@ object MiniAppDatabaseEncryptionUtil {
         val cipher: Cipher = Cipher.getInstance(CIPHER_TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val encryptedPasscode: ByteArray = cipher.doFinal(passcode.toByteArray())
+        print("##### encryptedPasscode = $encryptedPasscode")
         return Base64.encodeToString(encryptedPasscode, Base64.DEFAULT)
     }
 
-    private fun decrypt(
+    @VisibleForTesting
+    internal fun decrypt(
         encryptedPasscode: String,
         key: SecretKey,
         iv: IvParameterSpec
@@ -128,14 +135,14 @@ object MiniAppDatabaseEncryptionUtil {
         return String(decryptedPasscode)
     }
 
-    fun encryptPasscode(context: Context, passcode: String): String {
+    internal fun encryptPasscode(context: Context, passcode: String): String {
 
         val holder = getPasscodeHolder(context)
 
         if (holder == null) {
             val salt = generateSalt()
             val iv: IvParameterSpec = generateIv()
-            val secretKey = getKeyFromPassword(passcode, salt)
+            val secretKey = getSecretKeyFromPassword(passcode, salt)
             val encryptedPasscode = encrypt(passcode, secretKey, iv)
             val holder = EncryptedPasscodeDataHolder(
                 Base64.encodeToString(iv.iv, Base64.DEFAULT),
@@ -154,13 +161,13 @@ object MiniAppDatabaseEncryptionUtil {
      * in that case we'll decrypt the encrypted passcode
      * to match with the given passcode.
      */
-    fun decryptPasscode(context: Context, passcode: String): String {
+    private fun decryptPasscode(context: Context, passcode: String): String {
         val holder = getPasscodeHolder(context)
         if (holder != null) {
             val iv = Base64.decode(holder.iv, Base64.DEFAULT)
             val salt = Base64.decode(holder.salt, Base64.DEFAULT)
             val encryptedPasscode = holder.encryptedPasscode
-            val secretKey: SecretKey = getKeyFromPassword(passcode, salt)
+            val secretKey: SecretKey = getSecretKeyFromPassword(passcode, salt)
 
             return decrypt(encryptedPasscode, secretKey, IvParameterSpec(iv))
         }

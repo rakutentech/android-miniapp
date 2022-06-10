@@ -50,7 +50,7 @@ internal class MiniAppSecureDatabase(
         return database.pageSize
     }
 
-    internal fun isDatabaseBusy(): Boolean {
+    private fun isDatabaseBusy(): Boolean {
         return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
     }
 
@@ -66,8 +66,8 @@ internal class MiniAppSecureDatabase(
 
     override fun onUpgradeDatabase(db: SupportSQLiteDatabase) {
         try {
-            db.execSQL(DROP_TABLE_QUERY);
-            onCreate(db);
+            db.execSQL(DROP_TABLE_QUERY)
+            onCreate(db)
         } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
@@ -176,7 +176,7 @@ internal class MiniAppSecureDatabase(
         } finally {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
-        return (result > -1);
+        return (result > -1)
     }
 
     @SuppressLint("Range")
@@ -194,7 +194,7 @@ internal class MiniAppSecureDatabase(
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val query = "$GET_ITEM_QUERY_PREFIX\"$key\""
             val cursor = database.query(query)
-            cursor.moveToFirst();
+            cursor.moveToFirst()
 
             while (!cursor.isAfterLast) {
                 result = cursor.getString(cursor.getColumnIndex(SECOND_COLUMN_NAME))
@@ -220,7 +220,7 @@ internal class MiniAppSecureDatabase(
     @SuppressLint("Range")
     @Throws(SQLException::class)
     override fun getAllItems(): Map<String, String> {
-        var result = HashMap<String, String>();
+        var result = HashMap<String, String>()
         try {
             if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
@@ -231,7 +231,7 @@ internal class MiniAppSecureDatabase(
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val cursor = database.query(GET_ALL_ITEMS_QUERY)
-            cursor.moveToFirst();
+            cursor.moveToFirst()
 
             while (!cursor.isAfterLast) {
                 val first = cursor.getString(cursor.getColumnIndex(FIRST_COLUMN_NAME))
@@ -250,7 +250,7 @@ internal class MiniAppSecureDatabase(
         } finally {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
-        return result;
+        return result
     }
 
     @Throws(SQLException::class)
@@ -289,7 +289,7 @@ internal class MiniAppSecureDatabase(
             }
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
-            database.execSQL(DROP_TABLE_QUERY);
+            database.execSQL(DROP_TABLE_QUERY)
             database.setTransactionSuccessful()
             database.endTransaction()
             closeDatabase()

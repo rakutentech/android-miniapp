@@ -48,7 +48,7 @@ class MiniAppSecureStorageDispatcherSpec {
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
     private val testMaxStorageSizeInKB = 1000
     private val miniAppSecureStorage: MiniAppSecureStorage = mock()
-    private val testJsonError = "Can not parse secure storage json object"
+    private val testJsonError = "Can not parse secure storage json object."
 
     @Before
     fun setUp() {
@@ -74,8 +74,21 @@ class MiniAppSecureStorageDispatcherSpec {
             TEST_MA_ID, {}, {})
     }
 
+    /**
+     * Starting of insert items test cases
+     */
     @Test
-    @Ignore
+    fun `onSetItems should not be working if initialization is not completed`() {
+        val miniAppSecureStorageDispatcher =
+            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).insertItems(
+            testItems, {}, {}
+        )
+    }
+
+    @Test
     fun `postError should be called if can not parse the jsonStr`() {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
@@ -84,8 +97,8 @@ class MiniAppSecureStorageDispatcherSpec {
     }
 
     @Test
-    @Ignore
     fun `insertItems should be called if successfully parsed the jsonStr`() {
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).insertItems(
             testItems,
@@ -96,23 +109,18 @@ class MiniAppSecureStorageDispatcherSpec {
 
     /** end region */
 
-    /** region: get item to secure storage */
     @Test
-    @Ignore
     fun `onGetItem should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
             Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).getItem(
-            getItemCallbackObj.param.secureStorageKey,
-            miniAppSecureStorageDispatcher.onSuccessGetItem,
-            miniAppSecureStorageDispatcher.onFailed
+            getItemCallbackObj.param.secureStorageKey, {}, {}
         )
     }
 
     @Test
-    @Ignore
     fun `postError should be called if can not parse the jsonStr for getItem`() {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, "")
@@ -130,35 +138,6 @@ class MiniAppSecureStorageDispatcherSpec {
         )
     }
 
-    @Test
-    @Ignore
-    fun `getItem should not be called if can successfully parse the jsonStr and cached item is not null`() {
-        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
-        miniAppSecureStorageDispatcher.onSuccessGetItem = {}
-        miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).getItem(
-            testKey,
-            miniAppSecureStorageDispatcher.onSuccessGetItem,
-            miniAppSecureStorageDispatcher.onFailed
-        )
-    }
-
-    @Test
-    @Ignore
-    fun `postValue should return value from cached item if it is available`() {
-        miniAppSecureStorageDispatcher.onSuccessGetItem = {}
-        miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, testValue)
-    }
-
-    @Test
-    @Ignore
-    fun `postValue should return null from cached item if it is not available`() {
-        miniAppSecureStorageDispatcher.onSuccessGetItem = {}
-        miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        verify(bridgeExecutor, times(1)).postValue(TEST_CALLBACK_ID, "null")
-    }
-
     /** end region */
 
     /** region: remove items from secure storage */
@@ -173,7 +152,6 @@ class MiniAppSecureStorageDispatcherSpec {
     }
 
     @Test
-    @Ignore
     fun `postError should be called if can not parse the jsonStr for removeItems`() {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, "")
@@ -224,22 +202,12 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     @Ignore
     fun `clearSecureStorage should be called without the mini app id`() {
-        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
-        miniAppSecureStorageDispatcher.clearSecureStorage()
+        val msssd: MiniAppSecureStorageDispatcher = mock()
+        msssd.clearSecureStorage()
         verify(
-            miniAppSecureStorageDispatcher.miniAppSecureStorage,
+            msssd,
             times(1)
         ).clearAllSecureDatabases()
-    }
-
-    @Test
-    @Ignore
-    fun `postValue should return on onClearAll if the file is not available`() {
-        miniAppSecureStorageDispatcher.onClearAll(TEST_CALLBACK_ID)
-        verify(bridgeExecutor, times(1)).postValue(
-            TEST_CALLBACK_ID,
-            "Storage removed successfully."
-        )
     }
 
     /** end region */
@@ -263,16 +231,6 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).getDatabaseUsedSize(
             miniAppSecureStorageDispatcher.onSuccessDBSize
-        )
-    }
-
-    @Test
-    @Ignore
-    fun `postValue should return 0 from if the file is not available`() {
-        miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
-        verify(bridgeExecutor, times(1)).postValue(
-            TEST_CALLBACK_ID,
-            Gson().toJson(MiniAppSecureStorageSize(0, (testMaxStorageSizeInKB * 1024).toLong()))
         )
     }
     /** end region */

@@ -23,7 +23,7 @@ internal enum class MiniAppDatabaseStatus {
 /**
  * Database Implementation Wrapper
  */
-abstract class MiniAppSecureDatabaseImpl(
+internal abstract class MiniAppSecureDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
     var dbVersion: Int

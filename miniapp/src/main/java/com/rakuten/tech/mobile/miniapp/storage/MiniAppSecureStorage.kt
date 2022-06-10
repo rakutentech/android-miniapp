@@ -86,14 +86,13 @@ internal class MiniAppSecureStorage(
 
                 if (miniAppSecureDatabase.insert(items)) {
                     onSuccess()
-                }
-                else {
+                } else {
                     onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             } catch (e: SQLiteException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
-                when(e.message) {
+                when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_SPACE_LIMIT_REACHED_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageFullError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
@@ -113,7 +112,7 @@ internal class MiniAppSecureStorage(
                 val value = miniAppSecureDatabase.getItem(key)
                 onSuccess(value)
             } catch (e: SQLException) {
-                when(e.message) {
+                when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
@@ -140,7 +139,7 @@ internal class MiniAppSecureStorage(
                     onSuccess(emptyMap())
                 }
             } catch (e: SQLException) {
-                when(e.message) {
+                when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
@@ -163,12 +162,11 @@ internal class MiniAppSecureStorage(
             try {
                 if (miniAppSecureDatabase.deleteItems(keySet)) {
                     onSuccess()
-                }
-                else {
+                } else {
                     onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             } catch (e: SQLException) {
-                when(e.message) {
+                when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
@@ -195,8 +193,7 @@ internal class MiniAppSecureStorage(
             } catch (e: SQLException) {
                 if (e.message.equals(DATABASE_UNAVAILABLE_ERROR)) {
                     onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
-                }
-                else {
+                } else {
                     onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             }

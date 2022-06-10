@@ -33,7 +33,7 @@ class MiniAppSecureStorageSpec {
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this)
         mass = MiniAppSecureStorage(
             context,
             TEST_STORAGE_VERSION,
