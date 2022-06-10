@@ -167,8 +167,6 @@ internal class MiniAppSecureStorageDispatcher(
         miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
     }
 
-    fun cleanupSecureStorage() {}
-
     /**
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
@@ -189,6 +187,7 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked with MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the file to be deleted.
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun clearSecureDatabase(miniAppId: String) {
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
@@ -202,6 +201,7 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage.
      */
     @VisibleForTesting
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     internal fun clearAllSecureDatabases() {
         try {
             activity.databaseList().forEach {

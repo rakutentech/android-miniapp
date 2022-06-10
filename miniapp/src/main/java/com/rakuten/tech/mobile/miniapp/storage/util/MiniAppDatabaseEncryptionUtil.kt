@@ -51,6 +51,7 @@ private const val PASSCODE_DECRYPTION_ERROR = "Failed to decrypt database key"
 internal object MiniAppDatabaseEncryptionUtil {
 
     @VisibleForTesting
+    @SuppressWarnings("MagicNumber")
     internal fun getSecretKeyFromPassword(password: String, salt: ByteArray): SecretKey {
         val factory: SecretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM)
         val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 256)
@@ -61,6 +62,7 @@ internal object MiniAppDatabaseEncryptionUtil {
     }
 
     @VisibleForTesting
+    @SuppressWarnings("MagicNumber")
     internal fun generateIv(): IvParameterSpec {
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)
@@ -68,6 +70,7 @@ internal object MiniAppDatabaseEncryptionUtil {
     }
 
     @VisibleForTesting
+    @SuppressWarnings("MagicNumber")
     internal fun generateSalt(): ByteArray {
         val salt = ByteArray(8).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -79,6 +82,7 @@ internal object MiniAppDatabaseEncryptionUtil {
         return salt
     }
 
+    @SuppressWarnings("SwallowedException")
     private fun getPasscodeHolder(context: Context): EncryptedPasscodeDataHolder? {
         val prefs = context.getSharedPreferences(
             SHARED_PREFERENCE_NAME,

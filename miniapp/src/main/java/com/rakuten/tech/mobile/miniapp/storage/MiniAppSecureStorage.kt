@@ -32,6 +32,7 @@ internal class MiniAppSecureStorage(
     @VisibleForTesting
     internal lateinit var miniAppSecureDatabase: MiniAppSecureDatabase
 
+    @Suppress("MagicNumber")
     private fun checkAndInitSecuredDatabase(miniAppId: String) {
         if (!this::miniAppSecureDatabase.isInitialized) {
             val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
@@ -45,6 +46,7 @@ internal class MiniAppSecureStorage(
         databaseName = DB_NAME_PREFIX + miniAppId
     }
 
+    @SuppressWarnings("ExpressionBodySyntax")
     private fun createOrOpenAndUnlockDatabase(): Boolean {
         return miniAppSecureDatabase.createAndOpenDatabase()
     }
@@ -73,6 +75,7 @@ internal class MiniAppSecureStorage(
         onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
     }
 
+    @Suppress("ComplexMethod", "SwallowedException")
     fun insertItems(
         items: Map<String, String>,
         onSuccess: () -> Unit,
@@ -101,6 +104,7 @@ internal class MiniAppSecureStorage(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun getItem(
         key: String,
         onSuccess: (String) -> Unit,
@@ -126,6 +130,7 @@ internal class MiniAppSecureStorage(
     /**
      * Kept For the future reference, Just in case.
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun getAllItems(
         onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -151,8 +156,9 @@ internal class MiniAppSecureStorage(
     }
 
     /**
-     * It will delete given item(s) related to the given mini app id
+     * It will delete given item(s) related to the given mini app id.
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun deleteItems(
         keySet: Set<String>,
         onSuccess: () -> Unit,
@@ -178,8 +184,9 @@ internal class MiniAppSecureStorage(
     }
 
     /**
-     * It'll will delete all items/records related to the given mini app id
+     * It'll will delete all items/records related to the given mini app id.
      */
+    @Suppress("SwallowedException")
     fun delete(
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -207,6 +214,7 @@ internal class MiniAppSecureStorage(
      *
      * @param miniAppId will be used to find the file to be deleted.
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun clearSecureDatabase(miniAppId: String) {
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
@@ -221,6 +229,7 @@ internal class MiniAppSecureStorage(
      * then It will delete all the records as well as the whole DB
      * for all the MiniApps who created a Database.
      */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun clearAllSecureDatabases() {
         try {
             context.databaseList().forEach {

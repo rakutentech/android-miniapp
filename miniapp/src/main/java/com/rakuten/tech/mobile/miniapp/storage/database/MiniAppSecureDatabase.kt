@@ -31,6 +31,7 @@ internal const val DATABASE_SPACE_LIMIT_REACHED_ERROR =
 /**
  * Concrete MiniApp Database Implementation.
  */
+@SuppressWarnings("LargeClass", "TooManyFunctions")
 internal class MiniAppSecureDatabase(
     @NonNull private var context: Context,
     @NonNull dbName: String, // MiniAppId will be the dbName
@@ -46,10 +47,9 @@ internal class MiniAppSecureDatabase(
         miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
     }
 
-    private fun getDatabasePageSize(): Long {
-        return database.pageSize
-    }
+    private fun getDatabasePageSize(): Long = database.pageSize
 
+    @SuppressWarnings("ExpressionBodySyntax")
     private fun isDatabaseBusy(): Boolean {
         return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
     }
@@ -74,7 +74,9 @@ internal class MiniAppSecureDatabase(
         }
     }
 
-    override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {}
+    override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {
+        context.deleteDatabase(dbName)
+    }
 
     override fun onDatabaseReady(database: SupportSQLiteDatabase) {
         this.database = database
@@ -83,22 +85,17 @@ internal class MiniAppSecureDatabase(
 
     override fun isDatabaseOpen(): Boolean = database.isOpen
 
+    @SuppressWarnings("ExpressionBodySyntax")
     override fun isDatabaseAvailable(dbName: String): Boolean {
         return context.databaseList().contains(dbName)
     }
 
-    /**
-     * For the future usage, just in case
-     */
     override fun getDatabaseVersion(): Int = dbVersion
 
     override fun getDatabaseMaxsize(): Long = maxDatabaseSize
 
     override fun getDatabaseStatus(): MiniAppDatabaseStatus = miniAppDatabaseStatus
 
-    /**
-     * Kept For the future reference, Just in case.
-     */
     override fun resetDatabaseMaxSize(changedDBMaxSize: Long) {
         maxDatabaseSize = changedDBMaxSize
     }
@@ -108,9 +105,6 @@ internal class MiniAppSecureDatabase(
         return dbFile.length()
     }
 
-    /**
-     * Kept For the future reference, Just in case.
-     */
     override fun getDatabaseAvailableSize(): Long {
         val actualMaxSize = (
                 getDatabaseMaxsize() - (
@@ -180,6 +174,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @SuppressLint("Range")
+    @SuppressWarnings("TooGenericExceptionCaught")
     @Throws(SQLException::class, RuntimeException::class)
     override fun getItem(key: String): String {
         var result = "null"
@@ -214,10 +209,8 @@ internal class MiniAppSecureDatabase(
         return result
     }
 
-    /**
-     * Kept For the future reference, Just in case.
-     */
     @SuppressLint("Range")
+    @SuppressWarnings("TooGenericExceptionCaught")
     @Throws(SQLException::class)
     override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>()
@@ -254,6 +247,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @Throws(SQLException::class)
+    @SuppressWarnings("TooGenericExceptionCaught")
     override fun deleteItems(keys: Set<String>): Boolean {
         var totalDeleted = 0
         try {

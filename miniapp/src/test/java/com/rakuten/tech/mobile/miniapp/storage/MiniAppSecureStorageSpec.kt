@@ -22,6 +22,7 @@ import java.io.IOException
 import java.sql.SQLException
 
 @ExperimentalCoroutinesApi
+@Suppress("LargeClass")
 class MiniAppSecureStorageSpec {
 
     private val context: Context = mock()

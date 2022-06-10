@@ -21,7 +21,11 @@ class MiniAppDatabaseEncryptionUtilSpec {
 
         val stringIv = Base64.encodeToString(iv.iv, Base64.DEFAULT)
         val byteIv = Base64.decode(stringIv, Base64.DEFAULT)
-        val decryptedPasscode = MiniAppDatabaseEncryptionUtil.decrypt(encryptedPasscode, secretKey, IvParameterSpec(byteIv))
+        val decryptedPasscode = MiniAppDatabaseEncryptionUtil.decrypt(
+            encryptedPasscode,
+            secretKey,
+            IvParameterSpec(byteIv)
+        )
 
         assertEquals(passcode, decryptedPasscode)
     }

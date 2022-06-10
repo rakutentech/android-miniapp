@@ -21,8 +21,9 @@ internal enum class MiniAppDatabaseStatus {
 }
 
 /**
- * Database Implementation Wrapper
+ * Database Implementation Wrapper.
  */
+@Suppress("TooManyFunctions")
 internal abstract class MiniAppSecureDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
