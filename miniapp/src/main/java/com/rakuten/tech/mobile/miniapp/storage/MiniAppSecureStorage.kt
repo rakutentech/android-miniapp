@@ -1,278 +1,249 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import android.app.Activity
+import android.content.Context
+import android.database.sqlite.SQLiteException
+import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.MutableLiveData
-import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
+import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_BUSY_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_UNAVAILABLE_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_SPACE_LIMIT_REACHED_ERROR
+import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.nio.charset.StandardCharsets
-
-private const val SUB_DIR_MINIAPP = "miniapp"
-private const val SUB_DIR_SECURE_STORAGE = "secure-storage"
-
-internal enum class StorageState {
-    DEFAULT,
-    LOCK,
-    UNLOCK
-}
+import java.io.IOException
+import java.sql.SQLException
 
 @Suppress("TooManyFunctions", "LargeClass")
-internal class MiniAppSecureStorage(private val activity: Activity) {
-    private val hostAppBasePath = activity.filesDir
-    private val miniAppBasePath
-        get() = "$hostAppBasePath/$SUB_DIR_MINIAPP"
-    private val secureStorageBasePath
-        get() = "$miniAppBasePath/$SUB_DIR_SECURE_STORAGE/"
-    private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    var storageState: MutableLiveData<StorageState> = MutableLiveData<StorageState>()
-
-    private fun makeDirectoryAvailable() {
-        val storageDir = File(secureStorageBasePath)
-        if (!storageDir.exists()) {
-            storageDir.mkdir()
-        }
-    }
-
-    @Suppress("StringLiteralDuplication")
-    private fun isStorageAvailable(miniAppId: String): Boolean {
-        val securedStorageFile = File(secureStorageBasePath, "$miniAppId.txt")
-        return securedStorageFile.exists()
-    }
-
-    @Suppress("MagicNumber")
-    fun secureStorageSize(
-        miniAppId: String,
-        onSuccess: (Long) -> Unit,
-    ) {
-        if (isStorageAvailable(miniAppId)) {
-            val sizeInBytes = File(secureStorageBasePath, "$miniAppId.txt").length()
-            onSuccess(sizeInBytes)
-        } else {
-            onSuccess(0)
-        }
-    }
-
-    /**
-     * Check the usage of the secure storage.
-     */
-    @Suppress("MagicNumber")
-    fun isSecureStorageAvailable(miniAppId: String, storageMaxSizeKB: Int): Boolean {
-        return if (isStorageAvailable(miniAppId)) {
-            val maxSizeInBytes = storageMaxSizeKB * 1024
-            val usedSizeInBytes = File(secureStorageBasePath, "$miniAppId.txt").length()
-            !(usedSizeInBytes == maxSizeInBytes.toLong() || usedSizeInBytes > maxSizeInBytes)
-        } else {
-            true
-        }
-    }
-
-    @Suppress("SwallowedException", "TooGenericExceptionCaught")
-    private fun writeToEncryptedFile(
-        miniAppId: String,
-        content: String,
-        onSuccess: (Map<String, String>) -> Unit,
-        onFailed: (MiniAppSecureStorageError) -> Unit
-    ) = try {
-        makeDirectoryAvailable()
-        val fileToWrite = File(secureStorageBasePath, "$miniAppId.txt")
-        if (fileToWrite.exists()) {
-            fileToWrite.delete()
-        }
-        val encryptedFile = EncryptedFile.Builder(
-            activity,
-            fileToWrite,
-            MasterKey.Builder(activity).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
-
-        val fileContent = content.toByteArray(StandardCharsets.UTF_8)
-        encryptedFile.openFileOutput().apply {
-            write(fileContent)
-            flush()
-            close()
-        }
-        onSuccess(deserializeItems(content))
-    } catch (e: Exception) {
-        onFailed(MiniAppSecureStorageError.secureStorageIOError)
-    }
+internal class MiniAppSecureStorage(
+    @NonNull private val context: Context,
+    private val databaseVersion: Int,
+    private val maxDatabaseSizeInKB: Int
+) {
 
     @VisibleForTesting
-    @Suppress("SwallowedException", "TooGenericExceptionCaught", "ReturnCount")
-    private fun readFromEncryptedFile(miniAppId: String): Map<String, String>? {
-        try {
-            if (isStorageAvailable(miniAppId)) {
-                val encryptedFile = EncryptedFile.Builder(
-                    activity,
-                    File(secureStorageBasePath, "$miniAppId.txt"),
-                    MasterKey.Builder(activity).setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                        .build(),
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                ).build()
+    internal lateinit var databaseName: String
 
-                val inputStream = encryptedFile.openFileInput()
-                val plaintext: ByteArray = inputStream.readBytes()
-                val jsonToRead = plaintext.toString(Charsets.UTF_8)
-                return deserializeItems(jsonToRead)
-            } else {
-                return null
-            }
-        } catch (e: Exception) {
-            return null
+    @VisibleForTesting
+    internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+
+    @VisibleForTesting
+    internal lateinit var miniAppSecureDatabase: MiniAppSecureDatabase
+
+    @Suppress("MagicNumber")
+    private fun checkAndInitSecuredDatabase(miniAppId: String) {
+        if (!this::miniAppSecureDatabase.isInitialized) {
+            val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
+            setDatabaseName(miniAppId)
+            miniAppSecureDatabase =
+                MiniAppSecureDatabase(context, databaseName, databaseVersion, maxDBSize)
         }
     }
 
-    fun delete(
-        miniAppId: String,
-        onSuccess: () -> Unit,
-        onFailed: (MiniAppSecureStorageError) -> Unit
-    ) {
-        if (isStorageAvailable(miniAppId)) {
-            scope.launch {
-                val file = File(secureStorageBasePath, "$miniAppId.txt")
-                file.delete()
-                if (!file.exists()) {
-                    onSuccess()
-                } else {
-                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
-                }
-            }
-        } else {
-            onSuccess()
-        }
+    private fun setDatabaseName(miniAppId: String) {
+        databaseName = DB_NAME_PREFIX + miniAppId
     }
 
-    fun deleteItems(
-        miniAppId: String,
-        keySet: Set<String>,
-        onSuccess: (Map<String, String>) -> Unit,
-        onFailed: (MiniAppSecureStorageError) -> Unit
-    ) {
-        scope.launch {
-            storageState.postValue(StorageState.LOCK)
-            if (isStorageAvailable(miniAppId)) {
-                val storedItems = readFromEncryptedFile(miniAppId)
-                storedItems?.let { items ->
-                    val filterItems = items.filter { !keySet.contains(it.key) }
-                    if (storedItems.size == filterItems.size) {
-                        onFailed(MiniAppSecureStorageError.secureStorageIOError)
-                    } else {
-                        writeToEncryptedFile(
-                            miniAppId,
-                            serializedItems(filterItems),
-                            onSuccess,
-                            onFailed
-                        )
-                    }
-                } ?: kotlin.run {
-                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
-                }
-            } else {
-                onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
-            }
-            storageState.postValue(StorageState.UNLOCK)
-        }
+    @SuppressWarnings("ExpressionBodySyntax")
+    private fun createOrOpenAndUnlockDatabase(): Boolean {
+        return miniAppSecureDatabase.createAndOpenDatabase()
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
     fun load(
         miniAppId: String,
+        onSuccess: () -> Unit,
+        onFailed: (MiniAppSecureStorageError) -> Unit
+    ) {
+        scope.launch {
+            try {
+                checkAndInitSecuredDatabase(miniAppId)
+                if (createOrOpenAndUnlockDatabase()) {
+                    onSuccess()
+                }
+            } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            }
+        }
+    }
+
+    fun getDatabaseUsedSize(
+        onSuccess: (Long) -> Unit
+    ) {
+        onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
+    }
+
+    @Suppress("ComplexMethod", "SwallowedException")
+    fun insertItems(
+        items: Map<String, String>,
+        onSuccess: () -> Unit,
+        onFailed: (MiniAppSecureStorageError) -> Unit
+    ) {
+        scope.launch {
+            try {
+                if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
+                    createOrOpenAndUnlockDatabase()
+                }
+
+                if (miniAppSecureDatabase.insert(items)) {
+                    onSuccess()
+                } else {
+                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            } catch (e: SQLiteException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: SQLException) {
+                when (e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_SPACE_LIMIT_REACHED_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageFullError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            }
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun getItem(
+        key: String,
+        onSuccess: (String) -> Unit,
+        onFailed: (MiniAppSecureStorageError) -> Unit
+    ) {
+
+        scope.launch {
+            try {
+                val value = miniAppSecureDatabase.getItem(key)
+                onSuccess(value)
+            } catch (e: SQLException) {
+                when (e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            }
+        }
+    }
+
+    /**
+     * Kept For the future reference, Just in case.
+     */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun getAllItems(
         onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
-            storageState.postValue(StorageState.LOCK)
             try {
-                if (isStorageAvailable(miniAppId)) {
-                    val storedItems = readFromEncryptedFile(miniAppId)
-                    storedItems?.let {
-                        onSuccess(storedItems)
-                    } ?: kotlin.run {
-                        onSuccess(emptyMap())
-                    }
+                val value = miniAppSecureDatabase.getAllItems()
+                if (value.isNotEmpty()) {
+                    onSuccess(value)
                 } else {
                     onSuccess(emptyMap())
                 }
-            } catch (e: Exception) {
-                onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+            } catch (e: SQLException) {
+                when (e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
-            storageState.postValue(StorageState.UNLOCK)
         }
     }
 
-    fun insertItems(
-        miniAppId: String,
-        items: Map<String, String>,
-        onSuccess: (Map<String, String>) -> Unit,
+    /**
+     * It will delete given item(s) related to the given mini app id.
+     */
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun deleteItems(
+        keySet: Set<String>,
+        onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
-            storageState.postValue(StorageState.LOCK)
-            writeToEncryptedFile(miniAppId, serializedItems(items), onSuccess, onFailed)
-            storageState.postValue(StorageState.UNLOCK)
+            try {
+                if (miniAppSecureDatabase.deleteItems(keySet)) {
+                    onSuccess()
+                } else {
+                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            } catch (e: SQLException) {
+                when (e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                }
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            }
         }
     }
 
-    fun getItem(
-        miniAppId: String,
-        key: String,
-        onSuccess: (String) -> Unit,
+    /**
+     * It'll will delete all items/records related to the given mini app id.
+     */
+    @Suppress("SwallowedException")
+    fun delete(
+        onSuccess: () -> Unit,
+        onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
-            if (isStorageAvailable(miniAppId)) {
-                val storedItems = readFromEncryptedFile(miniAppId)
-                storedItems?.let {
-                    if (storedItems.containsKey(key)) {
-                        onSuccess(storedItems[key] ?: "")
-                    } else {
-                        onSuccess("null")
-                    }
-                } ?: kotlin.run {
-                    onSuccess("null")
+            try {
+                clearDatabase(databaseName)
+                onSuccess()
+            } catch (e: IOException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: SQLException) {
+                if (e.message.equals(DATABASE_UNAVAILABLE_ERROR)) {
+                    onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                } else {
+                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
-            } else {
-                onSuccess("null")
             }
         }
     }
 
-    private fun deserializeItems(jsonToRead: String): Map<String, String> {
-        return Gson().fromJson(
-            jsonToRead,
-            object : TypeToken<Map<String, String>>() {}.type
-        )
-    }
-
-    private fun serializedItems(items: Map<String, String>): String = Gson().toJson(items)
-
     /**
-     * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
+     * In case if host app want to clear the database for a specific MiniApp
+     * then It will delete all the records as well as the whole DB
+     * related to the given mini app id.
+     *
      * @param miniAppId will be used to find the file to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String) {
-        if (isStorageAvailable(miniAppId)) {
-            scope.launch {
-                val file = File(secureStorageBasePath, "$miniAppId.txt")
-                file.delete()
-            }
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun clearSecureDatabase(miniAppId: String) {
+        try {
+            val dbName = DB_NAME_PREFIX + miniAppId
+            context.deleteDatabase(dbName)
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
         }
     }
 
     /**
-     * Will be invoked by MiniApp.clearSecureStorage.
+     * In case if host app want to clear all the database for every MiniApp
+     * then It will delete all the records as well as the whole DB
+     * for all the MiniApps who created a Database.
      */
-    fun clearSecureStorage() {
-        val storageDir = File(secureStorageBasePath)
-        if (storageDir.exists()) {
-            scope.launch {
-                storageDir.deleteRecursively()
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
+    fun clearAllSecureDatabases() {
+        try {
+            context.databaseList().forEach {
+                if (it.startsWith(DB_NAME_PREFIX)) {
+                    context.deleteDatabase(it)
+                }
             }
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
         }
+    }
+
+    private fun clearDatabase(dbName: String) {
+        miniAppSecureDatabase.deleteAllRecords()
+        miniAppSecureDatabase.deleteWholeDatabase(dbName)
     }
 }
