@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal interface ManifestApi {
+    @Suppress("FunctionMaxLength")
     @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/manifest")
     fun fetchFileListFromManifestPreviewMode(
         @Path("hostId") hostId: String,

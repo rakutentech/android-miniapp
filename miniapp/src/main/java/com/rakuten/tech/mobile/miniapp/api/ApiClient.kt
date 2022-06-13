@@ -91,21 +91,17 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchFileList(miniAppId: String, versionId: String): Pair<ManifestEntity, ManifestHeader> {
         val request = when {
-            testPath != "" -> {
-                manifestApi.fetchFileListFromManifestPreviewMode(
-                    hostId = hostId,
-                    miniAppId = miniAppId,
-                    versionId = versionId,
-                    testPath = testPath
-                )
-            }
-            else -> {
-                manifestApi.fetchFileListFromManifest(
-                    hostId = hostId,
-                    miniAppId = miniAppId,
-                    versionId = versionId,
-                )
-            }
+            testPath != "" -> manifestApi.fetchFileListFromManifestPreviewMode(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                testPath = testPath
+            )
+            else -> manifestApi.fetchFileListFromManifest(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+            )
         }
         val response = requestExecutor.executeRequest(request)
         val manifestEntity = response.body() as ManifestEntity
@@ -116,23 +112,19 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String, languageCode: String): MetadataEntity {
         val request = when {
-            testPath != "" -> {
-                metadataApi.fetchMetadataPreviewMode(
-                    hostId = hostId,
-                    miniAppId = miniAppId,
-                    versionId = versionId,
-                    testPath = testPath,
-                    lang = languageCode
-                )
-            }
-            else -> {
-                metadataApi.fetchMetadata(
-                    hostId = hostId,
-                    miniAppId = miniAppId,
-                    versionId = versionId,
-                    lang = languageCode
-                )
-            }
+            testPath != "" -> metadataApi.fetchMetadataPreviewMode(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                testPath = testPath,
+                lang = languageCode
+            )
+            else -> metadataApi.fetchMetadata(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                lang = languageCode
+            )
         }
         return requestExecutor.executeRequest(request).body() as MetadataEntity
     }
