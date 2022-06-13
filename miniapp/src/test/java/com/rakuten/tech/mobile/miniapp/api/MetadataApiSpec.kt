@@ -69,7 +69,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
     fun `should have test endpoint when in test mode`() {
         mockServer.enqueue(createResponse())
         retrofit.create(MetadataApi::class.java)
-            .fetchMetadata(
+            .fetchMetadataPreviewMode(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,

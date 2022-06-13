@@ -60,7 +60,7 @@ open class ApiClientSpec {
             Response.success(ManifestEntity(fileList, TEST_PUBLIC_KEY_ID))
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns response
@@ -85,7 +85,7 @@ open class ApiClientSpec {
 
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns response
@@ -174,7 +174,7 @@ open class ApiClientSpec {
         val response: Response<MetadataEntity> = Response.success(metadataEntity)
 
         When calling mockMetadataApi.fetchMetadata(TEST_HA_ID_PROJECT, TEST_MA_ID,
-            TEST_MA_VERSION_ID, "", TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
+            TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(metadataApi = mockMetadataApi)
