@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage.util
 import android.content.Context
 import android.os.Build
 import android.util.Base64
+import androidx.annotation.Keep
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -29,6 +30,7 @@ private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
  * @param salt cryptographic salt
  * @param encryptedPasscode encrypted database key
  */
+@Keep
 private data class EncryptedPasscodeDataHolder(
     val iv: String,
     val salt: String,
@@ -143,7 +145,7 @@ internal object MiniAppDatabaseEncryptionUtil {
 
         val holder = getPasscodeHolder(context)
 
-        if (holder == null) {
+        if (holder == null || (holder.salt == null || holder.iv == null || holder.encryptedPasscode == null)) {
             val salt = generateSalt()
             val iv: IvParameterSpec = generateIv()
             val secretKey = getSecretKeyFromPassword(passcode, salt)
