@@ -141,6 +141,7 @@ internal object MiniAppDatabaseEncryptionUtil {
         return String(decryptedPasscode)
     }
 
+    @Suppress("ComplexCondition")
     internal fun encryptPasscode(context: Context, passcode: String): String {
 
         val holder = getPasscodeHolder(context)
