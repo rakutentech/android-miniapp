@@ -33,3 +33,4 @@
 
 # Prevent crash when minify enabled
 -keep class com.google.crypto.** { *; }
+-keep class net.sqlcipher.** { *; }
