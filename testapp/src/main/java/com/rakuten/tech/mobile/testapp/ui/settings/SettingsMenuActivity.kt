@@ -220,6 +220,16 @@ class SettingsMenuActivity : BaseActivity() {
                     }
                     navigateToPreviousScreen()
                 }
+            } catch (error: MiniAppTooManyRequestsError) {
+                onUpdateError(
+                    appIdHolder,
+                    subscriptionKeyHolder,
+                    urlParametersHolder,
+                    isPreviewModeHolder,
+                    requireSignatureVerificationHolder,
+                    "Error",
+                    getString(R.string.error_desc_miniapp_too_many_request)
+                )
             } catch (error: MiniAppSdkException) {
                 onUpdateError(
                     appIdHolder,
@@ -239,11 +249,6 @@ class SettingsMenuActivity : BaseActivity() {
                     requireSignatureVerificationHolder,
                     "URL parameter",
                     error.message.toString()
-                )
-            } catch (error: MiniAppTooManyRequestsError) {
-                showErrorDialog(
-                    this@SettingsMenuActivity,
-                    getString(R.string.error_desc_miniapp_too_many_request)
                 )
             }
         }
