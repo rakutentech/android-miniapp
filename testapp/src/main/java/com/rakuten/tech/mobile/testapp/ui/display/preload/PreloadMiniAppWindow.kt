@@ -22,6 +22,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.load
+import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import java.lang.StringBuilder
 
 class PreloadMiniAppWindow(
@@ -105,6 +106,13 @@ class PreloadMiniAppWindow(
                     manifestErrorData.observe(lifecycleOwner, Observer {
                         Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                     })
+
+                    containTooManyRequestsError.observe(lifecycleOwner) {
+                        showErrorDialog(
+                            context,
+                            context.getString(R.string.error_desc_miniapp_too_many_request)
+                        )
+                    }
                 }
 
         viewModel.checkMiniAppManifest(miniAppId, versionId)

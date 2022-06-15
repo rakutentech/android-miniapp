@@ -22,6 +22,7 @@ class MiniAppDisplayViewModel constructor(
     private val _miniAppView = MutableLiveData<View>()
     private val _errorData = MutableLiveData<String>()
     private val _isLoading = MutableLiveData<Boolean>()
+    private val _containTooManyRequestsError = MutableLiveData<Boolean>()
 
     val miniAppView: LiveData<View>
         get() = _miniAppView
@@ -29,6 +30,8 @@ class MiniAppDisplayViewModel constructor(
         get() = _errorData
     val isLoading: LiveData<Boolean>
         get() = _isLoading
+    val containTooManyRequestsError: LiveData<Boolean>
+        get() = _containTooManyRequestsError
 
     fun obtainMiniAppDisplay(
         context: Context,
@@ -50,6 +53,8 @@ class MiniAppDisplayViewModel constructor(
                     _errorData.postValue("No published version for the provided Mini App ID.")
                 is MiniAppNotFoundException ->
                     _errorData.postValue("No Mini App found for the provided Project ID.")
+                is MiniAppTooManyRequestsError ->
+                    _containTooManyRequestsError.postValue(true)
                 else ->{
                     //try to load MiniApp from cache
                     try {
