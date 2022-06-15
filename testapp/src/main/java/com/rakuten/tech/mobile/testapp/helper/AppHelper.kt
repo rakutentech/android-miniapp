@@ -18,12 +18,9 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import java.lang.IllegalArgumentException
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 
 private const val UUID_LENGTH = 36
 fun String.isInvalidUuid(): Boolean = try {
@@ -80,6 +77,17 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
         dialog.dismiss()
     }
     alertDialog.create().show()
+}
+
+fun showErrorDialog(
+    context: Context,
+    description: String
+) {
+    val builder = AlertDialog.Builder(context)
+    builder.setMessage(description)
+        .setNegativeButton("Close") { _, _ -> }
+    val alert = builder.create()
+    alert.show()
 }
 
 fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) = Glide.with(context)

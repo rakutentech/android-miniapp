@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
 import kotlinx.coroutines.delay
@@ -209,6 +210,7 @@ internal class RetrofitRequestExecutor(
             )
             404 -> throw MiniAppNotFoundException(response.message())
             400 -> throw MiniAppHostException(response.message())
+            429 -> throw MiniAppTooManyRequestsError(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConverter(retrofit)
