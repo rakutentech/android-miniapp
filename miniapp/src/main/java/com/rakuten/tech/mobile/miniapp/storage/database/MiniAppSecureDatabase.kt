@@ -141,7 +141,8 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class, SQLiteException::class)
     override fun insert(items: Map<String, String>): Boolean {
-        var result: Long = -1
+        var result: Long
+        var isInserted = false
         try {
             if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
@@ -156,10 +157,11 @@ internal class MiniAppSecureDatabase(
                 contentValues.put(FIRST_COLUMN_NAME, it.key)
                 contentValues.put(SECOND_COLUMN_NAME, it.value)
                 result = database.insert(TABLE_NAME, SQLiteDatabase.CONFLICT_REPLACE, contentValues)
+                if (result > -1) {
+                    isInserted = true
+                }
             }
-            if (result > -1) {
-                database.setTransactionSuccessful()
-            }
+            database.setTransactionSuccessful()
             database.endTransaction()
         } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
@@ -170,7 +172,7 @@ internal class MiniAppSecureDatabase(
         } finally {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
-        return (result > -1)
+        return isInserted
     }
 
     @SuppressLint("Range")
@@ -195,9 +197,7 @@ internal class MiniAppSecureDatabase(
                 result = cursor.getString(cursor.getColumnIndex(SECOND_COLUMN_NAME))
                 cursor.moveToNext()
             }
-            if (result != "null") {
-                database.setTransactionSuccessful()
-            }
+            database.setTransactionSuccessful()
             database.endTransaction()
             cursor.close()
         } catch (e: RuntimeException) {
@@ -232,9 +232,7 @@ internal class MiniAppSecureDatabase(
                 result[first] = second
                 cursor.moveToNext()
             }
-            if (result.isNotEmpty()) {
-                database.setTransactionSuccessful()
-            }
+            database.setTransactionSuccessful()
             database.endTransaction()
             cursor.close()
         } catch (e: RuntimeException) {
@@ -249,7 +247,8 @@ internal class MiniAppSecureDatabase(
     @Throws(SQLException::class)
     @SuppressWarnings("TooGenericExceptionCaught")
     override fun deleteItems(keys: Set<String>): Boolean {
-        var totalDeleted = 0
+        var totalDeleted: Int
+        var isDeleted = false
         try {
             if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
@@ -261,10 +260,11 @@ internal class MiniAppSecureDatabase(
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             keys.forEach {
                 totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME='$it'", null)
+                if (totalDeleted > 0) {
+                    isDeleted = true
+                }
             }
-            if (totalDeleted > 0) {
-                database.setTransactionSuccessful()
-            }
+            database.setTransactionSuccessful()
             database.endTransaction()
         } catch (e: RuntimeException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
@@ -272,7 +272,7 @@ internal class MiniAppSecureDatabase(
         } finally {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
         }
-        return totalDeleted > 0
+        return isDeleted
     }
 
     @Throws(IOException::class, SQLException::class)
