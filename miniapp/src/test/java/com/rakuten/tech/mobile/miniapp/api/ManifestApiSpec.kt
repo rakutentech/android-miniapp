@@ -60,7 +60,7 @@ class ManifestApiRequestSpec : ManifestApiSpec() {
     fun `should have test endpoint when in test mode`() {
         mockServer.enqueue(createResponse())
         retrofit.create(ManifestApi::class.java)
-            .fetchFileListFromManifest(
+            .fetchFileListFromManifestPreviewMode(
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,

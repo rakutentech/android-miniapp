@@ -7,13 +7,20 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal interface ManifestApi {
-    // double slash is okay
+    @Suppress("FunctionMaxLength")
     @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/manifest")
-    fun fetchFileListFromManifest(
+    fun fetchFileListFromManifestPreviewMode(
         @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
         @Path("testPath") testPath: String = ""
+    ): Call<ManifestEntity>
+
+    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/manifest")
+    fun fetchFileListFromManifest(
+        @Path("hostId") hostId: String,
+        @Path("miniappId") miniAppId: String,
+        @Path("versionId") versionId: String,
     ): Call<ManifestEntity>
 }
 
