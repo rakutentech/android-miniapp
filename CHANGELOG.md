@@ -8,7 +8,7 @@
 **Sample App**
 - **Feature:** Added a `Clear All` button to Settings/QA to remove all secure storages.
 
-### 4.1.2 (2022-06-17)
+### 4.1.2 (2022-06-20)
 **SDK**
 - **Fix:** Removed `//` from API calls to generate a valid URL in `MetaDataApi` and `ManifestApi`.
 
