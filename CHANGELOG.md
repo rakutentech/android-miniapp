@@ -11,6 +11,10 @@
 - **Feature:** Added a `Clear All` button to Settings/QA to remove all secure storages.
 - **Feature:** Added support to display error popup when there is `MiniAppTooManyRequestsError`.
 
+### 4.1.2 (2022-06-20)
+**SDK**
+- **Fix:** Removed `//` from API calls to generate a valid URL in `MetaDataApi` and `ManifestApi`.
+
 ### 4.1.1 (2022-05-16)
 **SDK**
 - **Remove:** Removed `io.github.rakutentech.sdkutils` dependency and adopted the related changes to MiniApp SDK.
