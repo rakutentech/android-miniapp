@@ -3,7 +3,7 @@
 # MiniAppDownloadFileError
 
 [androidJvm]\
-class [MiniAppDownloadFileError](index.md)(type: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?, message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?) : [MiniAppBridgeError](../-mini-app-bridge-error/index.md)
+class [MiniAppDownloadFileError](index.md)(type: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?, message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?, code: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)?) : [MiniAppBridgeError](../-mini-app-bridge-error/index.md)
 
 A class to provide the custom errors specific for file download.
 
@@ -11,7 +11,7 @@ A class to provide the custom errors specific for file download.
 
 | | |
 |---|---|
-| [MiniAppDownloadFileError](-mini-app-download-file-error.md) | [androidJvm]<br>fun [MiniAppDownloadFileError](-mini-app-download-file-error.md)(type: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null, message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null) |
+| [MiniAppDownloadFileError](-mini-app-download-file-error.md) | [androidJvm]<br>fun [MiniAppDownloadFileError](-mini-app-download-file-error.md)(type: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null, message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null, code: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)? = null) |
 
 ## Types
 
@@ -23,5 +23,6 @@ A class to provide the custom errors specific for file download.
 
 | Name | Summary |
 |---|---|
+| [code](code.md) | [androidJvm]<br>val [code](code.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)? = null |
 | [message](message.md) | [androidJvm]<br>val [message](message.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null |
 | [type](type.md) | [androidJvm]<br>val [type](type.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)? = null |

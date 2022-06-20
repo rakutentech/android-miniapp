@@ -5,12 +5,6 @@
 [androidJvm]\
 object [Companion](index.md)
 
-## Functions
-
-| Name | Summary |
-|---|---|
-| [custom](custom.md) | [androidJvm]<br>fun [custom](custom.md)(code: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), reason: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)): [MiniAppDownloadFileError](../index.md)<br>send custom error message from host app. |
-
 ## Properties
 
 | Name | Summary |
