@@ -48,7 +48,13 @@ internal class MiniAppDownloader(
     private val signatureVerifier: SignatureVerifier? by lazy { initSignatureVerifier() }
 
     suspend fun getMiniApp(appId: String): Pair<String, MiniAppInfo> = try {
-        val miniAppInfo = apiClient.fetchInfo(appId)
+        val miniAppInfo: MiniAppInfo
+        try {
+            miniAppInfo = apiClient.fetchInfo(appId)
+        } catch (error: MiniAppTooManyRequestsError) {
+            removeMiniApp(appId, "", TOO_MANY_REQUEST_ERR_LOG)
+            throw MiniAppTooManyRequestsError(error.message)
+        }
         onGetMiniApp(miniAppInfo)
     } catch (netError: MiniAppNetException) {
         onNetworkError(miniAppStatus.getDownloadedMiniApp(appId))
@@ -122,22 +128,23 @@ internal class MiniAppDownloader(
             return if (verifier.verify(miniAppInfo.version.versionId, File(versionPath)))
                 versionPath
             else {
-                removeMiniApp(miniAppInfo, "Failed to verify the hash of the cached files. " +
-                        "The files will be deleted and the Mini App re-downloaded.")
+                removeMiniApp(
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId,
+                    "Failed to verify the hash of the cached files. " +
+                            "The files will be deleted and the Mini App re-downloaded."
+                )
                 null
             }
         }
         return null
     }
 
-    private fun removeMiniApp(miniAppInfo: MiniAppInfo, log: String) {
+    internal fun removeMiniApp(appId: String, versionId: String = "", log: String) {
         Log.e(TAG, log)
-        storage.removeApp(miniAppInfo.id)
-        miniAppStatus.setVersionDownloaded(
-                miniAppInfo.id,
-                miniAppInfo.version.versionId,
-                false
-        )
+        storage.removeApp(appId)
+        if (versionId.isNotEmpty())
+            miniAppStatus.setVersionDownloaded(appId, versionId, false)
     }
 
     @VisibleForTesting
@@ -152,24 +159,30 @@ internal class MiniAppDownloader(
         versionId: String
     ) = apiClient.fetchFileList(appId, versionId)
 
+    @SuppressWarnings("NestedBlockDepth")
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
-            return if (apiClient.isPreviewMode) {
-                // every version should have it's own manifest information and it can be changed
-                val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
-                prepareMiniAppManifest(apiResponse, versionId)
-            } else {
-                // every version should have it's own manifest information or null
-                val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
-                if (cachedLatestManifest != null) cachedLatestManifest
-                else {
+            try {
+                return if (apiClient.isPreviewMode) {
+                    // every version should have it's own manifest information and it can be changed
                     val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
-                    val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
-                    manifestApiCache.storeManifest(appId, versionId, latestManifest)
-                    latestManifest
+                    prepareMiniAppManifest(apiResponse, versionId)
+                } else {
+                    // every version should have it's own manifest information or null
+                    val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+                    if (cachedLatestManifest != null) cachedLatestManifest
+                    else {
+                        val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
+                        val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
+                        manifestApiCache.storeManifest(appId, versionId, latestManifest)
+                        latestManifest
+                    }
                 }
+            } catch (error: MiniAppTooManyRequestsError) {
+                removeMiniApp(appId, versionId, TOO_MANY_REQUEST_ERR_LOG)
+                throw MiniAppTooManyRequestsError(error.message)
             }
         }
     }
@@ -198,7 +211,7 @@ internal class MiniAppDownloader(
         return pairs
     }
 
-    @SuppressWarnings("LongMethod", "NestedBlockDepth")
+    @SuppressWarnings("LongMethod", "NestedBlockDepth", "ComplexMethod", "ThrowsCount")
     private suspend fun downloadMiniApp(
         miniAppInfo: MiniAppInfo,
         manifest: Pair<ManifestEntity, ManifestHeader>
@@ -209,26 +222,31 @@ internal class MiniAppDownloader(
         when {
             doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
-                    if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
-                        miniAppAnalytics.sendAnalytics(
-                            eType = Etype.CLICK,
-                            actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
-                            miniAppInfo = miniAppInfo
-                        )
-                    } else {
-                        miniAppAnalytics.sendAnalytics(
-                            eType = Etype.CLICK,
-                            actype = Actype.SIGNATURE_VALIDATION_FAIL,
-                            miniAppInfo = miniAppInfo
-                        )
-                        if (requireSignatureVerification) {
-                            removeMiniApp(miniAppInfo, "$SIGNATURE_VERIFICATION_ERR " +
-                                    "The files will be deleted.")
-                            throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
+                    try {
+                        if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+                            miniAppAnalytics.sendAnalytics(
+                                eType = Etype.CLICK,
+                                actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                                miniAppInfo = miniAppInfo
+                            )
+                        } else {
+                            miniAppAnalytics.sendAnalytics(
+                                eType = Etype.CLICK,
+                                actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                                miniAppInfo = miniAppInfo
+                            )
+                            if (requireSignatureVerification) {
+                                removeMiniApp(appId, versionId, "$SIGNATURE_VERIFICATION_ERR " +
+                                        "The files will be deleted.")
+                                throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
+                            }
                         }
-                    }
 
-                    storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
+                        storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
+                    } catch (error: MiniAppTooManyRequestsError) {
+                        removeMiniApp(appId, versionId, TOO_MANY_REQUEST_ERR_LOG)
+                        throw MiniAppTooManyRequestsError(error.message)
+                    }
                 }
                 if (!apiClient.isPreviewMode) {
                     withContext(coroutineDispatcher) {
@@ -296,5 +314,6 @@ internal class MiniAppDownloader(
         private const val TAG = "MiniAppDownloader"
         private const val SIGNATURE_VERIFICATION_ERR = "Failed to verify the signature of MiniApp's zip."
         internal const val MINIAPP_NOT_FOUND_OR_CORRUPTED = "Mini app is not downloaded properly or corrupted"
+        internal const val TOO_MANY_REQUEST_ERR_LOG = "The files will be deleted for too many requests error."
     }
 }

@@ -11,16 +11,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsMenuActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_LIST_ACTIVITY
 import com.rakuten.tech.mobile.testapp.BuildVariant
-import com.rakuten.tech.mobile.testapp.helper.isAvailable
-import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
@@ -222,6 +220,16 @@ class SettingsMenuActivity : BaseActivity() {
                     }
                     navigateToPreviousScreen()
                 }
+            } catch (error: MiniAppTooManyRequestsError) {
+                onUpdateError(
+                    appIdHolder,
+                    subscriptionKeyHolder,
+                    urlParametersHolder,
+                    isPreviewModeHolder,
+                    requireSignatureVerificationHolder,
+                    "Error",
+                    getString(R.string.error_desc_miniapp_too_many_request)
+                )
             } catch (error: MiniAppSdkException) {
                 onUpdateError(
                     appIdHolder,

@@ -2,7 +2,9 @@ package com.rakuten.tech.mobile.testapp.ui.display
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -17,7 +19,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
@@ -42,9 +43,11 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivit
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
+import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.lang.NullPointerException
 import java.util.*
 
 class MiniAppDisplayActivity : BaseActivity() {
@@ -142,7 +145,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                checkCloseAlert()
                 true
             }
             R.id.share_mini_app -> {
@@ -164,7 +167,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         //Three different ways to get miniapp.
-        appInfo = intent.getParcelableExtra<MiniAppInfo>(miniAppTag)
+        appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
@@ -177,7 +180,7 @@ class MiniAppDisplayActivity : BaseActivity() {
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
         viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
-            miniAppView.observe(this@MiniAppDisplayActivity, Observer {
+            miniAppView.observe(this@MiniAppDisplayActivity) {
                 if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                     WebView.setWebContentsDebuggingEnabled(true)
 
@@ -185,15 +188,22 @@ class MiniAppDisplayActivity : BaseActivity() {
                 addLifeCycleObserver(lifecycle)
                 (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
-            })
+            }
 
-            errorData.observe(this@MiniAppDisplayActivity, Observer {
+            errorData.observe(this@MiniAppDisplayActivity) {
                 Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-            })
+            }
 
-            isLoading.observe(this@MiniAppDisplayActivity, Observer {
+            isLoading.observe(this@MiniAppDisplayActivity) {
                 toggleProgressLoading(it)
-            })
+            }
+
+            containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
+                showErrorDialog(
+                    this@MiniAppDisplayActivity,
+                    getString(R.string.error_desc_miniapp_too_many_request)
+                )
+            }
         }
 
         setupMiniAppMessageBridge()
@@ -280,7 +290,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
-
         miniAppMessageBridge.allowScreenOrientation(true)
 
         // setup UserInfoBridgeDispatcher
@@ -412,6 +421,30 @@ class MiniAppDisplayActivity : BaseActivity() {
     private fun toggleProgressLoading(isOn: Boolean) = when (isOn) {
         true -> binding.pb.visibility = View.VISIBLE
         false -> binding.pb.visibility = View.GONE
+    }
+
+    private fun checkCloseAlert() {
+        try {
+            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
+            if (closeAlertInfo?.shouldDisplay!!) {
+                val dialogClickListener =
+                    DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                finish()
+                            }
+                        }
+                    }
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this@MiniAppDisplayActivity)
+                builder.setTitle(closeAlertInfo.title)
+                    .setMessage(closeAlertInfo.description)
+                    .setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show()
+            } else finish()
+        } catch (e: NullPointerException) {
+            finish()
+        }
     }
 
     override fun onBackPressed() {

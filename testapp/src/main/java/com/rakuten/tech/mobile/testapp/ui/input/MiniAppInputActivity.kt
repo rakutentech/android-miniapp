@@ -7,12 +7,12 @@ import android.text.TextWatcher
 import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
+import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
@@ -104,17 +104,23 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
     private fun initiatePreloadScreen(miniAppId: String) {
         val viewModel: MiniAppInputViewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
                 .apply {
-                    miniAppVersionId.observe(this@MiniAppInputActivity, Observer {
+                    miniAppVersionId.observe(this@MiniAppInputActivity) {
                         preloadMiniAppWindow.initiate(
                             null,
                             miniAppId,
                             it,
                             this@MiniAppInputActivity
                         )
-                    })
-                    versionIdErrorData.observe(this@MiniAppInputActivity, Observer {
+                    }
+                    versionIdErrorData.observe(this@MiniAppInputActivity) {
                         Toast.makeText(this@MiniAppInputActivity, it, Toast.LENGTH_LONG).show()
-                    })
+                    }
+                    containTooManyRequestsError.observe(this@MiniAppInputActivity) {
+                        showErrorDialog(
+                            this@MiniAppInputActivity,
+                            getString(R.string.error_desc_miniapp_too_many_request)
+                        )
+                    }
                 }
         viewModel.getMiniAppVersionId(miniAppId)
     }
