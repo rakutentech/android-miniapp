@@ -10,11 +10,19 @@ import retrofit2.http.Query
 
 internal interface MetadataApi {
     @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/{testPath}/metadata")
-    fun fetchMetadata(
+    fun fetchMetadataPreviewMode(
         @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Path("versionId") versionId: String,
         @Path("testPath") testPath: String = "",
+        @Query("lang") lang: String
+    ): Call<MetadataEntity>
+
+    @GET("host/{hostId}/miniapp/{miniappId}/version/{versionId}/metadata")
+    fun fetchMetadata(
+        @Path("hostId") hostId: String,
+        @Path("miniappId") miniAppId: String,
+        @Path("versionId") versionId: String,
         @Query("lang") lang: String
     ): Call<MetadataEntity>
 }

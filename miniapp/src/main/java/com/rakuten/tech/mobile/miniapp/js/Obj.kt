@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
@@ -152,6 +153,15 @@ internal data class SendContactIdCallbackObj(val param: MessageParamId) {
         val contactId: String,
         val messageToContact: MessageToContact
     )
+}
+// end region
+
+// close alert region
+@Keep
+internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam) {
+
+    @Keep
+    internal data class CloseAlertInfoParam(val closeAlertInfo: MiniAppCloseAlertInfo)
 }
 // end region
 

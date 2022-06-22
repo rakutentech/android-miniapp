@@ -95,6 +95,7 @@
     <string name="error_title_miniapp_version_mismatch">" Version %1$s is not valid "</string>
     <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
     <string name="error_desc_promotional_text_missing">Promotional text is not available</string>
+    <string name="error_desc_miniapp_too_many_request">"Mini app is requested too many times.</string>
 
     <string name="help_center_text">Help Center</string>
     <string name="lb_close">Close</string>

@@ -18,6 +18,7 @@ import androidx.core.location.LocationManagerCompat
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.DialogType
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import java.io.BufferedReader
@@ -27,7 +28,8 @@ internal class MiniAppWebChromeClient(
     private val context: Context,
     private val miniAppInfo: MiniAppInfo,
     val miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
-    private val miniAppFileChooser: MiniAppFileChooser?
+    private val miniAppFileChooser: MiniAppFileChooser?,
+    private val miniAppMessageBridge: MiniAppMessageBridge
 ) : WebChromeClient() {
 
     private lateinit var locationManager: LocationManager
@@ -107,7 +109,7 @@ internal class MiniAppWebChromeClient(
     @VisibleForTesting
     internal fun doInjection(webView: WebView) {
         if (bridgeJs !== null) {
-            webView.evaluateJavascript(bridgeJs) {}
+            webView.evaluateJavascript(bridgeJs) { miniAppMessageBridge.onJsInjectionDone() }
         }
     }
 

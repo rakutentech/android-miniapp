@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
 import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
 import kotlinx.coroutines.delay
@@ -90,12 +91,19 @@ internal class ApiClient @VisibleForTesting constructor(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchFileList(miniAppId: String, versionId: String): Pair<ManifestEntity, ManifestHeader> {
-        val request = manifestApi.fetchFileListFromManifest(
-            hostId = hostId,
-            miniAppId = miniAppId,
-            versionId = versionId,
-            testPath = testPath
-        )
+        val request = when {
+            testPath != "" -> manifestApi.fetchFileListFromManifestPreviewMode(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                testPath = testPath
+            )
+            else -> manifestApi.fetchFileListFromManifest(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+            )
+        }
         val response = requestExecutor.executeRequest(request)
         val manifestEntity = response.body() as ManifestEntity
         val manifestHeader = ManifestHeader(response.headers()["signature"])
@@ -104,13 +112,21 @@ internal class ApiClient @VisibleForTesting constructor(
 
     @Throws(MiniAppSdkException::class)
     suspend fun fetchMiniAppManifest(miniAppId: String, versionId: String, languageCode: String): MetadataEntity {
-        val request = metadataApi.fetchMetadata(
-            hostId = hostId,
-            miniAppId = miniAppId,
-            versionId = versionId,
-            testPath = testPath,
-            lang = languageCode
-        )
+        val request = when {
+            testPath != "" -> metadataApi.fetchMetadataPreviewMode(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                testPath = testPath,
+                lang = languageCode
+            )
+            else -> metadataApi.fetchMetadata(
+                hostId = hostId,
+                miniAppId = miniAppId,
+                versionId = versionId,
+                lang = languageCode
+            )
+        }
         return requestExecutor.executeRequest(request).body() as MetadataEntity
     }
 
@@ -194,6 +210,7 @@ internal class RetrofitRequestExecutor(
             )
             404 -> throw MiniAppNotFoundException(response.message())
             400 -> throw MiniAppHostException(response.message())
+            429 -> throw MiniAppTooManyRequestsError(response.message())
             else -> throw MiniAppSdkException(
                 convertStandardHttpErrorToMsg(
                     response, errorData, createErrorConverter(retrofit)

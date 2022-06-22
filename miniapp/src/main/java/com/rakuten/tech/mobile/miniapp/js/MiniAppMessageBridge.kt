@@ -11,10 +11,12 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_CLOSE_ALERT
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
@@ -57,6 +59,10 @@ open class MiniAppMessageBridge {
     private var allowScreenOrientation = false
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
+    private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
+    /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
+    fun miniAppShouldClose() = miniAppCloseAlertInfo
+
     internal fun init(
         activity: Activity,
         webViewListener: WebViewListener,
@@ -90,6 +96,10 @@ open class MiniAppMessageBridge {
         iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId)
 
         miniAppViewInitialized = true
+    }
+
+    internal fun onJsInjectionDone() {
+        miniAppSecureStorageDispatcher.onLoad()
     }
 
     @VisibleForTesting
@@ -243,6 +253,7 @@ open class MiniAppMessageBridge {
             ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
                 callbackObj.id
             )
+            ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
             ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized)
@@ -451,6 +462,16 @@ open class MiniAppMessageBridge {
         if (this::screenBridgeDispatcher.isInitialized)
             screenBridgeDispatcher.allowScreenOrientation = allowScreenOrientation
     }
+
+    @SuppressWarnings("SwallowedException")
+    @VisibleForTesting
+    internal fun onMiniAppShouldClose(callbackId: String, jsonStr: String) = try {
+        val callbackObj = Gson().fromJson(jsonStr, CloseAlertInfoCallbackObj::class.java)
+        val alertInfo = callbackObj.param.closeAlertInfo
+        this.miniAppCloseAlertInfo = alertInfo
+    } catch (e: Exception) {
+        bridgeExecutor.postError(callbackId, ERR_CLOSE_ALERT)
+    }
 }
 
 internal object ErrorBridgeMessage {
@@ -470,4 +491,5 @@ internal object ErrorBridgeMessage {
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
+    const val ERR_CLOSE_ALERT = "There is an error occurred when setting close alert info."
 }

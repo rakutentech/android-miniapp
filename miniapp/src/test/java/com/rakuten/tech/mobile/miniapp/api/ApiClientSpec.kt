@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.api
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.sdkutils.AppInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
@@ -61,7 +60,7 @@ open class ApiClientSpec {
             Response.success(ManifestEntity(fileList, TEST_PUBLIC_KEY_ID))
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns response
@@ -86,7 +85,7 @@ open class ApiClientSpec {
 
         When calling
                 mockManifestApi
-                    .fetchFileListFromManifest(any(), any(), any(), any()) itReturns mockCall
+                    .fetchFileListFromManifest(any(), any(), any()) itReturns mockCall
         When calling
                 mockRequestExecutor
                     .executeRequest(mockCall) itReturns response
@@ -175,7 +174,7 @@ open class ApiClientSpec {
         val response: Response<MetadataEntity> = Response.success(metadataEntity)
 
         When calling mockMetadataApi.fetchMetadata(TEST_HA_ID_PROJECT, TEST_MA_ID,
-            TEST_MA_VERSION_ID, "", TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
+            TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(metadataApi = mockMetadataApi)
@@ -218,7 +217,6 @@ open class ApiClientSpec {
 
     @Test
     fun `should create ApiClient without error`() {
-        AppInfo.instance = mock()
         ApiClient(
             baseUrl = TEST_URL_HTTPS_2,
             rasProjectId = TEST_HA_ID_PROJECT,

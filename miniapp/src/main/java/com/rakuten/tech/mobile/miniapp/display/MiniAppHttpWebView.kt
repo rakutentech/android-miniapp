@@ -26,7 +26,8 @@ internal class MiniAppHttpWebView(
         context,
         miniAppInfo,
         miniAppCustomPermissionCache,
-        miniAppFileChooser
+        miniAppFileChooser,
+        miniAppMessageBridge
     ),
     queryParams: String,
     ratDispatcher: MessageBridgeRatDispatcher,
