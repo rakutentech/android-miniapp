@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteException
 import androidx.annotation.NonNull
 import androidx.sqlite.db.SupportSQLiteDatabase
+import net.sqlcipher.database.SQLiteFullException
 import java.io.IOException
 import java.sql.SQLException
+import java.util.stream.Collectors
 
 private const val DB_HEADER_SIZE = 100
 private const val PAGE_SIZE_MULTIPLIER = 3
@@ -43,27 +44,94 @@ internal class MiniAppSecureDatabase(
 
     private var miniAppDatabaseStatus = MiniAppDatabaseStatus.DEFAULT
 
-    init {
-        miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
+    private fun getDatabasePageSize(): Long = database.pageSize
+
+    @Throws(IllegalStateException::class)
+    private fun finishAnyPendingDBTransaction() {
+        try {
+            if (database.inTransaction()) {
+                database.endTransaction()
+            }
+        } catch (e: IllegalStateException) {
+            throw e
+        }
     }
 
-    private fun getDatabasePageSize(): Long = database.pageSize
+    @Throws(IllegalStateException::class)
+    private fun finalize() {
+        try {
+            if (database.inTransaction()) {
+                database.endTransaction()
+            }
+            if (miniAppDatabaseStatus != MiniAppDatabaseStatus.FAILED) {
+                miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            }
+        } catch (e: IllegalStateException) {
+            // It'll always be called from finally block so ignoring.
+        }
+    }
+
+    @SuppressWarnings("ExpressionBodySyntax")
+    private fun getRealMaxSize(): Long {
+        return getDatabaseMaxsize() - (getDatabasePageSize() * PAGE_SIZE_MULTIPLIER) - DB_HEADER_SIZE
+    }
 
     @SuppressWarnings("ExpressionBodySyntax")
     private fun isDatabaseBusy(): Boolean {
         return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
     }
 
+    @Throws(SQLException::class)
+    private fun insert(contentValues: ContentValues): Boolean {
+        var result: Long
+        var isInserted = false
+        try {
+            result = database.insert(
+                TABLE_NAME,
+                SQLiteDatabase.CONFLICT_REPLACE,
+                contentValues
+            )
+            if (result > -1) {
+                isInserted = true
+            }
+        } catch (e: SQLException) {
+            throw e
+        }
+        return isInserted
+    }
+
+    @Throws(SQLException::class)
+    private fun delete(item: String): Boolean {
+        var totalDeleted: Int
+        var isDeleted = false
+        try {
+            totalDeleted = database.delete(
+                TABLE_NAME,
+                "$FIRST_COLUMN_NAME='$item'",
+                null
+            )
+            if (totalDeleted > 0) {
+                isDeleted = true
+            }
+        } catch (e: SQLException) {
+            throw e
+        }
+        return isDeleted
+    }
+
+    @Throws(SQLException::class)
     override fun onCreateDatabase(db: SupportSQLiteDatabase) {
         try {
             db.execSQL(CREATE_TABLE_QUERY)
             db.maximumSize = maxDatabaseSize
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
         } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         }
     }
 
+    @Throws(SQLException::class)
     override fun onUpgradeDatabase(db: SupportSQLiteDatabase) {
         try {
             db.execSQL(DROP_TABLE_QUERY)
@@ -75,19 +143,24 @@ internal class MiniAppSecureDatabase(
     }
 
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {
-        context.deleteDatabase(dbName)
+        miniAppDatabaseStatus = MiniAppDatabaseStatus.CORRUPTED
+        deleteWholeDatabase(dbName)
     }
 
     override fun onDatabaseReady(database: SupportSQLiteDatabase) {
         this.database = database
-        MiniAppDatabaseStatus.OPENED
+        miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
     }
 
     override fun isDatabaseOpen(): Boolean = database.isOpen
 
     @SuppressWarnings("ExpressionBodySyntax")
     override fun isDatabaseAvailable(dbName: String): Boolean {
-        return context.databaseList().contains(dbName)
+        val isAvailable = context.databaseList().contains(dbName)
+        if (!isAvailable) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+        }
+        return isAvailable
     }
 
     override fun getDatabaseVersion(): Int = dbVersion
@@ -106,30 +179,28 @@ internal class MiniAppSecureDatabase(
     }
 
     override fun getDatabaseAvailableSize(): Long {
-        val actualMaxSize = (
-                getDatabaseMaxsize() - (
-                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER) - DB_HEADER_SIZE
-                )
-        return actualMaxSize - getDatabaseUsedSize()
+        return getDatabaseMaxsize() - getDatabaseUsedSize()
     }
 
     override fun isDatabaseFull(): Boolean {
-        val actualMaxSize = (
-                getDatabaseMaxsize() - (
-                        getDatabasePageSize() * PAGE_SIZE_MULTIPLIER) - DB_HEADER_SIZE
-                )
-        return getDatabaseUsedSize() >= actualMaxSize
+        return getDatabaseUsedSize() >= getDatabaseMaxsize()
     }
 
     @Throws(IOException::class)
     override fun closeDatabase() {
         try {
             if (database.isOpen) {
+                if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                    miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+                }
+                finishAnyPendingDBTransaction()
                 database.close()
             }
-        } catch (e: IOException) {
+        } catch (e: IllegalStateException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
-            throw e
+        } catch (e: IOException) {
+            finishAnyPendingDBTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
         } finally {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.CLOSED
         }
@@ -139,53 +210,83 @@ internal class MiniAppSecureDatabase(
         context.deleteDatabase(dbName)
     }
 
-    @Throws(SQLException::class, SQLiteException::class)
+    @Throws(
+        SQLException::class,
+        RuntimeException::class,
+        SQLiteFullException::class,
+        IllegalStateException::class,
+    )
     override fun insert(items: Map<String, String>): Boolean {
-        var result: Long
         var isInserted = false
         try {
             if (isDatabaseBusy()) {
                 throw SQLException(DATABASE_BUSY_ERROR)
             }
             if (isDatabaseFull()) {
-                throw SQLException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
+                throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
             }
-            database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             val contentValues = ContentValues()
-            items.entries.forEach {
-                contentValues.put(FIRST_COLUMN_NAME, it.key)
-                contentValues.put(SECOND_COLUMN_NAME, it.value)
-                result = database.insert(TABLE_NAME, SQLiteDatabase.CONFLICT_REPLACE, contentValues)
-                if (result > -1) {
-                    isInserted = true
+            if (items.size > 100) {
+                val listOfItems = items.entries.stream().collect(Collectors.toList())
+                val chunked = listOfItems.chunked(100)
+                chunked.forEach { outer ->
+                    database.beginTransaction()
+                    outer.forEach { inner ->
+                        if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
+                            contentValues.put(FIRST_COLUMN_NAME, inner.key)
+                            contentValues.put(SECOND_COLUMN_NAME, inner.value)
+                            isInserted = insert(contentValues)
+                        }
+                    }
+                    database.setTransactionSuccessful()
+                    finishAnyPendingDBTransaction()
                 }
             }
-            database.setTransactionSuccessful()
-            database.endTransaction()
+            else {
+                database.beginTransaction()
+                items.entries.forEach {
+                    contentValues.put(FIRST_COLUMN_NAME, it.key)
+                    contentValues.put(SECOND_COLUMN_NAME, it.value)
+                    isInserted = insert(contentValues)
+                }
+                database.setTransactionSuccessful()
+                finishAnyPendingDBTransaction()
+            }
+        } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } catch (e: IllegalStateException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
-            throw e
-        } catch (e: SQLiteException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            if (e.message?.lowercase()?.contains("full") == true) {
+                miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            }
             throw e
         } finally {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            finishAnyPendingDBTransaction()
         }
         return isInserted
     }
 
     @SuppressLint("Range")
     @SuppressWarnings("TooGenericExceptionCaught")
-    @Throws(SQLException::class, RuntimeException::class)
+    @Throws(
+        SQLException::class,
+        RuntimeException::class,
+        SQLiteFullException::class,
+        IllegalStateException::class,
+    )
     override fun getItem(key: String): String {
         var result = "null"
         try {
-            if (isDatabaseBusy()) {
-                throw SQLException(DATABASE_BUSY_ERROR)
-            }
             if (!isDatabaseAvailable(dbName)) {
                 throw SQLException(DATABASE_UNAVAILABLE_ERROR)
+            }
+            if (isDatabaseBusy()) {
+                throw SQLException(DATABASE_BUSY_ERROR)
             }
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
@@ -197,29 +298,37 @@ internal class MiniAppSecureDatabase(
                 result = cursor.getString(cursor.getColumnIndex(SECOND_COLUMN_NAME))
                 cursor.moveToNext()
             }
-            database.setTransactionSuccessful()
-            database.endTransaction()
             cursor.close()
+            database.setTransactionSuccessful()
+            finishAnyPendingDBTransaction()
+        } catch (e: IllegalStateException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         } catch (e: RuntimeException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } finally {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            finalize()
         }
         return result
     }
 
     @SuppressLint("Range")
     @SuppressWarnings("TooGenericExceptionCaught")
-    @Throws(SQLException::class)
+    @Throws(
+        SQLException::class,
+        RuntimeException::class,
+        SQLiteFullException::class,
+        IllegalStateException::class,
+    )
     override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>()
         try {
-            if (isDatabaseBusy()) {
-                throw SQLException(DATABASE_BUSY_ERROR)
-            }
             if (!isDatabaseAvailable(dbName)) {
                 throw SQLException(DATABASE_UNAVAILABLE_ERROR)
+            }
+            if (isDatabaseBusy()) {
+                throw SQLException(DATABASE_BUSY_ERROR)
             }
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
@@ -232,67 +341,107 @@ internal class MiniAppSecureDatabase(
                 result[first] = second
                 cursor.moveToNext()
             }
-            database.setTransactionSuccessful()
-            database.endTransaction()
             cursor.close()
+            database.setTransactionSuccessful()
+            finishAnyPendingDBTransaction()
+        } catch (e: IllegalStateException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         } catch (e: RuntimeException) {
+            finishAnyPendingDBTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } finally {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            finalize()
         }
         return result
     }
 
-    @Throws(SQLException::class)
+    @Throws(
+        SQLException::class,
+        RuntimeException::class,
+        SQLiteFullException::class,
+        IllegalStateException::class,
+    )
     @SuppressWarnings("TooGenericExceptionCaught")
-    override fun deleteItems(keys: Set<String>): Boolean {
-        var totalDeleted: Int
+    override fun deleteItems(items: Set<String>): Boolean {
         var isDeleted = false
         try {
-            if (isDatabaseBusy()) {
-                throw SQLException(DATABASE_BUSY_ERROR)
-            }
             if (!isDatabaseAvailable(dbName)) {
                 throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
-            database.beginTransaction()
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
-            keys.forEach {
-                totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME='$it'", null)
-                if (totalDeleted > 0) {
-                    isDeleted = true
-                }
+            if (isDatabaseBusy()) {
+                throw SQLException(DATABASE_BUSY_ERROR)
             }
-            database.setTransactionSuccessful()
-            database.endTransaction()
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
+            if (items.size > 100) {
+                val listOfItems = items.stream().collect(Collectors.toList())
+                val chunked = listOfItems.chunked(100)
+                chunked.forEach { outer ->
+                    database.beginTransaction()
+                    outer.forEach { item ->
+                        isDeleted = delete(item)
+                    }
+                    database.setTransactionSuccessful()
+                    finishAnyPendingDBTransaction()
+                }
+            } else {
+                database.beginTransaction()
+                items.forEach {
+                    isDeleted = delete(it)
+                }
+                database.setTransactionSuccessful()
+                finishAnyPendingDBTransaction()
+            }
+        } catch (e: IllegalStateException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
         } catch (e: RuntimeException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } finally {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+            finalize()
         }
         return isDeleted
     }
 
-    @Throws(IOException::class, SQLException::class)
+    @Throws(
+        IOException::class,
+        SQLException::class,
+        RuntimeException::class,
+        IllegalStateException::class
+    )
     override fun deleteAllRecords() {
         try {
             if (!isDatabaseAvailable(dbName)) {
                 throw SQLException(DATABASE_UNAVAILABLE_ERROR)
             }
+            if (isDatabaseBusy()) {
+                throw SQLException(DATABASE_BUSY_ERROR)
+            }
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
             database.execSQL(DROP_TABLE_QUERY)
             database.setTransactionSuccessful()
-            database.endTransaction()
+            finishAnyPendingDBTransaction()
             closeDatabase()
         } catch (e: IOException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } catch (e: IllegalStateException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
+        } finally {
+            finalize()
+            if (miniAppDatabaseStatus != MiniAppDatabaseStatus.FAILED) {
+                miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+            }
         }
     }
 }

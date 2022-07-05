@@ -13,11 +13,12 @@ import java.sql.SQLException
 internal enum class MiniAppDatabaseStatus {
     DEFAULT,
     INITIATED,
-    OPENED,
-    CLOSED,
     READY,
+    CLOSED,
+    UNAVAILABLE,
     BUSY,
-    FAILED
+    FAILED,
+    CORRUPTED
 }
 
 /**
@@ -79,8 +80,10 @@ internal abstract class MiniAppSecureDatabaseImpl(
         onDatabaseCorrupted(db)
     }
 
+    @Throws(SQLException::class)
     protected abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
 
+    @Throws(SQLException::class)
     protected abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
 
     protected abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)

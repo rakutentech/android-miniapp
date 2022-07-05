@@ -10,7 +10,7 @@ internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
-    private val storageMaxSizeKB: Int
+    private var storageMaxSizeKB: Int
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
@@ -46,12 +46,16 @@ internal class MiniAppSecureStorageDispatcher(
         )
     }
 
+    fun updateMiniAppStorageMaxLimit(maxStorage: Int) {
+        storageMaxSizeKB = maxStorage
+    }
+
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
             this::activity.isInitialized &&
-            this::miniAppId.isInitialized &&
-            this::miniAppSecureStorage.isInitialized
+            this::miniAppId.isInitialized
+            //this::miniAppSecureStorage.isInitialized
         ) {
             callback.invoke()
         }
@@ -182,6 +186,10 @@ internal class MiniAppSecureStorageDispatcher(
         clearAllSecureDatabases()
     }
 
+    fun cleanUp() = whenReady {
+        miniAppSecureStorage.closeDatabase()
+    }
+
     /**
      * It will delete all the records as well as the whole DB related to the given mini app id
      * Will be invoked with MiniApp.clearSecureStorage(miniAppId: String).
@@ -204,6 +212,7 @@ internal class MiniAppSecureStorageDispatcher(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     internal fun clearAllSecureDatabases() {
         try {
+            miniAppSecureStorage.closeDatabase()
             activity.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {
                     activity.deleteDatabase(it)

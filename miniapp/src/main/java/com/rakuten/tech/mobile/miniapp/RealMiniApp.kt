@@ -194,6 +194,8 @@ internal class RealMiniApp(
         if (setConfigAsDefault)
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
+
+        secureStorageDispatcher.updateMiniAppStorageMaxLimit(newConfig.storageMaxSizeKB)
     }
 
     @VisibleForTesting

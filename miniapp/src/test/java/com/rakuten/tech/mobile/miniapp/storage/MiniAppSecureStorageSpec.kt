@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_KB
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
@@ -13,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
+import net.sqlcipher.database.SQLiteFullException
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Ignore
@@ -85,11 +85,11 @@ class MiniAppSecureStorageSpec {
     }
 
     @Test
-    fun `insert onFailed should be called if sqlite exception occurs`() = runBlockingTest {
+    fun `insert onFailed should be called if IllegalStateException exception occurs`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itThrows SQLiteException("Failed")
+        When calling mass.miniAppSecureDatabase.insert(any()) itThrows IllegalStateException("Failed")
 
         mass.insertItems(mock(), mock(), onFailed)
 
@@ -115,7 +115,7 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itThrows SQLException(
+        When calling mass.miniAppSecureDatabase.insert(any()) itThrows SQLiteFullException(
             DATABASE_SPACE_LIMIT_REACHED_ERROR
         )
 
@@ -209,6 +209,18 @@ class MiniAppSecureStorageSpec {
         }
 
     @Test
+    fun `get item onFailed should be called if IllegalStateException occurs`() = runBlockingTest {
+
+        val key = "key"
+
+        When calling mass.miniAppSecureDatabase.getItem(key) itThrows IllegalStateException("Failed")
+
+        mass.getItem(key, mock(), onFailed)
+
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
+    }
+
+    @Test
     fun `get item onSuccess should be called if item fetched successfully`() = runBlockingTest {
         val onSuccess: (String) -> Unit = mock()
         val key = "key"
@@ -272,6 +284,16 @@ class MiniAppSecureStorageSpec {
         }
 
     @Test
+    fun `get all items onFailed should be called if IllegalStateException occurs`() = runBlockingTest {
+
+        When calling mass.miniAppSecureDatabase.getAllItems() itThrows IllegalStateException("Failed")
+
+        mass.getAllItems(mock(), onFailed)
+
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
+    }
+
+    @Test
     fun `get all items onSuccess should be called if item fetched successfully`() =
         runBlockingTest {
             val onSuccess: (Map<String, String>) -> Unit = mock()
@@ -307,6 +329,16 @@ class MiniAppSecureStorageSpec {
     fun `delete items onFailed should be called if runtime exception occurs`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.deleteItems(any()) itThrows RuntimeException("Failed")
+
+        mass.deleteItems(mock(), mock(), onFailed)
+
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
+    }
+
+    @Test
+    fun `delete items onFailed should be called if IllegalStateException occurs`() = runBlockingTest {
+
+        When calling mass.miniAppSecureDatabase.deleteItems(any()) itThrows IllegalStateException("Failed")
 
         mass.deleteItems(mock(), mock(), onFailed)
 
@@ -401,6 +433,26 @@ class MiniAppSecureStorageSpec {
     fun `delete onFailed should be called if database io exception occurred`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows IOException("Failed")
+
+        mass.delete(mock(), onFailed)
+
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
+    }
+
+    @Test
+    fun `delete onFailed should be called if database runtime exception occurred`() = runBlockingTest {
+
+        When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows RuntimeException("Failed")
+
+        mass.delete(mock(), onFailed)
+
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
+    }
+
+    @Test
+    fun `delete onFailed should be called if IllegalStateException occurs`() = runBlockingTest {
+
+        When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows IllegalStateException("Failed")
 
         mass.delete(mock(), onFailed)
 

@@ -1,18 +1,17 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_BUSY_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_UNAVAILABLE_ERROR
-import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_SPACE_LIMIT_REACHED_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.sqlcipher.database.SQLiteFullException
 import java.io.IOException
 import java.sql.SQLException
 
@@ -75,6 +74,10 @@ internal class MiniAppSecureStorage(
         onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
     }
 
+    fun closeDatabase() {
+        miniAppSecureDatabase.closeDatabase()
+    }
+
     @Suppress("ComplexMethod", "SwallowedException")
     fun insertItems(
         items: Map<String, String>,
@@ -92,12 +95,13 @@ internal class MiniAppSecureStorage(
                 } else {
                     onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
-            } catch (e: SQLiteException) {
+            } catch (e: IllegalStateException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: SQLiteFullException) {
+                onFailed(MiniAppSecureStorageError.secureStorageFullError)
             } catch (e: SQLException) {
                 when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
-                    DATABASE_SPACE_LIMIT_REACHED_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageFullError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             }
@@ -115,14 +119,16 @@ internal class MiniAppSecureStorage(
             try {
                 val value = miniAppSecureDatabase.getItem(key)
                 onSuccess(value)
+            } catch (e: IllegalStateException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
                 when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -143,14 +149,16 @@ internal class MiniAppSecureStorage(
                 } else {
                     onSuccess(emptyMap())
                 }
+            } catch (e: IllegalStateException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
                 when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -171,14 +179,16 @@ internal class MiniAppSecureStorage(
                 } else {
                     onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
+            } catch (e: IllegalStateException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
                 when (e.message) {
                     DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                     DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
                     else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
@@ -195,13 +205,17 @@ internal class MiniAppSecureStorage(
             try {
                 clearDatabase(databaseName)
                 onSuccess()
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            }  catch (e: IllegalStateException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: IOException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
-                if (e.message.equals(DATABASE_UNAVAILABLE_ERROR)) {
-                    onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
-                } else {
-                    onFailed(MiniAppSecureStorageError.secureStorageIOError)
+                when (e.message) {
+                    DATABASE_BUSY_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageBusyError)
+                    DATABASE_UNAVAILABLE_ERROR -> onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
+                    else -> onFailed(MiniAppSecureStorageError.secureStorageIOError)
                 }
             }
         }
