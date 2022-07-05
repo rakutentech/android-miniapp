@@ -132,8 +132,7 @@ internal class MiniAppSecureDatabase(
             db.maximumSize = maxDatabaseSize
             miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
         } catch (e: SQLException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
-            throw e
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
         }
     }
 
@@ -143,8 +142,7 @@ internal class MiniAppSecureDatabase(
             db.execSQL(DROP_TABLE_QUERY)
             onCreate(db)
         } catch (e: SQLException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
-            throw e
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
         }
     }
 
