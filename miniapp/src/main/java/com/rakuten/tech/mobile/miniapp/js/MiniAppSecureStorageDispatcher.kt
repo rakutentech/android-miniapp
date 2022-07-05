@@ -54,8 +54,8 @@ internal class MiniAppSecureStorageDispatcher(
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
             this::activity.isInitialized &&
-            this::miniAppId.isInitialized
-            //this::miniAppSecureStorage.isInitialized
+            this::miniAppId.isInitialized &&
+            this::miniAppSecureStorage.isInitialized
         ) {
             callback.invoke()
         }

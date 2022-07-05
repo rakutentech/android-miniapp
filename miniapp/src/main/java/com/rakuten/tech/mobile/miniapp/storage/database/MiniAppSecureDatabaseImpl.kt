@@ -18,6 +18,7 @@ internal enum class MiniAppDatabaseStatus {
     UNAVAILABLE,
     BUSY,
     FAILED,
+    FULL,
     CORRUPTED
 }
 

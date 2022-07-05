@@ -68,6 +68,7 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -100,6 +101,7 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
