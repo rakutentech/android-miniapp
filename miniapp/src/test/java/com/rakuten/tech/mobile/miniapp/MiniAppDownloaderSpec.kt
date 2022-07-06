@@ -385,16 +385,16 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
                 listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
             )
         )
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns null
         When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
         When calling apiClient.fetchMiniAppManifest(
-            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT
+            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE
         ) itReturns metadataEntity
 
-        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
         assertEquals(dummyManifest, actual)
-        verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+        verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE, dummyManifest)
     }
 
     @Test
@@ -405,21 +405,21 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             )
         )
         When calling apiClient.isPreviewMode itReturns true
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns null
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns null
         When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
         When calling apiClient.fetchMiniAppManifest(
-            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT
+            TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE
         ) itReturns metadataEntity
 
-        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
-        verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, dummyManifest)
+        verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE, dummyManifest)
     }
 
     @Test
     fun `metadata manifest should not be fetched from api when cache returns manifest`() = runBlockingTest {
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID) itReturns dummyManifest
-        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns dummyManifest
+        val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
         assertEquals(dummyManifest, actual)
     }
@@ -439,19 +439,19 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
-                TEST_LANG_MANIFEST_DEFAULT
+                TEST_MA_LANGUAGE_CODE
             ) itReturns metadataEntity
 
-            downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, "", TEST_LANG_MANIFEST_DEFAULT)
+            downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, "", TEST_MA_LANGUAGE_CODE)
         }
 
     @Test(expected = MiniAppSdkException::class)
     fun `should throw exception when cannot get metadata from server`() = runBlockingTest {
         When calling apiClient.fetchMiniAppManifest(
-            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_LANG_MANIFEST_DEFAULT
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_MA_LANGUAGE_CODE
         ) doThrow MiniAppSdkException(TEST_ERROR_MSG)
 
-        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_LANG_MANIFEST_DEFAULT)
+        downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_MA_LANGUAGE_CODE)
     }
 
     @SuppressWarnings("LongMethod")
@@ -495,7 +495,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             When calling apiClient.fetchMiniAppManifest(
                 TEST_ID_MINIAPP,
                 TEST_ID_MINIAPP_VERSION,
-                TEST_LANG_MANIFEST_DEFAULT
+                TEST_MA_LANGUAGE_CODE
             ) itReturns metadataEntity
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity, "")

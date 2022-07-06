@@ -2,11 +2,12 @@ package com.rakuten.tech.mobile.miniapp.api
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TEST_MA_LANGUAGE_CODE
 import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
+import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
@@ -33,7 +34,7 @@ internal class ManifestApiCacheSpec {
 
     @Test
     fun `readManifest should return null when it hasn't stored any data yet`() {
-        val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+        val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
         val expected = null
         actual shouldBeEqualTo expected
     }
@@ -45,8 +46,8 @@ internal class ManifestApiCacheSpec {
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         doReturn(cachedManifest).whenever(manifestCache)
-            .readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-        val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            .readManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
+        val actual = manifestCache.readManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
         actual shouldBeEqualTo cachedManifest
     }
 
@@ -57,13 +58,13 @@ internal class ManifestApiCacheSpec {
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         Mockito.`when`(mockEditor.clear()).thenReturn(mockEditor)
-        manifestCache.storeManifest(TEST_MA_ID, TEST_MA_VERSION_ID, newManifest)
+        manifestCache.storeManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE,  newManifest)
         verify(mockEditor).putString(anyString(), anyString())
     }
 
     @Test
     fun `primaryKey should match the correct rule`() {
-        val actual = manifestCache.primaryKey(TEST_MA_ID, TEST_MA_VERSION_ID)
-        assertEquals("$TEST_MA_ID-$TEST_MA_VERSION_ID", actual)
+        val actual = manifestCache.primaryKey(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
+        assertEquals("$TEST_MA_ID-$TEST_MA_VERSION_ID-$TEST_MA_LANGUAGE_CODE", actual)
     }
 }

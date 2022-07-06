@@ -174,14 +174,14 @@ open class ApiClientSpec {
         val response: Response<MetadataEntity> = Response.success(metadataEntity)
 
         When calling mockMetadataApi.fetchMetadata(TEST_HA_ID_PROJECT, TEST_MA_ID,
-            TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT) itReturns mockCall
+            TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(metadataApi = mockMetadataApi)
         apiClient.fetchMiniAppManifest(
             TEST_MA_ID,
             TEST_MA_VERSION_ID,
-            TEST_LANG_MANIFEST_DEFAULT
+            TEST_MA_LANGUAGE_CODE
         ) shouldBeEqualTo metadataEntity
     }
 
