@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
@@ -97,6 +96,7 @@ internal class MiniAppSecureStorage(
     }
 
     @Suppress(
+        "ComplexMethod",
         "SwallowedException",
         "TooGenericExceptionCaught"
     )

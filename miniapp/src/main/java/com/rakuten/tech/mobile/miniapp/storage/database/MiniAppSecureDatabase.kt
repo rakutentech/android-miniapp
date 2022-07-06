@@ -126,6 +126,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @Throws(SQLException::class)
+    @Suppress("SwallowedException")
     override fun onCreateDatabase(db: SupportSQLiteDatabase) {
         try {
             db.execSQL(CREATE_TABLE_QUERY)
@@ -137,6 +138,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @Throws(SQLException::class)
+    @Suppress("SwallowedException")
     override fun onUpgradeDatabase(db: SupportSQLiteDatabase) {
         try {
             db.execSQL(DROP_TABLE_QUERY)
