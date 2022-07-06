@@ -14,7 +14,8 @@ internal class MiniAppSecureStorageDispatcher(
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
-    private lateinit var activity: Activity
+    @VisibleForTesting
+    internal lateinit var activity: Activity
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
 
     @VisibleForTesting

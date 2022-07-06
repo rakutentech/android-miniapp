@@ -14,8 +14,8 @@ import java.io.IOException
 import java.sql.SQLException
 
 @Suppress(
-    "TooManyFunctions",
-    "LargeClass"
+    "LargeClass",
+    "TooManyFunctions"
 )
 internal class MiniAppSecureStorage(
     @NonNull private val context: Context,
@@ -46,9 +46,19 @@ internal class MiniAppSecureStorage(
         databaseName = DB_NAME_PREFIX + miniAppId
     }
 
-    @SuppressWarnings("ExpressionBodySyntax")
+    @SuppressWarnings(
+        "ExpressionBodySyntax",
+        "RethrowCaughtException",
+        "TooGenericExceptionCaught"
+    )
     private fun createOrOpenAndUnlockDatabase(): Boolean {
-        return miniAppSecureDatabase.createAndOpenDatabase()
+        var status: Boolean
+        try {
+            status = miniAppSecureDatabase.createAndOpenDatabase()
+        } catch (e: RuntimeException) {
+            throw e
+        }
+        return status
     }
 
     private fun isPreCheckPasses(onFailed: (MiniAppSecureStorageError) -> Unit): Boolean {
@@ -79,19 +89,19 @@ internal class MiniAppSecureStorage(
                 if (createOrOpenAndUnlockDatabase()) {
                     onSuccess()
                 }
-            } catch (e: SQLException) {
+            } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
 
-    fun getDatabaseUsedSize(
+    internal fun getDatabaseUsedSize(
         onSuccess: (Long) -> Unit
     ) {
         onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
     }
 
-    fun closeDatabase() {
+    internal fun closeDatabase() {
         miniAppSecureDatabase.closeDatabase()
     }
 
@@ -100,7 +110,7 @@ internal class MiniAppSecureStorage(
         "SwallowedException",
         "TooGenericExceptionCaught"
     )
-    fun insertItems(
+    internal fun insertItems(
         items: Map<String, String>,
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -138,7 +148,7 @@ internal class MiniAppSecureStorage(
         "SwallowedException",
         "TooGenericExceptionCaught"
     )
-    fun getItem(
+    internal fun getItem(
         key: String,
         onSuccess: (String) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -151,9 +161,9 @@ internal class MiniAppSecureStorage(
                 }
             } catch (e: IllegalStateException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
@@ -166,7 +176,7 @@ internal class MiniAppSecureStorage(
         "SwallowedException",
         "TooGenericExceptionCaught"
     )
-    fun getAllItems(
+    internal fun getAllItems(
         onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
@@ -182,9 +192,9 @@ internal class MiniAppSecureStorage(
                 }
             } catch (e: IllegalStateException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
@@ -197,7 +207,7 @@ internal class MiniAppSecureStorage(
         "SwallowedException",
         "TooGenericExceptionCaught"
     )
-    fun deleteItems(
+    internal fun deleteItems(
         keySet: Set<String>,
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -213,9 +223,9 @@ internal class MiniAppSecureStorage(
                 }
             } catch (e: IllegalStateException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
-            } catch (e: RuntimeException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
@@ -228,7 +238,7 @@ internal class MiniAppSecureStorage(
         "SwallowedException",
         "TooGenericExceptionCaught"
     )
-    fun delete(
+    internal fun delete(
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
@@ -238,55 +248,28 @@ internal class MiniAppSecureStorage(
                     clearDatabase(databaseName)
                     onSuccess()
                 }
-            } catch (e: RuntimeException) {
+            } catch (e: IOException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: IllegalStateException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
-            } catch (e: IOException) {
-                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             } catch (e: SQLException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
+            } catch (e: RuntimeException) {
+                onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
         }
     }
 
-    /**
-     * In case if host app want to clear the database for a specific MiniApp
-     * then It will delete all the records as well as the whole DB
-     * related to the given mini app id.
-     *
-     * @param miniAppId will be used to find the file to be deleted.
-     */
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    fun clearSecureDatabase(miniAppId: String) {
-        try {
-            val dbName = DB_NAME_PREFIX + miniAppId
-            context.deleteDatabase(dbName)
-        } catch (e: Exception) {
-            // No callback needed. So Ignoring.
-        }
-    }
-
-    /**
-     * In case if host app want to clear all the database for every MiniApp
-     * then It will delete all the records as well as the whole DB
-     * for all the MiniApps who created a Database.
-     */
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    fun clearAllSecureDatabases() {
-        try {
-            context.databaseList().forEach {
-                if (it.startsWith(DB_NAME_PREFIX)) {
-                    context.deleteDatabase(it)
-                }
-            }
-        } catch (e: Exception) {
-            // No callback needed. So Ignoring.
-        }
-    }
-
+    @Suppress(
+        "RethrowCaughtException",
+        "TooGenericExceptionCaught"
+    )
     private fun clearDatabase(dbName: String) {
-        miniAppSecureDatabase.deleteAllRecords()
-        miniAppSecureDatabase.deleteWholeDatabase(dbName)
+        try {
+            miniAppSecureDatabase.deleteAllRecords()
+            miniAppSecureDatabase.deleteWholeDatabase(dbName)
+        } catch (e: RuntimeException) {
+            throw e
+        }
     }
 }

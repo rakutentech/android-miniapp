@@ -10,7 +10,6 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -56,6 +55,7 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher = MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB)
             miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
+            miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         }
     }
 
@@ -190,24 +190,23 @@ class MiniAppSecureStorageDispatcherSpec {
     }
 
     @Test
-    @Ignore
     fun `clearSecureStorage should be called with the same mini app id`() {
-        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
-        miniAppSecureStorageDispatcher.clearSecureStorage(TEST_MA_ID)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).clearSecureDatabase(
-            TEST_MA_ID
+        val dbName = "database"
+        miniAppSecureStorageDispatcher.activity = mock()
+        miniAppSecureStorageDispatcher.clearSecureStorage(dbName)
+        verify(miniAppSecureStorageDispatcher.activity, times(1)).deleteDatabase(
+            DB_NAME_PREFIX + dbName
         )
     }
 
     @Test
-    @Ignore
     fun `clearSecureStorage should be called without the mini app id`() {
-        val msssd: MiniAppSecureStorageDispatcher = mock()
-        msssd.clearSecureStorage()
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.clearSecureStorage()
         verify(
-            msssd,
+            miniAppSecureStorageDispatcher.miniAppSecureStorage,
             times(1)
-        ).clearAllSecureDatabases()
+        ).closeDatabase()
     }
 
     /** end region */

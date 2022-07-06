@@ -148,9 +148,18 @@ internal class MiniAppSecureDatabase(
         }
     }
 
+    @Throws(RuntimeException::class)
+    @Suppress(
+        "SwallowedException",
+        "TooGenericExceptionCaught"
+    )
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {
-        miniAppDatabaseStatus = MiniAppDatabaseStatus.CORRUPTED
-        deleteWholeDatabase(dbName)
+        try {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.CORRUPTED
+            deleteWholeDatabase(dbName)
+        } catch (e: RuntimeException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+        }
     }
 
     override fun onDatabaseReady(database: SupportSQLiteDatabase) {
@@ -215,8 +224,16 @@ internal class MiniAppSecureDatabase(
         }
     }
 
+    @Suppress(
+        "RethrowCaughtException",
+        "TooGenericExceptionCaught"
+    )
     override fun deleteWholeDatabase(dbName: String) {
-        context.deleteDatabase(dbName)
+        try {
+            context.deleteDatabase(dbName)
+        } catch (e: RuntimeException) {
+            throw e
+        }
     }
 
     @Throws(
@@ -439,13 +456,13 @@ internal class MiniAppSecureDatabase(
         } catch (e: IOException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
-        } catch (e: RuntimeException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
-            throw e
         } catch (e: IllegalStateException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } catch (e: SQLException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } catch (e: RuntimeException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } finally {
