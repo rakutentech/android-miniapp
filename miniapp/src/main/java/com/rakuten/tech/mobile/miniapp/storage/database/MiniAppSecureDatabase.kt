@@ -87,42 +87,34 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class)
     @Suppress("RethrowCaughtException")
-    private fun insert(contentValues: ContentValues): Boolean {
+    private fun insert(contentValues: ContentValues): Long {
         var result: Long
-        var isInserted = false
         try {
             result = database.insert(
                 TABLE_NAME,
                 SQLiteDatabase.CONFLICT_REPLACE,
                 contentValues
             )
-            if (result > -1) {
-                isInserted = true
-            }
         } catch (e: SQLException) {
             throw e
         }
-        return isInserted
+        return result
     }
 
     @Throws(SQLException::class)
     @Suppress("RethrowCaughtException")
-    private fun delete(item: String): Boolean {
+    private fun delete(item: String): Int {
         var totalDeleted: Int
-        var isDeleted = false
         try {
             totalDeleted = database.delete(
                 TABLE_NAME,
                 "$FIRST_COLUMN_NAME='$item'",
                 null
             )
-            if (totalDeleted > 0) {
-                isDeleted = true
-            }
         } catch (e: SQLException) {
             throw e
         }
-        return isDeleted
+        return totalDeleted
     }
 
     @Throws(SQLException::class)
@@ -251,6 +243,7 @@ internal class MiniAppSecureDatabase(
         "TooGenericExceptionCaught"
     )
     override fun insert(items: Map<String, String>): Boolean {
+        var result: Long
         var isInserted = false
         try {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
@@ -260,14 +253,17 @@ internal class MiniAppSecureDatabase(
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
                     database.beginTransaction()
-                    if (isDatabaseFull()) {
-                        throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
-                    }
                     outer.forEach { inner ->
+                        if (isDatabaseFull()) {
+                            throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
+                        }
                         if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
                             contentValues.put(FIRST_COLUMN_NAME, inner.key)
                             contentValues.put(SECOND_COLUMN_NAME, inner.value)
-                            isInserted = insert(contentValues)
+                            result = insert(contentValues)
+                            if (result > -1) {
+                                isInserted = true
+                            }
                         }
                     }
                     database.setTransactionSuccessful()
@@ -278,7 +274,10 @@ internal class MiniAppSecureDatabase(
                 items.entries.forEach {
                     contentValues.put(FIRST_COLUMN_NAME, it.key)
                     contentValues.put(SECOND_COLUMN_NAME, it.value)
-                    isInserted = insert(contentValues)
+                    result = insert(contentValues)
+                    if (result > -1) {
+                        isInserted = true
+                    }
                 }
                 database.setTransactionSuccessful()
                 finishAnyPendingDBTransaction()
@@ -399,6 +398,7 @@ internal class MiniAppSecureDatabase(
         "TooGenericExceptionCaught"
     )
     override fun deleteItems(items: Set<String>): Boolean {
+        var totalDeleted: Int
         var isDeleted = false
         try {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
@@ -408,15 +408,21 @@ internal class MiniAppSecureDatabase(
                 chunked.forEach { outer ->
                     database.beginTransaction()
                     outer.forEach { item ->
-                        isDeleted = delete(item)
+                        totalDeleted = delete(item)
+                        if (totalDeleted > 0) {
+                            isDeleted = true
+                        }
                     }
                     database.setTransactionSuccessful()
                     finishAnyPendingDBTransaction()
                 }
             } else {
                 database.beginTransaction()
-                items.forEach {
-                    isDeleted = delete(it)
+                items.forEach { item ->
+                    totalDeleted = delete(item)
+                    if (totalDeleted > 0) {
+                        isDeleted = true
+                    }
                 }
                 database.setTransactionSuccessful()
                 finishAnyPendingDBTransaction()
