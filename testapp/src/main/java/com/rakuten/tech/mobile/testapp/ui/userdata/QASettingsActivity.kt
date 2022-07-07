@@ -24,7 +24,7 @@ class QASettingsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
-    private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+    private var miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
 
     companion object {
         fun start(activity: Activity) {
@@ -104,9 +104,60 @@ class QASettingsActivity : BaseActivity() {
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
             binding.edtUniqueIdError.isEnabled = isChecked
         }
+        binding.btnClearMiniAppSecureStorage.setOnClickListener{
+            if (!binding.clearStorageForMiniAppId.text.isNullOrEmpty()) {
+                clearSecureStorageForMiniApp(binding.clearStorageForMiniAppId.text.toString())
+            } else {
+                Toast.makeText(
+                    this@QASettingsActivity,
+                    "MiniApp ID cannot be empty to clear MiniApp storage",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
         binding.btnClearAllSecureStorage.setOnClickListener {
             clearAllSecureStorage()
         }
+    }
+
+    private fun clearSecureStorageForMiniApp(miniAppId: String) {
+        if (!doesMiniAppIdExist(miniAppId)) {
+            Toast.makeText(
+                this@QASettingsActivity,
+                "Could not find the MiniApp to clear the secured storage!",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            val dialogClickListener =
+                DialogInterface.OnClickListener { dialog, which ->
+                    when (which) {
+                        DialogInterface.BUTTON_POSITIVE -> {
+                            miniApp.clearSecureStorage(miniAppId)
+                            Toast.makeText(
+                                this@QASettingsActivity,
+                                "MiniApp Secured Storage Cleared Successfully!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                    dialog.dismiss()
+                }
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this@QASettingsActivity)
+            builder.setMessage("Are you sure to clear secure storage for this MiniApp ?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show()
+        }
+    }
+
+    private fun doesMiniAppIdExist(miniAppId: String): Boolean {
+        var doesExist = false
+        this.databaseList().forEach {
+            if (it.contains(miniAppId)) {
+                doesExist = true
+            }
+        }
+        return doesExist
     }
 
     private fun clearAllSecureStorage() {
@@ -188,6 +239,14 @@ class QASettingsActivity : BaseActivity() {
             settings.mauIdError = ""
         } else {
             settings.mauIdError = binding.edtMauidError.text.toString()
+        }
+
+        if (!binding.edtMaxStorageLimit.text.isNullOrEmpty()) {
+            val maxStorageSizeLimit = binding.edtMaxStorageLimit.text.toString().toInt()
+            settings.maxStorageSizeLimit = (maxStorageSizeLimit * 1000)
+        } else {
+            // Default max storage size limit
+            settings.maxStorageSizeLimit = (5 * 1000)
         }
 
         // post tasks
