@@ -252,11 +252,11 @@ internal class MiniAppSecureDatabase(
                 val listOfItems = items.entries.stream().collect(Collectors.toList())
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
+                    if (isDatabaseFull()) {
+                        throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
+                    }
                     database.beginTransaction()
                     outer.forEach { inner ->
-                        if (isDatabaseFull()) {
-                            throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
-                        }
                         if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
                             contentValues.put(FIRST_COLUMN_NAME, inner.key)
                             contentValues.put(SECOND_COLUMN_NAME, inner.value)
