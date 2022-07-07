@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rakuten.tech.mobile.miniapp"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.rakuten.tech.mobile.miniapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Request legacy Bluetooth permissions on older devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
 
     <application>
         <provider
