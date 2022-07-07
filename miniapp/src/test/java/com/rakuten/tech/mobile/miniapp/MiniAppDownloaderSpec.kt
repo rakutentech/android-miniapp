@@ -385,7 +385,11 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
                 listOf(requiredPermissionObj), listOf(optionalPermissionObj), TEST_ATP_LIST, hashMapOf()
             )
         )
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns null
+        When calling manifestApiCache.readManifest(
+            TEST_ID_MINIAPP,
+            TEST_MA_VERSION_ID,
+            TEST_MA_LANGUAGE_CODE
+        ) itReturns null
         When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
         When calling apiClient.fetchMiniAppManifest(
             TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE
@@ -394,7 +398,12 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
         assertEquals(dummyManifest, actual)
-        verify(manifestApiCache).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE, dummyManifest)
+        verify(manifestApiCache).storeManifest(
+            TEST_ID_MINIAPP,
+            TEST_MA_VERSION_ID,
+            TEST_MA_LANGUAGE_CODE,
+            dummyManifest
+        )
     }
 
     @Test
@@ -405,20 +414,36 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
             )
         )
         When calling apiClient.isPreviewMode itReturns true
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns null
-        When calling downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID) itReturns dummyManifest
+        When calling manifestApiCache.readManifest(
+            TEST_ID_MINIAPP,
+            TEST_MA_VERSION_ID,
+            TEST_MA_LANGUAGE_CODE
+        ) itReturns null
+        When calling downloader.prepareMiniAppManifest(
+            metadataEntity,
+            TEST_MA_VERSION_ID
+        ) itReturns dummyManifest
         When calling apiClient.fetchMiniAppManifest(
             TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE
         ) itReturns metadataEntity
 
         downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
-        verify(manifestApiCache, times(0)).storeManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE, dummyManifest)
+        verify(manifestApiCache, times(0)).storeManifest(
+            TEST_ID_MINIAPP,
+            TEST_MA_VERSION_ID,
+            TEST_MA_LANGUAGE_CODE,
+            dummyManifest
+        )
     }
 
     @Test
     fun `metadata manifest should not be fetched from api when cache returns manifest`() = runBlockingTest {
-        When calling manifestApiCache.readManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE) itReturns dummyManifest
+        When calling manifestApiCache.readManifest(
+            TEST_ID_MINIAPP,
+            TEST_MA_VERSION_ID,
+            TEST_MA_LANGUAGE_CODE
+        ) itReturns dummyManifest
         val actual = downloader.fetchMiniAppManifest(TEST_ID_MINIAPP, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
 
         assertEquals(dummyManifest, actual)

@@ -58,7 +58,7 @@ internal class ManifestApiCacheSpec {
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         Mockito.`when`(mockEditor.clear()).thenReturn(mockEditor)
-        manifestCache.storeManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE,  newManifest)
+        manifestCache.storeManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE, newManifest)
         verify(mockEditor).putString(anyString(), anyString())
     }
 
