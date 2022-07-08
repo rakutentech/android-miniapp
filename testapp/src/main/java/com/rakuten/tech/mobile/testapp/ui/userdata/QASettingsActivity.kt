@@ -1,16 +1,25 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.snackbar.Snackbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.bluetooth.BluetoothReceiverListenerDefault
+import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothManager
+import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothReceiverDefault
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
@@ -18,13 +27,16 @@ import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class QASettingsActivity : BaseActivity() {
+class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
     private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+    private val receiver = MiniAppBluetoothReceiverDefault(this)
+    private val bluetoothManager = MiniAppBluetoothManager()
+    private lateinit var menuBluetooth: MenuItem
 
     companion object {
         fun start(activity: Activity) {
@@ -41,10 +53,16 @@ class QASettingsActivity : BaseActivity() {
         binding.activity = this
         renderScreen()
         startListeners()
+
+        // detect bluetooth devices on Android 12+
+        bluetoothManager.initialize(this)
+        bluetoothManager.registerReceiver(receiver, receiver.bluetoothFilter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.settings_menu, menu)
+        menuInflater.inflate(R.menu.settings_qa_menu, menu)
+        menuBluetooth = menu.findItem(R.id.qa_menu_bluetooth)
+        menuBluetooth.isVisible = false
         return true
     }
 
@@ -57,6 +75,10 @@ class QASettingsActivity : BaseActivity() {
             }
             R.id.settings_menu_save -> {
                 update()
+                return true
+            }
+            R.id.qa_menu_bluetooth -> {
+                requestBTConnectPermission()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -106,6 +128,9 @@ class QASettingsActivity : BaseActivity() {
         }
         binding.btnClearAllSecureStorage.setOnClickListener {
             clearAllSecureStorage()
+        }
+        binding.btnDetectBTDevices.setOnClickListener {
+            bluetoothManager.startDiscovery()
         }
     }
 
@@ -193,5 +218,45 @@ class QASettingsActivity : BaseActivity() {
         // post tasks
         hideSoftKeyboard(binding.root)
         finish()
+    }
+
+    private fun requestBTConnectPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                1
+            )
+        }
+    }
+
+    override fun onDeviceFound(device: BluetoothDevice?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                1
+            )
+        }
+        menuBluetooth.isVisible = device?.name.toString().isNotEmpty()
+    }
+
+    override fun onDeviceDiscoveryStarted() {
+        Snackbar.make(binding.root, "Detecting bluetooth devices nearby...", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onDeviceDiscoveryFinished() {
+        Snackbar.make(binding.root, "Finished detecting bluetooth devices.", Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bluetoothManager.unregisterReceiver(receiver)
     }
 }

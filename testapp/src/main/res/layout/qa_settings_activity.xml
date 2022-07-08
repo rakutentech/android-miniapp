@@ -8,6 +8,10 @@
             type="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity" />
     </data>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -168,5 +172,31 @@
             app:pageName="QA"
             app:siteSection="Settings" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_section"
+            android:paddingStart="@dimen/medium_16"
+            android:paddingTop="@dimen/small_4"
+            android:paddingEnd="@dimen/medium_16"
+            android:paddingBottom="@dimen/small_4"
+            android:text="@string/lb_bluetooth_detection" />
+
+        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+            android:id="@+id/btnDetectBTDevices"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/large_44"
+            android:layout_margin="@dimen/medium_16"
+            android:background="@drawable/bg_red_curve"
+            android:gravity="center"
+            android:padding="@dimen/small_4"
+            android:text="@string/action_detect_bluetooth"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_large_16"
+            app:actionType="change_status"
+            app:pageName="QA"
+            app:siteSection="Settings" />
+
     </LinearLayout>
+    </ScrollView>
 </layout>

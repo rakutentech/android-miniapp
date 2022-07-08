@@ -3,12 +3,12 @@ package com.rakuten.tech.mobile.testapp.ui.display
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.bluetooth.BluetoothDevice
-import android.content.*
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -24,9 +24,6 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
-import com.rakuten.tech.mobile.miniapp.bluetooth.BluetoothReceiverListenerDefault
-import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothManager
-import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothReceiverDefault
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
@@ -53,7 +50,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.lang.NullPointerException
 import java.util.*
 
-class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault {
+class MiniAppDisplayActivity : BaseActivity() {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -105,9 +102,6 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
 
     private var appInfo: MiniAppInfo? = null
 
-    private val receiver = MiniAppBluetoothReceiverDefault(this)
-    private val bluetoothManager = MiniAppBluetoothManager()
-
     companion object {
         private const val appIdTag = "app_id_tag"
         private const val miniAppTag = "mini_app_tag"
@@ -115,12 +109,7 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
         private const val sdkConfigTag = "sdk_config_tag"
         private const val updateTypeTag = "update_type_tag"
 
-        fun start(
-            context: Context,
-            appId: String,
-            miniAppSdkConfig: MiniAppSdkConfig? = null,
-            updatetype: Boolean = false
-        ) {
+        fun start(context: Context, appId: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
                 putExtra(updateTypeTag, updatetype)
@@ -128,12 +117,7 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
             })
         }
 
-        fun startUrl(
-            context: Context,
-            appUrl: String,
-            miniAppSdkConfig: MiniAppSdkConfig? = null,
-            updatetype: Boolean = false
-        ) {
+        fun startUrl(context: Context, appUrl: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appUrlTag, appUrl)
                 putExtra(updateTypeTag, updatetype)
@@ -141,12 +125,7 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
             })
         }
 
-        fun start(
-            context: Context,
-            miniAppInfo: MiniAppInfo,
-            miniAppSdkConfig: MiniAppSdkConfig? = null,
-            updatetype: Boolean = false
-        ) {
+        fun start(context: Context, miniAppInfo: MiniAppInfo, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(miniAppTag, miniAppInfo)
                 putExtra(updateTypeTag, updatetype)
@@ -194,64 +173,54 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
-        if (miniAppSdkConfig == null)
+        if(miniAppSdkConfig == null)
             miniAppSdkConfig = AppSettings.instance.miniAppSettings
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
-        viewModel =
-            ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
-                miniAppView.observe(this@MiniAppDisplayActivity) {
-                    if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
-                        WebView.setWebContentsDebuggingEnabled(true)
+        viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
+            miniAppView.observe(this@MiniAppDisplayActivity) {
+                if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+                    WebView.setWebContentsDebuggingEnabled(true)
 
-                    //action: display webview
-                    addLifeCycleObserver(lifecycle)
-                    (binding.root.parent as ViewGroup).removeAllViews()
-                    setContentView(it)
-                }
-
-                errorData.observe(this@MiniAppDisplayActivity) {
-                    Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-                }
-
-                isLoading.observe(this@MiniAppDisplayActivity) {
-                    toggleProgressLoading(it)
-                }
-
-                containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
-                    showErrorDialog(
-                        this@MiniAppDisplayActivity,
-                        getString(R.string.error_desc_miniapp_too_many_request)
-                    )
-                }
+                //action: display webview
+                addLifeCycleObserver(lifecycle)
+                (binding.root.parent as ViewGroup).removeAllViews()
+                setContentView(it)
             }
+
+            errorData.observe(this@MiniAppDisplayActivity) {
+                Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
+            }
+
+            isLoading.observe(this@MiniAppDisplayActivity) {
+                toggleProgressLoading(it)
+            }
+
+            containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
+                showErrorDialog(
+                    this@MiniAppDisplayActivity,
+                    getString(R.string.error_desc_miniapp_too_many_request)
+                )
+            }
+        }
 
         setupMiniAppMessageBridge()
 
         miniAppNavigator = object : MiniAppNavigator {
 
-            override fun openExternalUrl(
-                url: String,
-                externalResultHandler: ExternalResultHandler
-            ) {
+            override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
                 if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
                     try {
                         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
                     } catch (e: Exception) {
-                        showAlertDialog(
-                            this@MiniAppDisplayActivity,
-                            "Warning!",
-                            e.message.toString()
-                        )
+                        showAlertDialog(this@MiniAppDisplayActivity, "Warning!", e.message.toString())
                     }
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(
-                        this@MiniAppDisplayActivity, url,
-                        appId, appUrl, externalWebViewReqCode
-                    )
+                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
+                        appId, appUrl, externalWebViewReqCode)
                 }
             }
         }
@@ -275,10 +244,6 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
                 miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
-
-        bluetoothManager.initialize(this)
-        bluetoothManager.registerReceiver(receiver, receiver.filter)
-        bluetoothManager.startDiscovery()
     }
 
     private fun setupMiniAppMessageBridge() {
@@ -423,7 +388,7 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
-        when (requestCode) {
+        when(requestCode){
             AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
@@ -440,11 +405,8 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
-                    "External webview closed"
-                )
-                if (!isClosedByBackPressed)
+                miniAppMessageBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "External webview closed")
+                if(!isClosedByBackPressed)
                     sampleWebViewExternalResultHandler.emitResult(intent)
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
@@ -487,7 +449,7 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
 
     override fun onBackPressed() {
         if (!viewModel.canGoBackwards()) {
-            super.onBackPressed()
+            checkCloseAlert()
         }
     }
 
@@ -498,34 +460,6 @@ class MiniAppDisplayActivity : BaseActivity(), BluetoothReceiverListenerDefault 
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(
-            NativeEventType.MINIAPP_ON_RESUME,
-            "MiniApp Resumed"
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        bluetoothManager.unregisterReceiver(receiver)
-    }
-
-    override fun onDeviceFound(device: BluetoothDevice?) {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-            && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1
-            )
-        }
-    }
-
-    override fun onDeviceDiscoveryStarted() {
-    }
-
-    override fun onDeviceDiscoveryFinished() {
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
     }
 }

@@ -25,15 +25,13 @@ class MiniAppBluetoothManager {
             activity.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
     }
 
-    // TODO: expose to MiniApp or HostApp
     @SuppressLint("MissingPermission")
     fun startDiscovery() {
         if (hasBluetoothFeature && bluetoothAdapter.isEnabled) {
-            if (ActivityCompat.checkSelfPermission(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
                     activity,
                     Manifest.permission.BLUETOOTH_SCAN
                 ) != PackageManager.PERMISSION_GRANTED
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             ) {
                 ActivityCompat.requestPermissions(
                     activity, arrayOf(Manifest.permission.BLUETOOTH_SCAN),
