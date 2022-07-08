@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 4.3.0 (release date TBD)
+**SDK**
+- **Feature:** Added `languageCode` in cached manifest to support localization of manifest.
+
 ### 4.2.0 (2022-06-24)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.getMessagingUniqueId` for supporting MAUID v2 and `MiniAppMessageBridge.getMauid` in MiniAppMessageDelegate for retrieving MAUID.
