@@ -268,7 +268,10 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
-                secureStorageDispatcher = MiniAppSecureStorageDispatcher(miniAppSdkConfig.storageMaxSizeKB),
+                secureStorageDispatcher = MiniAppSecureStorageDispatcher(
+                    context,
+                    miniAppSdkConfig.storageMaxSizeKB
+                ),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }

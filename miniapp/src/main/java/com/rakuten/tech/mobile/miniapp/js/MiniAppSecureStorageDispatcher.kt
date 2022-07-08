@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.app.Activity
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
@@ -10,12 +10,12 @@ internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
+    internal var context: Context,
     private var storageMaxSizeKB: Int
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
     @VisibleForTesting
-    internal lateinit var activity: Activity
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
 
     @VisibleForTesting
@@ -33,15 +33,14 @@ internal class MiniAppSecureStorageDispatcher(
     @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
-    fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
-        this.activity = activity
+    fun setBridgeExecutor(bridgeExecutor: MiniAppBridgeExecutor) {
         this.bridgeExecutor = bridgeExecutor
     }
 
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.miniAppSecureStorage = MiniAppSecureStorage(
-            activity,
+            context,
             databaseVersion,
             storageMaxSizeKB
         )
@@ -54,7 +53,6 @@ internal class MiniAppSecureStorageDispatcher(
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
-            this::activity.isInitialized &&
             this::miniAppId.isInitialized &&
             this::miniAppSecureStorage.isInitialized
         ) {
@@ -183,7 +181,7 @@ internal class MiniAppSecureStorageDispatcher(
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() = whenReady {
+    fun clearSecureStorage() {
         clearAllSecureDatabases()
     }
 
@@ -200,7 +198,7 @@ internal class MiniAppSecureStorageDispatcher(
     private fun clearSecureDatabase(miniAppId: String) {
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
-            activity.deleteDatabase(dbName)
+            context.deleteDatabase(dbName)
         } catch (e: Exception) {
             // No callback needed. So Ignoring.
         }
@@ -213,10 +211,12 @@ internal class MiniAppSecureStorageDispatcher(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     internal fun clearAllSecureDatabases() {
         try {
-            miniAppSecureStorage.closeDatabase()
-            activity.databaseList().forEach {
+            if (this::miniAppSecureStorage.isInitialized) {
+                miniAppSecureStorage.closeDatabase()
+            }
+            context.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {
-                    activity.deleteDatabase(it)
+                    context.deleteDatabase(it)
                 }
             }
         } catch (e: Exception) {

@@ -39,10 +39,7 @@ internal abstract class MiniAppSecureDatabaseImpl(
      * for the mini apps to store the data.
      */
     @Throws(RuntimeException::class)
-    @Suppress(
-        "RethrowCaughtException",
-        "TooGenericExceptionCaught"
-    )
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     internal fun createAndOpenDatabase(): Boolean {
         var status = false
         try {

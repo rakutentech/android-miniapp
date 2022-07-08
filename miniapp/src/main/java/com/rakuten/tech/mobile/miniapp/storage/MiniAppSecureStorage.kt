@@ -13,10 +13,7 @@ import net.sqlcipher.database.SQLiteFullException
 import java.io.IOException
 import java.sql.SQLException
 
-@Suppress(
-    "LargeClass",
-    "TooManyFunctions"
-)
+@Suppress("LargeClass", "TooManyFunctions")
 internal class MiniAppSecureStorage(
     @NonNull private val context: Context,
     private val databaseVersion: Int,
@@ -46,11 +43,7 @@ internal class MiniAppSecureStorage(
         databaseName = DB_NAME_PREFIX + miniAppId
     }
 
-    @SuppressWarnings(
-        "ExpressionBodySyntax",
-        "RethrowCaughtException",
-        "TooGenericExceptionCaught"
-    )
+    @SuppressWarnings("ExpressionBodySyntax", "RethrowCaughtException", "TooGenericExceptionCaught")
     private fun createOrOpenAndUnlockDatabase(): Boolean {
         var status: Boolean
         try {
@@ -61,8 +54,8 @@ internal class MiniAppSecureStorage(
         return status
     }
 
-    private fun isPreCheckPasses(onFailed: (MiniAppSecureStorageError) -> Unit): Boolean {
-        var status: Boolean = if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
+    private fun validatePreCheck(onFailed: (MiniAppSecureStorageError) -> Unit): Boolean {
+        val status: Boolean = if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
             onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
             false
         } else if (miniAppSecureDatabase.isDatabaseBusy()) {
@@ -74,10 +67,7 @@ internal class MiniAppSecureStorage(
         return status
     }
 
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     fun load(
         miniAppId: String,
         onSuccess: () -> Unit,
@@ -95,7 +85,7 @@ internal class MiniAppSecureStorage(
         }
     }
 
-    internal fun getDatabaseUsedSize(
+    fun getDatabaseUsedSize(
         onSuccess: (Long) -> Unit
     ) {
         onSuccess(miniAppSecureDatabase.getDatabaseUsedSize())
@@ -105,12 +95,8 @@ internal class MiniAppSecureStorage(
         miniAppSecureDatabase.closeDatabase()
     }
 
-    @Suppress(
-        "ComplexMethod",
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
-    internal fun insertItems(
+    @Suppress("ComplexMethod", "SwallowedException", "TooGenericExceptionCaught")
+    fun insertItems(
         items: Map<String, String>,
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
@@ -144,18 +130,15 @@ internal class MiniAppSecureStorage(
         }
     }
 
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
-    internal fun getItem(
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    fun getItem(
         key: String,
         onSuccess: (String) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
             try {
-                if (isPreCheckPasses(onFailed)) {
+                if (validatePreCheck(onFailed)) {
                     val value = miniAppSecureDatabase.getItem(key)
                     onSuccess(value)
                 }
@@ -172,17 +155,14 @@ internal class MiniAppSecureStorage(
     /**
      * Kept For the future reference, Just in case.
      */
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
-    internal fun getAllItems(
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    fun getAllItems(
         onSuccess: (Map<String, String>) -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
             try {
-                if (isPreCheckPasses(onFailed)) {
+                if (validatePreCheck(onFailed)) {
                     val value = miniAppSecureDatabase.getAllItems()
                     if (value.isNotEmpty()) {
                         onSuccess(value)
@@ -203,18 +183,15 @@ internal class MiniAppSecureStorage(
     /**
      * It will delete given item(s) related to the given mini app id.
      */
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
-    internal fun deleteItems(
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    fun deleteItems(
         keySet: Set<String>,
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
             try {
-                if (isPreCheckPasses(onFailed)) {
+                if (validatePreCheck(onFailed)) {
                     if (miniAppSecureDatabase.deleteItems(keySet)) {
                         onSuccess()
                     } else {
@@ -234,17 +211,14 @@ internal class MiniAppSecureStorage(
     /**
      * It'll will delete all items/records related to the given mini app id.
      */
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
-    internal fun delete(
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    fun delete(
         onSuccess: () -> Unit,
         onFailed: (MiniAppSecureStorageError) -> Unit
     ) {
         scope.launch {
             try {
-                if (isPreCheckPasses(onFailed)) {
+                if (validatePreCheck(onFailed)) {
                     clearDatabase(databaseName)
                     onSuccess()
                 }
@@ -260,10 +234,7 @@ internal class MiniAppSecureStorage(
         }
     }
 
-    @Suppress(
-        "RethrowCaughtException",
-        "TooGenericExceptionCaught"
-    )
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     private fun clearDatabase(dbName: String) {
         try {
             miniAppSecureDatabase.deleteAllRecords()

@@ -48,7 +48,6 @@ internal class MiniAppSecureDatabase(
     private fun getDatabasePageSize(): Long = database.pageSize
 
     @Throws(IllegalStateException::class)
-
     @Suppress("RethrowCaughtException")
     private fun finishAnyPendingDBTransaction() {
         try {
@@ -141,10 +140,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @Throws(RuntimeException::class)
-    @Suppress(
-        "SwallowedException",
-        "TooGenericExceptionCaught"
-    )
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {
         try {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.CORRUPTED
@@ -216,10 +212,7 @@ internal class MiniAppSecureDatabase(
         }
     }
 
-    @Suppress(
-        "RethrowCaughtException",
-        "TooGenericExceptionCaught"
-    )
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     override fun deleteWholeDatabase(dbName: String) {
         try {
             context.deleteDatabase(dbName)
@@ -307,11 +300,7 @@ internal class MiniAppSecureDatabase(
         IllegalStateException::class,
     )
     @SuppressLint("Range")
-    @Suppress(
-        "TooGenericExceptionCaught",
-        "LongParameterList",
-        "LongMethod"
-    )
+    @Suppress("LongMethod", "LongParameterList", "TooGenericExceptionCaught")
     override fun getItem(key: String): String {
         var result = "null"
         try {
@@ -347,11 +336,7 @@ internal class MiniAppSecureDatabase(
         IllegalStateException::class,
     )
     @SuppressLint("Range")
-    @Suppress(
-        "TooGenericExceptionCaught",
-        "LongParameterList",
-        "LongMethod"
-    )
+    @Suppress("LongMethod", "LongParameterList", "TooGenericExceptionCaught")
     override fun getAllItems(): Map<String, String> {
         var result = HashMap<String, String>()
         try {
@@ -402,9 +387,9 @@ internal class MiniAppSecureDatabase(
         var isDeleted = false
         try {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
-            if (items.size > 100) {
+            if (items.size > DB_BATCH_SIZE) {
                 val listOfItems = items.stream().collect(Collectors.toList())
-                val chunked = listOfItems.chunked(100)
+                val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
                     database.beginTransaction()
                     outer.forEach { item ->
@@ -445,12 +430,7 @@ internal class MiniAppSecureDatabase(
         RuntimeException::class,
         IllegalStateException::class
     )
-    @Suppress(
-        "TooGenericExceptionCaught",
-        "LongParameterList",
-        "LongMethod",
-        "ComplexMethod"
-    )
+    @Suppress("LongMethod", "ComplexMethod", "LongParameterList", "TooGenericExceptionCaught")
     override fun deleteAllRecords() {
         try {
             database.beginTransaction()

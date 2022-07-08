@@ -82,7 +82,7 @@ open class MiniAppMessageBridge {
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
         miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
-        miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppSecureStorageDispatcher.setBridgeExecutor(bridgeExecutor)
         miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor,
