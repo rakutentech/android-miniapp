@@ -75,7 +75,7 @@ internal class RealMiniApp(
 
     override fun clearSecureStorage() = secureStorageDispatcher.clearSecureStorage()
 
-    override fun clearSecureStorage(miniAppId: String) =
+    override fun clearSecureStorage(miniAppId: String): Boolean =
         secureStorageDispatcher.clearSecureStorage(miniAppId)
 
     override suspend fun create(

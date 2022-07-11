@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -39,8 +40,12 @@ class QASettingsActivity : BaseActivity() {
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.qa_settings_activity)
         binding.activity = this
-        renderScreen()
         startListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        renderScreen()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -96,6 +101,11 @@ class QASettingsActivity : BaseActivity() {
 
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
+
+        val maxStorage = settings.maxStorageSizeLimit / 1000
+        binding.edtMaxStorageLimit.setText("Current limit is $maxStorage MB")
+
+        invalidateMaxStorageField()
     }
 
     private fun startListeners(){
@@ -104,60 +114,63 @@ class QASettingsActivity : BaseActivity() {
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
             binding.edtUniqueIdError.isEnabled = isChecked
         }
+        binding.edtMaxStorageLimit.setOnFocusChangeListener { _, _ ->
+            binding.edtMaxStorageLimit.setText("")
+        }
         binding.btnClearMiniAppSecureStorage.setOnClickListener{
-            if (!binding.clearStorageForMiniAppId.text.isNullOrEmpty()) {
-                clearSecureStorageForMiniApp(binding.clearStorageForMiniAppId.text.toString())
-            } else {
-                Toast.makeText(
-                    this@QASettingsActivity,
-                    "MiniApp ID cannot be empty to clear MiniApp storage",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            clearSecureStorageForMiniApp(binding.clearStorageForMiniAppId.text.toString())
         }
         binding.btnClearAllSecureStorage.setOnClickListener {
             clearAllSecureStorage()
         }
     }
 
+    private fun invalidateMaxStorageField() {
+
+        binding.clearStorageForMiniAppId.isEnabled = false
+        binding.clearStorageForMiniAppId.setText("No MiniApp ID available.")
+        binding.btnClearMiniAppSecureStorage.isEnabled = false
+
+        var miniAppId = ""
+        this.databaseList().forEach {
+            val dbNamePrefix = "rmapp-"
+            if (it.startsWith(dbNamePrefix)) {
+                miniAppId = it.substring(dbNamePrefix.length)
+            }
+        }
+        if(miniAppId.isNotEmpty()) {
+            binding.clearStorageForMiniAppId.setText(miniAppId)
+            binding.btnClearMiniAppSecureStorage.isEnabled = true
+        }
+    }
+
     private fun clearSecureStorageForMiniApp(miniAppId: String) {
-        if (!doesMiniAppIdExist(miniAppId)) {
-            Toast.makeText(
-                this@QASettingsActivity,
-                "Could not find the MiniApp to clear the secured storage!",
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            val dialogClickListener =
-                DialogInterface.OnClickListener { dialog, which ->
-                    when (which) {
-                        DialogInterface.BUTTON_POSITIVE -> {
-                            miniApp.clearSecureStorage(miniAppId)
+        val dialogClickListener =
+            DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        if (miniApp.clearSecureStorage(miniAppId)) {
                             Toast.makeText(
                                 this@QASettingsActivity,
                                 "MiniApp Secured Storage Cleared Successfully!",
                                 Toast.LENGTH_LONG
                             ).show()
+                        } else {
+                            Toast.makeText(
+                                this@QASettingsActivity,
+                                "Could not find the MiniApp to clear the secured storage!",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
+                        invalidateMaxStorageField()
                     }
-                    dialog.dismiss()
                 }
-
-            val builder: AlertDialog.Builder = AlertDialog.Builder(this@QASettingsActivity)
-            builder.setMessage("Are you sure to clear secure storage for this MiniApp ?")
-                .setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show()
-        }
-    }
-
-    private fun doesMiniAppIdExist(miniAppId: String): Boolean {
-        var doesExist = false
-        this.databaseList().forEach {
-            if (it.contains(miniAppId)) {
-                doesExist = true
+                dialog.dismiss()
             }
-        }
-        return doesExist
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@QASettingsActivity)
+        builder.setMessage("Are you sure to clear secure storage for this MiniApp ?")
+            .setPositiveButton("Yes", dialogClickListener)
+            .setNegativeButton("No", dialogClickListener).show()
     }
 
     private fun clearAllSecureStorage() {

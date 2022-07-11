@@ -182,7 +182,7 @@ abstract class MiniApp internal constructor() {
      * Clears the secure storage for a particular Mini App ID.
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    abstract fun clearSecureStorage(miniAppId: String)
+    abstract fun clearSecureStorage(miniAppId: String): Boolean
 
     /**
      * Get the manifest information e.g. required and optional permissions.

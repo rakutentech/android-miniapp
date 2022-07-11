@@ -196,6 +196,7 @@
                 android:text="@string/action_clear_miniapp"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/text_large_16"
+                android:enabled="false"
                 app:actionType="change_status"
                 app:pageName="QA"
                 app:siteSection="Settings" />
