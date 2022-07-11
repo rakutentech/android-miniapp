@@ -10,7 +10,6 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -53,9 +52,10 @@ class MiniAppSecureStorageDispatcherSpec {
     @Before
     fun setUp() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            miniAppSecureStorageDispatcher = MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB)
-            miniAppSecureStorageDispatcher.setBridgeExecutor(activity, bridgeExecutor)
+            miniAppSecureStorageDispatcher = MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInKB)
+            miniAppSecureStorageDispatcher.setBridgeExecutor(bridgeExecutor)
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
+            miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         }
     }
 
@@ -67,7 +67,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onLoad should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onLoad()
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).load(
@@ -80,7 +80,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onSetItems should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).insertItems(
@@ -112,7 +112,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onGetItem should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).getItem(
@@ -144,7 +144,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onRemoveItems should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, deleteItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).deleteItems(
@@ -172,7 +172,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onClearAll should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onClearAll(TEST_CALLBACK_ID)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).delete(
@@ -190,24 +190,23 @@ class MiniAppSecureStorageDispatcherSpec {
     }
 
     @Test
-    @Ignore
     fun `clearSecureStorage should be called with the same mini app id`() {
-        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
-        miniAppSecureStorageDispatcher.clearSecureStorage(TEST_MA_ID)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).clearSecureDatabase(
-            TEST_MA_ID
+        val dbName = "database"
+        miniAppSecureStorageDispatcher.context = mock()
+        miniAppSecureStorageDispatcher.clearSecureStorage(dbName)
+        verify(miniAppSecureStorageDispatcher.context, times(1)).deleteDatabase(
+            DB_NAME_PREFIX + dbName
         )
     }
 
     @Test
-    @Ignore
     fun `clearSecureStorage should be called without the mini app id`() {
-        val msssd: MiniAppSecureStorageDispatcher = mock()
-        msssd.clearSecureStorage()
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.clearSecureStorage()
         verify(
-            msssd,
+            miniAppSecureStorageDispatcher.miniAppSecureStorage,
             times(1)
-        ).clearAllSecureDatabases()
+        ).closeDatabase()
     }
 
     /** end region */
@@ -216,7 +215,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onSize should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
         verify(

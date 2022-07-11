@@ -171,12 +171,12 @@ internal class MiniAppDownloader(
                     prepareMiniAppManifest(apiResponse, versionId)
                 } else {
                     // every version should have it's own manifest information or null
-                    val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId)
+                    val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId, languageCode)
                     if (cachedLatestManifest != null) cachedLatestManifest
                     else {
                         val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
                         val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
-                        manifestApiCache.storeManifest(appId, versionId, latestManifest)
+                        manifestApiCache.storeManifest(appId, versionId, languageCode, latestManifest)
                         latestManifest
                     }
                 }
