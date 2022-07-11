@@ -68,6 +68,7 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -100,6 +101,7 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -266,7 +268,10 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
-                secureStorageDispatcher = MiniAppSecureStorageDispatcher(miniAppSdkConfig.storageMaxSizeKB),
+                secureStorageDispatcher = MiniAppSecureStorageDispatcher(
+                    context,
+                    miniAppSdkConfig.storageMaxSizeKB
+                ),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }
