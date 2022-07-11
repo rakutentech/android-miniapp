@@ -28,7 +28,14 @@ class MiniAppBluetoothManager {
     @SuppressLint("MissingPermission")
     fun startDiscovery() {
         if (hasBluetoothFeature && bluetoothAdapter.isEnabled) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+            checkPermissions()
+            bluetoothAdapter.startDiscovery()
+        }
+    }
+
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(
                     activity,
                     Manifest.permission.BLUETOOTH_SCAN
                 ) != PackageManager.PERMISSION_GRANTED
@@ -38,7 +45,17 @@ class MiniAppBluetoothManager {
                     1
                 )
             }
-            bluetoothAdapter.startDiscovery()
+        } else {
+            if (ActivityCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    activity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    1
+                )
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothDevice
@@ -221,10 +222,16 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
     }
 
     private fun requestBTConnectPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
+        Snackbar.make(
+            binding.root,
+            "Requesting BLUETOOTH_CONNECT permission...",
+            Snackbar.LENGTH_SHORT
+        ).show()
+
+        if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         ) {
             ActivityCompat.requestPermissions(
                 this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
@@ -233,18 +240,18 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onDeviceFound(device: BluetoothDevice?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1
-            )
+        val isVisible = !device?.name.isNullOrEmpty()
+        menuBluetooth.isVisible = isVisible
+        if (isVisible) {
+            val name = device?.name.toString()
+            Snackbar.make(
+                binding.root,
+                "$name is detected, bluetooth icon is visible.",
+                Snackbar.LENGTH_SHORT
+            ).show()
         }
-        menuBluetooth.isVisible = device?.name.toString().isNotEmpty()
     }
 
     override fun onDeviceDiscoveryStarted() {
