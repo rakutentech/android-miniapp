@@ -8,165 +8,214 @@
             type="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity" />
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg_section"
-            android:paddingStart="@dimen/medium_16"
-            android:paddingTop="@dimen/small_4"
-            android:paddingEnd="@dimen/medium_16"
-            android:paddingBottom="@dimen/small_4"
-            android:text="@string/lb_access_token" />
+            android:orientation="vertical">
 
-        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
-            android:id="@+id/switchAuthFailure"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/medium_16"
-            android:textOff="@string/lb_auth_failure_error"
-            android:textOn="@string/lb_auth_failure_error"
-            android:text="@string/lb_auth_failure_error"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16"
-            app:actionType="change_status"
-            app:pageName="QA"
-            app:siteSection="Settings"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/horizontal_divider_height"
-            android:background="@color/bg_section" />
-
-        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
-            android:id="@+id/switchOtherError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/medium_16"
-            android:text="@string/lb_other_error"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16"
-            app:actionType="change_status"
-            app:pageName="QA"
-            app:siteSection="Settings"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/horizontal_divider_height"
-            android:background="@color/bg_section" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_8">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtCustomErrorMessage"
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_custom_error_message"
-                android:imeOptions="actionDone"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:background="@color/bg_section"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/lb_access_token" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/bg_section"
-            android:paddingStart="@dimen/medium_16"
-            android:paddingTop="@dimen/small_4"
-            android:paddingEnd="@dimen/medium_16"
-            android:paddingBottom="@dimen/small_4"
-            android:text="@string/lb_unique_id" />
-
-        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
-            android:id="@+id/switchUniqueIdError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/medium_16"
-            android:text="@string/lb_unique_id_error"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16"
-            app:actionType="change_status"
-            app:pageName="QA"
-            app:siteSection="Settings"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/horizontal_divider_height"
-            android:background="@color/bg_section" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_4">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtUniqueIdError"
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                android:id="@+id/switchAuthFailure"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/small_4"
-                android:hint="@string/hint_unique_id_error"
-                android:imeOptions="actionDone"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:padding="@dimen/medium_16"
+                android:textOff="@string/lb_auth_failure_error"
+                android:textOn="@string/lb_auth_failure_error"
+                android:text="@string/lb_auth_failure_error"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_large_16"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_4">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/horizontal_divider_height"
+                android:background="@color/bg_section" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtMessagingUniqueIdError"
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                android:id="@+id/switchOtherError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_messaging_unique_id_error"
-                android:imeOptions="actionDone"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:padding="@dimen/medium_16"
+                android:text="@string/lb_other_error"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_large_16"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_4">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/horizontal_divider_height"
+                android:background="@color/bg_section" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtMauidError"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_mauid_error"
-                android:imeOptions="actionDone"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:padding="@dimen/small_8">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/bg_section"
-            android:paddingStart="@dimen/medium_16"
-            android:paddingTop="@dimen/small_4"
-            android:paddingEnd="@dimen/medium_16"
-            android:paddingBottom="@dimen/small_4"
-            android:text="@string/lb_secure_storage" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtCustomErrorMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_custom_error_message"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
-            android:id="@+id/btnClearAllSecureStorage"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/large_44"
-            android:layout_margin="@dimen/medium_16"
-            android:background="@drawable/bg_red_curve"
-            android:gravity="center"
-            android:padding="@dimen/small_4"
-            android:text="@string/action_clear_all"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_large_16"
-            app:actionType="change_status"
-            app:pageName="QA"
-            app:siteSection="Settings" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/bg_section"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/lb_unique_id" />
 
-    </LinearLayout>
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                android:id="@+id/switchUniqueIdError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/medium_16"
+                android:text="@string/lb_unique_id_error"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_large_16"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/horizontal_divider_height"
+                android:background="@color/bg_section" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtUniqueIdError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_4"
+                    android:hint="@string/hint_unique_id_error"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtMessagingUniqueIdError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_messaging_unique_id_error"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtMauidError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_mauid_error"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/bg_section"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/lb_secure_storage" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtMaxStorageLimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_set_max_storage_limit"
+                    android:imeOptions="actionDone"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/clearStorageForMiniAppId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_enter_miniapp_id"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+                android:id="@+id/btnClearMiniAppSecureStorage"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/large_44"
+                android:layout_margin="@dimen/medium_16"
+                android:background="@drawable/bg_red_curve"
+                android:gravity="center"
+                android:padding="@dimen/small_4"
+                android:text="@string/action_clear_miniapp"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_large_16"
+                android:enabled="false"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings" />
+
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+                android:id="@+id/btnClearAllSecureStorage"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/large_44"
+                android:layout_margin="@dimen/medium_16"
+                android:background="@drawable/bg_red_curve"
+                android:gravity="center"
+                android:padding="@dimen/small_4"
+                android:text="@string/action_clear_all"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_large_16"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings" />
+
+        </LinearLayout>
+    </ScrollView>
 </layout>

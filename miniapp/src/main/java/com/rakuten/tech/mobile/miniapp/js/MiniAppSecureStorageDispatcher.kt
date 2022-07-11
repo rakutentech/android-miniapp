@@ -174,8 +174,8 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String) = whenReady {
-        clearSecureDatabase(miniAppId)
+    fun clearSecureStorage(miniAppId: String): Boolean {
+        return clearSecureDatabase(miniAppId)
     }
 
     /**
@@ -195,13 +195,22 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the file to be deleted.
      */
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun clearSecureDatabase(miniAppId: String) {
+    private fun clearSecureDatabase(miniAppId: String): Boolean {
+        var isDeleted: Boolean
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
             context.deleteDatabase(dbName)
+            context.databaseList().forEach {
+                if (it == dbName) {
+                    isDeleted = false
+                }
+            }
+            isDeleted = true
         } catch (e: Exception) {
             // No callback needed. So Ignoring.
+            isDeleted = false
         }
+        return isDeleted
     }
 
     /**

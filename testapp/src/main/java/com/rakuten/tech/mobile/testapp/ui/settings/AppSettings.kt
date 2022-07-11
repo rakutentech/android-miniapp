@@ -153,6 +153,10 @@ class AppSettings private constructor(context: Context) {
     val isDynamicDeeplinksSaved: Boolean
         get() = cache.isDynamicDeeplinksSaved
 
+    var maxStorageSizeLimit: Int
+        get() = cache.maxStorageSizeLimit
+        set(maxStorageSizeLimit) { cache.maxStorageSizeLimit = maxStorageSizeLimit }
+
     val miniAppSettings: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
@@ -168,7 +172,8 @@ class AppSettings private constructor(context: Context) {
                     BuildConfig.ADDITIONAL_ANALYTICS_ACC,
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
-            )
+            ),
+            storageMaxSizeKB = maxStorageSizeLimit
         )
 
     companion object {
@@ -305,6 +310,10 @@ private class Settings(context: Context) {
     val isDynamicDeeplinksSaved: Boolean
         get() = prefs.contains(DYNAMIC_DEEPLINKS)
 
+    var maxStorageSizeLimit: Int
+        get() = prefs.getInt(MAX_STORAGE_SIZE_LIMIT, 5000)
+        set(maxStorageSizeLimit) = prefs.edit().putInt(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimit).apply()
+
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
@@ -327,5 +336,6 @@ private class Settings(context: Context) {
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
         private const val POINTS = "points"
         private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
+        private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
     }
 }
