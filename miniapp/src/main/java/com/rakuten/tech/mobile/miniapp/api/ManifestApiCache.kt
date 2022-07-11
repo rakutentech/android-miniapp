@@ -21,13 +21,14 @@ internal class ManifestApiCache(context: Context) {
 
     /**
      * Reads the api manifest from SharedPreferences.
-     * @param [miniAppId] the first half of key provided to store manifest.
-     * @param [versionId] the second half of key provided to store manifest.
+     * @param [miniAppId] the first part of key provided to store manifest.
+     * @param [versionId] the second part of key provided to store manifest.
+     * @param [languageCode] the third part of key provided to store manifest.
      * @return [MiniAppManifest] an object to contain the manifest information,
      * if data has been stored in cache, otherwise null.
      */
-    fun readManifest(miniAppId: String, versionId: String): MiniAppManifest? {
-        val manifestJsonStr = prefs.getString(primaryKey(miniAppId, versionId), null) ?: return null
+    fun readManifest(miniAppId: String, versionId: String, languageCode: String): MiniAppManifest? {
+        val manifestJsonStr = prefs.getString(primaryKey(miniAppId, versionId, languageCode), null) ?: return null
         return try {
             Gson().fromJson(manifestJsonStr, object : TypeToken<MiniAppManifest>() {}.type)
         } catch (e: Exception) {
@@ -38,16 +39,17 @@ internal class ManifestApiCache(context: Context) {
 
     /**
      * Stores the api manifest to SharedPreferences.
-     * @param [miniAppId] the first half of key provided to store manifest.
-     * @param [versionId] the second half of key provided to store manifest.
+     * @param [miniAppId] the first part of key provided to store manifest.
+     * @param [versionId] the second part of key provided to store manifest.
+     * @param [languageCode] the third part of key provided to store manifest.
      * @return [MiniAppManifest] an object to contain the manifest information.
      */
     @SuppressLint("CommitPrefEdits")
-    fun storeManifest(miniAppId: String, versionId: String, miniAppManifest: MiniAppManifest) {
+    fun storeManifest(miniAppId: String, versionId: String, languageCode: String, miniAppManifest: MiniAppManifest) {
         val jsonToStore: String = Gson().toJson(miniAppManifest)
-        prefs.edit().clear().putString(primaryKey(miniAppId, versionId), jsonToStore).apply()
+        prefs.edit().clear().putString(primaryKey(miniAppId, versionId, languageCode), jsonToStore).apply()
     }
 
     @VisibleForTesting
-    fun primaryKey(miniAppId: String, versionId: String) = "$miniAppId-$versionId"
+    fun primaryKey(miniAppId: String, versionId: String, languageCode: String) = "$miniAppId-$versionId-$languageCode"
 }
