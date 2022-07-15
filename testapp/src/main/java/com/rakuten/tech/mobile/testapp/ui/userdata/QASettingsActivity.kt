@@ -185,6 +185,7 @@ class QASettingsActivity : BaseActivity() {
                             "Successfully cleared all secured storage!",
                             Toast.LENGTH_LONG
                         ).show()
+                        invalidateMaxStorageField()
                     }
                 }
                 dialog.dismiss()
