@@ -10,7 +10,11 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class MiniAppBluetoothManager {
+/**
+ * A class to provide information of permissions and bluetooth devices
+ * related to Android 12+ devices.
+ * */
+class MiniAppBluetoothDelegate {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var activity: Activity
 
@@ -18,11 +22,18 @@ class MiniAppBluetoothManager {
         const val REQ_CODE_BT_CONNECT = 10010
     }
 
+    /**
+     * Initialize the class to activate bluetooth adapter for the Activity.
+     * @param activity The Activity where bluetooth adapter needs to be initialized.
+     * */
     fun initialize(activity: Activity) {
         this.activity = activity
         this.bluetoothAdapter = activity.getSystemService(BluetoothManager::class.java).adapter
     }
 
+    /**
+     * Provide BLUETOOTH_CONNECT permission availability to the Host App.
+     **/
     fun hasBTConnectPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(
@@ -41,9 +52,12 @@ class MiniAppBluetoothManager {
         return false
     }
 
+    /**
+     * Return [Boolean] if there is any paired bluetooth device is detected.
+     **/
     @SuppressLint("MissingPermission")
+    @SuppressWarnings("ExpressionBodySyntax")
     fun detectPairedDevice(): Boolean {
-        // run every 5 sec
         return bluetoothAdapter.bondedDevices.size > 0
     }
 }
