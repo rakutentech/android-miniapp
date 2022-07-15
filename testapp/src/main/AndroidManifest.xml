@@ -9,14 +9,6 @@
 
     <!-- Request Bluetooth permissions on Android 12+ -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <!-- Request legacy Bluetooth permissions on older devices under Android 12 -->
-    <uses-permission android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
 
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"

@@ -1,26 +1,19 @@
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import com.google.android.material.snackbar.Snackbar
 import com.rakuten.tech.mobile.miniapp.MiniApp
-import com.rakuten.tech.mobile.miniapp.bluetooth.BluetoothReceiverListenerDefault
 import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothManager
-import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothReceiverDefault
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
@@ -28,14 +21,13 @@ import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
+class QASettingsActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
     private val miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
-    private val receiver = MiniAppBluetoothReceiverDefault(this)
     private val bluetoothManager = MiniAppBluetoothManager()
     private lateinit var menuBluetooth: MenuItem
 
@@ -55,9 +47,10 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         renderScreen()
         startListeners()
 
-        // detect bluetooth devices on Android 12+
+        // start paired bluetooth device detection on Android 12+
         bluetoothManager.initialize(this)
-        bluetoothManager.registerReceiver(receiver, receiver.bluetoothFilter)
+        if (bluetoothManager.hasBTConnectPermission())
+            menuBluetooth.isVisible = bluetoothManager.detectPairedDevice()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,10 +69,6 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
             }
             R.id.settings_menu_save -> {
                 update()
-                return true
-            }
-            R.id.qa_menu_bluetooth -> {
-                requestBTConnectPermission()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -121,7 +110,7 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         binding.edtMauidError.setText(settings.mauIdError)
     }
 
-    private fun startListeners(){
+    private fun startListeners() {
         binding.switchAuthFailure.setOnCheckedChangeListener(accessTokenListener)
         binding.switchOtherError.setOnCheckedChangeListener(accessTokenListener)
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
@@ -129,9 +118,6 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         }
         binding.btnClearAllSecureStorage.setOnClickListener {
             clearAllSecureStorage()
-        }
-        binding.btnDetectBTDevices.setOnClickListener {
-            bluetoothManager.startDiscovery()
         }
     }
 
@@ -159,7 +145,7 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
 
     private val accessTokenListener =
         CompoundButton.OnCheckedChangeListener { view, isChecked ->
-            setAccessTokenSwitchStates(view,isChecked)
+            setAccessTokenSwitchStates(view, isChecked)
         }
 
     private fun setAccessTokenSwitchStates(view: CompoundButton, isChecked: Boolean) {
@@ -197,7 +183,8 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         // Save unique ID error response
         if (binding.switchUniqueIdError.isChecked) {
             if (binding.edtUniqueIdError.text.isNullOrEmpty()) {
-                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG)
+                    .show()
                 return
             } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
         } else settings.uniqueIdError = ""
@@ -221,49 +208,20 @@ class QASettingsActivity : BaseActivity(), BluetoothReceiverListenerDefault {
         finish()
     }
 
-    private fun requestBTConnectPermission() {
-        Snackbar.make(
-            binding.root,
-            "Requesting BLUETOOTH_CONNECT permission...",
-            Snackbar.LENGTH_SHORT
-        ).show()
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                1
-            )
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
+        when (requestCode) {
+            MiniAppBluetoothManager.REQ_CODE_BT_CONNECT -> {
+                if (isGranted) {
+                    Log.d("AAAA", "granted!")
+                    menuBluetooth.isVisible = bluetoothManager.detectPairedDevice()
+                }
+            }
         }
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun onDeviceFound(device: BluetoothDevice?) {
-        val isVisible = !device?.name.isNullOrEmpty()
-        menuBluetooth.isVisible = isVisible
-        if (isVisible) {
-            val name = device?.name.toString()
-            Snackbar.make(
-                binding.root,
-                "$name is detected, bluetooth icon is visible.",
-                Snackbar.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    override fun onDeviceDiscoveryStarted() {
-        Snackbar.make(binding.root, "Detecting bluetooth devices nearby...", Snackbar.LENGTH_SHORT).show()
-    }
-
-    override fun onDeviceDiscoveryFinished() {
-        Snackbar.make(binding.root, "Finished detecting bluetooth devices.", Snackbar.LENGTH_SHORT).show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        bluetoothManager.unregisterReceiver(receiver)
     }
 }
