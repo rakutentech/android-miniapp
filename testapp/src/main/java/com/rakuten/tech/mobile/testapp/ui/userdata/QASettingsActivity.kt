@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
@@ -102,7 +103,7 @@ class QASettingsActivity : BaseActivity() {
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
 
-        val maxStorage = settings.maxStorageSizeLimit / 1000
+        val maxStorage = settings.maxStorageSizeLimit
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage MB")
 
         invalidateMaxStorageField()
@@ -254,12 +255,10 @@ class QASettingsActivity : BaseActivity() {
             settings.mauIdError = binding.edtMauidError.text.toString()
         }
 
-        if (!binding.edtMaxStorageLimit.text.isNullOrEmpty()) {
+        val upgradedSize = binding.edtMaxStorageLimit.text
+        if (!upgradedSize.isNullOrEmpty() && upgradedSize.isDigitsOnly()) {
             val maxStorageSizeLimit = binding.edtMaxStorageLimit.text.toString().toInt()
-            settings.maxStorageSizeLimit = (maxStorageSizeLimit * 1000)
-        } else {
-            // Default max storage size limit
-            settings.maxStorageSizeLimit = (5 * 1000)
+            settings.maxStorageSizeLimit = maxStorageSizeLimit
         }
 
         // post tasks

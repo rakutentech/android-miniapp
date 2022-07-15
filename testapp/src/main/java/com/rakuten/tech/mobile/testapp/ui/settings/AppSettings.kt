@@ -173,7 +173,7 @@ class AppSettings private constructor(context: Context) {
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            storageMaxSizeKB = maxStorageSizeLimit
+            maxStorageSizeLimit = maxStorageSizeLimit
         )
 
     companion object {
@@ -311,7 +311,7 @@ private class Settings(context: Context) {
         get() = prefs.contains(DYNAMIC_DEEPLINKS)
 
     var maxStorageSizeLimit: Int
-        get() = prefs.getInt(MAX_STORAGE_SIZE_LIMIT, 5000)
+        get() = prefs.getInt(MAX_STORAGE_SIZE_LIMIT, 5) // Default max storage is 5MB
         set(maxStorageSizeLimit) = prefs.edit().putInt(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimit).apply()
 
     companion object {
