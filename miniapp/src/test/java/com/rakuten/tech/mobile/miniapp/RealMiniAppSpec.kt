@@ -520,7 +520,7 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Test
     fun `api manifest should not be fetched from MiniAppDownloader when different languageCode`() =
         runBlockingTest {
-            realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_LANG_MANIFEST_DEFAULT)
+            realMiniApp.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, TEST_MA_LANGUAGE_CODE)
             verify(miniAppDownloader, times(0))
                 .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }

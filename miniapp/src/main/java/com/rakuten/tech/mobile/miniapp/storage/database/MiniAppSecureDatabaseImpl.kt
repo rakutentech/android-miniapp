@@ -13,11 +13,13 @@ import java.sql.SQLException
 internal enum class MiniAppDatabaseStatus {
     DEFAULT,
     INITIATED,
-    OPENED,
-    CLOSED,
     READY,
+    CLOSED,
+    UNAVAILABLE,
     BUSY,
-    FAILED
+    FAILED,
+    FULL,
+    CORRUPTED
 }
 
 /**
@@ -36,19 +38,25 @@ internal abstract class MiniAppSecureDatabaseImpl(
      * Method to create and open the secured database
      * for the mini apps to store the data.
      */
+    @Throws(RuntimeException::class)
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     internal fun createAndOpenDatabase(): Boolean {
-        // Creating database here.
         var status = false
-        val configuration =
-            SupportSQLiteOpenHelper.Configuration.builder(context)
-                .name(dbName)
-                .callback(this)
-                .build()
-        sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
-        // Opening database here.
-        if (sqliteHelper != null) {
-            onDatabaseReady(sqliteHelper.writableDatabase)
-            status = true
+        try {
+            // Creating database here.
+            val configuration =
+                SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .name(dbName)
+                    .callback(this)
+                    .build()
+            sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
+            // Opening database here.
+            if (sqliteHelper != null) {
+                onDatabaseReady(sqliteHelper.writableDatabase)
+                status = true
+            }
+        } catch (e: RuntimeException) {
+            throw e
         }
         return status
     }
@@ -79,10 +87,13 @@ internal abstract class MiniAppSecureDatabaseImpl(
         onDatabaseCorrupted(db)
     }
 
+    @Throws(SQLException::class)
     protected abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
 
+    @Throws(SQLException::class)
     protected abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
 
+    @Throws(SQLException::class)
     protected abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)
 
     protected abstract fun onDatabaseReady(database: SupportSQLiteDatabase)

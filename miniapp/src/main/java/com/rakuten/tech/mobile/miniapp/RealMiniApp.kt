@@ -75,7 +75,7 @@ internal class RealMiniApp(
 
     override fun clearSecureStorage() = secureStorageDispatcher.clearSecureStorage()
 
-    override fun clearSecureStorage(miniAppId: String) =
+    override fun clearSecureStorage(miniAppId: String): Boolean =
         secureStorageDispatcher.clearSecureStorage(miniAppId)
 
     override suspend fun create(
@@ -194,6 +194,8 @@ internal class RealMiniApp(
         if (setConfigAsDefault)
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
+
+        secureStorageDispatcher.updateMiniAppStorageMaxLimit(newConfig.storageMaxSizeKB)
     }
 
     @VisibleForTesting

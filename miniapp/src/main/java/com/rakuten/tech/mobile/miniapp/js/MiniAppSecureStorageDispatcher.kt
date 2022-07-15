@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.app.Activity
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
@@ -10,11 +10,12 @@ internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
-    private val storageMaxSizeKB: Int
+    internal var context: Context,
+    private var storageMaxSizeKB: Int
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
-    private lateinit var activity: Activity
+    @VisibleForTesting
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
 
     @VisibleForTesting
@@ -32,24 +33,26 @@ internal class MiniAppSecureStorageDispatcher(
     @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
-    fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
-        this.activity = activity
+    fun setBridgeExecutor(bridgeExecutor: MiniAppBridgeExecutor) {
         this.bridgeExecutor = bridgeExecutor
     }
 
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.miniAppSecureStorage = MiniAppSecureStorage(
-            activity,
+            context,
             databaseVersion,
             storageMaxSizeKB
         )
     }
 
+    fun updateMiniAppStorageMaxLimit(maxStorage: Int) {
+        storageMaxSizeKB = maxStorage
+    }
+
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
-            this::activity.isInitialized &&
             this::miniAppId.isInitialized &&
             this::miniAppSecureStorage.isInitialized
         ) {
@@ -171,15 +174,19 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String) = whenReady {
-        clearSecureDatabase(miniAppId)
+    fun clearSecureStorage(miniAppId: String): Boolean {
+        return clearSecureDatabase(miniAppId)
     }
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() = whenReady {
+    fun clearSecureStorage() {
         clearAllSecureDatabases()
+    }
+
+    fun cleanUp() = whenReady {
+        miniAppSecureStorage.closeDatabase()
     }
 
     /**
@@ -188,13 +195,22 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the file to be deleted.
      */
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun clearSecureDatabase(miniAppId: String) {
+    private fun clearSecureDatabase(miniAppId: String): Boolean {
+        var isDeleted: Boolean
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
-            activity.deleteDatabase(dbName)
+            context.deleteDatabase(dbName)
+            context.databaseList().forEach {
+                if (it == dbName) {
+                    isDeleted = false
+                }
+            }
+            isDeleted = true
         } catch (e: Exception) {
             // No callback needed. So Ignoring.
+            isDeleted = false
         }
+        return isDeleted
     }
 
     /**
@@ -204,9 +220,12 @@ internal class MiniAppSecureStorageDispatcher(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     internal fun clearAllSecureDatabases() {
         try {
-            activity.databaseList().forEach {
+            if (this::miniAppSecureStorage.isInitialized) {
+                miniAppSecureStorage.closeDatabase()
+            }
+            context.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {
-                    activity.deleteDatabase(it)
+                    context.deleteDatabase(it)
                 }
             }
         } catch (e: Exception) {
