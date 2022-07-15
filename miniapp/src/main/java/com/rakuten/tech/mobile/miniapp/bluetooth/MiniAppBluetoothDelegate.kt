@@ -58,6 +58,9 @@ class MiniAppBluetoothDelegate {
     @SuppressLint("MissingPermission")
     @SuppressWarnings("ExpressionBodySyntax")
     fun detectPairedDevice(): Boolean {
-        return bluetoothAdapter.bondedDevices.size > 0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            return bluetoothAdapter.bondedDevices.size > 0
+
+        return false
     }
 }
