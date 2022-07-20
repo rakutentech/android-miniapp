@@ -6,12 +6,13 @@ import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 
+internal const val CONVERT_TO_KB = 1024
 internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
     internal var context: Context,
-    private var storageMaxSizeKB: Int
+    private var maxStorageSizeLimit: Int
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
@@ -42,12 +43,12 @@ internal class MiniAppSecureStorageDispatcher(
         this.miniAppSecureStorage = MiniAppSecureStorage(
             context,
             databaseVersion,
-            storageMaxSizeKB
+            maxStorageSizeLimit
         )
     }
 
-    fun updateMiniAppStorageMaxLimit(maxStorage: Int) {
-        storageMaxSizeKB = maxStorage
+    fun updateMiniAppStorageMaxLimit(maxStorageInMB: Int) {
+        maxStorageSizeLimit = (maxStorageInMB * CONVERT_TO_KB)
     }
 
     @Suppress("ComplexCondition")
@@ -162,7 +163,7 @@ internal class MiniAppSecureStorageDispatcher(
     @Deprecated("No Longer Needed")
     fun onSize(callbackId: String) = whenReady {
         onSuccessDBSize = { fileSize: Long ->
-            val maxSizeInBytes = storageMaxSizeKB * 1024
+            val maxSizeInBytes = maxStorageSizeLimit * 1024
             val storageSize =
                 Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
             bridgeExecutor.postValue(callbackId, storageSize)
