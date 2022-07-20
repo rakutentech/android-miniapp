@@ -102,7 +102,7 @@ internal class MiniAppSecureDatabase(
     }
 
     @Throws(SQLException::class)
-    @Suppress("RethrowCaughtException")
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     private fun delete(item: String): Int {
         var totalDeleted: Int
         try {
@@ -424,7 +424,6 @@ internal class MiniAppSecureDatabase(
                 finishAnyPendingDBTransaction()
             }
             database.execSQL(AUTO_VACUUM)
-            //clearVacuum()
         } catch (e: IllegalStateException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
