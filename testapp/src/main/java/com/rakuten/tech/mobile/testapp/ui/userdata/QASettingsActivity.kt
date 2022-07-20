@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
@@ -103,7 +102,7 @@ class QASettingsActivity : BaseActivity() {
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
 
-        val maxStorage = settings.maxStorageSizeLimit
+        val maxStorage = settings.maxStorageSizeLimitInMB
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage MB")
 
         invalidateMaxStorageField()
@@ -258,8 +257,8 @@ class QASettingsActivity : BaseActivity() {
 
         val upgradedSize = binding.edtMaxStorageLimit.text
         if (!upgradedSize.isNullOrEmpty() && upgradedSize.isDigitsOnly()) {
-            val maxStorageSizeLimit = binding.edtMaxStorageLimit.text.toString().toInt()
-            settings.maxStorageSizeLimit = maxStorageSizeLimit
+            val maxStorageSizeLimitInMB = binding.edtMaxStorageLimit.text.toString().toInt()
+            settings.maxStorageSizeLimitInMB = maxStorageSizeLimitInMB
         }
 
         // post tasks

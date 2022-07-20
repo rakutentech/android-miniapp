@@ -270,7 +270,7 @@ abstract class MiniApp internal constructor() {
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
                 secureStorageDispatcher = MiniAppSecureStorageDispatcher(
                     context,
-                    miniAppSdkConfig.maxStorageSizeLimit
+                    miniAppSdkConfig.maxStorageSizeLimitInMB
                 ),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads
             )

@@ -195,7 +195,7 @@ internal class RealMiniApp(
             miniAppAnalytics =
                 MiniAppAnalytics(newConfig.rasProjectId, newConfig.miniAppAnalyticsConfigList)
 
-        secureStorageDispatcher.updateMiniAppStorageMaxLimit(newConfig.maxStorageSizeLimit)
+        secureStorageDispatcher.updateMiniAppStorageMaxLimit(newConfig.maxStorageSizeLimitInMB)
     }
 
     @VisibleForTesting

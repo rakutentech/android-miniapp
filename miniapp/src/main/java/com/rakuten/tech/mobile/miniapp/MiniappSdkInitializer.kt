@@ -69,10 +69,10 @@ class MiniappSdkInitializer : ContentProvider() {
         fun enableH5Ads(): Boolean
 
         /**
-         * Sets the maximum size in KB that each Mini App is allowed to use for Secure Storage.
+         * Maximum Secure Storage size limit in MB for each Mini App, Default is 5MB.
          **/
         @MetaData(key = "com.rakuten.tech.mobile.miniapp.MaxStorageSizeLimitInMB")
-        fun maxStorageSizeLimit(): Int
+        fun maxStorageSizeLimitInMB(): Int
     }
 
     override fun onCreate(): Boolean {
@@ -99,7 +99,7 @@ class MiniappSdkInitializer : ContentProvider() {
         isPreviewMode = manifestConfig.isPreviewMode(),
         requireSignatureVerification = manifestConfig.requireSignatureVerification(),
         enableH5Ads = manifestConfig.enableH5Ads(),
-        maxStorageSizeLimit = manifestConfig.maxStorageSizeLimit()
+        maxStorageSizeLimitInMB = manifestConfig.maxStorageSizeLimitInMB()
     )
 
     private fun executeMiniAppAnalytics(rasProjId: String) {
