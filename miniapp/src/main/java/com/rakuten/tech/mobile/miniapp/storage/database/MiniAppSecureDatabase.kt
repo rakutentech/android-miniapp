@@ -18,6 +18,7 @@ private const val TABLE_NAME = "MiniAppCache"
 private const val FIRST_COLUMN_NAME = "first"
 private const val SECOND_COLUMN_NAME = "second"
 
+private const val AUTO_VACUUM = "PRAGMA auto_vacuum = FULL"
 private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
 private const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
 private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
@@ -105,12 +106,8 @@ internal class MiniAppSecureDatabase(
     private fun delete(item: String): Int {
         var totalDeleted: Int
         try {
-            totalDeleted = database.delete(
-                TABLE_NAME,
-                "$FIRST_COLUMN_NAME='$item'",
-                null
-            )
-        } catch (e: SQLException) {
+            totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME='$item'", null)
+        } catch (e: RuntimeException) {
             throw e
         }
         return totalDeleted
@@ -118,14 +115,33 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class)
     @Suppress("SwallowedException")
-    override fun onCreateDatabase(db: SupportSQLiteDatabase) {
+    override fun onDatabaseConfiguration(db: SupportSQLiteDatabase) {
         try {
-            db.execSQL(CREATE_TABLE_QUERY)
             db.maximumSize = maxDatabaseSize
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.INITIATED
+            db.execSQL(AUTO_VACUUM)
         } catch (e: SQLException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+            MiniAppDatabaseStatus.UNAVAILABLE
         }
+    }
+
+    @Throws(SQLException::class)
+    @Suppress("SwallowedException")
+    override fun onCreateDatabase(db: SupportSQLiteDatabase) {
+        miniAppDatabaseStatus = try {
+            db.execSQL(CREATE_TABLE_QUERY)
+            MiniAppDatabaseStatus.INITIATED
+        } catch (e: SQLException) {
+            MiniAppDatabaseStatus.UNAVAILABLE
+        }
+    }
+
+    override fun onDatabaseReady(database: SupportSQLiteDatabase) {
+        this.database = database
+        miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
+    }
+
+    override fun onOpenDatabase(db: SupportSQLiteDatabase) {
+        miniAppDatabaseStatus = MiniAppDatabaseStatus.OPENED
     }
 
     @Throws(SQLException::class)
@@ -148,11 +164,6 @@ internal class MiniAppSecureDatabase(
         } catch (e: RuntimeException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
         }
-    }
-
-    override fun onDatabaseReady(database: SupportSQLiteDatabase) {
-        this.database = database
-        miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
     }
 
     override fun isDatabaseOpen(): Boolean = database.isOpen
@@ -412,7 +423,12 @@ internal class MiniAppSecureDatabase(
                 database.setTransactionSuccessful()
                 finishAnyPendingDBTransaction()
             }
+            database.execSQL(AUTO_VACUUM)
+            //clearVacuum()
         } catch (e: IllegalStateException) {
+            miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
+            throw e
+        } catch (e: SQLException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
         } catch (e: RuntimeException) {
