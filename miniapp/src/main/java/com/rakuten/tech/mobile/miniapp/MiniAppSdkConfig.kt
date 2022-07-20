@@ -16,7 +16,7 @@ import kotlinx.android.parcel.Parcelize
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  * @property sslPinningPublicKeyList List of SSL pinning public keys.
  * @property enableH5Ads Whether the host app wants to enable ad placement beta.
- * @property maxStorageSizeLimit Maximum size in KB for each Mini App is allowed to use for Secure Storage, Default is 5MB.
+ * @property maxStorageSizeLimit Maximum Secure Storage size limit for each Mini App, Default is 5MB.
  */
 @Parcelize
 data class MiniAppSdkConfig(
