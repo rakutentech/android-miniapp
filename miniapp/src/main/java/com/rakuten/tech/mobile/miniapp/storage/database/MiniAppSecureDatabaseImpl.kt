@@ -13,6 +13,7 @@ import java.sql.SQLException
 internal enum class MiniAppDatabaseStatus {
     DEFAULT,
     INITIATED,
+    OPENED,
     READY,
     CLOSED,
     UNAVAILABLE,
@@ -75,8 +76,16 @@ internal abstract class MiniAppSecureDatabaseImpl(
         )
     }
 
+    override fun onConfigure(db: SupportSQLiteDatabase) {
+        onDatabaseConfiguration(db)
+    }
+
     override fun onCreate(db: SupportSQLiteDatabase) {
         onCreateDatabase(db)
+    }
+
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        onOpenDatabase(db)
     }
 
     override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -88,7 +97,13 @@ internal abstract class MiniAppSecureDatabaseImpl(
     }
 
     @Throws(SQLException::class)
+    protected abstract fun onDatabaseConfiguration(db: SupportSQLiteDatabase)
+
+    @Throws(SQLException::class)
     protected abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
+
+    @Throws(SQLException::class)
+    protected abstract fun onOpenDatabase(db: SupportSQLiteDatabase)
 
     @Throws(SQLException::class)
     protected abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)

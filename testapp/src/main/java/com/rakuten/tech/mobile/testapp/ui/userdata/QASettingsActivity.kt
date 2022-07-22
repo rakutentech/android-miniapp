@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.bluetooth.MiniAppBluetoothDelegate
@@ -112,7 +113,7 @@ class QASettingsActivity : BaseActivity() {
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
 
-        val maxStorage = settings.maxStorageSizeLimit / 1000
+        val maxStorage = settings.maxStorageSizeLimitInMB
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage MB")
 
         invalidateMaxStorageField()
@@ -200,6 +201,7 @@ class QASettingsActivity : BaseActivity() {
                             "Successfully cleared all secured storage!",
                             Toast.LENGTH_LONG
                         ).show()
+                        invalidateMaxStorageField()
                     }
                 }
                 dialog.dismiss()
@@ -271,12 +273,10 @@ class QASettingsActivity : BaseActivity() {
             settings.mauIdError = binding.edtMauidError.text.toString()
         }
 
-        if (!binding.edtMaxStorageLimit.text.isNullOrEmpty()) {
-            val maxStorageSizeLimit = binding.edtMaxStorageLimit.text.toString().toInt()
-            settings.maxStorageSizeLimit = (maxStorageSizeLimit * 1000)
-        } else {
-            // Default max storage size limit
-            settings.maxStorageSizeLimit = (5 * 1000)
+        val upgradedSize = binding.edtMaxStorageLimit.text
+        if (!upgradedSize.isNullOrEmpty() && upgradedSize.isDigitsOnly()) {
+            val maxStorageSizeLimitInMB = binding.edtMaxStorageLimit.text.toString().toInt()
+            settings.maxStorageSizeLimitInMB = maxStorageSizeLimitInMB
         }
 
         // post tasks
