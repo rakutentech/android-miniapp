@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.bluetooth
+package com.rakuten.tech.mobile.testapp.helper
 
 import android.Manifest
 import android.annotation.SuppressLint
