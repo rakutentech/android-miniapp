@@ -139,6 +139,8 @@ class QASettingsActivity : BaseActivity() {
         binding.btnDetectBTDevice.setOnClickListener {
             if (bluetoothDelegate.hasBTConnectPermission())
                 detectPairDeviceOnSchedule()
+
+            detectPairDeviceOnSchedule()
         }
     }
 
@@ -300,6 +302,12 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun detectPairDeviceOnSchedule() {
+        Toast.makeText(
+            this@QASettingsActivity,
+            "Detecting paired bluetooth devices...",
+            Toast.LENGTH_SHORT
+        ).show()
+
         btDeviceTimer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {

@@ -220,7 +220,7 @@ class MiniAppDisplayActivity : BaseActivity() {
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
                     WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                        appId, appUrl, externalWebViewReqCode)
+                            appId, appUrl, externalWebViewReqCode)
                 }
             }
         }
@@ -251,8 +251,8 @@ class MiniAppDisplayActivity : BaseActivity() {
         miniAppMessageBridge = object : MiniAppMessageBridge() {
 
             override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
+                    onSuccess: (uniqueId: String) -> Unit,
+                    onError: (message: String) -> Unit
             ) {
                 val errorMsg = AppSettings.instance.uniqueIdError
                 if (errorMsg.isNotEmpty()) onError(errorMsg)
@@ -314,10 +314,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
 
             override fun getAccessToken(
-                miniAppId: String,
-                accessTokenScope: AccessTokenScope,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (tokenError: MiniAppAccessTokenError) -> Unit
+                    miniAppId: String,
+                    accessTokenScope: AccessTokenScope,
+                    onSuccess: (tokenData: TokenData) -> Unit,
+                    onError: (tokenError: MiniAppAccessTokenError) -> Unit
             ) {
                 if (AppSettings.instance.accessTokenError != null) {
                     onError(AppSettings.instance.accessTokenError!!)

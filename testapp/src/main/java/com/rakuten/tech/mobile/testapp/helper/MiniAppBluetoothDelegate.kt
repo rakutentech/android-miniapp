@@ -22,18 +22,11 @@ class MiniAppBluetoothDelegate {
         const val REQ_CODE_BT_CONNECT = 10010
     }
 
-    /**
-     * Initialize the class to activate bluetooth adapter for the Activity.
-     * @param activity The Activity where bluetooth adapter needs to be initialized.
-     * */
     fun initialize(activity: Activity) {
         this.activity = activity
         this.bluetoothAdapter = activity.getSystemService(BluetoothManager::class.java).adapter
     }
 
-    /**
-     * Provide BLUETOOTH_CONNECT permission availability to the Host App.
-     **/
     fun hasBTConnectPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(
@@ -52,11 +45,7 @@ class MiniAppBluetoothDelegate {
         return false
     }
 
-    /**
-     * Return [Boolean] if there is any paired bluetooth device is detected.
-     **/
     @SuppressLint("MissingPermission")
-    @SuppressWarnings("ExpressionBodySyntax")
     fun detectPairedDevice(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             return bluetoothAdapter.bondedDevices.size > 0
