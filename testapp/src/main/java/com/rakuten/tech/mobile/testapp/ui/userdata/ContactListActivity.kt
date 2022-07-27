@@ -133,19 +133,20 @@ class ContactListActivity : BaseActivity(), ContactListener {
         if (id.isEmpty()) {
             isVerified = false
             showContactInputWarning(getString(R.string.userdata_error_empty_contact_id))
-        }
-
-        if (name.isEmpty()) {
+        } else if (name.isEmpty() && email.isNotEmpty()) {
             isVerified = false
             showContactInputWarning(getString(R.string.userdata_error_empty_contact_name))
+        } else if (email.isEmpty() && name.isNotEmpty()) {
+            isVerified = false
+            showContactInputWarning(getString(R.string.userdata_error_empty_contact_email))
+        } else if (name.isEmpty() && email.isEmpty()) {
+            isVerified = false
+            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name_email))
         }
 
         if (email.isNotEmpty() && !email.isEmailValid()) {
             isVerified = false
             showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
-        } else if (email.isEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_email_name))
         }
 
         return isVerified

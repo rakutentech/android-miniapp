@@ -43,7 +43,8 @@
     <string name="userdata_hint_edit_name">Enter your name here</string>
     <string name="userdata_error_empty_contact_id">Empty contact id, please try again.</string>
     <string name="userdata_error_empty_contact_name">Empty contact name, please try again.</string>
-    <string name="userdata_error_empty_email_name">Empty contact email, please try again.</string>
+    <string name="userdata_error_empty_contact_email">Empty contact email, please try again.</string>
+    <string name="userdata_error_empty_contact_name_email">Empty contact name and email, please try again.</string>
     <string name="userdata_error_invalid_contact_email">Invalid contact email, please input the correct format.</string>
     <string name="userdata_warning_empty_contact_list">No contact available!</string>
     <string name="userdata_warning_not_saved_contact">No contact has been saved yet</string>

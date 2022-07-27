@@ -186,7 +186,6 @@ class MiniAppDisplayActivity : BaseActivity() {
 
                 //action: display webview
                 addLifeCycleObserver(lifecycle)
-                (binding.root.parent as ViewGroup).removeAllViews()
                 setContentView(it)
             }
 
