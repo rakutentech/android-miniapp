@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -137,10 +138,18 @@ class QASettingsActivity : BaseActivity() {
         // start paired bluetooth device detection on Android 12+
         bluetoothDelegate.initialize(this)
         binding.btnDetectBTDevice.setOnClickListener {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                Toast.makeText(
+                    this@QASettingsActivity,
+                    "This feature only supports on Android 12+ device.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
             if (bluetoothDelegate.hasBTConnectPermission())
                 detectPairDeviceOnSchedule()
-
-            detectPairDeviceOnSchedule()
         }
     }
 

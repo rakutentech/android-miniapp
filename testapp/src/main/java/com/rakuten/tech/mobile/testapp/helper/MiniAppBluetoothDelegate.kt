@@ -24,7 +24,9 @@ class MiniAppBluetoothDelegate {
 
     fun initialize(activity: Activity) {
         this.activity = activity
-        this.bluetoothAdapter = activity.getSystemService(BluetoothManager::class.java).adapter
+
+        if (activity.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH))
+            this.bluetoothAdapter = activity.getSystemService(BluetoothManager::class.java).adapter
     }
 
     fun hasBTConnectPermission(): Boolean {
