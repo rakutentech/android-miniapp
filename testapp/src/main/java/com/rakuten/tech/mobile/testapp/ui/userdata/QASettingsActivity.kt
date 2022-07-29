@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -15,9 +17,11 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import java.util.*
 
 class QASettingsActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
@@ -26,6 +30,9 @@ class QASettingsActivity : BaseActivity() {
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
     private var miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+    private val bluetoothDelegate = MiniAppBluetoothDelegate()
+    private lateinit var menuBluetooth: MenuItem
+    private val btDeviceTimer = Timer()
 
     companion object {
         fun start(activity: Activity) {
@@ -49,7 +56,11 @@ class QASettingsActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.settings_menu, menu)
+        menuInflater.inflate(R.menu.settings_qa_menu, menu)
+        menu.apply {
+            menuBluetooth = findItem(R.id.qa_menu_bluetooth)
+            menuBluetooth.isVisible = false
+        }
         return true
     }
 
@@ -108,7 +119,7 @@ class QASettingsActivity : BaseActivity() {
         invalidateMaxStorageField()
     }
 
-    private fun startListeners(){
+    private fun startListeners() {
         binding.switchAuthFailure.setOnCheckedChangeListener(accessTokenListener)
         binding.switchOtherError.setOnCheckedChangeListener(accessTokenListener)
         binding.switchUniqueIdError.setOnCheckedChangeListener { _, isChecked ->
@@ -117,16 +128,32 @@ class QASettingsActivity : BaseActivity() {
         binding.edtMaxStorageLimit.setOnFocusChangeListener { _, _ ->
             binding.edtMaxStorageLimit.setText("")
         }
-        binding.btnClearMiniAppSecureStorage.setOnClickListener{
+        binding.btnClearMiniAppSecureStorage.setOnClickListener {
             clearSecureStorageForMiniApp(binding.clearStorageForMiniAppId.text.toString())
         }
         binding.btnClearAllSecureStorage.setOnClickListener {
             clearAllSecureStorage()
         }
+
+        // start paired bluetooth device detection on Android 12+
+        bluetoothDelegate.initialize(this)
+        binding.btnDetectBTDevice.setOnClickListener {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                Toast.makeText(
+                    this@QASettingsActivity,
+                    "This feature only supports on Android 12+ device.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            if (bluetoothDelegate.hasBTConnectPermission())
+                detectPairDeviceOnSchedule()
+        }
     }
 
     private fun invalidateMaxStorageField() {
-
         binding.clearStorageForMiniAppId.isEnabled = false
         binding.clearStorageForMiniAppId.setText("No MiniApp ID available.")
         binding.btnClearMiniAppSecureStorage.isEnabled = false
@@ -138,7 +165,7 @@ class QASettingsActivity : BaseActivity() {
                 miniAppId = it.substring(dbNamePrefix.length)
             }
         }
-        if(miniAppId.isNotEmpty()) {
+        if (miniAppId.isNotEmpty()) {
             binding.clearStorageForMiniAppId.setText(miniAppId)
             binding.btnClearMiniAppSecureStorage.isEnabled = true
         }
@@ -198,7 +225,7 @@ class QASettingsActivity : BaseActivity() {
 
     private val accessTokenListener =
         CompoundButton.OnCheckedChangeListener { view, isChecked ->
-            setAccessTokenSwitchStates(view,isChecked)
+            setAccessTokenSwitchStates(view, isChecked)
         }
 
     private fun setAccessTokenSwitchStates(view: CompoundButton, isChecked: Boolean) {
@@ -236,7 +263,8 @@ class QASettingsActivity : BaseActivity() {
         // Save unique ID error response
         if (binding.switchUniqueIdError.isChecked) {
             if (binding.edtUniqueIdError.text.isNullOrEmpty()) {
-                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Please input error message for Unique ID", Toast.LENGTH_LONG)
+                    .show()
                 return
             } else settings.uniqueIdError = binding.edtUniqueIdError.text.toString()
         } else settings.uniqueIdError = ""
@@ -264,5 +292,42 @@ class QASettingsActivity : BaseActivity() {
         // post tasks
         hideSoftKeyboard(binding.root)
         finish()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
+        when (requestCode) {
+            MiniAppBluetoothDelegate.REQ_CODE_BT_CONNECT -> {
+                if (isGranted) {
+                    detectPairDeviceOnSchedule()
+                }
+            }
+        }
+    }
+
+    private fun detectPairDeviceOnSchedule() {
+        Toast.makeText(
+            this@QASettingsActivity,
+            "Detecting paired bluetooth devices...",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        btDeviceTimer.schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    menuBluetooth.isVisible = bluetoothDelegate.detectPairedDevice()
+                }
+            }
+        }, 0, 5000) // detect bluetooth device in every 5s.
+    }
+
+    override fun onDestroy() {
+        btDeviceTimer.cancel()
+        super.onDestroy()
     }
 }
