@@ -3,6 +3,7 @@
 ### 4.3.0 (release date TBD)
 **SDK**
 - **Feature:** Added `languageCode` in cached manifest to support localization of manifest.
+- **Fix:** Added fix when navigate to back page with invalid url. 
 
 ### 4.2.0 (2022-06-24)
 **SDK**
