@@ -14,6 +14,8 @@ internal class MiniAppScheme private constructor(miniAppId: String) {
     var appUrl: String? = null
         private set
 
+    val parentUrlExtension = "/index.html"
+
     companion object {
         fun schemeWithAppId(miniAppId: String) = MiniAppScheme(miniAppId)
 

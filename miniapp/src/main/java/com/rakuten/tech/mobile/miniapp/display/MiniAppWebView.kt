@@ -219,7 +219,7 @@ internal open class MiniAppWebView(
         .build()
 
     internal open fun getLoadUrl(): String {
-        val parentUrl = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH/index.html"
+        val parentUrl = "${miniAppScheme.miniAppCustomDomain}$SUB_DOMAIN_PATH${miniAppScheme.parentUrlExtension}"
         return miniAppScheme.appendParametersToUrl(parentUrl, queryParams)
     }
 

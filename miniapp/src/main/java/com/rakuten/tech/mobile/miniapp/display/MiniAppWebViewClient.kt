@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 
 internal class MiniAppWebViewClient(
     private val context: Context,
-    @VisibleForTesting internal val loader: WebViewAssetLoader?,
+    internal val loader: WebViewAssetLoader?,
     private val miniAppNavigator: MiniAppNavigator,
     private val externalResultHandler: ExternalResultHandler,
     private val miniAppScheme: MiniAppScheme
@@ -24,6 +24,13 @@ internal class MiniAppWebViewClient(
         val response = loader?.shouldInterceptRequest(request.url)
         interceptMimeType(response, request)
         return response
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        if (url?.startsWith(miniAppScheme.miniAppCustomDomain) == true && url.contains(miniAppScheme.parentUrlExtension))
+            view?.clearHistory()
+
+        super.onPageFinished(view, url)
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
