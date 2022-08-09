@@ -71,7 +71,7 @@ class QASettingsActivity : BaseActivity() {
                 finish()
                 return true
             }
-            R.id.settings_menu_save -> {
+            R.id.qa_menu_save -> {
                 update()
                 return true
             }

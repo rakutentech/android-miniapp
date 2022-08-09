@@ -1,8 +1,15 @@
 ## CHANGELOG
 
-### 4.3.0 (release date TBD)
+### 4.3.0 (2022-08-09)
 **SDK**
 - **Feature:** Added `languageCode` in cached manifest to support localization of manifest.
+- **Fix:** Added bug fixes related to Secure storage feature.
+
+**Sample App**
+- **Feature:** Added bluetooth paired device detection on Android 12+ devices in QA settings screen.
+- **Feature:** Added UI in QA settings screen to upgrade the max storage size limit on runtime.
+- **Fix:** Displayed close confirmation dialog when MiniApp is closed using physical back button.
+- **Fix:** Added proper error message when name and email both inputs are empty in contact settings page.
 
 ### 4.2.0 (2022-06-24)
 **SDK**
