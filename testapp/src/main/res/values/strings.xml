@@ -76,6 +76,7 @@
     <string name="action_clear_all">Clear All</string>
     <string name="action_clear_miniapp">Clear MiniApp Storage</string>
     <string name="action_detect_bluetooth">Start detect</string>
+    <string name="action_show_bluetooth">Show bluetooth devices</string>
 
     <string name="hint_host_project_id">Host Project ID</string>
     <string name="hint_subscription_key">Subscription Key</string>
