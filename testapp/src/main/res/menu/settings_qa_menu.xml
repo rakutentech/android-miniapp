@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/qa_menu_bluetooth"
         android:icon="@drawable/ic_bluetooth_connect"
-        app:showAsAction="always"
-        tools:ignore="MenuTitle" />
+        android:title="@string/action_show_bluetooth"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/qa_menu_save"
