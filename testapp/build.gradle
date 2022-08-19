@@ -58,7 +58,7 @@ android {
             sslPublicKey            : property("CERTIFICATE_PUBLIC_KEY") ?: "",
             sslPublicKeyBackup      : property("CERTIFICATE_PUBLIC_KEY_BACKUP") ?: "",
             enableH5Ads             : property("ENABLE_H5_ADS") ?: true,
-            storageMaxSizeKB        : property("STORAGE_MAX_SIZE_KB") ?: 5000,
+            maxStorageSizeLimitInMB : property("MAX_STORAGE_SIZE_LIMIT_IN_MB") ?: 5,
     ] + commonPlaceholders
     def stagingManifestPlaceholders = debugManifestPlaceholders.clone()
     stagingManifestPlaceholders.appName = defaultAppName + " STG"
