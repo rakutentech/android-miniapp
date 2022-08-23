@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import android.util.Log
-import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -14,14 +13,21 @@ import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
-import com.rakuten.tech.mobile.miniapp.storage.*
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 
+@Suppress("LargeClass")
 internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig

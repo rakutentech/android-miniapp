@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import android.view.View
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
 
 /**
@@ -29,10 +29,8 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      */
     suspend fun create(miniAppId: String, fromCache: Boolean = false): View? = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> {
-            miniAppViewHandler.createMiniAppView(miniAppId, config, fromCache)
-                .getMiniAppView(context)
-        }
+        else -> miniAppViewHandler.createMiniAppView(miniAppId, config, fromCache)
+            .getMiniAppView(context)
     }
 
     /**
@@ -49,10 +47,8 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      */
     suspend fun create(miniAppInfo: MiniAppInfo, fromCache: Boolean = false): View? = when {
         miniAppInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> {
-            miniAppViewHandler.createMiniAppView(miniAppInfo.id, config, fromCache)
-                .getMiniAppView(context)
-        }
+        else -> miniAppViewHandler.createMiniAppView(miniAppInfo.id, config, fromCache)
+            .getMiniAppView(context)
     }
 
     /**
@@ -69,8 +65,6 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      */
     suspend fun createWithUrl(miniAppUrl: String): View? = when {
         miniAppUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> {
-            miniAppViewHandler.createMiniAppViewWithUrl(miniAppUrl, config).getMiniAppView(context)
-        }
+        else -> miniAppViewHandler.createMiniAppViewWithUrl(miniAppUrl, config).getMiniAppView(context)
     }
 }
