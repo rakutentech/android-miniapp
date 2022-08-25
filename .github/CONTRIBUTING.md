@@ -2,7 +2,7 @@
 ## Found a Bug?
 If you find a bug in the source code, you can help us by submitting an issue to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
 
-**Considering making your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
+**Considering making your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://app.egghead.io/playlists/how-to-contribute-to-an-open-source-project-on-github)
 
 ## Pull Requests
 1. Fork the project
@@ -13,11 +13,10 @@ If you find a bug in the source code, you can help us by submitting an issue to 
 Please include unit tests where necessary to cover any functionality that is introduced.
 
 ## Coding Guidelines
-* **See our [Android SDK Development guidelines](https://github.com/rakutentech/mobile-sdk-guidelines/blob/master/android-sdk-development-guidelines.md)**
-* All features or bug fixes **must be tested** by one or more unit tests/specs
-* All public API methods **must be documented** in the KDoc/JavaDoc and potentially in the user guide.
 * All Kotlin code must follow [Kotlin's Coding Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html).
 * All Java code must follow [Google's Java Code style](https://google.github.io/styleguide/javaguide.html), the only excption being that annotations on members or classes may be on the same line (no forced line break).
+* All features or bug fixes **must be tested** by one or more unit tests/specs
+* All public API methods **must be documented** in the KDoc/JavaDoc and potentially in the user guide.
 
 ## Commit messages
 Each commit message consists of a header, a body and a footer. The header has a special format that includes a type and a subject:
@@ -102,7 +101,7 @@ A sentence describing the type of change with necessary and relevant information
 
 If you would like to submit a pull request for a major feature, please follow the learning path below to ensure you understand the development guidelines and the tools which we use.
 
-* **Read and understand our [Android SDK Development guidelines](https://github.com/rakutentech/mobile-sdk-guidelines/blob/master/android-sdk-development-guidelines.md)**.
+* **Read and understand our [SDK Development guidelines](https://github.com/rakutentech/mobile-sdk-guidelines/blob/master/sdk-development-guidelines.md)**.
 * Be familiar with the [Kotlin Coding Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html).
 * Read about best practices for Android:
     * [Best Practices for Background Jobs](https://developer.android.com/training/best-background)
@@ -120,11 +119,9 @@ If you would like to submit a pull request for a major feature, please follow th
     * [kotlinx-coroutines-test](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)
 * Learn how to write Kotlin documentation.
     * [KDocs reference](https://kotlinlang.org/docs/reference/kotlin-doc.html)
-    * Learn how to use [Dokka](https://github.com/Kotlin/dokka) and how to [generate docs locally](../DEV.md#How-to-generate-KDocs-SDK-documentation-locally).
+    * Learn how to use [Dokka](https://github.com/Kotlin/dokka) 
 * Read about [our shared build config for SDKs](https://github.com/rakutentech/android-buildconfig) and understand how its integrated in the project.
 * Be familiar with [code quality tools](https://github.com/rakutentech/android-buildconfig/tree/master/quality).
     * [Detekt](https://detekt.github.io/detekt/) and [our Detekt rules](https://github.com/rakutentech/android-buildconfig/blob/master/quality/detekt/detekt-config.yml)
     * [ktlint](https://github.com/pinterest/ktlint)
-* Be familiar with the [OWASP mobile security checklist](https://github.com/OWASP/owasp-mstg/tree/master/Checklists).
-    * Optional: Read the [OWASP Android Testing Guide](https://github.com/OWASP/owasp-mstg#android-testing-guide).
 * Learn about [Semantic versioning](https://semver.org/spec/v2.0.0.html).
