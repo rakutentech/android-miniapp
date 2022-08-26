@@ -19,13 +19,13 @@ data class MiniAppConfig(
     val miniAppNavigator: MiniAppNavigator?,
     val miniAppFileChooser: MiniAppFileChooser?,
     val miniAppMessageBridge: MiniAppMessageBridge,
-    val queryParams: String
+    val queryParams: String = ""
 ) {
 
     init {
         when {
             ((miniAppNavigator == null) || (miniAppFileChooser == null)) ->
-                throw sdkExceptionForInvalidArguments("MiniAppSdkConfig with invalid rasProjectId")
+                throw sdkExceptionForInvalidArguments("MiniAppConfig with invalid parameters")
         }
     }
 }

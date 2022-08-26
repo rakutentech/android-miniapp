@@ -6,9 +6,10 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
 
 /**
- * This class can be use to create miniapp instances.
- * @param context of where the miniapp is loaded.
- * @param config provide the necessary configuration.
+ * This class can be used in the HostApp to create the miniapp views independently.
+ * @param context is used by the view for initializing the internal services.
+ * Must be the context of activity to ensure that all standard html components work properly.
+ * @param config provide the necessary configuration to provide an independent MiniApp.
  */
 class MiniAppView(val context: Context, val config: MiniAppConfig) {
 
@@ -27,7 +28,7 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun create(miniAppId: String, fromCache: Boolean = false): View? = when {
+    suspend fun load(miniAppId: String, fromCache: Boolean = false): View? = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppViewHandler.createMiniAppView(miniAppId, config, fromCache)
             .getMiniAppView(context)
@@ -45,7 +46,7 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun create(miniAppInfo: MiniAppInfo, fromCache: Boolean = false): View? = when {
+    suspend fun load(miniAppInfo: MiniAppInfo, fromCache: Boolean = false): View? = when {
         miniAppInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppViewHandler.createMiniAppView(miniAppInfo.id, config, fromCache)
             .getMiniAppView(context)
@@ -63,7 +64,7 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun createWithUrl(miniAppUrl: String): View? = when {
+    suspend fun loadWithUrl(miniAppUrl: String): View? = when {
         miniAppUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppViewHandler.createMiniAppViewWithUrl(miniAppUrl, config).getMiniAppView(context)
     }

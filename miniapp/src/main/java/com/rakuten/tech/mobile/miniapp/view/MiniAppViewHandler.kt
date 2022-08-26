@@ -102,7 +102,7 @@ internal class MiniAppViewHandler(
                 checkToDownloadManifest(appId, versionId, cachedManifest)
         } catch (e: MiniAppNetException) {
             Log.e(
-                "RealMiniApp", "Unable to retrieve latest manifest due to device being offline. " +
+                "MiniAppViewHandler", "Unable to retrieve latest manifest due to device being offline. " +
                         "Skipping manifest download.", e
             )
         }
