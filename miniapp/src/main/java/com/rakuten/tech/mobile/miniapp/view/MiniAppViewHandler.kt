@@ -32,16 +32,16 @@ internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig
 ) {
-    internal var enableH5Ads: Boolean
+    private var displayer: Displayer
+    private var miniAppInfoFetcher: MiniAppInfoFetcher
+    private var miniAppManifestVerifier: MiniAppManifestVerifier
+    private var apiClientRepository: ApiClientRepository
+    internal var enableH5Ads: Boolean = config.enableH5Ads
     internal var apiClient: ApiClient
-    internal var displayer: Displayer
     internal var miniAppAnalytics: MiniAppAnalytics
-    internal var miniAppDownloader: MiniAppDownloader
+    private var miniAppDownloader: MiniAppDownloader
     internal var signatureVerifier: SignatureVerifier
-    internal var miniAppInfoFetcher: MiniAppInfoFetcher
-    internal var apiClientRepository: ApiClientRepository
     internal var ratDispatcher: MessageBridgeRatDispatcher
-    internal var miniAppManifestVerifier: MiniAppManifestVerifier
     internal var downloadedManifestCache: DownloadedManifestCache
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
@@ -66,7 +66,6 @@ internal class MiniAppViewHandler(
     )
 
     init {
-        enableH5Ads = config.enableH5Ads
         apiClient = initApiClient()
         displayer = Displayer(config.hostAppUserAgentInfo)
         miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
@@ -102,8 +101,10 @@ internal class MiniAppViewHandler(
                 checkToDownloadManifest(appId, versionId, cachedManifest)
         } catch (e: MiniAppNetException) {
             Log.e(
-                "MiniAppViewHandler", "Unable to retrieve latest manifest due to device being offline. " +
-                        "Skipping manifest download.", e
+                "MiniAppViewHandler",
+                "Unable to retrieve latest manifest due to device being offline. " +
+                        "Skipping manifest download.",
+                e
             )
         }
 

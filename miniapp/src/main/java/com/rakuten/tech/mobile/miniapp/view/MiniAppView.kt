@@ -2,7 +2,8 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import android.view.View
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.display.RealMiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
 
 /**
@@ -14,12 +15,12 @@ import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
 class MiniAppView(val context: Context, val config: MiniAppConfig) {
 
     private var miniAppViewHandler: MiniAppViewHandler =
-        config.miniAppSdkConfig?.let { MiniAppViewHandler(context, it) }!!
+        MiniAppViewHandler(context, config.miniAppSdkConfig)
 
     /**
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a view when successful.
-     * @param appId mini app id.
+     * @param miniAppId mini app id.
      * @param fromCache allow host app to load miniapp from cache.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
@@ -28,16 +29,21 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun load(miniAppId: String, fromCache: Boolean = false): View? = when {
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
+    suspend fun load(miniAppId: String, fromCache: Boolean = false): MiniAppDisplay = when {
         miniAppId.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppViewHandler.createMiniAppView(miniAppId, config, fromCache)
-            .getMiniAppView(context)
     }
 
     /**
      * Creates a mini app.
      * The mini app is downloaded, saved and provides a view when successful.
-     * @param appInfo metadata of a mini app.
+     * @param miniAppInfo metadata of a mini app.
      * @param fromCache allow host app to load miniapp from cache.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
@@ -46,17 +52,22 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun load(miniAppInfo: MiniAppInfo, fromCache: Boolean = false): View? = when {
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class
+    )
+    suspend fun load(miniAppInfo: MiniAppInfo, fromCache: Boolean = false): MiniAppDisplay = when {
         miniAppInfo.id.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> miniAppViewHandler.createMiniAppView(miniAppInfo.id, config, fromCache)
-            .getMiniAppView(context)
     }
 
     /**
      * Creates a mini app using provided url.
      * Mini app is NOT downloaded and cached in local, its content are read directly from the url.
      * This should only be used for previewing a mini app from a local server.
-     * @param appUrl a HTTP url containing Mini App content.
+     * @param miniAppUrl a HTTP url containing Mini App content.
      * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
      * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
      * server but has no published versions
@@ -64,8 +75,9 @@ class MiniAppView(val context: Context, val config: MiniAppConfig) {
      * downloading or creating the view.
      * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
      */
-    suspend fun loadWithUrl(miniAppUrl: String): View? = when {
+    @Throws(MiniAppNotFoundException::class, MiniAppSdkException::class)
+    suspend fun loadWithUrl(miniAppUrl: String): MiniAppDisplay = when {
         miniAppUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
-        else -> miniAppViewHandler.createMiniAppViewWithUrl(miniAppUrl, config).getMiniAppView(context)
+        else -> miniAppViewHandler.createMiniAppViewWithUrl(miniAppUrl, config)
     }
 }
