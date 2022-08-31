@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+### 5.x.x (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `MiniAppView` to create multiple MiniApp views.
+- **Feature:** Added `MiniAppConfig` data class to hold configuration settings for the `MiniAppView`.
+- **Deprecated:** Old `create` and `createWithUrl` interfaces.
+
 ### 4.3.0 (2022-08-09)
 **SDK**
 - **Feature:** Added `languageCode` in cached manifest to support localization of manifest.
