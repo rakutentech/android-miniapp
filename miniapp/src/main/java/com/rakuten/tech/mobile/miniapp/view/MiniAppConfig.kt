@@ -4,7 +4,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
 
 /**
  * This represents the configuration settings for the Mini App.

@@ -1,10 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
-import android.view.View
-import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.display.RealMiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInvalidArguments
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 
 /**
  * This class can be used in the HostApp to create the miniapp views independently.
