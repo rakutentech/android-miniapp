@@ -39,7 +39,7 @@ internal class SignatureApiClient(baseUrl: String, subscriptionKey: String, cont
 
         if (paramMap != null) {
             for ((k, v) in paramMap) {
-                if (v.isNotEmpty() && k.isNotEmpty()) builder.addQueryParameter(k, v)
+                if (v.isNotEmpty() && k.isNotEmpty()) builder.addqueryParams(k, v)
             }
         }
 

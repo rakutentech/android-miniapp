@@ -9,23 +9,11 @@ import com.rakuten.tech.mobile.miniapp.*
 abstract class MiniAppView internal constructor() {
     companion object {
         internal lateinit var instance: MiniAppView
+
         /**
-         * Creates a mini app view.
-         * The mini app is downloaded, saved and provides a view when successful.
+         * initialize a mini app view.
          * @param miniAppParameters parameters needed to create a mini app.
-         * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
-         * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
-         * server but has no published versions
-         * @throws [MiniAppSdkException] when there is any other issue during fetching,
-         * downloading or creating the view.
-         * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
          */
-        @Throws(
-            MiniAppNotFoundException::class,
-            MiniAppHasNoPublishedVersionException::class,
-            MiniAppSdkException::class,
-            RequiredPermissionsNotGrantedException::class,
-        )
         fun init(miniAppParameters: MiniAppParameters): MiniAppView {
             var context: Context? = null
             var config: MiniAppConfig? = null
@@ -50,7 +38,25 @@ abstract class MiniAppView internal constructor() {
         }
     }
 
-    abstract fun load(queryParameter: String = "", onComplete: (MiniAppDisplay) -> Unit)
+    /**
+     * load a mini app view.
+     * The mini app is downloaded, saved and provides a view when successful.
+     * @param queryParams the parameters will be appended with the miniapp url scheme.
+     * @param onComplete parameters needed to callback when the miniapp is successfully loaded.
+     * @throws [MiniAppNotFoundException] when the specified project ID does not have any mini app exist on the server.
+     * @throws [MiniAppHasNoPublishedVersionException] when the specified mini app ID exists on the
+     * server but has no published versions
+     * @throws [MiniAppSdkException] when there is any other issue during fetching,
+     * downloading or creating the view.
+     * @throws [RequiredPermissionsNotGrantedException] when the required permissions of the manifest are not granted.
+     */
+    @Throws(
+        MiniAppNotFoundException::class,
+        MiniAppHasNoPublishedVersionException::class,
+        MiniAppSdkException::class,
+        RequiredPermissionsNotGrantedException::class,
+    )
+    abstract fun load(queryParams: String = "", onComplete: (MiniAppDisplay) -> Unit)
 
 }
 

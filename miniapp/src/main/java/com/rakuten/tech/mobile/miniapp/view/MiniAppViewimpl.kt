@@ -13,10 +13,11 @@ internal class MiniAppViewimpl(
     private val miniAppViewHandler: MiniAppViewHandler by lazy { initMiniAppViewHandler() }
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    override fun load(queryParameter: String, onComplete: (MiniAppDisplay) -> Unit) {
+    override fun load(queryParams: String, onComplete: (MiniAppDisplay) -> Unit) {
         when (miniAppParameters) {
             is MiniAppParameters.DefaultParams -> {
                 scope.launch {
+                    if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
                     onComplete(
                         miniAppViewHandler.createMiniAppView(
                             (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
@@ -28,6 +29,7 @@ internal class MiniAppViewimpl(
             }
             is MiniAppParameters.InfoParams -> {
                 scope.launch {
+                    if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
                     onComplete(
                         miniAppViewHandler.createMiniAppView(
                             (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo.id,
@@ -38,6 +40,7 @@ internal class MiniAppViewimpl(
                 }
             }
             is MiniAppParameters.UrlParams -> {
+                if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
                 scope.launch {
                     onComplete(
                         miniAppViewHandler.createMiniAppViewWithUrl(

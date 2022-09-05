@@ -72,7 +72,9 @@ abstract class MiniApp internal constructor() {
     @Deprecated(
         "This function has been deprecated.",
         ReplaceWith(
-            "MiniAppView.load(miniAppId: String, fromCache: Boolean): View?"
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
         )
     )
     abstract suspend fun create(
@@ -111,7 +113,9 @@ abstract class MiniApp internal constructor() {
     @Deprecated(
         "This function has been deprecated.",
         ReplaceWith(
-            "MiniAppView.load(miniAppInfo: MiniAppInfo, fromCache: Boolean): View?"
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
         )
     )
     abstract suspend fun create(
@@ -139,7 +143,9 @@ abstract class MiniApp internal constructor() {
     @Deprecated(
         "This function has been deprecated.",
         ReplaceWith(
-            "MiniAppView.loadWithUrl(miniAppUrl: String): View?"
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
         )
     )
     abstract suspend fun createWithUrl(
