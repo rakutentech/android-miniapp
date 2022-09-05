@@ -1,11 +1,16 @@
 package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 
 /**
  * This class can be used in the HostApp to create the miniapp views independently.
  */
+@Suppress("UnnecessaryAbstractClass")
 abstract class MiniAppView internal constructor() {
     companion object {
         internal lateinit var instance: MiniAppView
@@ -57,9 +62,4 @@ abstract class MiniAppView internal constructor() {
         RequiredPermissionsNotGrantedException::class,
     )
     abstract fun load(queryParams: String = "", onComplete: (MiniAppDisplay) -> Unit)
-
 }
-
-
-
-

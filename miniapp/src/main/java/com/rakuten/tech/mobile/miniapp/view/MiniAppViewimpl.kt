@@ -15,40 +15,37 @@ internal class MiniAppViewimpl(
 
     override fun load(queryParams: String, onComplete: (MiniAppDisplay) -> Unit) {
         when (miniAppParameters) {
-            is MiniAppParameters.DefaultParams -> {
-                scope.launch {
-                    if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
-                    onComplete(
-                        miniAppViewHandler.createMiniAppView(
-                            (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
-                            (miniAppParameters as MiniAppParameters.DefaultParams).config,
-                            (miniAppParameters as MiniAppParameters.DefaultParams).fromCache
-                        )
+            is MiniAppParameters.DefaultParams -> scope.launch {
+                if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                    queryParams
+                onComplete(
+                    miniAppViewHandler.createMiniAppView(
+                        (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
+                        (miniAppParameters as MiniAppParameters.DefaultParams).config,
+                        (miniAppParameters as MiniAppParameters.DefaultParams).fromCache
                     )
-                }
+                )
             }
-            is MiniAppParameters.InfoParams -> {
-                scope.launch {
-                    if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
-                    onComplete(
-                        miniAppViewHandler.createMiniAppView(
-                            (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo.id,
-                            (miniAppParameters as MiniAppParameters.InfoParams).config,
-                            (miniAppParameters as MiniAppParameters.InfoParams).fromCache
-                        )
+            is MiniAppParameters.InfoParams -> scope.launch {
+                if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                    queryParams
+                onComplete(
+                    miniAppViewHandler.createMiniAppView(
+                        (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo.id,
+                        (miniAppParameters as MiniAppParameters.InfoParams).config,
+                        (miniAppParameters as MiniAppParameters.InfoParams).fromCache
                     )
-                }
+                )
             }
-            is MiniAppParameters.UrlParams -> {
-                if(queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams = queryParams
-                scope.launch {
-                    onComplete(
-                        miniAppViewHandler.createMiniAppViewWithUrl(
-                            (miniAppParameters as MiniAppParameters.UrlParams).miniAppUrl,
-                            (miniAppParameters as MiniAppParameters.UrlParams).config
-                        )
+            is MiniAppParameters.UrlParams -> scope.launch {
+                if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                    queryParams
+                onComplete(
+                    miniAppViewHandler.createMiniAppViewWithUrl(
+                        (miniAppParameters as MiniAppParameters.UrlParams).miniAppUrl,
+                        (miniAppParameters as MiniAppParameters.UrlParams).config
                     )
-                }
+                )
             }
         }
     }
