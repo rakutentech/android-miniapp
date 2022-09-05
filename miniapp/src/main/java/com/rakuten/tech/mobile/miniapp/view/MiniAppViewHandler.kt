@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -36,6 +37,7 @@ internal class MiniAppViewHandler(
     private var miniAppInfoFetcher: MiniAppInfoFetcher
     private var miniAppManifestVerifier: MiniAppManifestVerifier
     private var apiClientRepository: ApiClientRepository
+    private lateinit var miniAppParameters: MiniAppParameters
     internal var enableH5Ads: Boolean = config.enableH5Ads
     internal var apiClient: ApiClient
     internal var miniAppAnalytics: MiniAppAnalytics
@@ -214,5 +216,6 @@ internal class MiniAppViewHandler(
             secureStorageDispatcher,
             enableH5Ads
         )
+
     }
 }
