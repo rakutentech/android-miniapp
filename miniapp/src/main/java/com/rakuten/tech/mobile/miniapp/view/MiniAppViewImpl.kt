@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-internal class MiniAppViewimpl(
+internal class MiniAppViewImpl(
     private var miniAppParameters: MiniAppParameters,
     initMiniAppViewHandler: () -> MiniAppViewHandler,
 ) : MiniAppView() {

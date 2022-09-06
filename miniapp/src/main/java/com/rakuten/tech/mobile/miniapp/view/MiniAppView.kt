@@ -36,7 +36,7 @@ abstract class MiniAppView internal constructor() {
                     config = miniAppParameters.config
                 }
             }
-            instance = MiniAppViewimpl(miniAppParameters) {
+            instance = MiniAppViewImpl(miniAppParameters) {
                 MiniAppViewHandler(context, config.miniAppSdkConfig)
             }
             return instance
