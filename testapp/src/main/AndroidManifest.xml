@@ -33,12 +33,23 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.MiniAppMainActivity"
+            android:launchMode="singleTop"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
         </activity>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"

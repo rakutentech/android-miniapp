@@ -69,6 +69,14 @@ abstract class MiniApp internal constructor() {
         RequiredPermissionsNotGrantedException::class
     )
     @Suppress("LongParameterList", "LongMethod")
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -102,6 +110,14 @@ abstract class MiniApp internal constructor() {
         RequiredPermissionsNotGrantedException::class
     )
     @Suppress("LongParameterList", "LongMethod")
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -124,6 +140,14 @@ abstract class MiniApp internal constructor() {
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
     @Throws(MiniAppNotFoundException::class, MiniAppSdkException::class)
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun createWithUrl(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
