@@ -11,5 +11,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/pb"
+                android:layout_width="@dimen/progress_size"
+                android:layout_height="@dimen/progress_size"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

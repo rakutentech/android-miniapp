@@ -2,22 +2,24 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TableLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
@@ -47,11 +49,13 @@ import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
+import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
 import com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.NullPointerException
 import java.util.ArrayList
 
 class MiniAppDisplayFragment : BaseFragment() {
@@ -72,6 +76,8 @@ class MiniAppDisplayFragment : BaseFragment() {
     private var appInfo: MiniAppInfo? = null
     private var isloadNew = false
     private var miniappview: View? = null
+    private lateinit var miniAppDisplay: MiniAppDisplay
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.e("MiniAppDisplay", "fragment onCreate")
@@ -108,6 +114,9 @@ class MiniAppDisplayFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         Log.e("MiniAppDisplay", "fragment onViewCreated")
+
+        setHasOptionsMenu(true)
+        appInfo = args.miniAppInfo
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_mini_app_display,
@@ -184,23 +193,27 @@ class MiniAppDisplayFragment : BaseFragment() {
                     miniAppFileChooser = miniAppFileChooser,
                     queryParams = AppSettings.instance.urlParameters
                 ),
-                miniAppId = args.itemId.id,
-                miniAppVersion = args.itemId.version.versionId,
+                miniAppId = args.miniAppInfo.id,
+                miniAppVersion = args.miniAppInfo.version.versionId,
                 fromCache = false
             )
             val activiy = activity
             val miniapp = MiniAppView.init(param)
+            toggleProgressLoading(true)
             miniapp.load { miniAppDisplay ->
+                this.miniAppDisplay = miniAppDisplay
                 CoroutineScope(Dispatchers.Default).launch {
                     activity?.let {
                         miniappview = miniAppDisplay.getMiniAppView(it)
                         activiy?.runOnUiThread {
                             miniappview?.layoutParams = TableLayout.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                800, 1f
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                1f
                             )
                             miniappview?.setPadding(5, 30, 0, 30)
                             binding.linRoot.addView(miniappview)
+                            toggleProgressLoading(false)
                         }
                     }
                 }
@@ -214,10 +227,18 @@ class MiniAppDisplayFragment : BaseFragment() {
                 )
                 miniappview?.setPadding(5, 30, 0, 30)
                 (miniappview?.parent as? ViewGroup)?.removeView(miniappview)
-                miniappview?.let { binding.linRoot.addView(it) }
+                miniappview?.let {
+                    binding.linRoot.addView(it)
+                    toggleProgressLoading(false)
+                }
             }
         }
         return binding.root
+    }
+
+    private fun toggleProgressLoading(isOn: Boolean) = when (isOn) {
+        true -> binding.pb.visibility = View.VISIBLE
+        false -> binding.pb.visibility = View.GONE
     }
 
     private fun setupMiniAppMessageBridge(
@@ -382,5 +403,84 @@ class MiniAppDisplayFragment : BaseFragment() {
                 miniAppFileDownloader.onReceivedResult(destinationUri)
             }
         }
+    }
+
+    fun handlePermissionResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
+        when (requestCode) {
+            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            else -> miniappPermissionCallback.invoke(isGranted)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.miniapp_display_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            android.R.id.home -> {
+                checkCloseAlert()
+                true
+            }
+            R.id.share_mini_app -> {
+                appInfo?.let {
+                    MiniAppShareWindow.getInstance(requireActivity()).show(miniAppInfo = it)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun checkCloseAlert() {
+        try {
+            val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
+            if (closeAlertInfo?.shouldDisplay!!) {
+                val dialogClickListener =
+                    DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                findNavController().navigateUp()
+                            }
+                        }
+                    }
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+                builder.setTitle(closeAlertInfo.title)
+                    .setMessage(closeAlertInfo.description)
+                    .setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show()
+            } else findNavController().navigateUp()
+        } catch (e: NullPointerException) {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun canGoBackwards(): Boolean =
+        if (::miniAppDisplay.isInitialized)
+            miniAppDisplay.navigateBackward()
+        else
+            false
+
+    fun onBackPressed() {
+        if (!canGoBackwards()) {
+            checkCloseAlert()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
     }
 }

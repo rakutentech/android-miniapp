@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -12,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
+import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
@@ -115,6 +117,28 @@ class MiniAppMainActivity : BaseActivity() {
             if (fragment is MiniAppDisplayFragment) {
                 fragment.handleOnActivityResult(requestCode, resultCode, data)
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        getCurrentVisibleFragment()?.let { fragment ->
+            if (fragment is MiniAppDisplayFragment) {
+                fragment.handlePermissionResult(requestCode, permissions, grantResults)
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        getCurrentVisibleFragment()?.let { fragment ->
+            if (fragment is MiniAppDisplayFragment) {
+                fragment.onBackPressed()
+            } else super.onBackPressed()
+
         }
     }
 

@@ -21,7 +21,7 @@
         android:label="Detail"
         tools:layout="@layout/fragment_mini_app_display">
         <argument
-            android:name="itemId"
+            android:name="miniAppInfo"
             app:argType="com.rakuten.tech.mobile.miniapp.MiniAppInfo" />
     </fragment>
 </navigation>
