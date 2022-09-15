@@ -10,13 +10,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.TableLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
@@ -42,6 +42,7 @@ import com.rakuten.tech.mobile.miniapp.view.MiniAppParameters
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
 import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
+import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
@@ -101,21 +102,45 @@ class MiniAppDisplayFragment : BaseFragment() {
             container,
             false
         )
+
         if (isloadNew) {
             isloadNew = false
-            setUpFileChooserAndDownloader(activity)
-            setUpNavigator(activity)
-            setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
-            val miniAppView = MiniAppView.init(createMiniAppDefaultParam(activity, args.miniAppInfo))
-            toggleProgressLoading(true)
+            initializeMiniAppDisplay(activity)
+        } else {
+            if (this::miniAppDisplay.isInitialized)
+                addMiniAppChildView(activity, miniAppDisplay)
+            else
+                initializeMiniAppDisplay(activity)
+        }
+        return binding.root
+    }
+
+    private fun initializeMiniAppDisplay(activity: Activity){
+        toggleProgressLoading(true)
+        setUpFileChooserAndDownloader(activity)
+        setUpNavigator(activity)
+        setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
+        val miniAppView = MiniAppView.init(createMiniAppDefaultParam(activity, args.miniAppInfo))
+        try {
             miniAppView.load { miniAppDisplay ->
                 this.miniAppDisplay = miniAppDisplay
                 addMiniAppChildView(activity, miniAppDisplay)
             }
-        } else {
-            addMiniAppChildView(activity, miniAppDisplay)
+        } catch (e: MiniAppSdkException) {
+            toggleProgressLoading(false)
+            e.printStackTrace()
+            when (e) {
+                is MiniAppHasNoPublishedVersionException ->
+                    Toast.makeText(activity, "No published version for the provided Mini App ID.", Toast.LENGTH_LONG).show()
+                is MiniAppNotFoundException ->
+                    Toast.makeText(activity, "No Mini App found for the provided Project ID.", Toast.LENGTH_LONG).show()
+                is MiniAppTooManyRequestsError ->
+                    showErrorDialog(activity, getString(R.string.error_desc_miniapp_too_many_request))
+                else -> {
+                    Toast.makeText(activity, e.message, Toast.LENGTH_LONG).show()
+                }
+            }
         }
-        return binding.root
     }
 
     private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay){
