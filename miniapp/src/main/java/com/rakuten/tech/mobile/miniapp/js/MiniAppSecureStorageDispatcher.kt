@@ -71,7 +71,7 @@ internal class MiniAppSecureStorageDispatcher(
                 value = Gson().toJson(errorSecure)
             )
         }
-       // miniAppSecureStorage.load(miniAppId, onSuccess, onFailed)
+        // miniAppSecureStorage.load(miniAppId, onSuccess, onFailed)
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")

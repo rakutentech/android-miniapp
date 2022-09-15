@@ -77,6 +77,7 @@ class MiniAppDisplayFragment : BaseFragment() {
     private var isloadNew = false
     private var miniappview: View? = null
     private lateinit var miniAppDisplay: MiniAppDisplay
+    private lateinit var appId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +94,10 @@ class MiniAppDisplayFragment : BaseFragment() {
     override fun onDetach() {
         super.onDetach()
         Log.e("MiniAppDisplay", "fragment onDetach")
+        if (this::miniAppDisplay.isInitialized) {
+            miniAppDisplay.destroyView()
+        }
+        miniappview = null
     }
 
     override fun onDestroyView() {
@@ -117,6 +122,7 @@ class MiniAppDisplayFragment : BaseFragment() {
 
         setHasOptionsMenu(true)
         appInfo = args.miniAppInfo
+        appId = args.miniAppInfo.id
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_mini_app_display,
@@ -177,7 +183,7 @@ class MiniAppDisplayFragment : BaseFragment() {
                         sampleWebViewExternalResultHandler = externalResultHandler
                         WebViewActivity.startForResult(
                             requireActivity(), url,
-                            "appId", "appUrl", externalWebViewReqCode
+                            appId, null, externalWebViewReqCode
                         )
                     }
                 }
@@ -211,7 +217,6 @@ class MiniAppDisplayFragment : BaseFragment() {
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 1f
                             )
-                            miniappview?.setPadding(5, 30, 0, 30)
                             binding.linRoot.addView(miniappview)
                             toggleProgressLoading(false)
                         }
@@ -223,9 +228,8 @@ class MiniAppDisplayFragment : BaseFragment() {
             activiy?.runOnUiThread {
                 miniappview?.layoutParams = TableLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    800, 1f
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1f
                 )
-                miniappview?.setPadding(5, 30, 0, 30)
                 (miniappview?.parent as? ViewGroup)?.removeView(miniappview)
                 miniappview?.let {
                     binding.linRoot.addView(it)
