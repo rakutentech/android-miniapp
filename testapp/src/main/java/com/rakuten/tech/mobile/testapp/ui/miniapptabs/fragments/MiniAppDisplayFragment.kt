@@ -3,20 +3,16 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TableLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
@@ -25,7 +21,6 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
-import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
@@ -55,8 +50,6 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.NullPointerException
-import java.util.ArrayList
 
 class MiniAppDisplayFragment : BaseFragment() {
 
@@ -75,51 +68,30 @@ class MiniAppDisplayFragment : BaseFragment() {
     private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 1010
     private var appInfo: MiniAppInfo? = null
     private var isloadNew = false
-    private var miniappview: View? = null
     private lateinit var miniAppDisplay: MiniAppDisplay
     private lateinit var appId: String
+    private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
+    private lateinit var miniAppFileDownloader: MiniAppFileDownloaderDefault
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("MiniAppDisplay", "fragment onCreate")
         isloadNew = true
 
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.e("MiniAppDisplay", "fragment onAttach")
-    }
-
     override fun onDetach() {
         super.onDetach()
-        Log.e("MiniAppDisplay", "fragment onDetach")
         if (this::miniAppDisplay.isInitialized) {
             miniAppDisplay.destroyView()
         }
-        miniappview = null
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.e("MiniAppDisplay", "fragment onDestroyView")
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.e("MiniAppDisplay", "fragment onViewCreated")
-    }
-
-    private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
-    private lateinit var miniAppFileDownloader: MiniAppFileDownloaderDefault
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        Log.e("MiniAppDisplay", "fragment onViewCreated")
-
+    ): View {
+        val activity = requireActivity()
         setHasOptionsMenu(true)
         appInfo = args.miniAppInfo
         appId = args.miniAppInfo.id
@@ -131,113 +103,97 @@ class MiniAppDisplayFragment : BaseFragment() {
         )
         if (isloadNew) {
             isloadNew = false
-            Log.e("MiniAppDisplay", "load miniapp")
-            val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
-                override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
-                    if (ContextCompat.checkSelfPermission(
-                            requireActivity(),
-                            Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        permissionCallback(true)
-                    } else {
-                        permissionCallback(false)
-                    }
-                }
+            setUpFileChooserAndDownloader(activity)
+            setUpNavigator(activity)
+            setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
+            val miniAppView = MiniAppView.init(createMiniAppDefaultParam(activity, args.miniAppInfo))
+            toggleProgressLoading(true)
+            miniAppView.load { miniAppDisplay ->
+                this.miniAppDisplay = miniAppDisplay
+                addMiniAppChildView(activity, miniAppDisplay)
+            }
+        } else {
+            addMiniAppChildView(activity, miniAppDisplay)
+        }
+        return binding.root
+    }
 
-                override fun requestCameraPermission(
-                    miniAppPermissionType: MiniAppDevicePermissionType,
-                    permissionRequestCallback: (isGranted: Boolean) -> Unit
-                ) {
-                    miniappCameraPermissionCallback = permissionRequestCallback
-                    ActivityCompat.requestPermissions(
-                        requireActivity(),
-                        AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                        AppPermission.getDeviceRequestCode(miniAppPermissionType)
+    private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay){
+        CoroutineScope(Dispatchers.Default).launch {
+            val miniAppChildView = miniAppDisplay.getMiniAppView(activity)
+            activity.runOnUiThread {
+                miniAppChildView?.layoutParams = TableLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1f
+                )
+                (miniAppChildView?.parent as? ViewGroup)?.removeView(miniAppChildView)
+                binding.linRoot.addView(miniAppChildView)
+                toggleProgressLoading(false)
+            }
+        }
+    }
+
+    private fun setUpNavigator(activity: Activity) {
+        miniAppNavigator = object : MiniAppNavigator {
+
+            override fun openExternalUrl(
+                url: String,
+                externalResultHandler: ExternalResultHandler
+            ) {
+                if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(url)
+                        })
+                    } catch (e: Exception) {
+                        showAlertDialog(requireActivity(), "Warning!", e.message.toString())
+                    }
+                } else {
+                    sampleWebViewExternalResultHandler = externalResultHandler
+                    WebViewActivity.startForResult(
+                        activity, url,
+                        appId, null, externalWebViewReqCode
                     )
                 }
             }
-            miniAppFileChooser = MiniAppFileChooserDefault(
-                requestCode = fileChoosingReqCode,
-                miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
-            )
-            miniAppFileDownloader = MiniAppFileDownloaderDefault(
-                activity = requireActivity(),
-                requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
-            )
-            miniAppNavigator = object : MiniAppNavigator {
+        }
+    }
 
-                override fun openExternalUrl(
-                    url: String,
-                    externalResultHandler: ExternalResultHandler
+    private fun setUpFileChooserAndDownloader(activity: Activity) {
+        val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
+            override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
+                if (ContextCompat.checkSelfPermission(
+                        requireActivity(),
+                        Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
-                        try {
-                            startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                data = Uri.parse(url)
-                            })
-                        } catch (e: Exception) {
-                            showAlertDialog(requireActivity(), "Warning!", e.message.toString())
-                        }
-                    } else {
-                        sampleWebViewExternalResultHandler = externalResultHandler
-                        WebViewActivity.startForResult(
-                            requireActivity(), url,
-                            appId, null, externalWebViewReqCode
-                        )
-                    }
+                    permissionCallback(true)
+                } else {
+                    permissionCallback(false)
                 }
             }
-            setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
 
-            val param = MiniAppParameters.DefaultParams(
-                context = requireActivity(),
-                config = MiniAppConfig(
-                    miniAppSdkConfig = AppSettings.instance.miniAppSettings,
-                    miniAppMessageBridge = miniAppMessageBridge,
-                    miniAppNavigator = miniAppNavigator,
-                    miniAppFileChooser = miniAppFileChooser,
-                    queryParams = AppSettings.instance.urlParameters
-                ),
-                miniAppId = args.miniAppInfo.id,
-                miniAppVersion = args.miniAppInfo.version.versionId,
-                fromCache = false
-            )
-            val activiy = activity
-            val miniapp = MiniAppView.init(param)
-            toggleProgressLoading(true)
-            miniapp.load { miniAppDisplay ->
-                this.miniAppDisplay = miniAppDisplay
-                CoroutineScope(Dispatchers.Default).launch {
-                    activity?.let {
-                        miniappview = miniAppDisplay.getMiniAppView(it)
-                        activiy?.runOnUiThread {
-                            miniappview?.layoutParams = TableLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                1f
-                            )
-                            binding.linRoot.addView(miniappview)
-                            toggleProgressLoading(false)
-                        }
-                    }
-                }
-            }
-        } else {
-            val activiy = activity
-            activiy?.runOnUiThread {
-                miniappview?.layoutParams = TableLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT, 1f
+            override fun requestCameraPermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                permissionRequestCallback: (isGranted: Boolean) -> Unit
+            ) {
+                miniappCameraPermissionCallback = permissionRequestCallback
+                ActivityCompat.requestPermissions(
+                    activity,
+                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
-                (miniappview?.parent as? ViewGroup)?.removeView(miniappview)
-                miniappview?.let {
-                    binding.linRoot.addView(it)
-                    toggleProgressLoading(false)
-                }
             }
         }
-        return binding.root
+        miniAppFileChooser = MiniAppFileChooserDefault(
+            requestCode = fileChoosingReqCode,
+            miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
+        )
+        miniAppFileDownloader = MiniAppFileDownloaderDefault(
+            activity = activity,
+            requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
+        )
     }
 
     private fun toggleProgressLoading(isOn: Boolean) = when (isOn) {
@@ -486,5 +442,21 @@ class MiniAppDisplayFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
+    }
+
+    private fun createMiniAppDefaultParam(activity: Activity, miniAppInfo: MiniAppInfo): MiniAppParameters {
+        return MiniAppParameters.DefaultParams(
+            context = activity,
+            config = MiniAppConfig(
+                miniAppSdkConfig = AppSettings.instance.miniAppSettings,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
+                queryParams = AppSettings.instance.urlParameters
+            ),
+            miniAppId = miniAppInfo.id,
+            miniAppVersion = miniAppInfo.version.versionId,
+            fromCache = false
+        )
     }
 }
