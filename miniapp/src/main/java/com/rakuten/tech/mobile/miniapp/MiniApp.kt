@@ -198,15 +198,17 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Clears all secure storage items for all mini apps.
+     * @param context will be used to find the storage to be deleted.
      * Host App should call this when they want to clear all sensitive and session data such as when a user logs out.
      */
-    abstract fun clearSecureStorage()
+    abstract fun clearSecureStorage(context: Context)
 
     /**
      * Clears the secure storage for a particular Mini App ID.
+     * @param context will be used to find the storage to be deleted.
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    abstract fun clearSecureStorage(miniAppId: String): Boolean
+    abstract fun clearSecureStorage(context: Context, miniAppId: String): Boolean
 
     /**
      * Get the manifest information e.g. required and optional permissions.

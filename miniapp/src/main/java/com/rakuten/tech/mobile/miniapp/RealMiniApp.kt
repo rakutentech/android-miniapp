@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -7,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
@@ -73,10 +75,35 @@ internal class RealMiniApp(
         }
     }
 
-    override fun clearSecureStorage() = secureStorageDispatcher.clearSecureStorage()
+    override fun clearSecureStorage(context: Context) {
+        try {
+            context.databaseList().forEach {
+                if (it.startsWith(DB_NAME_PREFIX)) {
+                    context.deleteDatabase(it)
+                }
+            }
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
+        }
+    }
 
-    override fun clearSecureStorage(miniAppId: String): Boolean =
-        secureStorageDispatcher.clearSecureStorage(miniAppId)
+    override fun clearSecureStorage(context: Context, miniAppId: String): Boolean {
+        var isDeleted: Boolean
+        try {
+            val dbName = DB_NAME_PREFIX + miniAppId
+            context.deleteDatabase(dbName)
+            context.databaseList().forEach {
+                if (it == dbName) {
+                    isDeleted = false
+                }
+            }
+            isDeleted = true
+        } catch (e: Exception) {
+            // No callback needed. So Ignoring.
+            isDeleted = false
+        }
+        return isDeleted
+    }
 
     override suspend fun create(
         appId: String,
