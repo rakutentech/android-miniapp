@@ -43,7 +43,7 @@ internal class MiniAppSecureStorageDispatcher(
         this.miniAppSecureStorage = MiniAppSecureStorage(
             context,
             databaseVersion,
-            (maxStorageSizeLimit* CONVERT_TO_KB)
+            (maxStorageSizeLimit * CONVERT_TO_KB)
         )
     }
 
