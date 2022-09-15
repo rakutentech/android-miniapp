@@ -16,8 +16,7 @@ import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
-import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.MiniAppMainActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
@@ -59,7 +58,7 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
         }
         binding.btnDisplayList.setOnClickListener {
             raceExecutor.run {
-                launchActivity<MiniAppMainActivity>()
+                launchActivity<DemoAppMainActivity>()
             }
         }
     }

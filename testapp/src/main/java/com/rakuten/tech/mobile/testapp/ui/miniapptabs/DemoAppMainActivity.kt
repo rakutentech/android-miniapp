@@ -22,7 +22,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
 
-class MiniAppMainActivity : BaseActivity() {
+class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
     private lateinit var binding: MiniAppMainLayoutBinding
 

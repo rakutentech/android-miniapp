@@ -40,7 +40,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.MiniAppMainActivity"
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity"
             android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
