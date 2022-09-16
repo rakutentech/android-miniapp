@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class PreloadMiniAppViewModel(private val miniApp: MiniApp) : ViewModel() {
-    private val _miniAppManifest = MutableLiveData<MiniAppManifest>()
+    private val _miniAppManifest = MutableLiveData<MiniAppManifest?>()
     private val _manifestErrorData = MutableLiveData<String>()
     private val _containTooManyRequestsError = MutableLiveData<Boolean>()
 
-    val miniAppManifest: LiveData<MiniAppManifest>
+    val miniAppManifest: LiveData<MiniAppManifest?>
         get() = _miniAppManifest
     val manifestErrorData: LiveData<String>
         get() = _manifestErrorData
