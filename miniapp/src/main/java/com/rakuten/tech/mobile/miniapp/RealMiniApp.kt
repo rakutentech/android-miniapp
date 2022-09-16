@@ -75,6 +75,7 @@ internal class RealMiniApp(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun clearSecureStorage(context: Context) {
         try {
             context.databaseList().forEach {
@@ -87,6 +88,7 @@ internal class RealMiniApp(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override fun clearSecureStorage(context: Context, miniAppId: String): Boolean {
         var isDeleted: Boolean
         try {

@@ -71,7 +71,7 @@ internal class MiniAppSecureStorageDispatcher(
                 value = Gson().toJson(errorSecure)
             )
         }
-         miniAppSecureStorage.load(miniAppId, onSuccess, onFailed)
+        miniAppSecureStorage.load(miniAppId, onSuccess, onFailed)
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")
@@ -175,9 +175,7 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String): Boolean {
-        return clearSecureDatabase(miniAppId)
-    }
+    fun clearSecureStorage(miniAppId: String): Boolean = clearSecureDatabase(miniAppId)
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.

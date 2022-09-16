@@ -3,6 +3,9 @@ package com.rakuten.tech.mobile.miniapp.view
 import android.content.Context
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 
+/**
+ * This class can be used in the HostApp to create the mini app views using mini app id.
+ */
 sealed class MiniAppParameters {
     /**
      * This class can be used in the HostApp to create the mini app views using mini app id.
