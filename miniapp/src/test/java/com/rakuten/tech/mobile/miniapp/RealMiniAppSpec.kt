@@ -530,16 +530,4 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
         realMiniApp.getDownloadedManifest(TEST_MA_ID)
         verify(downloadedManifestCache).readDownloadedManifest(TEST_MA_ID)
     }
-
-    @Test
-    fun `clearSecureStorage should clear storage using dispatcher per MiniApp id`() {
-        realMiniApp.clearSecureStorage(TEST_MA_ID)
-        verify(secureStorageDispatcher).clearSecureStorage(TEST_MA_ID)
-    }
-
-    @Test
-    fun `clearSecureStorage should clear whole storage using dispatcher`() {
-        realMiniApp.clearSecureStorage()
-        verify(secureStorageDispatcher).clearSecureStorage()
-    }
 }
