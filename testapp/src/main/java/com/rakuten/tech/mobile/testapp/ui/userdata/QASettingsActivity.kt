@@ -205,7 +205,7 @@ class QASettingsActivity : BaseActivity() {
             DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        miniApp.clearSecureStorage(this)
+                        miniApp.clearSecureStorages(this)
                         Toast.makeText(
                             this@QASettingsActivity,
                             "Successfully cleared all secured storage!",

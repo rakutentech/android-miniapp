@@ -76,7 +76,7 @@ internal class RealMiniApp(
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    override fun clearSecureStorage(context: Context) {
+    override fun clearSecureStorages(context: Context) {
         try {
             context.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {

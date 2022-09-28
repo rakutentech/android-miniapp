@@ -180,7 +180,7 @@ internal class MiniAppSecureStorageDispatcher(
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() {
+    fun clearSecureStorages() {
         clearAllSecureDatabases()
     }
 
