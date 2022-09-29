@@ -1,38 +1,33 @@
-package com.rakuten.tech.mobile.testapp.ui.miniapplist
+package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
-import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
-import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
-import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModel
+import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
-import java.util.Locale
+import java.util.*
 
-import kotlin.collections.ArrayList
 
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
@@ -57,9 +52,10 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         setHasOptionsMenu(true)
 
+        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.mini_app_list_fragment,
@@ -84,26 +80,25 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         }
     }
 
+    private fun executeLoadingList() {
+        viewModel.getMiniAppList()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
-        viewModel =
-            ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
-                miniAppListData.observe(viewLifecycleOwner, Observer {
-                    binding.swipeRefreshLayout.isRefreshing = false
-                    addMiniAppList(it)
-                    MiniAppListStore.instance.saveMiniAppList(it)
-                })
-                errorData.observe(viewLifecycleOwner, Observer {
-                    val list = MiniAppListStore.instance.getMiniAppList()
-                    if (list.isEmpty())
-                        updateEmptyView(list)
-                    else {
-                        addMiniAppList(list)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                })
-            }
+
+        viewModel = ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java)
+
+        viewModel.miniAppListData.observe(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
+            addMiniAppList(it)
+        }
+        viewModel.errorData.observe(viewLifecycleOwner) {
+            updateEmptyView(emptyList())
+            addMiniAppList(emptyList())
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             executeLoadingList()
@@ -127,10 +122,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         updateEmptyView(list)
     }
 
-    private fun executeLoadingList() {
-        viewModel.getMiniAppList()
-    }
-
     override fun onMiniAppItemClick(miniAppInfo: MiniAppInfo) {
         raceExecutor.run {
             selectedMiniAppInfo = miniAppInfo
@@ -143,10 +134,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
                 )
             }
         }
-    }
-
-    fun switchToInput() {
-        raceExecutor.run { activity?.launchActivity<MiniAppInputActivity>() }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -200,7 +187,15 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
         if (isAccepted)
-            selectedMiniAppInfo?.let { MiniAppDisplayActivity.start(requireContext(), it) }
+            selectedMiniAppInfo?.let { miniAppInfo ->
+                val action =
+                    MiniAppListFragmentDirections.actionMiniapplistFragmentToMiniappdisplayFragment(
+                        miniAppInfo
+                    )
+                findNavController().graph.findNode(R.id.miniappdisplayFragment)?.label =
+                    miniAppInfo.displayName
+                findNavController().navigate(action)
+            }
     }
 
     private fun produceSearchResult(newText: String?): List<MiniAppInfo> {

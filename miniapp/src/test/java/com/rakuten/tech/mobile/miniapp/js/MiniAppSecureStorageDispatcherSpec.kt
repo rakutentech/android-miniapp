@@ -202,7 +202,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `clearSecureStorage should be called without the mini app id`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
-        miniAppSecureStorageDispatcher.clearSecureStorage()
+        miniAppSecureStorageDispatcher.clearSecureStorages()
         verify(
             miniAppSecureStorageDispatcher.miniAppSecureStorage,
             times(1)

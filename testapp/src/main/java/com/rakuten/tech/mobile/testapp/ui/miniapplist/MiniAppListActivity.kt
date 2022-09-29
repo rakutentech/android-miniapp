@@ -31,7 +31,7 @@ class MiniAppListActivity : MenuBaseActivity() {
         if (AppSettings.instance.isSettingSaved) {
             layoutTut.visibility = View.GONE
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MiniAppListFragment.newInstance(), MiniAppListFragment.TAG)
+                .replace(R.id.container, MiniAppListFragmentDeprecated.newInstance(), MiniAppListFragmentDeprecated.TAG)
                 .commitNow()
         } else {
             layoutTut.visibility = View.VISIBLE
@@ -59,8 +59,8 @@ class MiniAppListActivity : MenuBaseActivity() {
         when (intent.action) {
             Intent.ACTION_SEARCH -> {
                 val query = intent.getStringExtra(SearchManager.QUERY)
-                val fragment: MiniAppListFragment? =
-                    supportFragmentManager.findFragmentByTag(MiniAppListFragment.TAG) as MiniAppListFragment
+                val fragment: MiniAppListFragmentDeprecated? =
+                    supportFragmentManager.findFragmentByTag(MiniAppListFragmentDeprecated.TAG) as MiniAppListFragmentDeprecated
                 if (fragment?.isAdded ?: return) {
                     fragment.startSearch(query)
                 }

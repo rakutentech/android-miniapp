@@ -33,7 +33,7 @@
             <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
                 android:id="@+id/btnDisplayAppId"
                 android:layout_width="match_parent"
-                android:layout_height="33dp"
+                android:layout_height="43dp"
                 android:layout_marginTop="@dimen/medium_16"
                 android:layout_marginBottom="@dimen/large_24"
                 android:background="@drawable/bg_red_curve"

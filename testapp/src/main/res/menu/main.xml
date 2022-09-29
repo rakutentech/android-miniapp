@@ -14,6 +14,7 @@
       android:id="@+id/set_app_id_and_key"
       android:icon="@drawable/ic_wheel"
       android:title="@string/menu_title_change_settings"
+      android:visible="false"
       app:showAsAction="ifRoom" />
 
 </menu>
