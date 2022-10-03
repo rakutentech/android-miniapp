@@ -20,4 +20,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keepnames class androidx.navigation.fragment.NavHostFragment
--keepnames class com.rakuten.tech.mobile.miniapp.MiniAppInfo { *; }
+-keepnames class com.rakuten.tech.mobile.miniapp.MiniAppInfo
