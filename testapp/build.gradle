@@ -2,6 +2,7 @@ apply from: '../config/android/application.gradle'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
 
 def property = { key ->
     return System.getenv(key) ?: (project.hasProperty(key) ? project."$key" : null)
@@ -195,7 +196,8 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "com.google.android.gms:play-services-ads:$google_ads"
     implementation "com.microsoft.appcenter:appcenter-crashes:$appCenterSdkVersion"
-
+    implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
+    implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
     testImplementation "junit:junit:$junit"
 }
 

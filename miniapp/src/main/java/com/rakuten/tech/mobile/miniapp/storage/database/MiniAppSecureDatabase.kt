@@ -206,7 +206,7 @@ internal class MiniAppSecureDatabase(
     @Suppress("SwallowedException")
     override fun closeDatabase() {
         try {
-            if (database.isOpen) {
+            if (this::database.isInitialized && database.isOpen) {
                 if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
                     miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
                 }
