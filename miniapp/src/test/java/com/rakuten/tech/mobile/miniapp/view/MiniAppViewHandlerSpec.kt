@@ -20,7 +20,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import java.io.File
 
-
 @RunWith(AndroidJUnit4::class)
 open class BaseMiniAppViewHandlerSpec {
     internal lateinit var miniAppViewHandler: MiniAppViewHandler
@@ -53,6 +52,7 @@ open class BaseMiniAppViewHandlerSpec {
 }
 
 @ExperimentalCoroutinesApi
+@Suppress("LargeClass")
 class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
     private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
     private val deniedPermission = MiniAppCustomPermission(
@@ -69,8 +69,10 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
         miniAppViewHandler.downloadedManifestCache = mock()
         miniAppViewHandler.miniAppDownloader = mock()
 
-        When calling miniAppViewHandler.downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
-        When calling miniAppViewHandler.downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling miniAppViewHandler
+            .downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling miniAppViewHandler
+            .downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
         When calling miniAppViewHandler.miniAppManifestVerifier.verify(
             TEST_MA_ID,
             file
@@ -86,7 +88,8 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
                 TEST_MA_VERSION_ID,
                 "en-US"
             ) itReturns dummyManifest
-            When calling miniAppViewHandler.miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler
+                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
                 deniedPermission
             ) itReturns true
@@ -102,7 +105,8 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
                 TEST_MA_VERSION_ID,
                 "en-US"
             ) itReturns dummyManifest
-            When calling miniAppViewHandler.miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler
+                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
                 deniedPermission
             ) itReturns true
@@ -127,7 +131,8 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
             When calling miniAppViewHandler.downloadedManifestCache.readDownloadedManifest(
                 TEST_MA_ID
             ) itReturns manifest
-            When calling miniAppViewHandler.miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns allowedPermission
+            When calling miniAppViewHandler
+                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns allowedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
                 allowedPermission
             ) itReturns
@@ -160,7 +165,8 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
                 differentVersionId,
                 "en-US"
             ) itReturns dummyManifest
-            When calling miniAppViewHandler.miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler
+                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
                 deniedPermission
             ) itReturns
@@ -191,7 +197,8 @@ class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
                 TEST_MA_VERSION_ID,
                 "en-US"
             ) itReturns dummyManifest
-            When calling miniAppViewHandler.miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler
+                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.miniAppManifestVerifier.verify(
                 TEST_MA_ID,
                 file
