@@ -21,8 +21,10 @@ import org.mockito.kotlin.verify
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
-open class BaseMiniAppViewHandlerSpec {
-    internal lateinit var miniAppViewHandler: MiniAppViewHandler
+@ExperimentalCoroutinesApi
+@Suppress("LargeClass")
+open class MiniAppViewHandlerSpec {
+    private lateinit var miniAppViewHandler: MiniAppViewHandler
     private val context: Context = ApplicationProvider.getApplicationContext()
     private var miniAppSdkConfig: MiniAppSdkConfig = mock()
     private var apiClient: ApiClient = mock()
@@ -33,6 +35,12 @@ open class BaseMiniAppViewHandlerSpec {
         mapOf(),
         TEST_MA_VERSION_ID
     )
+    private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+    private val deniedPermission = MiniAppCustomPermission(
+        TEST_MA_ID,
+        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
+    )
+    private val file: File = mock()
 
     @Before
     fun setup() {
@@ -48,21 +56,7 @@ open class BaseMiniAppViewHandlerSpec {
 
         miniAppViewHandler.apiClientRepository = mock()
         When calling miniAppViewHandler.apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
-    }
-}
 
-@ExperimentalCoroutinesApi
-@Suppress("LargeClass")
-class MiniAppHandlerManifestSpec : BaseMiniAppViewHandlerSpec() {
-    private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
-    private val deniedPermission = MiniAppCustomPermission(
-        TEST_MA_ID,
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
-    )
-    private val file: File = org.mockito.kotlin.mock()
-
-    @Before
-    fun before() {
         miniAppViewHandler.downloadedManifestCache = mock()
         miniAppViewHandler.miniAppManifestVerifier = mock()
         miniAppViewHandler.miniAppCustomPermissionCache = mock()
