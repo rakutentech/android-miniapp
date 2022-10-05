@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -34,20 +35,24 @@ internal class MiniAppViewHandler(
 ) {
     private var displayer: Displayer
     private var miniAppInfoFetcher: MiniAppInfoFetcher
-    private var miniAppManifestVerifier: MiniAppManifestVerifier
-    private var apiClientRepository: ApiClientRepository
+    @VisibleForTesting
+    internal var miniAppManifestVerifier: MiniAppManifestVerifier
+    @VisibleForTesting
+    internal var apiClientRepository: ApiClientRepository
     private lateinit var miniAppParameters: MiniAppParameters
     internal var enableH5Ads: Boolean = config.enableH5Ads
     internal var apiClient: ApiClient
     internal var miniAppAnalytics: MiniAppAnalytics
-    private var miniAppDownloader: MiniAppDownloader
+    @VisibleForTesting
+    internal var miniAppDownloader: MiniAppDownloader
     internal var signatureVerifier: SignatureVerifier
     internal var ratDispatcher: MessageBridgeRatDispatcher
     internal var downloadedManifestCache: DownloadedManifestCache
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
 
-    private fun initApiClient() = ApiClient(
+    @VisibleForTesting
+    internal fun initApiClient() = ApiClient(
         baseUrl = config.baseUrl,
         rasProjectId = config.rasProjectId,
         subscriptionKey = config.subscriptionKey,
@@ -146,8 +151,7 @@ internal class MiniAppViewHandler(
         appId: String,
         versionId: String,
         languageCode: String
-    ): MiniAppManifest =
-        miniAppDownloader.fetchMiniAppManifest(appId, versionId, languageCode)
+    ): MiniAppManifest = miniAppDownloader.fetchMiniAppManifest(appId, versionId, languageCode)
 
     fun isManifestEqual(
         apiManifest: MiniAppManifest?,
