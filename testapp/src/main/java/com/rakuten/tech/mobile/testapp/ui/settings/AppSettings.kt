@@ -153,11 +153,11 @@ class AppSettings private constructor(context: Context) {
     val isDynamicDeeplinksSaved: Boolean
         get() = cache.isDynamicDeeplinksSaved
 
-    var maxStorageSizeLimitInMB: Int
-        get() = cache.maxStorageSizeLimitInMB
-        set(maxStorageSizeLimit) { cache.maxStorageSizeLimitInMB = maxStorageSizeLimit }
+    var maxStorageSizeLimitInBytes: String
+        get() = cache.maxStorageSizeLimitInBytes
+        set(maxStorageSizeLimitInBytes) { cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes }
 
-    val miniAppSettings: MiniAppSdkConfig
+    val newMiniAppSdkConfig: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
             rasProjectId = projectId,
@@ -173,7 +173,7 @@ class AppSettings private constructor(context: Context) {
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            maxStorageSizeLimitInMB = maxStorageSizeLimitInMB
+            maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
         )
 
     companion object {
@@ -310,9 +310,9 @@ private class Settings(context: Context) {
     val isDynamicDeeplinksSaved: Boolean
         get() = prefs.contains(DYNAMIC_DEEPLINKS)
 
-    var maxStorageSizeLimitInMB: Int
-        get() = prefs.getInt(MAX_STORAGE_SIZE_LIMIT, 5) // Default max storage is 5MB
-        set(maxStorageSizeLimit) = prefs.edit().putInt(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimit).apply()
+    var maxStorageSizeLimitInBytes: String
+        get() = prefs.getString(MAX_STORAGE_SIZE_LIMIT, "5242880").toString() // Default max storage is 5MB
+        set(maxStorageSizeLimitInBytes) = prefs.edit().putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
 
     companion object {
         private const val IS_PREVIEW_MODE = "is_preview_mode"

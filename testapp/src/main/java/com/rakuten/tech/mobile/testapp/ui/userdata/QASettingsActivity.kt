@@ -29,7 +29,7 @@ class QASettingsActivity : BaseActivity() {
     private lateinit var settings: AppSettings
     private lateinit var binding: QaSettingsActivityBinding
     private var accessTokenErrorCacheData: MiniAppAccessTokenError? = null
-    private var miniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+    private var miniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
@@ -113,8 +113,8 @@ class QASettingsActivity : BaseActivity() {
         // mauid
         binding.edtMauidError.setText(settings.mauIdError)
 
-        val maxStorage = settings.maxStorageSizeLimitInMB
-        binding.edtMaxStorageLimit.setText("Current limit is $maxStorage MB")
+        val maxStorage = settings.maxStorageSizeLimitInBytes
+        binding.edtMaxStorageLimit.setText("Current limit is $maxStorage Bytes")
 
         invalidateMaxStorageField()
     }
@@ -285,8 +285,7 @@ class QASettingsActivity : BaseActivity() {
 
         val upgradedSize = binding.edtMaxStorageLimit.text
         if (!upgradedSize.isNullOrEmpty() && upgradedSize.isDigitsOnly()) {
-            val maxStorageSizeLimitInMB = binding.edtMaxStorageLimit.text.toString().toInt()
-            settings.maxStorageSizeLimitInMB = maxStorageSizeLimitInMB
+            settings.maxStorageSizeLimitInBytes = binding.edtMaxStorageLimit.text.toString()
         }
 
         // post tasks

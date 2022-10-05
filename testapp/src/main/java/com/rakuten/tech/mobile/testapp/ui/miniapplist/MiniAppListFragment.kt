@@ -86,7 +86,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
         viewModel =
             ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner, Observer {
@@ -113,7 +113,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onResume() {
         super.onResume()
-        MiniApp.instance(AppSettings.instance.miniAppSettings)
+        MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
         activity?.invalidateOptionsMenu()
     }
 
