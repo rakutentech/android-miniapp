@@ -120,7 +120,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         setUpFileChooserAndDownloader(activity)
         setUpNavigator(activity)
         setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
-        val miniAppView = MiniAppView.init(createMiniAppDefaultParam(activity, args.miniAppInfo))
+        val miniAppView = MiniAppView.init(createMiniAppInfoParam(activity, args.miniAppInfo))
         try {
             miniAppView.load { miniAppDisplay ->
                 this.miniAppDisplay = miniAppDisplay
@@ -469,8 +469,8 @@ class MiniAppDisplayFragment : BaseFragment() {
         miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
     }
 
-    private fun createMiniAppDefaultParam(activity: Activity, miniAppInfo: MiniAppInfo): MiniAppParameters {
-        return MiniAppParameters.DefaultParams(
+    private fun createMiniAppInfoParam(activity: Activity, miniAppInfo: MiniAppInfo): MiniAppParameters {
+        return MiniAppParameters.InfoParams(
             context = activity,
             config = MiniAppConfig(
                 miniAppSdkConfig = AppSettings.instance.miniAppSettings,
@@ -479,9 +479,9 @@ class MiniAppDisplayFragment : BaseFragment() {
                 miniAppFileChooser = miniAppFileChooser,
                 queryParams = AppSettings.instance.urlParameters
             ),
-            miniAppId = miniAppInfo.id,
-            miniAppVersion = miniAppInfo.version.versionId,
+            miniAppInfo =  miniAppInfo,
             fromCache = false
         )
     }
+
 }

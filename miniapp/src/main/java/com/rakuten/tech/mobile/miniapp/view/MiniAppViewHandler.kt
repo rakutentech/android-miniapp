@@ -3,7 +3,14 @@ package com.rakuten.tech.mobile.miniapp.view
 import android.content.Context
 import android.util.Log
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -20,12 +27,6 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppManifest
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 
 @Suppress("LargeClass")
 internal class MiniAppViewHandler(
@@ -180,6 +181,35 @@ internal class MiniAppViewHandler(
         } else {
             miniAppDownloader.getCachedMiniApp(miniAppId)
         }
+        verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+        return displayer.createMiniAppDisplay(
+            basePath,
+            miniAppInfo,
+            config.miniAppMessageBridge,
+            config.miniAppNavigator,
+            config.miniAppFileChooser,
+            miniAppCustomPermissionCache,
+            downloadedManifestCache,
+            config.queryParams,
+            miniAppAnalytics,
+            ratDispatcher,
+            secureStorageDispatcher,
+            enableH5Ads
+        )
+    }
+
+    suspend fun createMiniAppView(
+        miniAppInfo: MiniAppInfo,
+        config: MiniAppConfig,
+        fromCache: Boolean = false
+    ): MiniAppDisplay {
+        val (basePath, miniAppInfo) = if (!fromCache) {
+            miniAppDownloader.getMiniApp(miniAppInfo)
+        } else {
+            miniAppDownloader.getCachedMiniApp(miniAppInfo)
+        }
+        Log.e("id", miniAppInfo.id)
+        Log.e("version", miniAppInfo.version.versionId)
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         return displayer.createMiniAppDisplay(
             basePath,
