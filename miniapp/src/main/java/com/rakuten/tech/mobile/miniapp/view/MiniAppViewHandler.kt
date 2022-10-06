@@ -208,8 +208,6 @@ internal class MiniAppViewHandler(
         } else {
             miniAppDownloader.getCachedMiniApp(miniAppInfo)
         }
-        Log.e("id", miniAppInfo.id)
-        Log.e("version", miniAppInfo.version.versionId)
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         return displayer.createMiniAppDisplay(
             basePath,
