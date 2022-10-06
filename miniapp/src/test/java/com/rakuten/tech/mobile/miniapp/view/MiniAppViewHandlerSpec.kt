@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -19,6 +20,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import java.io.File
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
@@ -41,6 +43,9 @@ open class MiniAppViewHandlerSpec {
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
     )
     private val file: File = mock()
+    private val languageCode = Locale.forLanguageTag(context.getString(R.string.miniapp_sdk_android_locale)).language
+    val miniAppConfig: MiniAppConfig = mock()
+    val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
     fun setup() {
@@ -62,6 +67,7 @@ open class MiniAppViewHandlerSpec {
         miniAppViewHandler.miniAppCustomPermissionCache = mock()
         miniAppViewHandler.downloadedManifestCache = mock()
         miniAppViewHandler.miniAppDownloader = mock()
+        miniAppViewHandler.displayer = mock()
 
         When calling miniAppViewHandler
             .downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
@@ -80,7 +86,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             ) itReturns dummyManifest
             When calling miniAppViewHandler
                 .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
@@ -97,7 +103,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             ) itReturns dummyManifest
             When calling miniAppViewHandler
                 .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
@@ -134,7 +140,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             ) itReturns dummyManifest
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
@@ -157,7 +163,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 differentVersionId,
-                "en-US"
+                languageCode
             ) itReturns dummyManifest
             When calling miniAppViewHandler
                 .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
@@ -189,7 +195,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                "en"
             ) itReturns dummyManifest
             When calling miniAppViewHandler
                 .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
@@ -222,7 +228,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             ) itReturns dummyManifest
             miniAppViewHandler.checkToDownloadManifest(
                 TEST_MA_ID,
@@ -265,11 +271,11 @@ open class MiniAppViewHandlerSpec {
     @Test
     fun `api manifest should be fetched from MiniAppDownloader`() =
         runBlockingTest {
-            miniAppViewHandler.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "en-US")
+            miniAppViewHandler.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, languageCode)
             verify(miniAppViewHandler.miniAppDownloader).fetchMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             )
         }
 
@@ -279,9 +285,97 @@ open class MiniAppViewHandlerSpec {
             miniAppViewHandler.getMiniAppManifest(
                 TEST_MA_ID,
                 TEST_MA_VERSION_ID,
-                "en-US"
+                languageCode
             )
             verify(miniAppViewHandler.miniAppDownloader, times(0))
                 .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
         }
+
+    /** region: RealMiniApp.create */
+    private fun onGettingManifestWhileCreate() = runBlockingTest {
+        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+        When calling miniAppViewHandler
+            .downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling miniAppViewHandler.getMiniAppManifest(
+            TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
+        ) itReturns dummyManifest
+    }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation`() =
+        runBlockingTest {
+            onGettingManifestWhileCreate()
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppViewHandler.miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+            When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
+            When calling miniAppConfig.queryParams itReturns ""
+
+            miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig)
+
+            verify(miniAppViewHandler.miniAppDownloader).getMiniApp(TEST_MA_ID)
+            verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppViewHandler.displayer).createMiniAppDisplay(
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppConfig.miniAppMessageBridge,
+                null,
+                null,
+                miniAppViewHandler.miniAppCustomPermissionCache,
+                miniAppViewHandler.downloadedManifestCache,
+                "",
+                miniAppViewHandler.miniAppAnalytics,
+                miniAppViewHandler.ratDispatcher,
+                miniAppViewHandler.secureStorageDispatcher,
+                false
+            )
+        }
+
+    @Test
+    fun `should invoke getCachedMiniApp while mini app view creation if fromCache is true`() =
+        runBlockingTest {
+            onGettingManifestWhileCreate()
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppViewHandler.miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+
+            miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig, true)
+            verify(miniAppViewHandler.miniAppDownloader).getCachedMiniApp(TEST_MA_ID)
+        }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke getMiniApp while mini app view creation if fromCache is false`() =
+        runBlockingTest {
+            onGettingManifestWhileCreate()
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            When calling miniAppViewHandler.miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
+
+            miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig, false)
+            verify(miniAppViewHandler.miniAppDownloader).getMiniApp(TEST_MA_ID)
+        }
+
+    @Test
+    fun `should invoke validateHttpAppUrl while miniapp creation with valid url`() =
+        runBlockingTest {
+            When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
+            When calling miniAppConfig.queryParams itReturns ""
+
+            miniAppViewHandler.createMiniAppViewWithUrl(TEST_MA_URL, miniAppConfig)
+
+            verify(miniAppViewHandler.miniAppDownloader).validateHttpAppUrl(TEST_MA_URL)
+            verify(miniAppViewHandler.displayer).createMiniAppDisplay(
+                TEST_MA_URL,
+                miniAppMessageBridge,
+                null,
+                null,
+                miniAppViewHandler.miniAppCustomPermissionCache,
+                miniAppViewHandler.downloadedManifestCache,
+                "",
+                miniAppViewHandler.miniAppAnalytics,
+                miniAppViewHandler.ratDispatcher,
+                miniAppViewHandler.secureStorageDispatcher,
+                false
+            )
+        }
+    /** end region */
 }
