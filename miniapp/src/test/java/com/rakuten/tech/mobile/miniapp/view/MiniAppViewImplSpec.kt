@@ -42,7 +42,6 @@ class MiniAppViewImplSpec {
         ""
     )
 
-
     @Test
     fun `load will call the correct createMiniAppView for defaultParameters`() = runBlocking {
         val miniAppViewImpl = spy(MiniAppViewImpl(defaultParameters) { miniAppViewHandler })
