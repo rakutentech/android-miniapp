@@ -183,8 +183,8 @@ internal class MiniAppSecureDatabase(
 
     override fun getDatabaseStatus(): MiniAppDatabaseStatus = miniAppDatabaseStatus
 
-    override fun resetDatabaseMaxSize(changedDBMaxSize: Long) {
-        maxDBSizeLimitInBytes = changedDBMaxSize
+    override fun resetDatabaseMaxSize(changedDBMaxSizeInBytes: Long) {
+        maxDBSizeLimitInBytes = changedDBMaxSizeInBytes
     }
 
     override fun getDatabaseUsedSize(): Long {

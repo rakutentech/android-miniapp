@@ -163,10 +163,9 @@ internal class MiniAppSecureStorageDispatcher(
     @Deprecated("No Longer Needed")
     fun onSize(callbackId: String) = whenReady {
         onSuccessDBSize = { fileSize: Long ->
-            val maxSizeInBytes = maxStorageSizeLimitInBytes * 1024
-            val storageSize =
-                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
-            bridgeExecutor.postValue(callbackId, storageSize)
+            val maxStorageSizeLimit =
+                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxStorageSizeLimitInBytes))
+            bridgeExecutor.postValue(callbackId, maxStorageSizeLimit)
         }
         miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
     }

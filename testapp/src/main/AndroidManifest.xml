@@ -133,7 +133,7 @@
             android:value="${enableH5Ads}" />
         <meta-data
             android:name="com.rakuten.tech.mobile.miniapp.MaxStorageSizeLimitInBytes"
-            android:value="${maxStorageSizeLimitInBytes}" />
+            android:value="${maxStorageSizeLimitInBytes}\" />
     </application>
 
 </manifest>
