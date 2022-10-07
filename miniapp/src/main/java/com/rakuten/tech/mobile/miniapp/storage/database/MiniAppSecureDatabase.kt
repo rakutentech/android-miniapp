@@ -435,7 +435,10 @@ internal class MiniAppSecureDatabase(
             throw e
         } finally {
             finalize()
+            if (!isDeleted && items.size > 1)
+                isDeleted = !isDeleted
         }
+
         return isDeleted
     }
 

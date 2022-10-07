@@ -4,14 +4,15 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.R
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
-import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -190,6 +191,33 @@ internal class MiniAppViewHandler(
             miniAppDownloader.getMiniApp(miniAppId)
         } else {
             miniAppDownloader.getCachedMiniApp(miniAppId)
+        }
+        verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+        return displayer.createMiniAppDisplay(
+            basePath,
+            miniAppInfo,
+            config.miniAppMessageBridge,
+            config.miniAppNavigator,
+            config.miniAppFileChooser,
+            miniAppCustomPermissionCache,
+            downloadedManifestCache,
+            config.queryParams,
+            miniAppAnalytics,
+            ratDispatcher,
+            secureStorageDispatcher,
+            enableH5Ads
+        )
+    }
+
+    suspend fun createMiniAppView(
+        miniAppInfo: MiniAppInfo,
+        config: MiniAppConfig,
+        fromCache: Boolean = false
+    ): MiniAppDisplay {
+        val (basePath, miniAppInfo) = if (!fromCache) {
+            miniAppDownloader.getMiniApp(miniAppInfo)
+        } else {
+            miniAppDownloader.getCachedMiniApp(miniAppInfo)
         }
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         return displayer.createMiniAppDisplay(

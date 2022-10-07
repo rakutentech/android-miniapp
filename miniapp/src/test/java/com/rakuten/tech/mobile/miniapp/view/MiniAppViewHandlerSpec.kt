@@ -303,7 +303,7 @@ open class MiniAppViewHandlerSpec {
 
     @Test
     @Suppress("LongMethod")
-    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation`() =
+    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppId`() =
         runBlockingTest {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
@@ -314,6 +314,39 @@ open class MiniAppViewHandlerSpec {
             miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig)
 
             verify(miniAppViewHandler.miniAppDownloader).getMiniApp(TEST_MA_ID)
+            verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+            verify(miniAppViewHandler.displayer).createMiniAppDisplay(
+                getMiniAppResult.first,
+                getMiniAppResult.second,
+                miniAppConfig.miniAppMessageBridge,
+                null,
+                null,
+                miniAppViewHandler.miniAppCustomPermissionCache,
+                miniAppViewHandler.downloadedManifestCache,
+                "",
+                miniAppViewHandler.miniAppAnalytics,
+                miniAppViewHandler.ratDispatcher,
+                miniAppViewHandler.secureStorageDispatcher,
+                false
+            )
+        }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppInfo`() =
+        runBlockingTest {
+            onGettingManifestWhileCreate()
+            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+            val testVersion = Version("", TEST_MA_VERSION_ID)
+            val testMiniAppInfo = TEST_MA.copy(id = TEST_MA_ID, version = testVersion)
+
+            When calling miniAppViewHandler.miniAppDownloader.getMiniApp(testMiniAppInfo) itReturns getMiniAppResult
+            When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
+            When calling miniAppConfig.queryParams itReturns ""
+
+            miniAppViewHandler.createMiniAppView(testMiniAppInfo, miniAppConfig)
+
+            verify(miniAppViewHandler.miniAppDownloader).getMiniApp(testMiniAppInfo)
             verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
             verify(miniAppViewHandler.displayer).createMiniAppDisplay(
                 getMiniAppResult.first,
