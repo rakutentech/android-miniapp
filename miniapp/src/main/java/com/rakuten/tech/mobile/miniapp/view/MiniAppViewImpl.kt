@@ -27,18 +27,18 @@ internal class MiniAppViewImpl(
                 )
             }
             is MiniAppParameters.InfoParams -> scope.launch {
-                if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                if (queryParams != "") (miniAppParameters as MiniAppParameters.InfoParams).config.queryParams =
                     queryParams
                 onComplete(
                     miniAppViewHandler.createMiniAppView(
-                        (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo.id,
+                        (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo,
                         (miniAppParameters as MiniAppParameters.InfoParams).config,
                         (miniAppParameters as MiniAppParameters.InfoParams).fromCache
                     )
                 )
             }
             is MiniAppParameters.UrlParams -> scope.launch {
-                if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                if (queryParams != "") (miniAppParameters as MiniAppParameters.UrlParams).config.queryParams =
                     queryParams
                 onComplete(
                     miniAppViewHandler.createMiniAppViewWithUrl(
