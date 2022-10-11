@@ -23,7 +23,7 @@ class MiniAppPermissionSettingsActivity(private val miniapp: MiniApp) : BaseActi
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
 
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
+    constructor() : this(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
 
     private lateinit var permissionSettingsAdapter: MiniAppPermissionSettingsAdapter
     private lateinit var miniAppId: String

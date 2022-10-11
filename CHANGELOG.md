@@ -5,6 +5,9 @@
 - **Feature:** Added `MiniAppView` to create multiple MiniApp views.
 - **Feature:** Added `MiniAppConfig` data class to hold configuration settings for the `MiniAppView`.
 - **Deprecated:** Old `create` and `createWithUrl` interfaces.
+- **Fix:** Made the `MaxStorageSize` Limit in Bytes.
+- **Fix:** Returning `onSuccess` for the Bulk Delete even if no items could be deleted.
+- **Update:** Refactored the `maxStorageSizeLimitInMB` parameter to `maxStorageSizeLimitInBytes` in `MiniAppSdkConfig`.
 
 **Sample App**
 - **Feature:** Demo App will now use a TabBar instead of a single screen.

@@ -16,7 +16,7 @@ import kotlinx.android.parcel.Parcelize
  * @property miniAppAnalyticsConfigList List of analytic config to send events on.
  * @property sslPinningPublicKeyList List of SSL pinning public keys.
  * @property enableH5Ads Whether the host app wants to enable ad placement beta.
- * @property maxStorageSizeLimitInMB Maximum Secure Storage size limit in MB for each Mini App, Default is 5MB.
+ * @property maxStorageSizeLimitInBytes Maximum Secure Storage size limit in bytes for each Mini App, Default is 5MB.
  */
 @Parcelize
 data class MiniAppSdkConfig(
@@ -30,7 +30,7 @@ data class MiniAppSdkConfig(
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
     val sslPinningPublicKeyList: List<String> = emptyList(),
     val enableH5Ads: Boolean = false,
-    val maxStorageSizeLimitInMB: Int = 5 // Default max storage limit in MB
+    val maxStorageSizeLimitInBytes: String = "52428800" // Default max storage limit is 5 MB
 ) : Parcelable {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 
