@@ -174,14 +174,12 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String): Boolean {
-        return clearSecureDatabase(miniAppId)
-    }
+    fun clearSecureStorage(miniAppId: String): Boolean = clearSecureDatabase(miniAppId)
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() {
+    fun clearSecureStorages() {
         clearAllSecureDatabases()
     }
 

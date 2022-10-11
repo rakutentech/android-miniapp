@@ -91,7 +91,8 @@ internal class MiniAppSecureStorage(
     }
 
     internal fun closeDatabase() {
-        miniAppSecureDatabase.closeDatabase()
+        if (this::miniAppSecureDatabase.isInitialized)
+            miniAppSecureDatabase.closeDatabase()
     }
 
     @Suppress("ComplexMethod", "SwallowedException", "TooGenericExceptionCaught")

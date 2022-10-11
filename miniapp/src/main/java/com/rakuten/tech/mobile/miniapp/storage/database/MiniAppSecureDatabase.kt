@@ -206,7 +206,7 @@ internal class MiniAppSecureDatabase(
     @Suppress("SwallowedException")
     override fun closeDatabase() {
         try {
-            if (database.isOpen) {
+            if (this::database.isInitialized && database.isOpen) {
                 if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
                     miniAppDatabaseStatus = MiniAppDatabaseStatus.READY
                 }
@@ -435,7 +435,10 @@ internal class MiniAppSecureDatabase(
             throw e
         } finally {
             finalize()
+            if (!isDeleted && items.size > 1)
+                isDeleted = !isDeleted
         }
+
         return isDeleted
     }
 

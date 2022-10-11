@@ -57,6 +57,18 @@ class AppSettings private constructor(context: Context) {
             cache.subscriptionKey = subscriptionKey
         }
 
+    var projectId2: String
+        get() = cache.projectId2 ?: manifestConfig.rasProjectId()
+        set(projectId2) {
+            cache.projectId2 = projectId2
+        }
+
+    var subscriptionKey2: String
+        get() = cache.subscriptionKey2 ?: manifestConfig.subscriptionKey()
+        set(subscriptionKey2) {
+            cache.subscriptionKey2 = subscriptionKey2
+        }
+
     var uniqueId: String
         get() {
             val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
@@ -157,11 +169,32 @@ class AppSettings private constructor(context: Context) {
         get() = cache.maxStorageSizeLimitInBytes
         set(maxStorageSizeLimitInBytes) { cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes }
 
-    val newMiniAppSdkConfig: MiniAppSdkConfig
+    var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
+
+    val miniAppSettings1: MiniAppSdkConfig
         get() = MiniAppSdkConfig(
             baseUrl = baseUrl,
             rasProjectId = projectId,
             subscriptionKey = subscriptionKey,
+            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+            hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+            isPreviewMode = isPreviewMode,
+            requireSignatureVerification = requireSignatureVerification,
+            // temporarily taking values from buildConfig, we may add UI for this later.
+            miniAppAnalyticsConfigList = listOf(
+                MiniAppAnalyticsConfig(
+                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                    BuildConfig.ADDITIONAL_ANALYTICS_AID
+                )
+            ),
+            maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+        )
+
+    val miniAppSettings2: MiniAppSdkConfig
+        get() = MiniAppSdkConfig(
+            baseUrl = baseUrl,
+            rasProjectId = projectId2,
+            subscriptionKey = subscriptionKey2,
             // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
             hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
             isPreviewMode = isPreviewMode,
@@ -225,9 +258,17 @@ private class Settings(context: Context) {
         get() = prefs.getString(APP_ID, null)
         set(appId) = prefs.edit().putString(APP_ID, appId).apply()
 
+    var projectId2: String?
+        get() = prefs.getString(APP_ID_2, null)
+        set(appId2) = prefs.edit().putString(APP_ID_2, appId2).apply()
+
     var subscriptionKey: String?
         get() = prefs.getString(SUBSCRIPTION_KEY, null)
         set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
+
+    var subscriptionKey2: String?
+        get() = prefs.getString(SUBSCRIPTION_KEY_2, null)
+        set(subscriptionKey2) = prefs.edit().putString(SUBSCRIPTION_KEY_2, subscriptionKey2).apply()
 
     var uniqueId: String?
         get() = prefs.getString(UNIQUE_ID, null)
@@ -320,7 +361,9 @@ private class Settings(context: Context) {
         private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
         private const val BASE_URL = "base_url"
         private const val APP_ID = "app_id"
+        private const val APP_ID_2 = "app_id_2"
         private const val SUBSCRIPTION_KEY = "subscription_key"
+        private const val SUBSCRIPTION_KEY_2 = "subscription_key_2"
         private const val UNIQUE_ID = "unique_id"
         private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
