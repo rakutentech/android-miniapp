@@ -30,7 +30,7 @@ data class MiniAppSdkConfig(
     val miniAppAnalyticsConfigList: List<MiniAppAnalyticsConfig> = emptyList(),
     val sslPinningPublicKeyList: List<String> = emptyList(),
     val enableH5Ads: Boolean = false,
-    val maxStorageSizeLimitInBytes: String = "5242880" // Default max storage limit is 5 MB
+    val maxStorageSizeLimitInBytes: String = "52428800" // Default max storage limit is 5 MB
 ) : Parcelable {
     internal val key = "$baseUrl-$isPreviewMode-$rasProjectId-$subscriptionKey"
 

@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_KB
+import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
@@ -36,7 +36,7 @@ class MiniAppSecureStorageSpec {
         mass = MiniAppSecureStorage(
             context,
             TEST_STORAGE_VERSION,
-            TEST_MAX_STORAGE_SIZE_IN_KB
+            TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
         )
         mass.databaseName = TEST_MA_ID
         mass.miniAppSecureDatabase = mock()
@@ -48,11 +48,11 @@ class MiniAppSecureStorageSpec {
 
         val onSuccess: (Long) -> Unit = mock()
 
-        When calling mass.miniAppSecureDatabase.getDatabaseUsedSize() itReturns TEST_MAX_STORAGE_SIZE_IN_KB.toLong()
+        When calling mass.miniAppSecureDatabase.getDatabaseUsedSize() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
         mass.getDatabaseUsedSize(onSuccess)
 
-        Verify on onSuccess that onSuccess(TEST_MAX_STORAGE_SIZE_IN_KB.toLong()) was called
+        Verify on onSuccess that onSuccess(TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()) was called
     }
 
     @Test
