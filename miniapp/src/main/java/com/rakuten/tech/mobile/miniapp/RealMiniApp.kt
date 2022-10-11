@@ -94,12 +94,12 @@ internal class RealMiniApp(
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
             context.deleteDatabase(dbName)
+            isDeleted = true
             context.databaseList().forEach {
                 if (it == dbName) {
                     isDeleted = false
                 }
             }
-            isDeleted = true
         } catch (e: Exception) {
             // No callback needed. So Ignoring.
             isDeleted = false
