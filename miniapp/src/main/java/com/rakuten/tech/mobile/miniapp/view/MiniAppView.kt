@@ -1,11 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 
 /**
  * This class can be used in the HostApp to create the miniapp views independently.
@@ -36,8 +38,17 @@ abstract class MiniAppView internal constructor() {
                     config = miniAppParameters.config
                 }
             }
+            return createMiniAppView(context, miniAppParameters, config.miniAppSdkConfig)
+        }
+
+        @VisibleForTesting
+        internal fun createMiniAppView(
+            context: Context,
+            miniAppParameters: MiniAppParameters,
+            miniAppSdkConfig: MiniAppSdkConfig
+        ): MiniAppView {
             instance = MiniAppViewImpl(miniAppParameters) {
-                MiniAppViewHandler(context, config.miniAppSdkConfig)
+                MiniAppViewHandler(context, miniAppSdkConfig)
             }
             return instance
         }

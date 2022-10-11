@@ -1,14 +1,20 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
-import com.rakuten.tech.mobile.miniapp.api.*
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.permission.*
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.CachedManifest
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
@@ -368,6 +374,58 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         realMiniApp.setCustomPermissions(miniAppCustomPermission)
 
         verify(miniAppCustomPermissionCache).storePermissions(miniAppCustomPermission)
+    }
+    /** end region */
+
+    /** region: secure storage */
+    private val context: Context = mock()
+    private val databaseList = arrayOf(DB_NAME_PREFIX + TEST_MA_ID, "sample_database")
+
+    @Test
+    fun `clearSecureStorages should clear all the mini appp secure storages`() {
+        When calling context.databaseList() itReturns databaseList
+        realMiniApp.clearSecureStorages(context = context)
+        verify(context).deleteDatabase(DB_NAME_PREFIX + TEST_MA_ID)
+    }
+
+    @Test
+    fun `clearSecureStorages should not delete database except miniapp sceure storage`() {
+        When calling context.databaseList() itReturns databaseList
+
+        realMiniApp.clearSecureStorages(context = context)
+
+        verify(context, times(1)).deleteDatabase(DB_NAME_PREFIX + TEST_MA_ID)
+        verify(context, times(0)).deleteDatabase("sample_database")
+    }
+
+    @Test
+    fun `clearSecureStorages should not throw any exception if can not clear secure storages`() {
+        When calling context.databaseList() itReturns null
+        realMiniApp.clearSecureStorages(context = context)
+    }
+
+    @Test
+    fun `clearSecureStorage should call deleteDatabase with specific mini app secure storages`() {
+        realMiniApp.clearSecureStorage(context, TEST_MA_ID)
+        verify(context).deleteDatabase(DB_NAME_PREFIX + TEST_MA_ID)
+    }
+
+    @Test
+    fun `clearSecureStorage should return true if the specific mini app secure storages is cleared`() {
+        When calling context.databaseList() itReturns arrayOf("sample_database")
+        realMiniApp.clearSecureStorage(context, TEST_MA_ID) shouldBe true
+    }
+
+    @Test
+    fun `clearSecureStorage should return false if the specific mini app secure storages can not be cleared`() {
+        When calling context.databaseList() itReturns databaseList
+        realMiniApp.clearSecureStorage(context, TEST_MA_ID) shouldBe false
+    }
+
+    @Test
+    fun `clearSecureStorage should return false if any exception happened`() {
+        When calling context.databaseList() itReturns null
+        realMiniApp.clearSecureStorage(context, TEST_MA_ID) shouldBe false
     }
     /** end region */
 }
