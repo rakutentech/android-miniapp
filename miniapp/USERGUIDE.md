@@ -54,8 +54,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
-* The "Host App User Agent Info" is the string which is appended to user-agent of webview. It should be a meaningful 
-keyword such as host app name to differentiate other host apps.
+* The "Host App User Agent Info" is the string which is appended to user-agent of webview. It should be a meaningful keyword such as host app name to differentiate other host apps.
 
 <details><summary markdown="span"><b>Click to expand example AndroidManifest.xml</b>
 </summary>
