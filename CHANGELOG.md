@@ -7,7 +7,7 @@
 - **Deprecated:** Old `create` and `createWithUrl` interfaces.
 - **Fix:** Made the `MaxStorageSize` Limit in Bytes.
 - **Fix:** Returning `onSuccess` for the Bulk Delete even if no items could be deleted.
-- **Update:** Refactored the variable name to `maxStorageSizeLimitInBytes` and `newMiniAppSdkConfig`
+- **Update:** Refactored the `MiniAppSdkConfig` parameter to `maxStorageSizeLimitInBytes` 
 
 **Sample App**
 - **Feature:** Demo App will now use a TabBar instead of a single screen.
