@@ -56,6 +56,7 @@ open class MiniAppViewHandlerSpec {
         When calling miniAppSdkConfig.subscriptionKey itReturns TEST_HA_SUBSCRIPTION_KEY
         When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
         When calling miniAppSdkConfig.hostAppUserAgentInfo itReturns ""
+        When calling miniAppSdkConfig.maxStorageSizeLimitInBytes itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
 
         miniAppViewHandler = spy(MiniAppViewHandler(context, miniAppSdkConfig))
 
