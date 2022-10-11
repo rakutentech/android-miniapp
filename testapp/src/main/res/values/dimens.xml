@@ -17,6 +17,7 @@
     <dimen name="large_24">24dp</dimen>
     <dimen name="large_32">32dp</dimen>
     <dimen name="large_44">44dp</dimen>
+    <dimen name="large_48">48dp</dimen>
     <dimen name="large_52">52dp</dimen>
     <dimen name="large_72">72dp</dimen>
 

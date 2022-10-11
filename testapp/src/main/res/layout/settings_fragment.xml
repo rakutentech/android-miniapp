@@ -125,7 +125,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editProjectId"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/large_48"
                         android:hint="@string/hint_host_project_id"
                         android:imeOptions="actionDone"
                         android:inputType="text" />
@@ -142,7 +142,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editSubscriptionKey"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/large_48"
                         android:hint="@string/hint_subscription_key"
                         android:imeOptions="actionDone"
                         android:inputType="text" />
@@ -275,10 +275,11 @@
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/editParametersUrl"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/large_48"
                         android:hint="@string/hint_miniapp_url_parameters"
                         android:imeOptions="actionDone"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>

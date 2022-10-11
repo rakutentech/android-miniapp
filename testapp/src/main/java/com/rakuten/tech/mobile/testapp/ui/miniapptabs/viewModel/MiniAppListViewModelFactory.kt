@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.miniapplist
+package com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
