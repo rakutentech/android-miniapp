@@ -46,10 +46,12 @@ class MiniappSdkInitializerSpec {
         When calling testManifestConfig.requireSignatureVerification() itReturns false
         When calling testManifestConfig.hostAppUserAgentInfo() itReturns ""
         When calling testManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
+        When calling testManifestConfig.maxStorageSizeLimitInBytes() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
 
         val miniAppSdkConfig = miniappSdkInitializer.createMiniAppSdkConfig(testManifestConfig)
         miniAppSdkConfig.rasProjectId shouldBeEqualTo TEST_HA_ID_PROJECT
         miniAppSdkConfig.baseUrl shouldBeEqualTo TEST_BASE_URL
         miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
+        miniAppSdkConfig.maxStorageSizeLimitInBytes shouldBeEqualTo TEST_MAX_STORAGE_SIZE_IN_BYTES
     }
 }

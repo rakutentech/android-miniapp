@@ -50,6 +50,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 | Enable [Ad Placement api](https://developers.google.com/ad-placement)      | Boolean | `com.rakuten.tech.mobile.miniapp.EnableH5Ads`          | ✅         | false     |
+| Secure Storage Max Size     | String  | `com.rakuten.tech.mobile.miniapp.MaxStorageSizeLimitInBytes` | ✅         | ✅          |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.

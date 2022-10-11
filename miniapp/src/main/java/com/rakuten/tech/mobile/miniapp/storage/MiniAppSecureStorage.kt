@@ -17,7 +17,7 @@ import java.sql.SQLException
 internal class MiniAppSecureStorage(
     @NonNull private val context: Context,
     private val databaseVersion: Int,
-    private val maxDatabaseSizeInKB: Int
+    private val maxDatabaseSizeInBytes: Long
 ) {
 
     @VisibleForTesting
@@ -32,10 +32,9 @@ internal class MiniAppSecureStorage(
     @Suppress("MagicNumber")
     private fun checkAndInitSecuredDatabase(miniAppId: String) {
         if (!this::miniAppSecureDatabase.isInitialized) {
-            val maxDBSize = (maxDatabaseSizeInKB * 1024).toLong()
             setDatabaseName(miniAppId)
             miniAppSecureDatabase =
-                MiniAppSecureDatabase(context, databaseName, databaseVersion, maxDBSize)
+                MiniAppSecureDatabase(context, databaseName, databaseVersion, maxDatabaseSizeInBytes)
         }
     }
 

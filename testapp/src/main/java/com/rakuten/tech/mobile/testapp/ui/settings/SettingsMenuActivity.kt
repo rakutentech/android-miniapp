@@ -210,7 +210,7 @@ class SettingsMenuActivity : BaseActivity() {
 
         launch {
             try {
-                MiniApp.instance(AppSettings.instance.miniAppSettings).listMiniApp()
+                MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig).listMiniApp()
                 URL("https://www.test-param.com?$urlParameters").toURI()
 
                 settings.isSettingSaved = true

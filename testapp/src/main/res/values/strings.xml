@@ -26,7 +26,7 @@
     <string name="hint_messaging_unique_id_error">Messaging Unique ID Error Message</string>
     <string name="hint_mauid_error">MAUID Error Message</string>
 
-    <string name="hint_set_max_storage_limit">Upgrade Max Storage Limit in MB</string>
+    <string name="hint_set_max_storage_limit">Upgrade Max Storage Limit in Bytes</string>
     <string name="hint_enter_miniapp_id">Enter MiniApp Id</string>
 
     <string name="hint_points_standard">Points (Standard)</string>

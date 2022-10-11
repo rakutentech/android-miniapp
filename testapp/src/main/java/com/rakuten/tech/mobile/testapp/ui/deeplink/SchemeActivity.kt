@@ -31,8 +31,8 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         super.onCreate(savedInstanceState)
         miniAppInfo = null
         miniAppSdkConfig = createSdkConfig(
-            AppSettings.instance.miniAppSettings.rasProjectId,
-            AppSettings.instance.miniAppSettings.subscriptionKey
+            AppSettings.instance.newMiniAppSdkConfig.rasProjectId,
+            AppSettings.instance.newMiniAppSdkConfig.subscriptionKey
         )
         miniAppSdkConfig?.let { config ->
             miniApp = MiniApp.instance(config, setConfigAsDefault = false)
@@ -103,12 +103,12 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
 
     private fun createSdkConfig(hostId: String, subscriptionKey: String): MiniAppSdkConfig {
         return MiniAppSdkConfig(
-            baseUrl = AppSettings.instance.miniAppSettings.baseUrl,
+            baseUrl = AppSettings.instance.newMiniAppSdkConfig.baseUrl,
             rasProjectId = hostId,
             subscriptionKey = subscriptionKey,
-            hostAppUserAgentInfo = AppSettings.instance.miniAppSettings.hostAppUserAgentInfo,
-            isPreviewMode = AppSettings.instance.miniAppSettings.isPreviewMode,
-            requireSignatureVerification = AppSettings.instance.miniAppSettings.requireSignatureVerification,
+            hostAppUserAgentInfo = AppSettings.instance.newMiniAppSdkConfig.hostAppUserAgentInfo,
+            isPreviewMode = AppSettings.instance.newMiniAppSdkConfig.isPreviewMode,
+            requireSignatureVerification = AppSettings.instance.newMiniAppSdkConfig.requireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(

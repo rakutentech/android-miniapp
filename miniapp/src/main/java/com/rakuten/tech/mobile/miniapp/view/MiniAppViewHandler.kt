@@ -100,7 +100,7 @@ internal class MiniAppViewHandler(
         ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
         secureStorageDispatcher = MiniAppSecureStorageDispatcher(
             context,
-            config.maxStorageSizeLimitInMB
+            config.maxStorageSizeLimitInBytes.toLong()
         )
     }
 
