@@ -33,6 +33,7 @@ import java.util.Locale
 
 import kotlin.collections.ArrayList
 
+@Deprecated("Obsolete")
 class MiniAppListFragmentDeprecated : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
@@ -85,7 +86,7 @@ class MiniAppListFragmentDeprecated : BaseFragment(), MiniAppListener, OnSearchL
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
         viewModel =
             ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
                 miniAppListData.observe(viewLifecycleOwner) {
@@ -112,7 +113,7 @@ class MiniAppListFragmentDeprecated : BaseFragment(), MiniAppListener, OnSearchL
 
     override fun onResume() {
         super.onResume()
-        MiniApp.instance(AppSettings.instance.miniAppSettings)
+        MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
         activity?.invalidateOptionsMenu()
     }
 

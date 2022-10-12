@@ -44,7 +44,7 @@ class PreloadMiniAppWindow(
         miniAppId: String,
         versionId: String,
         lifecycleOwner: LifecycleOwner,
-        miniApp: MiniApp = MiniApp.instance(AppSettings.instance.miniAppSettings)
+        miniApp: MiniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
     ) {
         this.lifecycleOwner = lifecycleOwner
         this.miniApp = miniApp

@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -174,7 +173,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
         if(miniAppSdkConfig == null)
-            miniAppSdkConfig = AppSettings.instance.miniAppSettings
+            miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 

@@ -1,11 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -13,11 +10,9 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
-import com.rakuten.tech.mobile.testapp.helper.AppPermission
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.SettingsFragment
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
@@ -73,9 +68,9 @@ class DemoAppMainActivity : BaseActivity() {
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
-                R.id.nav_tab_0 -> AppSettings.instance.miniAppSettings =
+                R.id.nav_tab_0 -> AppSettings.instance.newMiniAppSdkConfig =
                     AppSettings.instance.miniAppSettings1
-                R.id.nav_tab_1 -> AppSettings.instance.miniAppSettings =
+                R.id.nav_tab_1 -> AppSettings.instance.newMiniAppSdkConfig =
                     AppSettings.instance.miniAppSettings2
                 R.id.nav_tab_2 -> {}
                 R.id.nav_tab_3 -> {}

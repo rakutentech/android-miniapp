@@ -473,7 +473,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         return MiniAppParameters.InfoParams(
             context = activity,
             config = MiniAppConfig(
-                miniAppSdkConfig = AppSettings.instance.miniAppSettings,
+                miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig,
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
                 miniAppFileChooser = miniAppFileChooser,

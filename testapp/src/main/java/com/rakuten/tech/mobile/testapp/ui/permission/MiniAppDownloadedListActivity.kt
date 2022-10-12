@@ -28,7 +28,7 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
 
-    constructor() : this(MiniApp.instance(AppSettings.instance.miniAppSettings))
+    constructor() : this(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
 
     private lateinit var adapter: MiniAppDownloadedListAdapter
     private lateinit var binding: MiniappDownloadedListActivityBinding
@@ -81,7 +81,7 @@ class MiniAppDownloadedListActivity(private val miniApp: MiniApp) : BaseActivity
 
     private fun loadList() {
         settingsProgressDialog.show()
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
         viewModel =
                 ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java).apply {
                 settingsProgressDialog.cancel()

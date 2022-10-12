@@ -72,6 +72,7 @@ open class BaseRealMiniAppSpec {
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
         When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
         When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
+        When calling miniAppSdkConfig.maxStorageSizeLimitInBytes itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
     }
 }
 

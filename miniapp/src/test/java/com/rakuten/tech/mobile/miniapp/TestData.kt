@@ -14,7 +14,7 @@ internal const val TEST_ID_MINIAPP = "5f0ed952-36ab-43e2-a285-b237c11e23cb"
 internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812a5"
 
 internal const val TEST_STORAGE_VERSION = 1
-internal const val TEST_MAX_STORAGE_SIZE_IN_KB = 5000
+internal const val TEST_MAX_STORAGE_SIZE_IN_BYTES = "52428800"
 
 internal const val TEST_BASE_PATH = "dummy"
 internal const val TEST_URL_FILE = "file.storage/test/file.abc"

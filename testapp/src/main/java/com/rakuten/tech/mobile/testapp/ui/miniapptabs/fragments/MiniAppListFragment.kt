@@ -3,10 +3,8 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +17,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
-import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModel
@@ -86,7 +83,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.miniAppSettings))
+        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
 
         viewModel = ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java)
 
@@ -108,7 +105,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onResume() {
         super.onResume()
-        MiniApp.instance(AppSettings.instance.miniAppSettings)
+        MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
         activity?.invalidateOptionsMenu()
     }
 
