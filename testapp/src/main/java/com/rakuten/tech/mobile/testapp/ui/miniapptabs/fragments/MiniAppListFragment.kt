@@ -19,8 +19,8 @@ import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
-import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModel
-import com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListViewModelFactory
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.*

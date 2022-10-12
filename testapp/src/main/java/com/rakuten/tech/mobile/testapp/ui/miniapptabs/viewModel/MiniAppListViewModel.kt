@@ -1,7 +1,5 @@
-package com.rakuten.tech.mobile.testapp.ui.miniapplist
+package com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel
 
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

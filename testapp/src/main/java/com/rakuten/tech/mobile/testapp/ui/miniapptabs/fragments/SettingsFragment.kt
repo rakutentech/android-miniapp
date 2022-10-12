@@ -5,20 +5,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
-import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.button.MaterialButtonToggleGroup
-import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
 import com.rakuten.tech.mobile.testapp.BuildVariant
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
@@ -30,11 +23,8 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
-import kotlinx.android.synthetic.main.settings_menu_activity.*
-import kotlinx.android.synthetic.main.settings_menu_activity.switchProdVersion
 import kotlinx.coroutines.launch
 import java.net.URL
-import java.util.ArrayList
 import kotlin.properties.Delegates
 
 class SettingsFragment : BaseFragment() {

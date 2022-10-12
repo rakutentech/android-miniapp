@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.input
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,18 +9,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
-import com.rakuten.tech.mobile.testapp.AppScreen.MINI_APP_INPUT_ACTIVITY
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.launchActivity
+import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.MenuBaseActivity
-import com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity
 
-class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
+class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -127,13 +124,6 @@ class MiniAppInputActivity : MenuBaseActivity(), PreloadMiniAppWindow.PreloadMin
                     }
                 }
         viewModel.getMiniAppVersionId(miniAppId)
-    }
-
-    override fun navigateToScreen(): Boolean {
-        val intent = Intent(this, SettingsMenuActivity::class.java)
-        intent.putExtra(MENU_SCREEN_NAME, MINI_APP_INPUT_ACTIVITY)
-        startActivity(intent)
-        return true
     }
 
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
