@@ -14,7 +14,6 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.webkit.WebViewAssetLoader
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -210,11 +209,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             enableH5Ads = true
         )
 
-       miniAppWebView.webViewClient shouldBeEqualTo MiniAppH5AdsProvider().getH5AdsWebViewClient(
-           context,
-           miniAppWebView,
-           miniAppWebView.getMiniAppWebViewClient()
-       )
+       verify(miniAppWebView).getH5AdsWebViewClient(context, miniAppWebView.webViewClient)
     }
 
     @Test
