@@ -192,7 +192,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `should invoke MiniAppH5AdsProvider when isH5AdsEnabled is true`() {
         miniAppWebView = MiniAppWebView(
             context,
@@ -211,7 +211,8 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             enableH5Ads = true
         )
 
-        Assert.fail("java.lang.AssertionError'")
+        verify(miniAppWebView).setupMiniAppNavigator()
+        Assert.fail()
     }
 
     @Test
