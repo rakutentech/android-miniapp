@@ -211,7 +211,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             enableH5Ads = true
         )
 
-        Assert.fail("Cannot access class 'com.google.android.gms.ads.h5.H5AdsWebViewClient'")
+        Assert.fail("java.lang.AssertionError'")
     }
 
     @Test
