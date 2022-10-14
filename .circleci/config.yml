@@ -1,26 +1,158 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+orbs:
+  android-sdk: rakutentech/android-sdk@0.3.0
+  app-center: rakutentech/app-center@0.1.3
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+commands:
+  update-submodules:
+    steps:
+      - run: |
+          set -e
+          git submodule update --init
 workflows:
-  say-hello-workflow:
+  version: 2.1
+  build-and-release:
     jobs:
-      - say-hello
+      - android-sdk/build:
+          gradle-cache-key: >-
+            gradle-
+            {{ checksum "build.gradle" }}
+            {{ checksum "miniapp/build.gradle" }}
+            {{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          maven-cache-key: maven-{{ checksum "miniapp/src/test/AndroidManifest.xml" }}
+          sdk-path: miniapp
+          sample-app-path: testapp
+          after-prepare-steps:
+            - update-submodules
+            # Retrieve Base64 Keystore from Env variable and save to testapp project
+            - run: |
+                if [[ "$RELEASE_KEYSTORE_BASE64" != "" ]]; then
+                  base64 -d \<<< "$RELEASE_KEYSTORE_BASE64" > ./testapp/release-keystore.jks
+                fi
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: /.*/
+          post-steps:
+            - persist_to_workspace:
+                root: testapp/build/outputs
+                paths:
+                  - mapping/
+            - persist_to_workspace:
+                root: testapp/build/generated/source
+                paths:
+                  - buildConfig/
+      - app-center/publish:
+          name: deploy-test-app-stg
+          group: Testers
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BUILD_URL
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: master
+      - release-verification:
+          type: approval
+          requires:
+            - android-sdk/build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - android-sdk/publish:
+          requires:
+            - release-verification
+          after-prepare-steps:
+            - update-submodules
+            # Retrieve Base64 PGP Key and save to file
+            - run: |
+                if [[ "$RELEASE_PGP_KEY_BASE64" != "" ]]; then
+                  base64 -d \<<< "$RELEASE_PGP_KEY_BASE64" > ./maven-central-key.gpg
+                fi
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - app-center/publish:
+          name: deploy-test-app-prod
+          group: Production
+          file: apk/release/testapp-release.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_TAG
+          requires:
+            - android-sdk/publish
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - app-center/publish:
+          name: deploy-test-app-candidate
+          group: Release_Candidate
+          file: apk/rc/testapp-rc.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BUILD_URL
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: candidate
+      - app-center/publish:
+          name: deploy-test-app-feature
+          group: Feature
+          file: apk/staging/testapp-staging.apk
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          notes: $CIRCLE_BRANCH
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: /^feature\/.*/
+      - app-center/mapping:
+          name: deploy-test-app-stg-mapping
+          file: mapping/staging/mapping.txt
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          version-name: $(grep "VERSION_NAME" buildConfig/staging/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-code: 1
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: master
+      - app-center/mapping:
+          name: deploy-test-app-release-mapping
+          file: mapping/release/mapping.txt
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          version-name: $(grep "VERSION_NAME" buildConfig/release/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-code: 1
+          requires:
+            - android-sdk/build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - app-center/mapping:
+          name: deploy-test-app-rc-mapping
+          file: mapping/rc/mapping.txt
+          app: $APP_CENTER_APP_NAME
+          token: $APP_CENTER_TOKEN
+          version-name: $(grep "VERSION_NAME" buildConfig/rc/com/rakuten/tech/mobile/miniapp/testapp/BuildConfig.java | awk '{print $7}' | tr -d \''";\')
+          version-code: 1
+          requires:
+            - android-sdk/build
+          filters:
+            branches:
+              only: candidate
