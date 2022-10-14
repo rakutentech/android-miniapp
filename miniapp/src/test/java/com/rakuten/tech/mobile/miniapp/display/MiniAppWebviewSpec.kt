@@ -191,6 +191,28 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
     }
 
     @Test
+    fun `should invoke MiniAppH5AdsProvider when isH5AdsEnabled is true`() {
+        miniAppWebView = MiniAppWebView(
+            context,
+            basePath = basePath,
+            miniAppInfo = TEST_MA,
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = miniAppNavigator,
+            miniAppFileChooser = miniAppFileChooser,
+            hostAppUserAgentInfo = "",
+            miniAppWebChromeClient = webChromeClient,
+            miniAppCustomPermissionCache = mock(),
+            downloadedManifestCache = mock(),
+            queryParams = TEST_URL_PARAMS,
+            ratDispatcher = mock(),
+            secureStorageDispatcher = mock(),
+            enableH5Ads = true
+        )
+
+        verify(whenHasH5AdsWebViewClient { })
+    }
+
+    @Test
     fun `when destroyView called then the MiniAppWebView should be disposed`() {
         val displayer = Mockito.spy(miniAppWebView)
         displayer.destroyView()
