@@ -223,7 +223,8 @@ internal open class MiniAppWebView(
         return miniAppScheme.appendParametersToUrl(parentUrl, queryParams)
     }
 
-    protected open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
+    @VisibleForTesting
+    internal open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
         context,
         getWebViewAssetLoader(),
         miniAppNavigator!!,
