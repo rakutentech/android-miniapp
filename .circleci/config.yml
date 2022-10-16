@@ -10,6 +10,7 @@ commands:
       - run: |
           set -e
           git submodule update --init
+
 workflows:
   version: 2.1
   build-and-release:
