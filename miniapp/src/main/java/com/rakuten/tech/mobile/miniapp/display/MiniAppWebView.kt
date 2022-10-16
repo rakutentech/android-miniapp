@@ -4,14 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import androidx.webkit.WebViewAssetLoader
+import com.google.android.gms.ads.h5.H5AdsWebViewClient
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
-import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -127,9 +128,8 @@ internal open class MiniAppWebView(
 
         if (enableH5Ads) {
             whenHasH5AdsWebViewClient {
-                webViewClient = MiniAppH5AdsProvider().getH5AdsWebViewClient(
+                webViewClient = getH5AdsWebViewClient(
                     context,
-                    this,
                     getMiniAppWebViewClient()
                 )
             }
@@ -140,6 +140,20 @@ internal open class MiniAppWebView(
         webChromeClient = miniAppWebChromeClient
 
         loadUrl(getLoadUrl())
+    }
+
+    /**
+     * The function to create a H5AdsWebViewClient.
+     * @param context context of the webview.
+     * @param webViewClient the WebViewClient for delegating to H5AdsWebViewClient.
+     */
+    fun getH5AdsWebViewClient(
+        context: Context,
+        webViewClient: WebViewClient
+    ): H5AdsWebViewClient {
+        val h5Client = H5AdsWebViewClient(context, this)
+        h5Client.delegateWebViewClient = webViewClient
+        return h5Client
     }
 
     override fun onAttachedToWindow() {
@@ -223,7 +237,8 @@ internal open class MiniAppWebView(
         return miniAppScheme.appendParametersToUrl(parentUrl, queryParams)
     }
 
-    protected open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
+    @VisibleForTesting
+    internal open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
         context,
         getWebViewAssetLoader(),
         miniAppNavigator!!,
