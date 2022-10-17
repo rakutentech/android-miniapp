@@ -209,7 +209,7 @@ Calling `MiniAppView.load` will do the following:
 - If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
 - If the host app needs the cached version of the miniapp, set `fromCache` value to `true` will return already downloaded version.
 
-After calling `MiniAppView.load` and all the "required" manifest permissions have been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app.
+After calling `MiniAppView.load` and all the "required" manifest permissions have been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app. You will get an instance of `MiniAppSdkException` you any exception happens.
 
 The following is a simplified example:
 ```kotlin
@@ -231,9 +231,14 @@ val miniapp = MiniAppView.init(param)
 ```
 To load the miniapp following load function needed to call
 ```kotlin
-miniapp.load { miniAppDisplay ->
-    val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
-    // view could be added to show the miniapp           
+miniapp.load { miniAppDisplay, miniAppSdkException ->
+    if(miniAppDisplay != null) {
+      val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+      // view could be added to show the miniapp
+      runOnUithread {
+        rootView.addView(miniAppView)
+      }    
+    }       
 }
 ```
 
