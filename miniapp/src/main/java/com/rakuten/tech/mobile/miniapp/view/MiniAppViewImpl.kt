@@ -22,8 +22,10 @@ internal class MiniAppViewImpl(
             try {
                 when (miniAppParameters) {
                     is MiniAppParameters.DefaultParams -> {
-                        if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
-                            queryParams
+                        if (queryParams != "") {
+                            (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                                queryParams
+                        }
                         onComplete(
                             miniAppViewHandler.createMiniAppView(
                                 (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
