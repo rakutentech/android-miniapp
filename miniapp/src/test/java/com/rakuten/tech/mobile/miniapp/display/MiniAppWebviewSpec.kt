@@ -36,7 +36,6 @@ import org.mockito.kotlin.mock
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
-
 open class BaseWebViewSpec {
     lateinit var context: Context
     lateinit var basePath: String
@@ -192,7 +191,6 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
-
 
     /**
      * catching error due to test environment doesn't have gms library that has H5AdsProvider in it
