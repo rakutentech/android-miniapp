@@ -102,7 +102,6 @@ class MiniAppDisplayFragment : BaseFragment() {
             container,
             false
         )
-
         if (isloadNew) {
             isloadNew = false
             initializeMiniAppDisplay(activity)
@@ -121,23 +120,27 @@ class MiniAppDisplayFragment : BaseFragment() {
         setUpNavigator(activity)
         setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
         val miniAppView = MiniAppView.init(createMiniAppInfoParam(activity, args.miniAppInfo))
-        try {
-            miniAppView.load { miniAppDisplay ->
-                this.miniAppDisplay = miniAppDisplay
-                addMiniAppChildView(activity, miniAppDisplay)
-            }
-        } catch (e: MiniAppSdkException) {
-            toggleProgressLoading(false)
-            e.printStackTrace()
-            when (e) {
-                is MiniAppHasNoPublishedVersionException ->
-                    Toast.makeText(activity, "No published version for the provided Mini App ID.", Toast.LENGTH_LONG).show()
-                is MiniAppNotFoundException ->
-                    Toast.makeText(activity, "No Mini App found for the provided Project ID.", Toast.LENGTH_LONG).show()
-                is MiniAppTooManyRequestsError ->
-                    showErrorDialog(activity, getString(R.string.error_desc_miniapp_too_many_request))
-                else -> {
-                    Toast.makeText(activity, e.message, Toast.LENGTH_LONG).show()
+        miniAppView.load { miniAppDisplay, miniAppSdkException ->
+            activity.runOnUiThread {
+                miniAppDisplay?.let {
+                    this.miniAppDisplay = miniAppDisplay
+                    addMiniAppChildView(activity, miniAppDisplay)
+                } ?: kotlin.run {
+                    miniAppSdkException?.let {
+                        toggleProgressLoading(false)
+                        it.printStackTrace()
+                        when (it) {
+                            is MiniAppHasNoPublishedVersionException ->
+                                Toast.makeText(activity, "No published version for the provided Mini App ID.", Toast.LENGTH_LONG).show()
+                            is MiniAppNotFoundException ->
+                                Toast.makeText(activity, "No Mini App found for the provided Project ID.", Toast.LENGTH_LONG).show()
+                            is MiniAppTooManyRequestsError ->
+                                showErrorDialog(activity, getString(R.string.error_desc_miniapp_too_many_request))
+                            else -> {
+                                Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -161,7 +164,6 @@ class MiniAppDisplayFragment : BaseFragment() {
 
     private fun setUpNavigator(activity: Activity) {
         miniAppNavigator = object : MiniAppNavigator {
-
             override fun openExternalUrl(
                 url: String,
                 externalResultHandler: ExternalResultHandler
