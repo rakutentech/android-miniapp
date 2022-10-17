@@ -33,10 +33,14 @@ interface MiniAppFileChooser {
      * @param fileChooserParams the parameters can be used to customize the options of file chooser.
      * @param context the Activity context can be used to start the intent to choose file.
      **/
+    @Suppress("LongParameterList")
     fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
-        context: Context
+        context: Context,
+        isOpenMultipleMode: Boolean = fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE,
+        isCaptureEnabled: Boolean = fileChooserParams?.isCaptureEnabled ?: false,
+        fileChooserParamsAcceptTypes: Array<String>? = fileChooserParams?.acceptTypes
     ): Boolean
 }
 
@@ -89,7 +93,8 @@ class MiniAppFileChooserDefault(
         }
     }
 
-    private fun launchCameraIntent() = whenReady {
+    @VisibleForTesting
+    internal fun launchCameraIntent() = whenReady {
         val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
@@ -118,20 +123,23 @@ class MiniAppFileChooserDefault(
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
-        context: Context
+        context: Context,
+        isOpenMultipleMode: Boolean,
+        isCaptureEnabled: Boolean,
+        fileChooserParamsAcceptTypes: Array<String>?
     ): Boolean {
         try {
             callback = filePathCallback
             this.context = context
             val intent = fileChooserParams?.createIntent()
-            if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
+            if (isOpenMultipleMode) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
-            if (fileChooserParams?.isCaptureEnabled == true) {
+            if (isCaptureEnabled) {
                 launchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
-                fileChooserParams?.acceptTypes?.let { acceptTypes ->
+                fileChooserParamsAcceptTypes?.let { acceptTypes ->
                     if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
                         // Accept all first.
                         intent?.type = "*/*"
@@ -151,8 +159,9 @@ class MiniAppFileChooserDefault(
         return true
     }
 
+    @VisibleForTesting
     @Suppress("SwallowedException")
-    private fun dispatchTakePictureIntent(context: Context) {
+    internal fun dispatchTakePictureIntent(context: Context) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Create the File where the photo should go
             val photoFile: File? = try {

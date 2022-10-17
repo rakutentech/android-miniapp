@@ -83,6 +83,35 @@ class MiniAppFileChooserDefaultSpec {
     }
 
     @Test
+    fun `onShowFileChooser should launch camera permission when isCaptureEnabled is true`() {
+        val actual =
+            miniAppFileChooser.onShowFileChooser(mock(), fileChooserParams, context, false, true)
+        verify(miniAppFileChooser).launchCameraIntent()
+        assertTrue(actual)
+    }
+
+    @Test
+    fun `onShowFileChooser should add EXTRA_MIME_TYPES when acceptTypes is not empty`() {
+        val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        val actual = miniAppFileChooser.onShowFileChooser(
+            mock(),
+            fileChooserParams,
+            context,
+            fileChooserParamsAcceptTypes = fileChooserParamsAcceptTypes
+        )
+        verify(context as Activity).startActivityForResult(intent, requestCode)
+        assertTrue(actual)
+    }
+
+    @Test
+    fun `onShowFileChooser Intent should add EXTRA_ALLOW_MULTIPLE extra if isOpenMultipleMode is true`() {
+        val actual =
+            miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context, true)
+        verify(fileChooserParams?.createIntent())?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        assertTrue(actual)
+    }
+
+    @Test
     fun `onReceivedFiles should invoke value when intent data in intent after onShowFileChooser`() {
         val intent: Intent = mock()
         val uri: Uri = mock()
