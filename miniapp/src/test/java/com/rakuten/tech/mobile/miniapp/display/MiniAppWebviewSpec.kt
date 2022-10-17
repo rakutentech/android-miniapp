@@ -23,18 +23,19 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import org.amshove.kluent.*
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.AdditionalAnswers.delegatesTo
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.exceptions.misusing.InvalidUseOfMatchersException
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
+
 
 open class BaseWebViewSpec {
     lateinit var context: Context
@@ -194,11 +195,11 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
 
 
     /**
-     * catching error due to test environment doesn't have gms library
+     * catching error due to test environment doesn't have gms library that has H5AdsProvider in it
      */
-    @Test(expected = AssertionError::class)
+    @Test
     fun `should invoke MiniAppH5AdsProvider when isH5AdsEnabled is true`() {
-        miniAppWebView = MiniAppWebView(
+        `when`(MiniAppWebView(
             context,
             basePath = basePath,
             miniAppInfo = TEST_MA,
@@ -213,9 +214,7 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             ratDispatcher = mock(),
             secureStorageDispatcher = mock(),
             enableH5Ads = true
-        )
-
-        Assert.fail()
+        )).itThrows(AssertionError())
     }
 
     @Test
