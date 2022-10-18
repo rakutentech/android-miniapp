@@ -174,7 +174,7 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns true
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(items, mock(), onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).insert(items)
     }
@@ -182,15 +182,17 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `insert onFailed should be called if IllegalStateException occurred`() = runBlockingTest {
 
+        val items = mapOf("key" to "value")
+
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itThrows IllegalStateException("Failed")
+        When calling mass.miniAppSecureDatabase.insert(items) itThrows IllegalStateException("Failed")
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(items, mock(), onFailed)
 
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
@@ -198,15 +200,17 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `insert onFailed should be called if runtime exception occurred`() = runBlockingTest {
 
+        val items = mapOf("key" to "value")
+
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itThrows RuntimeException("Failed")
+        When calling mass.miniAppSecureDatabase.insert(items) itThrows RuntimeException("Failed")
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(items, mock(), onFailed)
 
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
@@ -215,17 +219,19 @@ class MiniAppSecureStorageSpec {
     fun `insert onFailed should be called if database is full exception occurred`() =
         runBlockingTest {
 
+            val items = mapOf("key" to "value")
+
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
             When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
-            When calling mass.miniAppSecureDatabase.insert(any()) itThrows SQLiteFullException(
+            When calling mass.miniAppSecureDatabase.insert(items) itThrows SQLiteFullException(
                 DATABASE_SPACE_LIMIT_REACHED_ERROR
             )
 
-            mass.insertItems(mock(), mock(), onFailed)
+            mass.insertItems(items, mock(), onFailed)
 
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageFullError) was called
         }
@@ -233,15 +239,17 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `insert onFailed should be called if database is busy error occurred`() = runBlockingTest {
 
+        val items = mapOf("key" to "value")
+
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itThrows SQLException("Failed")
+        When calling mass.miniAppSecureDatabase.insert(items) itThrows SQLException("Failed")
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(items, mock(), onFailed)
 
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
@@ -249,13 +257,15 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `insert onFailed should be called if insert is false`() = runBlockingTest {
 
+        val items = mapOf("key" to "value")
+
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
-        When calling mass.miniAppSecureDatabase.insert(any()) itReturns false
+        When calling mass.miniAppSecureDatabase.insert(items) itReturns false
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(items, mock(), onFailed)
 
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
