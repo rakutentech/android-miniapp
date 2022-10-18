@@ -242,13 +242,6 @@ class AppSettings private constructor(context: Context) {
         return cache.rasCredentialData.isTab2TempDataValid()
     }
 
-    fun isCredentialValueChanged(key: String): Boolean {
-        return key == Cache.TEMP_APP_ID
-                || key == Cache.TEMP_SUBSCRIPTION_KEY
-                || key == Cache.TEMP_APP_ID_2
-                || key == Cache.TEMP_SUBSCRIPTION_KEY_2
-    }
-
     fun setTab1CredentialData(
         projectIdSubscriptionKeyPair: Pair<String, String>,
     ) {
