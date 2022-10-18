@@ -2,9 +2,9 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 
 /**
  * This class can be used in the HostApp to create the miniapp views independently.
@@ -55,7 +55,12 @@ abstract class MiniAppView internal constructor() {
      * load a mini app view.
      * The mini app is downloaded, saved and provides a view when successful.
      * @param queryParams the parameters will be appended with the miniapp url scheme.
+     * @param fromCache the parameters will be appended with cached miniapp.
      * @param onComplete parameters needed to callback when the miniapp is successfully loaded.
      */
-    abstract fun load(queryParams: String = "", onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit)
+    abstract fun load(
+        queryParams: String = "",
+        fromCache: Boolean = false,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
+    )
 }

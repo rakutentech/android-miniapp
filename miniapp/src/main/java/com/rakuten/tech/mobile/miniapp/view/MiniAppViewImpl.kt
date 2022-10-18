@@ -14,14 +14,17 @@ internal class MiniAppViewImpl(
     private val miniAppViewHandler: MiniAppViewHandler by lazy { initMiniAppViewHandler() }
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
+    @Suppress("LongMethod")
     override fun load(
         queryParams: String,
+        fromCache: Boolean,
         onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
     ) {
         scope.launch {
             try {
                 when (miniAppParameters) {
                     is MiniAppParameters.DefaultParams -> {
+                        (miniAppParameters as MiniAppParameters.DefaultParams).fromCache = fromCache
                         if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
                             queryParams
                         onComplete(
@@ -33,6 +36,7 @@ internal class MiniAppViewImpl(
                         )
                     }
                     is MiniAppParameters.InfoParams -> {
+                        (miniAppParameters as MiniAppParameters.InfoParams).fromCache = fromCache
                         if (queryParams != "") (miniAppParameters as MiniAppParameters.InfoParams).config.queryParams =
                             queryParams
                         onComplete(
