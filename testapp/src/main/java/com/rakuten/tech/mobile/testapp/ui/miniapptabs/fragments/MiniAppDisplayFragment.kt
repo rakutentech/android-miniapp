@@ -138,12 +138,14 @@ class MiniAppDisplayFragment : BaseFragment() {
                                 showErrorDialog(activity, getString(R.string.error_desc_miniapp_too_many_request))
                             else -> {
                                 // try to load miniapp from cache.
+                                toggleProgressLoading(true)
                                 miniAppView.load(fromCache = true) { miniAppDisplay, miniAppSdkException ->
                                     activity.runOnUiThread {
                                         miniAppDisplay?.let {
                                             this.miniAppDisplay = miniAppDisplay
                                             addMiniAppChildView(activity, miniAppDisplay)
                                         } ?: kotlin.run {
+                                            toggleProgressLoading(false)
                                             miniAppSdkException?.let { e ->
                                                 when (e) {
                                                     is MiniAppNotFoundException ->
