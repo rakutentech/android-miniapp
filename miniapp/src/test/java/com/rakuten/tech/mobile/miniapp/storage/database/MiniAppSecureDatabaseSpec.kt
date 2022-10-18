@@ -8,13 +8,11 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteFullException
 import org.amshove.kluent.*
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -54,14 +52,17 @@ class MiniAppSecureDatabaseSpec {
     private lateinit var miniAppDBStatus: MiniAppDatabaseStatus
 
     @Before
+    @Suppress("TooGenericExceptionThrown")
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        massDB = Mockito.spy(MiniAppSecureDatabase(
-            context,
-            TEST_MA_ID,
-            TEST_STORAGE_VERSION,
-            TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
-        ))
+        massDB = Mockito.spy(
+            MiniAppSecureDatabase(
+                context,
+                TEST_MA_ID,
+                TEST_STORAGE_VERSION,
+                TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+            )
+        )
         massDB.miniAppDatabaseStatus = mock()
         massDB.database = mock(SupportSQLiteDatabase::class)
 
@@ -73,6 +74,7 @@ class MiniAppSecureDatabaseSpec {
         sqlException = assertThrows(SQLException::class.java) {
             throw SQLException(SQL_EXCEPTION_ERROR_MSG)
         }
+        @Suppress("TooGenericExceptionThrown")
         runTimeException = assertThrows(RuntimeException::class.java) {
             throw RuntimeException(RUNTIME_EXCEPTION_ERROR_MSG)
         }
@@ -92,30 +94,33 @@ class MiniAppSecureDatabaseSpec {
      * onDatabaseConfiguration test cases
      */
     @Test
-    fun `verify execSQL should be executed with AUTO_VACUUM query during onDatabaseConfiguration`() = runBlockingTest {
+    fun `verify execSQL should be executed with AUTO_VACUUM query during onDatabaseConfiguration`() =
+        runBlockingTest {
 
-        massDB.onDatabaseConfiguration(database)
+            massDB.onDatabaseConfiguration(database)
 
-        verify(database, times(1)).execSQL(AUTO_VACUUM)
-    }
-
-    @Test
-    fun `verify execSQL should not be executed with wrong query during onDatabaseConfiguration`() = runBlockingTest {
-
-        massDB.onDatabaseConfiguration(database)
-
-        verify(database, times(0)).execSQL(CREATE_TABLE_QUERY)
-    }
+            verify(database, times(1)).execSQL(AUTO_VACUUM)
+        }
 
     @Test
-    fun `verify the error message when SQLException occurred during onDatabaseConfiguration`() = runBlockingTest {
+    fun `verify execSQL should not be executed with wrong query during onDatabaseConfiguration`() =
+        runBlockingTest {
 
-        When calling database.execSQL(AUTO_VACUUM) itAnswers { sqlException }
+            massDB.onDatabaseConfiguration(database)
 
-        massDB.onDatabaseConfiguration(database)
+            verify(database, times(0)).execSQL(CREATE_TABLE_QUERY)
+        }
 
-        assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
-    }
+    @Test
+    fun `verify the error message when SQLException occurred during onDatabaseConfiguration`() =
+        runBlockingTest {
+
+            When calling database.execSQL(AUTO_VACUUM) itAnswers { sqlException }
+
+            massDB.onDatabaseConfiguration(database)
+
+            assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
+        }
 
     @Test
     fun `verify the status was called when onDatabaseConfiguration is success`() = runBlockingTest {
@@ -129,30 +134,33 @@ class MiniAppSecureDatabaseSpec {
      * onCreateDatabase test cases
      */
     @Test
-    fun `verify execSQL should be executed for CREATE_TABLE_QUERY during onCreateDatabase`() = runBlockingTest {
+    fun `verify execSQL should be executed for CREATE_TABLE_QUERY during onCreateDatabase`() =
+        runBlockingTest {
 
-        massDB.onCreateDatabase(database)
+            massDB.onCreateDatabase(database)
 
-        verify(database, times(1)).execSQL(CREATE_TABLE_QUERY)
-    }
-
-    @Test
-    fun `verify execSQL should not be executed for wrong query during onCreateDatabase `() = runBlockingTest {
-
-        massDB.onCreateDatabase(database)
-
-        verify(database, times(0)).execSQL(AUTO_VACUUM)
-    }
+            verify(database, times(1)).execSQL(CREATE_TABLE_QUERY)
+        }
 
     @Test
-    fun `verify the error message when SQLException occurred during onCreateDatabase`() = runBlockingTest {
+    fun `verify execSQL should not be executed for wrong query during onCreateDatabase `() =
+        runBlockingTest {
 
-        When calling database.execSQL(CREATE_TABLE_QUERY) itAnswers { sqlException }
+            massDB.onCreateDatabase(database)
 
-        massDB.onCreateDatabase(database)
+            verify(database, times(0)).execSQL(AUTO_VACUUM)
+        }
 
-        assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
-    }
+    @Test
+    fun `verify the error message when SQLException occurred during onCreateDatabase`() =
+        runBlockingTest {
+
+            When calling database.execSQL(CREATE_TABLE_QUERY) itAnswers { sqlException }
+
+            massDB.onCreateDatabase(database)
+
+            assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
+        }
 
     @Test
     fun `verify the status was called when onCreateDatabase is success`() = runBlockingTest {
@@ -188,28 +196,31 @@ class MiniAppSecureDatabaseSpec {
      * onUpgradeDatabase test cases
      */
     @Test
-    fun `verify execSQL should be executed for DROP_TABLE_QUERY during onUpgradeDatabase`() = runBlockingTest {
+    fun `verify execSQL should be executed for DROP_TABLE_QUERY during onUpgradeDatabase`() =
+        runBlockingTest {
 
-        massDB.onUpgradeDatabase(database)
+            massDB.onUpgradeDatabase(database)
 
-        verify(database, times(1)).execSQL(DROP_TABLE_QUERY)
-    }
-
-    @Test
-    fun `verify execSQL should be executed for CREATE_TABLE_QUERY during onUpgradeDatabase`() = runBlockingTest {
-
-        massDB.onUpgradeDatabase(database)
-
-        verify(database, times(1)).execSQL(CREATE_TABLE_QUERY)
-    }
+            verify(database, times(1)).execSQL(DROP_TABLE_QUERY)
+        }
 
     @Test
-    fun `verify execSQL should not be executed for wrong query during onUpgradeDatabase `() = runBlockingTest {
+    fun `verify execSQL should be executed for CREATE_TABLE_QUERY during onUpgradeDatabase`() =
+        runBlockingTest {
 
-        massDB.onUpgradeDatabase(database)
+            massDB.onUpgradeDatabase(database)
 
-        verify(database, times(0)).execSQL(AUTO_VACUUM)
-    }
+            verify(database, times(1)).execSQL(CREATE_TABLE_QUERY)
+        }
+
+    @Test
+    fun `verify execSQL should not be executed for wrong query during onUpgradeDatabase `() =
+        runBlockingTest {
+
+            massDB.onUpgradeDatabase(database)
+
+            verify(database, times(0)).execSQL(AUTO_VACUUM)
+        }
 
     @Test
     fun `verify the onCreate was called when onUpgradeDatabase is success`() = runBlockingTest {
@@ -220,14 +231,15 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify the error message when SQLException occurred during onUpgradeDatabase`() = runBlockingTest {
+    fun `verify the error message when SQLException occurred during onUpgradeDatabase`() =
+        runBlockingTest {
 
-        When calling database.execSQL(DROP_TABLE_QUERY) itAnswers { sqlException }
+            When calling database.execSQL(DROP_TABLE_QUERY) itAnswers { sqlException }
 
-        massDB.onUpgradeDatabase(database)
+            massDB.onUpgradeDatabase(database)
 
-        assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
-    }
+            assertEquals(sqlException.message, SQL_EXCEPTION_ERROR_MSG)
+        }
 
     @Test
     fun `verify the status was called when onUpgradeDatabase is success`() = runBlockingTest {
@@ -241,24 +253,28 @@ class MiniAppSecureDatabaseSpec {
      * onDatabaseCorrupted test cases
      */
     @Test
-    fun `verify the status is called when RunTimeException occurred during onDatabaseCorrupted`() = runBlockingTest {
+    fun `verify the status is called when RunTimeException occurred during onDatabaseCorrupted`() =
+        runBlockingTest {
 
-        When calling massDB.deleteWholeDatabase(TEST_MA_ID) itThrows RuntimeException(RUNTIME_EXCEPTION_ERROR_MSG)
+            When calling massDB.deleteWholeDatabase(TEST_MA_ID) itThrows RuntimeException(
+                RUNTIME_EXCEPTION_ERROR_MSG
+            )
 
-        massDB.onDatabaseCorrupted(database)
+            massDB.onDatabaseCorrupted(database)
 
-        assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.UNAVAILABLE)
-    }
+            assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.UNAVAILABLE)
+        }
 
     @Test
-    fun `verify the error message when RunTimeException occurred during onDatabaseCorrupted`() = runBlockingTest {
+    fun `verify the error message when RunTimeException occurred during onDatabaseCorrupted`() =
+        runBlockingTest {
 
-        When calling massDB.deleteWholeDatabase(TEST_MA_ID) itAnswers { runTimeException }
+            When calling massDB.deleteWholeDatabase(TEST_MA_ID) itAnswers { runTimeException }
 
-        massDB.onDatabaseCorrupted(database)
+            massDB.onDatabaseCorrupted(database)
 
-        assertEquals(runTimeException.message, RUNTIME_EXCEPTION_ERROR_MSG)
-    }
+            assertEquals(runTimeException.message, RUNTIME_EXCEPTION_ERROR_MSG)
+        }
 
     @Test
     fun `verify the status was called when onDatabaseCorrupted is success`() = runBlockingTest {
@@ -307,24 +323,26 @@ class MiniAppSecureDatabaseSpec {
      * isDatabaseAvailable test cases
      */
     @Test
-    fun `verify the isDatabaseAvailable returns true if database file is found`() = runBlockingTest {
+    fun `verify the isDatabaseAvailable returns true if database file is found`() =
+        runBlockingTest {
 
-        val dbList = arrayOf(TEST_MA_ID, "DB-2", "DB-3")
+            val dbList = arrayOf(TEST_MA_ID, "DB-2", "DB-3")
 
-        When calling context.databaseList() itAnswers { dbList }
+            When calling context.databaseList() itAnswers { dbList }
 
-        assertTrue(massDB.isDatabaseAvailable(TEST_MA_ID))
-    }
+            assertTrue(massDB.isDatabaseAvailable(TEST_MA_ID))
+        }
 
     @Test
-    fun `verify the isDatabaseAvailable returns false if database file is found`() = runBlockingTest {
+    fun `verify the isDatabaseAvailable returns false if database file is found`() =
+        runBlockingTest {
 
-        val dbList = arrayOf(TEST_MA_ID, "DB-2", "DB-3")
+            val dbList = arrayOf(TEST_MA_ID, "DB-2", "DB-3")
 
-        When calling context.databaseList() itAnswers { dbList }
+            When calling context.databaseList() itAnswers { dbList }
 
-        assertFalse(massDB.isDatabaseAvailable("DB-4"))
-    }
+            assertFalse(massDB.isDatabaseAvailable("DB-4"))
+        }
 
     @Test
     fun `verify the status was called if isDatabaseAvailable returns false`() = runBlockingTest {
@@ -380,7 +398,8 @@ class MiniAppSecureDatabaseSpec {
 
         val fileSize = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+        When calling context.getDatabasePath(TEST_MA_ID)
+            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
         assertEquals(fileSize, massDB.getDatabaseUsedSize())
     }
@@ -406,7 +425,8 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify isDatabaseFull return true if the size reaches to max limit`() {
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+        When calling context.getDatabasePath(TEST_MA_ID)
+            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
         assertTrue(massDB.isDatabaseFull())
     }
@@ -466,7 +486,7 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify endTransaction should be called if database still haa any pending transactions during database close`() {
+    fun `verify endTransaction should be called during database close`() {
 
         When calling massDB.database.inTransaction() itReturns true
 
@@ -545,20 +565,23 @@ class MiniAppSecureDatabaseSpec {
      * insert above batch size test cases
      */
     @Test
-    fun `verify the insert should throw DB full exception while inserting when batch size is above limits`() = runBlockingTest {
+    @Suppress("MaximumLineLength")
+    fun `verify the insert should throw DB full exception while inserting when batch size is above limits`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+            When calling context.getDatabasePath(TEST_MA_ID)
+                .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
-        val sqlFullException = assertThrows(SQLiteFullException::class.java) {
-            massDB.insert(items)
+            val sqlFullException = assertThrows(SQLiteFullException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertTrue(sqlFullException.message == DATABASE_SPACE_LIMIT_REACHED_ERROR)
         }
-
-        assertTrue(sqlFullException.message == DATABASE_SPACE_LIMIT_REACHED_ERROR)
-    }
 
     @Test
     fun `verify all the items are successfully inserted above batch size`() = runBlockingTest {
@@ -566,7 +589,7 @@ class MiniAppSecureDatabaseSpec {
         val sizeBelowMaxLimit = 100000L
 
         var pairs: ArrayList<Pair<String, String>> = ArrayList()
-        for(i in 1..BATCH_SIZE) {
+        for (i in 1..BATCH_SIZE) {
             pairs.add(Pair("a-$i", "b-$i"))
         }
 
@@ -589,90 +612,96 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify the insert successfully passes when batch size is above limits`() = runBlockingTest {
+    fun `verify the insert successfully passes when batch size is above limits`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        assertTrue(massDB.insert(items))
-    }
-
-    @Test
-    fun `verify the finalize was called insert successfully passes for above batch size`() = runBlockingTest {
-
-        val sizeBelowMaxLimit = 100000L
-
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
-
-        When calling items.size itReturns BATCH_SIZE
-
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
-
-        massDB.insert(items)
-
-        verify(massDB, times(1)).finalize()
-    }
+            assertTrue(massDB.insert(items))
+        }
 
     @Test
-    fun `verify the status after insert successfully passes for above batch size`() = runBlockingTest {
+    fun `verify the finalize was called insert successfully passes for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        massDB.insert(items)
+            massDB.insert(items)
 
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
-    }
-
-    @Test
-    fun `verify endTransaction should not be called if database don't have any pending transactions after insert for above batch size`() = runBlockingTest {
-
-        val sizeBelowMaxLimit = 100000L
-
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
-
-        When calling items.size itReturns BATCH_SIZE
-
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
-
-        massDB.insert(items)
-
-        verify(massDB.database, times(0)).endTransaction()
-    }
+            verify(massDB, times(1)).finalize()
+        }
 
     @Test
-    fun `verify endTransaction should be called if database still has any pending transactions after insert for above batch size`() = runBlockingTest {
+    fun `verify the status after insert successfully passes for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        When calling massDB.database.inTransaction() itReturns true
+            massDB.insert(items)
 
-        massDB.insert(items)
+            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+        }
 
-        verify(massDB.database, times(2)).endTransaction()
-    }
+    @Test
+    fun `verify endTransaction should not be called for above batch size`() =
+        runBlockingTest {
+
+            val sizeBelowMaxLimit = 100000L
+
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+
+            When calling items.size itReturns BATCH_SIZE
+
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+
+            massDB.insert(items)
+
+            verify(massDB.database, times(0)).endTransaction()
+        }
+
+    @Test
+    fun `verify endTransaction should be called after insert for above batch size`() =
+        runBlockingTest {
+
+            val sizeBelowMaxLimit = 100000L
+
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+
+            When calling items.size itReturns BATCH_SIZE
+
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+
+            When calling massDB.database.inTransaction() itReturns true
+
+            massDB.insert(items)
+
+            verify(massDB.database, times(2)).endTransaction()
+        }
+
     @Test
     fun `verify the insert throws IllegalStateException for above batch size`() = runBlockingTest {
 
         val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         When calling items.size itReturns BATCH_SIZE
 
@@ -690,110 +719,115 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify the finalize throws IllegalStateException after insert is done for above batch size`() = runBlockingTest {
+    fun `verify the finalize throws IllegalStateException after insert is done for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        When calling massDB.finalize() itThrows IllegalStateException(
-            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
-        )
+            When calling massDB.finalize() itThrows IllegalStateException(
+                ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+            )
 
-        val ise = assertThrows(IllegalStateException::class.java) {
-            massDB.insert(items)
+            val ise = assertThrows(IllegalStateException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertEquals(ILLEGAL_STATE_EXCEPTION_ERROR_MSG, ise.message)
         }
-
-        assertEquals(ILLEGAL_STATE_EXCEPTION_ERROR_MSG, ise.message)
-    }
 
     @Test
-    fun `verify the finalize throws RuntimeException after insert is done for above batch size`() = runBlockingTest {
+    fun `verify the finalize throws RuntimeException after insert is done for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        When calling massDB.finalize() itThrows RuntimeException(
-            RUNTIME_EXCEPTION_ERROR_MSG
-        )
+            When calling massDB.finalize() itThrows RuntimeException(
+                RUNTIME_EXCEPTION_ERROR_MSG
+            )
 
-        val rte = assertThrows(RuntimeException::class.java) {
-            massDB.insert(items)
+            val rte = assertThrows(RuntimeException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertEquals(RUNTIME_EXCEPTION_ERROR_MSG, rte.message)
         }
-
-        assertEquals(RUNTIME_EXCEPTION_ERROR_MSG, rte.message)
-    }
 
     @Test
-    fun `verify the failed status when insert throws IllegalStateException for above batch size`() = runBlockingTest {
+    fun `verify the failed status when insert throws IllegalStateException for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
-            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
-        )
+            When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+                ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+            )
 
-        assertThrows(IllegalStateException::class.java) {
-            massDB.insert(items)
+            assertThrows(IllegalStateException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
         }
-
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
-    }
 
     @Test
-    fun `verify the failed status when insert throws RuntimeException for above batch size`() = runBlockingTest {
+    fun `verify the failed status when insert throws RuntimeException for above batch size`() =
+        runBlockingTest {
 
-        val sizeBelowMaxLimit = 100000L
+            val sizeBelowMaxLimit = 100000L
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling items.size itReturns BATCH_SIZE
+            When calling items.size itReturns BATCH_SIZE
 
-        When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
+            When calling context.getDatabasePath(TEST_MA_ID).length() itReturns sizeBelowMaxLimit
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
-            RUNTIME_EXCEPTION_ERROR_MSG
-        )
+            When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+                RUNTIME_EXCEPTION_ERROR_MSG
+            )
 
-        assertThrows(RuntimeException::class.java) {
-            massDB.insert(items)
+            assertThrows(RuntimeException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
         }
-
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
-    }
 
     /**
      * insert below batch size
      */
     @Test
-    fun `verify the isDatabaseFull should not be called for inserting below batch size`() = runBlockingTest {
+    fun `verify the isDatabaseFull should not be called for inserting below batch size`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        massDB.insert(items)
+            massDB.insert(items)
 
-        verify(massDB, times(0)).isDatabaseFull()
-    }
+            verify(massDB, times(0)).isDatabaseFull()
+        }
 
     @Test
     fun `verify all the items are inserted successfully below batch size2`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         val contentValues = ContentValues()
 
@@ -810,57 +844,61 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify the insert successfully passes for below batch size`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         assertTrue(massDB.insert(items))
     }
 
     @Test
-    fun `verify the finalize was called insert successfully passes for below batch size`() = runBlockingTest {
+    fun `verify the finalize was called insert successfully passes for below batch size`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        massDB.insert(items)
+            massDB.insert(items)
 
-        verify(massDB, times(1)).finalize()
-    }
-
-    @Test
-    fun `verify the status after insert successfully passes for below batch size`() = runBlockingTest {
-
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
-
-        massDB.insert(items)
-
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
-    }
+            verify(massDB, times(1)).finalize()
+        }
 
     @Test
-    fun `verify endTransaction should not be called if database don't have any pending transactions after insert`() = runBlockingTest {
+    fun `verify the status after insert successfully passes for below batch size`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        massDB.insert(items)
+            massDB.insert(items)
 
-        verify(massDB.database, times(0)).endTransaction()
-    }
+            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+        }
 
     @Test
-    fun `verify endTransaction should be called if database still haa any pending transactions after insert`() = runBlockingTest {
+    fun `verify endTransaction should not be called if database don't have any pending transactions after insert`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling massDB.database.inTransaction() itReturns true
+            massDB.insert(items)
 
-        massDB.insert(items)
+            verify(massDB.database, times(0)).endTransaction()
+        }
 
-        verify(massDB.database, times(2)).endTransaction()
-    }
+    @Test
+    fun `verify endTransaction should be called if database still haa any pending transactions after insert`() =
+        runBlockingTest {
+
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+
+            When calling massDB.database.inTransaction() itReturns true
+
+            massDB.insert(items)
+
+            verify(massDB.database, times(2)).endTransaction()
+        }
 
     @Test
     fun `verify the insert throws IllegalStateException`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
@@ -874,25 +912,26 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify the finalize throws IllegalStateException after insert is done`() = runBlockingTest {
+    fun `verify the finalize throws IllegalStateException after insert is done`() =
+        runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+            val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
-        When calling massDB.finalize() itThrows IllegalStateException(
-            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
-        )
+            When calling massDB.finalize() itThrows IllegalStateException(
+                ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+            )
 
-        val ise = assertThrows(IllegalStateException::class.java) {
-            massDB.insert(items)
+            val ise = assertThrows(IllegalStateException::class.java) {
+                massDB.insert(items)
+            }
+
+            assertEquals(ILLEGAL_STATE_EXCEPTION_ERROR_MSG, ise.message)
         }
-
-        assertEquals(ILLEGAL_STATE_EXCEPTION_ERROR_MSG, ise.message)
-    }
 
     @Test
     fun `verify the finalize throws RuntimeException after insert is done`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
@@ -908,7 +947,11 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify the failed status when insert throws IllegalStateException`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(
+            mapOf(
+                "a" to "b", "c" to "d", "e" to "f"
+            )
+        )
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
@@ -924,7 +967,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify the failed status when insert throws RunTimeException`() = runBlockingTest {
 
-        val items =  Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
+        val items = Mockito.spy(mapOf("a" to "b", "c" to "d", "e" to "f"))
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
@@ -948,7 +991,6 @@ class MiniAppSecureDatabaseSpec {
         When calling massDB.delete(key.first()) itReturns 1
 
         assertTrue(massDB.deleteItems(key))
-
     }
 
     @Test

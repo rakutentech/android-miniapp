@@ -98,15 +98,6 @@ internal class MiniAppSecureDatabase(
         return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
     }
 
-    @Throws(SQLException::class)
-    internal fun executeSQLQuery(db: SupportSQLiteDatabase, query: String) {
-        try {
-            db.execSQL(query)
-        } catch (e: SQLException) {
-            throw e
-        }
-    }
-
     @VisibleForTesting
     @Throws(SQLException::class)
     @Suppress("RethrowCaughtException")
