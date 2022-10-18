@@ -1,9 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
@@ -12,14 +9,13 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
-import java.util.Date
-import java.util.UUID
-import kotlin.collections.ArrayList
+import com.rakuten.tech.mobile.testapp.BuildVariant
+import java.util.*
 
 class AppSettings private constructor(context: Context) {
 
     private val manifestConfig = AppManifestConfig(context)
-    private val cache = Settings(context)
+    private val cache = Cache(context)
 
     var isPreviewMode: Boolean
         get() = cache.isPreviewMode ?: manifestConfig.isPreviewMode()
@@ -34,7 +30,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: false
+        get() = cache.isProdVersionEnabled ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value)
         set(isRequired) {
             cache.isProdVersionEnabled = isRequired
         }
@@ -46,27 +42,27 @@ class AppSettings private constructor(context: Context) {
         }
 
     var projectId: String
-        get() = cache.projectId ?: manifestConfig.rasProjectId()
+        get() = cache.rasCredentialData.projectId ?: manifestConfig.rasProjectId()
         set(projectId) {
-            cache.projectId = projectId
+            cache.rasCredentialData.projectId = projectId
         }
 
     var subscriptionKey: String
-        get() = cache.subscriptionKey ?: manifestConfig.subscriptionKey()
+        get() = cache.rasCredentialData.subscriptionKey ?: manifestConfig.subscriptionKey()
         set(subscriptionKey) {
-            cache.subscriptionKey = subscriptionKey
+            cache.rasCredentialData.subscriptionKey = subscriptionKey
         }
 
     var projectId2: String
-        get() = cache.projectId2 ?: manifestConfig.rasProjectId()
+        get() = cache.rasCredentialData.projectId2 ?: manifestConfig.rasProjectId()
         set(projectId2) {
-            cache.projectId2 = projectId2
+            cache.rasCredentialData.projectId2 = projectId2
         }
 
     var subscriptionKey2: String
-        get() = cache.subscriptionKey2 ?: manifestConfig.subscriptionKey()
+        get() = cache.rasCredentialData.subscriptionKey2 ?: manifestConfig.subscriptionKey()
         set(subscriptionKey2) {
-            cache.subscriptionKey2 = subscriptionKey2
+            cache.rasCredentialData.subscriptionKey2 = subscriptionKey2
         }
 
     var uniqueId: String
@@ -76,7 +72,7 @@ class AppSettings private constructor(context: Context) {
             return uniqueId
         }
         set(subscriptionKey) {
-            cache.subscriptionKey = subscriptionKey
+            cache.rasCredentialData.subscriptionKey = subscriptionKey
         }
 
     var uniqueIdError: String
@@ -129,7 +125,9 @@ class AppSettings private constructor(context: Context) {
 
     var contacts: ArrayList<Contact>
         get() = cache.contacts ?: arrayListOf()
-        set(contacts) { cache.contacts = contacts }
+        set(contacts) {
+            cache.contacts = contacts
+        }
 
     val isContactsSaved: Boolean
         get() = cache.isContactsSaved
@@ -160,14 +158,18 @@ class AppSettings private constructor(context: Context) {
 
     var dynamicDeeplinks: ArrayList<String>
         get() = cache.dynamicDeeplinks ?: arrayListOf()
-        set(deeplinks) { cache.dynamicDeeplinks = deeplinks }
+        set(deeplinks) {
+            cache.dynamicDeeplinks = deeplinks
+        }
 
     val isDynamicDeeplinksSaved: Boolean
         get() = cache.isDynamicDeeplinksSaved
 
     var maxStorageSizeLimitInBytes: String
         get() = cache.maxStorageSizeLimitInBytes
-        set(maxStorageSizeLimitInBytes) { cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes }
+        set(maxStorageSizeLimitInBytes) {
+            cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+        }
 
     var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
 
@@ -209,176 +211,67 @@ class AppSettings private constructor(context: Context) {
             maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
         )
 
+    fun getCurrentTab1ProjectIdSubscriptionKeyPair(isProduction: Boolean): Pair<String, String> {
+        return if (isTab1TempCredentialDataValid()) {
+            cache.rasCredentialData.getTab1TempData()
+        } else {
+            cache.rasCredentialData.getDefaultData(isProduction)
+        }
+    }
+
+    fun getDefaultProjectIdSubscriptionKeyPair(): Pair<String, String> {
+        return if (isProdVersionEnabled) cache.rasCredentialData.defaultProdPair else Pair(
+            manifestConfig.rasProjectId(),
+            manifestConfig.subscriptionKey()
+        )
+    }
+
+    fun getCurrentTab2ProjectIdSubscriptionKeyPair(isProduction: Boolean): Pair<String, String> {
+        return if (isTab2TempCredentialDataValid()) {
+            cache.rasCredentialData.getTab2TempData()
+        } else {
+            cache.rasCredentialData.getDefaultData(isProduction)
+        }
+    }
+
+    private fun isTab1TempCredentialDataValid(): Boolean {
+        return cache.rasCredentialData.isTab1TempDataValid()
+    }
+
+    private fun isTab2TempCredentialDataValid(): Boolean {
+        return cache.rasCredentialData.isTab2TempDataValid()
+    }
+
+    fun isCredentialValueChanged(key: String): Boolean {
+        return key == Cache.TEMP_APP_ID
+                || key == Cache.TEMP_SUBSCRIPTION_KEY
+                || key == Cache.TEMP_APP_ID_2
+                || key == Cache.TEMP_SUBSCRIPTION_KEY_2
+    }
+
+    fun setTab1CredentialData(
+        projectIdSubscriptionKeyPair: Pair<String, String>,
+    ) {
+        cache.rasCredentialData.setTab1Data(
+            projectIdSubscriptionKeyPair.first,
+            projectIdSubscriptionKeyPair.second,
+        )
+    }
+
+    fun setTab2CredentialData(
+        projectIdSubscriptionKeyPair: Pair<String, String>,
+    ) {
+        cache.rasCredentialData.setTab2Data(
+            projectIdSubscriptionKeyPair.first,
+            projectIdSubscriptionKeyPair.second,
+        )
+    }
+
     companion object {
         lateinit var instance: AppSettings
 
         fun init(context: Context) {
             instance = AppSettings(context)
         }
-    }
-}
-
-private class Settings(context: Context) {
-
-    private val gson = Gson()
-    private val prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.sample.settings",
-        Context.MODE_PRIVATE
-    )
-
-    var isPreviewMode: Boolean?
-        get() =
-            if (prefs.contains(IS_PREVIEW_MODE))
-                prefs.getBoolean(IS_PREVIEW_MODE, true)
-            else
-                null
-        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
-
-    var requireSignatureVerification: Boolean?
-        get() =
-            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
-                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!).apply()
-
-    var isProdVersionEnabled: Boolean?
-        get() =
-            if (prefs.contains(IS_PROD_VERSION_ENABLED))
-                prefs.getBoolean(IS_PROD_VERSION_ENABLED, false)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(IS_PROD_VERSION_ENABLED, isRequired!!).apply()
-
-    var baseUrl: String?
-        get() = prefs.getString(BASE_URL, null)
-        set(baseUrl) = prefs.edit().putString(BASE_URL, baseUrl).apply()
-
-    var projectId: String?
-        get() = prefs.getString(APP_ID, null)
-        set(appId) = prefs.edit().putString(APP_ID, appId).apply()
-
-    var projectId2: String?
-        get() = prefs.getString(APP_ID_2, null)
-        set(appId2) = prefs.edit().putString(APP_ID_2, appId2).apply()
-
-    var subscriptionKey: String?
-        get() = prefs.getString(SUBSCRIPTION_KEY, null)
-        set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
-
-    var subscriptionKey2: String?
-        get() = prefs.getString(SUBSCRIPTION_KEY_2, null)
-        set(subscriptionKey2) = prefs.edit().putString(SUBSCRIPTION_KEY_2, subscriptionKey2).apply()
-
-    var uniqueId: String?
-        get() = prefs.getString(UNIQUE_ID, null)
-        set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
-
-    var uniqueIdError: String?
-        get() = prefs.getString(UNIQUE_ID_ERROR, null)
-        set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
-
-    var messagingUniqueIdError: String?
-        get() = prefs.getString(MESSAGING_UNIQUE_ID_ERROR, null)
-        set(messagingUniqueIdError) = prefs.edit()
-            .putString(MESSAGING_UNIQUE_ID_ERROR, messagingUniqueIdError).apply()
-
-    var mauIdError: String?
-        get() = prefs.getString(MAUID_ERROR, null)
-        set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
-
-    var isSettingSaved: Boolean
-        get() = prefs.getBoolean(IS_SETTING_SAVED, false)
-        set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
-
-    var profileName: String?
-        get() = prefs.getString(PROFILE_NAME, null)
-        set(profileName) = prefs.edit().putString(PROFILE_NAME, profileName).apply()
-
-    var profilePictureUrl: String?
-        get() = prefs.getString(PROFILE_PICTURE_URL, null)
-        set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl)
-            .apply()
-
-    var profilePictureUrlBase64: String?
-        get() = prefs.getString(PROFILE_PICTURE_URL_BASE_64, null)
-        set(profilePictureUrlBase64) = prefs.edit().putString(PROFILE_PICTURE_URL_BASE_64, profilePictureUrlBase64)
-            .apply()
-
-    var tokenData: TokenData?
-        get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), TokenData::class.java)
-        set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
-            .apply()
-
-    var contacts: ArrayList<Contact>?
-        get() = Gson().fromJson(
-            prefs.getString(CONTACTS, null),
-            object : TypeToken<ArrayList<Contact>>() {}.type
-        )
-        set(contacts) = prefs.edit().putString(CONTACTS, Gson().toJson(contacts)).apply()
-
-    val isContactsSaved: Boolean
-        get() = prefs.contains(CONTACTS)
-
-    var urlParameters: String?
-        get() = prefs.getString(URL_PARAMETERS, null)
-        set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
-
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>?
-        get() = Gson().fromJson(
-            prefs.getString(ANALYTIC_CONFIGS, null),
-            object : TypeToken<List<MiniAppAnalyticsConfig>>() {}.type
-        )
-        set(miniAppAnalyticsConfigs) = prefs.edit().putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
-
-    var accessTokenError: MiniAppAccessTokenError?
-        get() = gson.fromJson(prefs.getString(ACCESS_TOKEN_ERROR, null), MiniAppAccessTokenError::class.java)
-        set(accessTokenError) = prefs.edit().putString(ACCESS_TOKEN_ERROR, gson.toJson(accessTokenError))
-            .apply()
-
-    var points: Points?
-        get() = gson.fromJson(prefs.getString(POINTS, null), Points::class.java)
-        set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
-                .apply()
-
-    var dynamicDeeplinks: ArrayList<String>?
-        get() = Gson().fromJson(
-                prefs.getString(DYNAMIC_DEEPLINKS, null),
-                object : TypeToken<ArrayList<String>>() {}.type
-        )
-        set(deeplinks) = prefs.edit().putString(DYNAMIC_DEEPLINKS, Gson().toJson(deeplinks)).apply()
-
-    val isDynamicDeeplinksSaved: Boolean
-        get() = prefs.contains(DYNAMIC_DEEPLINKS)
-
-    var maxStorageSizeLimitInBytes: String
-        get() = prefs.getString(MAX_STORAGE_SIZE_LIMIT, "5242880").toString() // Default max storage is 5MB
-        set(maxStorageSizeLimitInBytes) = prefs.edit().putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
-
-    companion object {
-        private const val IS_PREVIEW_MODE = "is_preview_mode"
-        private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
-        private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
-        private const val BASE_URL = "base_url"
-        private const val APP_ID = "app_id"
-        private const val APP_ID_2 = "app_id_2"
-        private const val SUBSCRIPTION_KEY = "subscription_key"
-        private const val SUBSCRIPTION_KEY_2 = "subscription_key_2"
-        private const val UNIQUE_ID = "unique_id"
-        private const val UNIQUE_ID_ERROR = "unique_id_error"
-        private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
-        private const val MAUID_ERROR = "mauid_error"
-        private const val IS_SETTING_SAVED = "is_setting_saved"
-        private const val PROFILE_NAME = "profile_name"
-        private const val PROFILE_PICTURE_URL = "profile_picture_url"
-        private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
-        private const val CONTACTS = "contacts"
-        private const val TOKEN_DATA = "token_data"
-        private const val URL_PARAMETERS = "url_parameters"
-        private const val ANALYTIC_CONFIGS = "analytic_configs"
-        private const val ACCESS_TOKEN_ERROR = "access_token_error"
-        private const val POINTS = "points"
-        private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
-        private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
     }
 }

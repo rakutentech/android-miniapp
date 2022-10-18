@@ -31,11 +31,32 @@ class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
-
     private lateinit var binding: SettingsFragmentBinding
     private lateinit var settings: AppSettings
     private lateinit var settingsProgressDialog: SettingsProgressDialog
-    private var isVersionChanged = false
+    private var isTab1Checked = true
+    private val settingsTextWatcher = object : TextWatcher {
+        private var old_text = ""
+        override fun afterTextChanged(s: Editable?) {}
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            old_text = binding.editProjectId.text.toString()
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            validateInputIDs(old_text != s.toString())
+        }
+    }
+    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
+        if (new != old) {
+             invalidateOptionsMenu(requireActivity())
+            if(isTab1Checked){
+                binding.toggleList2.isEnabled = new
+            } else {
+                binding.toggleList1.isEnabled = new
+            }
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.settings_menu, menu)
@@ -59,6 +80,22 @@ class SettingsFragment : BaseFragment() {
             settingsProgressDialog.show()
         }
 
+        val tab1ProjectIdSubscriptionKeyPair: Pair<String, String>
+        val tab2ProjectIdSubscriptionKeyPair: Pair<String, String>
+
+        if (!isTab1Checked) {
+            tab1ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
+            tab2ProjectIdSubscriptionKeyPair = settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+        } else {
+            tab1ProjectIdSubscriptionKeyPair = settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+            tab2ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
+        }
+
+        updateSetupIdSubscriptionData(
+            tab1ProjectIdSubscriptionKeyPair,
+            tab2ProjectIdSubscriptionKeyPair
+        )
+
         updateSettings(
             binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString(),
@@ -68,6 +105,8 @@ class SettingsFragment : BaseFragment() {
             binding.switchProdVersion.isChecked
         )
     }
+
+
 
     private fun updateSettings(
         projectId: String,
@@ -179,21 +218,8 @@ class SettingsFragment : BaseFragment() {
         return binding.root
     }
 
-    private val settingsTextWatcher = object : TextWatcher {
-        private var old_text = ""
-        override fun afterTextChanged(s: Editable?) {}
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            old_text = binding.editProjectId.text.toString()
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            validateInputIDs(old_text != s.toString())
-        }
-    }
-
     private fun validateInputIDs(inputChanged: Boolean = false) {
-        val isAppIdInvalid = binding.editProjectId.text.toString().isInvalidUuid()
+        val isAppIdInvalid = !isInputIDValid()
 
         saveViewEnabled = !(isInputEmpty(binding.editProjectId)
                 || isInputEmpty(binding.editSubscriptionKey)
@@ -208,10 +234,8 @@ class SettingsFragment : BaseFragment() {
         else binding.inputSubscriptionKey.error = null
     }
 
-    private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
-        if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-        }
+    private fun isInputIDValid(): Boolean {
+        return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
     private fun renderAppSettingsScreen() {
@@ -223,7 +247,9 @@ class SettingsFragment : BaseFragment() {
         if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
             switchProdVersion.isChecked = true
         }
-        setUpIdSubscription(true)
+
+        val projectIdSubscriptionKeyPair = settings.getDefaultProjectIdSubscriptionKeyPair()
+        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -257,64 +283,65 @@ class SettingsFragment : BaseFragment() {
         }
 
         binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
-            isVersionChanged = true
             if (isChecked) {
                 settings.baseUrl = getString(R.string.prodBaseUrl)
-                setUpIdSubscription()
             } else {
                 settings.baseUrl = getString(R.string.stagingBaseUrl)
-                setUpIdSubscription()
             }
+            updateProjectIdAndSubscription()
         }
 
         binding.toggleList1.setOnClickListener {
-            binding.toggleList1.isChecked = true
-            binding.toggleList2.isChecked = false
-            setUpIdSubscription(!isVersionChanged)
-            isVersionChanged = false
+            if(isTab1Checked) return@setOnClickListener
+            isTab1Checked = true
+            settings.setTab2CredentialData(getTypedSubscriptionKeyProjectIdPair())
+            updateProjectIdAndSubscription()
         }
 
         binding.toggleList2.setOnClickListener {
-            binding.toggleList1.isChecked = false
-            binding.toggleList2.isChecked = true
-            setUpIdSubscription(!isVersionChanged)
-            isVersionChanged = false
+            if(!isTab1Checked) return@setOnClickListener
+            isTab1Checked = false
+            settings.setTab1CredentialData(getTypedSubscriptionKeyProjectIdPair())
+            updateProjectIdAndSubscription()
         }
 
         // enable the save button first time.
         validateInputIDs(true)
     }
 
-    private fun setUpIdSubscription(isFromCache: Boolean = false) {
-        if (binding.switchProdVersion.isChecked) {
-            if (binding.toggleList1.isChecked) {
-                if (!isFromCache) {
-                    settings.projectId = getString(R.string.prodProjectId)
-                    settings.subscriptionKey = getString(R.string.prodSubscriptionKey)
-                }
-                setUpIdSubscriptionView(settings.projectId, settings.subscriptionKey)
-            } else {
-                if (!isFromCache) {
-                    settings.projectId2 = getString(R.string.prodProjectId)
-                    settings.subscriptionKey2 = getString(R.string.prodSubscriptionKey)
-                }
-                setUpIdSubscriptionView(settings.projectId2, settings.subscriptionKey2)
-            }
+    fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
+        return Pair(
+            binding.editProjectId.text.toString(),
+            binding.editSubscriptionKey.text.toString()
+        )
+    }
+
+    private fun updateSetupIdSubscriptionData(
+        tab1ProjectIdSubscriptionKeyPair: Pair<String, String>,
+        tab2ProjectIdSubscriptionKeyPair: Pair<String, String>,
+    ) {
+        settings.projectId = tab1ProjectIdSubscriptionKeyPair.first
+        settings.subscriptionKey = tab1ProjectIdSubscriptionKeyPair.second
+        settings.projectId2 = tab2ProjectIdSubscriptionKeyPair.first
+        settings.subscriptionKey2 = tab2ProjectIdSubscriptionKeyPair.second
+    }
+
+    private fun updateProjectIdAndSubscription() {
+        val projectIdSubscriptionKeyPair: Pair<String, String> = if (isTab1Checked) {
+            settings.getCurrentTab1ProjectIdSubscriptionKeyPair(
+                binding.switchProdVersion.isChecked
+            )
         } else {
-            if (binding.toggleList1.isChecked) {
-                if (!isFromCache) {
-                    settings.projectId = getString(R.string.stagingProjectId)
-                    settings.subscriptionKey = getString(R.string.stagingSubscriptionKey)
-                }
-                setUpIdSubscriptionView(settings.projectId, settings.subscriptionKey)
-            } else {
-                if (!isFromCache) {
-                    settings.projectId2 = getString(R.string.stagingProjectId)
-                    settings.subscriptionKey2 = getString(R.string.stagingSubscriptionKey)
-                }
-                setUpIdSubscriptionView(settings.projectId2, settings.subscriptionKey2)
-            }
+            settings.getCurrentTab2ProjectIdSubscriptionKeyPair(
+                binding.switchProdVersion.isChecked
+            )
         }
+        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
+    }
+
+    private fun setUpIdSubscriptionView(projectIdAndSubscriptionKeyPair: Pair<String, String>) {
+        binding.editProjectId.setText(projectIdAndSubscriptionKeyPair.first)
+        binding.editSubscriptionKey.setText(projectIdAndSubscriptionKeyPair.second)
     }
 
     private fun setUpIdSubscriptionView(projectId: String, subscriptionKey: String){
