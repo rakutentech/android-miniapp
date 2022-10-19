@@ -1351,4 +1351,209 @@ class MiniAppSecureDatabaseSpec {
         verify(massDB.database, times(0)).endTransaction()
         assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
     }
+
+    @Test
+    fun `verify the AUTO_VACCUM has been called after the deleteItems`() = runBlockingTest {
+
+        val key = Mockito.spy(setOf("a"))
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        massDB.deleteItems(key)
+
+        verify(massDB.database, times(1)).execSQL(AUTO_VACUUM)
+    }
+
+    /**
+     * deleteAllRecords test cases
+     */
+    @Test
+    fun `verify deleteAllRecords closes the database`() = runBlockingTest {
+
+        When calling massDB.database.isOpen itReturns true
+
+        massDB.deleteAllRecords()
+
+        Verify on massDB.database that massDB.database.close() was called
+        verify(massDB, times(2)).finishAnyPendingDBTransaction()
+    }
+
+    @Test
+    fun `verify database closes not called if not opened the database`() = runBlockingTest {
+
+        When calling massDB.database.isOpen itReturns false
+
+        massDB.deleteAllRecords()
+
+        verify(massDB.database, times(0)).close()
+        verify(massDB, times(1)).finishAnyPendingDBTransaction()
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords1`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords2`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.UNAVAILABLE)
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords3`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        val ise = assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertEquals(ise.message, ILLEGAL_STATE_EXCEPTION_ERROR_MSG)
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords4`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords5`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify IllegalStateException for deleteAllRecords6`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        verify(massDB.database, times(0)).endTransaction()
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords1`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords2`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.UNAVAILABLE)
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords3`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        val ise = assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertEquals(ise.message, RUNTIME_EXCEPTION_ERROR_MSG)
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords4`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords5`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify RuntimeException for deleteAllRecords6`() {
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        verify(massDB.database, times(0)).endTransaction()
+    }
 }
