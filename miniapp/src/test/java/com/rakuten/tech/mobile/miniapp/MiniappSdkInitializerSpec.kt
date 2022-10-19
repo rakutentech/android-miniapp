@@ -87,5 +87,4 @@ class MiniappSdkInitializerSpec {
         verify(sdkInitializer).createMiniAppSdkConfig(testManifestConfig)
         verify(sdkInitializer).executeMiniAppAnalytics(testManifestConfig.rasProjectId())
     }
-
 }

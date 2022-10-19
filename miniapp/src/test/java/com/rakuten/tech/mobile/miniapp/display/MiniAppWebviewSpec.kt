@@ -120,6 +120,7 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
     }
 }
 
+@Suppress("LargeClass")
 @RunWith(AndroidJUnit4::class)
 class MiniAppWebViewSpec : BaseWebViewSpec() {
 

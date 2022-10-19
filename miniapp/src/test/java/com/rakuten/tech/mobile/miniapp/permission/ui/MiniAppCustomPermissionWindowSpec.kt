@@ -79,10 +79,10 @@ class MiniAppCustomPermissionWindowSpec {
     }
 
     @Test
-    fun `adapter should add permissionList when permissionWindow calls prepareDataForAdapter()`(){
-        val adapter : MiniAppCustomPermissionAdapter = mock()
+    fun `adapter should add permissionList when permissionWindow calls prepareDataForAdapter()`() {
+        val adapter: MiniAppCustomPermissionAdapter = mock()
         whenever(permissionWindow.customPermissionAdapter).thenReturn(adapter)
-        val namesForAdapter : ArrayList<MiniAppCustomPermissionType> = mock()
+        val namesForAdapter: ArrayList<MiniAppCustomPermissionType> = mock()
         val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = mock()
         val descriptionForAdapter: ArrayList<String> = mock()
         permissionWindow.prepareDataForAdapter(permissionWithDescriptions)
@@ -92,7 +92,7 @@ class MiniAppCustomPermissionWindowSpec {
     }
 
     @Test
-    fun `dialog should be initialized when permissionWindow calls initDefaultWindow()`(){
+    fun `dialog should be initialized when permissionWindow calls initDefaultWindow()`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
         permissionWindow.initDefaultWindow()
@@ -100,10 +100,10 @@ class MiniAppCustomPermissionWindowSpec {
     }
 
     @Test
-    fun `dialog should add clickListeners when permissionWindow calls addPermissionClickListeners()`(){
+    fun `dialog should add clickListeners when permissionWindow calls addPermissionClickListeners()`() {
         val mockDialog: AlertDialog = mock()
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
-        val layout : View = mock()
+        val layout: View = mock()
         doReturn(layout).whenever(permissionWindow).customPermissionLayout
         permissionWindow.initDefaultWindow()
         permissionWindow.addPermissionClickListeners()
@@ -112,7 +112,6 @@ class MiniAppCustomPermissionWindowSpec {
         permissionWindow.customPermissionLayout.setOnKeyListener(mock())
         permissionWindow.customPermissionAlertDialog.setOnKeyListener(mock())
     }
-
 
     @Test
     fun `onNoPermissionsSaved should send cached custom permissions`() {
