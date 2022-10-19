@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 @RunWith(AndroidJUnit4::class)
 class MiniappSdkInitializerSpec {
@@ -54,4 +55,37 @@ class MiniappSdkInitializerSpec {
         miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
         miniAppSdkConfig.maxStorageSizeLimitInBytes shouldBeEqualTo TEST_MAX_STORAGE_SIZE_IN_BYTES
     }
+
+    @Test
+    fun `MiniApp should be called when calls onCreate()`() {
+        val testManifestConfig: AppManifestConfig = mock()
+        val sdkInitializer: MiniappSdkInitializer = mock()
+        val mockMiniAppSdkConfig: MiniAppSdkConfig = mock()
+        val context: Context = mock()
+
+        When calling testManifestConfig.rasProjectId() itReturns TEST_HA_ID_PROJECT
+        When calling testManifestConfig.baseUrl() itReturns TEST_BASE_URL
+        When calling testManifestConfig.isPreviewMode() itReturns false
+        When calling testManifestConfig.requireSignatureVerification() itReturns false
+        When calling testManifestConfig.hostAppUserAgentInfo() itReturns ""
+        When calling testManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
+        When calling sdkInitializer.context itReturns context
+        When calling testManifestConfig.maxStorageSizeLimitInBytes() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
+        When calling sdkInitializer.createMiniAppSdkConfig(testManifestConfig) itReturns mockMiniAppSdkConfig
+        When calling sdkInitializer.createAppManifestConfig(context) itReturns testManifestConfig
+
+        miniappSdkInitializer.onCreate()
+        When calling sdkInitializer.context itReturns context
+        When calling sdkInitializer.onCreate() itReturns true
+
+        sdkInitializer.onCreate()
+        val manifestConfig = sdkInitializer.createAppManifestConfig(context)
+        sdkInitializer.createMiniAppSdkConfig(manifestConfig)
+        sdkInitializer.executeMiniAppAnalytics(testManifestConfig.rasProjectId())
+        verify(sdkInitializer).onCreate()
+        manifestConfig.shouldBe(testManifestConfig)
+        verify(sdkInitializer).createMiniAppSdkConfig(testManifestConfig)
+        verify(sdkInitializer).executeMiniAppAnalytics(testManifestConfig.rasProjectId())
+    }
+
 }

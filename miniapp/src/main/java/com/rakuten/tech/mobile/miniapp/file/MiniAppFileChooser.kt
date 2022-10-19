@@ -32,6 +32,9 @@ interface MiniAppFileChooser {
      * @param filePathCallback a callback to provide the array of file-paths to select.
      * @param fileChooserParams the parameters can be used to customize the options of file chooser.
      * @param context the Activity context can be used to start the intent to choose file.
+     * @param isOpenMultipleMode derived from WebChromeClient function,
+     * @param isCaptureEnabled derived from WebChromeClient function
+     * @param fileChooserParamsAcceptTypes derived from WebChromeClient function
      **/
     @Suppress("LongParameterList")
     fun onShowFileChooser(

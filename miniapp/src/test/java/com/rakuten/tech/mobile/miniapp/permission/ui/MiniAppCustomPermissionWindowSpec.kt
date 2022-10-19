@@ -3,22 +3,22 @@ package com.rakuten.tech.mobile.miniapp.permission.ui
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.*
 import java.io.File
+import kotlin.test.assertTrue
 
 @Suppress("LongMethod")
 @ExperimentalCoroutinesApi
@@ -48,7 +48,7 @@ class MiniAppCustomPermissionWindowSpec {
         permissionCache = MiniAppCustomPermissionCache(prefs, prefs)
         downloadedManifestCache = spy(DownloadedManifestCache(context))
         cachedCustomPermission = permissionCache.readPermissions(miniAppId)
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
+        permissionWindow = mock()
     }
 
     @Test
@@ -79,8 +79,45 @@ class MiniAppCustomPermissionWindowSpec {
     }
 
     @Test
+    fun `adapter should add permissionList when permissionWindow calls prepareDataForAdapter()`(){
+        val adapter : MiniAppCustomPermissionAdapter = mock()
+        whenever(permissionWindow.customPermissionAdapter).thenReturn(adapter)
+        val namesForAdapter : ArrayList<MiniAppCustomPermissionType> = mock()
+        val resultsForAdapter: ArrayList<MiniAppCustomPermissionResult> = mock()
+        val descriptionForAdapter: ArrayList<String> = mock()
+        permissionWindow.prepareDataForAdapter(permissionWithDescriptions)
+        assertTrue(namesForAdapter.isNotEmpty())
+        assertTrue(resultsForAdapter.isNotEmpty())
+        assertTrue(descriptionForAdapter.isNotEmpty())
+    }
+
+    @Test
+    fun `dialog should be initialized when permissionWindow calls initDefaultWindow()`(){
+        val mockDialog: AlertDialog = mock()
+        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+        permissionWindow.initDefaultWindow()
+        permissionWindow.customPermissionAlertDialog.shouldNotBeNull()
+    }
+
+    @Test
+    fun `dialog should add clickListeners when permissionWindow calls addPermissionClickListeners()`(){
+        val mockDialog: AlertDialog = mock()
+        doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+        val layout : View = mock()
+        doReturn(layout).whenever(permissionWindow).customPermissionLayout
+        permissionWindow.initDefaultWindow()
+        permissionWindow.addPermissionClickListeners()
+
+        permissionWindow.customPermissionLayout.setOnClickListener(mock())
+        permissionWindow.customPermissionLayout.setOnKeyListener(mock())
+        permissionWindow.customPermissionAlertDialog.setOnKeyListener(mock())
+    }
+
+
+    @Test
     fun `onNoPermissionsSaved should send cached custom permissions`() {
         val mockDialog: AlertDialog = mock()
+        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
         permissionWindow.onNoPermissionsSaved()
         verify(dispatcher).sendCachedCustomPermissions()

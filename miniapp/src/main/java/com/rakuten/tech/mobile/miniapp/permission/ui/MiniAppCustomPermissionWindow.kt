@@ -34,8 +34,10 @@ internal class MiniAppCustomPermissionWindow(
     @VisibleForTesting
     lateinit var customPermissionAlertDialog: AlertDialog
 
-    private lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
-    private lateinit var customPermissionLayout: View
+    @VisibleForTesting
+    lateinit var customPermissionAdapter: MiniAppCustomPermissionAdapter
+    @VisibleForTesting
+    lateinit var customPermissionLayout: View
 
     fun displayPermissions(
         miniAppId: String,
@@ -62,8 +64,7 @@ internal class MiniAppCustomPermissionWindow(
 
     @VisibleForTesting
     fun initDefaultWindow() {
-        val layoutInflater = LayoutInflater.from(activity)
-        customPermissionLayout = layoutInflater.inflate(R.layout.window_custom_permission, null)
+        customPermissionLayout =  LayoutInflater.from(activity).inflate(R.layout.window_custom_permission, null)
         val permissionRecyclerView =
             customPermissionLayout.findViewById<RecyclerView>(R.id.listCustomPermission)
         permissionRecyclerView.layoutManager = LinearLayoutManager(activity)
