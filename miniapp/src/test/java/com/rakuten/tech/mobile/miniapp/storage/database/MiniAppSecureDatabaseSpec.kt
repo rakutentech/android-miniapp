@@ -1019,13 +1019,13 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify delete was called for all items if deleted successfully`() = runBlockingTest {
+    fun `verify deleteItems deleted all items`() = runBlockingTest {
 
         val key = Mockito.spy(setOf("a", "b"))
 
         When calling massDB.delete(key.first()) itReturns 1
 
-        When calling massDB.delete(key.first()) itReturns 1
+        When calling massDB.delete(key.last()) itReturns 1
 
         massDB.deleteItems(key)
 
@@ -1041,17 +1041,6 @@ class MiniAppSecureDatabaseSpec {
 
         assertFalse(massDB.deleteItems(key))
     }
-
-    @Test
-    fun `verify deleteItems returns true even if delete is unsuccessful for bulk items`() =
-        runBlockingTest {
-
-            val key = Mockito.spy(setOf("a", "b", "c"))
-
-            When calling massDB.delete(key.first()) itReturns 0
-
-            assertTrue(massDB.deleteItems(key))
-        }
 
     @Test
     fun `verify setTransactionSuccessful is called if deleteItems is successful`() =
@@ -1161,4 +1150,205 @@ class MiniAppSecureDatabaseSpec {
     /**
      * deleteItems above batches test cases
      */
+    @Test
+    fun `verify deleteItems returns true if deleted successfully above batches`() =
+        runBlockingTest {
+
+            val keys = Mockito.spy(HashSet<String>())
+
+            for (i in 1..BATCH_SIZE) {
+                keys.add("delete-$i")
+            }
+
+            When calling keys.size itReturns BATCH_SIZE
+
+            val itr = keys.iterator()
+            while (itr.hasNext()) {
+                When calling massDB.delete(itr.next()) itReturns 1
+            }
+
+            assertTrue(massDB.deleteItems(keys))
+        }
+
+    @Test
+    fun `verify deleteItems returns true even if only one item deleted from a batch`() =
+        runBlockingTest {
+
+            val keys = Mockito.spy(HashSet<String>())
+
+            for (i in 1..BATCH_SIZE) {
+                keys.add("delete-$i")
+            }
+
+            When calling keys.size itReturns BATCH_SIZE
+
+            var cnt = 1
+            val itr = keys.iterator()
+            while (itr.hasNext()) {
+
+                if (cnt == 51) {
+                    When calling massDB.delete(itr.next()) itReturns 1
+                } else {
+                    When calling massDB.delete(itr.next()) itReturns 0
+                }
+                cnt += 1
+            }
+
+            assertTrue(massDB.deleteItems(keys))
+        }
+
+    @Test
+    fun `verify deleteItems deleted all items in above batch size`() = runBlockingTest {
+
+        val keys = Mockito.spy(HashSet<String>())
+
+        for (i in 1..BATCH_SIZE) {
+            keys.add("delete-$i")
+        }
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        val itr = keys.iterator()
+        while (itr.hasNext()) {
+            When calling massDB.delete(itr.next()) itReturns 1
+        }
+
+        while (itr.hasNext()) {
+            verify(massDB, times(1)).delete(itr.next())
+        }
+    }
+
+    @Test
+    fun `verify deleteItems returns true even if none of the keys found to delete in a batch`() =
+        runBlockingTest {
+
+            val keys = Mockito.spy(HashSet<String>())
+
+            for (i in 1..BATCH_SIZE) {
+                keys.add("delete-$i")
+            }
+
+            When calling keys.size itReturns BATCH_SIZE
+
+            val itr = keys.iterator()
+            while (itr.hasNext()) {
+                When calling massDB.delete(itr.next()) itReturns 0
+            }
+
+            assertTrue(massDB.deleteItems(keys))
+        }
+
+    @Test
+    fun `verify after tasks after every batch completed`() = runBlockingTest {
+
+            val keys = Mockito.spy(HashSet<String>())
+
+            for (i in 1..BATCH_SIZE) {
+                keys.add("delete-$i")
+            }
+
+            When calling keys.size itReturns BATCH_SIZE
+
+            val itr = keys.iterator()
+            while (itr.hasNext()) {
+                When calling massDB.delete(itr.next()) itReturns 1
+            }
+
+            When calling massDB.database.inTransaction() itReturns true
+
+            massDB.deleteItems(keys)
+
+            verify(massDB.database, times(2)).setTransactionSuccessful()
+            verify(massDB, times(2)).finishAnyPendingDBTransaction()
+            verify(massDB.database, times(3)).endTransaction()
+            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+        }
+
+    @Test
+    fun `verify endTransaction not called if inTransaction is false after batch of deleteItems`() =
+        runBlockingTest {
+
+            val keys = Mockito.spy(HashSet<String>())
+
+            for (i in 1..BATCH_SIZE) {
+                keys.add("delete-$i")
+            }
+
+            When calling keys.size itReturns BATCH_SIZE
+
+            val itr = keys.iterator()
+            while (itr.hasNext()) {
+                When calling massDB.delete(itr.next()) itReturns 1
+            }
+
+            When calling massDB.database.inTransaction() itReturns false
+
+            massDB.deleteItems(keys)
+
+            verify(massDB.database, times(0)).endTransaction()
+        }
+
+    @Test
+    fun `verify the IllegalStateException occurred during a batch of deleteItems`() = runBlockingTest {
+
+        val keys = Mockito.spy(HashSet<String>())
+
+        for (i in 1..BATCH_SIZE) {
+            keys.add("delete-$i")
+        }
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        val itr = keys.iterator()
+        while (itr.hasNext()) {
+            When calling massDB.delete(itr.next()) itReturns 1
+        }
+
+        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        val ise = assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+        assertEquals(ise.message, ILLEGAL_STATE_EXCEPTION_ERROR_MSG)
+        verify(massDB, times(1)).finalize()
+        verify(massDB.database, times(2)).inTransaction()
+        verify(massDB.database, times(0)).endTransaction()
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during a batch of deleteItems`() = runBlockingTest {
+
+        val keys = Mockito.spy(HashSet<String>())
+
+        for (i in 1..BATCH_SIZE) {
+            keys.add("delete-$i")
+        }
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        val itr = keys.iterator()
+        while (itr.hasNext()) {
+            When calling massDB.delete(itr.next()) itReturns 1
+        }
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        val rte = assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+        assertEquals(rte.message, RUNTIME_EXCEPTION_ERROR_MSG)
+        verify(massDB, times(1)).finalize()
+        verify(massDB.database, times(3)).inTransaction()
+        verify(massDB.database, times(0)).endTransaction()
+        assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
+    }
 }
