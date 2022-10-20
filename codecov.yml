@@ -1,5 +1,4 @@
 ignore:
-  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/MiniappSdkInitializer.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/MiniApp.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/permission/ui/MiniAppCustomPermissionAdapter.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/permission/ui/MiniAppCustomPermissionWindow.kt"
