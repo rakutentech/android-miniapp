@@ -190,6 +190,22 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         createRequestExecutor().executeRequest(createApi().fetch())
     }
 
+    @Test(expected = MiniAppHostException::class)
+    fun `should throw MiniAppHostException when the server returns 400`() = runBlockingTest {
+        mockServer.enqueue(MockResponse().setResponseCode(400))
+
+        createRequestExecutor().executeRequest(createApi().fetch())
+    }
+
+    @Test(expected = MiniAppTooManyRequestsError::class)
+    fun `should throw MiniAppTooManyRequestsError when the server returns 429`() = runBlockingTest {
+        mockServer.enqueue(MockResponse().setResponseCode(429))
+
+        createRequestExecutor().executeRequest(createApi().fetch())
+    }
+
+
+
     private val standardErrorBody = { code: Int, message: String ->
         """
             {
