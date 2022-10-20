@@ -38,6 +38,7 @@ class CustomPermissionBridgeDispatcherSpec {
             )
         )
     )
+    private val description = "dummy description"
     private val customPermissionCallbackObj = CustomPermissionCallbackObj(
         action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
         param = CustomPermission(
@@ -66,7 +67,6 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `preparePermissionsWithDescription should return a list of pair with name and description`() {
-        val description = "dummy description"
         val customPermissionObj = CustomPermissionObj(
             "rakuten.miniapp.user.USER_NAME",
             description
@@ -87,7 +87,6 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `getRequiredPermissions should return the correct values`() {
-        val description = "dummy description"
         val actual = customPermissionBridgeDispatcher.getRequiredPermissions(
             arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
         )
