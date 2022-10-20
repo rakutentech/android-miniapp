@@ -19,6 +19,7 @@ class MiniAppCustomPermissionAdapterSpec {
     private val names = arrayListOf<MiniAppCustomPermissionType>()
     private val results = arrayListOf<MiniAppCustomPermissionResult>()
     private val descriptions = arrayListOf<String>()
+    private val description = "dummy description"
 
     @Before
     fun setup() {
@@ -54,7 +55,7 @@ class MiniAppCustomPermissionAdapterSpec {
 
     @Test
     fun `permissionDescription should hold arrayListOf String`() {
-        descriptions.add("dummy description")
+        descriptions.add(description)
         doReturn(descriptions).whenever(permissionAdapter).permissionDescriptions
         assertEquals(permissionAdapter.permissionDescriptions.size, descriptions.size)
     }
@@ -121,7 +122,7 @@ class MiniAppCustomPermissionAdapterSpec {
 
         names.add(MiniAppCustomPermissionType.USER_NAME)
         results.add(MiniAppCustomPermissionResult.DENIED)
-        descriptions.add("dummy description")
+        descriptions.add(description)
 
         permissionAdapter.addPermissionList(names, results, descriptions)
 
