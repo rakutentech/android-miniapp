@@ -16,6 +16,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 
+@Suppress("LargeClass")
 @RunWith(AndroidJUnit4::class)
 class MiniappSdkInitializerSpec {
     private val miniappSdkInitializer = MiniappSdkInitializer()
@@ -146,7 +147,6 @@ class MiniappSdkInitializerSpec {
         }
     }
 
-
     @Suppress("MaxLineLength")
     @Test
     fun `calling packageManager inside  should not fail`() {
@@ -158,7 +158,7 @@ class MiniappSdkInitializerSpec {
 
     @Test
     fun `onCreate should call createAppManifestConfig`() {
-        getAppManifestConfigAndSdkConfig { appManifestConfig, miniappSdkInitializer ->
+        getAppManifestConfigAndSdkConfig { _, miniappSdkInitializer ->
             miniappSdkInitializer.onCreate()
             verify(miniappSdkInitializer).createAppManifestConfig(context)
         }

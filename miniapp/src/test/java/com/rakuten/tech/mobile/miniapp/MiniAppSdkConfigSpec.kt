@@ -70,8 +70,8 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test
-    fun `hostAppVersionId should contains empty value as default`(){
-        val miniAppSdkConfig =   MiniAppSdkConfig(
+    fun `hostAppVersionId should contains empty value as default`() {
+        val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
             requireSignatureVerification = true,
@@ -83,8 +83,8 @@ class MiniAppSdkConfigSpec {
     }
 
     @Test
-    fun `requireSignatureVerification should be false as default`(){
-        val miniAppSdkConfig =   MiniAppSdkConfig(
+    fun `requireSignatureVerification should be false as default`() {
+        val miniAppSdkConfig = MiniAppSdkConfig(
             baseUrl = TEST_URL_HTTPS_2,
             isPreviewMode = true,
             rasProjectId = TEST_HA_ID_PROJECT,

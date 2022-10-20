@@ -65,7 +65,8 @@ internal class MiniAppCustomPermissionWindow(
         }
     }
 
-    private fun initCustomPermissionLayout() {
+    @VisibleForTesting
+    internal fun initCustomPermissionLayout() {
         customPermissionLayout =
             LayoutInflater.from(activity).inflate(R.layout.window_custom_permission, null)
     }

@@ -71,6 +71,18 @@ class MiniAppViewSpec {
     }
 
     @Test
+    fun `MiniAppConfig queryParams defaultValue should be empty`() {
+        val miniAppConfig = MiniAppConfig(
+            mock(),
+            mock(),
+            mock(),
+            mock(),
+        )
+
+        miniAppConfig.queryParams.shouldBeEmpty()
+    }
+
+    @Test
     fun `MiniAppConfig miniAppNavigator and miniAppFileChooser should be null`() {
         val miniAppConfig = MiniAppConfig(
             mock(),
@@ -104,14 +116,41 @@ class MiniAppViewSpec {
     }
 
     @Test
-    fun `init will initialize the mini app view correctly`() {
+    fun `init with defaultParameters should return miniAppView`() {
+        val instance = getMockMiniAppView()
+        instance.init(defaultParameters) shouldBe miniAppView
+    }
+
+    @Test
+    fun `init with infoParameters should return miniAppView`() {
+        val instance = getMockMiniAppView()
+        instance.init(infoParameters) shouldBe miniAppView
+    }
+
+    @Test
+    fun `init with urlParameters should return miniAppView`() {
+        val instance = getMockMiniAppView()
+        instance.init(urlParameters) shouldBe miniAppView
+    }
+
+    private fun getMockMiniAppView(): MiniAppView.Companion {
         val instance = spy<MiniAppView.Companion>()
         When calling miniAppConfig.miniAppSdkConfig itReturns miniAppSdkConfig
-        When calling instance.createMiniAppView(context, defaultParameters, miniAppSdkConfig) itReturns miniAppView
-        When calling instance.createMiniAppView(context, infoParameters, miniAppSdkConfig) itReturns miniAppView
-        When calling instance.createMiniAppView(context, urlParameters, miniAppSdkConfig) itReturns miniAppView
-        instance.init(defaultParameters) shouldBe miniAppView
-        instance.init(infoParameters) shouldBe miniAppView
-        instance.init(urlParameters) shouldBe miniAppView
+        When calling instance.createMiniAppView(
+            context,
+            defaultParameters,
+            miniAppSdkConfig
+        ) itReturns miniAppView
+        When calling instance.createMiniAppView(
+            context,
+            infoParameters,
+            miniAppSdkConfig
+        ) itReturns miniAppView
+        When calling instance.createMiniAppView(
+            context,
+            urlParameters,
+            miniAppSdkConfig
+        ) itReturns miniAppView
+        return instance
     }
 }
