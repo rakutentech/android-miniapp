@@ -27,19 +27,43 @@ class MiniappSdkInitializerSpec {
     }
 
     @Test
-    fun `The MiniappSdkInitializer should be overriden from ContentProvider`() {
+    fun `query should be null when calls overrode query`() {
         miniappSdkInitializer.onCreate()
         val uri: Uri = mock()
         miniappSdkInitializer.query(
             uri, null, null, null, null
         ) shouldBe null
+    }
+
+    @Test
+    fun `update should be null when calls overrode update`() {
+        miniappSdkInitializer.onCreate()
+        val uri: Uri = mock()
         miniappSdkInitializer.update(
             uri, null, null, null
         ) shouldBe 0
+    }
+
+    @Test
+    fun `insert should be null when calls overrode insert`() {
+        miniappSdkInitializer.onCreate()
+        val uri: Uri = mock()
         miniappSdkInitializer.insert(uri, null) shouldBe null
+    }
+
+    @Test
+    fun `delete should be null when calls overrode delete`() {
+        miniappSdkInitializer.onCreate()
+        val uri: Uri = mock()
         miniappSdkInitializer.delete(
             uri, null, null
         ) shouldBe 0
+    }
+
+    @Test
+    fun `getType should be overriden from ContentProvider`() {
+        miniappSdkInitializer.onCreate()
+        val uri: Uri = mock()
         miniappSdkInitializer.getType(uri) shouldBe null
     }
 
@@ -55,27 +79,7 @@ class MiniappSdkInitializerSpec {
         return testManifestConfig
     }
 
-    @Test
-    fun `createMiniAppSdkConfig should return the correct MiniAppSdkConfig`() {
-        val testManifestConfig: AppManifestConfig = mock()
-        When calling testManifestConfig.rasProjectId() itReturns TEST_HA_ID_PROJECT
-        When calling testManifestConfig.baseUrl() itReturns TEST_BASE_URL
-        When calling testManifestConfig.isPreviewMode() itReturns false
-        When calling testManifestConfig.requireSignatureVerification() itReturns false
-        When calling testManifestConfig.hostAppUserAgentInfo() itReturns ""
-        When calling testManifestConfig.subscriptionKey() itReturns TEST_HA_SUBSCRIPTION_KEY
-        When calling testManifestConfig.maxStorageSizeLimitInBytes() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
-
-        val miniAppSdkConfig = miniappSdkInitializer.createMiniAppSdkConfig(testManifestConfig)
-        miniAppSdkConfig.rasProjectId shouldBeEqualTo TEST_HA_ID_PROJECT
-        miniAppSdkConfig.baseUrl shouldBeEqualTo TEST_BASE_URL
-        miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
-        miniAppSdkConfig.maxStorageSizeLimitInBytes shouldBeEqualTo TEST_MAX_STORAGE_SIZE_IN_BYTES
-    }
-
-    @Suppress("MaxLineLength")
-    @Test
-    fun `calling createAppManifestConfig should generate AppManifestConfig`() {
+    private fun getMockContextAndPackageManager(onGenerated: (Context, PackageManager) -> Unit) {
         val context: Context = mock()
         val packageManager: PackageManager = mock()
         val applicationInfo: ApplicationInfo = mock()
@@ -86,28 +90,102 @@ class MiniappSdkInitializerSpec {
             TEST_PACKAGE_NAME, PackageManager.GET_META_DATA
         ) itReturns applicationInfo
 
-        val appManifestConfig = miniappSdkInitializer.createAppManifestConfig(context)
-
-        verify(context).packageManager
-        verify(packageManager).getApplicationInfo(any(), any())
-        context.packageName.shouldBeEqualTo(TEST_PACKAGE_NAME)
-        appManifestConfig.shouldNotBeNull()
-        appManifestConfig.shouldBeInstanceOf<AppManifestConfig>()
+        onGenerated(context, packageManager)
     }
 
-    @Test
-    fun `MiniApp should be called when calls onCreate()`() {
+    private fun getAppManifestConfigAndSdkConfig(onGenerated: (AppManifestConfig, MiniappSdkInitializer) -> Unit) {
         val appManifestConfig = getMockAppManifestConfig()
         val sdkInitializer: MiniappSdkInitializer = spy(MiniappSdkInitializer())
 
         When calling sdkInitializer.context itReturns context
         When calling sdkInitializer.createAppManifestConfig(context) itReturns appManifestConfig
 
-        val isSdkInitializerLoaded = sdkInitializer.onCreate()
-        verify(sdkInitializer).createAppManifestConfig(context)
-        verify(sdkInitializer).createMiniAppSdkConfig(appManifestConfig)
-        verify(sdkInitializer).executeMiniAppAnalytics(appManifestConfig.rasProjectId())
-        isSdkInitializerLoaded.shouldBe(true)
+        onGenerated(appManifestConfig, sdkInitializer)
+    }
+
+    @Test
+    fun `createMiniAppSdkConfig should return the correct MiniAppSdkConfig`() {
+        val testManifestConfig: AppManifestConfig = getMockAppManifestConfig()
+
+        val miniAppSdkConfig = miniappSdkInitializer.createMiniAppSdkConfig(testManifestConfig)
+        miniAppSdkConfig.rasProjectId shouldBeEqualTo TEST_HA_ID_PROJECT
+        miniAppSdkConfig.baseUrl shouldBeEqualTo TEST_BASE_URL
+        miniAppSdkConfig.subscriptionKey shouldBeEqualTo TEST_HA_SUBSCRIPTION_KEY
+        miniAppSdkConfig.maxStorageSizeLimitInBytes shouldBeEqualTo TEST_MAX_STORAGE_SIZE_IN_BYTES
+    }
+
+    @Test
+    fun `calling applicationInfo inside createAppManifestConfig should not fail`() {
+        getMockContextAndPackageManager { context, packageManager ->
+            miniappSdkInitializer.createAppManifestConfig(context)
+            verify(packageManager).getApplicationInfo(any(), any())
+        }
+    }
+
+    @Test
+    fun `calling packageName inside createAppManifestConfig should not fail`() {
+        getMockContextAndPackageManager { context, _ ->
+            miniappSdkInitializer.createAppManifestConfig(context)
+            verify(context).packageName
+        }
+    }
+
+    @Test
+    fun `calling createAppManifestConfig should generate AppManifestConfig`() {
+        getMockContextAndPackageManager { context, _ ->
+            val appManifestConfig = miniappSdkInitializer.createAppManifestConfig(context)
+            appManifestConfig.shouldBeInstanceOf<AppManifestConfig>()
+        }
+    }
+
+    @Test
+    fun `calling createAppManifestConfig should not be null`() {
+        getMockContextAndPackageManager { context, _ ->
+            val appManifestConfig = miniappSdkInitializer.createAppManifestConfig(context)
+            appManifestConfig.shouldNotBeNull()
+        }
+    }
+
+
+    @Suppress("MaxLineLength")
+    @Test
+    fun `calling packageManager inside  should not fail`() {
+        getMockContextAndPackageManager { context, _ ->
+            miniappSdkInitializer.createAppManifestConfig(context)
+            verify(context).packageManager
+        }
+    }
+
+    @Test
+    fun `onCreate should call createAppManifestConfig`() {
+        getAppManifestConfigAndSdkConfig { appManifestConfig, miniappSdkInitializer ->
+            miniappSdkInitializer.onCreate()
+            verify(miniappSdkInitializer).createAppManifestConfig(context)
+        }
+    }
+
+    @Test
+    fun `onCreate should call createMiniAppSdkConfig`() {
+        getAppManifestConfigAndSdkConfig { appManifestConfig, miniappSdkInitializer ->
+            miniappSdkInitializer.onCreate()
+            verify(miniappSdkInitializer).createMiniAppSdkConfig(appManifestConfig)
+        }
+    }
+
+    @Test
+    fun `onCreate should call executeMiniAppAnalytics`() {
+        getAppManifestConfigAndSdkConfig { appManifestConfig, miniappSdkInitializer ->
+            miniappSdkInitializer.onCreate()
+            verify(miniappSdkInitializer).executeMiniAppAnalytics(appManifestConfig.rasProjectId())
+        }
+    }
+
+    @Test
+    fun `MiniApp should be called when calls onCreate()`() {
+        getAppManifestConfigAndSdkConfig { _, miniappSdkInitializer ->
+            val isSdkInitialized = miniappSdkInitializer.onCreate()
+            isSdkInitialized.shouldBe(true)
+        }
     }
 
     @Test
