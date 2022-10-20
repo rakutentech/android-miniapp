@@ -1011,7 +1011,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify deleteItems returns true if deleted successfully`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
 
         When calling massDB.delete(key.first()) itReturns 1
 
@@ -1019,23 +1019,43 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify deleteItems deleted all items`() = runBlockingTest {
+    fun `verify delete was called upto total size of keys`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a", "b"))
+        val keys = HashSet<String>()
 
-        When calling massDB.delete(key.first()) itReturns 1
+        for (i in 1..5) {
+            keys.add("delete-$i")
+        }
 
-        When calling massDB.delete(key.last()) itReturns 1
+        massDB.deleteItems(keys)
 
-        massDB.deleteItems(key)
-
-        verify(massDB, times(4)).delete(any())
+        verify(massDB, times(keys.size)).delete(any())
     }
+
+    @Test
+    fun `verify the correct items are passed and deleted to and from the database`() =
+        runBlockingTest {
+
+            val keys = HashSet<String>()
+
+            for (i in 1..5) {
+                keys.add("delete-$i")
+            }
+
+            massDB.deleteItems(keys)
+
+            val iterator = keys.iterator()
+            while (iterator.hasNext()) {
+                verify(massDB.database, times(1)).delete(
+                    TABLE_NAME, "$FIRST_COLUMN_NAME='${iterator.next()}'", null
+                )
+            }
+        }
 
     @Test
     fun `verify deleteItems returns false if delete is unsuccessful`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
 
         When calling massDB.delete(key.first()) itReturns 0
 
@@ -1043,14 +1063,12 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify setTransactionSuccessful is called if deleteItems is successful`() =
+    fun `verify setTransactionSuccessful is called after deleteItems is successful`() =
         runBlockingTest {
 
-            val key = Mockito.spy(setOf("a"))
+            val key = setOf("a")
 
             When calling massDB.delete(key.first()) itReturns 1
-
-            When calling massDB.database.inTransaction() itReturns true
 
             massDB.deleteItems(key)
 
@@ -1058,10 +1076,53 @@ class MiniAppSecureDatabaseSpec {
         }
 
     @Test
-    fun `verify endTransaction should be called if inTransaction is true after deleteItems`() =
+    fun `verify finishAnyPendingDBTransaction is called after deleteItems is successful`() =
         runBlockingTest {
 
-            val key = Mockito.spy(setOf("a"))
+            val key = setOf("a")
+
+            When calling massDB.delete(key.first()) itReturns 1
+
+            massDB.deleteItems(key)
+
+            verify(massDB, times(1)).finishAnyPendingDBTransaction()
+        }
+
+    @Test
+    fun `verify the transactions flow for deleteItems`() =
+        runBlockingTest {
+
+            val key = setOf("a")
+
+            When calling massDB.delete(key.first()) itReturns 1
+
+            massDB.deleteItems(key)
+
+            verify(massDB.database, times(1)).beginTransaction()
+            verify(massDB.database, times(1)).setTransactionSuccessful()
+            verify(massDB.database, times(2)).inTransaction()
+            verify(massDB.database, times(0)).endTransaction()
+        }
+
+    @Test
+    fun `verify endTransaction shouldn't be called if not pending any after deleteItems`() =
+        runBlockingTest {
+
+            val key = setOf("a")
+
+            When calling massDB.delete(key.first()) itReturns 1
+
+            massDB.deleteItems(key)
+
+            verify(massDB.database, times(2)).inTransaction()
+            verify(massDB.database, times(0)).endTransaction()
+        }
+
+    @Test
+    fun `verify endTransaction should be called if transaction is still pending for deleteItems`() =
+        runBlockingTest {
+
+            val key = setOf("a")
 
             When calling massDB.delete(key.first()) itReturns 1
 
@@ -1073,61 +1134,165 @@ class MiniAppSecureDatabaseSpec {
         }
 
     @Test
-    fun `verify endTransaction should not be called if inTransaction is false after deleteItems`() =
-        runBlockingTest {
+    fun `verify finalize task in finally after deleteItems is successful`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
 
         When calling massDB.delete(key.first()) itReturns 1
-
-        When calling massDB.database.inTransaction() itReturns false
 
         massDB.deleteItems(key)
 
-        verify(massDB.database, times(0)).endTransaction()
+        verify(massDB, times(1)).finalize()
     }
 
     @Test
-    fun `verify the status if deleteItems is successful`() = runBlockingTest {
+    fun `verify status is ready after deleteItems is successful`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
 
         When calling massDB.delete(key.first()) itReturns 1
-
-        When calling massDB.database.inTransaction() itReturns true
 
         massDB.deleteItems(key)
 
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+        assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.READY)
     }
 
     @Test
-    fun `verify the IllegalStateException occurred during deleteItems`() = runBlockingTest {
+    fun `verify setTransactionSuccessful throws IllegalStateException during deleteItems`() {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
 
-        When calling massDB.delete(key.first()) itReturns 1
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(key)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify finishAnyPendingDBTransaction throws IllegalStateException during deleteItems`() {
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
-        val ise = assertThrows(IllegalStateException::class.java) {
-            massDB.deleteItems(key)
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
         }
 
         assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
-        assertEquals(ise.message, ILLEGAL_STATE_EXCEPTION_ERROR_MSG)
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-1`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
         verify(massDB, times(1)).finalize()
-        verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-2`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        val ise = assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
+        assertEquals(ise.message, ILLEGAL_STATE_EXCEPTION_ERROR_MSG)
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-3`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-4`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
+        verify(massDB.database, times(1)).inTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-5`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
         verify(massDB.database, times(0)).endTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException during deleteItems was thrown-6`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(setOf("a"))
+        }
+
         assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
     }
 
     @Test
-    fun `verify the RunTimeException occurred during deleteItems`() = runBlockingTest {
+    fun `verify the RunTimeException occurred during deleteItems-1`() = runBlockingTest {
 
-        val key = Mockito.spy(setOf("a"))
+        val key = setOf("a")
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(key)
+        }
+
+        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during deleteItems-2`() = runBlockingTest {
+
+        val key = setOf("a")
 
         When calling massDB.delete(key.first()) itReturns 1
 
@@ -1139,11 +1304,77 @@ class MiniAppSecureDatabaseSpec {
             massDB.deleteItems(key)
         }
 
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
         assertEquals(rte.message, RUNTIME_EXCEPTION_ERROR_MSG)
-        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during deleteItems-3`() = runBlockingTest {
+
+        val key = setOf("a")
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(key)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during deleteItems-4`() = runBlockingTest {
+
+        val key = setOf("a")
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(key)
+        }
+
         verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during deleteItems-5`() = runBlockingTest {
+
+        val key = setOf("a")
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        val rte = assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(key)
+        }
+
         verify(massDB.database, times(0)).endTransaction()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during deleteItems-6`() = runBlockingTest {
+
+        val key = setOf("a")
+
+        When calling massDB.delete(key.first()) itReturns 1
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        val rte = assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(key)
+        }
         assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
     }
 
@@ -1213,9 +1444,7 @@ class MiniAppSecureDatabaseSpec {
             When calling massDB.delete(itr.next()) itReturns 1
         }
 
-        while (itr.hasNext()) {
-            verify(massDB, times(1)).delete(itr.next())
-        }
+        verify(massDB, times(BATCH_SIZE)).delete(any())
     }
 
     @Test
@@ -1241,28 +1470,28 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks after every batch completed`() = runBlockingTest {
 
-            val keys = Mockito.spy(HashSet<String>())
+        val keys = Mockito.spy(HashSet<String>())
 
-            for (i in 1..BATCH_SIZE) {
-                keys.add("delete-$i")
-            }
-
-            When calling keys.size itReturns BATCH_SIZE
-
-            val itr = keys.iterator()
-            while (itr.hasNext()) {
-                When calling massDB.delete(itr.next()) itReturns 1
-            }
-
-            When calling massDB.database.inTransaction() itReturns true
-
-            massDB.deleteItems(keys)
-
-            verify(massDB.database, times(2)).setTransactionSuccessful()
-            verify(massDB, times(2)).finishAnyPendingDBTransaction()
-            verify(massDB.database, times(3)).endTransaction()
-            assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+        for (i in 1..BATCH_SIZE) {
+            keys.add("delete-$i")
         }
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        val itr = keys.iterator()
+        while (itr.hasNext()) {
+            When calling massDB.delete(itr.next()) itReturns 1
+        }
+
+        When calling massDB.database.inTransaction() itReturns true
+
+        massDB.deleteItems(keys)
+
+        verify(massDB.database, times(2)).setTransactionSuccessful()
+        verify(massDB, times(2)).finishAnyPendingDBTransaction()
+        verify(massDB.database, times(3)).endTransaction()
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.READY)
+    }
 
     @Test
     fun `verify endTransaction not called if inTransaction is false after batch of deleteItems`() =
@@ -1289,22 +1518,31 @@ class MiniAppSecureDatabaseSpec {
         }
 
     @Test
-    fun `verify the IllegalStateException occurred during a batch of deleteItems`() = runBlockingTest {
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-1`() {
 
-        val keys = Mockito.spy(HashSet<String>())
-
-        for (i in 1..BATCH_SIZE) {
-            keys.add("delete-$i")
-        }
+        val keys = Mockito.spy(setOf("a"))
 
         When calling keys.size itReturns BATCH_SIZE
 
-        val itr = keys.iterator()
-        while (itr.hasNext()) {
-            When calling massDB.delete(itr.next()) itReturns 1
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
         }
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-2`() {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1312,29 +1550,105 @@ class MiniAppSecureDatabaseSpec {
             massDB.deleteItems(keys)
         }
 
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
         assertEquals(ise.message, ILLEGAL_STATE_EXCEPTION_ERROR_MSG)
-        verify(massDB, times(1)).finalize()
-        verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-3`() {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-4`() {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        verify(massDB.database, times(1)).inTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-5`() {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
         verify(massDB.database, times(0)).endTransaction()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException thrown during batch of deleteItems-6`() {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
         assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
     }
 
     @Test
-    fun `verify the RunTimeException occurred during a batch of deleteItems`() = runBlockingTest {
+    fun `verify the RunTimeException occurred during batch of deleteItems-1`() = runBlockingTest {
 
-        val keys = Mockito.spy(HashSet<String>())
-
-        for (i in 1..BATCH_SIZE) {
-            keys.add("delete-$i")
-        }
+        val keys = Mockito.spy(setOf("a"))
 
         When calling keys.size itReturns BATCH_SIZE
 
-        val itr = keys.iterator()
-        while (itr.hasNext()) {
-            When calling massDB.delete(itr.next()) itReturns 1
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
         }
+
+        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during batch of deleteItems-2`() = runBlockingTest {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
 
         When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
@@ -1344,11 +1658,78 @@ class MiniAppSecureDatabaseSpec {
             massDB.deleteItems(keys)
         }
 
-        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
         assertEquals(rte.message, RUNTIME_EXCEPTION_ERROR_MSG)
-        verify(massDB, times(1)).finalize()
-        verify(massDB.database, times(3)).inTransaction()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during batch of deleteItems-3`() = runBlockingTest {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during batch of deleteItems-4`() = runBlockingTest {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
+        verify(massDB.database, times(2)).inTransaction()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during batch of deleteItems-5`() = runBlockingTest {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
         verify(massDB.database, times(0)).endTransaction()
+    }
+
+    @Test
+    fun `verify the RunTimeException occurred during batch of deleteItems-6`() = runBlockingTest {
+
+        val keys = Mockito.spy(setOf("a"))
+
+        When calling keys.size itReturns BATCH_SIZE
+
+        When calling massDB.database.execSQL(AUTO_VACUUM) itThrows RuntimeException(
+            RUNTIME_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(RuntimeException::class.java) {
+            massDB.deleteItems(keys)
+        }
+
         assertTrue(massDB.miniAppDatabaseStatus != MiniAppDatabaseStatus.READY)
     }
 
@@ -1359,7 +1740,7 @@ class MiniAppSecureDatabaseSpec {
 
         When calling massDB.delete(key.first()) itReturns 1
 
-        massDB.deleteItems(key)
+        assertTrue(massDB.deleteItems(key))
 
         verify(massDB.database, times(1)).execSQL(AUTO_VACUUM)
     }
@@ -1368,6 +1749,89 @@ class MiniAppSecureDatabaseSpec {
      * deleteAllRecords test cases
      */
     @Test
+    fun `verify sql query executed successfully`() = runBlockingTest {
+
+        massDB.deleteAllRecords()
+
+        verify(massDB.database, times(1)).execSQL(DROP_TABLE_QUERY)
+    }
+
+    @Test
+    fun `verify transaction is successful after deleting all records`() = runBlockingTest {
+
+        massDB.deleteAllRecords()
+
+        verify(massDB.database, times(1)).setTransactionSuccessful()
+    }
+
+    @Test
+    fun `verify the transactions flow for deleteAllRecords`() =
+        runBlockingTest {
+
+            massDB.deleteAllRecords()
+
+            verify(massDB.database, times(1)).beginTransaction()
+            verify(massDB.database, times(1)).setTransactionSuccessful()
+            verify(massDB.database, times(2)).inTransaction()
+        }
+
+    @Test
+    fun `verify endTransaction shouldn't be called if not pending any for deleteAllRecords`() =
+        runBlockingTest {
+
+            massDB.deleteAllRecords()
+
+            verify(massDB.database, times(2)).inTransaction()
+            verify(massDB.database, times(0)).endTransaction()
+        }
+
+    @Test
+    fun `verify endTransaction should be called if transaction still pending for deleteAllRecords`() =
+        runBlockingTest {
+
+            When calling massDB.database.inTransaction() itReturns true
+
+            massDB.deleteAllRecords()
+
+            verify(massDB.database, times(2)).endTransaction()
+        }
+
+    @Test
+    fun `verify finalize task in finally after deleteAllRecords is successful`() = runBlockingTest {
+
+        massDB.deleteAllRecords()
+
+        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify status in finally after deleteAllRecords is successful`() = runBlockingTest {
+
+        massDB.deleteAllRecords()
+
+        assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.UNAVAILABLE)
+    }
+
+    @Test
+    fun `verify database isn't opened if all the records in the table are deleted successfully`() =
+        runBlockingTest {
+
+            massDB.deleteAllRecords()
+
+            assertFalse(massDB.database.isOpen)
+        }
+
+    @Test
+    fun `verify db close should not be called if db is not opened after deleteAllRecords`() =
+        runBlockingTest {
+
+            massDB.deleteAllRecords()
+
+            assertFalse(massDB.database.isOpen)
+            verify(massDB.database, times(0)).close()
+        }
+
+    @Test
     fun `verify deleteAllRecords closes the database`() = runBlockingTest {
 
         When calling massDB.database.isOpen itReturns true
@@ -1375,22 +1839,55 @@ class MiniAppSecureDatabaseSpec {
         massDB.deleteAllRecords()
 
         Verify on massDB.database that massDB.database.close() was called
-        verify(massDB, times(2)).finishAnyPendingDBTransaction()
     }
 
     @Test
-    fun `verify database closes not called if not opened the database`() = runBlockingTest {
+    fun `verify finishAnyPendingDBTransaction was called twice after deleteAllRecords`() =
+        runBlockingTest {
 
-        When calling massDB.database.isOpen itReturns false
+            When calling massDB.database.isOpen itReturns true
+
+            massDB.deleteAllRecords()
+
+            verify(massDB, times(2)).finishAnyPendingDBTransaction()
+        }
+
+    @Test
+    fun `verify inTransaction was called thrice when closes database`() = runBlockingTest {
+
+        When calling massDB.database.isOpen itReturns true
 
         massDB.deleteAllRecords()
 
-        verify(massDB.database, times(0)).close()
-        verify(massDB, times(1)).finishAnyPendingDBTransaction()
+        verify(massDB.database, times(3)).inTransaction()
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords1`() {
+    fun `verify finishAnyPendingDBTransaction not called if database was not opened`() =
+        runBlockingTest {
+
+            When calling massDB.database.isOpen itReturns false
+
+            massDB.deleteAllRecords()
+
+            verify(massDB, times(1)).finishAnyPendingDBTransaction()
+        }
+
+    @Test
+    fun `verify setTransactionSuccessful throws IllegalStateException`() = runBlockingTest {
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        assertEquals(massDB.miniAppDatabaseStatus, MiniAppDatabaseStatus.FAILED)
+    }
+
+    @Test
+    fun `verify finishAnyPendingDBTransaction throws IllegalStateException`() {
 
         When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
@@ -1404,9 +1901,23 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords2`() {
+    fun `verify after tasks when IllegalStateException was thrown-1`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
+            ILLEGAL_STATE_EXCEPTION_ERROR_MSG
+        )
+
+        assertThrows(IllegalStateException::class.java) {
+            massDB.deleteAllRecords()
+        }
+
+        verify(massDB, times(1)).finalize()
+    }
+
+    @Test
+    fun `verify after tasks when IllegalStateException was thrown-2`() {
+
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1418,9 +1929,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords3`() {
+    fun `verify after tasks when IllegalStateException was thrown-3`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1432,9 +1943,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords4`() {
+    fun `verify after tasks when IllegalStateException was thrown-4`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1446,9 +1957,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords5`() {
+    fun `verify after tasks when IllegalStateException was thrown-5`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1456,13 +1967,13 @@ class MiniAppSecureDatabaseSpec {
             massDB.deleteAllRecords()
         }
 
-        verify(massDB.database, times(2)).inTransaction()
+        verify(massDB.database, times(1)).inTransaction()
     }
 
     @Test
-    fun `verify IllegalStateException for deleteAllRecords6`() {
+    fun `verify after tasks when IllegalStateException was thrown-6`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows IllegalStateException(
+        When calling massDB.database.setTransactionSuccessful() itThrows IllegalStateException(
             ILLEGAL_STATE_EXCEPTION_ERROR_MSG
         )
 
@@ -1474,9 +1985,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords1`() {
+    fun `verify after tasks when RuntimeException was thrown-1`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -1488,9 +1999,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords2`() {
+    fun `verify after tasks when RuntimeException was thrown-2`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -1502,9 +2013,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords3`() {
+    fun `verify after tasks when RuntimeException was thrown-3`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -1516,9 +2027,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords4`() {
+    fun `verify after tasks when RuntimeException was thrown-4`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -1530,9 +2041,9 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords5`() {
+    fun `verify after tasks when RuntimeException was thrown-5`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -1540,13 +2051,13 @@ class MiniAppSecureDatabaseSpec {
             massDB.deleteAllRecords()
         }
 
-        verify(massDB.database, times(2)).inTransaction()
+        verify(massDB.database, times(1)).inTransaction()
     }
 
     @Test
-    fun `verify RuntimeException for deleteAllRecords6`() {
+    fun `verify after tasks when RuntimeException was thrown-6`() {
 
-        When calling massDB.finishAnyPendingDBTransaction() itThrows RuntimeException(
+        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
