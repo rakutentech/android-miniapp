@@ -81,16 +81,16 @@ class MiniappSdkInitializerSpec {
         val applicationInfo: ApplicationInfo = mock()
 
         When calling context.packageManager itReturns packageManager
-        When calling context.packageName itReturns "com.rakuten.tech.mobile.miniapp"
+        When calling context.packageName itReturns TEST_PACKAGE_NAME
         When calling packageManager.getApplicationInfo(
-            "com.rakuten.tech.mobile.miniapp", PackageManager.GET_META_DATA
+            TEST_PACKAGE_NAME, PackageManager.GET_META_DATA
         ) itReturns applicationInfo
 
         val appManifestConfig = miniappSdkInitializer.createAppManifestConfig(context)
 
         verify(context).packageManager
         verify(packageManager).getApplicationInfo(any(), any())
-        context.packageName.shouldBeEqualTo("com.rakuten.tech.mobile.miniapp")
+        context.packageName.shouldBeEqualTo(TEST_PACKAGE_NAME)
         appManifestConfig.shouldNotBeNull()
         appManifestConfig.shouldBeInstanceOf<AppManifestConfig>()
     }
