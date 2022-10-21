@@ -279,6 +279,7 @@ internal class MiniAppSecureDatabase(
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
                     if (isDatabaseFull()) {
+                        miniAppDatabaseStatus = MiniAppDatabaseStatus.FULL
                         throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
                     }
                     database.beginTransaction()
