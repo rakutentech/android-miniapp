@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.R
@@ -67,6 +66,60 @@ class MiniAppCustomPermissionWindowSpec {
         permissionWindow = mock()
     }
 
+    private fun setupForRecyclerViewTestCase(onReady: (MiniAppCustomPermissionWindow, RecyclerView) -> Unit )  {
+        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
+        val customPermissionLayout: View = mock()
+        val permissionRecyclerView: RecyclerView = mock()
+
+        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
+            .findViewById<RecyclerView>(R.id.listCustomPermission)
+        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
+
+        val recyclerView = permissionWindow.getRecyclerView()
+
+        onReady(permissionWindow, recyclerView)
+    }
+
+    private fun setupForPermissionLayoutTestCases(onReady: (View, TextView, TextView, AlertDialog) -> Unit){
+        val permissionAlertDialog: AlertDialog = mock()
+        val customPermissionLayout: View = mock()
+        val textPermissionSave: TextView = mock()
+        val textPermissionCloseWindow: TextView = mock()
+        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
+        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
+        permissionWindow.customPermissionLayout = mock()
+
+        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
+        doReturn(textPermissionSave).whenever(customPermissionLayout)
+            .findViewById<TextView>(R.id.permissionSave)
+        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
+            .findViewById<TextView>(R.id.permissionCloseWindow)
+        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
+        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
+        permissionWindow.addPermissionClickListeners()
+
+        onReady(customPermissionLayout, textPermissionSave, textPermissionCloseWindow, permissionAlertDialog)
+
+    }
+
+    private fun setupUsingRealContext(onReady: (MiniAppCustomPermissionWindow) -> Unit) {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
+            permissionWindow.initCustomPermissionLayout()
+            onReady(permissionWindow)
+        }
+    }
+
+    private fun setupUsingRealContextWithRecyclerView(onReady: (MiniAppCustomPermissionWindow, RecyclerView) -> Unit) {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
+            permissionWindow.initCustomPermissionLayout()
+            val recyclerView = spy(permissionWindow.getRecyclerView())
+            onReady(permissionWindow, recyclerView)
+        }
+    }
+
+
     @Test
     fun `the coroutine context should be Dispatchers Main`() {
         val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
@@ -108,100 +161,53 @@ class MiniAppCustomPermissionWindowSpec {
     @Suppress("MaxLineLength")
     @Test(expected = NullPointerException::class) // due to a require real context
     fun `getRecyclerView should call layoutManager`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        val customPermissionLayout: View = mock()
-        val permissionRecyclerView: RecyclerView = mock()
+        setupForRecyclerViewTestCase { _, recyclerView ->
+            verify(recyclerView).layoutManager
+            verify(recyclerView).adapter
+            recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
+            recyclerView.shouldNotBeNull()
 
-        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
-            .findViewById<RecyclerView>(R.id.listCustomPermission)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-
-        val recyclerView = permissionWindow.getRecyclerView()
-
-        verify(recyclerView).layoutManager
-        verify(recyclerView).adapter
-        recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
-        recyclerView.shouldNotBeNull()
+        }
     }
 
     @Suppress("MaxLineLength")
     @Test(expected = NullPointerException::class) // due to a require real context
     fun `getRecyclerView layoutManager should not be null`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        val customPermissionLayout: View = mock()
-        val layoutManager: LayoutManager = mock()
-        val permissionRecyclerView: RecyclerView = mock()
-
-        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
-            .findViewById<RecyclerView>(R.id.listCustomPermission)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-
-        val recyclerView = permissionWindow.getRecyclerView()
-
-        recyclerView.layoutManager shouldBeEqualTo layoutManager
+        setupForRecyclerViewTestCase { _, recyclerView ->
+            recyclerView.layoutManager.shouldNotBeNull()
+        }
     }
 
     @Suppress("MaxLineLength")
     @Test(expected = NullPointerException::class) // due to a require real context
     fun `getRecyclerView should set adapter`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        val customPermissionLayout: View = mock()
-        val permissionRecyclerView: RecyclerView = mock()
-
-        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
-            .findViewById<RecyclerView>(R.id.listCustomPermission)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-
-        val recyclerView = permissionWindow.getRecyclerView()
-
-        verify(recyclerView).adapter
-        recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
-        recyclerView.shouldNotBeNull()
+        setupForRecyclerViewTestCase { _, recyclerView ->
+            verify(recyclerView).adapter
+        }
     }
 
     @Suppress("MaxLineLength")
     @Test(expected = NullPointerException::class) // due to a require real context
     fun `getRecyclerView should generate a recyclerView`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        val customPermissionLayout: View = mock()
-        val permissionRecyclerView: RecyclerView = mock()
-
-        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
-            .findViewById<RecyclerView>(R.id.listCustomPermission)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-
-        val recyclerView = permissionWindow.getRecyclerView()
-
-        verify(recyclerView).adapter
-        recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
-        recyclerView.shouldNotBeNull()
+        setupForRecyclerViewTestCase { _, recyclerView ->
+            recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
+        }
     }
 
     @Suppress("MaxLineLength")
     @Test(expected = NullPointerException::class) // due to a require real context
     fun `getRecyclerView should not be null`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        val customPermissionLayout: View = mock()
-        val permissionRecyclerView: RecyclerView = mock()
-
-        doReturn(permissionRecyclerView).whenever(customPermissionLayout)
-            .findViewById<RecyclerView>(R.id.listCustomPermission)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-
-        val recyclerView = permissionWindow.getRecyclerView()
-
-        recyclerView.shouldNotBeNull()
+        setupForRecyclerViewTestCase { _, recyclerView ->
+            recyclerView.shouldNotBeNull()
+        }
     }
 
     @Test
-    fun `prepareDataForAdapter should add the deniedPermissions to adapter`() {
+    fun `prepareDataForAdapter should add deniedPermissions to adapter`() {
         val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
         val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-
         doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
         permissionWindow.prepareDataForAdapter(permissionWithDescriptions)
-
         verify(customPermissionAdapter).addPermissionList(
             any(),
             any(),
@@ -211,117 +217,37 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `addPermissionClickListeners should register permissionSave textView`() {
-        val permissionAlertDialog: AlertDialog = mock()
-        val customPermissionLayout: View = mock()
-        val textPermissionSave: TextView = mock()
-        val textPermissionCloseWindow: TextView = mock()
-        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        permissionWindow.customPermissionLayout = mock()
-
-        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(textPermissionSave).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionSave)
-        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionCloseWindow)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
-        permissionWindow.addPermissionClickListeners()
-
-        verify(customPermissionLayout).findViewById<TextView>(R.id.permissionSave)
+        setupForPermissionLayoutTestCases { customPermissionLayout, _, _, _ ->
+            verify(customPermissionLayout).findViewById<TextView>(R.id.permissionSave)
+        }
     }
 
     @Test
     fun `addPermissionClickListeners should register textPermissionCloseWindow textView`() {
-        val permissionAlertDialog: AlertDialog = mock()
-        val customPermissionLayout: View = mock()
-        val textPermissionSave: TextView = mock()
-        val textPermissionCloseWindow: TextView = mock()
-        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        permissionWindow.customPermissionLayout = mock()
-
-        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(textPermissionSave).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionSave)
-        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionCloseWindow)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
-        permissionWindow.addPermissionClickListeners()
-
-        verify(customPermissionLayout).findViewById<TextView>(R.id.permissionCloseWindow)
+        setupForPermissionLayoutTestCases { customPermissionLayout, _, _, _ ->
+            verify(customPermissionLayout).findViewById<TextView>(R.id.permissionCloseWindow)
+        }
     }
 
     @Test
     fun `addPermissionClickListeners textPermissionSave textview should call setOnClickListener`() {
-        val permissionAlertDialog: AlertDialog = mock()
-        val customPermissionLayout: View = mock()
-        val textPermissionSave: TextView = mock()
-        val textPermissionCloseWindow: TextView = mock()
-        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        permissionWindow.customPermissionLayout = mock()
-
-        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(textPermissionSave).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionSave)
-        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionCloseWindow)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
-        permissionWindow.addPermissionClickListeners()
-
-        verify(textPermissionSave).setOnClickListener(any())
+        setupForPermissionLayoutTestCases { _, textPermissionSave, _, _ ->
+            verify(textPermissionSave).setOnClickListener(any())
+        }
     }
 
     @Test
     fun `addPermissionClickListeners textPermissionCloseWindow textview should call setOnClickListener`() {
-        val permissionAlertDialog: AlertDialog = mock()
-        val customPermissionLayout: View = mock()
-        val textPermissionSave: TextView = mock()
-        val textPermissionCloseWindow: TextView = mock()
-        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        permissionWindow.customPermissionLayout = mock()
-
-        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(textPermissionSave).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionSave)
-        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionCloseWindow)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
-        permissionWindow.addPermissionClickListeners()
-
-        verify(textPermissionCloseWindow).setOnClickListener(any())
+        setupForPermissionLayoutTestCases { _, _, textPermissionCloseWindow, _ ->
+            verify(textPermissionCloseWindow).setOnClickListener(any())
+        }
     }
 
     @Test
     fun `addPermissionClickListeners permissionAlertDialog should call setOnKeyListener`() {
-        val permissionAlertDialog: AlertDialog = mock()
-        val customPermissionLayout: View = mock()
-        val textPermissionSave: TextView = mock()
-        val textPermissionCloseWindow: TextView = mock()
-        val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
-        permissionWindow.customPermissionLayout = mock()
-
-        doReturn(permissionAlertDialog).whenever(permissionWindow).customPermissionAlertDialog
-        doReturn(textPermissionSave).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionSave)
-        doReturn(textPermissionCloseWindow).whenever(customPermissionLayout)
-            .findViewById<TextView>(R.id.permissionCloseWindow)
-        doReturn(customPermissionLayout).whenever(permissionWindow).customPermissionLayout
-        doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-
-        permissionWindow.addPermissionClickListeners()
-
-        verify(permissionAlertDialog).setOnKeyListener(any())
+        setupForPermissionLayoutTestCases { _, _, _, permissionAlertDialog ->
+            verify(permissionAlertDialog).setOnKeyListener(any())
+        }
     }
 
     @Test
@@ -351,9 +277,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `customPermissionLayout should be initialized when initCustomPermissionLayout is called`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-            permissionWindow.initCustomPermissionLayout()
+        setupUsingRealContext { permissionWindow ->
             val customPermissionLayout = spy(permissionWindow.customPermissionLayout)
             customPermissionLayout.isVisible.shouldBeTrue()
         }
@@ -361,10 +285,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `initAdapterAndDialog should initialize customPermissionAlertDialog`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-            permissionWindow.initCustomPermissionLayout()
-            val recyclerView = permissionWindow.getRecyclerView()
+        setupUsingRealContextWithRecyclerView { permissionWindow, recyclerView ->
             permissionWindow.initAdapterAndDialog(recyclerView)
             val customPermissionAlertDialog = spy(permissionWindow.customPermissionAdapter)
             customPermissionAlertDialog.permissionNames.shouldBeEmpty()
@@ -373,10 +294,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `initAdapterAndDialog should initialize customPermissionAdapter`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-            permissionWindow.initCustomPermissionLayout()
-            val recyclerView = permissionWindow.getRecyclerView()
+        setupUsingRealContextWithRecyclerView { permissionWindow, recyclerView ->
             permissionWindow.initAdapterAndDialog(recyclerView)
             val customPermissionAdapter = spy(permissionWindow.customPermissionAdapter)
             customPermissionAdapter.itemCount.shouldBe(0)
@@ -385,9 +303,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `customPermissionLayout calls context should not be null`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-            permissionWindow.initCustomPermissionLayout()
+        setupUsingRealContext { permissionWindow ->
             val customPermissionLayout = spy(permissionWindow.customPermissionLayout)
             customPermissionLayout.context.shouldNotBeNull()
         }
@@ -395,24 +311,14 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `should get recyclerView when getRecyclerView isCalled`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-
-            permissionWindow.initCustomPermissionLayout()
-            val recyclerView = spy(permissionWindow.getRecyclerView())
-
+        setupUsingRealContextWithRecyclerView { _, recyclerView ->
             recyclerView.shouldNotBeNull()
         }
     }
 
     @Test
     fun `recyclerView should be visible when getRecyclerView isCalled`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-
-            permissionWindow.initCustomPermissionLayout()
-            val recyclerView = spy(permissionWindow.getRecyclerView())
-
+        setupUsingRealContextWithRecyclerView { _, recyclerView ->
             recyclerView.isVisible.shouldBeTrue()
             recyclerView.itemDecorationCount.shouldBe(1)
         }
@@ -420,12 +326,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `recyclerView should have itemDecoration when getRecyclerView isCalled`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
-
-            permissionWindow.initCustomPermissionLayout()
-            val recyclerView = spy(permissionWindow.getRecyclerView())
-
+        setupUsingRealContextWithRecyclerView { _, recyclerView ->
             recyclerView.itemDecorationCount.shouldBe(1)
         }
     }
