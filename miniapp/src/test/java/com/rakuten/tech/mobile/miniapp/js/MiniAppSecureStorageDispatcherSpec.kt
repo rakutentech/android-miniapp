@@ -239,10 +239,11 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher.onFailed.invoke(mock())
         }
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
+        //miniAppSecureDatabaseHasNotInitialized
         miniAppSecureStorageDispatcher.onFailed.invoke(mock()).shouldBe(job)
         verify(bridgeExecutor).postError(
             TEST_CALLBACK_ID,
-            Gson().toJson(MiniAppSecureStorageError.secureStorageIOError)
+            "{}"
         )
     }
 
