@@ -184,7 +184,7 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.miniAppSecureStorage.scope = scope
         miniAppSecureStorageDispatcher.onSuccess = spy()
-        miniAppSecureStorageDispatcher.onFailed = mock()
+        miniAppSecureStorageDispatcher.onFailed = spy()
     }
 
     @Test
@@ -233,14 +233,13 @@ class MiniAppSecureStorageDispatcherSpec {
     }
 
     @Test
-    fun `bridgeExecutor should call postError if an exception is thrwon`() {
+    fun `bridgeExecutor should call postError if an exception is thrown`() {
         setupMiniAppSetItemsStorageDispatcher()
         val job = runBlockingTest {
             miniAppSecureStorageDispatcher.onFailed.invoke(mock())
         }
-
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        miniAppSecureStorageDispatcher.onSuccess.invoke().shouldBe(job)
+        miniAppSecureStorageDispatcher.onFailed.invoke(mock()).shouldBe(job)
         verify(bridgeExecutor).postError(
             TEST_CALLBACK_ID,
             Gson().toJson(MiniAppSecureStorageError.secureStorageIOError)
