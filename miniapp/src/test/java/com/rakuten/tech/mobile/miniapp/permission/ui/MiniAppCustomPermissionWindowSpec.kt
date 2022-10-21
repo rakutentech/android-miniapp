@@ -33,7 +33,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import java.io.File
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class MiniAppCustomPermissionWindowSpec {
@@ -66,7 +66,7 @@ class MiniAppCustomPermissionWindowSpec {
         permissionWindow = mock()
     }
 
-    private fun setupForRecyclerViewTestCase(onReady: (MiniAppCustomPermissionWindow, RecyclerView) -> Unit )  {
+    private fun setupForRecyclerViewTestCase(onReady: (MiniAppCustomPermissionWindow, RecyclerView) -> Unit) {
         val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         val customPermissionLayout: View = mock()
         val permissionRecyclerView: RecyclerView = mock()
@@ -80,7 +80,7 @@ class MiniAppCustomPermissionWindowSpec {
         onReady(permissionWindow, recyclerView)
     }
 
-    private fun setupForPermissionLayoutTestCases(onReady: (View, TextView, TextView, AlertDialog) -> Unit){
+    private fun setupForPermissionLayoutTestCases(onReady: (View, TextView, TextView, AlertDialog) -> Unit) {
         val permissionAlertDialog: AlertDialog = mock()
         val customPermissionLayout: View = mock()
         val textPermissionSave: TextView = mock()
@@ -98,8 +98,12 @@ class MiniAppCustomPermissionWindowSpec {
         doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
         permissionWindow.addPermissionClickListeners()
 
-        onReady(customPermissionLayout, textPermissionSave, textPermissionCloseWindow, permissionAlertDialog)
-
+        onReady(
+            customPermissionLayout,
+            textPermissionSave,
+            textPermissionCloseWindow,
+            permissionAlertDialog
+        )
     }
 
     private fun setupUsingRealContext(onReady: (MiniAppCustomPermissionWindow) -> Unit) {
@@ -118,7 +122,6 @@ class MiniAppCustomPermissionWindowSpec {
             onReady(permissionWindow, recyclerView)
         }
     }
-
 
     @Test
     fun `the coroutine context should be Dispatchers Main`() {
@@ -166,7 +169,6 @@ class MiniAppCustomPermissionWindowSpec {
             verify(recyclerView).adapter
             recyclerView.shouldBeInstanceOf(RecyclerView::class.java)
             recyclerView.shouldNotBeNull()
-
         }
     }
 

@@ -204,8 +204,6 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         createRequestExecutor().executeRequest(createApi().fetch())
     }
 
-
-
     private val standardErrorBody = { code: Int, message: String ->
         """
             {

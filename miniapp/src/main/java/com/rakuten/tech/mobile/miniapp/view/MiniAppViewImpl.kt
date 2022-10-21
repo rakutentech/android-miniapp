@@ -14,7 +14,7 @@ internal class MiniAppViewImpl(
     private val miniAppViewHandler: MiniAppViewHandler by lazy { initMiniAppViewHandler() }
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    @Suppress("LongMethod", "MaxLineLength")
+    @Suppress("LongMethod", "MaxLineLength", "MaximumLineLength")
     override fun load(
         queryParams: String,
         fromCache: Boolean,
