@@ -3,22 +3,27 @@ package com.rakuten.tech.mobile.miniapp.js
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.amshove.kluent.*
-import org.junit.*
+import org.amshove.kluent.shouldBe
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import kotlin.test.expect
 
 @ExperimentalCoroutinesApi
