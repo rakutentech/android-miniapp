@@ -148,16 +148,6 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     }
 
     @Test
-    fun `securestorageDispatcher should call onSize when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
-        val callbackJson = getCallbackObjToJson(getCallbackObject(ActionType.SECURE_STORAGE_SIZE))
-        miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onSize(
-            secureStorageCallbackObj.id
-        )
-    }
-
-    @Test
     fun `securestorageDispatcher should call onSetItems when secureStorageCallbackObj is valid`() {
         val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson = getSecureStorageCallBackToJson(secureStorageCallbackObj)

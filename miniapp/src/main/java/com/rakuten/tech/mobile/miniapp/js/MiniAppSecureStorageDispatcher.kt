@@ -29,9 +29,6 @@ internal class MiniAppSecureStorageDispatcher(
     internal lateinit var onSuccessGetItem: (String) -> Unit
 
     @VisibleForTesting
-    internal lateinit var onSuccessDBSize: (Long) -> Unit
-
-    @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
     fun setMiniAppComponents(miniAppId: String) {
@@ -141,17 +138,6 @@ internal class MiniAppSecureStorageDispatcher(
             bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
         }
         miniAppSecureStorage.delete(onSuccess, onFailed)
-    }
-
-    @Suppress("MagicNumber")
-    @Deprecated("No Longer Needed")
-    fun onSize(callbackId: String) = whenReady {
-        onSuccessDBSize = { fileSize: Long ->
-            val maxStorageSizeLimit =
-                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxStorageSizeLimitInBytes))
-            bridgeExecutor.postValue(callbackId, maxStorageSizeLimit)
-        }
-        miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
     }
 
     /**

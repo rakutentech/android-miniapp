@@ -3,15 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_AD_UNIT_ID
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
-import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.AdMobClassName
 import com.rakuten.tech.mobile.miniapp.ads.TestAdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -28,6 +20,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import kotlin.test.assertEquals
 
 @Suppress("TooGenericExceptionThrown")
@@ -36,7 +31,8 @@ open class BridgeCommon {
     internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
     fun createMiniAppMessageBridge(
-        isPermissionGranted: Boolean, hasEnvInfo: Boolean = false
+        isPermissionGranted: Boolean,
+        hasEnvInfo: Boolean = false
     ): MiniAppMessageBridge = object : MiniAppMessageBridge() {
 
         @Suppress("MaxLineLength")
@@ -45,19 +41,22 @@ open class BridgeCommon {
             replaceWith = ReplaceWith("getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit,onError: (message: String) -> Unit)")
         )
         override fun getUniqueId(
-            onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
 
         override fun getMessagingUniqueId(
-            onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
 
         override fun getMauid(
-            onSuccess: (mauId: String) -> Unit, onError: (message: String) -> Unit
+            onSuccess: (mauId: String) -> Unit,
+            onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
@@ -70,7 +69,8 @@ open class BridgeCommon {
         }
 
         override fun shareContent(
-            content: String, callback: (isSuccess: Boolean, message: String?) -> Unit
+            content: String,
+            callback: (isSuccess: Boolean, message: String?) -> Unit
         ) {
             callback.invoke(true, SUCCESS)
             callback.invoke(false, null)
@@ -101,19 +101,22 @@ open class BridgeCommon {
                 replaceWith = ReplaceWith("getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit,onError: (message: String) -> Unit)")
             )
             override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
             ) {
                 onSuccess(TEST_CALLBACK_VALUE)
             }
 
             override fun getMessagingUniqueId(
-                onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
             ) {
                 onSuccess(TEST_CALLBACK_VALUE)
             }
 
             override fun getMauid(
-                onSuccess: (mauId: String) -> Unit, onError: (message: String) -> Unit
+                onSuccess: (mauId: String) -> Unit,
+                onError: (message: String) -> Unit
             ) {
                 onSuccess(TEST_CALLBACK_VALUE)
             }
@@ -326,9 +329,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             miniAppBridge.postMessage(permissionJsonStr)
 
             verify(bridgeExecutor).postValue(
-                    permissionCallbackObj.id,
-                    MiniAppDevicePermissionResult.getValue(isPermissionGranted).type
-                )
+                permissionCallbackObj.id,
+                MiniAppDevicePermissionResult.getValue(isPermissionGranted).type
+            )
         }
     }
 
@@ -337,9 +340,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(permissionJsonStr)
 
         verify(bridgeExecutor).postError(
-                permissionCallbackObj.id,
-                MiniAppDevicePermissionResult.getValue(false).type
-            )
+            permissionCallbackObj.id,
+            MiniAppDevicePermissionResult.getValue(false).type
+        )
     }
 
     /** end region */
