@@ -35,83 +35,29 @@ open class BridgeCommon {
     internal val webViewListener: WebViewListener = mock()
     internal val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
 
-    protected fun createMiniAppMessageBridge(
-        isPermissionGranted: Boolean,
-        hasEnvInfo: Boolean = false
-    ): MiniAppMessageBridge =
-        object : MiniAppMessageBridge() {
+    fun createMiniAppMessageBridge(
+        isPermissionGranted: Boolean, hasEnvInfo: Boolean = false
+    ): MiniAppMessageBridge = object : MiniAppMessageBridge() {
 
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
-
-            override fun getMessagingUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
-
-            override fun getMauid(
-                onSuccess: (mauId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
-
-            override fun requestDevicePermission(
-                miniAppPermissionType: MiniAppDevicePermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
-            }
-
-            override fun shareContent(
-                content: String,
-                callback: (isSuccess: Boolean, message: String?) -> Unit
-            ) {
-                callback.invoke(true, SUCCESS)
-                callback.invoke(false, null)
-                callback.invoke(false, TEST_ERROR_MSG)
-            }
-
-            override fun getHostEnvironmentInfo(
-                onSuccess: (info: HostEnvironmentInfo) -> Unit,
-                onError: (infoError: HostEnvironmentInfoError) -> Unit
-            ) {
-                if (hasEnvInfo) {
-                    ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-                        onSuccess.invoke(HostEnvironmentInfo(activity, "en"))
-                    }
-                } else {
-                    val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
-                    onError.invoke(HostEnvironmentInfoError(infoErrMessage))
-                }
-            }
-        }
-
-    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {
-
+        @Suppress("MaxLineLength")
+        @Deprecated(
+            "This function has been deprecated.",
+            replaceWith = ReplaceWith("getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit,onError: (message: String) -> Unit)")
+        )
         override fun getUniqueId(
-            onSuccess: (uniqueId: String) -> Unit,
-            onError: (message: String) -> Unit
+            onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
 
         override fun getMessagingUniqueId(
-            onSuccess: (uniqueId: String) -> Unit,
-            onError: (message: String) -> Unit
+            onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
 
         override fun getMauid(
-            onSuccess: (mauId: String) -> Unit,
-            onError: (message: String) -> Unit
+            onSuccess: (mauId: String) -> Unit, onError: (message: String) -> Unit
         ) {
             onSuccess(TEST_CALLBACK_VALUE)
         }
@@ -120,9 +66,65 @@ open class BridgeCommon {
             miniAppPermissionType: MiniAppDevicePermissionType,
             callback: (isGranted: Boolean) -> Unit
         ) {
-            onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
+            onRequestDevicePermissionsResult(TEST_CALLBACK_ID, isPermissionGranted)
+        }
+
+        override fun shareContent(
+            content: String, callback: (isSuccess: Boolean, message: String?) -> Unit
+        ) {
+            callback.invoke(true, SUCCESS)
+            callback.invoke(false, null)
+            callback.invoke(false, TEST_ERROR_MSG)
+        }
+
+        override fun getHostEnvironmentInfo(
+            onSuccess: (info: HostEnvironmentInfo) -> Unit,
+            onError: (infoError: HostEnvironmentInfoError) -> Unit
+        ) {
+            if (hasEnvInfo) {
+                ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+                    onSuccess.invoke(HostEnvironmentInfo(activity, "en"))
+                }
+            } else {
+                val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
+                onError.invoke(HostEnvironmentInfoError(infoErrMessage))
+            }
         }
     }
+
+    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
+        object : MiniAppMessageBridge() {
+
+            @Suppress("MaxLineLength")
+            @Deprecated(
+                "This function has been deprecated.",
+                replaceWith = ReplaceWith("getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit,onError: (message: String) -> Unit)")
+            )
+            override fun getUniqueId(
+                onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
+
+            override fun getMessagingUniqueId(
+                onSuccess: (uniqueId: String) -> Unit, onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
+
+            override fun getMauid(
+                onSuccess: (mauId: String) -> Unit, onError: (message: String) -> Unit
+            ) {
+                onSuccess(TEST_CALLBACK_VALUE)
+            }
+
+            override fun requestDevicePermission(
+                miniAppPermissionType: MiniAppDevicePermissionType,
+                callback: (isGranted: Boolean) -> Unit
+            ) {
+                onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
+            }
+        }
 
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =
         object : WebViewListener {
@@ -148,33 +150,29 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     )
 
     private val uniqueIdCallbackObj = CallbackObj(
-        action = ActionType.GET_UNIQUE_ID.action,
-        param = null,
-        id = TEST_CALLBACK_ID)
+        action = ActionType.GET_UNIQUE_ID.action, param = null, id = TEST_CALLBACK_ID
+    )
     private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
 
     private val messagingUniqueIdCallbackObj = CallbackObj(
-        action = ActionType.GET_MESSAGING_UNIQUE_ID.action,
-        param = null,
-        id = TEST_CALLBACK_ID)
+        action = ActionType.GET_MESSAGING_UNIQUE_ID.action, param = null, id = TEST_CALLBACK_ID
+    )
     private val messagingUniqueIdJsonStr = Gson().toJson(messagingUniqueIdCallbackObj)
 
     private val mauIdCallbackObj = CallbackObj(
-        action = ActionType.GET_MAUID.action,
-        param = null,
-        id = TEST_CALLBACK_ID)
+        action = ActionType.GET_MAUID.action, param = null, id = TEST_CALLBACK_ID
+    )
     private val mauIdJsonStr = Gson().toJson(mauIdCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
         param = Gson().toJson(DevicePermission(MiniAppDevicePermissionType.LOCATION.type)),
-        id = TEST_CALLBACK_ID)
+        id = TEST_CALLBACK_ID
+    )
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
     private val hostEnvInfoCallbackObj = CallbackObj(
-        action = ActionType.GET_HOST_ENVIRONMENT_INFO.action,
-        param = null,
-        id = TEST_CALLBACK_ID
+        action = ActionType.GET_HOST_ENVIRONMENT_INFO.action, param = null, id = TEST_CALLBACK_ID
     )
 
     @Before
@@ -204,7 +202,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `postError should be called when cannot get unique id`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val errMsg = "Cannot get unique id: null"
-            val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
+            val webViewListener =
+                createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.init(
@@ -326,8 +325,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
             miniAppBridge.postMessage(permissionJsonStr)
 
-            verify(bridgeExecutor)
-                .postValue(
+            verify(bridgeExecutor).postValue(
                     permissionCallbackObj.id,
                     MiniAppDevicePermissionResult.getValue(isPermissionGranted).type
                 )
@@ -338,9 +336,12 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `postError should be called when device permission is denied`() {
         miniAppBridge.postMessage(permissionJsonStr)
 
-        verify(bridgeExecutor)
-            .postError(permissionCallbackObj.id, MiniAppDevicePermissionResult.getValue(false).type)
+        verify(bridgeExecutor).postError(
+                permissionCallbackObj.id,
+                MiniAppDevicePermissionResult.getValue(false).type
+            )
     }
+
     /** end region */
 
     @Test
@@ -353,7 +354,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     /** region: host environment info */
     @Test
     fun `postError should be called when error callback invoked to get host environment info`() {
-        val errMsg = "{\"type\":\"{\\\"type\\\":\\\"Cannot get host environment info: error_message\\\"}\"}"
+        val errMsg =
+            "{\"type\":\"{\\\"type\\\":\\\"Cannot get host environment info: error_message\\\"}\"}"
         miniAppBridge.onGetHostEnvironmentInfo(hostEnvInfoCallbackObj.id)
         verify(bridgeExecutor).postError(hostEnvInfoCallbackObj.id, errMsg)
     }
@@ -362,7 +364,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `postValue should be called when success callback invoked to get host environment info`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createMiniAppMessageBridge(false, true))
-            val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
+            val webViewListener =
+                createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.init(
                 activity = activity,
@@ -378,6 +381,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             verify(bridgeExecutor).postValue(hostEnvInfoCallbackObj.id, Gson().toJson(info))
         }
     }
+
     /** end region */
 
     @Test
@@ -385,8 +389,12 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("no implementation by the Host App.", ErrorBridgeMessage.NO_IMPL)
         assertEquals("No support from hostapp", ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP)
         assertEquals("Cannot get unique id:", ErrorBridgeMessage.ERR_UNIQUE_ID)
-        assertEquals("Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION)
-        assertEquals("Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION)
+        assertEquals(
+            "Cannot request device permission:", ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION
+        )
+        assertEquals(
+            "Cannot request custom permissions:", ErrorBridgeMessage.ERR_REQ_CUSTOM_PERMISSION
+        )
         assertEquals(
             "The `MiniAppMessageBridge.requestDevicePermission` ${ErrorBridgeMessage.NO_IMPL}",
             ErrorBridgeMessage.NO_IMPLEMENT_DEVICE_PERMISSION
@@ -426,13 +434,11 @@ class ShareContentBridgeSpec : BridgeCommon() {
     private val shareContentJsonStr = createShareCallbackJsonStr("This is content")
 
     private fun createShareCallbackJsonStr(content: String) = Gson().toJson(
-            CallbackObj(
-                action = ActionType.SHARE_INFO.action,
-                param = ShareInfoCallbackObj.ShareInfoParam(
-                    ShareInfo(content)
-                ),
-                id = TEST_CALLBACK_ID
-            )
+        CallbackObj(
+            action = ActionType.SHARE_INFO.action, param = ShareInfoCallbackObj.ShareInfoParam(
+                ShareInfo(content)
+            ), id = TEST_CALLBACK_ID
+        )
     )
 
     @Test
@@ -471,8 +477,10 @@ class ShareContentBridgeSpec : BridgeCommon() {
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
-            verify(bridgeExecutor, times(0))
-                .dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
+            verify(
+                bridgeExecutor,
+                times(0)
+            ).dispatchEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE.value, "")
         }
     }
 
@@ -564,9 +572,7 @@ class AdBridgeSpec : BridgeCommon() {
 
     private fun createAdJsonStr(action: String, adType: Int, adUnitId: String) = Gson().toJson(
         CallbackObj(
-            action = action,
-            param = AdObj(adType, adUnitId),
-            id = TEST_CALLBACK_ID
+            action = action, param = AdObj(adType, adUnitId), id = TEST_CALLBACK_ID
         )
     )
 
@@ -591,14 +597,17 @@ class AdBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postError should be called when AdMob is not provided`() {
-        var errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
-        var jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        var errMsg =
+            "${ErrorBridgeMessage.ERR_LOAD_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
+        var jsonStr =
+            createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         miniAppBridge.postMessage(jsonStr)
         jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
         miniAppBridge.postMessage(jsonStr)
         verify(bridgeExecutor, times(2)).postError(TEST_CALLBACK_ID, errMsg)
 
-        jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        jsonStr =
+            createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} ${ErrorBridgeMessage.ERR_NO_SUPPORT_HOSTAPP}"
         miniAppBridge.postMessage(jsonStr)
         jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
@@ -609,7 +618,8 @@ class AdBridgeSpec : BridgeCommon() {
     @Test
     fun `postError should be called when cannot load interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_LOAD_AD} null"
-        var jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        var jsonStr =
+            createAdJsonStr(ActionType.LOAD_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
         jsonStr = createAdJsonStr(ActionType.LOAD_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
@@ -620,7 +630,8 @@ class AdBridgeSpec : BridgeCommon() {
     @Test
     fun `postError should be called when cannot show interstitial`() {
         val errMsg = "${ErrorBridgeMessage.ERR_SHOW_AD} null"
-        var jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
+        var jsonStr =
+            createAdJsonStr(ActionType.SHOW_AD.action, AdType.INTERSTITIAL.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
         jsonStr = createAdJsonStr(ActionType.SHOW_AD.action, AdType.REWARDED.value, TEST_AD_UNIT_ID)
         miniAppBridgeWithAdMob.postMessage(jsonStr)
@@ -664,7 +675,9 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock())
+            miniAppBridge.init(
+                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock()
+            )
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))
@@ -677,8 +690,10 @@ class ScreenBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postValue should not be called when there is invalid action request`() {
-        miniAppBridge.postMessage(Gson().toJson(
-            CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID))
+        miniAppBridge.postMessage(
+            Gson().toJson(
+                CallbackObj(ActionType.SET_SCREEN_ORIENTATION.action, "", TEST_CALLBACK_ID)
+            )
         )
 
         verify(bridgeExecutor, times(0)).postValue(TEST_CALLBACK_ID, SUCCESS)
@@ -697,7 +712,9 @@ class ScreenBridgeSpec : BridgeCommon() {
     fun `miniAppShouldClose value should be assigned properly`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-            miniAppBridge.init(activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock())
+            miniAppBridge.init(
+                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock()
+            )
             val alertInfo = MiniAppCloseAlertInfo(true, "title", "desc")
             val closeAlertJsonStr = Gson().toJson(
                 CallbackObj(

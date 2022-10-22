@@ -29,25 +29,25 @@ internal data class SecureStorageCallbackObj(
 
 @Keep
 internal data class SecureStorageItems(
-    val secureStorageItems: Map<String, String>
+    val secureStorageItems: Map<String, String>?
 )
 
 @Keep
 internal data class DeleteItemsCallbackObj(
     var action: String,
-    val param: SecureStorageKeyList,
+    val param: SecureStorageKeyList?,
     var id: String
 )
 
 @Keep
 internal data class SecureStorageKeyList(
-    val secureStorageKeyList: Set<String>
+    val secureStorageKeyList: Set<String>?
 )
 
 @Keep
 internal data class GetItemCallbackObj(
     var action: String,
-    val param: SecureStorageKey,
+    val param: SecureStorageKey?,
     var id: String
 )
 
@@ -158,7 +158,7 @@ internal data class SendContactIdCallbackObj(val param: MessageParamId) {
 
 // close alert region
 @Keep
-internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam) {
+internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam?) {
 
     @Keep
     internal data class CloseAlertInfoParam(val closeAlertInfo: MiniAppCloseAlertInfo)

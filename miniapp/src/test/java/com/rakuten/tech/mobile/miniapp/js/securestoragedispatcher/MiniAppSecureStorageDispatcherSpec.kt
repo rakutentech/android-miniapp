@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.js
+package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +65,7 @@ class MiniAppSecureStorageDispatcherSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppSecureStorageDispatcher =
                 MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInKB)
-            miniAppSecureStorageDispatcher.setBridgeExecutor(bridgeExecutor)
+            miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
             miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         }
@@ -125,7 +126,7 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher.onSuccess.invoke()
         }
 
-        miniAppSecureStorageDispatcher.setBridgeExecutor(bridgeExecutor)
+        miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
 
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
         // penyebab 2
@@ -215,7 +216,7 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).getItem(
-            getItemCallbackObj.param.secureStorageKey, {}, {}
+            getItemCallbackObj.param!!.secureStorageKey, {}, {}
         )
     }
 
@@ -244,7 +245,6 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher.onFailed.invoke(mock())
         }
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        //miniAppSecureDatabaseHasNotInitialized
         miniAppSecureStorageDispatcher.onFailed.invoke(mock()).shouldBe(job)
         verify(bridgeExecutor).postError(
             TEST_CALLBACK_ID,
@@ -262,7 +262,7 @@ class MiniAppSecureStorageDispatcherSpec {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, deleteItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).deleteItems(
-            deleteItemsCallbackObj.param.secureStorageKeyList, {}, {})
+            deleteItemsCallbackObj.param!!.secureStorageKeyList!!, {}, {})
     }
 
     @Test
@@ -317,6 +317,16 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `clearSecureStorage should be called without the mini app id`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.clearSecureStorages()
+        verify(
+            miniAppSecureStorageDispatcher.miniAppSecureStorage,
+            times(1)
+        ).closeDatabase()
+    }
+
+    @Test
+    fun `cleanUp should call miniAppSecureStorage closeDatabase`() {
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.cleanUp()
         verify(
             miniAppSecureStorageDispatcher.miniAppSecureStorage,
             times(1)

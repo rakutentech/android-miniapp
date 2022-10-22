@@ -25,8 +25,10 @@ internal class MiniAppViewImpl(
                 when (miniAppParameters) {
                     is MiniAppParameters.DefaultParams -> {
                         (miniAppParameters as MiniAppParameters.DefaultParams).fromCache = fromCache
-                        if (queryParams != "") (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
-                            queryParams
+                        if (queryParams != "") {
+                            (miniAppParameters as MiniAppParameters.DefaultParams).config.queryParams =
+                                queryParams
+                        }
                         onComplete(
                             miniAppViewHandler.createMiniAppView(
                                 (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
