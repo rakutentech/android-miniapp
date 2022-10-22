@@ -5,29 +5,38 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import androidx.annotation.NonNull
+import androidx.annotation.VisibleForTesting
 import androidx.sqlite.db.SupportSQLiteDatabase
 import net.sqlcipher.database.SQLiteFullException
 import java.io.IOException
 import java.sql.SQLException
 import java.util.stream.Collectors
 
-private const val DB_BATCH_SIZE = 100
+@VisibleForTesting
+internal const val DB_BATCH_SIZE = 100
 private const val DB_HEADER_SIZE = 100
 private const val PAGE_SIZE_MULTIPLIER = 3
-private const val TABLE_NAME = "MiniAppCache"
-private const val FIRST_COLUMN_NAME = "first"
-private const val SECOND_COLUMN_NAME = "second"
+@VisibleForTesting
+internal const val TABLE_NAME = "MiniAppCache"
+@VisibleForTesting
+internal const val FIRST_COLUMN_NAME = "first"
+@VisibleForTesting
+internal const val SECOND_COLUMN_NAME = "second"
 
-private const val AUTO_VACUUM = "PRAGMA auto_vacuum = FULL"
+@VisibleForTesting
+internal const val AUTO_VACUUM = "PRAGMA auto_vacuum = FULL"
 private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
-private const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
+@VisibleForTesting
+internal const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
 private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
-private const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
+@VisibleForTesting
+internal const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
         "$FIRST_COLUMN_NAME text primary key, $SECOND_COLUMN_NAME text)"
 
 internal const val DATABASE_IO_ERROR = "Database I/O operation failed."
 internal const val DATABASE_UNAVAILABLE_ERROR = "Database does not exist."
 internal const val DATABASE_BUSY_ERROR = "Database is busy doing another operation."
+@VisibleForTesting
 internal const val DATABASE_SPACE_LIMIT_REACHED_ERROR =
     "Can't insert new items. Database reached to max space limit."
 
@@ -42,15 +51,18 @@ internal class MiniAppSecureDatabase(
     @NonNull private var maxDBSizeLimitInBytes: Long
 ) : MiniAppSecureDatabaseImpl(context, dbName, dbVersion) {
 
-    private lateinit var database: SupportSQLiteDatabase
+    @VisibleForTesting
+    internal lateinit var database: SupportSQLiteDatabase
 
-    private var miniAppDatabaseStatus = MiniAppDatabaseStatus.DEFAULT
+    @VisibleForTesting
+    internal var miniAppDatabaseStatus = MiniAppDatabaseStatus.DEFAULT
 
     private fun getDatabasePageSize(): Long = database.pageSize
 
+    @VisibleForTesting
     @Throws(IllegalStateException::class)
     @Suppress("RethrowCaughtException")
-    private fun finishAnyPendingDBTransaction() {
+    internal fun finishAnyPendingDBTransaction() {
         try {
             if (database.inTransaction()) {
                 database.endTransaction()
@@ -60,9 +72,10 @@ internal class MiniAppSecureDatabase(
         }
     }
 
+    @VisibleForTesting
     @Throws(IllegalStateException::class)
     @Suppress("SwallowedException")
-    private fun finalize() {
+    internal fun finalize() {
         try {
             if (database.inTransaction()) {
                 database.endTransaction()
@@ -85,9 +98,10 @@ internal class MiniAppSecureDatabase(
         return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
     }
 
+    @VisibleForTesting
     @Throws(SQLException::class)
     @Suppress("RethrowCaughtException")
-    private fun insert(contentValues: ContentValues): Long {
+    internal fun insert(contentValues: ContentValues): Long {
         var result: Long
         try {
             result = database.insert(
@@ -101,9 +115,10 @@ internal class MiniAppSecureDatabase(
         return result
     }
 
+    @VisibleForTesting
     @Throws(SQLException::class)
     @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
-    private fun delete(item: String): Int {
+    internal fun delete(item: String): Int {
         var totalDeleted: Int
         try {
             totalDeleted = database.delete(TABLE_NAME, "$FIRST_COLUMN_NAME='$item'", null)
@@ -116,9 +131,10 @@ internal class MiniAppSecureDatabase(
     @Throws(SQLException::class)
     @Suppress("SwallowedException")
     override fun onDatabaseConfiguration(db: SupportSQLiteDatabase) {
-        try {
+        miniAppDatabaseStatus = try {
             db.maximumSize = maxDBSizeLimitInBytes
             db.execSQL(AUTO_VACUUM)
+            MiniAppDatabaseStatus.DEFAULT
         } catch (e: SQLException) {
             MiniAppDatabaseStatus.UNAVAILABLE
         }
@@ -126,6 +142,7 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class)
     @Suppress("SwallowedException")
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun onCreateDatabase(db: SupportSQLiteDatabase) {
         miniAppDatabaseStatus = try {
             db.execSQL(CREATE_TABLE_QUERY)
@@ -146,23 +163,25 @@ internal class MiniAppSecureDatabase(
 
     @Throws(SQLException::class)
     @Suppress("SwallowedException")
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     override fun onUpgradeDatabase(db: SupportSQLiteDatabase) {
-        try {
+        miniAppDatabaseStatus = try {
             db.execSQL(DROP_TABLE_QUERY)
             onCreate(db)
+            MiniAppDatabaseStatus.INITIATED
         } catch (e: SQLException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+            MiniAppDatabaseStatus.UNAVAILABLE
         }
     }
 
     @Throws(RuntimeException::class)
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
     override fun onDatabaseCorrupted(db: SupportSQLiteDatabase) {
-        try {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.CORRUPTED
+        miniAppDatabaseStatus = try {
             deleteWholeDatabase(dbName)
+            MiniAppDatabaseStatus.CORRUPTED
         } catch (e: RuntimeException) {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
+            MiniAppDatabaseStatus.UNAVAILABLE
         }
     }
 
@@ -219,10 +238,13 @@ internal class MiniAppSecureDatabase(
             finishAnyPendingDBTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
         } finally {
-            miniAppDatabaseStatus = MiniAppDatabaseStatus.CLOSED
+            if (miniAppDatabaseStatus != MiniAppDatabaseStatus.FAILED) {
+                miniAppDatabaseStatus = MiniAppDatabaseStatus.CLOSED
+            }
         }
     }
 
+    @Throws(RuntimeException::class)
     @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     override fun deleteWholeDatabase(dbName: String) {
         try {
@@ -257,6 +279,7 @@ internal class MiniAppSecureDatabase(
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
                     if (isDatabaseFull()) {
+                        miniAppDatabaseStatus = MiniAppDatabaseStatus.FULL
                         throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
                     }
                     database.beginTransaction()
