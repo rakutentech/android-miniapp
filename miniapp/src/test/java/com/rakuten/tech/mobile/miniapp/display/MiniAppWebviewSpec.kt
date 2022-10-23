@@ -36,6 +36,7 @@ import org.mockito.kotlin.mock
 import java.io.ByteArrayInputStream
 import kotlin.test.assertTrue
 
+@RunWith(AndroidJUnit4::class)
 open class BaseWebViewSpec {
     lateinit var context: Context
     lateinit var basePath: String
@@ -88,6 +89,27 @@ open class BaseWebViewSpec {
         secureStorageDispatcher = mock(),
         enableH5Ads = false
     )
+
+    @Test
+    fun `runSuccessfullCallback should call post`() {
+        miniAppWebView = spy(createMiniAppWebView())
+        miniAppWebView.runSuccessCallback(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+        verify(miniAppWebView).post(Mockito.any())
+    }
+
+    @Test
+    fun `runErrorCallback should call post`() {
+        miniAppWebView = spy(createMiniAppWebView())
+        miniAppWebView.runErrorCallback(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+        verify(miniAppWebView).post(Mockito.any())
+    }
+
+    @Test
+    fun `runNativeEventCallback should call post`() {
+        miniAppWebView = spy(createMiniAppWebView())
+        miniAppWebView.runNativeEventCallback(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
+        verify(miniAppWebView).post(Mockito.any())
+    }
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -198,22 +220,24 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
      */
     @Test
     fun `should invoke MiniAppH5AdsProvider when isH5AdsEnabled is true`() {
-        `when`(MiniAppWebView(
-            context,
-            basePath = basePath,
-            miniAppInfo = TEST_MA,
-            miniAppMessageBridge = miniAppMessageBridge,
-            miniAppNavigator = miniAppNavigator,
-            miniAppFileChooser = miniAppFileChooser,
-            hostAppUserAgentInfo = "",
-            miniAppWebChromeClient = webChromeClient,
-            miniAppCustomPermissionCache = mock(),
-            downloadedManifestCache = mock(),
-            queryParams = TEST_URL_PARAMS,
-            ratDispatcher = mock(),
-            secureStorageDispatcher = mock(),
-            enableH5Ads = true
-        )).itThrows(AssertionError())
+        `when`(
+            MiniAppWebView(
+                context,
+                basePath = basePath,
+                miniAppInfo = TEST_MA,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
+                hostAppUserAgentInfo = "",
+                miniAppWebChromeClient = webChromeClient,
+                miniAppCustomPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                queryParams = TEST_URL_PARAMS,
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock(),
+                enableH5Ads = true
+            )
+        ).itThrows(AssertionError())
     }
 
     @Test

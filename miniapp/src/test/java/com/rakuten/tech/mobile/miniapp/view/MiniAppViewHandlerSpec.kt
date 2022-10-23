@@ -24,13 +24,13 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-@Suppress("LargeClass", "MaximumLineLength", "DeferredResultUnused")
+@Suppress("LargeClass", "DeferredResultUnused", "MaxLineLength")
 open class MiniAppViewHandlerSpec {
     private lateinit var miniAppViewHandler: MiniAppViewHandler
     private val context: Context = ApplicationProvider.getApplicationContext()
     private var miniAppSdkConfig: MiniAppSdkConfig = mock()
     private var apiClient: ApiClient = mock()
-    val dummyManifest: MiniAppManifest = MiniAppManifest(
+    private val dummyManifest: MiniAppManifest = MiniAppManifest(
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
         listOf(),
         TEST_ATP_LIST,
@@ -43,9 +43,10 @@ open class MiniAppViewHandlerSpec {
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED))
     )
     private val file: File = mock()
-    private val languageCode = Locale.forLanguageTag(context.getString(R.string.miniapp_sdk_android_locale)).language
-    val miniAppConfig: MiniAppConfig = mock()
-    val miniAppMessageBridge: MiniAppMessageBridge = mock()
+    private val languageCode =
+        Locale.forLanguageTag(context.getString(R.string.miniapp_sdk_android_locale)).language
+    private val miniAppConfig: MiniAppConfig = mock()
+    private val miniAppMessageBridge: MiniAppMessageBridge = mock()
 
     @Before
     fun setup() {
@@ -70,13 +71,11 @@ open class MiniAppViewHandlerSpec {
         miniAppViewHandler.miniAppDownloader = mock()
         miniAppViewHandler.displayer = mock()
 
-        When calling miniAppViewHandler
-            .downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
-        When calling miniAppViewHandler
-            .downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
+        When calling miniAppViewHandler.downloadedManifestCache
+            .readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling miniAppViewHandler.downloadedManifestCache.getManifestFile(TEST_MA_ID) itReturns file
         When calling miniAppViewHandler.miniAppManifestVerifier.verify(
-            TEST_MA_ID,
-            file
+            TEST_MA_ID, file
         ) itReturns true
     }
 
@@ -85,12 +84,10 @@ open class MiniAppViewHandlerSpec {
     fun `verifyManifest will throw exception when required permissions are denied`() =
         runBlockingTest {
             When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
+                TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
             ) itReturns dummyManifest
-            When calling miniAppViewHandler
-                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler.miniAppCustomPermissionCache
+                .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
                 deniedPermission
             ) itReturns true
@@ -102,12 +99,10 @@ open class MiniAppViewHandlerSpec {
     fun `verifyManifest will throw exception when required permissions are denied when fromCache true`() =
         runBlockingTest {
             When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
+                TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
             ) itReturns dummyManifest
-            When calling miniAppViewHandler
-                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler.miniAppCustomPermissionCache
+                .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
                 deniedPermission
             ) itReturns true
@@ -119,8 +114,7 @@ open class MiniAppViewHandlerSpec {
     fun `verifyManifest will execute successfully when required permissions are accepted`() =
         runBlockingTest {
             val allowedPermission = MiniAppCustomPermission(
-                TEST_MA_ID,
-                listOf(
+                TEST_MA_ID, listOf(
                     Pair(
                         MiniAppCustomPermissionType.USER_NAME,
                         MiniAppCustomPermissionResult.ALLOWED
@@ -132,16 +126,13 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.downloadedManifestCache.readDownloadedManifest(
                 TEST_MA_ID
             ) itReturns manifest
-            When calling miniAppViewHandler
-                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns allowedPermission
+            When calling miniAppViewHandler.miniAppCustomPermissionCache
+                .readPermissions(TEST_MA_ID) itReturns allowedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
                 allowedPermission
-            ) itReturns
-                    allowedPermission.pairValues
+            ) itReturns allowedPermission.pairValues
             When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
+                TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
             ) itReturns dummyManifest
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
@@ -162,31 +153,24 @@ open class MiniAppViewHandlerSpec {
             val manifestToStore = CachedManifest(differentVersionId, dummyManifest)
             val manifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
             When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                differentVersionId,
-                languageCode
+                TEST_MA_ID, differentVersionId, languageCode
             ) itReturns dummyManifest
-            When calling miniAppViewHandler
-                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler.miniAppCustomPermissionCache
+                .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
                 deniedPermission
-            ) itReturns
-                    deniedPermission.pairValues
+            ) itReturns deniedPermission.pairValues
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, differentVersionId)
 
             verify(miniAppViewHandler).checkToDownloadManifest(
-                TEST_MA_ID,
-                differentVersionId,
-                manifest
+                TEST_MA_ID, differentVersionId, manifest
             )
             verify(miniAppViewHandler.downloadedManifestCache).storeDownloadedManifest(
-                TEST_MA_ID,
-                manifestToStore
+                TEST_MA_ID, manifestToStore
             )
             verify(miniAppViewHandler.miniAppCustomPermissionCache).removePermissionsNotMatching(
-                TEST_MA_ID,
-                deniedPermission.pairValues
+                TEST_MA_ID, deniedPermission.pairValues
             )
         }
 
@@ -194,55 +178,43 @@ open class MiniAppViewHandlerSpec {
     fun `verifyManifest will download api manifest when hash has not been verified`() =
         runBlockingTest {
             When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                "en"
+                TEST_MA_ID, TEST_MA_VERSION_ID, "en"
             ) itReturns dummyManifest
-            When calling miniAppViewHandler
-                .miniAppCustomPermissionCache.readPermissions(TEST_MA_ID) itReturns deniedPermission
+            When calling miniAppViewHandler.miniAppCustomPermissionCache
+                .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.miniAppManifestVerifier.verify(
-                TEST_MA_ID,
-                file
+                TEST_MA_ID, file
             ) itReturns false
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
             verify(miniAppViewHandler, times(2)).checkToDownloadManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                cachedManifest
+                TEST_MA_ID, TEST_MA_VERSION_ID, cachedManifest
             )
         }
 
     @Test
-    fun `checkToDownloadManifest will store manifest and hash properly`() =
-        runBlockingTest {
-            val manifest = MiniAppManifest(
-                listOf(
-                    Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
-                    Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")
-                ), listOf(),
-                TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
-            )
-            val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, manifest)
-            val manifestToStore = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
-            When calling miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
-            ) itReturns dummyManifest
-            miniAppViewHandler.checkToDownloadManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                cachedManifest
-            )
+    fun `checkToDownloadManifest will store manifest and hash properly`() = runBlockingTest {
+        val manifest = MiniAppManifest(
+            listOf(
+                Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")
+            ), listOf(), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
+        )
+        val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, manifest)
+        val manifestToStore = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
+        When calling miniAppViewHandler.getMiniAppManifest(
+            TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
+        ) itReturns dummyManifest
+        miniAppViewHandler.checkToDownloadManifest(
+            TEST_MA_ID, TEST_MA_VERSION_ID, cachedManifest
+        )
 
-            verify(miniAppViewHandler.downloadedManifestCache).storeDownloadedManifest(
-                TEST_MA_ID,
-                manifestToStore
-            )
-            verify(miniAppViewHandler.miniAppManifestVerifier).storeHashAsync(TEST_MA_ID, file)
-        }
+        verify(miniAppViewHandler.downloadedManifestCache).storeDownloadedManifest(
+            TEST_MA_ID, manifestToStore
+        )
+        verify(miniAppViewHandler.miniAppManifestVerifier).storeHashAsync(TEST_MA_ID, file)
+    }
 
     @Test
     fun `isManifestEqual will return true when both api and downloaded manifest are equal`() {
@@ -255,9 +227,7 @@ open class MiniAppViewHandlerSpec {
             listOf(
                 Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
                 Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")
-            ),
-            listOf(),
-            TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
+            ), listOf(), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         miniAppViewHandler.isManifestEqual(dummyApiManifest, dummyManifest) shouldBeEqualTo false
     }
@@ -270,33 +240,29 @@ open class MiniAppViewHandlerSpec {
     /** end region */
 
     @Test
-    fun `api manifest should be fetched from MiniAppDownloader`() =
-        runBlockingTest {
-            miniAppViewHandler.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, languageCode)
-            verify(miniAppViewHandler.miniAppDownloader).fetchMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
-            )
-        }
+    fun `api manifest should be fetched from MiniAppDownloader`() = runBlockingTest {
+        miniAppViewHandler.getMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, languageCode)
+        verify(miniAppViewHandler.miniAppDownloader).fetchMiniAppManifest(
+            TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
+        )
+    }
 
     @Test
     fun `api manifest should not be fetched from MiniAppDownloader when different languageCode`() =
         runBlockingTest {
             miniAppViewHandler.getMiniAppManifest(
-                TEST_MA_ID,
-                TEST_MA_VERSION_ID,
-                languageCode
+                TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
             )
-            verify(miniAppViewHandler.miniAppDownloader, times(0))
-                .fetchMiniAppManifest(TEST_MA_ID, TEST_MA_VERSION_ID, "")
+            verify(miniAppViewHandler.miniAppDownloader, times(0)).fetchMiniAppManifest(
+                TEST_MA_ID, TEST_MA_VERSION_ID, ""
+            )
         }
 
     /** region: RealMiniApp.create */
     private fun onGettingManifestWhileCreate() = runBlockingTest {
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, dummyManifest)
-        When calling miniAppViewHandler
-            .downloadedManifestCache.readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
+        When calling miniAppViewHandler.downloadedManifestCache
+            .readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
         When calling miniAppViewHandler.getMiniAppManifest(
             TEST_MA_ID, TEST_MA_VERSION_ID, languageCode
         ) itReturns dummyManifest

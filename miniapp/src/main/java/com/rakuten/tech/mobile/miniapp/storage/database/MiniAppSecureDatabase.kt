@@ -16,19 +16,24 @@ import java.util.stream.Collectors
 internal const val DB_BATCH_SIZE = 100
 private const val DB_HEADER_SIZE = 100
 private const val PAGE_SIZE_MULTIPLIER = 3
+
 @VisibleForTesting
 internal const val TABLE_NAME = "MiniAppCache"
+
 @VisibleForTesting
 internal const val FIRST_COLUMN_NAME = "first"
+
 @VisibleForTesting
 internal const val SECOND_COLUMN_NAME = "second"
 
 @VisibleForTesting
 internal const val AUTO_VACUUM = "PRAGMA auto_vacuum = FULL"
 private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
+
 @VisibleForTesting
 internal const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
 private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
+
 @VisibleForTesting
 internal const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
         "$FIRST_COLUMN_NAME text primary key, $SECOND_COLUMN_NAME text)"
@@ -36,6 +41,7 @@ internal const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME 
 internal const val DATABASE_IO_ERROR = "Database I/O operation failed."
 internal const val DATABASE_UNAVAILABLE_ERROR = "Database does not exist."
 internal const val DATABASE_BUSY_ERROR = "Database is busy doing another operation."
+
 @VisibleForTesting
 internal const val DATABASE_SPACE_LIMIT_REACHED_ERROR =
     "Can't insert new items. Database reached to max space limit."
@@ -57,7 +63,8 @@ internal class MiniAppSecureDatabase(
     @VisibleForTesting
     internal var miniAppDatabaseStatus = MiniAppDatabaseStatus.DEFAULT
 
-    private fun getDatabasePageSize(): Long = database.pageSize
+    @VisibleForTesting
+    internal fun getDatabasePageSize(): Long = database.pageSize
 
     @VisibleForTesting
     @Throws(IllegalStateException::class)

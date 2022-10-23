@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +13,7 @@ import org.amshove.kluent.shouldContain
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import retrofit2.Call
 import retrofit2.Callback
@@ -142,7 +142,6 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
             try {
                 mockServer.enqueue(MockResponse().setResponseCode(500))
                 createRequestExecutor().executeRequest(createApi().fetch())
-                advanceTimeBy(1000)
             } catch (exception: MiniAppNetException) {
                 exception.message.toString() shouldContain "Found some problem, timeout"
             }

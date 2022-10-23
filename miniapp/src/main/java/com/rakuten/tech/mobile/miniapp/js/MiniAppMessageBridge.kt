@@ -24,14 +24,14 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -287,7 +287,8 @@ open class MiniAppMessageBridge {
         )
     }
 
-    private fun onGetUniqueId(callbackObj: CallbackObj) = try {
+    @VisibleForTesting
+    internal fun onGetUniqueId(callbackObj: CallbackObj) = try {
         val successCallback = { uniqueId: String ->
             bridgeExecutor.postValue(callbackObj.id, uniqueId)
         }
@@ -373,7 +374,8 @@ open class MiniAppMessageBridge {
     @Suppress("SwallowedException")
     internal fun onRequestCustomPermissions(jsonStr: String) {
         val customPermissionBridgeDispatcher = getCustomPermissionBridgeDispatcher(jsonStr)
-        val customPermissionWindow = getMiniAppCustomPermissionWindow(customPermissionBridgeDispatcher)
+        val customPermissionWindow =
+            getMiniAppCustomPermissionWindow(customPermissionBridgeDispatcher)
         // check if there is any denied permission
         customPermissionBridgeDispatcher.onRequestCustomPermissions(
             requestCustomPermissions = { deniedPermissions ->

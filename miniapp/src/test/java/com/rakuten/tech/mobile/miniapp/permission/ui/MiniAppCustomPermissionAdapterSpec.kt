@@ -1,17 +1,19 @@
 package com.rakuten.tech.mobile.miniapp.permission.ui
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
-import org.mockito.kotlin.*
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import org.junit.Before
-import org.junit.Test
-import kotlin.test.assertEquals
-import com.rakuten.tech.mobile.miniapp.R
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldNotBeNull
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.*
+import kotlin.test.assertEquals
 
 @Suppress("LargeClass")
 class MiniAppCustomPermissionAdapterSpec {
@@ -20,6 +22,16 @@ class MiniAppCustomPermissionAdapterSpec {
     private val results = arrayListOf<MiniAppCustomPermissionResult>()
     private val descriptions = arrayListOf<String>()
     private val description = "dummy description"
+
+    @Suppress("MaxLineLength")
+    private fun withViewHolder(
+        onReady: (ViewGroup, MiniAppCustomPermissionAdapter.PermissionViewHolder) -> Unit
+    ) {
+        val viewGroup: ViewGroup = mock()
+        val permissionviewholder: MiniAppCustomPermissionAdapter.PermissionViewHolder = mock()
+        doReturn(permissionviewholder).whenever(permissionAdapter).onCreateViewHolder(viewGroup, 0)
+        onReady(viewGroup, permissionviewholder)
+    }
 
     @Before
     fun setup() {
@@ -275,5 +287,21 @@ class MiniAppCustomPermissionAdapterSpec {
         val actual = permissionAdapter.permissionResultToChecked(result)
         assertEquals(expected, actual)
     }
+
     /** end region */
+
+    @Test
+    fun `onCreateViewHolder should return PermissionViewHolder`() {
+        withViewHolder { viewGroup, permissionViewHolder ->
+            permissionAdapter.onCreateViewHolder(viewGroup, 0).shouldBeEqualTo(permissionViewHolder)
+        }
+    }
+
+    @Test(expected = IndexOutOfBoundsException::class)
+    fun `onBindViewHolder should call bindView`() {
+        withViewHolder { viewGroup, permissionViewHolder ->
+            permissionAdapter.onBindViewHolder(permissionViewHolder, 0)
+            verify(permissionAdapter).bindView(permissionViewHolder, 0)
+        }
+    }
 }

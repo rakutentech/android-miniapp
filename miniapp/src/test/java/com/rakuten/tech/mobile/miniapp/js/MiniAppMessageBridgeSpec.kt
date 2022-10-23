@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import org.amshove.kluent.When
+import org.amshove.kluent.any
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
@@ -68,7 +69,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     @Test
     fun `should be able to return contact id to miniapp`() {
         miniAppBridge.postMessage(messagingUniqueIdJsonStr)
-
         verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
     }
 
@@ -93,6 +93,12 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
+    }
+
+    @Test
+    fun `onGetUniqueId should call getUniqueId`() {
+        miniAppBridge.onGetUniqueId(getCallbackObject(ActionType.GET_UNIQUE_ID))
+        verify(miniAppBridge).getUniqueId(any(), any())
     }
 
     @Test

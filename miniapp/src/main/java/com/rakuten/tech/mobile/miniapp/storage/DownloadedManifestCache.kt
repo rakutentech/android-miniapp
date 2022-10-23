@@ -10,7 +10,6 @@ import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import kotlin.Exception
 import java.io.File
 
 /**
@@ -114,7 +113,8 @@ internal class DownloadedManifestCache(context: Context) {
         }
     }
 
-    private fun migrateToFileStorage() {
+    @VisibleForTesting
+    internal fun migrateToFileStorage() {
         if (prefs.all.isNotEmpty()) {
             prefs.all.forEach {
                 storeNewFile(it.key, toCachedManifest(it.value.toString()))
@@ -137,10 +137,10 @@ internal class DownloadedManifestCache(context: Context) {
         if (!file.exists()) return null
         return try {
             val jsonToRead = file.bufferedReader()
-                    .use {
-                        it.readText()
-                                .dropLast(2) // for fixing the json format
-                    }
+                .use {
+                    it.readText()
+                        .dropLast(2) // for fixing the json format
+                }
             toCachedManifest(jsonToRead)
         } catch (e: Exception) {
             null
