@@ -299,7 +299,7 @@ class MiniAppCustomPermissionAdapterSpec {
 
     @Test(expected = IndexOutOfBoundsException::class)
     fun `onBindViewHolder should call bindView`() {
-        withViewHolder { viewGroup, permissionViewHolder ->
+        withViewHolder { _, permissionViewHolder ->
             permissionAdapter.onBindViewHolder(permissionViewHolder, 0)
             verify(permissionAdapter).bindView(permissionViewHolder, 0)
         }
