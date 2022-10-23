@@ -114,7 +114,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         return binding.root
     }
 
-    private fun initializeMiniAppDisplay(activity: Activity){
+    private fun initializeMiniAppDisplay(activity: Activity) {
         toggleProgressLoading(true)
         setUpFileChooserAndDownloader(activity)
         setUpNavigator(activity)
@@ -131,11 +131,22 @@ class MiniAppDisplayFragment : BaseFragment() {
                         it.printStackTrace()
                         when (it) {
                             is MiniAppHasNoPublishedVersionException ->
-                                Toast.makeText(activity, "No published version for the provided Mini App ID.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    activity,
+                                    "No published version for the provided Mini App ID.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             is MiniAppNotFoundException ->
-                                Toast.makeText(activity, "No Mini App found for the provided Project ID.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    activity,
+                                    "No Mini App found for the provided Project ID.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             is MiniAppTooManyRequestsError ->
-                                showErrorDialog(activity, getString(R.string.error_desc_miniapp_too_many_request))
+                                showErrorDialog(
+                                    activity,
+                                    getString(R.string.error_desc_miniapp_too_many_request)
+                                )
                             else -> {
                                 // try to load miniapp from cache.
                                 toggleProgressLoading(true)
@@ -149,8 +160,16 @@ class MiniAppDisplayFragment : BaseFragment() {
                                             miniAppSdkException?.let { e ->
                                                 when (e) {
                                                     is MiniAppNotFoundException ->
-                                                        Toast.makeText(activity, "No Mini App found for the provided Project ID.", Toast.LENGTH_LONG).show()
-                                                    else -> Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
+                                                        Toast.makeText(
+                                                            activity,
+                                                            "No Mini App found for the provided Project ID.",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    else -> Toast.makeText(
+                                                        activity,
+                                                        it.message,
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
                                                 }
                                             }
                                         }
@@ -164,7 +183,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         }
     }
 
-    private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay){
+    private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay) {
         CoroutineScope(Dispatchers.Default).launch {
             val miniAppChildView = miniAppDisplay.getMiniAppView(activity)
             activity.runOnUiThread {
@@ -252,15 +271,6 @@ class MiniAppDisplayFragment : BaseFragment() {
     ) {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
-
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.uniqueIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess(AppSettings.instance.uniqueId)
-            }
 
             override fun getMessagingUniqueId(
                 onSuccess: (uniqueId: String) -> Unit,
@@ -486,10 +496,16 @@ class MiniAppDisplayFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
+        miniAppMessageBridge.dispatchNativeEvent(
+            NativeEventType.MINIAPP_ON_RESUME,
+            "MiniApp Resumed"
+        )
     }
 
-    private fun createMiniAppInfoParam(activity: Activity, miniAppInfo: MiniAppInfo): MiniAppParameters {
+    private fun createMiniAppInfoParam(
+        activity: Activity,
+        miniAppInfo: MiniAppInfo
+    ): MiniAppParameters {
         return MiniAppParameters.InfoParams(
             context = activity,
             config = MiniAppConfig(
@@ -499,7 +515,7 @@ class MiniAppDisplayFragment : BaseFragment() {
                 miniAppFileChooser = miniAppFileChooser,
                 queryParams = AppSettings.instance.urlParameters
             ),
-            miniAppInfo =  miniAppInfo,
+            miniAppInfo = miniAppInfo,
             fromCache = false
         )
     }
