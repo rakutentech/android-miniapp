@@ -252,6 +252,12 @@ class CustomPermissionBridgeDispatcherSpec {
     }
 
     @Test
+    fun `should call filterDeniedPermissions when onRequestPermissions is called`() {
+        customPermissionBridgeDispatcher.onRequestCustomPermissions(mock(), mock(), mock())
+        verify(customPermissionBridgeDispatcher).filterDeniedPermissions()
+    }
+
+    @Test
     fun `default unknown permission pair should be as expected`() {
         val defaultPair = customPermissionBridgeDispatcher.defaultUnknownPermissionPair
         defaultPair.first shouldBe MiniAppCustomPermissionType.UNKNOWN

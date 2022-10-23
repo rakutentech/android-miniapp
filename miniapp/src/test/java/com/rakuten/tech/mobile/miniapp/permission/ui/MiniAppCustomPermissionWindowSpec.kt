@@ -10,17 +10,15 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rakuten.tech.mobile.miniapp.R
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
@@ -46,13 +44,28 @@ class MiniAppCustomPermissionWindowSpec {
     private val activity: Activity = mock()
     private lateinit var permissionWindow: MiniAppCustomPermissionWindow
     private val miniAppId = TEST_CALLBACK_ID
-    private val permissionWithDescriptions =
-        listOf(
-            Pair(MiniAppCustomPermissionType.USER_NAME, "dummy description"),
-            Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "dummy description"),
-            Pair(MiniAppCustomPermissionType.CONTACT_LIST, "dummy description")
-        )
+    private val deniedPermissions = listOf(
+        Pair(MiniAppCustomPermissionType.USER_NAME, "dummy description"),
+        Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "dummy description"),
+        Pair(MiniAppCustomPermissionType.CONTACT_LIST, "dummy description")
+    )
     private lateinit var cachedCustomPermission: MiniAppCustomPermission
+
+    @Suppress("MaxLineLength")
+    private fun getSpyPermissionWindow(coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)) =
+        spy(MiniAppCustomPermissionWindow(activity, dispatcher, coroutineScope))
+
+    @Suppress("MaxLineLength")
+    private fun withActivity(
+        coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
+        onReady: (MiniAppCustomPermissionWindow) -> Unit
+    ) {
+        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
+            val permissionWindow =
+                spy(MiniAppCustomPermissionWindow(activity, dispatcher, coroutineScope))
+            onReady(permissionWindow)
+        }
+    }
 
     @Before
     fun setup() {
@@ -80,7 +93,7 @@ class MiniAppCustomPermissionWindowSpec {
         onReady(permissionWindow, recyclerView)
     }
 
-    private fun setupForPermissionLayoutTestCases(onReady: (View, TextView, TextView, AlertDialog) -> Unit) {
+    private fun setupForPermissionLayoutTestCase(onReady: (View, TextView, TextView, AlertDialog) -> Unit) {
         val permissionAlertDialog: AlertDialog = mock()
         val customPermissionLayout: View = mock()
         val textPermissionSave: TextView = mock()
@@ -106,7 +119,7 @@ class MiniAppCustomPermissionWindowSpec {
         )
     }
 
-    private fun setupUsingRealContext(onReady: (MiniAppCustomPermissionWindow) -> Unit) {
+    private fun setupUsingRealActivity(onReady: (MiniAppCustomPermissionWindow) -> Unit) {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val permissionWindow = MiniAppCustomPermissionWindow(activity, dispatcher)
             permissionWindow.initCustomPermissionLayout()
@@ -124,10 +137,54 @@ class MiniAppCustomPermissionWindowSpec {
     }
 
     @Test
-    fun `the coroutine context should be Dispatchers Main`() {
-        val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
+    fun `should call initCustomPermissionLayout if miniAppId is valid and has deniedPermissions`() =
+        runBlocking {
+            val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
+            withActivity(coroutineScope = coroutineDispatcher) { permissionWindow ->
+                permissionWindow.displayPermissions(TEST_MA_ID, deniedPermissions)
+                verify(permissionWindow).initCustomPermissionLayout()
+            }
+        }
 
-        permissionWindow.coroutineContext.shouldBe(Dispatchers.Main)
+    @Test
+    fun `should call a if getRecyclerView if miniAppId is valid and has deniedPermissions`() =
+        runBlocking {
+            val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
+            withActivity(coroutineScope = coroutineDispatcher) { permissionWindow ->
+                permissionWindow.displayPermissions(TEST_MA_ID, deniedPermissions)
+                verify(permissionWindow).getRecyclerView()
+            }
+        }
+
+    @Test
+    fun `should call prepareForAdapter if miniAppId is valid and has deniedPermissions`() =
+        runBlocking {
+            val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
+            withActivity(coroutineScope = coroutineDispatcher) { permissionWindow ->
+                permissionWindow.displayPermissions(TEST_MA_ID, deniedPermissions)
+                verify(permissionWindow).prepareDataForAdapter(deniedPermissions)
+            }
+        }
+
+    @Test
+    fun `should call addPermissionClickListeners if miniAppId is valid and has deniedPermissions`() =
+        runBlocking {
+            val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
+            withActivity(coroutineScope = coroutineDispatcher) { permissionWindow ->
+                permissionWindow.displayPermissions(TEST_MA_ID, deniedPermissions)
+                verify(permissionWindow).addPermissionClickListeners()
+            }
+        }
+
+    @Test
+    fun `should call dialog show if miniAppId is valid and has deniedPermissions`() = runBlocking {
+        val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
+        withActivity(coroutineScope = coroutineDispatcher) { permissionWindow ->
+            val mockDialog: AlertDialog = mock()
+            doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
+            permissionWindow.displayPermissions(TEST_MA_ID, deniedPermissions)
+            verify(mockDialog).show()
+        }
     }
 
     @Test
@@ -137,9 +194,9 @@ class MiniAppCustomPermissionWindowSpec {
 
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
 
-        permissionWindow.displayPermissions("", permissionWithDescriptions)
+        permissionWindow.displayPermissions("", deniedPermissions)
 
-        verify(permissionWindow, times(0)).prepareDataForAdapter(permissionWithDescriptions)
+        verify(permissionWindow, times(0)).prepareDataForAdapter(deniedPermissions)
         verify(permissionWindow, times(0)).addPermissionClickListeners()
         verify(mockDialog, times(0)).show()
     }
@@ -209,7 +266,7 @@ class MiniAppCustomPermissionWindowSpec {
         val customPermissionAdapter: MiniAppCustomPermissionAdapter = mock()
         val permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
         doReturn(customPermissionAdapter).whenever(permissionWindow).customPermissionAdapter
-        permissionWindow.prepareDataForAdapter(permissionWithDescriptions)
+        permissionWindow.prepareDataForAdapter(deniedPermissions)
         verify(customPermissionAdapter).addPermissionList(
             any(),
             any(),
@@ -219,35 +276,35 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `addPermissionClickListeners should register permissionSave textView`() {
-        setupForPermissionLayoutTestCases { customPermissionLayout, _, _, _ ->
+        setupForPermissionLayoutTestCase { customPermissionLayout, _, _, _ ->
             verify(customPermissionLayout).findViewById<TextView>(R.id.permissionSave)
         }
     }
 
     @Test
     fun `addPermissionClickListeners should register textPermissionCloseWindow textView`() {
-        setupForPermissionLayoutTestCases { customPermissionLayout, _, _, _ ->
+        setupForPermissionLayoutTestCase { customPermissionLayout, _, _, _ ->
             verify(customPermissionLayout).findViewById<TextView>(R.id.permissionCloseWindow)
         }
     }
 
     @Test
     fun `addPermissionClickListeners textPermissionSave textview should call setOnClickListener`() {
-        setupForPermissionLayoutTestCases { _, textPermissionSave, _, _ ->
+        setupForPermissionLayoutTestCase { _, textPermissionSave, _, _ ->
             verify(textPermissionSave).setOnClickListener(any())
         }
     }
 
     @Test
     fun `addPermissionClickListeners textPermissionCloseWindow textview should call setOnClickListener`() {
-        setupForPermissionLayoutTestCases { _, _, textPermissionCloseWindow, _ ->
+        setupForPermissionLayoutTestCase { _, _, textPermissionCloseWindow, _ ->
             verify(textPermissionCloseWindow).setOnClickListener(any())
         }
     }
 
     @Test
     fun `addPermissionClickListeners permissionAlertDialog should call setOnKeyListener`() {
-        setupForPermissionLayoutTestCases { _, _, _, permissionAlertDialog ->
+        setupForPermissionLayoutTestCase { _, _, _, permissionAlertDialog ->
             verify(permissionAlertDialog).setOnKeyListener(any())
         }
     }
@@ -268,7 +325,7 @@ class MiniAppCustomPermissionWindowSpec {
     @Test
     fun `onNoPermissionsSaved should call dialog dismiss`() {
         val mockDialog: AlertDialog = mock()
-        permissionWindow = spy(MiniAppCustomPermissionWindow(activity, dispatcher))
+        permissionWindow = getSpyPermissionWindow()
 
         doReturn(mockDialog).whenever(permissionWindow).customPermissionAlertDialog
 
@@ -279,7 +336,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `customPermissionLayout should be initialized when initCustomPermissionLayout is called`() {
-        setupUsingRealContext { permissionWindow ->
+        setupUsingRealActivity { permissionWindow ->
             val customPermissionLayout = spy(permissionWindow.customPermissionLayout)
             customPermissionLayout.isVisible.shouldBeTrue()
         }
@@ -305,7 +362,7 @@ class MiniAppCustomPermissionWindowSpec {
 
     @Test
     fun `customPermissionLayout calls context should not be null`() {
-        setupUsingRealContext { permissionWindow ->
+        setupUsingRealActivity { permissionWindow ->
             val customPermissionLayout = spy(permissionWindow.customPermissionLayout)
             customPermissionLayout.context.shouldNotBeNull()
         }

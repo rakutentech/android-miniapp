@@ -24,7 +24,7 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-@Suppress("LargeClass")
+@Suppress("LargeClass", "MaximumLineLength", "DeferredResultUnused")
 open class MiniAppViewHandlerSpec {
     private lateinit var miniAppViewHandler: MiniAppViewHandler
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -332,37 +332,73 @@ open class MiniAppViewHandlerSpec {
             )
         }
 
+    private suspend fun withMiniAppViewHandler(onReady: suspend (Pair<String, MiniAppInfo>, MiniAppInfo) -> Unit) {
+        onGettingManifestWhileCreate()
+        val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
+        val testVersion = Version("", TEST_MA_VERSION_ID)
+        val testMiniAppInfo = TEST_MA.copy(id = TEST_MA_ID, version = testVersion)
+
+        When calling miniAppViewHandler.miniAppDownloader.getMiniApp(testMiniAppInfo) itReturns getMiniAppResult
+        When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
+        When calling miniAppConfig.queryParams itReturns ""
+        onReady(getMiniAppResult, testMiniAppInfo)
+    }
+
     @Test
     @Suppress("LongMethod")
     fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppInfo`() =
         runBlockingTest {
-            onGettingManifestWhileCreate()
-            val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
-            val testVersion = Version("", TEST_MA_VERSION_ID)
-            val testMiniAppInfo = TEST_MA.copy(id = TEST_MA_ID, version = testVersion)
 
-            When calling miniAppViewHandler.miniAppDownloader.getMiniApp(testMiniAppInfo) itReturns getMiniAppResult
-            When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
-            When calling miniAppConfig.queryParams itReturns ""
+            withMiniAppViewHandler { getMiniAppResult, testMiniAppInfo ->
+                miniAppViewHandler.createMiniAppView(testMiniAppInfo, miniAppConfig)
 
-            miniAppViewHandler.createMiniAppView(testMiniAppInfo, miniAppConfig)
+                verify(miniAppViewHandler.miniAppDownloader).getMiniApp(testMiniAppInfo)
+                verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+                verify(miniAppViewHandler.displayer).createMiniAppDisplay(
+                    getMiniAppResult.first,
+                    getMiniAppResult.second,
+                    miniAppConfig.miniAppMessageBridge,
+                    null,
+                    null,
+                    miniAppViewHandler.miniAppCustomPermissionCache,
+                    miniAppViewHandler.downloadedManifestCache,
+                    "",
+                    miniAppViewHandler.miniAppAnalytics,
+                    miniAppViewHandler.ratDispatcher,
+                    miniAppViewHandler.secureStorageDispatcher,
+                    false
+                )
+            }
+        }
 
-            verify(miniAppViewHandler.miniAppDownloader).getMiniApp(testMiniAppInfo)
-            verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
-            verify(miniAppViewHandler.displayer).createMiniAppDisplay(
-                getMiniAppResult.first,
-                getMiniAppResult.second,
-                miniAppConfig.miniAppMessageBridge,
-                null,
-                null,
-                miniAppViewHandler.miniAppCustomPermissionCache,
-                miniAppViewHandler.downloadedManifestCache,
-                "",
-                miniAppViewHandler.miniAppAnalytics,
-                miniAppViewHandler.ratDispatcher,
-                miniAppViewHandler.secureStorageDispatcher,
-                false
-            )
+    @Test(expected = NullPointerException::class)
+    @Suppress("LongMethod", "MaxLineLength")
+    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppInfo from cache`() =
+        runBlockingTest {
+
+            withMiniAppViewHandler { getMiniAppResult, testMiniAppInfo ->
+                val cachedMiniApp: Pair<String, MiniAppInfo> = mock()
+                When calling miniAppViewHandler.miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns cachedMiniApp
+
+                miniAppViewHandler.createMiniAppView(testMiniAppInfo, miniAppConfig, true)
+
+                verify(miniAppViewHandler.miniAppDownloader).getMiniApp(testMiniAppInfo)
+                verify(miniAppViewHandler).verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
+                verify(miniAppViewHandler.displayer).createMiniAppDisplay(
+                    getMiniAppResult.first,
+                    getMiniAppResult.second,
+                    miniAppConfig.miniAppMessageBridge,
+                    null,
+                    null,
+                    miniAppViewHandler.miniAppCustomPermissionCache,
+                    miniAppViewHandler.downloadedManifestCache,
+                    "",
+                    miniAppViewHandler.miniAppAnalytics,
+                    miniAppViewHandler.ratDispatcher,
+                    miniAppViewHandler.secureStorageDispatcher,
+                    false
+                )
+            }
         }
 
     @Test
@@ -388,7 +424,6 @@ open class MiniAppViewHandlerSpec {
             verify(miniAppViewHandler.miniAppDownloader).getMiniApp(TEST_MA_ID)
         }
 
-    @Test
     fun `should invoke validateHttpAppUrl while miniapp creation with valid url`() =
         runBlockingTest {
             When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge

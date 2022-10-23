@@ -265,12 +265,22 @@ class MiniAppDisplayFragment : BaseFragment() {
         false -> binding.pb.visibility = View.GONE
     }
 
+    @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge(
         activity: Activity,
         miniAppFileDownloader: MiniAppFileDownloaderDefault
     ) {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
+
+            override fun getUniqueId(
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                val errorMsg = AppSettings.instance.uniqueIdError
+                if (errorMsg.isNotEmpty()) onError(errorMsg)
+                else onSuccess(AppSettings.instance.uniqueId)
+            }
 
             override fun getMessagingUniqueId(
                 onSuccess: (uniqueId: String) -> Unit,

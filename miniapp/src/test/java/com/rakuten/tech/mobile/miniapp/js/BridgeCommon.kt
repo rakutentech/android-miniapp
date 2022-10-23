@@ -29,7 +29,10 @@ open class BridgeCommon {
     internal fun getSecureStorageCallBackToJsonStr(secureStorageCallbackObj: SecureStorageCallbackObj): String =
         Gson().toJson(secureStorageCallbackObj)
 
-    internal fun getCallbackObject(actionType: ActionType, params: Map<String, String>? = testItems) = CallbackObj(
+    internal fun getCallbackObject(
+        actionType: ActionType,
+        params: Map<String, String>? = testItems
+    ) = CallbackObj(
         id = TEST_CALLBACK_ID,
         action = actionType.action,
         param = params

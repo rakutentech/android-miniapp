@@ -12,7 +12,7 @@ import org.amshove.kluent.*
 import org.junit.Test
 import org.mockito.kotlin.spy
 
-class MiniAppViewSpec {
+open class MiniAppViewSpec {
     private val context: Context = mock()
     private val miniAppConfig: MiniAppConfig = mock()
     private val miniAppSdkConfig: MiniAppSdkConfig = mock()

@@ -17,19 +17,17 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 /**
  * A class to show default custom permissions UI to manage permissions in this SDK.
  */
+
 @SuppressWarnings("LongMethod")
 internal class MiniAppCustomPermissionWindow(
     private val activity: Activity,
-    private val customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher
-) : CoroutineScope {
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
+    private val customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+) {
 
     @VisibleForTesting
     internal lateinit var customPermissionAlertDialog: AlertDialog
@@ -47,7 +45,7 @@ internal class MiniAppCustomPermissionWindow(
         if (miniAppId.isEmpty())
             return
 
-        launch {
+        scope.launch {
             // show permission default UI if there is any denied permission
             if (deniedPermissions.isNotEmpty()) {
                 // initialize permission view after ensuring if there is any denied permission
