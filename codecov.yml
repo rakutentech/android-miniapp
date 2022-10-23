@@ -1,6 +1,12 @@
 ignore:
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/view/MiniAppViewImpl.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/MiniApp.kt"
   - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/analytics/MiniAppAnalytics.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/storage/util/MiniAppDatabaseEncryptionUtil.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/closealert/MiniAppCloseAlertInfo.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/closealert/MiniAppSecureDatabaseImpl.kt"
+  - "miniapp/src/main/java/com/rakuten/tech/mobile/miniapp/storage/verifier/MiniAppManifestVerifier.kt"
+  - "miniapp/src/main/java.com/rakuten/tech/mobile/miniapp/storage/verifier/CachedMiniAppVerifier.kt""
 coverage:
   status:
     patch: off

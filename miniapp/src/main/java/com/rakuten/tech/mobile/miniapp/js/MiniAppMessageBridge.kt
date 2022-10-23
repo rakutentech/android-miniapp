@@ -113,19 +113,6 @@ open class MiniAppMessageBridge {
     internal fun createBridgeExecutor(webViewListener: WebViewListener) =
         MiniAppBridgeExecutor(webViewListener)
 
-    @Deprecated(
-        "This function has been deprecated.", ReplaceWith(
-            "getMessagingUniqueId(onSuccess: (uniqueId: String) -> Unit," + "onError: (message: String) -> Unit)"
-        )
-    )
-    /** Get provided id of mini app for any purpose. **/
-    open fun getUniqueId(
-        onSuccess: (uniqueId: String) -> Unit,
-        onError: (message: String) -> Unit
-    ) {
-        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
-    }
-
     /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
     open fun getMessagingUniqueId(
         onSuccess: (uniqueId: String) -> Unit,
@@ -207,7 +194,6 @@ open class MiniAppMessageBridge {
     fun postMessage(jsonStr: String) {
         val callbackObj = Gson().fromJson(jsonStr, CallbackObj::class.java)
         when (callbackObj.action) {
-            ActionType.GET_UNIQUE_ID.action -> onGetUniqueId(callbackObj)
             ActionType.GET_MESSAGING_UNIQUE_ID.action -> onGetMessagingUniqueId(callbackObj)
             ActionType.GET_MAUID.action -> onGetMauid(callbackObj)
             ActionType.REQUEST_PERMISSION.action -> onRequestDevicePermission(callbackObj)
@@ -284,21 +270,6 @@ open class MiniAppMessageBridge {
         if (this::bridgeExecutor.isInitialized) bridgeExecutor.dispatchEvent(
             eventType = eventType.value, value = value
         )
-    }
-
-    private fun onGetUniqueId(callbackObj: CallbackObj) = try {
-        val successCallback = { uniqueId: String ->
-            bridgeExecutor.postValue(callbackObj.id, uniqueId)
-        }
-        val errorCallback = { message: String ->
-            bridgeExecutor.postError(
-                callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} $message"
-            )
-        }
-
-        getUniqueId(successCallback, errorCallback)
-    } catch (e: Exception) {
-        bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_UNIQUE_ID} ${e.message}")
     }
 
     private fun onGetMessagingUniqueId(callbackObj: CallbackObj) = try {

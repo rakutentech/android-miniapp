@@ -4,10 +4,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
-import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -30,11 +26,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(false)
     )
-
-    private val uniqueIdCallbackObj = CallbackObj(
-        action = ActionType.GET_UNIQUE_ID.action, param = null, id = TEST_CALLBACK_ID
-    )
-    private val uniqueIdJsonStr = Gson().toJson(uniqueIdCallbackObj)
 
     private val messagingUniqueIdCallbackObj = CallbackObj(
         action = ActionType.GET_MESSAGING_UNIQUE_ID.action, param = null, id = TEST_CALLBACK_ID
@@ -71,36 +62,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 ratDispatcher = mock(),
                 secureStorageDispatcher = mock()
             )
-        }
-    }
-
-    @Test
-    fun `should be able to return unique id to miniapp`() {
-        miniAppBridge.postMessage(uniqueIdJsonStr)
-
-        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, TEST_CALLBACK_VALUE)
-    }
-
-    @Test
-    fun `postError should be called when cannot get unique id`() {
-        ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            val errMsg = "Cannot get unique id: null"
-            val webViewListener =
-                createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIQUE_ID} null")
-            val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
-            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.init(
-                activity = activity,
-                webViewListener = webViewListener,
-                customPermissionCache = mock(),
-                downloadedManifestCache = mock(),
-                miniAppId = TEST_MA_ID,
-                ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
-            )
-            miniAppBridge.postMessage(uniqueIdJsonStr)
-
-            verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
     }
 

@@ -23,10 +23,10 @@ open class BridgeCommon {
     internal val testValue = "value"
     internal val testItems: Map<String, String> = mapOf(testKey to testValue)
 
-    internal fun getCallbackObjToJson(callbackObj: CallbackObj): String =
+    internal fun getCallbackObjToJsonStr(callbackObj: CallbackObj): String =
         Gson().toJson(callbackObj)
 
-    internal fun getSecureStorageCallBackToJson(secureStorageCallbackObj: SecureStorageCallbackObj): String =
+    internal fun getSecureStorageCallBackToJsonStr(secureStorageCallbackObj: SecureStorageCallbackObj): String =
         Gson().toJson(secureStorageCallbackObj)
 
     internal fun getCallbackObject(actionType: ActionType, params: Map<String, String>? = testItems) = CallbackObj(
@@ -39,13 +39,6 @@ open class BridgeCommon {
         isPermissionGranted: Boolean,
         hasEnvInfo: Boolean = false
     ): MiniAppMessageBridge = object : MiniAppMessageBridge() {
-
-        override fun getUniqueId(
-            onSuccess: (uniqueId: String) -> Unit,
-            onError: (message: String) -> Unit
-        ) {
-            onSuccess(TEST_CALLBACK_VALUE)
-        }
 
         override fun requestCustomPermissions(
             permissionsWithDescription: List<Pair<MiniAppCustomPermissionType, String>>,
@@ -115,13 +108,6 @@ open class BridgeCommon {
 
     protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
-
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
 
             override fun getMessagingUniqueId(
                 onSuccess: (uniqueId: String) -> Unit,

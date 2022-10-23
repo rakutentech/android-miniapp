@@ -107,14 +107,14 @@ class CustomPermissionBridgeSpec : BridgeCommon() {
 
     @Test
     fun `should call getCustomPermissionBridgeDispatcher when action type is REQUEST_CUSTOM_PERMISSIONS `() {
-        val callbackJson = getCallbackObjToJson(getCallbackJson())
+        val callbackJson = getCallbackObjToJsonStr(getCallbackJson())
         miniappMessageBridge.postMessage(callbackJson)
         verify(miniappMessageBridge).getCustomPermissionBridgeDispatcher(callbackJson)
     }
 
     @Test
     fun `should call requestCustomPermissions when action type is REQUEST_CUSTOM_PERMISSIONS`() {
-        val callbackJson = getCallbackObjToJson(getCallbackJson())
+        val callbackJson = getCallbackObjToJsonStr(getCallbackJson())
         miniappMessageBridge.postMessage(callbackJson)
         verify(miniappMessageBridge).onRequestCustomPermissions(callbackJson)
     }
