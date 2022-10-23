@@ -35,15 +35,6 @@ class MiniAppViewImplSpec {
         }
     }
 
-    private fun getMiniAppSdkConfig() = MiniAppSdkConfig(
-        baseUrl = TEST_URL_HTTPS_2,
-        isPreviewMode = true,
-        requireSignatureVerification = true,
-        rasProjectId = TEST_HA_ID_PROJECT,
-        subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
-        hostAppUserAgentInfo = TEST_HA_NAME
-    )
-
     private fun withMiniAppDefaultParams(onReady: (MiniAppViewImpl) -> Unit) {
         withRealActivity { activity ->
             miniAppDefaultParams = MiniAppParameters.DefaultParams(
@@ -88,14 +79,6 @@ class MiniAppViewImplSpec {
             }) as MiniAppViewImpl
             miniAppViewImpl.scope = coroutineDispatcher
             onReady(miniAppViewImpl)
-        }
-    }
-
-    @Test(expected = MiniAppVerificationException::class)
-    fun `miniAppViewHandler should throw MiniAppVerificationException due to not having the AndroidKeystore`() {
-        withRealActivity { activity ->
-            val miniAppSdkConfig = getMiniAppSdkConfig()
-            MiniAppViewHandler(activity, miniAppSdkConfig)
         }
     }
 
