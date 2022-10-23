@@ -111,7 +111,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(
+            jsonStr = Gson().toJson(emptyPermissionCallbackObj)
+        )
 
         assertEquals(emptyList(), dispatcher.filterDeniedPermissions())
     }
@@ -126,7 +128,10 @@ class CustomPermissionBridgeDispatcherSpec {
     fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
         customPermissionBridgeDispatcher.permissionsAsManifest = permissions
         customPermissionBridgeDispatcher.filterDeniedPermissions()
-        verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
+        verify(miniAppCustomPermissionCache).hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
     }
 
     @Test

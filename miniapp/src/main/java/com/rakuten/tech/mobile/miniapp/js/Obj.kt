@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 @Keep
@@ -56,17 +55,6 @@ internal data class SecureStorageKey(
     val secureStorageKey: String
 )
 
-@Keep
-internal data class SecureStorageReadyCallback(
-    var success: Boolean,
-    var errorSecure: MiniAppSecureStorageError? = null
-)
-
-@Keep
-internal data class MiniAppSecureStorageSize(
-    val used: Long,
-    val max: Long
-)
 // end region
 
 @Keep

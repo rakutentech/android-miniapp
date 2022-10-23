@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
@@ -20,12 +19,8 @@ import org.mockito.kotlin.mock
 @RunWith(AndroidJUnit4::class)
 @Suppress("LargeClass")
 class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
-    private val unImplementedMessageBrdige = object : MiniAppMessageBridge() {}
-    private val testKey = "key"
-    private val testValue = "value"
-    private val testItems: Map<String, String> = mapOf(testKey to testValue)
-    private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
+    private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
     private val testMaxStorageSizeInKB = 1000L
 
     private val secureStorageCallbackObj = SecureStorageCallbackObj(
@@ -40,18 +35,6 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
         id = TEST_CALLBACK_ID
     )
 
-    private fun getCallbackObject(actionType: ActionType) = CallbackObj(
-        id = TEST_CALLBACK_ID,
-        action = actionType.action,
-        param = testItems
-    )
-
-    private fun getCallbackObjToJson(callbackObj: CallbackObj): String =
-        Gson().toJson(callbackObj)
-
-    private fun getSecureStorageCallBackToJson(secureStorageCallbackObj: SecureStorageCallbackObj): String =
-        Gson().toJson(secureStorageCallbackObj)
-
     private val miniappMessageBridge: MiniAppMessageBridge = Mockito.spy(
         createMiniAppMessageBridge(true)
     )
@@ -63,7 +46,7 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     }
 
     @Before
-    fun setupShareInfo() {
+    fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppSecureStorageDispatcher =
                 spy(MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInKB))
@@ -91,26 +74,6 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
         When calling miniappMessageBridge.miniAppSecureStorageDispatcher itReturns securestoragedispatcher
         miniappMessageBridge.onJsInjectionDone()
         verify(securestoragedispatcher).onLoad()
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `getMessaginguniqueId should throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.getMessagingUniqueId(mock(), mock())
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `getMauid should throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.getMauid(mock(), mock())
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `requestDevicepPermission throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.requestDevicePermission(mock(), mock())
-    }
-
-    @Test(expected = MiniAppSdkException::class)
-    fun `requestCustomPermissions throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.requestCustomPermissions(mock(), mock())
     }
 
     @Test
@@ -188,5 +151,25 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
         val callbackJson = getCallbackObjToJson(closeAlertCallbackObj)
         miniappMessageBridge.postMessage(callbackJson)
         verify(miniappMessageBridge).onMiniAppShouldClose(closeAlertCallbackObj.id, callbackJson)
+    }
+
+    @Test
+    fun `bridgeExecutor should call postError when CloseAlertInfoCallbackObj is not valid`() {
+        val closeAlertCallbackObj = getCallbackObject(ActionType.SET_CLOSE_ALERT, params = null)
+        val callbackJson = getCallbackObjToJson(closeAlertCallbackObj)
+        miniappMessageBridge.postMessage(callbackJson)
+        verify(bridgeExecutor).postError(
+            closeAlertCallbackObj.id,
+            ErrorBridgeMessage.ERR_CLOSE_ALERT
+        )
+    }
+
+    @Test
+    fun `fundispatchNativeEvent should be called when bridgeExecutor is initialized`() {
+        val testNativeEventType = NativeEventType.MINIAPP_ON_PAUSE
+        miniappMessageBridge.dispatchNativeEvent(testNativeEventType)
+        verify(bridgeExecutor).dispatchEvent(
+            testNativeEventType.value, ""
+        )
     }
 }

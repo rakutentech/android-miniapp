@@ -131,7 +131,6 @@ open class MiniAppMessageBridge {
         onSuccess: (uniqueId: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        println("hiii ")
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
 
@@ -283,8 +282,7 @@ open class MiniAppMessageBridge {
      **/
     fun dispatchNativeEvent(eventType: NativeEventType, value: String = "") {
         if (this::bridgeExecutor.isInitialized) bridgeExecutor.dispatchEvent(
-            eventType = eventType.value,
-            value = value
+            eventType = eventType.value, value = value
         )
     }
 
@@ -340,7 +338,6 @@ open class MiniAppMessageBridge {
             val permissionParam = Gson().fromJson<DevicePermission>(
                 callbackObj.param.toString(), object : TypeToken<DevicePermission>() {}.type
             )
-
             requestDevicePermission(
                 MiniAppDevicePermissionType.getValue(permissionParam.permission)
             ) { isGranted ->
@@ -355,23 +352,30 @@ open class MiniAppMessageBridge {
         }
     }
 
-    @Suppress("SwallowedException")
-    private fun onRequestCustomPermissions(jsonStr: String) {
-        val customPermissionBridgeDispatcher = CustomPermissionBridgeDispatcher(
+    @VisibleForTesting
+    internal fun getCustomPermissionBridgeDispatcher(jsonStr: String) =
+        CustomPermissionBridgeDispatcher(
             bridgeExecutor = bridgeExecutor,
             customPermissionCache = customPermissionCache,
             downloadedManifestCache = downloadedManifestCache,
             miniAppId = miniAppId,
             jsonStr = jsonStr
         )
-        val customPermissionWindow = MiniAppCustomPermissionWindow(
+
+    @VisibleForTesting
+    internal fun getMiniAppCustomPermissionWindow(customPermissionBridgeDispatcher: CustomPermissionBridgeDispatcher) =
+        MiniAppCustomPermissionWindow(
             activity, customPermissionBridgeDispatcher
         )
 
+    @VisibleForTesting
+    @Suppress("SwallowedException")
+    internal fun onRequestCustomPermissions(jsonStr: String) {
+        val customPermissionBridgeDispatcher = getCustomPermissionBridgeDispatcher(jsonStr)
+        val customPermissionWindow = getMiniAppCustomPermissionWindow(customPermissionBridgeDispatcher)
         // check if there is any denied permission
-        val deniedPermissions = customPermissionBridgeDispatcher.filterDeniedPermissions()
-        if (deniedPermissions.isNotEmpty()) {
-            try {
+        customPermissionBridgeDispatcher.onRequestCustomPermissions(
+            requestCustomPermissions = { deniedPermissions ->
                 requestCustomPermissions(
                     deniedPermissions
                 ) { permissionsWithResult ->
@@ -379,14 +383,11 @@ open class MiniAppMessageBridge {
                         permissionsWithResult
                     )
                 }
-            } catch (e: CustomPermissionsNotImplementedException) {
+            }, onNotimplementedExceptionThrown = { deniedPermissions ->
                 customPermissionWindow.displayPermissions(miniAppId, deniedPermissions)
-            } catch (e: Exception) {
-                customPermissionBridgeDispatcher.postCustomPermissionError(e.message.toString())
-            }
-        } else {
-            customPermissionBridgeDispatcher.sendCachedCustomPermissions()
-        }
+            }, onExceptionThrown = { message ->
+                customPermissionBridgeDispatcher.postCustomPermissionError(message)
+            })
     }
 
     private fun onShareContent(callbackId: String, jsonStr: String) = try {
@@ -450,7 +451,6 @@ open class MiniAppMessageBridge {
             this.miniAppCloseAlertInfo = alertInfo
             return
         }
-
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
     }
 }

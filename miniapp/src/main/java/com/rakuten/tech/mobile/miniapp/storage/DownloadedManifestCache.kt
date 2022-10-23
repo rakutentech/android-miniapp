@@ -18,6 +18,7 @@ import java.io.File
  */
 @Suppress("TooGenericExceptionCaught", "SwallowedException", "TooManyFunctions")
 internal class DownloadedManifestCache(context: Context) {
+
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.manifest.cache.downloaded", Context.MODE_PRIVATE
     )
@@ -25,12 +26,12 @@ internal class DownloadedManifestCache(context: Context) {
     private val sdkBasePath = context.filesDir.path
     private val miniAppBasePath = "$sdkBasePath/$SUB_DIR_MINIAPP/"
 
-    @VisibleForTesting
-    fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
-
     init {
         migrateToFileStorage()
     }
+
+    @VisibleForTesting
+    fun getManifestPath(appId: String) = "${miniAppBasePath}$appId/"
 
     /**
      * Reads the downloaded manifest from File.
