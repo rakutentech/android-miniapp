@@ -38,6 +38,7 @@ class CustomPermissionBridgeDispatcherSpec {
             )
         )
     )
+    private val description = "dummy description"
     private val customPermissionCallbackObj = CustomPermissionCallbackObj(
         action = ActionType.REQUEST_CUSTOM_PERMISSIONS.action,
         param = CustomPermission(
@@ -66,7 +67,6 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `preparePermissionsWithDescription should return a list of pair with name and description`() {
-        val description = "dummy description"
         val customPermissionObj = CustomPermissionObj(
             "rakuten.miniapp.user.USER_NAME",
             description
@@ -87,7 +87,6 @@ class CustomPermissionBridgeDispatcherSpec {
 
     @Test
     fun `getRequiredPermissions should return the correct values`() {
-        val description = "dummy description"
         val actual = customPermissionBridgeDispatcher.getRequiredPermissions(
             arrayListOf(Pair(MiniAppCustomPermissionType.USER_NAME, description)), cachedManifest
         )
@@ -112,7 +111,9 @@ class CustomPermissionBridgeDispatcherSpec {
             param = CustomPermission(emptyList()),
             id = TEST_CALLBACK_ID
         )
-        val dispatcher = createCustomPermissionBridgeDispatcher(jsonStr = Gson().toJson(emptyPermissionCallbackObj))
+        val dispatcher = createCustomPermissionBridgeDispatcher(
+            jsonStr = Gson().toJson(emptyPermissionCallbackObj)
+        )
 
         assertEquals(emptyList(), dispatcher.filterDeniedPermissions())
     }
@@ -127,7 +128,10 @@ class CustomPermissionBridgeDispatcherSpec {
     fun `filterDeniedPermissions should use hasPermission from MiniAppCustomPermissionCache`() {
         customPermissionBridgeDispatcher.permissionsAsManifest = permissions
         customPermissionBridgeDispatcher.filterDeniedPermissions()
-        verify(miniAppCustomPermissionCache).hasPermission(TEST_MA_ID, MiniAppCustomPermissionType.USER_NAME)
+        verify(miniAppCustomPermissionCache).hasPermission(
+            TEST_MA_ID,
+            MiniAppCustomPermissionType.USER_NAME
+        )
     }
 
     @Test
@@ -245,6 +249,12 @@ class CustomPermissionBridgeDispatcherSpec {
     fun `sending cached custom permission should post the value`() {
         customPermissionBridgeDispatcher.sendCachedCustomPermissions()
         verify(customPermissionBridgeDispatcher).postCustomPermissionsValue(any())
+    }
+
+    @Test
+    fun `should call filterDeniedPermissions when onRequestPermissions is called`() {
+        customPermissionBridgeDispatcher.onRequestCustomPermissions(mock(), mock(), mock())
+        verify(customPermissionBridgeDispatcher).filterDeniedPermissions()
     }
 
     @Test

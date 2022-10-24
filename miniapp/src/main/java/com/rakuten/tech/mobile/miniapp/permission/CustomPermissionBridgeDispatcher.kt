@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.js.CustomPermissionCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.CustomPermissionObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
@@ -12,7 +13,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 /**
  * A class to dispatch the bridge operations involved with custom permissions in this SDK.
  */
-@Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod")
+@Suppress("LargeClass", "TooManyFunctions", "TooGenericExceptionCaught", "SwallowedException", "LongMethod")
 internal class CustomPermissionBridgeDispatcher(
     private val bridgeExecutor: MiniAppBridgeExecutor,
     private val customPermissionCache: MiniAppCustomPermissionCache,
@@ -153,6 +154,26 @@ internal class CustomPermissionBridgeDispatcher(
         }
 
         return filteredPair
+    }
+
+    internal fun onRequestCustomPermissions(
+        requestCustomPermissions: (deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>) -> Unit,
+        onNotimplementedExceptionThrown: (deniedPermissions: List<Pair<MiniAppCustomPermissionType, String>>) -> Unit,
+        onExceptionThrown: (String) -> Unit
+    ) {
+        // check if there is any denied permission
+        val deniedPermissions = filterDeniedPermissions()
+        if (deniedPermissions.isNotEmpty()) {
+            try {
+                requestCustomPermissions(deniedPermissions)
+            } catch (e: CustomPermissionsNotImplementedException) {
+                onNotimplementedExceptionThrown(deniedPermissions)
+            } catch (e: Exception) {
+                onExceptionThrown(e.message.toString())
+            }
+        } else {
+            sendCachedCustomPermissions()
+        }
     }
 
     fun sendHostAppCustomPermissions(

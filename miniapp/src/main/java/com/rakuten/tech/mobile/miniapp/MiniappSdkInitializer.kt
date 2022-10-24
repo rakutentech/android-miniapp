@@ -102,7 +102,8 @@ class MiniappSdkInitializer : ContentProvider() {
         maxStorageSizeLimitInBytes = manifestConfig.maxStorageSizeLimitInBytes()
     )
 
-    private fun executeMiniAppAnalytics(rasProjId: String) {
+    @VisibleForTesting
+    internal fun executeMiniAppAnalytics(rasProjId: String) {
         MiniAppAnalytics.sendAnalyticsDefault(
             rasProjectId = rasProjId,
             eType = Etype.APPEAR,

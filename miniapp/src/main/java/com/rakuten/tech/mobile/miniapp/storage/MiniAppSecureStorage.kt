@@ -34,7 +34,12 @@ internal class MiniAppSecureStorage(
         if (!this::miniAppSecureDatabase.isInitialized) {
             setDatabaseName(miniAppId)
             miniAppSecureDatabase =
-                MiniAppSecureDatabase(context, databaseName, databaseVersion, maxDatabaseSizeInBytes)
+                MiniAppSecureDatabase(
+                    context,
+                    databaseName,
+                    databaseVersion,
+                    maxDatabaseSizeInBytes
+                )
         }
     }
 
