@@ -32,18 +32,12 @@ interface MiniAppFileChooser {
      * @param filePathCallback a callback to provide the array of file-paths to select.
      * @param fileChooserParams the parameters can be used to customize the options of file chooser.
      * @param context the Activity context can be used to start the intent to choose file.
-     * @param isOpenMultipleMode derived from WebChromeClient function,
-     * @param isCaptureEnabled derived from WebChromeClient function
-     * @param fileChooserParamsAcceptTypes derived from WebChromeClient function
      **/
     @Suppress("LongParameterList")
     fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
-        context: Context,
-        isOpenMultipleMode: Boolean = fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE,
-        isCaptureEnabled: Boolean = fileChooserParams?.isCaptureEnabled ?: false,
-        fileChooserParamsAcceptTypes: Array<String>? = fileChooserParams?.acceptTypes
+        context: Context
     ): Boolean
 }
 
@@ -58,6 +52,7 @@ interface MiniAppCameraPermissionDispatcher {
     fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
+
     /**
      * Request camera permission from host app.
      * You can also throw an [Exception] from this method.
@@ -122,28 +117,37 @@ class MiniAppFileChooserDefault(
         )
     }
 
+    private fun isOpenMultipleMode(fileChooserParams: WebChromeClient.FileChooserParams?): Boolean =
+        fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE
+
+    private fun isCaptureEnabled(fileChooserParams: WebChromeClient.FileChooserParams?): Boolean =
+        fileChooserParams?.isCaptureEnabled ?: false
+
+    private fun getAcceptTypes(fileChooserParams: WebChromeClient.FileChooserParams?): Array<String> =
+        fileChooserParams?.acceptTypes ?: emptyArray()
+
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
         context: Context,
-        isOpenMultipleMode: Boolean,
-        isCaptureEnabled: Boolean,
-        fileChooserParamsAcceptTypes: Array<String>?
     ): Boolean {
         try {
             callback = filePathCallback
             this.context = context
             val intent = fileChooserParams?.createIntent()
-            if (isOpenMultipleMode) {
+            if (isOpenMultipleMode(fileChooserParams)) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
-            if (isCaptureEnabled) {
+            if (isCaptureEnabled(fileChooserParams)) {
                 launchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
-                fileChooserParamsAcceptTypes?.let { acceptTypes ->
-                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
+                getAcceptTypes(fileChooserParams).let { acceptTypes ->
+                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(
+                            ""
+                        ))
+                    ) {
                         // Accept all first.
                         intent?.type = "*/*"
                         // Convert to valid MimeType if with dot.
@@ -235,7 +239,7 @@ class MiniAppFileChooserDefault(
             }
             currentPhotoPath != null -> {
                 val results = mutableListOf<Uri>()
-                results.add(Uri.fromFile(File(currentPhotoPath)))
+                results.add(Uri.fromFile(currentPhotoPath?.let { File(it) }))
                 callback?.onReceiveValue((results.toTypedArray()))
             }
             else -> {

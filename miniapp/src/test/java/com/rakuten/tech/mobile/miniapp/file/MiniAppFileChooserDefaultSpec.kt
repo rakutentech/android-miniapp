@@ -11,14 +11,15 @@ import android.webkit.WebChromeClient
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.TestActivity
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.Mockito.*
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -84,8 +85,8 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `onShowFileChooser should launch camera permission when isCaptureEnabled`() {
-        val actual =
-            miniAppFileChooser.onShowFileChooser(mock(), fileChooserParams, context, false, true)
+        whenever(fileChooserParams?.isCaptureEnabled).thenReturn(true)
+        val actual = miniAppFileChooser.onShowFileChooser(mock(), fileChooserParams, context)
         verify(miniAppFileChooser).launchCameraIntent()
         assertTrue(actual)
     }
@@ -93,38 +94,39 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `onShowFileChooser should add EXTRA_MIME_TYPES when acceptTypes is not empty`() {
         val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
-        val actual = miniAppFileChooser.onShowFileChooser(
+        whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
+        miniAppFileChooser.onShowFileChooser(
             mock(),
             fileChooserParams,
             context,
-            fileChooserParamsAcceptTypes = fileChooserParamsAcceptTypes
         )
         verify(context as Activity).startActivityForResult(intent, requestCode)
-        assertTrue(actual)
     }
 
     @Test
     fun `onShowFileChooser should return true when acceptTypes is not empty`() {
         val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
         val actual = miniAppFileChooser.onShowFileChooser(
             mock(),
             fileChooserParams,
             context,
-            fileChooserParamsAcceptTypes = fileChooserParamsAcceptTypes
         )
         assertTrue(actual)
     }
 
     @Test
     fun `onShowFileChooser Intent should add EXTRA_ALLOW_MULTIPLE extra if isOpenMultipleMode is true`() {
-        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context, true)
+        whenever(fileChooserParams?.mode).thenReturn(WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         verify(fileChooserParams?.createIntent())?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
     }
 
     @Test
     fun `onShowFileChooser should return true when isOpenMultipleMode is true`() {
         val actual =
-            miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context, true)
+            miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+
         assertTrue(actual)
     }
 
@@ -132,7 +134,7 @@ class MiniAppFileChooserDefaultSpec {
     fun `onShowFileChooser should call onReceivedFiles should call resetCallback`() {
         val intent: Intent = mock()
         val uri: Uri = mock()
-        When calling intent.data itReturns uri
+        whenever(intent.data).thenReturn(uri)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
@@ -142,7 +144,7 @@ class MiniAppFileChooserDefaultSpec {
     fun `onShowFileChooser should receiveValue onReceivedFiles when onReceivedFiles is called`() {
         val intent: Intent = mock()
         val uri: Uri = mock()
-        When calling intent.data itReturns uri
+        whenever(intent.data).thenReturn(uri)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(arrayOf(uri))
@@ -152,7 +154,7 @@ class MiniAppFileChooserDefaultSpec {
     fun `onReceivedFiles should call resetCallback when type is ClipData`() {
         val intent: Intent = mock()
         val clipData: ClipData = mock()
-        When calling intent.clipData itReturns clipData
+        whenever(intent.clipData).thenReturn(clipData)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
@@ -163,7 +165,7 @@ class MiniAppFileChooserDefaultSpec {
         val intent: Intent = mock()
         val clipData: ClipData = mock()
         val uriList = mutableListOf<Uri>()
-        When calling intent.clipData itReturns clipData
+        whenever(intent.clipData).thenReturn(clipData)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(uriList.toTypedArray())
