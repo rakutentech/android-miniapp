@@ -3,7 +3,12 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.ViewGroup
+import android.view.View
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
@@ -18,15 +23,19 @@ import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
-import com.rakuten.tech.mobile.testapp.ui.userdata.*
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.PointsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.properties.Delegates
 
+@Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -49,8 +58,8 @@ class SettingsFragment : BaseFragment() {
     }
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-            if(isTab1Checked){
+            invalidateOptionsMenu(requireActivity())
+            if (isTab1Checked) {
                 binding.toggleList2.isEnabled = new
             } else {
                 binding.toggleList1.isEnabled = new
@@ -85,9 +94,11 @@ class SettingsFragment : BaseFragment() {
 
         if (!isTab1Checked) {
             tab1ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
-            tab2ProjectIdSubscriptionKeyPair = settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+            tab2ProjectIdSubscriptionKeyPair =
+                settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
         } else {
-            tab1ProjectIdSubscriptionKeyPair = settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+            tab1ProjectIdSubscriptionKeyPair =
+                settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
             tab2ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
         }
 
@@ -106,8 +117,7 @@ class SettingsFragment : BaseFragment() {
         )
     }
 
-
-
+    @Suppress("LongMethod", "LongParameterList", "TooGenericExceptionCaught", "SwallowedException")
     private fun updateSettings(
         projectId: String,
         subscriptionKey: String,
@@ -178,6 +188,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
+    @Suppress("LongParameterList")
     private fun onUpdateError(
         appIdHolder: String,
         subscriptionKeyHolder: String,
@@ -203,7 +214,7 @@ class SettingsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
         // Inflate the layout for this fragment
@@ -244,7 +255,7 @@ class SettingsFragment : BaseFragment() {
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
         binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
+        if (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved) {
             switchProdVersion.isChecked = true
         }
 
@@ -260,10 +271,6 @@ class SettingsFragment : BaseFragment() {
 
         binding.buttonContacts.setOnClickListener {
             ContactListActivity.start(requireActivity())
-        }
-
-        binding.buttonCustomPermissions.setOnClickListener {
-            MiniAppDownloadedListActivity.start(requireActivity())
         }
 
         binding.buttonAccessToken.setOnClickListener {
@@ -292,14 +299,14 @@ class SettingsFragment : BaseFragment() {
         }
 
         binding.toggleList1.setOnClickListener {
-            if(isTab1Checked) return@setOnClickListener
+            if (isTab1Checked) return@setOnClickListener
             isTab1Checked = true
             settings.setTab2CredentialData(getTypedSubscriptionKeyProjectIdPair())
             updateProjectIdAndSubscription()
         }
 
         binding.toggleList2.setOnClickListener {
-            if(!isTab1Checked) return@setOnClickListener
+            if (!isTab1Checked) return@setOnClickListener
             isTab1Checked = false
             settings.setTab1CredentialData(getTypedSubscriptionKeyProjectIdPair())
             updateProjectIdAndSubscription()
@@ -342,11 +349,6 @@ class SettingsFragment : BaseFragment() {
     private fun setUpIdSubscriptionView(projectIdAndSubscriptionKeyPair: Pair<String, String>) {
         binding.editProjectId.setText(projectIdAndSubscriptionKeyPair.first)
         binding.editSubscriptionKey.setText(projectIdAndSubscriptionKeyPair.second)
-    }
-
-    private fun setUpIdSubscriptionView(projectId: String, subscriptionKey: String){
-        binding.editProjectId.setText(projectId)
-        binding.editSubscriptionKey.setText(subscriptionKey)
     }
 
     private fun createBuildInfo(): String {

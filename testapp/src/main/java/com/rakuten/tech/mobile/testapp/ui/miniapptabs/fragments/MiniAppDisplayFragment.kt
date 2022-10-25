@@ -60,6 +60,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.Menu
 import android.view.MenuItem
+import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity
 
 
 class MiniAppDisplayFragment : BaseFragment() {
@@ -467,6 +468,10 @@ class MiniAppDisplayFragment : BaseFragment() {
                 appInfo?.let {
                     MiniAppShareWindow.getInstance(requireActivity()).show(miniAppInfo = it)
                 }
+                true
+            }
+            R.id.settings_permission_mini_app -> {
+                startActivity(MiniAppPermissionSettingsActivity.getStartIntent(requireActivity(), appId))
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -62,6 +62,7 @@
             android:label="Downloaded Mini App List" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity"
+            android:launchMode="singleTask"
             android:label="Permission Settings" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity"
