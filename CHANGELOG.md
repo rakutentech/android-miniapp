@@ -10,7 +10,7 @@
 - **Update:** Refactored the `maxStorageSizeLimitInMB` parameter to `maxStorageSizeLimitInBytes` in `MiniAppSdkConfig`.
 
 **Sample App**
-- **Feature:** Demo App will now use a TabBar instead of a single screen.
+- **Feature:** Demo App will now use a tabBar instead of a single screen.
 - **Feature:** Adding List I and List II for displaying multiple MiniApps at the same time and configurable through settings.
 - **Feature:** Features tab will start with URL feature to run MiniApps locally.
 - **Feature:** Settings is moved to it's own tab.
