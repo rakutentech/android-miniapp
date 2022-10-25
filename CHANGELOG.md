@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.x.x (xxxx-xx-xx)
+### 5.0.0 (2022-10-25)
 **SDK**
 - **Feature:** Added `MiniAppView` to create multiple MiniApp views.
 - **Feature:** Added `MiniAppConfig` data class to hold configuration settings for the `MiniAppView`.
