@@ -116,4 +116,5 @@
     <string name="deeplink_activity_input_hint">Input here</string>
     <string name="deeplink_activity_no_deeplink">No deeplink available!</string>
     <string name="deeplink_activity_not_saved">No deeplink has been saved yet.</string>
+    <string name="miniapp_by_input">MiniApp By Input</string>
 </resources>

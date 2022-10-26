@@ -6,8 +6,6 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
@@ -15,11 +13,11 @@ import com.rakuten.tech.mobile.testapp.BuildVariant
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppCredentialData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -80,130 +78,47 @@ class SettingsFragment : BaseFragment() {
             settingsProgressDialog.show()
         }
 
-        val tab1ProjectIdSubscriptionKeyPair: Pair<String, String>
-        val tab2ProjectIdSubscriptionKeyPair: Pair<String, String>
+        val tab1CredentialData: MiniAppCredentialData
+        val tab2CredentialData: MiniAppCredentialData
 
-        if (!isTab1Checked) {
-            tab1ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
-            tab2ProjectIdSubscriptionKeyPair = settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+        if (isTab1Checked) {
+            tab1CredentialData = getCurrentTypedCredentialData()
+            tab2CredentialData = settings.getCurrentTab2CredentialData()
         } else {
-            tab1ProjectIdSubscriptionKeyPair = settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
-            tab2ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
+            tab1CredentialData = settings.getCurrentTab1CredentialData()
+            tab2CredentialData = getCurrentTypedCredentialData()
         }
 
-        updateSetupIdSubscriptionData(
-            tab1ProjectIdSubscriptionKeyPair,
-            tab2ProjectIdSubscriptionKeyPair
+        saveCredentialData(
+            tab1CredentialData,
+            tab2CredentialData
         )
 
-        updateSettings(
-            binding.editProjectId.text.toString(),
-            binding.editSubscriptionKey.text.toString(),
-            binding.editParametersUrl.text.toString(),
-            binding.switchPreviewMode.isChecked,
-            binding.switchSignatureVerification.isChecked,
-            binding.switchProdVersion.isChecked
-        )
+        updateSettings()
     }
 
 
 
-    private fun updateSettings(
-        projectId: String,
-        subscriptionKey: String,
-        urlParameters: String,
-        isPreviewMode: Boolean,
-        requireSignatureVerification: Boolean,
-        isProdVersionEnabled: Boolean
-    ) {
-        val appIdHolder = settings.projectId
-        val subscriptionKeyHolder = settings.subscriptionKey
-        val urlParametersHolder = settings.urlParameters
-        val isPreviewModeHolder = settings.isPreviewMode
-        val requireSignatureVerificationHolder = settings.requireSignatureVerification
-        if (toggleList1.isChecked) {
-            settings.projectId = projectId
-            settings.subscriptionKey = subscriptionKey
-        } else {
-            settings.projectId2 = projectId
-            settings.subscriptionKey2 = subscriptionKey
-        }
-        settings.urlParameters = urlParameters
-        settings.isPreviewMode = isPreviewMode
-        settings.requireSignatureVerification = requireSignatureVerification
-        settings.isProdVersionEnabled = isProdVersionEnabled
+    private fun updateSettings() {
+        settings.urlParameters = binding.editParametersUrl.text.toString()
+        settings.isDisplayInputPreviewMode = binding.switchPreviewMode.isChecked
 
         launch {
-            try {
-                URL("https://www.test-param.com?$urlParameters").toURI()
-
-                settings.isSettingSaved = true
-                requireActivity().runOnUiThread {
-                    if (requireActivity().isAvailable) {
-                        settingsProgressDialog.cancel()
-                    }
-                    validateInputIDs()
+            URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
+            settings.isSettingSaved = true
+            requireActivity().runOnUiThread {
+                if (requireActivity().isAvailable) {
+                    settingsProgressDialog.cancel()
                 }
-            } catch (error: MiniAppTooManyRequestsError) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "Error",
-                    getString(R.string.error_desc_miniapp_too_many_request)
-                )
-            } catch (error: MiniAppSdkException) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "MiniApp SDK",
-                    error.message.toString()
-                )
-            } catch (error: Exception) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "URL parameter",
-                    error.message.toString()
-                )
+                validateInputIDs()
             }
-        }
-    }
-
-    private fun onUpdateError(
-        appIdHolder: String,
-        subscriptionKeyHolder: String,
-        urlParametersHolder: String,
-        isPreviewModeHolder: Boolean,
-        requireSignatureVerificationHolder: Boolean,
-        errTitle: String,
-        errMsg: String
-    ) {
-        settings.projectId = appIdHolder
-        settings.subscriptionKey = subscriptionKeyHolder
-        settings.urlParameters = urlParametersHolder
-        settings.isPreviewMode = isPreviewModeHolder
-        settings.requireSignatureVerification = requireSignatureVerificationHolder
-        requireActivity().runOnUiThread {
-            if (requireActivity().isAvailable) {
-                settingsProgressDialog.cancel()
-            }
-            showAlertDialog(requireActivity(), errTitle, errMsg)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
         // Inflate the layout for this fragment
@@ -241,15 +156,14 @@ class SettingsFragment : BaseFragment() {
     private fun renderAppSettingsScreen() {
         binding.textInfo.text = createBuildInfo()
         binding.editParametersUrl.setText(settings.urlParameters)
-        binding.switchPreviewMode.isChecked = settings.isPreviewMode
-        binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
-        binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
+        binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
+
         if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
             switchProdVersion.isChecked = true
         }
 
-        val projectIdSubscriptionKeyPair = settings.getDefaultProjectIdSubscriptionKeyPair()
-        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
+        val defaultCredentialData = settings.getDefaultCredentialData()
+        setupCredentialDataToView(defaultCredentialData)
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
@@ -283,70 +197,65 @@ class SettingsFragment : BaseFragment() {
         }
 
         binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                settings.baseUrl = getString(R.string.prodBaseUrl)
+            if(isTab1Checked){
+                settings.setTempTab1IsProduction(isChecked)
             } else {
-                settings.baseUrl = getString(R.string.stagingBaseUrl)
+                settings.setTempTab2IsProduction(isChecked)
             }
-            updateProjectIdAndSubscription()
+            updateTabProjectIdAndSubscription()
         }
 
         binding.toggleList1.setOnClickListener {
             if(isTab1Checked) return@setOnClickListener
             isTab1Checked = true
-            settings.setTab2CredentialData(getTypedSubscriptionKeyProjectIdPair())
-            updateProjectIdAndSubscription()
+            settings.setTempTab2CredentialData(getCurrentTypedCredentialData())
+            updateTabProjectIdAndSubscription()
         }
 
         binding.toggleList2.setOnClickListener {
             if(!isTab1Checked) return@setOnClickListener
             isTab1Checked = false
-            settings.setTab1CredentialData(getTypedSubscriptionKeyProjectIdPair())
-            updateProjectIdAndSubscription()
+            settings.setTempTab1CredentialData(getCurrentTypedCredentialData())
+            updateTabProjectIdAndSubscription()
         }
 
         // enable the save button first time.
         validateInputIDs(true)
     }
 
-    fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
-        return Pair(
+    fun getCurrentTypedCredentialData(): MiniAppCredentialData {
+        return MiniAppCredentialData(
+            binding.switchProdVersion.isChecked,
+            binding.switchSignatureVerification.isChecked,
+            binding.switchPreviewModeTab.isChecked,
             binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString()
         )
     }
 
-    private fun updateSetupIdSubscriptionData(
-        tab1ProjectIdSubscriptionKeyPair: Pair<String, String>,
-        tab2ProjectIdSubscriptionKeyPair: Pair<String, String>,
+    private fun saveCredentialData(
+        tab1CredentialData: MiniAppCredentialData,
+        tab2CredentialData: MiniAppCredentialData
     ) {
-        settings.projectId = tab1ProjectIdSubscriptionKeyPair.first
-        settings.subscriptionKey = tab1ProjectIdSubscriptionKeyPair.second
-        settings.projectId2 = tab2ProjectIdSubscriptionKeyPair.first
-        settings.subscriptionKey2 = tab2ProjectIdSubscriptionKeyPair.second
+        settings.saveTab1CredentialData(tab1CredentialData)
+        settings.saveTab2CredentialData(tab2CredentialData)
     }
 
-    private fun updateProjectIdAndSubscription() {
-        val projectIdSubscriptionKeyPair: Pair<String, String> = if (isTab1Checked) {
-            settings.getCurrentTab1ProjectIdSubscriptionKeyPair(
-                binding.switchProdVersion.isChecked
-            )
+    private fun updateTabProjectIdAndSubscription() {
+        val credentialData: MiniAppCredentialData = if (isTab1Checked) {
+            settings.getCurrentTab1CredentialData()
         } else {
-            settings.getCurrentTab2ProjectIdSubscriptionKeyPair(
-                binding.switchProdVersion.isChecked
-            )
+            settings.getCurrentTab2CredentialData()
         }
-        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
+        setupCredentialDataToView(credentialData)
     }
 
-    private fun setUpIdSubscriptionView(projectIdAndSubscriptionKeyPair: Pair<String, String>) {
-        binding.editProjectId.setText(projectIdAndSubscriptionKeyPair.first)
-        binding.editSubscriptionKey.setText(projectIdAndSubscriptionKeyPair.second)
-    }
-
-    private fun setUpIdSubscriptionView(projectId: String, subscriptionKey: String){
-        binding.editProjectId.setText(projectId)
-        binding.editSubscriptionKey.setText(subscriptionKey)
+    private fun setupCredentialDataToView(credentialData: MiniAppCredentialData) {
+        binding.switchProdVersion.isChecked = credentialData.isProduction
+        binding.switchPreviewModeTab.isChecked = credentialData.isPreviewMode
+        binding.switchSignatureVerification.isChecked = credentialData.requireSignatureVerification
+        binding.editProjectId.setText(credentialData.projectId)
+        binding.editSubscriptionKey.setText(credentialData.subscriptionId)
     }
 
     private fun createBuildInfo(): String {

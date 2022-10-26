@@ -9,70 +9,28 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
-import com.rakuten.tech.mobile.testapp.BuildVariant
 import java.util.*
 
+
+@Suppress("TooManyFunctions")
 class AppSettings private constructor(context: Context) {
 
     private val manifestConfig = AppManifestConfig(context)
-    private val cache = Cache(context)
+    private val cache = Cache(context, manifestConfig)
 
-    var isPreviewMode: Boolean
-        get() = cache.isPreviewMode ?: manifestConfig.isPreviewMode()
+    val defaultProjectId: String = manifestConfig.rasProjectId()
+
+    var isDisplayInputPreviewMode: Boolean
+        get() = cache.rasCredentialData.isDisplayInputPreviewMode ?: manifestConfig.isPreviewMode()
         set(isPreviewMode) {
-            cache.isPreviewMode = isPreviewMode
+            cache.rasCredentialData.isPreviewModeDisplayByInput = isPreviewMode
         }
 
-    var requireSignatureVerification: Boolean
-        get() = cache.requireSignatureVerification ?: manifestConfig.requireSignatureVerification()
-        set(isRequired) {
-            cache.requireSignatureVerification = isRequired
-        }
-
-    var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value)
-        set(isRequired) {
-            cache.isProdVersionEnabled = isRequired
-        }
-
-    var baseUrl: String
-        get() = cache.baseUrl ?: manifestConfig.baseUrl()
-        set(baseUrl) {
-            cache.baseUrl = baseUrl
-        }
-
-    var projectId: String
-        get() = cache.rasCredentialData.projectId ?: manifestConfig.rasProjectId()
-        set(projectId) {
-            cache.rasCredentialData.projectId = projectId
-        }
-
-    var subscriptionKey: String
-        get() = cache.rasCredentialData.subscriptionKey ?: manifestConfig.subscriptionKey()
-        set(subscriptionKey) {
-            cache.rasCredentialData.subscriptionKey = subscriptionKey
-        }
-
-    var projectId2: String
-        get() = cache.rasCredentialData.projectId2 ?: manifestConfig.rasProjectId()
-        set(projectId2) {
-            cache.rasCredentialData.projectId2 = projectId2
-        }
-
-    var subscriptionKey2: String
-        get() = cache.rasCredentialData.subscriptionKey2 ?: manifestConfig.subscriptionKey()
-        set(subscriptionKey2) {
-            cache.rasCredentialData.subscriptionKey2 = subscriptionKey2
-        }
-
-    var uniqueId: String
+    val uniqueId: String
         get() {
             val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
             cache.uniqueId = uniqueId
             return uniqueId
-        }
-        set(subscriptionKey) {
-            cache.rasCredentialData.subscriptionKey = subscriptionKey
         }
 
     var uniqueIdError: String
@@ -138,12 +96,6 @@ class AppSettings private constructor(context: Context) {
             cache.urlParameters = urlParameters
         }
 
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>
-        get() = cache.miniAppAnalyticsConfigs ?: emptyList()
-        set(miniAppAnalyticsConfigs) {
-            cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
-        }
-
     var accessTokenError: MiniAppAccessTokenError?
         get() = cache.accessTokenError
         set(accessTokenError) {
@@ -174,63 +126,68 @@ class AppSettings private constructor(context: Context) {
     var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
 
     val miniAppSettings1: MiniAppSdkConfig
-        get() = MiniAppSdkConfig(
-            baseUrl = baseUrl,
-            rasProjectId = projectId,
-            subscriptionKey = subscriptionKey,
-            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
-            hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isPreviewMode = isPreviewMode,
-            requireSignatureVerification = requireSignatureVerification,
-            // temporarily taking values from buildConfig, we may add UI for this later.
-            miniAppAnalyticsConfigList = listOf(
-                MiniAppAnalyticsConfig(
-                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
-                    BuildConfig.ADDITIONAL_ANALYTICS_AID
-                )
-            ),
-            maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
-        )
+        get() {
+            val tab1Data = getCurrentTab1CredentialData()
+            return MiniAppSdkConfig(
+                baseUrl = cache.getBaseUrl(tab1Data.isProduction) ,
+                rasProjectId = tab1Data.projectId,
+                subscriptionKey = tab1Data.subscriptionId,
+                // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isPreviewMode = tab1Data.isPreviewMode,
+                requireSignatureVerification = tab1Data.requireSignatureVerification,
+                // temporarily taking values from buildConfig, we may add UI for this later.
+                miniAppAnalyticsConfigList = listOf(
+                    MiniAppAnalyticsConfig(
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC, BuildConfig.ADDITIONAL_ANALYTICS_AID
+                    )
+                ),
+                maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+            )
+        }
 
     val miniAppSettings2: MiniAppSdkConfig
-        get() = MiniAppSdkConfig(
-            baseUrl = baseUrl,
-            rasProjectId = projectId2,
-            subscriptionKey = subscriptionKey2,
-            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
-            hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isPreviewMode = isPreviewMode,
-            requireSignatureVerification = requireSignatureVerification,
-            // temporarily taking values from buildConfig, we may add UI for this later.
-            miniAppAnalyticsConfigList = listOf(
-                MiniAppAnalyticsConfig(
-                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
-                    BuildConfig.ADDITIONAL_ANALYTICS_AID
-                )
-            ),
-            maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
-        )
+        get() {
+            val tab2Data = getCurrentTab2CredentialData()
+            return MiniAppSdkConfig(
+                baseUrl = cache.getBaseUrl(tab2Data.isProduction),
+                rasProjectId = tab2Data.projectId,
+                subscriptionKey = tab2Data.subscriptionId,
+                // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isPreviewMode = tab2Data.isPreviewMode,
+                requireSignatureVerification = tab2Data.requireSignatureVerification,
+                // temporarily taking values from buildConfig, we may add UI for this later.
+                miniAppAnalyticsConfigList = listOf(
+                    MiniAppAnalyticsConfig(
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC, BuildConfig.ADDITIONAL_ANALYTICS_AID
+                    )
+                ),
+                maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+            )
+        }
 
-    fun getCurrentTab1ProjectIdSubscriptionKeyPair(isProduction: Boolean): Pair<String, String> {
+    fun getCurrentTab1CredentialData(): MiniAppCredentialData {
         return if (isTab1TempCredentialDataValid()) {
             cache.rasCredentialData.getTab1TempData()
         } else {
-            cache.rasCredentialData.getDefaultData(isProduction)
+            cache.rasCredentialData.getDefaultData()
         }
     }
 
-    fun getDefaultProjectIdSubscriptionKeyPair(): Pair<String, String> {
-        return if (isProdVersionEnabled) cache.rasCredentialData.defaultProdPair else Pair(
-            manifestConfig.rasProjectId(),
-            manifestConfig.subscriptionKey()
-        )
+    fun getDefaultCredentialData(): MiniAppCredentialData {
+        return if (cache.rasCredentialData.isDefaultProductionEnabled) {
+            cache.rasCredentialData.defaultProductionData
+        } else {
+            cache.rasCredentialData.defaultStagingData
+        }
     }
 
-    fun getCurrentTab2ProjectIdSubscriptionKeyPair(isProduction: Boolean): Pair<String, String> {
+    fun getCurrentTab2CredentialData(): MiniAppCredentialData {
         return if (isTab2TempCredentialDataValid()) {
             cache.rasCredentialData.getTab2TempData()
         } else {
-            cache.rasCredentialData.getDefaultData(isProduction)
+            cache.rasCredentialData.getDefaultData()
         }
     }
 
@@ -242,21 +199,43 @@ class AppSettings private constructor(context: Context) {
         return cache.rasCredentialData.isTab2TempDataValid()
     }
 
-    fun setTab1CredentialData(
-        projectIdSubscriptionKeyPair: Pair<String, String>,
+    fun saveTab1CredentialData(
+        credentialData: MiniAppCredentialData
     ) {
-        cache.rasCredentialData.setTab1Data(
-            projectIdSubscriptionKeyPair.first,
-            projectIdSubscriptionKeyPair.second,
+        cache.rasCredentialData.saveTab1Data(
+            credentialData
         )
     }
 
-    fun setTab2CredentialData(
-        projectIdSubscriptionKeyPair: Pair<String, String>,
+    fun setTempTab1CredentialData(
+        credentialData: MiniAppCredentialData
     ) {
-        cache.rasCredentialData.setTab2Data(
-            projectIdSubscriptionKeyPair.first,
-            projectIdSubscriptionKeyPair.second,
+        cache.rasCredentialData.setTempTab1Data(
+            credentialData
+        )
+    }
+
+    fun saveTab2CredentialData(
+        tab2CredentialData: MiniAppCredentialData
+    ) {
+        cache.rasCredentialData.saveTab2Data(
+            tab2CredentialData
+        )
+    }
+
+    fun setTempTab1IsProduction(isProduction: Boolean){
+        cache.rasCredentialData.setTempTab1IsProduction(isProduction)
+    }
+
+    fun setTempTab2IsProduction(isProduction: Boolean){
+        cache.rasCredentialData.setTempTab2IsProduction(isProduction)
+    }
+
+    fun setTempTab2CredentialData(
+        credentialData: MiniAppCredentialData
+    ) {
+        cache.rasCredentialData.setTempTab2Data(
+            credentialData
         )
     }
 

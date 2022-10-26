@@ -23,17 +23,9 @@ class MiniAppListStore private constructor(context: Context) {
         Context.MODE_PRIVATE
     )
     private val gson = Gson()
-    private val miniAppList = "mini_app_list" + "_is_test_${AppSettings.instance.isPreviewMode}"
+    private val miniAppList = "mini_app_list" + "_is_test_${AppSettings.instance.isDisplayInputPreviewMode}"
 
-    @SuppressLint("CommitPrefEdits")
-    fun saveMiniAppList(list: List<MiniAppInfo>): Boolean = when {
-        list.isEmpty() -> false
-        else -> {
-            prefs.edit().putString(miniAppList, gson.toJson(list)).apply()
-            true
-        }
-    }
-
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun getMiniAppList(): List<MiniAppInfo> = try {
         gson.fromJson(
             prefs.getString(miniAppList, ""),

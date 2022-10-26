@@ -4,53 +4,32 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.BuildVariant
 
 
-internal class Cache(context: Context) {
+internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
     private val gson = Gson()
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.settings",
         Context.MODE_PRIVATE
     )
+    val productionBaseUrl = context.getString(R.string.prodBaseUrl)
+    val stagingBBaseUrl = context.getString(R.string.stagingBaseUrl)
 
-    val rasCredentialData = RasCredentialData(context)
+    val rasCredentialData = RasCredentialData(context, manifestConfig)
 
-    var isPreviewMode: Boolean?
-        get() =
-            if (prefs.contains(IS_PREVIEW_MODE))
-                prefs.getBoolean(IS_PREVIEW_MODE, true)
-            else
-                null
-        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
-
-    var requireSignatureVerification: Boolean?
-        get() =
-            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
-                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!)
-            .apply()
-
-    var isProdVersionEnabled: Boolean?
-        get() =
-            if (prefs.contains(IS_PROD_VERSION_ENABLED))
-                prefs.getBoolean(IS_PROD_VERSION_ENABLED, false)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(IS_PROD_VERSION_ENABLED, isRequired!!).apply()
-
-    var baseUrl: String?
-        get() = prefs.getString(BASE_URL, null)
-        set(baseUrl) = prefs.edit().putString(BASE_URL, baseUrl).apply()
-
+    fun getBaseUrl(isProduction: Boolean) = if(isProduction){
+        productionBaseUrl
+    } else stagingBBaseUrl
 
     var uniqueId: String?
         get() = prefs.getString(UNIQUE_ID, null)
@@ -145,12 +124,22 @@ internal class Cache(context: Context) {
         set(maxStorageSizeLimitInBytes) = prefs.edit()
             .putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
 
-
     companion object {
+        private const val IS_PREVIEW_MODE_DISPLAY_BY_INPUT = "is_display_by_input_preview_mode"
         private const val IS_PREVIEW_MODE = "is_preview_mode"
+        private const val TEMP_IS_PREVIEW_MODE = "temp_is_preview_mode"
+        private const val IS_PREVIEW_MODE_2 = "is_preview_mode_2"
+        private const val TEMP_IS_PREVIEW_MODE_2 = "temp_is_preview_mode"
         private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
+        private const val TEMP_REQUIRE_SIGNATURE_VERIFICATION =
+            "temp_require_signature_verification"
+        private const val REQUIRE_SIGNATURE_VERIFICATION_2 = "require_signature_verification_2"
+        private const val TEMP_REQUIRE_SIGNATURE_VERIFICATION_2 =
+            "temp_require_signature_verification_2"
         private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
-        private const val BASE_URL = "base_url"
+        private const val TEMP_IS_PROD_VERSION_ENABLED = "temp_is_prod_version_enabled"
+        private const val IS_PROD_VERSION_ENABLED_2 = "is_prod_version_enabled_2"
+        private const val TEMP_IS_PROD_VERSION_ENABLED_2 = "temp_is_prod_version_enabled_2"
         private const val APP_ID = "app_id"
         private const val APP_ID_2 = "app_id_2"
         const val TEMP_APP_ID = "temp_app_id"
@@ -177,85 +166,144 @@ internal class Cache(context: Context) {
         private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
     }
 
-    inner class RasCredentialData(context: Context) {
+    inner class RasCredentialData(context: Context, manifestConfig: AppManifestConfig) {
 
+        val isDefaultProductionEnabled = BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value
 
-        val defaultProdPair = Pair(
+        val tab1MiniAppCredentialCache = MiniAppCredentialCache(
+            IS_PROD_VERSION_ENABLED,
+            REQUIRE_SIGNATURE_VERIFICATION,
+            IS_PREVIEW_MODE,
+            APP_ID,
+            SUBSCRIPTION_KEY
+        )
+
+        val tab1TempMiniAppCredentialCache = MiniAppCredentialCache(
+            TEMP_IS_PROD_VERSION_ENABLED,
+            TEMP_REQUIRE_SIGNATURE_VERIFICATION,
+            TEMP_IS_PREVIEW_MODE,
+            TEMP_APP_ID,
+            TEMP_SUBSCRIPTION_KEY
+        )
+
+        val tab2MiniAppCredentialCache = MiniAppCredentialCache(
+            IS_PROD_VERSION_ENABLED_2,
+            REQUIRE_SIGNATURE_VERIFICATION_2,
+            IS_PREVIEW_MODE_2,
+            APP_ID_2,
+            SUBSCRIPTION_KEY_2
+        )
+
+        val tab2TempMiniAppCredentialCache = MiniAppCredentialCache(
+            TEMP_IS_PROD_VERSION_ENABLED_2,
+            TEMP_REQUIRE_SIGNATURE_VERIFICATION_2,
+            TEMP_IS_PREVIEW_MODE_2,
+            TEMP_APP_ID_2,
+            TEMP_SUBSCRIPTION_KEY_2
+        )
+
+        val defaultProductionData = MiniAppCredentialData(
+            isDefaultProductionEnabled,
+            manifestConfig.requireSignatureVerification(),
+            manifestConfig.isPreviewMode(),
             context.getString(R.string.prodProjectId),
             context.getString(R.string.prodSubscriptionKey)
         )
 
-        val defaultStagingPair = Pair(
+        val defaultStagingData = MiniAppCredentialData(
+            BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value,
+            manifestConfig.requireSignatureVerification(),
+            manifestConfig.isPreviewMode(),
             context.getString(R.string.stagingProjectId),
             context.getString(R.string.stagingSubscriptionKey)
         )
 
-        var projectId: String?
-            get() = prefs.getString(APP_ID, null)
-            set(appId) = prefs.edit().putString(APP_ID, appId).apply()
 
-        var projectId2: String?
-            get() = prefs.getString(APP_ID_2, null)
-            set(appId2) = prefs.edit().putString(APP_ID_2, appId2).apply()
+        var isPreviewModeDisplayByInput: Boolean?
+            get() =
+                if (prefs.contains(IS_PREVIEW_MODE_DISPLAY_BY_INPUT))
+                    prefs.getBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, true)
+                else
+                    null
+            set(isPreviewMode) = prefs.edit()
+                .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, isPreviewMode!!).apply()
 
-        var subscriptionKey: String?
-            get() = prefs.getString(SUBSCRIPTION_KEY, null)
-            set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
+        var isDisplayInputPreviewMode: Boolean?
+            get() =
+                if (prefs.contains(IS_PREVIEW_MODE))
+                    prefs.getBoolean(IS_PREVIEW_MODE, true)
+                else
+                    null
+            set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
 
-        var subscriptionKey2: String?
-            get() = prefs.getString(SUBSCRIPTION_KEY_2, null)
-            set(subscriptionKey2) = prefs.edit().putString(SUBSCRIPTION_KEY_2, subscriptionKey2)
-                .apply()
 
-
-        fun getDefaultData(isProduction: Boolean): Pair<String, String> {
-            return if (isProduction) defaultProdPair else defaultStagingPair
+        fun getDefaultData(
+        ): MiniAppCredentialData {
+            return if (isDefaultProductionEnabled) defaultProductionData
+            else defaultStagingData
         }
 
-        fun getTab1TempData(): Pair<String, String> {
-            return Pair(
-                prefs.getString(TEMP_APP_ID, null) ?: "",
-                prefs.getString(TEMP_SUBSCRIPTION_KEY, null) ?: ""
+        fun getTab1TempData(): MiniAppCredentialData =
+            tab1TempMiniAppCredentialCache.getData(prefs)
+
+
+        fun getTab2TempData(): MiniAppCredentialData =
+            tab2TempMiniAppCredentialCache.getData(prefs)
+
+
+        fun isTab1TempDataValid(): Boolean =
+            tab1MiniAppCredentialCache.isValid(prefs)
+
+
+        fun isTab2TempDataValid(): Boolean = tab2MiniAppCredentialCache.isValid(prefs)
+
+
+        fun saveTab1Data(
+            credentialData: MiniAppCredentialData
+        ) {
+            tab1MiniAppCredentialCache.setData(
+                prefs.edit(),
+                credentialData
+            )
+            tab1TempMiniAppCredentialCache.clear(prefs.edit())
+        }
+
+        fun setTempTab1IsProduction(isProduction: Boolean) {
+            tab1TempMiniAppCredentialCache.setIsProduction(prefs.edit(), isProduction)
+        }
+
+        fun setTempTab1Data(
+            credentialData: MiniAppCredentialData
+        ) {
+            tab1TempMiniAppCredentialCache.setData(
+                prefs.edit(),
+                credentialData
             )
         }
 
-        fun getTab2TempData(): Pair<String, String> {
-            return Pair(
-                prefs.getString(TEMP_APP_ID_2, null) ?: "",
-                prefs.getString(TEMP_SUBSCRIPTION_KEY_2, null) ?: ""
+        fun saveTab2Data(
+            credentialData: MiniAppCredentialData
+        ) {
+            tab2MiniAppCredentialCache.setData(
+                prefs.edit(),
+                credentialData
+            )
+            tab2TempMiniAppCredentialCache.clear(prefs.edit())
+        }
+
+        fun setTempTab2IsProduction(isProduction: Boolean) {
+            tab2TempMiniAppCredentialCache.setIsProduction(prefs.edit(), isProduction)
+        }
+
+        fun setTempTab2Data(
+            credentialData: MiniAppCredentialData
+        ) {
+            tab2TempMiniAppCredentialCache.setData(
+                prefs.edit(),
+                credentialData
             )
         }
 
-        fun isTab1TempDataValid(): Boolean {
-            val tempData = getTab1TempData()
-            return tempData.first.isNotBlank() && tempData.second.isNotBlank()
-        }
 
-        fun isTab2TempDataValid(): Boolean {
-            val tempData = getTab2TempData()
-            return tempData.first.isNotBlank() && tempData.second.isNotBlank()
-        }
-
-        /**
-         * no OnSharedPreferenceChangeListener added, thus requires immediate value
-         */
-
-        fun setTab1Data(
-            tempAppId: String,
-            tempSubscriptionKey: String,
-        ) {
-            val edit = prefs.edit()
-            edit.putString(TEMP_APP_ID, tempAppId).commit()
-            edit.putString(TEMP_SUBSCRIPTION_KEY, tempSubscriptionKey).commit()
-        }
-
-        fun setTab2Data(
-            tempAppId: String,
-            tempSubscriptionKey: String,
-        ) {
-            val edit = prefs.edit()
-            edit.putString(TEMP_APP_ID_2, tempAppId).commit()
-            edit.putString(TEMP_SUBSCRIPTION_KEY_2, tempSubscriptionKey).commit()
-        }
     }
 }

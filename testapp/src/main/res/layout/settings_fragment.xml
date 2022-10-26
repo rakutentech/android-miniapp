@@ -30,6 +30,16 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_section"
+                    android:paddingStart="@dimen/medium_16"
+                    android:paddingTop="@dimen/small_4"
+                    android:paddingEnd="@dimen/medium_16"
+                    android:paddingBottom="@dimen/small_4"
+                    android:text="@string/miniapp_by_input" />
+
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
                     android:id="@+id/switchPreviewMode"
                     android:layout_width="match_parent"
@@ -42,42 +52,6 @@
                     app:actionType="change_status"
                     app:pageName="Settings"
                     app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
-                    android:id="@+id/switchSignatureVerification"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8"
-                    android:padding="@dimen/small_8"
-                    android:text="@string/lb_require_signature_verification"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_large_16"
-                    app:actionType="change_status"
-                    app:pageName="Settings"
-                    app:siteSection="Top" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
-                    android:id="@+id/switchProdVersion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8"
-                    android:padding="@dimen/small_8"
-                    android:text="@string/lb_enable_prod_version"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_large_16"
-                    app:actionType="change_status"
-                    app:pageName="Settings"
-                    app:siteSection="Top" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
@@ -114,11 +88,61 @@
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchProdVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_enable_prod_version"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchPreviewModeTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_preview_mode"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchSignatureVerification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_require_signature_verification"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/inputProjectId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/small_4"
+                    android:padding="@dimen/small_8"
                     app:endIconMode="clear_text"
                     app:errorTextAppearance="@style/SettingsError.TextAppearance">
 
@@ -136,6 +160,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/small_4"
+                    android:padding="@dimen/small_8"
                     app:endIconMode="clear_text"
                     app:errorTextAppearance="@style/SettingsError.TextAppearance">
 

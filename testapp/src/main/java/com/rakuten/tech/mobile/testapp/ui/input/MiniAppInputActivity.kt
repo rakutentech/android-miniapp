@@ -27,9 +27,9 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
 
     sealed class InputDisplay(val input: String) {
-        class AppId(input: String): InputDisplay(input)
-        class Url(input: String): InputDisplay(input)
-        class None: InputDisplay("")
+        class AppId(input: String) : InputDisplay(input)
+        class Url(input: String) : InputDisplay(input)
+        class None : InputDisplay("")
     }
 
     private var display: InputDisplay = InputDisplay.None()
@@ -40,10 +40,14 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
 
         setupInputHint()
         validateInput(binding.edtAppId.text.toString().trim())
-        binding.edtAppId.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
+        binding.edtAppId.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                //EmptyFunctionBlock intended
+            }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                //EmptyFunctionBlock intended
+            }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 validateInput(s.toString().trim())
@@ -60,10 +64,12 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
         }
     }
 
-    override fun onBackPressed() {}
+    override fun onBackPressed() {
+        //EmptyFunctionBlock intended
+    }
 
     private fun setupInputHint() {
-        if (AppSettings.instance.isPreviewMode)
+        if (AppSettings.instance.isDisplayInputPreviewMode)
             binding.inputLayout.hint = getString(R.string.lb_app_url)
         else
             binding.inputLayout.hint = getString(R.string.lb_app_id_or_url)
@@ -76,7 +82,7 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
             display = if (URLUtil.isValidUrl(input)) {
                 onValidUI()
                 InputDisplay.Url(input)
-            } else if (!AppSettings.instance.isPreviewMode && !input.isInvalidUuid()) {
+            } else if (!AppSettings.instance.isDisplayInputPreviewMode && !input.isInvalidUuid()) {
                 onValidUI()
                 InputDisplay.AppId(input)
             } else {
@@ -96,14 +102,15 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
         binding.btnDisplayAppId.isEnabled = true
     }
 
-    private fun displayMiniApp() = when(display) {
+    private fun displayMiniApp() = when (display) {
         is InputDisplay.AppId -> initiatePreloadScreen(display.input.trim())
         is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
         is InputDisplay.None -> {}
     }
 
     private fun initiatePreloadScreen(miniAppId: String) {
-        val viewModel: MiniAppInputViewModel = ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
+        val viewModel: MiniAppInputViewModel =
+            ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
                 .apply {
                     miniAppVersionId.observe(this@MiniAppInputActivity) {
                         preloadMiniAppWindow.initiate(

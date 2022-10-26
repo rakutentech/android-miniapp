@@ -41,7 +41,7 @@ class RATSwitch : SwitchCompat {
                 if (index > -1) action = ActionType.values()[index]
                 it.recycle()
             }
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.defaultProjectId).sendAnalytics(
             RATEvent(
                 event = EventType.APPEAR,
                 action = action,
@@ -56,7 +56,7 @@ class RATSwitch : SwitchCompat {
     /** This listener will send the RAT event first then send the values to child listener. */
     private var listener: OnCheckedChangeListener =
         OnCheckedChangeListener { buttonView, isChecked ->
-            DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+            DemoAppAnalytics.init(AppSettings.instance.defaultProjectId).sendAnalytics(
                 RATEvent(
                     event = EventType.CLICK,
                     action = action,
