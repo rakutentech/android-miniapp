@@ -32,7 +32,7 @@ import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.userinfo.*
+import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
@@ -48,6 +48,10 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.lang.NullPointerException
 import java.util.*
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
+
 
 class MiniAppDisplayActivity : BaseActivity() {
 
@@ -108,7 +112,12 @@ class MiniAppDisplayActivity : BaseActivity() {
         private const val sdkConfigTag = "sdk_config_tag"
         private const val updateTypeTag = "update_type_tag"
 
-        fun start(context: Context, appId: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
+        fun start(
+            context: Context,
+            appId: String,
+            miniAppSdkConfig: MiniAppSdkConfig? = null,
+            updatetype: Boolean = false
+        ) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
                 putExtra(updateTypeTag, updatetype)
@@ -116,7 +125,12 @@ class MiniAppDisplayActivity : BaseActivity() {
             })
         }
 
-        fun startUrl(context: Context, appUrl: String, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
+        fun startUrl(
+            context: Context,
+            appUrl: String,
+            miniAppSdkConfig: MiniAppSdkConfig? = null,
+            updatetype: Boolean = false
+        ) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appUrlTag, appUrl)
                 putExtra(updateTypeTag, updatetype)
@@ -124,7 +138,12 @@ class MiniAppDisplayActivity : BaseActivity() {
             })
         }
 
-        fun start(context: Context, miniAppInfo: MiniAppInfo, miniAppSdkConfig: MiniAppSdkConfig? = null, updatetype: Boolean = false) {
+        fun start(
+            context: Context,
+            miniAppInfo: MiniAppInfo,
+            miniAppSdkConfig: MiniAppSdkConfig? = null,
+            updatetype: Boolean = false
+        ) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(miniAppTag, miniAppInfo)
                 putExtra(updateTypeTag, updatetype)
@@ -172,53 +191,63 @@ class MiniAppDisplayActivity : BaseActivity() {
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
-        if(miniAppSdkConfig == null)
+        if (miniAppSdkConfig == null)
             miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
-        viewModel = ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
-            miniAppView.observe(this@MiniAppDisplayActivity) {
-                if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
-                    WebView.setWebContentsDebuggingEnabled(true)
+        viewModel =
+            ViewModelProvider(this, factory).get(MiniAppDisplayViewModel::class.java).apply {
+                miniAppView.observe(this@MiniAppDisplayActivity) {
+                    if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+                        WebView.setWebContentsDebuggingEnabled(true)
 
-                //action: display webview
-                addLifeCycleObserver(lifecycle)
-                setContentView(it)
-            }
+                    //action: display webview
+                    addLifeCycleObserver(lifecycle)
+                    setContentView(it)
+                }
 
-            errorData.observe(this@MiniAppDisplayActivity) {
-                Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
-            }
+                errorData.observe(this@MiniAppDisplayActivity) {
+                    Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
+                }
 
-            isLoading.observe(this@MiniAppDisplayActivity) {
-                toggleProgressLoading(it)
-            }
+                isLoading.observe(this@MiniAppDisplayActivity) {
+                    toggleProgressLoading(it)
+                }
 
-            containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
-                showErrorDialog(
-                    this@MiniAppDisplayActivity,
-                    getString(R.string.error_desc_miniapp_too_many_request)
-                )
+                containTooManyRequestsError.observe(this@MiniAppDisplayActivity) {
+                    showErrorDialog(
+                        this@MiniAppDisplayActivity,
+                        getString(R.string.error_desc_miniapp_too_many_request)
+                    )
+                }
             }
-        }
 
         setupMiniAppMessageBridge()
 
         miniAppNavigator = object : MiniAppNavigator {
 
-            override fun openExternalUrl(url: String, externalResultHandler: ExternalResultHandler) {
+            override fun openExternalUrl(
+                url: String,
+                externalResultHandler: ExternalResultHandler
+            ) {
                 if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
                     try {
                         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
                     } catch (e: Exception) {
-                        showAlertDialog(this@MiniAppDisplayActivity, "Warning!", e.message.toString())
+                        showAlertDialog(
+                            this@MiniAppDisplayActivity,
+                            "Warning!",
+                            e.message.toString()
+                        )
                     }
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
-                    WebViewActivity.startForResult(this@MiniAppDisplayActivity, url,
-                            appId, appUrl, externalWebViewReqCode)
+                    WebViewActivity.startForResult(
+                        this@MiniAppDisplayActivity, url,
+                        appId, appUrl, externalWebViewReqCode
+                    )
                 }
             }
         }
@@ -244,13 +273,14 @@ class MiniAppDisplayActivity : BaseActivity() {
             )
     }
 
+    @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge() {
         // setup MiniAppMessageBridge
         miniAppMessageBridge = object : MiniAppMessageBridge() {
 
             override fun getUniqueId(
-                    onSuccess: (uniqueId: String) -> Unit,
-                    onError: (message: String) -> Unit
+                onSuccess: (uniqueId: String) -> Unit,
+                onError: (message: String) -> Unit
             ) {
                 val errorMsg = AppSettings.instance.uniqueIdError
                 if (errorMsg.isNotEmpty()) onError(errorMsg)
@@ -312,10 +342,10 @@ class MiniAppDisplayActivity : BaseActivity() {
             }
 
             override fun getAccessToken(
-                    miniAppId: String,
-                    accessTokenScope: AccessTokenScope,
-                    onSuccess: (tokenData: TokenData) -> Unit,
-                    onError: (tokenError: MiniAppAccessTokenError) -> Unit
+                miniAppId: String,
+                accessTokenScope: AccessTokenScope,
+                onSuccess: (tokenData: TokenData) -> Unit,
+                onError: (tokenError: MiniAppAccessTokenError) -> Unit
             ) {
                 if (AppSettings.instance.accessTokenError != null) {
                     onError(AppSettings.instance.accessTokenError!!)
@@ -386,7 +416,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
-        when(requestCode){
+        when (requestCode) {
             AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
@@ -403,8 +433,11 @@ class MiniAppDisplayActivity : BaseActivity() {
         if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
             data?.let { intent ->
                 val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "External webview closed")
-                if(!isClosedByBackPressed)
+                miniAppMessageBridge.dispatchNativeEvent(
+                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
+                    "External webview closed"
+                )
+                if (!isClosedByBackPressed)
                     sampleWebViewExternalResultHandler.emitResult(intent)
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
@@ -458,6 +491,9 @@ class MiniAppDisplayActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed")
+        miniAppMessageBridge.dispatchNativeEvent(
+            NativeEventType.MINIAPP_ON_RESUME,
+            "MiniApp Resumed"
+        )
     }
 }

@@ -33,6 +33,7 @@ interface MiniAppFileChooser {
      * @param fileChooserParams the parameters can be used to customize the options of file chooser.
      * @param context the Activity context can be used to start the intent to choose file.
      **/
+    @Suppress("LongParameterList")
     fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
@@ -51,6 +52,7 @@ interface MiniAppCameraPermissionDispatcher {
     fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
+
     /**
      * Request camera permission from host app.
      * You can also throw an [Exception] from this method.
@@ -89,7 +91,8 @@ class MiniAppFileChooserDefault(
         }
     }
 
-    private fun launchCameraIntent() = whenReady {
+    @VisibleForTesting
+    internal fun launchCameraIntent() = whenReady {
         val permissionCallback: (Boolean) -> Unit = { isGranted: Boolean ->
             if (isGranted) {
                 context?.let { dispatchTakePictureIntent(it) }
@@ -114,25 +117,37 @@ class MiniAppFileChooserDefault(
         )
     }
 
+    private fun isOpenMultipleMode(fileChooserParams: WebChromeClient.FileChooserParams?): Boolean =
+        fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE
+
+    private fun isCaptureEnabled(fileChooserParams: WebChromeClient.FileChooserParams?): Boolean =
+        fileChooserParams?.isCaptureEnabled ?: false
+
+    private fun getAcceptTypes(fileChooserParams: WebChromeClient.FileChooserParams?): Array<String> =
+        fileChooserParams?.acceptTypes ?: emptyArray()
+
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "LongMethod", "NestedBlockDepth")
     override fun onShowFileChooser(
         filePathCallback: ValueCallback<Array<Uri>>?,
         fileChooserParams: WebChromeClient.FileChooserParams?,
-        context: Context
+        context: Context,
     ): Boolean {
         try {
             callback = filePathCallback
             this.context = context
             val intent = fileChooserParams?.createIntent()
-            if (fileChooserParams?.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
+            if (isOpenMultipleMode(fileChooserParams)) {
                 intent?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             }
-            if (fileChooserParams?.isCaptureEnabled == true) {
+            if (isCaptureEnabled(fileChooserParams)) {
                 launchCameraIntent()
             } else {
                 // Uses Intent.EXTRA_MIME_TYPES to pass multiple mime types.
-                fileChooserParams?.acceptTypes?.let { acceptTypes ->
-                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(""))) {
+                getAcceptTypes(fileChooserParams).let { acceptTypes ->
+                    if (acceptTypes.isNotEmpty() && !(acceptTypes.size == 1 && acceptTypes[0].equals(
+                            ""
+                        ))
+                    ) {
                         // Accept all first.
                         intent?.type = "*/*"
                         // Convert to valid MimeType if with dot.
@@ -151,8 +166,9 @@ class MiniAppFileChooserDefault(
         return true
     }
 
+    @VisibleForTesting
     @Suppress("SwallowedException")
-    private fun dispatchTakePictureIntent(context: Context) {
+    internal fun dispatchTakePictureIntent(context: Context) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Create the File where the photo should go
             val photoFile: File? = try {
@@ -223,7 +239,7 @@ class MiniAppFileChooserDefault(
             }
             currentPhotoPath != null -> {
                 val results = mutableListOf<Uri>()
-                results.add(Uri.fromFile(File(currentPhotoPath)))
+                results.add(Uri.fromFile(currentPhotoPath?.let { File(it) }))
                 callback?.onReceiveValue((results.toTypedArray()))
             }
             else -> {

@@ -1,7 +1,9 @@
 package com.rakuten.tech.mobile.miniapp.storage.util
 
 import android.util.Base64
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
+import org.amshove.kluent.shouldBeInstanceOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,5 +30,11 @@ class MiniAppDatabaseEncryptionUtilSpec {
         )
 
         assertEquals(passcode, decryptedPasscode)
+    }
+
+    @Test
+    fun `encryptPasscode should return a string`() {
+        MiniAppDatabaseEncryptionUtil.encryptPasscode(getApplicationContext(), TEST_MA_ID)
+            .shouldBeInstanceOf<String>()
     }
 }
