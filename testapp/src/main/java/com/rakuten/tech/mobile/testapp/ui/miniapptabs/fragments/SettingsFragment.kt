@@ -73,6 +73,12 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // enable the save button first time.
+        validateInputIDs(true)
+    }
+
     private fun onSaveAction() {
         if (requireActivity().isAvailable) {
             settingsProgressDialog.show()
@@ -218,9 +224,6 @@ class SettingsFragment : BaseFragment() {
             settings.setTempTab1CredentialData(getCurrentTypedCredentialData())
             updateTabProjectIdAndSubscription()
         }
-
-        // enable the save button first time.
-        validateInputIDs(true)
     }
 
     fun getCurrentTypedCredentialData(): MiniAppCredentialData {
