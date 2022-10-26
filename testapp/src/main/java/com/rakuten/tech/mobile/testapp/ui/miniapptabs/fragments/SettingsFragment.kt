@@ -3,20 +3,13 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.View
+import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.BuildVariant
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
@@ -25,11 +18,7 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
-import com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity
-import com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity
-import com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity
-import com.rakuten.tech.mobile.testapp.ui.userdata.PointsActivity
-import com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity
+import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.coroutines.launch
 import java.net.URL
@@ -255,9 +244,6 @@ class SettingsFragment : BaseFragment() {
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
         binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-        if (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved) {
-            switchProdVersion.isChecked = true
-        }
 
         val projectIdSubscriptionKeyPair = settings.getDefaultProjectIdSubscriptionKeyPair()
         setUpIdSubscriptionView(projectIdSubscriptionKeyPair)

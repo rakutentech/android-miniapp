@@ -30,7 +30,8 @@ class AppSettings private constructor(context: Context) {
         }
 
     var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value)
+        get() = cache.isProdVersionEnabled
+            ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !isSettingSaved)
         set(isRequired) {
             cache.isProdVersionEnabled = isRequired
         }
