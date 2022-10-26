@@ -154,7 +154,7 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun invalidateMaxStorageField() {
-        binding.clearStorageForMiniAppId.isEnabled = false
+        binding.clearStorageForMiniAppId.isEnabled = true
         binding.clearStorageForMiniAppId.setText("No MiniApp ID available.")
         binding.btnClearMiniAppSecureStorage.isEnabled = false
 
