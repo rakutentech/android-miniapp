@@ -18,7 +18,9 @@ class AppSettings private constructor(context: Context) {
     private val manifestConfig = AppManifestConfig(context)
     private val cache = Cache(context, manifestConfig)
 
-    val defaultProjectId: String = manifestConfig.rasProjectId()
+    val projectIdForAnalytics: String = if (isSettingSaved)
+        cache.rasCredentialData.getTab1Data().projectId
+    else manifestConfig.rasProjectId()
 
     var isDisplayInputPreviewMode: Boolean
         get() = cache.rasCredentialData.isDisplayInputPreviewMode ?: manifestConfig.isPreviewMode()
@@ -127,15 +129,15 @@ class AppSettings private constructor(context: Context) {
 
     val miniAppSettings1: MiniAppSdkConfig
         get() {
-            val tab1Data = getCurrentTab1CredentialData()
+            val tab1Data = cache.rasCredentialData.getTab1Data()
             return MiniAppSdkConfig(
-                baseUrl = cache.getBaseUrl(tab1Data.isProduction) ,
+                baseUrl = cache.getBaseUrl(tab1Data.isProduction),
                 rasProjectId = tab1Data.projectId,
                 subscriptionKey = tab1Data.subscriptionId,
                 // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isPreviewMode = tab1Data.isPreviewMode,
-                requireSignatureVerification = tab1Data.requireSignatureVerification,
+                requireSignatureVerification = tab1Data.isVerificationRequired,
                 // temporarily taking values from buildConfig, we may add UI for this later.
                 miniAppAnalyticsConfigList = listOf(
                     MiniAppAnalyticsConfig(
@@ -148,7 +150,7 @@ class AppSettings private constructor(context: Context) {
 
     val miniAppSettings2: MiniAppSdkConfig
         get() {
-            val tab2Data = getCurrentTab2CredentialData()
+            val tab2Data = cache.rasCredentialData.getTab2Data()
             return MiniAppSdkConfig(
                 baseUrl = cache.getBaseUrl(tab2Data.isProduction),
                 rasProjectId = tab2Data.projectId,
@@ -156,7 +158,7 @@ class AppSettings private constructor(context: Context) {
                 // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
                 hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
                 isPreviewMode = tab2Data.isPreviewMode,
-                requireSignatureVerification = tab2Data.requireSignatureVerification,
+                requireSignatureVerification = tab2Data.isVerificationRequired,
                 // temporarily taking values from buildConfig, we may add UI for this later.
                 miniAppAnalyticsConfigList = listOf(
                     MiniAppAnalyticsConfig(
@@ -168,44 +170,23 @@ class AppSettings private constructor(context: Context) {
         }
 
     fun getCurrentTab1CredentialData(): MiniAppCredentialData {
-        return if (isTab1TempCredentialDataValid()) {
-            cache.rasCredentialData.getTab1TempData()
-        } else {
-            cache.rasCredentialData.getDefaultData()
-        }
+        return cache.rasCredentialData.getTab1CurrentData()
     }
 
     fun getDefaultCredentialData(): MiniAppCredentialData {
-        return if (cache.rasCredentialData.isDefaultProductionEnabled) {
-            cache.rasCredentialData.defaultProductionData
-        } else {
-            cache.rasCredentialData.defaultStagingData
-        }
+        return if (isSettingSaved) cache.rasCredentialData.getTab1Data() else cache.rasCredentialData.getDefaultData()
     }
 
     fun getCurrentTab2CredentialData(): MiniAppCredentialData {
-        return if (isTab2TempCredentialDataValid()) {
-            cache.rasCredentialData.getTab2TempData()
-        } else {
-            cache.rasCredentialData.getDefaultData()
-        }
+        return cache.rasCredentialData.getTab2CurrentData()
     }
 
-    private fun isTab1TempCredentialDataValid(): Boolean {
-        return cache.rasCredentialData.isTab1TempDataValid()
+    fun saveData() {
+        cache.rasCredentialData.saveTab1Data()
+        cache.rasCredentialData.saveTab2Data()
+        cache.rasCredentialData.isTempCleared = true
     }
 
-    private fun isTab2TempCredentialDataValid(): Boolean {
-        return cache.rasCredentialData.isTab2TempDataValid()
-    }
-
-    fun saveTab1CredentialData(
-        credentialData: MiniAppCredentialData
-    ) {
-        cache.rasCredentialData.saveTab1Data(
-            credentialData
-        )
-    }
 
     fun setTempTab1CredentialData(
         credentialData: MiniAppCredentialData
@@ -215,20 +196,28 @@ class AppSettings private constructor(context: Context) {
         )
     }
 
-    fun saveTab2CredentialData(
-        tab2CredentialData: MiniAppCredentialData
-    ) {
-        cache.rasCredentialData.saveTab2Data(
-            tab2CredentialData
-        )
-    }
-
-    fun setTempTab1IsProduction(isProduction: Boolean){
+    fun setTempTab1IsProduction(isProduction: Boolean) {
         cache.rasCredentialData.setTempTab1IsProduction(isProduction)
     }
 
-    fun setTempTab2IsProduction(isProduction: Boolean){
+    fun setTempTab1IsVerificationRequired(isVerificationRequired: Boolean) {
+        cache.rasCredentialData.setTempTab1IsVerificationRequired(isVerificationRequired)
+    }
+
+    fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
+        cache.rasCredentialData.setTempTab1IsPreviewMode(isPreviewMode)
+    }
+
+    fun setTempTab2IsProduction(isProduction: Boolean) {
         cache.rasCredentialData.setTempTab2IsProduction(isProduction)
+    }
+
+    fun setTempTab2IsVerificationRequired(isVerificationRequired: Boolean) {
+        cache.rasCredentialData.setTempTab2IsVerificationRequired(isVerificationRequired)
+    }
+
+    fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
+        cache.rasCredentialData.setTempTab2IsPreviewMode(isPreviewMode)
     }
 
     fun setTempTab2CredentialData(

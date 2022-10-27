@@ -6,10 +6,9 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.BuildVariant
+import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
@@ -25,6 +24,8 @@ import kotlinx.coroutines.launch
 import java.net.URL
 import kotlin.properties.Delegates
 
+
+@Suppress("TooManyFunctions")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -35,7 +36,9 @@ class SettingsFragment : BaseFragment() {
     private var isTab1Checked = true
     private val settingsTextWatcher = object : TextWatcher {
         private var old_text = ""
-        override fun afterTextChanged(s: Editable?) {}
+        override fun afterTextChanged(s: Editable?) {
+            //empty function intended
+        }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             old_text = binding.editProjectId.text.toString()
@@ -47,12 +50,7 @@ class SettingsFragment : BaseFragment() {
     }
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-            if(isTab1Checked){
-                binding.toggleList2.isEnabled = new
-            } else {
-                binding.toggleList1.isEnabled = new
-            }
+            invalidateOptionsMenu(requireActivity())
         }
     }
 
@@ -84,26 +82,17 @@ class SettingsFragment : BaseFragment() {
             settingsProgressDialog.show()
         }
 
-        val tab1CredentialData: MiniAppCredentialData
-        val tab2CredentialData: MiniAppCredentialData
+        val currentCredentialData = getCurrentTypedCredentialData()
 
         if (isTab1Checked) {
-            tab1CredentialData = getCurrentTypedCredentialData()
-            tab2CredentialData = settings.getCurrentTab2CredentialData()
+            settings.setTempTab1CredentialData(currentCredentialData)
         } else {
-            tab1CredentialData = settings.getCurrentTab1CredentialData()
-            tab2CredentialData = getCurrentTypedCredentialData()
+            settings.setTempTab2CredentialData(currentCredentialData)
         }
 
-        saveCredentialData(
-            tab1CredentialData,
-            tab2CredentialData
-        )
-
+        settings.saveData()
         updateSettings()
     }
-
-
 
     private fun updateSettings() {
         settings.urlParameters = binding.editParametersUrl.text.toString()
@@ -112,11 +101,16 @@ class SettingsFragment : BaseFragment() {
         launch {
             URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
             settings.isSettingSaved = true
-            requireActivity().runOnUiThread {
-                if (requireActivity().isAvailable) {
-                    settingsProgressDialog.cancel()
+            with(requireActivity()) {
+                currentFocus?.let {
+                    hideSoftKeyboard(it)
                 }
-                validateInputIDs()
+                runOnUiThread {
+                    if (isAvailable) {
+                        settingsProgressDialog.cancel()
+                    }
+                    validateInputIDs()
+                }
             }
         }
     }
@@ -141,10 +135,18 @@ class SettingsFragment : BaseFragment() {
 
     private fun validateInputIDs(inputChanged: Boolean = false) {
         val isAppIdInvalid = !isInputIDValid()
+        val isInputEmpty = !(isInputEmpty(binding.editProjectId)
+                || isInputEmpty(binding.editSubscriptionKey))
+        val isToggleListEnabled = isInputEmpty
+                || isAppIdInvalid
 
-        saveViewEnabled = !(isInputEmpty(binding.editProjectId)
-                || isInputEmpty(binding.editSubscriptionKey)
-                || isAppIdInvalid) && inputChanged
+        if (isTab1Checked) {
+            binding.toggleList2.isEnabled = isToggleListEnabled
+        } else {
+            binding.toggleList1.isEnabled = isToggleListEnabled
+        }
+
+        saveViewEnabled = isToggleListEnabled && inputChanged
 
         if (isInputEmpty(binding.editProjectId) || isAppIdInvalid)
             binding.inputProjectId.error = getString(R.string.error_invalid_input)
@@ -164,11 +166,9 @@ class SettingsFragment : BaseFragment() {
         binding.editParametersUrl.setText(settings.urlParameters)
         binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
 
-        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
-            switchProdVersion.isChecked = true
-        }
 
         val defaultCredentialData = settings.getDefaultCredentialData()
+
         setupCredentialDataToView(defaultCredentialData)
 
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
@@ -202,24 +202,51 @@ class SettingsFragment : BaseFragment() {
             QASettingsActivity.start(requireActivity())
         }
 
+        binding.switchPreviewModeTab.setOnCheckedChangeListener { _, isChecked ->
+            if (isTab1Checked) {
+                settings.setTempTab1IsPreviewMode(isChecked)
+            } else {
+                settings.setTempTab2IsPreviewMode(isChecked)
+            }
+            binding.switchPreviewModeTab.isChecked = isChecked
+            validateInputIDs(true)
+        }
+
         binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
-            if(isTab1Checked){
+            if (isTab1Checked) {
                 settings.setTempTab1IsProduction(isChecked)
             } else {
                 settings.setTempTab2IsProduction(isChecked)
             }
-            updateTabProjectIdAndSubscription()
+            binding.switchProdVersion.isChecked = isChecked
+            validateInputIDs(true)
+        }
+
+        binding.switchSignatureVerification.setOnCheckedChangeListener { _, isChecked ->
+            if (isTab1Checked) {
+                settings.setTempTab1IsVerificationRequired(isChecked)
+            } else {
+                settings.setTempTab2IsVerificationRequired(isChecked)
+            }
+            binding.switchSignatureVerification.isChecked = isChecked
+            validateInputIDs(true)
         }
 
         binding.toggleList1.setOnClickListener {
-            if(isTab1Checked) return@setOnClickListener
+            if (isTab1Checked) {
+                binding.toggleList1.isChecked = true
+                return@setOnClickListener
+            }
             isTab1Checked = true
             settings.setTempTab2CredentialData(getCurrentTypedCredentialData())
             updateTabProjectIdAndSubscription()
         }
 
         binding.toggleList2.setOnClickListener {
-            if(!isTab1Checked) return@setOnClickListener
+            if (!isTab1Checked) {
+                binding.toggleList2.isChecked = true
+                return@setOnClickListener
+            }
             isTab1Checked = false
             settings.setTempTab1CredentialData(getCurrentTypedCredentialData())
             updateTabProjectIdAndSubscription()
@@ -231,18 +258,11 @@ class SettingsFragment : BaseFragment() {
             binding.switchProdVersion.isChecked,
             binding.switchSignatureVerification.isChecked,
             binding.switchPreviewModeTab.isChecked,
-            binding.editProjectId.text.toString(),
-            binding.editSubscriptionKey.text.toString()
+            binding.editProjectId.text.toString().trim(),
+            binding.editSubscriptionKey.text.toString().trim()
         )
     }
 
-    private fun saveCredentialData(
-        tab1CredentialData: MiniAppCredentialData,
-        tab2CredentialData: MiniAppCredentialData
-    ) {
-        settings.saveTab1CredentialData(tab1CredentialData)
-        settings.saveTab2CredentialData(tab2CredentialData)
-    }
 
     private fun updateTabProjectIdAndSubscription() {
         val credentialData: MiniAppCredentialData = if (isTab1Checked) {
@@ -256,7 +276,7 @@ class SettingsFragment : BaseFragment() {
     private fun setupCredentialDataToView(credentialData: MiniAppCredentialData) {
         binding.switchProdVersion.isChecked = credentialData.isProduction
         binding.switchPreviewModeTab.isChecked = credentialData.isPreviewMode
-        binding.switchSignatureVerification.isChecked = credentialData.requireSignatureVerification
+        binding.switchSignatureVerification.isChecked = credentialData.isVerificationRequired
         binding.editProjectId.setText(credentialData.projectId)
         binding.editSubscriptionKey.setText(credentialData.subscriptionId)
     }

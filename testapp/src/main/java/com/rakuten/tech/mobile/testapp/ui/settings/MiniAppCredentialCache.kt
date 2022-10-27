@@ -2,25 +2,33 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
-import com.rakuten.tech.mobile.testapp.BuildVariant
+import android.util.Log
 
 
 class MiniAppCredentialCache(
     private val isproductionKey: String,
-    private val isPreviewModeKey: String,
     private val isSignatureVerificationRequiredKey: String,
+    private val isPreviewModeKey: String,
     private val projectidKey: String,
     private val subscriptionKey: String,
 ) {
 
-    fun getData(prefs: SharedPreferences): MiniAppCredentialData {
+    var isCleared = false
+
+
+    fun getData(
+        prefs: SharedPreferences,
+        defaultData: MiniAppCredentialData
+    ): MiniAppCredentialData {
         return MiniAppCredentialData(
-            prefs.getBoolean(isproductionKey, BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value),
-            prefs.getBoolean(isPreviewModeKey, false),
-            prefs.getBoolean(isSignatureVerificationRequiredKey, false),
-            prefs.getString(projectidKey, null) ?: "",
-            prefs.getString(subscriptionKey, null) ?: ""
+            prefs.getBoolean(isproductionKey, defaultData.isProduction),
+            prefs.getBoolean(
+                isSignatureVerificationRequiredKey,
+                defaultData.isVerificationRequired
+            ),
+            prefs.getBoolean(isPreviewModeKey, defaultData.isPreviewMode),
+            prefs.getString(projectidKey, null) ?: defaultData.projectId,
+            prefs.getString(subscriptionKey, null) ?: defaultData.subscriptionId
         )
     }
 
@@ -35,31 +43,46 @@ class MiniAppCredentialCache(
         editor.putBoolean(isproductionKey, isProduction).commit()
     }
 
+    fun setIsVerificationRequired(
+        editor: Editor,
+        isSignatureVerificationRequired: Boolean
+    ) {
+        editor.putBoolean(isSignatureVerificationRequiredKey, isSignatureVerificationRequired)
+            .commit()
+    }
+
+    fun setIsPreviewMode(
+        editor: Editor,
+        isPreviewMode: Boolean
+    ) {
+        editor.putBoolean(isPreviewModeKey, isPreviewMode).commit()
+    }
+
     fun setData(
         editor: Editor,
         credentialData: MiniAppCredentialData,
     ) {
-        editor.putBoolean(isproductionKey, credentialData.isProduction).commit()
-        editor.putBoolean(isPreviewModeKey, credentialData.isPreviewMode).commit()
-        editor.putBoolean(
-            isSignatureVerificationRequiredKey,
-            credentialData.requireSignatureVerification
-        ).commit()
-        editor.putString(projectidKey, credentialData.projectId).commit()
-        editor.putString(subscriptionKey, credentialData.subscriptionId).commit()
-    }
-
-    fun isValid(prefs: SharedPreferences): Boolean {
-        val data = getData(prefs)
-        return data.projectId.isNotBlank() && data.subscriptionId.isNotBlank()
+        editor.apply {
+            putBoolean(isproductionKey, credentialData.isProduction).commit()
+            putBoolean(
+                isSignatureVerificationRequiredKey,
+                credentialData.isVerificationRequired
+            ).commit()
+            putBoolean(isPreviewModeKey, credentialData.isPreviewMode).commit()
+            editor.putString(projectidKey, credentialData.projectId).commit()
+            editor.putString(subscriptionKey, credentialData.subscriptionId).commit()
+        }
     }
 
     fun clear(editor: Editor) {
-        editor.remove(isproductionKey).commit()
-        editor.remove(isPreviewModeKey).commit()
-        editor.remove(isSignatureVerificationRequiredKey).commit()
-        editor.remove(projectidKey).commit()
-        editor.remove(subscriptionKey).commit()
+        editor.apply {
+            remove(isproductionKey).commit()
+            remove(isPreviewModeKey).commit()
+            remove(isSignatureVerificationRequiredKey).commit()
+            remove(projectidKey).commit()
+            remove(subscriptionKey).commit()
+        }
+
     }
 
 }
