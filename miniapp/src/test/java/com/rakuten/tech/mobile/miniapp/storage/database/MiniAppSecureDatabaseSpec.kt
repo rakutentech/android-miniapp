@@ -579,33 +579,6 @@ class MiniAppSecureDatabaseSpec {
      * insert above batch size test cases
      */
     @Test
-    fun `verify the after tasks when DB full exception is thrown`() = runBlockingTest {
-
-        var pairs: ArrayList<Pair<String, String>> = ArrayList()
-        for (i in 1..BATCH_SIZE) {
-            pairs.add(Pair("a-$i", "b-$i"))
-        }
-
-        val items = Mockito.spy(pairs.associate { Pair(it.first, it.second) })
-
-        When calling context.getDatabasePath(TEST_MA_ID)
-            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
-
-        val sqlFullException = assertThrows(SQLiteFullException::class.java) {
-            massDB.insert(items)
-        }
-
-        assertTrue(sqlFullException.message == DATABASE_SPACE_LIMIT_REACHED_ERROR)
-        verify(massDB.database, times(0)).beginTransaction()
-        verify(massDB, times(0)).insert(ContentValues())
-        verify(massDB.database, times(0)).setTransactionSuccessful()
-        verify(massDB, times(0)).finishAnyPendingDBTransaction()
-        verify(massDB, times(1)).finalize()
-        verify(massDB.database, times(1)).inTransaction()
-        verify(massDB.database, times(0)).endTransaction()
-    }
-
-    @Test
     fun `verify status is not full when database is not full`() = runBlockingTest {
 
         val sizeBelowMaxLimit = 100000L // making the isDatabaseFull = false
@@ -720,6 +693,40 @@ class MiniAppSecureDatabaseSpec {
 
             verify(massDB.database, times(2)).endTransaction()
         }
+
+    @Test
+    fun `verify the after tasks when DB full exception is thrown`() = runBlockingTest {
+
+        var pairs: ArrayList<Pair<String, String>> = ArrayList()
+        for (i in 1..BATCH_SIZE) {
+            pairs.add(Pair("a-$i", "b-$i"))
+        }
+
+        val items = Mockito.spy(pairs.associate { Pair(it.first, it.second) })
+
+        val contentValues = ContentValues()
+        items.entries.forEach {
+            contentValues.put(FIRST_COLUMN_NAME, it.key)
+            contentValues.put(SECOND_COLUMN_NAME, it.value)
+        }
+
+        When calling massDB.insert(contentValues) itThrows SQLiteFullException(
+            DATABASE_SPACE_LIMIT_REACHED_ERROR
+        )
+
+        val sqlFullException = assertThrows(SQLiteFullException::class.java) {
+            massDB.insert(items)
+        }
+
+        assertTrue(sqlFullException.message == DATABASE_SPACE_LIMIT_REACHED_ERROR)
+        verify(massDB.database, times(2)).beginTransaction()
+        verify(massDB, times(0)).insert(ContentValues())
+        verify(massDB.database, times(1)).setTransactionSuccessful()
+        verify(massDB, times(1)).finishAnyPendingDBTransaction()
+        verify(massDB, times(1)).finalize()
+        verify(massDB.database, times(2)).inTransaction()
+        verify(massDB.database, times(0)).endTransaction()
+    }
 
     @Test
     fun `verify the finishAnyPendingDBTransaction throws IllegalStateException for a batch`() =
