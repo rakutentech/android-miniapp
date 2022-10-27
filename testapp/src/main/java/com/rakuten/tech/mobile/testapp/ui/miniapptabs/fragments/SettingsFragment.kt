@@ -1,17 +1,18 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.BuildVariant
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
@@ -23,7 +24,10 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.net.URL
 import kotlin.properties.Delegates
 
@@ -121,7 +125,7 @@ class SettingsFragment : BaseFragment() {
         val urlParametersHolder = settings.urlParameters
         val isPreviewModeHolder = settings.isPreviewMode
         val requireSignatureVerificationHolder = settings.requireSignatureVerification
-        if (toggleList1.isChecked) {
+        if (binding.toggleList1.isChecked) {
             settings.projectId = projectId
             settings.subscriptionKey = subscriptionKey
         } else {
@@ -244,8 +248,14 @@ class SettingsFragment : BaseFragment() {
         binding.switchPreviewMode.isChecked = settings.isPreviewMode
         binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
         binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
-            switchProdVersion.isChecked = true
+        if(!AppSettings.instance.isSettingSaved){
+            // set the default values.
+            binding.switchProdVersion.isChecked = true
+            settings.baseUrl = getString(R.string.prodBaseUrl)
+            settings.projectId = settings.getDefaultProjectIdSubscriptionKeyPair().first
+            settings.subscriptionKey = settings.getDefaultProjectIdSubscriptionKeyPair().second
+            settings.projectId2 = settings.getDefaultProjectIdSubscriptionKeyPair().first
+            settings.subscriptionKey2 = settings.getDefaultProjectIdSubscriptionKeyPair().second
         }
 
         val projectIdSubscriptionKeyPair = settings.getDefaultProjectIdSubscriptionKeyPair()
@@ -307,9 +317,11 @@ class SettingsFragment : BaseFragment() {
 
         // enable the save button first time.
         validateInputIDs(true)
+
+        updateProfileImageBase64()
     }
 
-    fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
+    private fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
         return Pair(
             binding.editProjectId.text.toString(),
             binding.editSubscriptionKey.text.toString()
@@ -353,5 +365,32 @@ class SettingsFragment : BaseFragment() {
         val sdkVersion = getString(R.string.miniapp_sdk_version)
         val buildVersion = getString(R.string.build_version)
         return "Build $sdkVersion - $buildVersion"
+    }
+
+    private fun updateProfileImageBase64() {
+        if (AppSettings.instance.profilePictureUrlBase64 == "") {
+            encodeImageForMiniApp()
+        }
+    }
+
+    private fun encodeImageForMiniApp() {
+        launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val bitmap = BitmapFactory.decodeResource(resources, R.drawable.r_logo_default_profile)
+                    val byteStream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
+                    val byteArray = byteStream.toByteArray()
+                    val BASE_64_DATA_PREFIX = "data:image/png;base64,"
+                    val profileUrlBase64 = BASE_64_DATA_PREFIX + Base64.encodeToString(
+                        byteArray,
+                        Base64.DEFAULT
+                    )
+                    AppSettings.instance.profilePictureUrlBase64 = profileUrlBase64
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }
