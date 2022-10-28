@@ -317,7 +317,7 @@ class SettingsFragment : BaseFragment() {
 
         // enable the save button first time.
         validateInputIDs(true)
-
+        // add the default profile pic initially.
         updateProfileImageBase64()
     }
 
@@ -379,7 +379,7 @@ class SettingsFragment : BaseFragment() {
                 withContext(Dispatchers.IO) {
                     val bitmap = BitmapFactory.decodeResource(resources, R.drawable.r_logo_default_profile)
                     val byteStream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream)
                     val byteArray = byteStream.toByteArray()
                     val BASE_64_DATA_PREFIX = "data:image/png;base64,"
                     val profileUrlBase64 = BASE_64_DATA_PREFIX + Base64.encodeToString(
