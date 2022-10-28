@@ -1,24 +1,25 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.BuildVariant
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
@@ -30,7 +31,6 @@ import java.io.ByteArrayOutputStream
 import java.net.URL
 import java.security.SecureRandom
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
 @Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
@@ -247,6 +247,7 @@ class SettingsFragment : BaseFragment() {
         return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
+    @Suppress("LongMethod")
     private fun renderAppSettingsScreen() {
         binding.textInfo.text = createBuildInfo()
         binding.editParametersUrl.setText(settings.urlParameters)
@@ -275,10 +276,6 @@ class SettingsFragment : BaseFragment() {
 
         binding.buttonContacts.setOnClickListener {
             ContactListActivity.start(requireActivity())
-        }
-
-        binding.buttonCustomPermissions.setOnClickListener {
-            MiniAppDownloadedListActivity.start(requireActivity())
         }
 
         binding.buttonAccessToken.setOnClickListener {
@@ -375,6 +372,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
+    @Suppress("MagicNumber")
     private fun encodeImageForMiniApp() {
         launch {
             try {
@@ -401,11 +399,16 @@ class SettingsFragment : BaseFragment() {
             settings.contacts = createRandomContactList()
         }
     }
+
+    @Suppress("UnusedPrivateMember", "MagicNumber")
     private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
         for (i in 1..10) {
             this.add(createRandomContact())
         }
     }
+
+
+    @Suppress("MaxLineLength")
     private fun createRandomContact(): Contact {
         val firstName = AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
         val lastName = AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
