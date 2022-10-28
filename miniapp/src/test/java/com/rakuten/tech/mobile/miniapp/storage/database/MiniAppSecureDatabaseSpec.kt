@@ -61,9 +61,10 @@ class MiniAppSecureDatabaseSpec {
             )
         )
         massDB.miniAppDatabaseStatus = mock()
-        massDB.database = mock(SupportSQLiteDatabase::class)
+        //massDB.database = mock(SupportSQLiteDatabase::class)
+        massDB.database = Mockito.spy(SupportSQLiteDatabase::class.java)
 
-        database = mock(SupportSQLiteDatabase::class)
+        database = Mockito.spy(SupportSQLiteDatabase::class.java)
         massDBImpl = mock(MiniAppSecureDatabaseImpl::class)
         miniAppDBStatus = mock(MiniAppDatabaseStatus::class)
         dbFile = Mockito.spy(File("file://$TEST_MA_ID"))
@@ -375,7 +376,7 @@ class MiniAppSecureDatabaseSpec {
      * getDatabaseUsedSize Test Cases
      */
     @Test
-    fun `verify getDatabasePath was called for getDatabaseUsedSize`() = runBlockingTest {
+    fun `verify getDatabasePath was called for getDatabaseUsedSize`() {
 
         massDB.getDatabaseUsedSize()
 
@@ -383,7 +384,7 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify getDatabasePath returns the same file for getDatabaseUsedSize`() = runBlockingTest {
+    fun `verify getDatabasePath returns the same file for getDatabaseUsedSize`() {
 
         massDB.getDatabaseUsedSize()
 
@@ -391,12 +392,23 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify the correct file length was returned for getDatabaseUsedSize`() = runBlockingTest {
+    fun `verify it returns exact file size in case data inserted with in max size`() {
 
         val fileSize = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
 
         When calling context.getDatabasePath(TEST_MA_ID)
-            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong() - 1000L
+
+        assertEquals(fileSize - 1000L, massDB.getDatabaseUsedSize())
+    }
+
+    @Test
+    fun `verify it returns up to max size only in case data inserted more than max size`() {
+
+        val fileSize = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+
+        When calling context.getDatabasePath(TEST_MA_ID)
+            .length() itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong() + 1000L
 
         assertEquals(fileSize, massDB.getDatabaseUsedSize())
     }

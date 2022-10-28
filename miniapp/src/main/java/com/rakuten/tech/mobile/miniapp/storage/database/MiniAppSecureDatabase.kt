@@ -215,7 +215,11 @@ internal class MiniAppSecureDatabase(
 
     override fun getDatabaseUsedSize(): Long {
         val dbFile = context.getDatabasePath(dbName)
-        return dbFile.length()
+        var fileSize = dbFile.length()
+        if (dbFile.length() > maxDBSizeLimitInBytes) {
+            fileSize = maxDBSizeLimitInBytes
+        }
+        return fileSize
     }
 
     @Suppress("ExpressionBodySyntax")
