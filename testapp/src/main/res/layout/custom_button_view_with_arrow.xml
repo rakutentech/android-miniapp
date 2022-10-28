@@ -13,15 +13,31 @@
             android:layout_width="@dimen/sec_icon_size"
             android:layout_height="@dimen/sec_icon_size"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_arrow_forward" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_label"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/text_large_16" />
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/text_large_16" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_label"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="@dimen/text_medium_14"
+                android:visibility="gone" />
+        </LinearLayout>
     </RelativeLayout>
 
 </merge>

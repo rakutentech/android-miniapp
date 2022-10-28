@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions
 import android.content.Intent
-import android.util.SparseArray
-import androidx.core.util.forEach
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
