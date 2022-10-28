@@ -96,7 +96,7 @@ allprojects {
         tag {
             prefix = 'v'
             versionSeparator = ''
-            versionIncrementer 'incrementMajor'
+            versionIncrementer 'incrementMinor'
         }
     }
 
