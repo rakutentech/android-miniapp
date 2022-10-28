@@ -59,7 +59,8 @@
     <string name="chat_tutorial">Would you like to send the message?</string>
 
     <string name="action_display">Display</string>
-    <string name="action_go_input">Display Miniapp From Input</string>
+    <string name="action_go_input_url">URL</string>
+    <string name="action_go_input_url_details">Open a miniapp via url</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
