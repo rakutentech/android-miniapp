@@ -1,6 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -31,7 +30,8 @@
                     app:pageName="feature"
                     app:rightArrowEnable="true"
                     app:siteSection="Top"
-                    app:titleLabel="@string/action_go_input" />
+                    app:titleDetails="@string/action_go_input_url_details"
+                    app:titleLabel="@string/action_go_input_url" />
 
                 <View
                     android:layout_width="match_parent"
