@@ -123,7 +123,7 @@ class ProfileSettingsActivity : BaseActivity() {
     private fun setProfileImage(uri: Uri?) {
         Glide.with(this@ProfileSettingsActivity)
             .load(uri).apply(RequestOptions().circleCrop())
-            .placeholder(R.drawable.r_logo)
+            .placeholder(R.drawable.r_logo_default_profile)
             .into(binding.imageProfile as ImageView)
     }
 
