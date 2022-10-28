@@ -387,8 +387,8 @@ class SettingsFragment : BaseFragment() {
                     val byteStream = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream)
                     val byteArray = byteStream.toByteArray()
-                    val BASE_64_DATA_PREFIX = "data:image/png;base64,"
-                    val profileUrlBase64 = BASE_64_DATA_PREFIX + Base64.encodeToString(
+                    val base64DataPrefix = "data:image/png;base64,"
+                    val profileUrlBase64 = base64DataPrefix + Base64.encodeToString(
                         byteArray,
                         Base64.DEFAULT
                     )
