@@ -262,9 +262,9 @@ class AppSettings private constructor(context: Context) {
     companion object {
         lateinit var instance: AppSettings
         const val DEFAULT_PROFILE_NAME = "MiniAppUser"
-        const val DEFAULT_PROFILE_PICTURE_BASE64 = ""
         val DEFAULT_POINTS = Points(10, 20, 30)
-
+        val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
+        val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
         fun init(context: Context) {
             instance = AppSettings(context)
         }

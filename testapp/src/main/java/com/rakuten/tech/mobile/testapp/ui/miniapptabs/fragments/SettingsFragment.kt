@@ -400,9 +400,6 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    private val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
-    private val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
-
     private fun addDefaultContactList(){
         if (!settings.isContactsSaved) {
             settings.contacts = createRandomContactList()
@@ -414,8 +411,8 @@ class SettingsFragment : BaseFragment() {
         }
     }
     private fun createRandomContact(): Contact {
-        val firstName = fakeFirstNames[(SecureRandom().nextDouble() * fakeFirstNames.size).toInt()]
-        val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
+        val firstName = AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
+        val lastName = AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
         val email = firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
         return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
