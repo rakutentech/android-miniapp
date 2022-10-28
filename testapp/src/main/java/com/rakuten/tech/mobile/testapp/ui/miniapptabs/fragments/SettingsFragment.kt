@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
@@ -29,6 +30,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.security.SecureRandom
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
 class SettingsFragment : BaseFragment() {
@@ -319,6 +323,8 @@ class SettingsFragment : BaseFragment() {
         validateInputIDs(true)
         // add the default profile pic initially.
         updateProfileImageBase64()
+        // add the default contacts initially.
+        addDefaultContactList()
     }
 
     private fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
@@ -392,5 +398,25 @@ class SettingsFragment : BaseFragment() {
                 e.printStackTrace()
             }
         }
+    }
+
+    private val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
+    private val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
+
+    private fun addDefaultContactList(){
+        if (!settings.isContactsSaved) {
+            settings.contacts = createRandomContactList()
+        }
+    }
+    private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
+        for (i in 1..10) {
+            this.add(createRandomContact())
+        }
+    }
+    private fun createRandomContact(): Contact {
+        val firstName = fakeFirstNames[(SecureRandom().nextDouble() * fakeFirstNames.size).toInt()]
+        val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
+        val email = firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
 }
