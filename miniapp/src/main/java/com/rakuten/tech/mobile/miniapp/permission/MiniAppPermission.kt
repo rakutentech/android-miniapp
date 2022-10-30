@@ -50,3 +50,4 @@ enum class MiniAppCustomPermissionResult {
     DENIED,
     PERMISSION_NOT_AVAILABLE;
 }
+
