@@ -27,42 +27,44 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp, private val shouldSh
     val containTooManyRequestsError: LiveData<Boolean>
         get() = _containTooManyRequestsError
 
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     fun checkMiniAppManifest(miniAppId: String, versionId: String) =
         viewModelScope.launch(Dispatchers.IO) {
             val downloadedManifest = miniApp.getDownloadedManifest(miniAppId)
             try {
                 val miniAppManifest =
                     miniApp.getMiniAppManifest(miniAppId, versionId, Locale.getDefault().language)
-                when {
-                    //shouldShowDialog -> _miniAppManifest.postValue(miniAppManifest)
+                if (
                     downloadedManifest != null && isManifestEqual(
                         miniAppManifest, downloadedManifest
-                    ) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest) -> {
-                        if (shouldShowDialog) {
-                            _miniAppManifest.postValue(miniAppManifest)
-                        } else {
-                            _miniAppManifest.postValue(null)
-                        }
+                    ) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest)
+                ) {
+                    if (shouldShowDialog) {
+                        _miniAppManifest.postValue(miniAppManifest)
+                    } else {
+                        _miniAppManifest.postValue(null)
                     }
-                    else -> _miniAppManifest.postValue(miniAppManifest)
+                    return@launch
                 }
-            } catch (error: MiniAppSdkException) {
-                when {
-                    error is MiniAppNetException && downloadedManifest !== null -> {
-                        if (isAcceptedRequiredPermissions(
-                                miniAppId,
-                                downloadedManifest
-                            )
-                        ) _miniAppManifest.postValue(null)
-                        else _miniAppManifest.postValue(downloadedManifest)
-                    }
-                    error is MiniAppTooManyRequestsError -> _containTooManyRequestsError.postValue(
-                        true
-                    )
-                    else -> {
-                        _manifestErrorData.postValue(error.message)
+                _miniAppManifest.postValue(miniAppManifest)
+            } catch (error: MiniAppNetException) {
+                downloadedManifest?.let {
+                    if (isAcceptedRequiredPermissions(
+                            miniAppId,
+                            downloadedManifest
+                        )
+                    ) {
+                        _miniAppManifest.postValue(null)
+                        return@let
                     }
                 }
+                _miniAppManifest.postValue(downloadedManifest)
+            } catch (error: MiniAppTooManyRequestsError) {
+                _containTooManyRequestsError.postValue(
+                    true
+                )
+            } catch (error: Exception) {
+                _manifestErrorData.postValue(error.message)
             }
         }
 
