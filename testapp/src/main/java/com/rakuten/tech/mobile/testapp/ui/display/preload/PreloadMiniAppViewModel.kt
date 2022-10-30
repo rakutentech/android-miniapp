@@ -34,31 +34,21 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp, private val shouldSh
             try {
                 val miniAppManifest =
                     miniApp.getMiniAppManifest(miniAppId, versionId, Locale.getDefault().language)
-                if (
-                    downloadedManifest != null && isManifestEqual(
-                        miniAppManifest, downloadedManifest
-                    ) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest)
+                if (isAlreadyAccepted(
+                        downloadedManifest = downloadedManifest,
+                        miniAppManifest = miniAppManifest,
+                        miniAppId = miniAppId
+                    )
                 ) {
-                    if (shouldShowDialog) {
-                        _miniAppManifest.postValue(miniAppManifest)
-                    } else {
-                        _miniAppManifest.postValue(null)
-                    }
+                    onAlreadyAccepted(miniAppManifest)
                     return@launch
                 }
                 _miniAppManifest.postValue(miniAppManifest)
             } catch (error: MiniAppNetException) {
-                downloadedManifest?.let {
-                    if (isAcceptedRequiredPermissions(
-                            miniAppId,
-                            downloadedManifest
-                        )
-                    ) {
-                        _miniAppManifest.postValue(null)
-                        return@let
-                    }
-                }
-                _miniAppManifest.postValue(downloadedManifest)
+                handleMiniAppNetException(
+                    downloadedManifest = downloadedManifest,
+                    miniAppId = miniAppId
+                )
             } catch (error: MiniAppTooManyRequestsError) {
                 _containTooManyRequestsError.postValue(
                     true
@@ -67,6 +57,38 @@ class PreloadMiniAppViewModel(private val miniApp: MiniApp, private val shouldSh
                 _manifestErrorData.postValue(error.message)
             }
         }
+
+    private fun onAlreadyAccepted(miniAppManifest: MiniAppManifest) {
+        if (shouldShowDialog) {
+            _miniAppManifest.postValue(miniAppManifest)
+        } else {
+            _miniAppManifest.postValue(null)
+        }
+    }
+
+    private fun handleMiniAppNetException(downloadedManifest: MiniAppManifest?, miniAppId: String) {
+        downloadedManifest?.let {
+            if (isAcceptedRequiredPermissions(
+                    miniAppId,
+                    downloadedManifest
+                )
+            ) {
+                _miniAppManifest.postValue(null)
+                return@let
+            }
+        }
+        _miniAppManifest.postValue(downloadedManifest)
+    }
+
+    private fun isAlreadyAccepted(
+        downloadedManifest: MiniAppManifest?,
+        miniAppManifest: MiniAppManifest,
+        miniAppId: String
+    ): Boolean =
+        downloadedManifest != null && isManifestEqual(
+            miniAppManifest, downloadedManifest
+        ) && isAcceptedRequiredPermissions(miniAppId, miniAppManifest)
+
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
     private fun isManifestEqual(
