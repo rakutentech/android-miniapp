@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.testapp.BuildVariant
 import java.util.*
 
 class AppSettings private constructor(context: Context) {
@@ -29,7 +30,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: true
+        get() = cache.isProdVersionEnabled ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value)
         set(isRequired) {
             cache.isProdVersionEnabled = isRequired
         }
@@ -99,7 +100,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var profileName: String
-        get() = cache.profileName ?: DEFAULT_PROFILE_NAME
+        get() = cache.profileName ?: ""
         set(profileName) {
             cache.profileName = profileName
         }
@@ -149,8 +150,8 @@ class AppSettings private constructor(context: Context) {
             cache.accessTokenError = accessTokenError
         }
 
-    var points: Points
-        get() = cache.points ?: DEFAULT_POINTS
+    var points: Points?
+        get() = cache.points
         set(points) {
             cache.points = points
         }
@@ -261,10 +262,7 @@ class AppSettings private constructor(context: Context) {
 
     companion object {
         lateinit var instance: AppSettings
-        const val DEFAULT_PROFILE_NAME = "MiniAppUser"
-        val DEFAULT_POINTS = Points(10, 20, 30)
-        val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
-        val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
+
         fun init(context: Context) {
             instance = AppSettings(context)
         }
