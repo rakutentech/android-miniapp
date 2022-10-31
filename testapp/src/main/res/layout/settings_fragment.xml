@@ -228,21 +228,6 @@
                     android:background="@color/bg_section" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonCustomPermissions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_custom_permissions"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonPoints"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
