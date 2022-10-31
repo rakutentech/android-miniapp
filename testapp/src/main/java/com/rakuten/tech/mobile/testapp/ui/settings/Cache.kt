@@ -14,7 +14,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.testapp.BuildVariant
 
-
 internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
     private val gson = Gson()
@@ -86,14 +85,6 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         get() = prefs.getString(URL_PARAMETERS, null)
         set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
 
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>?
-        get() = Gson().fromJson(
-            prefs.getString(ANALYTIC_CONFIGS, null),
-            object : TypeToken<List<MiniAppAnalyticsConfig>>() {}.type
-        )
-        set(miniAppAnalyticsConfigs) = prefs.edit()
-            .putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
-
     var accessTokenError: MiniAppAccessTokenError?
         get() = gson.fromJson(
             prefs.getString(ACCESS_TOKEN_ERROR, null),
@@ -129,7 +120,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val TEMP_IS_PREVIEW_MODE = "temp_is_preview_mode"
         private const val IS_PREVIEW_MODE_2 = "is_preview_mode_2"
-        private const val TEMP_IS_PREVIEW_MODE_2 = "temp_is_preview_mode"
+        private const val TEMP_IS_PREVIEW_MODE_2 = "temp_is_preview_mode_2"
         private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
         private const val TEMP_REQUIRE_SIGNATURE_VERIFICATION =
             "temp_require_signature_verification"
@@ -171,34 +162,34 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
     inner class RasCredentialData(context: Context, manifestConfig: AppManifestConfig) {
         val isDefaultProductionEnabled = BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value
 
-        val tab1MiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab1MiniAppCredentialCache = MiniAppCredentialCache(
             IS_PROD_VERSION_ENABLED,
-            REQUIRE_SIGNATURE_VERIFICATION,
             IS_PREVIEW_MODE,
+            REQUIRE_SIGNATURE_VERIFICATION,
             APP_ID,
             SUBSCRIPTION_KEY
         )
 
-        val tab1TempMiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab1TempMiniAppCredentialCache = MiniAppCredentialCache(
             TEMP_IS_PROD_VERSION_ENABLED,
-            TEMP_REQUIRE_SIGNATURE_VERIFICATION,
             TEMP_IS_PREVIEW_MODE,
+            TEMP_REQUIRE_SIGNATURE_VERIFICATION,
             TEMP_APP_ID,
             TEMP_SUBSCRIPTION_KEY
         )
 
-        val tab2MiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab2MiniAppCredentialCache = MiniAppCredentialCache(
             IS_PROD_VERSION_ENABLED_2,
-            REQUIRE_SIGNATURE_VERIFICATION_2,
             IS_PREVIEW_MODE_2,
+            REQUIRE_SIGNATURE_VERIFICATION_2,
             APP_ID_2,
             SUBSCRIPTION_KEY_2
         )
 
-        val tab2TempMiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab2TempMiniAppCredentialCache = MiniAppCredentialCache(
             TEMP_IS_PROD_VERSION_ENABLED_2,
-            TEMP_REQUIRE_SIGNATURE_VERIFICATION_2,
             TEMP_IS_PREVIEW_MODE_2,
+            TEMP_REQUIRE_SIGNATURE_VERIFICATION_2,
             TEMP_APP_ID_2,
             TEMP_SUBSCRIPTION_KEY_2
         )
@@ -225,7 +216,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         )
 
 
-        var isPreviewModeDisplayByInput: Boolean?
+        var isDisplayByInputPreviewMode: Boolean?
             get() =
                 if (prefs.contains(IS_PREVIEW_MODE_DISPLAY_BY_INPUT))
                     prefs.getBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, true)
@@ -233,15 +224,6 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                     null
             set(isPreviewMode) = prefs.edit()
                 .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, isPreviewMode!!).apply()
-
-        var isDisplayInputPreviewMode: Boolean?
-            get() =
-                if (prefs.contains(IS_PREVIEW_MODE))
-                    prefs.getBoolean(IS_PREVIEW_MODE, true)
-                else
-                    null
-            set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
-
 
         fun getDefaultData(
         ): MiniAppCredentialData {
@@ -292,6 +274,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
         fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
             tab1TempMiniAppCredentialCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
+            isTempCleared = false
         }
 
         fun setTempTab1Data(
@@ -313,6 +296,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
         fun setTempTab2IsProduction(isProduction: Boolean) {
             tab2TempMiniAppCredentialCache.setIsProduction(prefs.edit(), isProduction)
+            isTempCleared = false
         }
 
         fun setTempTab2IsVerificationRequired(isSignatureVerificationRequired: Boolean) {
@@ -320,10 +304,12 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 prefs.edit(),
                 isSignatureVerificationRequired
             )
+            isTempCleared = false
         }
 
         fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
             tab2TempMiniAppCredentialCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
+            isTempCleared = false
         }
 
         fun setTempTab2Data(
@@ -335,5 +321,4 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             )
         }
     }
-
 }

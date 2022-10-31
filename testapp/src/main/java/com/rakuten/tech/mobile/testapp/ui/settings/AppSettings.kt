@@ -11,7 +11,6 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import java.util.*
 
-
 @Suppress("TooManyFunctions")
 class AppSettings private constructor(context: Context) {
 
@@ -23,9 +22,10 @@ class AppSettings private constructor(context: Context) {
     else manifestConfig.rasProjectId()
 
     var isDisplayInputPreviewMode: Boolean
-        get() = cache.rasCredentialData.isDisplayInputPreviewMode ?: manifestConfig.isPreviewMode()
+        get() = cache.rasCredentialData.isDisplayByInputPreviewMode
+            ?: manifestConfig.isPreviewMode()
         set(isPreviewMode) {
-            cache.rasCredentialData.isPreviewModeDisplayByInput = isPreviewMode
+            cache.rasCredentialData.isDisplayByInputPreviewMode = isPreviewMode
         }
 
     val uniqueId: String
@@ -232,8 +232,29 @@ class AppSettings private constructor(context: Context) {
         lateinit var instance: AppSettings
         const val DEFAULT_PROFILE_NAME = "MiniAppUser"
         val DEFAULT_POINTS = Points(10, 20, 30)
-        val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
-        val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
+        val fakeFirstNames = arrayOf(
+            "Yvonne",
+            "Jamie",
+            "Leticia",
+            "Priscilla",
+            "Sidney",
+            "Nancy",
+            "Edmund",
+            "Bill",
+            "Megan"
+        )
+        val fakeLastNames = arrayOf(
+            "Andrews",
+            "Casey",
+            "Gross",
+            "Lane",
+            "Thomas",
+            "Patrick",
+            "Strickland",
+            "Nicolas",
+            "Freeman"
+        )
+
         fun init(context: Context) {
             instance = AppSettings(context)
         }

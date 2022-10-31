@@ -9,8 +9,6 @@ import android.util.Base64
 import android.view.*
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
@@ -54,14 +52,13 @@ class SettingsFragment : BaseFragment() {
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            validateInputIDs(old_text != s.toString())
+            validateInputIDs()
         }
     }
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-            //todo requires inspection
-            if(isTab1Checked){
+            invalidateOptionsMenu(requireActivity())
+            if (isTab1Checked) {
                 binding.toggleList2.isEnabled = new
             } else {
                 binding.toggleList1.isEnabled = new
@@ -88,8 +85,8 @@ class SettingsFragment : BaseFragment() {
 
     override fun onStart() {
         super.onStart()
-        // enable the save button first time.
-        validateInputIDs(true)
+        renderAppSettingsScreen()
+        validateInputIDs()
     }
 
     private fun onSaveAction() {
@@ -130,85 +127,42 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    @Suppress("LongParameterList")
-    private fun onUpdateError(
-        appIdHolder: String,
-        subscriptionKeyHolder: String,
-        urlParametersHolder: String,
-        isPreviewModeHolder: Boolean,
-        requireSignatureVerificationHolder: Boolean,
-        errTitle: String,
-        errMsg: String
-    ) {
-        settings.projectId = appIdHolder
-        settings.subscriptionKey = subscriptionKeyHolder
-        settings.urlParameters = urlParametersHolder
-        settings.isPreviewMode = isPreviewModeHolder
-        settings.requireSignatureVerification = requireSignatureVerificationHolder
-        requireActivity().runOnUiThread {
-            if (requireActivity().isAvailable) {
-                settingsProgressDialog.cancel()
-            }
-            showAlertDialog(requireActivity(), errTitle, errMsg)
-        }
-    }
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.settings_fragment,
-            container,
-            false
+            inflater, R.layout.settings_fragment, container, false
         )
         settingsProgressDialog = SettingsProgressDialog(requireActivity())
-        renderAppSettingsScreen()
+        setViewsListener()
         return binding.root
     }
 
-    private fun validateInputIDs(inputChanged: Boolean = false) {
-        val isAppIdInvalid = !isInputIDValid()
-        val isInputEmpty = !(isInputEmpty(binding.editProjectId)
-                || isInputEmpty(binding.editSubscriptionKey))
-        val isToggleListEnabled = isInputEmpty
-                || isAppIdInvalid
+    private fun validateInputIDs() {
+        val isInputValid = isInputIDValid()
 
-        if (isTab1Checked) {
-            binding.toggleList2.isEnabled = isToggleListEnabled
-        } else {
-            binding.toggleList1.isEnabled = isToggleListEnabled
-        }
-
-        saveViewEnabled = isToggleListEnabled && inputChanged
-
-        if (isInputEmpty(binding.editProjectId) || isAppIdInvalid)
-            binding.inputProjectId.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editProjectId) || !isInputValid) binding.inputProjectId.error =
+            getString(R.string.error_invalid_input)
         else binding.inputProjectId.error = null
 
-        if (isInputEmpty(binding.editSubscriptionKey))
-            binding.inputSubscriptionKey.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editSubscriptionKey)) binding.inputSubscriptionKey.error =
+            getString(R.string.error_invalid_input)
         else binding.inputSubscriptionKey.error = null
+
+
+        saveViewEnabled =
+            binding.inputProjectId.error == null && binding.inputSubscriptionKey.error == null
     }
 
     private fun isInputIDValid(): Boolean {
         return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
-    private fun renderAppSettingsScreen() {
+    private fun setViewsListener() {
         binding.textInfo.text = createBuildInfo()
-        binding.editParametersUrl.setText(settings.urlParameters)
-        binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
-
-
-        val defaultCredentialData = settings.getDefaultCredentialData()
-
-        setupCredentialDataToView(defaultCredentialData)
-
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
@@ -243,7 +197,6 @@ class SettingsFragment : BaseFragment() {
                 settings.setTempTab2IsPreviewMode(isChecked)
             }
             binding.switchPreviewModeTab.isChecked = isChecked
-            validateInputIDs(true)
         }
 
         binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
@@ -253,7 +206,6 @@ class SettingsFragment : BaseFragment() {
                 settings.setTempTab2IsProduction(isChecked)
             }
             binding.switchProdVersion.isChecked = isChecked
-            validateInputIDs(true)
         }
 
         binding.switchSignatureVerification.setOnCheckedChangeListener { _, isChecked ->
@@ -263,7 +215,6 @@ class SettingsFragment : BaseFragment() {
                 settings.setTempTab2IsVerificationRequired(isChecked)
             }
             binding.switchSignatureVerification.isChecked = isChecked
-            validateInputIDs(true)
         }
 
         binding.toggleList1.setOnClickListener {
@@ -285,9 +236,14 @@ class SettingsFragment : BaseFragment() {
             settings.setTempTab1CredentialData(getCurrentTypedCredentialData())
             updateTabProjectIdAndSubscription()
         }
+    }
 
-        // enable the save button first time.
-        validateInputIDs(true)
+    private fun renderAppSettingsScreen() {
+        binding.editParametersUrl.setText(settings.urlParameters)
+        binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
+
+        val defaultCredentialData = settings.getDefaultCredentialData()
+        setupCredentialDataToView(defaultCredentialData)
         // add the default profile pic initially.
         updateProfileImageBase64()
         // add the default contacts initially.
@@ -296,14 +252,13 @@ class SettingsFragment : BaseFragment() {
 
     fun getCurrentTypedCredentialData(): MiniAppCredentialData {
         return MiniAppCredentialData(
-            binding.switchProdVersion.isChecked,
-            binding.switchSignatureVerification.isChecked,
-            binding.switchPreviewModeTab.isChecked,
-            binding.editProjectId.text.toString().trim(),
-            binding.editSubscriptionKey.text.toString().trim()
+            isProduction = binding.switchProdVersion.isChecked,
+            isPreviewMode = binding.switchPreviewModeTab.isChecked,
+            isVerificationRequired = binding.switchSignatureVerification.isChecked,
+            projectId = binding.editProjectId.text.toString().trim(),
+            subscriptionId = binding.editSubscriptionKey.text.toString().trim()
         )
     }
-
 
     private fun updateTabProjectIdAndSubscription() {
         val credentialData: MiniAppCredentialData = if (isTab1Checked) {
@@ -339,14 +294,14 @@ class SettingsFragment : BaseFragment() {
         launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val bitmap = BitmapFactory.decodeResource(resources, R.drawable.r_logo_default_profile)
+                    val bitmap =
+                        BitmapFactory.decodeResource(resources, R.drawable.r_logo_default_profile)
                     val byteStream = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream)
                     val byteArray = byteStream.toByteArray()
                     val base64DataPrefix = "data:image/png;base64,"
                     val profileUrlBase64 = base64DataPrefix + Base64.encodeToString(
-                        byteArray,
-                        Base64.DEFAULT
+                        byteArray, Base64.DEFAULT
                     )
                     AppSettings.instance.profilePictureUrlBase64 = profileUrlBase64
                 }
@@ -356,7 +311,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    private fun addDefaultContactList(){
+    private fun addDefaultContactList() {
         if (!settings.isContactsSaved) {
             settings.contacts = createRandomContactList()
         }
@@ -369,12 +324,14 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-
     @Suppress("MaxLineLength")
     private fun createRandomContact(): Contact {
-        val firstName = AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
-        val lastName = AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
-        val email = firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
+        val firstName =
+            AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
+        val lastName =
+            AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
+        val email =
+            firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
         return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
 }
