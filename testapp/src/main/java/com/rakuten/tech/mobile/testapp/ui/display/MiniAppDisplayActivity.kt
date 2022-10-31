@@ -253,7 +253,7 @@ class MiniAppDisplayActivity : BaseActivity() {
         }
 
         if (appUrl != null) {
-            viewModel.obtainMiniAppDisplayUrl(
+            viewModel.obtainNewMiniAppDisplayUrl(
                 this@MiniAppDisplayActivity,
                 appUrl,
                 miniAppMessageBridge,
@@ -261,16 +261,18 @@ class MiniAppDisplayActivity : BaseActivity() {
                 miniAppFileChooser,
                 AppSettings.instance.urlParameters
             )
-        } else
-            viewModel.obtainMiniAppDisplay(
-                this@MiniAppDisplayActivity,
-                appInfo,
-                appId!!,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                miniAppFileChooser,
-                AppSettings.instance.urlParameters
-            )
+        } else {
+            appInfo?.let {
+                viewModel.obtainMiniAppDisplay(
+                    this@MiniAppDisplayActivity,
+                    it,
+                    miniAppMessageBridge,
+                    miniAppNavigator,
+                    miniAppFileChooser,
+                    AppSettings.instance.urlParameters
+                )
+            }
+        }
     }
 
     @Suppress("OverridingDeprecatedMember")
