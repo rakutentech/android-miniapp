@@ -5,18 +5,12 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
-import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
@@ -57,10 +51,17 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppSecureStorageDispatcher =
-                spy(MiniAppSecureStorageDispatcher(activity, TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()))
-            miniAppSecureStorage = Mockito.spy(MiniAppSecureStorage(
-                context, TEST_STORAGE_VERSION, TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
-            ))
+                spy(
+                    MiniAppSecureStorageDispatcher(
+                        activity,
+                        TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+                    )
+                )
+            miniAppSecureStorage = Mockito.spy(
+                MiniAppSecureStorage(
+                    context, TEST_STORAGE_VERSION, TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+                )
+            )
             miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
             miniAppSecureStorageDispatcher.onFailed = mock()
@@ -117,7 +118,8 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     @Test
     fun `securestorageDispatcher should call onClearAll when secureStorageCallbackObj is valid`() {
         val secureStorageDispatcher = getMockSecureStorageDispatcher()
-        val callbackJson = getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_CLEAR))
+        val callbackJson =
+            getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_CLEAR))
         miniappMessageBridge.postMessage(callbackJson)
         verify(secureStorageDispatcher).onClearAll(
             secureStorageCallbackObj.id
@@ -127,7 +129,8 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     @Test
     fun `securestorageDispatcher should call onSize when secureStorageCallbackObj is valid`() {
         val secureStorageDispatcher = getMockSecureStorageDispatcher()
-        val callbackJson = getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_SIZE))
+        val callbackJson =
+            getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_SIZE))
         miniappMessageBridge.postMessage(callbackJson)
         verify(secureStorageDispatcher).onSize(
             secureStorageCallbackObj.id

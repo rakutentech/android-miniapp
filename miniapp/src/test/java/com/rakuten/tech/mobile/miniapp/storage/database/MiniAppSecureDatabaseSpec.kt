@@ -61,7 +61,6 @@ class MiniAppSecureDatabaseSpec {
             )
         )
         massDB.miniAppDatabaseStatus = mock()
-        //massDB.database = mock(SupportSQLiteDatabase::class)
         massDB.database = Mockito.spy(SupportSQLiteDatabase::class.java)
 
         database = Mockito.spy(SupportSQLiteDatabase::class.java)
