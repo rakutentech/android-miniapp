@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorageSize
 
 internal const val DB_NAME_PREFIX = "rmapp-"
 
@@ -27,6 +28,9 @@ internal class MiniAppSecureStorageDispatcher(
 
     @VisibleForTesting
     internal lateinit var onSuccessGetItem: (String) -> Unit
+
+    @VisibleForTesting
+    internal lateinit var onSuccessDBSize: (Long) -> Unit
 
     @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
@@ -138,6 +142,17 @@ internal class MiniAppSecureStorageDispatcher(
             bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
         }
         miniAppSecureStorage.delete(onSuccess, onFailed)
+    }
+
+    @Suppress("MagicNumber")
+    fun onSize(callbackId: String) = whenReady {
+        onSuccessDBSize = { fileSize: Long ->
+            val maxSizeInBytes = maxStorageSizeLimitInBytes
+            val storageSize =
+                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes))
+            bridgeExecutor.postValue(callbackId, storageSize)
+        }
+        miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
     }
 
     /**
