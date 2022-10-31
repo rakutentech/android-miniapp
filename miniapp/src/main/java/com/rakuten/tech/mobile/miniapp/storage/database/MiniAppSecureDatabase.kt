@@ -215,7 +215,11 @@ internal class MiniAppSecureDatabase(
 
     override fun getDatabaseUsedSize(): Long {
         val dbFile = context.getDatabasePath(dbName)
-        return dbFile.length()
+        var fileSize = dbFile.length()
+        if (dbFile.length() > maxDBSizeLimitInBytes) {
+            fileSize = maxDBSizeLimitInBytes
+        }
+        return fileSize
     }
 
     @Suppress("ExpressionBodySyntax")
@@ -285,19 +289,13 @@ internal class MiniAppSecureDatabase(
                 val listOfItems = items.entries.stream().collect(Collectors.toList())
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
-                    if (isDatabaseFull()) {
-                        miniAppDatabaseStatus = MiniAppDatabaseStatus.FULL
-                        throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
-                    }
                     database.beginTransaction()
                     outer.forEach { inner ->
-                        if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
-                            contentValues.put(FIRST_COLUMN_NAME, inner.key)
-                            contentValues.put(SECOND_COLUMN_NAME, inner.value)
-                            result = insert(contentValues)
-                            if (result > -1) {
-                                isInserted = true
-                            }
+                        contentValues.put(FIRST_COLUMN_NAME, inner.key)
+                        contentValues.put(SECOND_COLUMN_NAME, inner.value)
+                        result = insert(contentValues)
+                        if (result > -1) {
+                            isInserted = true
                         }
                     }
                     database.setTransactionSuccessful()
