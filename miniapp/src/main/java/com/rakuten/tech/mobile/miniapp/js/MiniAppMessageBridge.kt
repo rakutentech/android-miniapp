@@ -251,9 +251,6 @@ open class MiniAppMessageBridge {
             ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(
                 callbackObj.id
             )
-            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
-                callbackObj.id
-            )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)

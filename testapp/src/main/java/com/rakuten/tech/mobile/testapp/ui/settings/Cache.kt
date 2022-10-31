@@ -140,7 +140,7 @@ internal class Cache(context: Context) {
         get() = prefs.contains(DYNAMIC_DEEPLINKS)
 
     var maxStorageSizeLimitInBytes: String
-        get() = prefs.getString(MAX_STORAGE_SIZE_LIMIT, "52428800")
+        get() = prefs.getString(MAX_STORAGE_SIZE_LIMIT, "5242880")
             .toString() // Default max storage is 5MB
         set(maxStorageSizeLimitInBytes) = prefs.edit()
             .putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
