@@ -23,7 +23,6 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr) {
 
     private var btnLabel = ""
-    private var btnDetails = ""
     private var siteSection = ""
     private var pageName = ""
     private var action: ActionType = ActionType.DEFAULT
@@ -38,12 +37,9 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
                 val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
                 if (index > -1) action = ActionType.values()[index]
                 btnLabel = it.getString(R.styleable.CustomButtonViewWithArrow_titleLabel) ?: ""
-                btnDetails = it.getString(R.styleable.CustomButtonViewWithArrow_titleDetails) ?: ""
-                if(btnDetails == "") tv_details.visibility = View.GONE else tv_details.visibility = View.VISIBLE
                 val isArrowEnable =
                     it.getBoolean(R.styleable.CustomButtonViewWithArrow_rightArrowEnable, true)
                 tv_label.text = btnLabel
-                tv_details.text = btnDetails
                 if (isArrowEnable) img_arrow_right.visibility =
                     View.VISIBLE else img_arrow_right.visibility = View.INVISIBLE
 

@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import kotlin.Exception
 
 /**
  * A caching class to read and store the [MiniAppManifest] per miniapp id & version id using [SharedPreferences].

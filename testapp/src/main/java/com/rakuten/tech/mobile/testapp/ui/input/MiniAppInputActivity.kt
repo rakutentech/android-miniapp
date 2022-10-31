@@ -11,9 +11,11 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
+import com.rakuten.tech.mobile.testapp.launchActivity
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
@@ -52,13 +54,13 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
             raceExecutor.run { displayMiniApp() }
         }
         binding.btnDisplayList.setOnClickListener {
-            finish()
+            raceExecutor.run {
+                launchActivity<DemoAppMainActivity>()
+            }
         }
     }
 
-    override fun onBackPressed() {
-        finish()
-    }
+    override fun onBackPressed() {}
 
     private fun setupInputHint() {
         if (AppSettings.instance.isPreviewMode)
