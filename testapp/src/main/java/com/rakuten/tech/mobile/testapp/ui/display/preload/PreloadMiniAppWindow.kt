@@ -72,6 +72,11 @@ class PreloadMiniAppWindow(
         binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.window_preload_miniapp, null, false
         )
+
+        if(shouldShowDialog){
+            binding.preloadTutorial.visibility = View.INVISIBLE
+        }
+
         preloadMiniAppAlertDialog =
             AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
         preloadMiniAppAlertDialog.setView(binding.root)
