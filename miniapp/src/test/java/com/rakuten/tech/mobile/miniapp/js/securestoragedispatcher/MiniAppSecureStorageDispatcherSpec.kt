@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 
+import android.content.Context
 import androidx.test.core.app.ActivityScenario
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
@@ -25,11 +25,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.expect
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+// @RunWith(AndroidJUnit4::class)
 @Suppress("LargeClass")
+@RunWith(RobolectricTestRunner::class)
 class MiniAppSecureStorageDispatcherSpec {
     private val testKey = "key"
     private val testValue = "value"
@@ -49,6 +51,7 @@ class MiniAppSecureStorageDispatcherSpec {
         param = SecureStorageKeyList(setOf(testKey)),
         id = TEST_CALLBACK_ID
     )
+    private val context: Context = mock()
     private val setItemsJsonStr = Gson().toJson(secureStorageCallbackObj)
     private val getItemsJsonStr = Gson().toJson(getItemCallbackObj)
     private val deleteItemsJsonStr = Gson().toJson(deleteItemsCallbackObj)
@@ -56,7 +59,7 @@ class MiniAppSecureStorageDispatcherSpec {
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
-    private val testMaxStorageSizeInKB = 1000L
+    private val testMaxStorageSizeInKB = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
     private val miniAppSecureStorage: MiniAppSecureStorage = mock()
     private val testJsonError = "Can not parse secure storage json object."
 
@@ -180,6 +183,7 @@ class MiniAppSecureStorageDispatcherSpec {
 
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.miniAppSecureStorage.scope = scope
+        miniAppSecureStorageDispatcher.onSuccessDBSize = spy()
         miniAppSecureStorageDispatcher.onSuccess = spy()
         miniAppSecureStorageDispatcher.onFailed = spy()
     }
@@ -273,6 +277,14 @@ class MiniAppSecureStorageDispatcherSpec {
             miniAppSecureStorageDispatcher.onSuccess,
             miniAppSecureStorageDispatcher.onFailed
         )
+    }
+
+    @Test
+    fun `onSize should be called if can successfully parse the jsonStr`() {
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+        miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1))
+            .getDatabaseUsedSize(miniAppSecureStorageDispatcher.onSuccessDBSize)
     }
 
     @Test
