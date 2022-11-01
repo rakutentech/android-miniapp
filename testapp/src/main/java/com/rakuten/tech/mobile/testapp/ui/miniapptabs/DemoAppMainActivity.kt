@@ -123,7 +123,7 @@ class DemoAppMainActivity : BaseActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentVisibleFragment()?.let { fragment ->
             if (fragment is MiniAppDisplayFragment) {
-                fragment.handlePermissionResult(requestCode, permissions, grantResults)
+                fragment.handlePermissionResult(requestCode, grantResults)
             }
         }
     }
