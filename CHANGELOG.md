@@ -11,9 +11,11 @@
 
 **Sample App**
 - **Feature:** Demo App will now use a tabBar instead of a single screen.
-- **Feature:** Adding List I and List II for displaying multiple MiniApps at the same time and configurable through settings.
-- **Feature:** Features tab will start with URL feature to run MiniApps locally.
+- **Feature:** Added List I and List II for displaying multiple MiniApps at the same time and configurable through settings.
+- **Feature:** Features tab started with URL feature to run MiniApps locally.
 - **Feature:** Settings is moved to it's own tab.
+- **Feature:** Multiple MiniAppSdk configurations
+- **Feature:** Enabled PermissionSettings on MiniApp top bar
 
 ### 4.3.0 (2022-08-09)
 **SDK**
