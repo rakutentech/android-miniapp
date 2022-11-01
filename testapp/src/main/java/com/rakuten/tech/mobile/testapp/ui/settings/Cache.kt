@@ -9,9 +9,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.BuildVariant
 
 internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
@@ -23,7 +21,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
     val productionBaseUrl = context.getString(R.string.prodBaseUrl)
     val stagingBaseUrl = context.getString(R.string.stagingBaseUrl)
 
-    val rasConfigData = RasCredentialData(context, manifestConfig)
+    val rasConfigData = RasConfigData(context, manifestConfig)
 
     fun getBaseUrl(isProduction: Boolean) = if (isProduction) {
         productionBaseUrl
@@ -157,8 +155,8 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
     }
 
     @Suppress("TooManyFunctions")
-    inner class RasCredentialData(context: Context, manifestConfig: AppManifestConfig) {
-        val isDefaultProductionEnabled = BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value
+    inner class RasConfigData(context: Context, manifestConfig: AppManifestConfig) {
+        private val isDefaultProductionEnabled = true
 
         private val tab1MiniAppConfigCache = MiniAppConfigCache(
             IS_PROD_VERSION_ENABLED,
@@ -213,16 +211,6 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             subscriptionId = context.getString(R.string.stagingSubscriptionKey)
         )
 
-
-        var isDisplayByUrlPreviewMode: Boolean?
-            get() =
-                if (prefs.contains(IS_PREVIEW_MODE_DISPLAY_BY_URL))
-                    prefs.getBoolean(IS_PREVIEW_MODE_DISPLAY_BY_URL, true)
-                else
-                    null
-            set(isPreviewMode) = prefs.edit()
-                .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_URL, isPreviewMode!!).apply()
-
         fun getDefaultData(
         ): MiniAppConfigData {
             return if (isDefaultProductionEnabled) defaultProductionData
@@ -258,7 +246,11 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
 
 
         fun setTempTab1IsProduction(isProduction: Boolean) {
-            tab1TempMiniAppConfigCache.setIsProduction(prefs.edit(), isProduction)
+            tab1TempMiniAppConfigCache.setIsProduction(
+                prefs.edit(),
+                isProduction = isProduction,
+                defaultProjectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
+            )
             isTempCleared = false
         }
 
@@ -292,8 +284,20 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             tab2TempMiniAppConfigCache.clear(prefs.edit())
         }
 
+        fun getDefaultProjectIdAndSubsKeyPair(isProduction: Boolean): Pair<String, String> {
+            return if (isProduction) Pair(
+                defaultProductionData.projectId,
+                defaultProductionData.subscriptionId
+            )
+            else Pair(defaultStagingData.projectId, defaultStagingData.subscriptionId)
+        }
+
         fun setTempTab2IsProduction(isProduction: Boolean) {
-            tab2TempMiniAppConfigCache.setIsProduction(prefs.edit(), isProduction)
+            tab2TempMiniAppConfigCache.setIsProduction(
+                prefs.edit(),
+                isProduction = isProduction,
+                defaultProjectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
+            )
             isTempCleared = false
         }
 

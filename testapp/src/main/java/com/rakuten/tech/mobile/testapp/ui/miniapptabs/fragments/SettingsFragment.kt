@@ -108,7 +108,6 @@ class SettingsFragment : BaseFragment() {
 
     private fun updateSettings() {
         settings.urlParameters = binding.editParametersUrl.text.toString()
-        settings.isDisplayUrlPreviewMode = binding.switchPreviewMode.isChecked
 
         launch {
             URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
@@ -207,6 +206,7 @@ class SettingsFragment : BaseFragment() {
                 settings.setTempTab2IsProduction(isChecked)
             }
             binding.switchProdVersion.isChecked = isChecked
+            updateTabProjectIdAndSubscription()
         }
 
         binding.switchSignatureVerification.setOnCheckedChangeListener { _, isChecked ->
@@ -241,7 +241,6 @@ class SettingsFragment : BaseFragment() {
 
     private fun renderAppSettingsScreen() {
         binding.editParametersUrl.setText(settings.urlParameters)
-        binding.switchPreviewMode.isChecked = settings.isDisplayUrlPreviewMode
 
         val defaultConfigData = settings.getDefaultConfigData()
         setupConfigDataToView(defaultConfigData)
@@ -251,7 +250,7 @@ class SettingsFragment : BaseFragment() {
         addDefaultContactList()
     }
 
-    fun getCurrentTypedConfigData(): MiniAppConfigData {
+    private fun getCurrentTypedConfigData(): MiniAppConfigData {
         return MiniAppConfigData(
             isProduction = binding.switchProdVersion.isChecked,
             isPreviewMode = binding.switchPreviewModeTab.isChecked,

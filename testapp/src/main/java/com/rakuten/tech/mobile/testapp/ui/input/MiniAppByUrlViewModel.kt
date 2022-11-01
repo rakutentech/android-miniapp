@@ -10,7 +10,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MiniAppInputViewModel constructor(private val miniApp: MiniApp) : ViewModel() {
+class MiniAppByUrlViewModel constructor(private val miniApp: MiniApp) : ViewModel() {
     private val _miniAppVersionId = MutableLiveData<String>()
     private val _versionIdErrorData = MutableLiveData<String>()
     private val _containTooManyRequestsError = MutableLiveData<Boolean>()

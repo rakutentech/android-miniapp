@@ -32,9 +32,14 @@ class MiniAppConfigCache(
      */
     fun setIsProduction(
         editor: Editor,
-        isProduction: Boolean
+        isProduction: Boolean,
+        defaultProjectIdSubsKeyPair: Pair<String, String>
     ) {
-        editor.putBoolean(isproductionKey, isProduction).commit()
+        editor.apply {
+            putString(projectidKey, defaultProjectIdSubsKeyPair.first).commit()
+            putString(subscriptionKey, defaultProjectIdSubsKeyPair.second).commit()
+            putBoolean(isproductionKey, isProduction).commit()
+        }
     }
 
     fun setIsVerificationRequired(

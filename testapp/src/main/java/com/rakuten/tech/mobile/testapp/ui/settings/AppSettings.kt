@@ -21,13 +21,6 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.getTab1Data().projectId
     else manifestConfig.rasProjectId()
 
-    var isDisplayUrlPreviewMode: Boolean
-        get() = cache.rasConfigData.isDisplayByUrlPreviewMode
-            ?: manifestConfig.isPreviewMode()
-        set(isPreviewMode) {
-            cache.rasConfigData.isDisplayByUrlPreviewMode = isPreviewMode
-        }
-
     val uniqueId: String
         get() {
             val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
