@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 
 import android.content.Context
 import androidx.test.core.app.ActivityScenario
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
@@ -16,9 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
 import org.amshove.kluent.shouldBe
 import org.junit.After
 import org.junit.Before
@@ -30,11 +26,10 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 import kotlin.test.expect
 
 @ExperimentalCoroutinesApi
-//@RunWith(AndroidJUnit4::class)
+// @RunWith(AndroidJUnit4::class)
 @Suppress("LargeClass")
 @RunWith(RobolectricTestRunner::class)
 class MiniAppSecureStorageDispatcherSpec {
