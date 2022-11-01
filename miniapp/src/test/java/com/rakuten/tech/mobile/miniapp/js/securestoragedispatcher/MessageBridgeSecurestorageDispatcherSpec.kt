@@ -3,9 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
-import com.rakuten.tech.mobile.miniapp.TestActivity
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import org.amshove.kluent.*
@@ -49,7 +47,12 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppSecureStorageDispatcher =
-                spy(MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInKB))
+                spy(
+                    MiniAppSecureStorageDispatcher(
+                        activity,
+                        TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+                    )
+                )
             miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
 
@@ -104,9 +107,21 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     @Test
     fun `securestorageDispatcher should call onClearAll when secureStorageCallbackObj is valid`() {
         val secureStorageDispatcher = getMockSecureStorageDispatcher()
-        val callbackJson = getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_CLEAR))
+        val callbackJson =
+            getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_CLEAR))
         miniappMessageBridge.postMessage(callbackJson)
         verify(secureStorageDispatcher).onClearAll(
+            secureStorageCallbackObj.id
+        )
+    }
+
+    @Test
+    fun `securestorageDispatcher should call onSize when secureStorageCallbackObj is valid`() {
+        val secureStorageDispatcher = getMockSecureStorageDispatcher()
+        val callbackJson =
+            getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_SIZE))
+        miniappMessageBridge.postMessage(callbackJson)
+        verify(secureStorageDispatcher).onSize(
             secureStorageCallbackObj.id
         )
     }
