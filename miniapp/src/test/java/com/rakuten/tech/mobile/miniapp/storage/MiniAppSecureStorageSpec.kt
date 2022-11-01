@@ -13,6 +13,7 @@ import net.sqlcipher.database.SQLiteFullException
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -33,10 +34,11 @@ class MiniAppSecureStorageSpec {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        mass = MiniAppSecureStorage(
-            context,
-            TEST_STORAGE_VERSION,
-            TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+        mass = Mockito.spy(MiniAppSecureStorage(
+                context,
+                TEST_STORAGE_VERSION,
+                TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+            )
         )
         mass.databaseName = TEST_MA_ID
         mass.miniAppSecureDatabase = mock()
