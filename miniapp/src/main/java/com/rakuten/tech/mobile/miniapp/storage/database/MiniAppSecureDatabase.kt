@@ -32,7 +32,9 @@ private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
 
 @VisibleForTesting
 internal const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
-private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
+
+@VisibleForTesting
+internal const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
 
 @VisibleForTesting
 internal const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
