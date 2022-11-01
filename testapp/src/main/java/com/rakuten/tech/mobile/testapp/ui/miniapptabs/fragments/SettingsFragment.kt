@@ -20,7 +20,6 @@ import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
@@ -32,9 +31,9 @@ import java.io.ByteArrayOutputStream
 import java.net.URL
 import java.security.SecureRandom
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.properties.Delegates
 
+@Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -57,8 +56,8 @@ class SettingsFragment : BaseFragment() {
     }
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-            if(isTab1Checked){
+            invalidateOptionsMenu(requireActivity())
+            if (isTab1Checked) {
                 binding.toggleList2.isEnabled = new
             } else {
                 binding.toggleList1.isEnabled = new
@@ -93,9 +92,11 @@ class SettingsFragment : BaseFragment() {
 
         if (!isTab1Checked) {
             tab1ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
-            tab2ProjectIdSubscriptionKeyPair = settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+            tab2ProjectIdSubscriptionKeyPair =
+                settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
         } else {
-            tab1ProjectIdSubscriptionKeyPair = settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+            tab1ProjectIdSubscriptionKeyPair =
+                settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
             tab2ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
         }
 
@@ -114,8 +115,7 @@ class SettingsFragment : BaseFragment() {
         )
     }
 
-
-
+    @Suppress("LongMethod", "LongParameterList", "TooGenericExceptionCaught", "SwallowedException")
     private fun updateSettings(
         projectId: String,
         subscriptionKey: String,
@@ -186,6 +186,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
+    @Suppress("LongParameterList")
     private fun onUpdateError(
         appIdHolder: String,
         subscriptionKeyHolder: String,
@@ -211,7 +212,7 @@ class SettingsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
         // Inflate the layout for this fragment
@@ -246,6 +247,7 @@ class SettingsFragment : BaseFragment() {
         return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
+    @Suppress("LongMethod")
     private fun renderAppSettingsScreen() {
         binding.textInfo.text = createBuildInfo()
         binding.editParametersUrl.setText(settings.urlParameters)
@@ -276,10 +278,6 @@ class SettingsFragment : BaseFragment() {
             ContactListActivity.start(requireActivity())
         }
 
-        binding.buttonCustomPermissions.setOnClickListener {
-            MiniAppDownloadedListActivity.start(requireActivity())
-        }
-
         binding.buttonAccessToken.setOnClickListener {
             AccessTokenActivity.start(requireActivity())
         }
@@ -306,14 +304,14 @@ class SettingsFragment : BaseFragment() {
         }
 
         binding.toggleList1.setOnClickListener {
-            if(isTab1Checked) return@setOnClickListener
+            if (isTab1Checked) return@setOnClickListener
             isTab1Checked = true
             settings.setTab2CredentialData(getTypedSubscriptionKeyProjectIdPair())
             updateProjectIdAndSubscription()
         }
 
         binding.toggleList2.setOnClickListener {
-            if(!isTab1Checked) return@setOnClickListener
+            if (!isTab1Checked) return@setOnClickListener
             isTab1Checked = false
             settings.setTab1CredentialData(getTypedSubscriptionKeyProjectIdPair())
             updateProjectIdAndSubscription()
@@ -362,11 +360,6 @@ class SettingsFragment : BaseFragment() {
         binding.editSubscriptionKey.setText(projectIdAndSubscriptionKeyPair.second)
     }
 
-    private fun setUpIdSubscriptionView(projectId: String, subscriptionKey: String){
-        binding.editProjectId.setText(projectId)
-        binding.editSubscriptionKey.setText(subscriptionKey)
-    }
-
     private fun createBuildInfo(): String {
         val sdkVersion = getString(R.string.miniapp_sdk_version)
         val buildVersion = getString(R.string.build_version)
@@ -379,6 +372,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
+    @Suppress("MagicNumber")
     private fun encodeImageForMiniApp() {
         launch {
             try {
@@ -405,11 +399,16 @@ class SettingsFragment : BaseFragment() {
             settings.contacts = createRandomContactList()
         }
     }
+
+    @Suppress("UnusedPrivateMember", "MagicNumber")
     private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
         for (i in 1..10) {
             this.add(createRandomContact())
         }
     }
+
+
+    @Suppress("MaxLineLength")
     private fun createRandomContact(): Contact {
         val firstName = AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
         val lastName = AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]

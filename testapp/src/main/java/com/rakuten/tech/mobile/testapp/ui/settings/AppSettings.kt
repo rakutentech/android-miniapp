@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.testapp.BuildVariant
 import java.util.*
 
 class AppSettings private constructor(context: Context) {
@@ -29,7 +30,8 @@ class AppSettings private constructor(context: Context) {
         }
 
     var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: true
+        get() = cache.isProdVersionEnabled
+            ?: (BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !isSettingSaved)
         set(isRequired) {
             cache.isProdVersionEnabled = isRequired
         }
