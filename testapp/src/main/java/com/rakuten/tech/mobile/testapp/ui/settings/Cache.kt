@@ -21,13 +21,13 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         Context.MODE_PRIVATE
     )
     val productionBaseUrl = context.getString(R.string.prodBaseUrl)
-    val stagingBBaseUrl = context.getString(R.string.stagingBaseUrl)
+    val stagingBaseUrl = context.getString(R.string.stagingBaseUrl)
 
-    val rasCredentialData = RasCredentialData(context, manifestConfig)
+    val rasConfigData = RasCredentialData(context, manifestConfig)
 
     fun getBaseUrl(isProduction: Boolean) = if (isProduction) {
         productionBaseUrl
-    } else stagingBBaseUrl
+    } else stagingBaseUrl
 
     var uniqueId: String?
         get() = prefs.getString(UNIQUE_ID, null)
@@ -149,7 +149,6 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         private const val CONTACTS = "contacts"
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
-        private const val ANALYTIC_CONFIGS = "analytic_configs"
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
         private const val POINTS = "points"
         private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
@@ -161,7 +160,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
     inner class RasCredentialData(context: Context, manifestConfig: AppManifestConfig) {
         val isDefaultProductionEnabled = BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value
 
-        private val tab1MiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab1MiniAppConfigCache = MiniAppConfigCache(
             IS_PROD_VERSION_ENABLED,
             IS_PREVIEW_MODE,
             REQUIRE_SIGNATURE_VERIFICATION,
@@ -169,7 +168,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             SUBSCRIPTION_KEY
         )
 
-        private val tab1TempMiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab1TempMiniAppConfigCache = MiniAppConfigCache(
             TEMP_IS_PROD_VERSION_ENABLED,
             TEMP_IS_PREVIEW_MODE,
             TEMP_REQUIRE_SIGNATURE_VERIFICATION,
@@ -177,7 +176,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             TEMP_SUBSCRIPTION_KEY
         )
 
-        private val tab2MiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab2MiniAppConfigCache = MiniAppConfigCache(
             IS_PROD_VERSION_ENABLED_2,
             IS_PREVIEW_MODE_2,
             REQUIRE_SIGNATURE_VERIFICATION_2,
@@ -185,7 +184,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             SUBSCRIPTION_KEY_2
         )
 
-        private val tab2TempMiniAppCredentialCache = MiniAppCredentialCache(
+        private val tab2TempMiniAppConfigCache = MiniAppConfigCache(
             TEMP_IS_PROD_VERSION_ENABLED_2,
             TEMP_IS_PREVIEW_MODE_2,
             TEMP_REQUIRE_SIGNATURE_VERIFICATION_2,
@@ -198,7 +197,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             set(isTempSaved) = prefs.edit()
                 .putBoolean(IS_TEMP_CLEARED, isTempSaved).apply()
 
-        val defaultProductionData = MiniAppCredentialData(
+        val defaultProductionData = MiniAppConfigData(
             isProduction = isDefaultProductionEnabled,
             isVerificationRequired = manifestConfig.requireSignatureVerification(),
             isPreviewMode = manifestConfig.isPreviewMode(),
@@ -206,7 +205,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             subscriptionId = context.getString(R.string.prodSubscriptionKey)
         )
 
-        val defaultStagingData = MiniAppCredentialData(
+        val defaultStagingData = MiniAppConfigData(
             isProduction = isDefaultProductionEnabled,
             isVerificationRequired = manifestConfig.requireSignatureVerification(),
             isPreviewMode = manifestConfig.isPreviewMode(),
@@ -225,46 +224,46 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, isPreviewMode!!).apply()
 
         fun getDefaultData(
-        ): MiniAppCredentialData {
+        ): MiniAppConfigData {
             return if (isDefaultProductionEnabled) defaultProductionData
             else defaultStagingData
         }
 
-        fun getTab1Data(): MiniAppCredentialData =
-            tab1MiniAppCredentialCache.getData(prefs, getDefaultData())
+        fun getTab1Data(): MiniAppConfigData =
+            tab1MiniAppConfigCache.getData(prefs, getDefaultData())
 
-        private fun getTab1TempData(): MiniAppCredentialData =
-            tab1TempMiniAppCredentialCache.getData(prefs, getDefaultData())
+        private fun getTab1TempData(): MiniAppConfigData =
+            tab1TempMiniAppConfigCache.getData(prefs, getDefaultData())
 
-        fun getTab1CurrentData(): MiniAppCredentialData =
+        fun getTab1CurrentData(): MiniAppConfigData =
             if (isTempCleared && isSettingSaved) getTab1Data() else getTab1TempData()
 
-        fun getTab2Data(): MiniAppCredentialData =
-            tab2MiniAppCredentialCache.getData(prefs, getDefaultData())
+        fun getTab2Data(): MiniAppConfigData =
+            tab2MiniAppConfigCache.getData(prefs, getDefaultData())
 
-        fun getTab2CurrentData(): MiniAppCredentialData =
+        fun getTab2CurrentData(): MiniAppConfigData =
             if (isTempCleared && isSettingSaved) getTab2Data() else getTab2TempData()
 
-        private fun getTab2TempData(): MiniAppCredentialData =
-            tab2TempMiniAppCredentialCache.getData(prefs, getDefaultData())
+        private fun getTab2TempData(): MiniAppConfigData =
+            tab2TempMiniAppConfigCache.getData(prefs, getDefaultData())
 
 
         fun saveTab1Data() {
-            tab1MiniAppCredentialCache.setData(
+            tab1MiniAppConfigCache.setData(
                 prefs.edit(),
                 getTab1TempData()
             )
-            tab1TempMiniAppCredentialCache.clear(prefs.edit())
+            tab1TempMiniAppConfigCache.clear(prefs.edit())
         }
 
 
         fun setTempTab1IsProduction(isProduction: Boolean) {
-            tab1TempMiniAppCredentialCache.setIsProduction(prefs.edit(), isProduction)
+            tab1TempMiniAppConfigCache.setIsProduction(prefs.edit(), isProduction)
             isTempCleared = false
         }
 
         fun setTempTab1IsVerificationRequired(isVerificationRequired: Boolean) {
-            tab1TempMiniAppCredentialCache.setIsVerificationRequired(
+            tab1TempMiniAppConfigCache.setIsVerificationRequired(
                 prefs.edit(),
                 isVerificationRequired
             )
@@ -272,34 +271,34 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         }
 
         fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
-            tab1TempMiniAppCredentialCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
+            tab1TempMiniAppConfigCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
             isTempCleared = false
         }
 
         fun setTempTab1Data(
-            credentialData: MiniAppCredentialData
+            credentialData: MiniAppConfigData
         ) {
-            tab1TempMiniAppCredentialCache.setData(
+            tab1TempMiniAppConfigCache.setData(
                 prefs.edit(),
                 credentialData
             )
         }
 
         fun saveTab2Data() {
-            tab2MiniAppCredentialCache.setData(
+            tab2MiniAppConfigCache.setData(
                 prefs.edit(),
                 getTab2TempData()
             )
-            tab2TempMiniAppCredentialCache.clear(prefs.edit())
+            tab2TempMiniAppConfigCache.clear(prefs.edit())
         }
 
         fun setTempTab2IsProduction(isProduction: Boolean) {
-            tab2TempMiniAppCredentialCache.setIsProduction(prefs.edit(), isProduction)
+            tab2TempMiniAppConfigCache.setIsProduction(prefs.edit(), isProduction)
             isTempCleared = false
         }
 
         fun setTempTab2IsVerificationRequired(isSignatureVerificationRequired: Boolean) {
-            tab2TempMiniAppCredentialCache.setIsVerificationRequired(
+            tab2TempMiniAppConfigCache.setIsVerificationRequired(
                 prefs.edit(),
                 isSignatureVerificationRequired
             )
@@ -307,14 +306,14 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         }
 
         fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
-            tab2TempMiniAppCredentialCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
+            tab2TempMiniAppConfigCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
             isTempCleared = false
         }
 
         fun setTempTab2Data(
-            credentialData: MiniAppCredentialData
+            credentialData: MiniAppConfigData
         ) {
-            tab2TempMiniAppCredentialCache.setData(
+            tab2TempMiniAppConfigCache.setData(
                 prefs.edit(),
                 credentialData
             )

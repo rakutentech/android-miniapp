@@ -19,7 +19,7 @@ import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppCredentialData
+import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -94,12 +94,12 @@ class SettingsFragment : BaseFragment() {
             settingsProgressDialog.show()
         }
 
-        val currentCredentialData = getCurrentTypedCredentialData()
+        val currentConfigData = getCurrentTypedConfigData()
 
         if (isTab1Checked) {
-            settings.setTempTab1CredentialData(currentCredentialData)
+            settings.setTempTab1ConfigData(currentConfigData)
         } else {
-            settings.setTempTab2CredentialData(currentCredentialData)
+            settings.setTempTab2ConfigData(currentConfigData)
         }
 
         settings.saveData()
@@ -161,6 +161,7 @@ class SettingsFragment : BaseFragment() {
         return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
+    @Suppress("LongMethod")
     private fun setViewsListener() {
         binding.textInfo.text = createBuildInfo()
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
@@ -223,7 +224,7 @@ class SettingsFragment : BaseFragment() {
                 return@setOnClickListener
             }
             isTab1Checked = true
-            settings.setTempTab2CredentialData(getCurrentTypedCredentialData())
+            settings.setTempTab2ConfigData(getCurrentTypedConfigData())
             updateTabProjectIdAndSubscription()
         }
 
@@ -233,7 +234,7 @@ class SettingsFragment : BaseFragment() {
                 return@setOnClickListener
             }
             isTab1Checked = false
-            settings.setTempTab1CredentialData(getCurrentTypedCredentialData())
+            settings.setTempTab1ConfigData(getCurrentTypedConfigData())
             updateTabProjectIdAndSubscription()
         }
     }
@@ -242,16 +243,16 @@ class SettingsFragment : BaseFragment() {
         binding.editParametersUrl.setText(settings.urlParameters)
         binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
 
-        val defaultCredentialData = settings.getDefaultCredentialData()
-        setupCredentialDataToView(defaultCredentialData)
+        val defaultConfigData = settings.getDefaultConfigData()
+        setupConfigDataToView(defaultConfigData)
         // add the default profile pic initially.
         updateProfileImageBase64()
         // add the default contacts initially.
         addDefaultContactList()
     }
 
-    fun getCurrentTypedCredentialData(): MiniAppCredentialData {
-        return MiniAppCredentialData(
+    fun getCurrentTypedConfigData(): MiniAppConfigData {
+        return MiniAppConfigData(
             isProduction = binding.switchProdVersion.isChecked,
             isPreviewMode = binding.switchPreviewModeTab.isChecked,
             isVerificationRequired = binding.switchSignatureVerification.isChecked,
@@ -261,20 +262,20 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun updateTabProjectIdAndSubscription() {
-        val credentialData: MiniAppCredentialData = if (isTab1Checked) {
-            settings.getCurrentTab1CredentialData()
+        val configData: MiniAppConfigData = if (isTab1Checked) {
+            settings.getCurrentTab1ConfigData()
         } else {
-            settings.getCurrentTab2CredentialData()
+            settings.getCurrentTab2ConfigData()
         }
-        setupCredentialDataToView(credentialData)
+        setupConfigDataToView(configData)
     }
 
-    private fun setupCredentialDataToView(credentialData: MiniAppCredentialData) {
-        binding.switchProdVersion.isChecked = credentialData.isProduction
-        binding.switchPreviewModeTab.isChecked = credentialData.isPreviewMode
-        binding.switchSignatureVerification.isChecked = credentialData.isVerificationRequired
-        binding.editProjectId.setText(credentialData.projectId)
-        binding.editSubscriptionKey.setText(credentialData.subscriptionId)
+    private fun setupConfigDataToView(configData: MiniAppConfigData) {
+        binding.switchProdVersion.isChecked = configData.isProduction
+        binding.switchPreviewModeTab.isChecked = configData.isPreviewMode
+        binding.switchSignatureVerification.isChecked = configData.isVerificationRequired
+        binding.editProjectId.setText(configData.projectId)
+        binding.editSubscriptionKey.setText(configData.subscriptionId)
     }
 
     private fun createBuildInfo(): String {

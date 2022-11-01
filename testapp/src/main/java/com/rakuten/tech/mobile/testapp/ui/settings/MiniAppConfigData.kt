@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
-data class MiniAppCredentialData(
+data class MiniAppConfigData(
     val isProduction: Boolean,
     val isPreviewMode: Boolean,
     val isVerificationRequired: Boolean,

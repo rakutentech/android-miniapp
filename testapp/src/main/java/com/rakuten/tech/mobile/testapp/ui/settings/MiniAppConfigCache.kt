@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 
-class MiniAppCredentialCache(
+class MiniAppConfigCache(
     private val isproductionKey: String,
     private val isPreviewModeKey: String,
     private val isSignatureVerificationRequiredKey: String,
@@ -13,9 +13,9 @@ class MiniAppCredentialCache(
 
     fun getData(
         prefs: SharedPreferences,
-        defaultData: MiniAppCredentialData
-    ): MiniAppCredentialData {
-        return MiniAppCredentialData(
+        defaultData: MiniAppConfigData
+    ): MiniAppConfigData {
+        return MiniAppConfigData(
             prefs.getBoolean(isproductionKey, defaultData.isProduction),
             prefs.getBoolean(isPreviewModeKey, defaultData.isPreviewMode),
             prefs.getBoolean(
@@ -54,17 +54,17 @@ class MiniAppCredentialCache(
 
     fun setData(
         editor: Editor,
-        credentialData: MiniAppCredentialData,
+        configData: MiniAppConfigData,
     ) {
         editor.apply {
-            putBoolean(isproductionKey, credentialData.isProduction).commit()
+            putBoolean(isproductionKey, configData.isProduction).commit()
             putBoolean(
                 isSignatureVerificationRequiredKey,
-                credentialData.isVerificationRequired
+                configData.isVerificationRequired
             ).commit()
-            putBoolean(isPreviewModeKey, credentialData.isPreviewMode).commit()
-            putString(projectidKey, credentialData.projectId).commit()
-            putString(subscriptionKey, credentialData.subscriptionId).commit()
+            putBoolean(isPreviewModeKey, configData.isPreviewMode).commit()
+            putString(projectidKey, configData.projectId).commit()
+            putString(subscriptionKey, configData.subscriptionId).commit()
         }
     }
 
