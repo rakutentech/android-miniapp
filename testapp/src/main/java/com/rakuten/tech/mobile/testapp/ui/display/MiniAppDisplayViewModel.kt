@@ -25,6 +25,9 @@ class MiniAppDisplayViewModel constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     private val _containTooManyRequestsError = MutableLiveData<Boolean>()
 
+    private val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
+    private val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
+
     val miniAppView: LiveData<View>
         get() = _miniAppView
     val errorData: LiveData<String>
@@ -51,9 +54,9 @@ class MiniAppDisplayViewModel constructor(
             e.printStackTrace()
             when (e) {
                 is MiniAppHasNoPublishedVersionException ->
-                    _errorData.postValue("No published version for the provided Mini App ID.")
+                    _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
                 is MiniAppNotFoundException ->
-                    _errorData.postValue("No Mini App found for the provided Project ID.")
+                    _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                 is MiniAppTooManyRequestsError ->
                     _containTooManyRequestsError.postValue(true)
                 else ->{
@@ -64,7 +67,7 @@ class MiniAppDisplayViewModel constructor(
                     } catch (e: MiniAppSdkException) {
                         when (e) {
                             is MiniAppNotFoundException ->
-                                _errorData.postValue("No Mini App found for the provided Project ID.")
+                                _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                             else -> _errorData.postValue(e.message)
                         }
                     }
@@ -147,9 +150,9 @@ class MiniAppDisplayViewModel constructor(
                     e.printStackTrace()
                     when (e) {
                         is MiniAppHasNoPublishedVersionException ->
-                            _errorData.postValue("No published version for the provided Mini App ID.")
+                            _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
                         is MiniAppNotFoundException ->
-                            _errorData.postValue("No Mini App found for the provided Project ID.")
+                            _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                         is MiniAppTooManyRequestsError ->
                             _containTooManyRequestsError.postValue(true)
                         else -> {
@@ -189,9 +192,9 @@ class MiniAppDisplayViewModel constructor(
                     e.printStackTrace()
                     when (e) {
                         is MiniAppHasNoPublishedVersionException ->
-                            _errorData.postValue("No published version for the provided Mini App ID.")
+                            _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
                         is MiniAppNotFoundException ->
-                            _errorData.postValue("No Mini App found for the provided Project ID.")
+                            _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                         is MiniAppTooManyRequestsError ->
                             _containTooManyRequestsError.postValue(true)
                         else -> {

@@ -516,5 +516,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         )
     }
 
-    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {}
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
+        // Implementation not needed
+    }
 }
