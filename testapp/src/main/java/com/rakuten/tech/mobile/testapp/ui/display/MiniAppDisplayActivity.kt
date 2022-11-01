@@ -32,6 +32,9 @@ import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
+import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
@@ -45,15 +48,11 @@ import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.lang.NullPointerException
-import java.util.*
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 
 
-class MiniAppDisplayActivity : BaseActivity() {
+class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -68,6 +67,7 @@ class MiniAppDisplayActivity : BaseActivity() {
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
     private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
             if (ContextCompat.checkSelfPermission(
@@ -172,8 +172,25 @@ class MiniAppDisplayActivity : BaseActivity() {
                 }
                 true
             }
+            R.id.settings_permission_mini_app -> {
+                launchCustomPermissionDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun launchCustomPermissionDialog() {
+        appInfo?.let {
+            preloadMiniAppWindow.initiate(
+                appInfo = appInfo,
+                it.id,
+                it.version.versionId,
+                this,
+                shouldShowDialog = true
+            )
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -498,4 +515,6 @@ class MiniAppDisplayActivity : BaseActivity() {
             "MiniApp Resumed"
         )
     }
+
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {}
 }

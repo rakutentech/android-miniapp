@@ -153,7 +153,6 @@ class MiniAppDisplayViewModel constructor(
                         is MiniAppTooManyRequestsError ->
                             _containTooManyRequestsError.postValue(true)
                         else -> {
-                            //try to load MiniApp from cache
                             _errorData.postValue(e.message)
                         }
                     }
@@ -196,7 +195,6 @@ class MiniAppDisplayViewModel constructor(
                         is MiniAppTooManyRequestsError ->
                             _containTooManyRequestsError.postValue(true)
                         else -> {
-                            //try to load MiniApp from cache
                             _errorData.postValue(e.message)
                         }
                     }
@@ -222,28 +220,6 @@ class MiniAppDisplayViewModel constructor(
                 queryParams = AppSettings.instance.urlParameters
             ),
             miniAppInfo = miniAppInfo,
-            fromCache = false
-        )
-    }
-
-    private fun createMiniAppDefaultParam(
-        context: Context,
-        miniAppId: String,
-        miniAppMessageBridge: MiniAppMessageBridge,
-        miniAppNavigator: MiniAppNavigator,
-        miniAppFileChooser: MiniAppFileChooser
-    ): MiniAppParameters {
-        return MiniAppParameters.DefaultParams(
-            context = context,
-            config = MiniAppConfig(
-                miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig,
-                miniAppMessageBridge = miniAppMessageBridge,
-                miniAppNavigator = miniAppNavigator,
-                miniAppFileChooser = miniAppFileChooser,
-                queryParams = AppSettings.instance.urlParameters
-            ),
-            miniAppId = miniAppId,
-            miniAppVersion = "",
             fromCache = false
         )
     }
