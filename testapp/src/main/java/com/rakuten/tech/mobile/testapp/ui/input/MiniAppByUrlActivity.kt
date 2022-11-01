@@ -101,7 +101,9 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     private fun displayMiniApp() = when (display) {
         is InputDisplay.AppId -> initiatePreloadScreen(display.input.trim())
         is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
-        is InputDisplay.None -> {}
+        is InputDisplay.None -> {
+            //intended
+        }
     }
 
     private fun initiatePreloadScreen(miniAppId: String) {
