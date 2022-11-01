@@ -38,7 +38,7 @@
                     android:paddingTop="@dimen/small_4"
                     android:paddingEnd="@dimen/medium_16"
                     android:paddingBottom="@dimen/small_4"
-                    android:text="@string/miniapp_by_input" />
+                    android:text="@string/miniapp_by_url" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
                     android:id="@+id/switchPreviewMode"

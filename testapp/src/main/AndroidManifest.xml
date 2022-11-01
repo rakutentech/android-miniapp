@@ -46,8 +46,8 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
-            android:label="@string/lb_display_input"
+            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppByUrlActivity"
+            android:label="@string/lb_display_url"
             android:theme="@style/MaterialAppTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity" />

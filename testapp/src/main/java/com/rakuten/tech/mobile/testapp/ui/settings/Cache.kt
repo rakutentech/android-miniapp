@@ -115,7 +115,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             .putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
 
     companion object {
-        private const val IS_PREVIEW_MODE_DISPLAY_BY_INPUT = "is_display_by_input_preview_mode"
+        private const val IS_PREVIEW_MODE_DISPLAY_BY_URL = "is_display_by_url_preview_mode"
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val TEMP_IS_PREVIEW_MODE = "temp_is_preview_mode"
         private const val IS_PREVIEW_MODE_2 = "is_preview_mode_2"
@@ -214,14 +214,14 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         )
 
 
-        var isDisplayByInputPreviewMode: Boolean?
+        var isDisplayByUrlPreviewMode: Boolean?
             get() =
-                if (prefs.contains(IS_PREVIEW_MODE_DISPLAY_BY_INPUT))
-                    prefs.getBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, true)
+                if (prefs.contains(IS_PREVIEW_MODE_DISPLAY_BY_URL))
+                    prefs.getBoolean(IS_PREVIEW_MODE_DISPLAY_BY_URL, true)
                 else
                     null
             set(isPreviewMode) = prefs.edit()
-                .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_INPUT, isPreviewMode!!).apply()
+                .putBoolean(IS_PREVIEW_MODE_DISPLAY_BY_URL, isPreviewMode!!).apply()
 
         fun getDefaultData(
         ): MiniAppConfigData {

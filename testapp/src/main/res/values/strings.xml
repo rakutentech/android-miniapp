@@ -11,7 +11,7 @@
     <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
-    <string name="lb_display_input">Display by Input</string>
+    <string name="lb_display_url">Display by URL</string>
     <string name="lb_unique_id">Unique ID</string>
     <string name="lb_filter_view_miniapp">Open MiniApp</string>
     <string name="lb_secure_storage">Secure Storage</string>
@@ -117,5 +117,5 @@
     <string name="deeplink_activity_input_hint">Input here</string>
     <string name="deeplink_activity_no_deeplink">No deeplink available!</string>
     <string name="deeplink_activity_not_saved">No deeplink has been saved yet.</string>
-    <string name="miniapp_by_input">MiniApp By Input</string>
+    <string name="miniapp_by_url">MiniApp By URL</string>
 </resources>

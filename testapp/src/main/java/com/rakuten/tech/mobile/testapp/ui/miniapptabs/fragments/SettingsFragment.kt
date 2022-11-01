@@ -108,7 +108,7 @@ class SettingsFragment : BaseFragment() {
 
     private fun updateSettings() {
         settings.urlParameters = binding.editParametersUrl.text.toString()
-        settings.isDisplayInputPreviewMode = binding.switchPreviewMode.isChecked
+        settings.isDisplayUrlPreviewMode = binding.switchPreviewMode.isChecked
 
         launch {
             URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
@@ -241,7 +241,7 @@ class SettingsFragment : BaseFragment() {
 
     private fun renderAppSettingsScreen() {
         binding.editParametersUrl.setText(settings.urlParameters)
-        binding.switchPreviewMode.isChecked = settings.isDisplayInputPreviewMode
+        binding.switchPreviewMode.isChecked = settings.isDisplayUrlPreviewMode
 
         val defaultConfigData = settings.getDefaultConfigData()
         setupConfigDataToView(defaultConfigData)

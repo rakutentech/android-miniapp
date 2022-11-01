@@ -16,7 +16,7 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
+class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -65,7 +65,7 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     }
 
     private fun setupInputHint() {
-        if (AppSettings.instance.isDisplayInputPreviewMode)
+        if (AppSettings.instance.isDisplayUrlPreviewMode)
             binding.inputLayout.hint = getString(R.string.lb_app_url)
         else
             binding.inputLayout.hint = getString(R.string.lb_app_id_or_url)
@@ -78,7 +78,7 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
             display = if (URLUtil.isValidUrl(input)) {
                 onValidUI()
                 InputDisplay.Url(input)
-            } else if (!AppSettings.instance.isDisplayInputPreviewMode && !input.isInvalidUuid()) {
+            } else if (!AppSettings.instance.isDisplayUrlPreviewMode && !input.isInvalidUuid()) {
                 onValidUI()
                 InputDisplay.AppId(input)
             } else {
@@ -108,20 +108,20 @@ class MiniAppInputActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
         val viewModel: MiniAppInputViewModel =
             ViewModelProvider.NewInstanceFactory().create(MiniAppInputViewModel::class.java)
                 .apply {
-                    miniAppVersionId.observe(this@MiniAppInputActivity) {
+                    miniAppVersionId.observe(this@MiniAppByUrlActivity) {
                         preloadMiniAppWindow.initiate(
                             null,
                             miniAppId,
                             it,
-                            this@MiniAppInputActivity
+                            this@MiniAppByUrlActivity
                         )
                     }
-                    versionIdErrorData.observe(this@MiniAppInputActivity) {
-                        Toast.makeText(this@MiniAppInputActivity, it, Toast.LENGTH_LONG).show()
+                    versionIdErrorData.observe(this@MiniAppByUrlActivity) {
+                        Toast.makeText(this@MiniAppByUrlActivity, it, Toast.LENGTH_LONG).show()
                     }
-                    containTooManyRequestsError.observe(this@MiniAppInputActivity) {
+                    containTooManyRequestsError.observe(this@MiniAppByUrlActivity) {
                         showErrorDialog(
-                            this@MiniAppInputActivity,
+                            this@MiniAppByUrlActivity,
                             getString(R.string.error_desc_miniapp_too_many_request)
                         )
                     }
