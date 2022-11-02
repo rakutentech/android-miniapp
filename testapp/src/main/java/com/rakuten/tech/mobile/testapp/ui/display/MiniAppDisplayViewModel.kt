@@ -147,18 +147,7 @@ class MiniAppDisplayViewModel constructor(
                 }
             } ?: kotlin.run {
                 miniAppSdkException?.let { e ->
-                    e.printStackTrace()
-                    when (e) {
-                        is MiniAppHasNoPublishedVersionException ->
-                            _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
-                        is MiniAppNotFoundException ->
-                            _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
-                        is MiniAppTooManyRequestsError ->
-                            _containTooManyRequestsError.postValue(true)
-                        else -> {
-                            _errorData.postValue(e.message)
-                        }
-                    }
+                    handleErrors(e)
                 }
             }
         }
@@ -189,19 +178,23 @@ class MiniAppDisplayViewModel constructor(
                 }
             } ?: kotlin.run {
                 miniAppSdkException?.let { e ->
-                    e.printStackTrace()
-                    when (e) {
-                        is MiniAppHasNoPublishedVersionException ->
-                            _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
-                        is MiniAppNotFoundException ->
-                            _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
-                        is MiniAppTooManyRequestsError ->
-                            _containTooManyRequestsError.postValue(true)
-                        else -> {
-                            _errorData.postValue(e.message)
-                        }
-                    }
+                    handleErrors(e)
                 }
+            }
+        }
+    }
+
+    private fun handleErrors(e: MiniAppSdkException){
+        e.printStackTrace()
+        when (e) {
+            is MiniAppHasNoPublishedVersionException ->
+                _errorData.postValue(NO_PUBLISHED_VERSION_ERROR)
+            is MiniAppNotFoundException ->
+                _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
+            is MiniAppTooManyRequestsError ->
+                _containTooManyRequestsError.postValue(true)
+            else -> {
+                _errorData.postValue(e.message)
             }
         }
     }

@@ -126,7 +126,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
             getString(R.string.sslPublicKeyBackup)
         ) else listOf(
             getString(R.string.sslPublicKeyProd),
-            getString(R.string.sslPublicKeyBackupProd)
+            getString(R.string.sslPublicKeyProdBackup)
         )
     }
 }
