@@ -18,7 +18,7 @@ abstract class RATActivity : AppCompatActivity(), RatComponent {
     private var menuItemLabel = ""
 
     override fun onResume() {
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.PAGE_LOAD,
                 pageName = pageName,
@@ -40,7 +40,7 @@ abstract class RATActivity : AppCompatActivity(), RatComponent {
         } else {
             menuItemLabel = item.title.toString()
         }
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.CLICK,
                 action = ActionType.OPEN,

@@ -550,7 +550,6 @@ class MiniAppDisplayFragment : BaseFragment(),  PreloadMiniAppWindow.PreloadMini
                 shouldShowDialog = true
             )
         }
-
     }
 
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {

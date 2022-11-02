@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.FeaturesFragmentBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
-import com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity
+import com.rakuten.tech.mobile.testapp.ui.input.MiniAppByUrlActivity
 
 class FeaturesFragment : BaseFragment() {
 
@@ -35,7 +35,7 @@ class FeaturesFragment : BaseFragment() {
 
     fun switchToInput() {
         raceExecutor.run {
-            startActivity(Intent(requireActivity(), MiniAppInputActivity::class.java))
+            startActivity(Intent(requireActivity(), MiniAppByUrlActivity::class.java))
         }
     }
 }

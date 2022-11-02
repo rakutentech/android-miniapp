@@ -4,53 +4,35 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
 
-
-internal class Cache(context: Context) {
+internal class Cache(
+    context: Context,
+    isVerificationRequired: Boolean,
+    isPreviewMode: Boolean
+) {
 
     private val gson = Gson()
     private val prefs: SharedPreferences = context.getSharedPreferences(
         "com.rakuten.tech.mobile.miniapp.sample.settings",
         Context.MODE_PRIVATE
     )
+    private val productionBaseUrl = context.getString(R.string.prodBaseUrl)
+    private val stagingBaseUrl = context.getString(R.string.stagingBaseUrl)
 
-    val rasCredentialData = RasCredentialData(context)
+    val rasConfigData = RasConfigData(
+        context = context,
+        requireSignatureVerification = isVerificationRequired,
+        isPreviewMode = isPreviewMode
+    )
 
-    var isPreviewMode: Boolean?
-        get() =
-            if (prefs.contains(IS_PREVIEW_MODE))
-                prefs.getBoolean(IS_PREVIEW_MODE, true)
-            else
-                null
-        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
-
-    var requireSignatureVerification: Boolean?
-        get() =
-            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
-                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!)
-            .apply()
-
-    var isProdVersionEnabled: Boolean?
-        get() =
-            if (prefs.contains(IS_PROD_VERSION_ENABLED))
-                prefs.getBoolean(IS_PROD_VERSION_ENABLED, false)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(IS_PROD_VERSION_ENABLED, isRequired!!).apply()
-
-    var baseUrl: String?
-        get() = prefs.getString(BASE_URL, null)
-        set(baseUrl) = prefs.edit().putString(BASE_URL, baseUrl).apply()
-
+    fun getBaseUrl(isProduction: Boolean) = if (isProduction) {
+        productionBaseUrl
+    } else stagingBaseUrl
 
     var uniqueId: String?
         get() = prefs.getString(UNIQUE_ID, null)
@@ -107,14 +89,6 @@ internal class Cache(context: Context) {
         get() = prefs.getString(URL_PARAMETERS, null)
         set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
 
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>?
-        get() = Gson().fromJson(
-            prefs.getString(ANALYTIC_CONFIGS, null),
-            object : TypeToken<List<MiniAppAnalyticsConfig>>() {}.type
-        )
-        set(miniAppAnalyticsConfigs) = prefs.edit()
-            .putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
-
     var accessTokenError: MiniAppAccessTokenError?
         get() = gson.fromJson(
             prefs.getString(ACCESS_TOKEN_ERROR, null),
@@ -145,20 +119,17 @@ internal class Cache(context: Context) {
         set(maxStorageSizeLimitInBytes) = prefs.edit()
             .putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
 
+    var isTab1Checked: Boolean
+        get() = prefs.getBoolean(IS_TAB_1_CHECKED, true)
+        set(isTab1Checked) = prefs.edit()
+            .putBoolean(IS_TAB_1_CHECKED, isTab1Checked).apply()
 
     companion object {
-        private const val IS_PREVIEW_MODE = "is_preview_mode"
-        private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
-        private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
-        private const val BASE_URL = "base_url"
-        private const val APP_ID = "app_id"
-        private const val APP_ID_2 = "app_id_2"
-        const val TEMP_APP_ID = "temp_app_id"
-        const val TEMP_APP_ID_2 = "temp_app_id_2"
-        private const val SUBSCRIPTION_KEY = "subscription_key"
-        private const val SUBSCRIPTION_KEY_2 = "subscription_key_2"
-        const val TEMP_SUBSCRIPTION_KEY = "temp_subscription_key"
-        const val TEMP_SUBSCRIPTION_KEY_2 = "temp_subscription_key_2"
+        private const val TAB_1_DATA_KEY = "tab_1_data"
+        private const val TAB_2_DATA_KEY = "tab_2_data"
+        private const val TAB_1_TEMP_DATA_KEY = "tab_1_temp_data"
+        private const val TAB_2_TEMP_DATA_KEY = "tab_2_temp_data"
+
         private const val UNIQUE_ID = "unique_id"
         private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
@@ -170,92 +141,192 @@ internal class Cache(context: Context) {
         private const val CONTACTS = "contacts"
         private const val TOKEN_DATA = "token_data"
         private const val URL_PARAMETERS = "url_parameters"
-        private const val ANALYTIC_CONFIGS = "analytic_configs"
         private const val ACCESS_TOKEN_ERROR = "access_token_error"
         private const val POINTS = "points"
         private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
         private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
+        private const val IS_TEMP_CLEARED = "is_temp_cleared"
+        private const val IS_TAB_1_CHECKED = "is_tab_1_checked"
     }
 
-    inner class RasCredentialData(context: Context) {
+    @Suppress("TooManyFunctions")
+    inner class RasConfigData(
+        context: Context,
+        requireSignatureVerification: Boolean,
+        isPreviewMode: Boolean
+    ) {
+        private val isDefaultProductionEnabled = true
+        val gson = Gson()
 
-
-        val defaultProdPair = Pair(
-            context.getString(R.string.prodProjectId),
-            context.getString(R.string.prodSubscriptionKey)
+        private val tab1MiniAppConfigCache = MiniAppConfigCache(
+            TAB_1_DATA_KEY
         )
 
-        val defaultStagingPair = Pair(
-            context.getString(R.string.stagingProjectId),
-            context.getString(R.string.stagingSubscriptionKey)
+        private val tab1TempMiniAppConfigCache = MiniAppConfigCache(
+            TAB_1_TEMP_DATA_KEY
         )
 
-        var projectId: String?
-            get() = prefs.getString(APP_ID, null)
-            set(appId) = prefs.edit().putString(APP_ID, appId).apply()
+        private val tab2MiniAppConfigCache = MiniAppConfigCache(
+            TAB_2_DATA_KEY
+        )
 
-        var projectId2: String?
-            get() = prefs.getString(APP_ID_2, null)
-            set(appId2) = prefs.edit().putString(APP_ID_2, appId2).apply()
+        private val tab2TempMiniAppConfigCache = MiniAppConfigCache(
+            TAB_2_TEMP_DATA_KEY
+        )
 
-        var subscriptionKey: String?
-            get() = prefs.getString(SUBSCRIPTION_KEY, null)
-            set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
+        private fun isTempCleared() = prefs.getBoolean(IS_TEMP_CLEARED, true)
 
-        var subscriptionKey2: String?
-            get() = prefs.getString(SUBSCRIPTION_KEY_2, null)
-            set(subscriptionKey2) = prefs.edit().putString(SUBSCRIPTION_KEY_2, subscriptionKey2)
-                .apply()
+        private val defaultProductionData = MiniAppConfigData(
+            isProduction = isDefaultProductionEnabled,
+            isVerificationRequired = requireSignatureVerification,
+            isPreviewMode = isPreviewMode,
+            projectId = context.getString(R.string.prodProjectId),
+            subscriptionId = context.getString(R.string.prodSubscriptionKey)
+        )
 
+        private val defaultStagingData = MiniAppConfigData(
+            isProduction = isDefaultProductionEnabled,
+            isVerificationRequired = requireSignatureVerification,
+            isPreviewMode = isPreviewMode,
+            projectId = context.getString(R.string.stagingProjectId),
+            subscriptionId = context.getString(R.string.stagingSubscriptionKey)
+        )
 
-        fun getDefaultData(isProduction: Boolean): Pair<String, String> {
-            return if (isProduction) defaultProdPair else defaultStagingPair
+        private fun getDefaultData(
+        ): MiniAppConfigData {
+            return if (isDefaultProductionEnabled) defaultProductionData
+            else defaultStagingData
         }
 
-        fun getTab1TempData(): Pair<String, String> {
-            return Pair(
-                prefs.getString(TEMP_APP_ID, null) ?: "",
-                prefs.getString(TEMP_SUBSCRIPTION_KEY, null) ?: ""
+        private fun setTempCleared(isCleared: Boolean) {
+            prefs.edit().putBoolean(IS_TEMP_CLEARED, isCleared).commit()
+        }
+
+        fun clearTempData(){
+            val editor = prefs.edit()
+            tab1TempMiniAppConfigCache.clear(editor)
+            tab2TempMiniAppConfigCache.clear(editor)
+            setTempCleared(true)
+        }
+
+        fun getTab1Data(): MiniAppConfigData =
+            tab1MiniAppConfigCache.getData(gson, prefs) ?: getDefaultData()
+
+        private fun getTab1TempData(): MiniAppConfigData =
+            tab1TempMiniAppConfigCache.getData(gson, prefs) ?: getDefaultData()
+
+        fun getTab1CurrentData(): MiniAppConfigData =
+            if (isTempCleared() && isSettingSaved) getTab1Data() else getTab1TempData()
+
+        fun getTab2Data(): MiniAppConfigData =
+            tab2MiniAppConfigCache.getData(gson, prefs) ?: getDefaultData()
+
+        fun getTab2CurrentData(): MiniAppConfigData =
+            if (isTempCleared() && isSettingSaved) getTab2Data() else getTab2TempData()
+
+        private fun getTab2TempData(): MiniAppConfigData =
+            tab2TempMiniAppConfigCache.getData(gson, prefs) ?: getDefaultData()
+
+
+        fun saveTab1Data() {
+            tab1MiniAppConfigCache.setData(
+                prefs.edit(),
+                getTab1TempData()
             )
         }
 
-        fun getTab2TempData(): Pair<String, String> {
-            return Pair(
-                prefs.getString(TEMP_APP_ID_2, null) ?: "",
-                prefs.getString(TEMP_SUBSCRIPTION_KEY_2, null) ?: ""
+
+        fun setTempTab1IsProduction(isProduction: Boolean) {
+            val projectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
+            val newData = getTab1TempData().copy(
+                isProduction = isProduction,
+                projectId = projectIdSubsKeyPair.first,
+                subscriptionId = projectIdSubsKeyPair.second,
+            )
+            tab1TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                newData
+            )
+            setTempCleared(false)
+        }
+
+        fun setTempTab1IsVerificationRequired(isVerificationRequired: Boolean) {
+            val configData = getTab1TempData()
+            val newData = configData.copy(isVerificationRequired = isVerificationRequired)
+            tab1TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                newData
+            )
+            setTempCleared(false)
+        }
+
+        fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
+            val configData = getTab1TempData()
+            val newData = configData.copy(isPreviewMode = isPreviewMode)
+            tab1TempMiniAppConfigCache.setData(prefs.edit(), newData)
+            setTempCleared(false)
+        }
+
+        fun setTempTab1Data(
+            credentialData: MiniAppConfigData
+        ) {
+            tab1TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                credentialData
             )
         }
 
-        fun isTab1TempDataValid(): Boolean {
-            val tempData = getTab1TempData()
-            return tempData.first.isNotBlank() && tempData.second.isNotBlank()
+        fun saveTab2Data() {
+            tab2MiniAppConfigCache.setData(
+                prefs.edit(),
+                getTab2TempData()
+            )
         }
 
-        fun isTab2TempDataValid(): Boolean {
-            val tempData = getTab2TempData()
-            return tempData.first.isNotBlank() && tempData.second.isNotBlank()
+        private fun getDefaultProjectIdAndSubsKeyPair(isProduction: Boolean): Pair<String, String> {
+            return if (isProduction) Pair(
+                defaultProductionData.projectId,
+                defaultProductionData.subscriptionId
+            )
+            else Pair(defaultStagingData.projectId, defaultStagingData.subscriptionId)
         }
 
-        /**
-         * no OnSharedPreferenceChangeListener added, thus requires immediate value
-         */
+        fun setTempTab2IsProduction(isProduction: Boolean) {
+            val projectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
+            val configData = getTab2TempData().copy(
+                isProduction = isProduction,
+                projectId = projectIdSubsKeyPair.first,
+                subscriptionId = projectIdSubsKeyPair.second
+            )
+            tab2TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                configData
+            )
+            setTempCleared(false)
+        }
 
-        fun setTab1Data(
-            tempAppId: String,
-            tempSubscriptionKey: String,
+        fun setTempTab2IsVerificationRequired(isVerificationRequired: Boolean) {
+            val configData = getTab2TempData().copy(isVerificationRequired = isVerificationRequired)
+            tab2TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                configData
+            )
+            setTempCleared(false)
+        }
+
+        fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
+            val newData = getTab2TempData().copy(isPreviewMode = isPreviewMode)
+            tab2TempMiniAppConfigCache.setData(prefs.edit(), newData)
+            setTempCleared(false)
+        }
+
+        fun setTempTab2Data(
+            credentialData: MiniAppConfigData
         ) {
-            val edit = prefs.edit()
-            edit.putString(TEMP_APP_ID, tempAppId).commit()
-            edit.putString(TEMP_SUBSCRIPTION_KEY, tempSubscriptionKey).commit()
-        }
-
-        fun setTab2Data(
-            tempAppId: String,
-            tempSubscriptionKey: String,
-        ) {
-            val edit = prefs.edit()
-            edit.putString(TEMP_APP_ID_2, tempAppId).commit()
-            edit.putString(TEMP_SUBSCRIPTION_KEY_2, tempSubscriptionKey).commit()
+            tab2TempMiniAppConfigCache.setData(
+                prefs.edit(),
+                credentialData
+            )
         }
     }
 }

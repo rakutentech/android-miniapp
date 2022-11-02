@@ -47,7 +47,7 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
                 if (isArrowEnable) img_arrow_right.visibility =
                     View.VISIBLE else img_arrow_right.visibility = View.INVISIBLE
 
-                DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+                DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
                     RATEvent(
                         event = EventType.APPEAR,
                         action = action,
@@ -63,7 +63,7 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.CLICK,
                 action = action,

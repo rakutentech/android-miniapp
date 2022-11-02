@@ -6,7 +6,6 @@ import com.microsoft.appcenter.AppCenter
 import com.microsoft.appcenter.crashes.Crashes
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.MiniAppListStore
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class SampleApplication : Application() {
@@ -16,8 +15,6 @@ class SampleApplication : Application() {
 
         // Initialize demo app's settings properties
         AppSettings.init(this)
-        MiniAppListStore.init(this)
-
         // Enable AdMob
         MobileAds.initialize(this)
 
