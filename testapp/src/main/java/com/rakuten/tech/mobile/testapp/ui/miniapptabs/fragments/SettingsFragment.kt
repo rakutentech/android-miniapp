@@ -193,7 +193,7 @@ class SettingsFragment : BaseFragment() {
             QASettingsActivity.start(requireActivity())
         }
 
-        binding.toggleListGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        binding.toggleListGroup.addOnButtonCheckedListener { group, checkedId, _ ->
             if (group.checkedButtonId == -1) group.check(checkedId)
         }
 

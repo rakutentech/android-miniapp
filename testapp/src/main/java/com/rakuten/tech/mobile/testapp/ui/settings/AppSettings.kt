@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
-import android.util.Log
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
