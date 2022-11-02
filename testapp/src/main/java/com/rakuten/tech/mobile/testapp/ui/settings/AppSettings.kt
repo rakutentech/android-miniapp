@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
+import android.util.Log
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
@@ -118,6 +119,12 @@ class AppSettings private constructor(context: Context) {
             cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
         }
 
+    var isTab1Checked: Boolean
+        get() = cache.isTab1Checked
+        set(isTab1Checked) {
+            cache.isTab1Checked = isTab1Checked
+        }
+
     var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
 
     val miniAppSettings1: MiniAppSdkConfig
@@ -166,8 +173,13 @@ class AppSettings private constructor(context: Context) {
         return cache.rasConfigData.getTab1CurrentData()
     }
 
-    fun getDefaultConfigData(): MiniAppConfigData {
-        return if (isSettingSaved) cache.rasConfigData.getTab1Data() else cache.rasConfigData.getDefaultData()
+    fun getDefaultConfigData(isTab1Checked: Boolean): MiniAppConfigData {
+        return when {
+            isTab1Checked -> getCurrentTab1ConfigData()
+            else -> {
+                getCurrentTab2ConfigData()
+            }
+        }
     }
 
     fun getCurrentTab2ConfigData(): MiniAppConfigData {
@@ -177,7 +189,7 @@ class AppSettings private constructor(context: Context) {
     fun saveData() {
         cache.rasConfigData.saveTab1Data()
         cache.rasConfigData.saveTab2Data()
-        cache.rasConfigData.isTempCleared = true
+        cache.rasConfigData.setTempCleared(true)
     }
 
 

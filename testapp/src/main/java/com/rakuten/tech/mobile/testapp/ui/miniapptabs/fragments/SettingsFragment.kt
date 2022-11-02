@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.android.synthetic.main.settings_fragment.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -83,12 +84,6 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        renderAppSettingsScreen()
-        validateInputIDs()
-    }
-
     private fun onSaveAction() {
         if (requireActivity().isAvailable) {
             settingsProgressDialog.show()
@@ -131,13 +126,21 @@ class SettingsFragment : BaseFragment() {
     ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
+        isTab1Checked = settings.isTab1Checked
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater, R.layout.settings_fragment, container, false
         )
         settingsProgressDialog = SettingsProgressDialog(requireActivity())
-        setViewsListener()
+
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        renderAppSettingsScreen()
+        setViewsListener()
+        validateInputIDs()
     }
 
     private fun validateInputIDs() {
@@ -190,6 +193,30 @@ class SettingsFragment : BaseFragment() {
             QASettingsActivity.start(requireActivity())
         }
 
+        binding.toggleListGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (group.checkedButtonId == -1) group.check(checkedId)
+        }
+
+        binding.toggleList1.setOnClickListener {
+            binding.toggleList1.isChecked = true
+            if (isTab1Checked) {
+                return@setOnClickListener
+            }
+            isTab1Checked = true
+            settings.setTempTab2ConfigData(getCurrentTypedConfigData())
+            updateTabProjectIdAndSubscription()
+        }
+
+        binding.toggleList2.setOnClickListener {
+            binding.toggleList2.isChecked = true
+            if (!isTab1Checked) {
+                return@setOnClickListener
+            }
+            isTab1Checked = false
+            settings.setTempTab1ConfigData(getCurrentTypedConfigData())
+            updateTabProjectIdAndSubscription()
+        }
+
         binding.switchPreviewModeTab.setOnCheckedChangeListener { _, isChecked ->
             if (isTab1Checked) {
                 settings.setTempTab1IsPreviewMode(isChecked)
@@ -218,31 +245,14 @@ class SettingsFragment : BaseFragment() {
             binding.switchSignatureVerification.isChecked = isChecked
         }
 
-        binding.toggleList1.setOnClickListener {
-            if (isTab1Checked) {
-                binding.toggleList1.isChecked = true
-                return@setOnClickListener
-            }
-            isTab1Checked = true
-            settings.setTempTab2ConfigData(getCurrentTypedConfigData())
-            updateTabProjectIdAndSubscription()
-        }
 
-        binding.toggleList2.setOnClickListener {
-            if (!isTab1Checked) {
-                binding.toggleList2.isChecked = true
-                return@setOnClickListener
-            }
-            isTab1Checked = false
-            settings.setTempTab1ConfigData(getCurrentTypedConfigData())
-            updateTabProjectIdAndSubscription()
-        }
     }
 
     private fun renderAppSettingsScreen() {
         binding.editParametersUrl.setText(settings.urlParameters)
+        binding.toggleListGroup.check(if (isTab1Checked) binding.toggleList1.id else binding.toggleList2.id)
 
-        val defaultConfigData = settings.getDefaultConfigData()
+        val defaultConfigData = settings.getDefaultConfigData(isTab1Checked)
         setupConfigDataToView(defaultConfigData)
         // add the default profile pic initially.
         updateProfileImageBase64()
@@ -333,5 +343,10 @@ class SettingsFragment : BaseFragment() {
         val email =
             firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
         return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
+    }
+
+    override fun onStop() {
+        settings.isTab1Checked = isTab1Checked
+        super.onStop()
     }
 }

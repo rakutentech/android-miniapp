@@ -112,8 +112,12 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         set(maxStorageSizeLimitInBytes) = prefs.edit()
             .putString(MAX_STORAGE_SIZE_LIMIT, maxStorageSizeLimitInBytes).apply()
 
+    var isTab1Checked: Boolean
+        get() = prefs.getBoolean(IS_TAB_1_CHECKED, true)
+        set(isTab1Checked) = prefs.edit()
+            .putBoolean(IS_TAB_1_CHECKED, isTab1Checked).apply()
+
     companion object {
-        private const val IS_PREVIEW_MODE_DISPLAY_BY_URL = "is_display_by_url_preview_mode"
         private const val IS_PREVIEW_MODE = "is_preview_mode"
         private const val TEMP_IS_PREVIEW_MODE = "temp_is_preview_mode"
         private const val IS_PREVIEW_MODE_2 = "is_preview_mode_2"
@@ -152,6 +156,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
         private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
         private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
         private const val IS_TEMP_CLEARED = "is_temp_cleared"
+        private const val IS_TAB_1_CHECKED = "is_tab_1_checked"
     }
 
     @Suppress("TooManyFunctions")
@@ -190,10 +195,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             TEMP_SUBSCRIPTION_KEY_2
         )
 
-        var isTempCleared: Boolean
-            get() = prefs.getBoolean(IS_TEMP_CLEARED, false)
-            set(isTempSaved) = prefs.edit()
-                .putBoolean(IS_TEMP_CLEARED, isTempSaved).apply()
+        fun isTempCleared() = prefs.getBoolean(IS_TEMP_CLEARED, true)
 
         val defaultProductionData = MiniAppConfigData(
             isProduction = isDefaultProductionEnabled,
@@ -217,6 +219,10 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             else defaultStagingData
         }
 
+        fun setTempCleared(isCleared: Boolean) {
+            prefs.edit().putBoolean(IS_TEMP_CLEARED, isCleared).commit()
+        }
+
         fun getTab1Data(): MiniAppConfigData =
             tab1MiniAppConfigCache.getData(prefs, getDefaultData())
 
@@ -224,13 +230,13 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
             tab1TempMiniAppConfigCache.getData(prefs, getDefaultData())
 
         fun getTab1CurrentData(): MiniAppConfigData =
-            if (isTempCleared && isSettingSaved) getTab1Data() else getTab1TempData()
+            if (isTempCleared() && isSettingSaved) getTab1Data() else getTab1TempData()
 
         fun getTab2Data(): MiniAppConfigData =
             tab2MiniAppConfigCache.getData(prefs, getDefaultData())
 
         fun getTab2CurrentData(): MiniAppConfigData =
-            if (isTempCleared && isSettingSaved) getTab2Data() else getTab2TempData()
+            if (isTempCleared() && isSettingSaved) getTab2Data() else getTab2TempData()
 
         private fun getTab2TempData(): MiniAppConfigData =
             tab2TempMiniAppConfigCache.getData(prefs, getDefaultData())
@@ -251,7 +257,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 isProduction = isProduction,
                 defaultProjectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
             )
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab1IsVerificationRequired(isVerificationRequired: Boolean) {
@@ -259,12 +265,12 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 prefs.edit(),
                 isVerificationRequired
             )
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
             tab1TempMiniAppConfigCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab1Data(
@@ -298,7 +304,7 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 isProduction = isProduction,
                 defaultProjectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
             )
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab2IsVerificationRequired(isSignatureVerificationRequired: Boolean) {
@@ -306,12 +312,12 @@ internal class Cache(context: Context, manifestConfig: AppManifestConfig) {
                 prefs.edit(),
                 isSignatureVerificationRequired
             )
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
             tab2TempMiniAppConfigCache.setIsPreviewMode(prefs.edit(), isPreviewMode)
-            isTempCleared = false
+            setTempCleared(false)
         }
 
         fun setTempTab2Data(

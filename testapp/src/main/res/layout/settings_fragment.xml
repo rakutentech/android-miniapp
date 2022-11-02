@@ -46,8 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:theme="@style/AppTheme.MaterialButtonToggleGroup"
-                    app:singleSelection="true"
-                    app:checkedButton="@id/toggleList1">
+                    app:singleSelection="true">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/toggleList1"
