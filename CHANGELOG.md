@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 5.1.0 (2022-11-02)
+
+**Sample App**
+- **Feature:** Settings is moved to it's own tab.
+- **Feature:** Multiple MiniAppSdk configurations
+- **Feature:** Enabled PermissionSettings on MiniApp top bar
+
 ### 5.0.0 (2022-10-25)
 **SDK**
 - **Feature:** Added `MiniAppView` to create multiple MiniApp views.
@@ -13,9 +20,6 @@
 - **Feature:** Demo App will now use a tabBar instead of a single screen.
 - **Feature:** Added List I and List II for displaying multiple MiniApps at the same time and configurable through settings.
 - **Feature:** Features tab started with URL feature to run MiniApps locally.
-- **Feature:** Settings is moved to it's own tab.
-- **Feature:** Multiple MiniAppSdk configurations
-- **Feature:** Enabled PermissionSettings on MiniApp top bar
 
 ### 4.3.0 (2022-08-09)
 **SDK**
