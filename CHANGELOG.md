@@ -1,7 +1,6 @@
 ## CHANGELOG
 
-### 5.1.0 (2022-11-02)
-
+### 5.1.0 (xxxx-xx-xx)
 **Sample App**
 - **Feature:** Settings is moved to it's own tab.
 - **Feature:** Multiple MiniAppSdk configurations
