@@ -2,85 +2,34 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import com.google.gson.Gson
+
 
 class MiniAppConfigCache(
-    private val isproductionKey: String,
-    private val isPreviewModeKey: String,
-    private val isSignatureVerificationRequiredKey: String,
-    private val projectidKey: String,
-    private val subscriptionKey: String,
+    private val key: String,
 ) {
 
     fun getData(
-        prefs: SharedPreferences,
-        defaultData: MiniAppConfigData
-    ): MiniAppConfigData {
-        return MiniAppConfigData(
-            prefs.getBoolean(isproductionKey, defaultData.isProduction),
-            prefs.getBoolean(isPreviewModeKey, defaultData.isPreviewMode),
-            prefs.getBoolean(
-                isSignatureVerificationRequiredKey,
-                defaultData.isVerificationRequired
-            ),
-            prefs.getString(projectidKey, null) ?: defaultData.projectId,
-            prefs.getString(subscriptionKey, null) ?: defaultData.subscriptionId
-        )
+        gson: Gson,
+        prefs: SharedPreferences
+    ): MiniAppConfigData? {
+        val miniAppConfigData = prefs.getString(key, null) ?: return null
+        return gson.fromJson(miniAppConfigData)
     }
 
     /**
      * no OnSharedPreferenceChangeListener added, thus requires immediate value
      */
-    fun setIsProduction(
-        editor: Editor,
-        isProduction: Boolean,
-        defaultProjectIdSubsKeyPair: Pair<String, String>
-    ) {
-        editor.apply {
-            putString(projectidKey, defaultProjectIdSubsKeyPair.first).commit()
-            putString(subscriptionKey, defaultProjectIdSubsKeyPair.second).commit()
-            putBoolean(isproductionKey, isProduction).commit()
-        }
-    }
-
-    fun setIsVerificationRequired(
-        editor: Editor,
-        isSignatureVerificationRequired: Boolean
-    ) {
-        editor.putBoolean(isSignatureVerificationRequiredKey, isSignatureVerificationRequired)
-            .commit()
-    }
-
-    fun setIsPreviewMode(
-        editor: Editor,
-        isPreviewMode: Boolean
-    ) {
-        editor.putBoolean(isPreviewModeKey, isPreviewMode).commit()
-    }
 
     fun setData(
         editor: Editor,
         configData: MiniAppConfigData,
     ) {
-        editor.apply {
-            putBoolean(isproductionKey, configData.isProduction).commit()
-            putBoolean(
-                isSignatureVerificationRequiredKey,
-                configData.isVerificationRequired
-            ).commit()
-            putBoolean(isPreviewModeKey, configData.isPreviewMode).commit()
-            putString(projectidKey, configData.projectId).commit()
-            putString(subscriptionKey, configData.subscriptionId).commit()
-        }
+        editor.putString(key, configData.toJsonString()).commit()
     }
 
     fun clear(editor: Editor) {
-        editor.apply {
-            remove(isproductionKey).commit()
-            remove(isPreviewModeKey).commit()
-            remove(isSignatureVerificationRequiredKey).commit()
-            remove(projectidKey).commit()
-            remove(subscriptionKey).commit()
-        }
-
+        editor.remove(key).commit()
     }
+
 }

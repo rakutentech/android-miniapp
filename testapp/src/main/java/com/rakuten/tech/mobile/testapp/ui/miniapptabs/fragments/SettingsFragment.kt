@@ -347,6 +347,7 @@ class SettingsFragment : BaseFragment() {
 
     override fun onStop() {
         settings.isTab1Checked = isTab1Checked
+        settings.clearTempDataIfExists()
         super.onStop()
     }
 }

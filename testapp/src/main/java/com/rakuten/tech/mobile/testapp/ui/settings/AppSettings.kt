@@ -15,7 +15,11 @@ import java.util.*
 class AppSettings private constructor(context: Context) {
 
     private val manifestConfig = AppManifestConfig(context)
-    private val cache = Cache(context, manifestConfig)
+    private val cache = Cache(
+        context,
+        manifestConfig.requireSignatureVerification(),
+        manifestConfig.isPreviewMode()
+    )
 
     val projectIdForAnalytics: String = if (isSettingSaved)
         cache.rasConfigData.getTab1Data().projectId
@@ -191,7 +195,6 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.setTempCleared(true)
     }
 
-
     fun setTempTab1ConfigData(
         credentialData: MiniAppConfigData
     ) {
@@ -230,6 +233,10 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.setTempTab2Data(
             credentialData
         )
+    }
+
+    fun clearTempDataIfExists(){
+        cache.rasConfigData.clearTempDataIfExists()
     }
 
     companion object {

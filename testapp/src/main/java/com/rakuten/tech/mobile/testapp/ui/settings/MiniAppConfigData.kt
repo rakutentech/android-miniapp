@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
+import com.google.gson.Gson
+
 data class MiniAppConfigData(
     val isProduction: Boolean,
     val isPreviewMode: Boolean,
@@ -7,3 +9,9 @@ data class MiniAppConfigData(
     val projectId: String,
     val subscriptionId: String
 )
+
+
+internal fun MiniAppConfigData.toJsonString() = Gson().toJson(this)
+
+internal fun Gson.fromJson(key: String)  = fromJson(key, MiniAppConfigData::class.java)
+
