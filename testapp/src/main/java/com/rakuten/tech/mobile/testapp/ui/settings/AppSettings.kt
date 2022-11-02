@@ -192,7 +192,6 @@ class AppSettings private constructor(context: Context) {
     fun saveData() {
         cache.rasConfigData.saveTab1Data()
         cache.rasConfigData.saveTab2Data()
-        cache.rasConfigData.setTempCleared(true)
     }
 
     fun setTempTab1ConfigData(
@@ -235,8 +234,8 @@ class AppSettings private constructor(context: Context) {
         )
     }
 
-    fun clearTempDataIfExists(){
-        cache.rasConfigData.clearTempDataIfExists()
+    fun clearTempData(){
+        cache.rasConfigData.clearTempData()
     }
 
     companion object {

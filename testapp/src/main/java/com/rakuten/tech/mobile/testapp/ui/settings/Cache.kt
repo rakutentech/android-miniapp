@@ -21,8 +21,8 @@ internal class Cache(
         "com.rakuten.tech.mobile.miniapp.sample.settings",
         Context.MODE_PRIVATE
     )
-    val productionBaseUrl = context.getString(R.string.prodBaseUrl)
-    val stagingBaseUrl = context.getString(R.string.stagingBaseUrl)
+    private val productionBaseUrl = context.getString(R.string.prodBaseUrl)
+    private val stagingBaseUrl = context.getString(R.string.stagingBaseUrl)
 
     val rasConfigData = RasConfigData(
         context = context,
@@ -174,9 +174,9 @@ internal class Cache(
             TAB_2_TEMP_DATA_KEY
         )
 
-        fun isTempCleared() = prefs.getBoolean(IS_TEMP_CLEARED, true)
+        private fun isTempCleared() = prefs.getBoolean(IS_TEMP_CLEARED, true)
 
-        val defaultProductionData = MiniAppConfigData(
+        private val defaultProductionData = MiniAppConfigData(
             isProduction = isDefaultProductionEnabled,
             isVerificationRequired = requireSignatureVerification,
             isPreviewMode = isPreviewMode,
@@ -184,7 +184,7 @@ internal class Cache(
             subscriptionId = context.getString(R.string.prodSubscriptionKey)
         )
 
-        val defaultStagingData = MiniAppConfigData(
+        private val defaultStagingData = MiniAppConfigData(
             isProduction = isDefaultProductionEnabled,
             isVerificationRequired = requireSignatureVerification,
             isPreviewMode = isPreviewMode,
@@ -192,24 +192,21 @@ internal class Cache(
             subscriptionId = context.getString(R.string.stagingSubscriptionKey)
         )
 
-        fun getDefaultData(
+        private fun getDefaultData(
         ): MiniAppConfigData {
             return if (isDefaultProductionEnabled) defaultProductionData
             else defaultStagingData
         }
 
-        fun setTempCleared(isCleared: Boolean) {
+        private fun setTempCleared(isCleared: Boolean) {
             prefs.edit().putBoolean(IS_TEMP_CLEARED, isCleared).commit()
         }
 
-        fun clearTempDataIfExists(){
+        fun clearTempData(){
             val editor = prefs.edit()
-            if(prefs.contains(TAB_1_TEMP_DATA_KEY)){
-                tab1TempMiniAppConfigCache.clear(editor)
-            }
-            if(prefs.contains(TAB_2_TEMP_DATA_KEY)){
-                tab2TempMiniAppConfigCache.clear(editor)
-            }
+            tab1TempMiniAppConfigCache.clear(editor)
+            tab2TempMiniAppConfigCache.clear(editor)
+            setTempCleared(true)
         }
 
         fun getTab1Data(): MiniAppConfigData =
@@ -236,7 +233,6 @@ internal class Cache(
                 prefs.edit(),
                 getTab1TempData()
             )
-            tab1TempMiniAppConfigCache.clear(prefs.edit())
         }
 
 
@@ -285,7 +281,6 @@ internal class Cache(
                 prefs.edit(),
                 getTab2TempData()
             )
-            tab2TempMiniAppConfigCache.clear(prefs.edit())
         }
 
         private fun getDefaultProjectIdAndSubsKeyPair(isProduction: Boolean): Pair<String, String> {
