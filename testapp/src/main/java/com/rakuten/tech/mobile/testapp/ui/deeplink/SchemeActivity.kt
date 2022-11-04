@@ -121,12 +121,10 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
     }
 
     private fun getSSlKeyList(): List<String> {
-        return if (!AppSettings.instance.isProdVersionEnabled) listOf(
-            getString(R.string.sslPublicKey),
-            getString(R.string.sslPublicKeyBackup)
+        return if (AppSettings.instance.miniAppSettings1.baseUrl != getString(R.string.prodBaseUrl)) listOf(
+            getString(R.string.sslPublicKey), getString(R.string.sslPublicKeyBackup)
         ) else listOf(
-            getString(R.string.sslPublicKeyProd),
-            getString(R.string.sslPublicKeyProdBackup)
+            getString(R.string.sslPublicKeyProd), getString(R.string.sslPublicKeyProdBackup)
         )
     }
 }
