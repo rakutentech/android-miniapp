@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowShareMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.load
+import com.rakuten.tech.mobile.testapp.helper.registerOnShowAndOnDismissEvent
 
 class MiniAppShareWindow {
     companion object {
@@ -19,13 +20,21 @@ class MiniAppShareWindow {
         private lateinit var context: Context
 
         @Synchronized
-        fun getInstance(context: Context): MiniAppShareWindow {
-            dialog = initDialog(context)
+        fun getInstance(
+            context: Context,
+            onShow: () -> Unit,
+            onDismiss: () -> Unit
+        ): MiniAppShareWindow {
+            dialog = initDialog(context, onShow, onDismiss)
             this.context = context
             return instance ?: MiniAppShareWindow().also { instance = it }
         }
 
-        private fun initDialog(context: Context): AlertDialog {
+        private fun initDialog(
+            context: Context,
+            onShow: () -> Unit,
+            onDismiss: () -> Unit
+        ): AlertDialog {
             // set ui components
             val layoutInflater = LayoutInflater.from(context)
             binding = DataBindingUtil.inflate(
@@ -33,6 +42,7 @@ class MiniAppShareWindow {
             )
             val alertDialog = AlertDialog.Builder(context, R.style.AppThemeSettings).create()
             alertDialog?.setView(binding.root)
+            alertDialog?.registerOnShowAndOnDismissEvent(onShow = onShow, onDismiss = onDismiss)
             return alertDialog
         }
     }
@@ -45,8 +55,13 @@ class MiniAppShareWindow {
 
     private fun renderScreen(miniAppInfo: MiniAppInfo) {
         if (dialog.isShowing) dismissDialog()
-        binding.imgPromotional.load(context, miniAppInfo.promotionalImageUrl ?: "", android.R.color.darker_gray)
-        binding.tvPromotionalText.text = miniAppInfo.promotionalText ?: context.getText(R.string.error_desc_promotional_text_missing)
+        binding.imgPromotional.load(
+            context,
+            miniAppInfo.promotionalImageUrl ?: "",
+            android.R.color.darker_gray
+        )
+        binding.tvPromotionalText.text = miniAppInfo.promotionalText
+            ?: context.getText(R.string.error_desc_promotional_text_missing)
         binding.btnClose.setOnClickListener(listener)
         dialog.setCancelable(false)
         if (!(context as Activity).isFinishing) {

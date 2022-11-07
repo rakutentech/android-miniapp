@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
+import android.app.Dialog
 import android.content.Context
 import android.text.InputType
 import android.util.Patterns
@@ -17,6 +18,8 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -59,8 +62,7 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     editText.background = null
     val container = FrameLayout(activity)
     val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
     )
     params.topMargin = activity.resources.getDimensionPixelSize(R.dimen.medium_16)
     params.bottomMargin = activity.resources.getDimensionPixelSize(R.dimen.medium_16)
@@ -80,29 +82,26 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
 }
 
 fun showErrorDialog(
-    context: Context,
-    description: String
+    context: Context, description: String
 ) {
     val builder = AlertDialog.Builder(context)
-    builder.setMessage(description)
-        .setNegativeButton("Close") { _, _ -> }
+    builder.setMessage(description).setNegativeButton("Close") { _, _ -> }
     val alert = builder.create()
     alert.show()
 }
 
-fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) = Glide.with(context)
-    .load(res)
-    .placeholder(placeholder)
-    .into(this)
+fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) =
+    Glide.with(context).load(res).placeholder(placeholder).into(this)
 
 fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
 fun hideSoftKeyboard(view: View) {
-    val imm: InputMethodManager? = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+    val imm: InputMethodManager? =
+        view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
     imm?.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun setResizableSoftInputMode(activity: Activity){
+fun setResizableSoftInputMode(activity: Activity) {
     activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 }
 
@@ -142,3 +141,19 @@ fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterData
             observeUIState()
         }
     }
+
+
+fun Dialog.registerOnShowAndOnDismissEvent(onShow: () -> Unit, onDismiss: () -> Unit) {
+    setOnShowListener { onShow() }
+    setOnDismissListener { onDismiss() }
+}
+
+fun MiniAppMessageBridge.dispatchOnPauseEvent() {
+    dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+}
+
+fun MiniAppMessageBridge.dispatchOnResumeEvent() {
+    dispatchNativeEvent(
+        NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed"
+    )
+}

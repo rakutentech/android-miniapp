@@ -40,9 +40,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.FragmentMiniAppDispla
 import com.rakuten.tech.mobile.miniapp.view.MiniAppConfig
 import com.rakuten.tech.mobile.miniapp.view.MiniAppParameters
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
-import com.rakuten.tech.mobile.testapp.helper.AppPermission
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
-import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
@@ -55,7 +53,7 @@ import kotlinx.coroutines.launch
 
 
 @Suppress("TooManyFunctions", "MagicNumber", "VariableNaming")
-class MiniAppDisplayFragment : BaseFragment(),  PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
+class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -460,7 +458,11 @@ class MiniAppDisplayFragment : BaseFragment(),  PreloadMiniAppWindow.PreloadMini
             }
             R.id.share_mini_app -> {
                 appInfo?.let {
-                    MiniAppShareWindow.getInstance(requireActivity()).show(miniAppInfo = it)
+                    MiniAppShareWindow.getInstance(
+                        context = requireActivity(),
+                        onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                        onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
+                    ).show(miniAppInfo = it)
                 }
                 true
             }
@@ -511,15 +513,12 @@ class MiniAppDisplayFragment : BaseFragment(),  PreloadMiniAppWindow.PreloadMini
 
     override fun onPause() {
         super.onPause()
-        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+        miniAppMessageBridge.dispatchOnPauseEvent()
     }
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(
-            NativeEventType.MINIAPP_ON_RESUME,
-            "MiniApp Resumed"
-        )
+        miniAppMessageBridge.dispatchOnResumeEvent()
     }
 
     private fun createMiniAppInfoParam(
@@ -547,7 +546,9 @@ class MiniAppDisplayFragment : BaseFragment(),  PreloadMiniAppWindow.PreloadMini
                 it.id,
                 it.version.versionId,
                 this,
-                shouldShowDialog = true
+                shouldShowDialog = true,
+                onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
             )
         }
     }

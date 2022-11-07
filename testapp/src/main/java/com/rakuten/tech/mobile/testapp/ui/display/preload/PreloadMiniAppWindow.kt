@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.load
+import com.rakuten.tech.mobile.testapp.helper.registerOnShowAndOnDismissEvent
 import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
@@ -45,6 +46,8 @@ class PreloadMiniAppWindow(
         lifecycleOwner: LifecycleOwner,
         miniApp: MiniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig),
         shouldShowDialog: Boolean = false,
+        onShow: () -> Unit = {},
+        onDismiss: () -> Unit = {}
     ) {
         this.lifecycleOwner = lifecycleOwner
         this.miniApp = miniApp
@@ -58,7 +61,11 @@ class PreloadMiniAppWindow(
             this.versionId = versionId
         }
 
-        if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow(shouldShowDialog)
+        if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow(
+            shouldShowDialog = shouldShowDialog,
+            onShow = onShow,
+            onDismiss = onDismiss
+        )
     }
 
     private fun launchScreen() {
@@ -66,20 +73,25 @@ class PreloadMiniAppWindow(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initDefaultWindow(shouldShowDialog: Boolean) {
+    private fun initDefaultWindow(
+        shouldShowDialog: Boolean,
+        onShow: () -> Unit,
+        onDismiss: () -> Unit
+    ) {
         // set ui components
         val layoutInflater = LayoutInflater.from(context)
         binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.window_preload_miniapp, null, false
         )
 
-        if(shouldShowDialog){
+        if (shouldShowDialog) {
             binding.preloadTutorial.visibility = View.INVISIBLE
         }
 
         preloadMiniAppAlertDialog =
             AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
         preloadMiniAppAlertDialog.setView(binding.root)
+        preloadMiniAppAlertDialog.registerOnShowAndOnDismissEvent(onShow = onShow, onDismiss = onDismiss)
 
         // set data to ui
         if (miniAppInfo != null) {
