@@ -12,10 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
-import com.rakuten.tech.mobile.testapp.helper.isAvailable
-import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -99,6 +96,11 @@ class SettingsFragment : BaseFragment() {
 
         settings.saveData()
         updateSettings()
+        showAlertDialog(requireActivity(),
+            title = getString(R.string.success_title_parameters_saved),
+            content = getString(R.string.success_desc_parameter_saved),
+            negativeButton =  "Ok"
+        )
     }
 
     private fun updateSettings() {
