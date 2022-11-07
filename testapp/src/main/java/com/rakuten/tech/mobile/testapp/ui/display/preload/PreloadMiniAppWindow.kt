@@ -41,8 +41,7 @@ class PreloadMiniAppWindow(
     @Suppress("LongParameterList")
     fun initiate(
         appInfo: MiniAppInfo?,
-        miniAppId: String,
-        versionId: String,
+        miniAppIdAndVersionIdPair: Pair<String, String>,
         lifecycleOwner: LifecycleOwner,
         miniApp: MiniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig),
         shouldShowDialog: Boolean = false,
@@ -57,8 +56,8 @@ class PreloadMiniAppWindow(
             this.miniAppId = miniAppInfo!!.id
             this.versionId = miniAppInfo!!.version.versionId
         } else {
-            this.miniAppId = miniAppId
-            this.versionId = versionId
+            this.miniAppId = miniAppIdAndVersionIdPair.first
+            this.versionId = miniAppIdAndVersionIdPair.second
         }
 
         if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow(

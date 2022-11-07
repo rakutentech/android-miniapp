@@ -185,8 +185,10 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         appInfo?.let {
             preloadMiniAppWindow.initiate(
                 appInfo = appInfo,
-                it.id,
-                it.version.versionId,
+                miniAppIdAndVersionIdPair = Pair(
+                    it.id,
+                    it.version.versionId
+                ),
                 this,
                 shouldShowDialog = true,
                 onShow = miniAppMessageBridge::dispatchOnPauseEvent,
