@@ -83,7 +83,8 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
+        val factory =
+            MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
 
         viewModel = ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java)
 
@@ -124,9 +125,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
             selectedMiniAppInfo = miniAppInfo
             activity?.let {
                 preloadMiniAppWindow.initiate(
-                    miniAppInfo,
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId,
+                    appInfo = miniAppInfo,
+                    miniAppIdAndVersionIdPair = Pair(
+                        miniAppInfo.id,
+                        miniAppInfo.version.versionId
+                    ),
                     this
                 )
             }
