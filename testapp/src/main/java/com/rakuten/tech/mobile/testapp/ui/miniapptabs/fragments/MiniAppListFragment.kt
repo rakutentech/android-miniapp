@@ -17,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
@@ -73,6 +74,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         super.onStart()
         binding.swipeRefreshLayout.post {
             binding.swipeRefreshLayout.isRefreshing = true
+            updateEmptyView(emptyList())
             executeLoadingList()
         }
     }
@@ -92,12 +94,16 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
             addMiniAppList(it)
         }
         viewModel.errorData.observe(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
             updateEmptyView(emptyList())
             addMiniAppList(emptyList())
-            binding.swipeRefreshLayout.isRefreshing = false
+            if (it.isBlank()) return@observe
+            showAlertDialog(requireActivity(), content = it)
+            viewModel.clearErrorData()
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
+            updateEmptyView(emptyList())
             executeLoadingList()
             resetSearchBox()
         }
@@ -211,7 +217,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     }
 
     private fun updateEmptyView(collection: List<MiniAppInfo>) {
-        if (collection.isEmpty())
+        if (collection.isEmpty() && !binding.swipeRefreshLayout.isRefreshing)
             binding.emptyView.visibility = View.VISIBLE
         else
             binding.emptyView.visibility = View.GONE
