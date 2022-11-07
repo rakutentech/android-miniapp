@@ -103,6 +103,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
+            updateEmptyView(emptyList())
             executeLoadingList()
             resetSearchBox()
         }
