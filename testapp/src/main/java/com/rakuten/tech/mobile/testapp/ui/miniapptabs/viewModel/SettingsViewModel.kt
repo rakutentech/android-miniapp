@@ -32,7 +32,6 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     fun getEachTabMiniAppList(
         miniAppSdkConfigList: ArrayList<Pair<MiniAppSdkConfig, (List<MiniAppInfo>) -> Unit>>,
         onSuccess: () -> Unit
@@ -52,7 +51,7 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
-    fun clearErrorData() {
+    private fun clearErrorData() {
         _errorData.value = ""
     }
 }
