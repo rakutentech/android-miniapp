@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -7,19 +8,20 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.view.*
+import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
-import com.rakuten.tech.mobile.testapp.helper.isAvailable
-import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModel
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -59,11 +61,16 @@ class SettingsFragment : BaseFragment() {
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
             invalidateOptionsMenu(requireActivity())
-            if (isTab1Checked) {
-                binding.toggleList2.isEnabled = new
-            } else {
-                binding.toggleList1.isEnabled = new
-            }
+            toggleTabIsEnabled(new)
+        }
+    }
+    private lateinit var viewModel: SettingsViewModel
+
+    private fun toggleTabIsEnabled(isEnabled: Boolean) {
+        if (isTab1Checked) {
+            binding.toggleList2.isEnabled = isEnabled
+        } else {
+            binding.toggleList1.isEnabled = isEnabled
         }
     }
 
@@ -76,8 +83,8 @@ class SettingsFragment : BaseFragment() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             R.id.settings_menu_save -> {
+                saveViewEnabled = false
                 onSaveAction()
-                item.isEnabled = false
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -98,12 +105,25 @@ class SettingsFragment : BaseFragment() {
         }
 
         settings.saveData()
-        updateSettings()
+        viewModel.getEachTabMiniAppList(
+            arrayListOf(
+                Pair(settings.miniAppSettings1, settings::saveTab1MiniAppInfoList),
+                Pair(settings.miniAppSettings2, settings::saveTab2MiniAppInfoList)
+            )
+        ) {
+            updateSettings()
+            showAlertDialog(
+                requireActivity(),
+                title = getString(R.string.success_title_parameters_saved),
+                content = getString(R.string.success_desc_parameter_saved),
+                negativeButton = "Ok"
+            )
+            toggleTabIsEnabled(true)
+        }
     }
 
     private fun updateSettings() {
         settings.urlParameters = binding.editParametersUrl.text.toString()
-
         launch {
             URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
             settings.isSettingSaved = true
@@ -111,13 +131,32 @@ class SettingsFragment : BaseFragment() {
                 currentFocus?.let {
                     hideSoftKeyboard(it)
                 }
-                runOnUiThread {
-                    if (isAvailable) {
-                        settingsProgressDialog.cancel()
-                    }
-                    validateInputIDs()
-                }
+                hideProgressDialog()
             }
+        }
+    }
+
+    private fun Activity.hideProgressDialog() {
+        runOnUiThread {
+            if (isAvailable) {
+                settingsProgressDialog.cancel()
+            }
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val factory = SettingsViewModelFactory()
+        viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
+
+        viewModel.errorData.observe(viewLifecycleOwner) {
+            with(requireActivity()) {
+                hideProgressDialog()
+            }
+            validateInputIDs()
+            if (it.isBlank()) return@observe
+            settings.clearAllMiniAppInfoList()
+            Toast.makeText(requireActivity(), it, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -205,6 +244,7 @@ class SettingsFragment : BaseFragment() {
             isTab1Checked = true
             settings.setTempTab2ConfigData(getCurrentTypedConfigData())
             updateTabProjectIdAndSubscription()
+            validateInputIDs()
         }
 
         binding.toggleList2.setOnClickListener {
@@ -215,6 +255,7 @@ class SettingsFragment : BaseFragment() {
             isTab1Checked = false
             settings.setTempTab1ConfigData(getCurrentTypedConfigData())
             updateTabProjectIdAndSubscription()
+            validateInputIDs()
         }
 
         binding.switchPreviewModeTab.setOnCheckedChangeListener { _, isChecked ->
@@ -224,6 +265,7 @@ class SettingsFragment : BaseFragment() {
                 settings.setTempTab2IsPreviewMode(isChecked)
             }
             binding.switchPreviewModeTab.isChecked = isChecked
+            validateInputIDs()
         }
 
         binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
@@ -234,6 +276,7 @@ class SettingsFragment : BaseFragment() {
             }
             binding.switchProdVersion.isChecked = isChecked
             updateTabProjectIdAndSubscription()
+            validateInputIDs()
         }
 
         binding.switchSignatureVerification.setOnCheckedChangeListener { _, isChecked ->
@@ -244,8 +287,6 @@ class SettingsFragment : BaseFragment() {
             }
             binding.switchSignatureVerification.isChecked = isChecked
         }
-
-
     }
 
     private fun renderAppSettingsScreen() {

@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.ui.settings
+package com.rakuten.tech.mobile.testapp.ui.settings.cache
 
 import com.google.gson.Gson
 

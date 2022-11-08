@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
@@ -9,6 +10,8 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.Cache
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import java.util.*
 
 @Suppress("TooManyFunctions")
@@ -129,6 +132,17 @@ class AppSettings private constructor(context: Context) {
         }
 
     var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
+    var miniAppInfoListKey = Cache.TAB_1_MINIAPP_INFO_LIST_KEY
+
+    fun setTab1MiniAppSdkConfig() {
+        newMiniAppSdkConfig = miniAppSettings1
+        miniAppInfoListKey = Cache.TAB_1_MINIAPP_INFO_LIST_KEY
+    }
+
+    fun setTab2MiniAppSdkConfig() {
+        newMiniAppSdkConfig = miniAppSettings2
+        miniAppInfoListKey = Cache.TAB_2_MINIAPP_INFO_LIST_KEY
+    }
 
     val miniAppSettings1: MiniAppSdkConfig
         get() {
@@ -144,7 +158,8 @@ class AppSettings private constructor(context: Context) {
                 // temporarily taking values from buildConfig, we may add UI for this later.
                 miniAppAnalyticsConfigList = listOf(
                     MiniAppAnalyticsConfig(
-                        BuildConfig.ADDITIONAL_ANALYTICS_ACC, BuildConfig.ADDITIONAL_ANALYTICS_AID
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                        BuildConfig.ADDITIONAL_ANALYTICS_AID
                     )
                 ),
                 maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
@@ -165,7 +180,8 @@ class AppSettings private constructor(context: Context) {
                 // temporarily taking values from buildConfig, we may add UI for this later.
                 miniAppAnalyticsConfigList = listOf(
                     MiniAppAnalyticsConfig(
-                        BuildConfig.ADDITIONAL_ANALYTICS_ACC, BuildConfig.ADDITIONAL_ANALYTICS_AID
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                        BuildConfig.ADDITIONAL_ANALYTICS_AID
                     )
                 ),
                 maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
@@ -192,6 +208,21 @@ class AppSettings private constructor(context: Context) {
     fun saveData() {
         cache.rasConfigData.saveTab1Data()
         cache.rasConfigData.saveTab2Data()
+    }
+
+    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>){
+        cache.rasConfigData.saveCurrentMiniAppInfoList(miniAppInfoList, miniAppInfoListKey)
+    }
+
+    fun saveTab1MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+        cache.rasConfigData.saveTab1MiniAppInfoList(miniAppInfoList)
+    }
+
+    fun getMiniAppinfoList(key: String): List<MiniAppInfo> =
+        cache.rasConfigData.getTabMiniAppInfoList(key) ?: emptyList()
+
+    fun saveTab2MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+        cache.rasConfigData.saveTab2MiniAppInfoList(miniAppInfoList)
     }
 
     fun setTempTab1ConfigData(
@@ -234,8 +265,12 @@ class AppSettings private constructor(context: Context) {
         )
     }
 
-    fun clearTempData(){
+    fun clearTempData() {
         cache.rasConfigData.clearTempData()
+    }
+
+    fun clearAllMiniAppInfoList(){
+        cache.rasConfigData.clearAllMiniAppInfoList()
     }
 
     companion object {

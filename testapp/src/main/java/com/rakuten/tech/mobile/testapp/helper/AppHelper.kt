@@ -52,7 +52,12 @@ fun parseStringToDate(givenFormat: String, str: String): Date {
     return Date()
 }
 
-fun showAlertDialog(activity: Activity, title: String = "Alert", content: String) {
+fun showAlertDialog(
+    activity: Activity,
+    title: String = "Alert",
+    content: String,
+    negativeButton: String = "Close"
+) {
     // prepare an EditText where the content can be copied by long press
     val editText = EditText(activity)
     editText.setText(content)
@@ -62,7 +67,8 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     editText.background = null
     val container = FrameLayout(activity)
     val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
     )
     params.topMargin = activity.resources.getDimensionPixelSize(R.dimen.medium_16)
     params.bottomMargin = activity.resources.getDimensionPixelSize(R.dimen.medium_16)
@@ -75,23 +81,28 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     val alertDialog = AlertDialog.Builder(activity)
     alertDialog.setTitle(title)
     alertDialog.setView(container)
-    alertDialog.setNegativeButton("Close") { dialog, _ ->
+    alertDialog.setNegativeButton(negativeButton) { dialog, _ ->
         dialog.dismiss()
     }
     alertDialog.create().show()
 }
 
 fun showErrorDialog(
-    context: Context, description: String
+    context: Context,
+    description: String
 ) {
     val builder = AlertDialog.Builder(context)
-    builder.setMessage(description).setNegativeButton("Close") { _, _ -> }
+    builder.setMessage(description)
+        .setNegativeButton("Close") { _, _ -> }
     val alert = builder.create()
     alert.show()
 }
 
 fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) =
-    Glide.with(context).load(res).placeholder(placeholder).into(this)
+    Glide.with(context)
+        .load(res)
+        .placeholder(placeholder)
+        .into(this)
 
 fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
