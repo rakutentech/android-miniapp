@@ -40,8 +40,4 @@ class MiniAppListViewModel constructor(
                 _errorData.postValue(error.message)
             }
         }
-
-    fun clearErrorData() {
-        _errorData.value = ""
-    }
 }

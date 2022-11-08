@@ -22,7 +22,7 @@ class SettingsViewModel : ViewModel() {
         onSuccess: (List<MiniAppInfo>) -> Unit
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
-            onSuccess(miniapp.listMiniApp())
+            onSuccess(miniapp.listMiniApp().sortedBy { it.id })
         } catch (error: MiniAppSdkException) {
             _errorData.value.let {
                 if (it.isNullOrBlank()) {
