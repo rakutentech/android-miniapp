@@ -74,7 +74,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
                 testPath = "test",
-                lang = TEST_LANG_MANIFEST_DEFAULT
+                lang = TEST_MA_LANGUAGE_CODE
             ).execute()
         mockServer.takeRequest().path!! shouldContain "test"
     }
@@ -83,7 +83,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
     fun `should fetch metadata of a mini app using the 'lang' query`() {
         executeMetadataCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!
-        requestUrl.encodedQuery shouldBeEqualTo "lang=$TEST_LANG_MANIFEST_DEFAULT"
+        requestUrl.encodedQuery shouldBeEqualTo "lang=$TEST_MA_LANGUAGE_CODE"
     }
 
     private fun executeMetadataCallByRetrofit() {
@@ -93,7 +93,7 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                lang = TEST_LANG_MANIFEST_DEFAULT
+                lang = TEST_MA_LANGUAGE_CODE
             ).execute()
     }
 }
@@ -110,7 +110,7 @@ class MetadataApiResponseSpec : MetadataApiSpec() {
                 hostId = TEST_HA_ID_PROJECT,
                 miniAppId = TEST_ID_MINIAPP,
                 versionId = TEST_ID_MINIAPP_VERSION,
-                lang = TEST_LANG_MANIFEST_DEFAULT
+                lang = TEST_MA_LANGUAGE_CODE
             )
             .execute().body()!!
     }

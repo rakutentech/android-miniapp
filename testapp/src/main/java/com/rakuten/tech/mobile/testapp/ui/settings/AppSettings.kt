@@ -1,10 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.settings
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.AppManifestConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
@@ -12,59 +10,29 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
-import java.util.Date
-import java.util.UUID
-import kotlin.collections.ArrayList
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.Cache
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
+import java.util.*
 
+@Suppress("TooManyFunctions")
 class AppSettings private constructor(context: Context) {
 
     private val manifestConfig = AppManifestConfig(context)
-    private val cache = Settings(context)
+    private val cache = Cache(
+        context,
+        manifestConfig.requireSignatureVerification(),
+        manifestConfig.isPreviewMode()
+    )
 
-    var isPreviewMode: Boolean
-        get() = cache.isPreviewMode ?: manifestConfig.isPreviewMode()
-        set(isPreviewMode) {
-            cache.isPreviewMode = isPreviewMode
-        }
+    val projectIdForAnalytics: String = if (isSettingSaved)
+        cache.rasConfigData.getTab1Data().projectId
+    else manifestConfig.rasProjectId()
 
-    var requireSignatureVerification: Boolean
-        get() = cache.requireSignatureVerification ?: manifestConfig.requireSignatureVerification()
-        set(isRequired) {
-            cache.requireSignatureVerification = isRequired
-        }
-
-    var isProdVersionEnabled: Boolean
-        get() = cache.isProdVersionEnabled ?: false
-        set(isRequired) {
-            cache.isProdVersionEnabled = isRequired
-        }
-
-    var baseUrl: String
-        get() = cache.baseUrl ?: manifestConfig.baseUrl()
-        set(baseUrl) {
-            cache.baseUrl = baseUrl
-        }
-
-    var projectId: String
-        get() = cache.projectId ?: manifestConfig.rasProjectId()
-        set(projectId) {
-            cache.projectId = projectId
-        }
-
-    var subscriptionKey: String
-        get() = cache.subscriptionKey ?: manifestConfig.subscriptionKey()
-        set(subscriptionKey) {
-            cache.subscriptionKey = subscriptionKey
-        }
-
-    var uniqueId: String
+    val uniqueId: String
         get() {
             val uniqueId = cache.uniqueId ?: UUID.randomUUID().toString()
             cache.uniqueId = uniqueId
             return uniqueId
-        }
-        set(subscriptionKey) {
-            cache.subscriptionKey = subscriptionKey
         }
 
     var uniqueIdError: String
@@ -92,7 +60,7 @@ class AppSettings private constructor(context: Context) {
         }
 
     var profileName: String
-        get() = cache.profileName ?: ""
+        get() = cache.profileName ?: DEFAULT_PROFILE_NAME
         set(profileName) {
             cache.profileName = profileName
         }
@@ -117,7 +85,9 @@ class AppSettings private constructor(context: Context) {
 
     var contacts: ArrayList<Contact>
         get() = cache.contacts ?: arrayListOf()
-        set(contacts) { cache.contacts = contacts }
+        set(contacts) {
+            cache.contacts = contacts
+        }
 
     val isContactsSaved: Boolean
         get() = cache.isContactsSaved
@@ -128,204 +98,210 @@ class AppSettings private constructor(context: Context) {
             cache.urlParameters = urlParameters
         }
 
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>
-        get() = cache.miniAppAnalyticsConfigs ?: emptyList()
-        set(miniAppAnalyticsConfigs) {
-            cache.miniAppAnalyticsConfigs = miniAppAnalyticsConfigs
-        }
-
     var accessTokenError: MiniAppAccessTokenError?
         get() = cache.accessTokenError
         set(accessTokenError) {
             cache.accessTokenError = accessTokenError
         }
 
-    var points: Points?
-        get() = cache.points
+    var points: Points
+        get() = cache.points ?: DEFAULT_POINTS
         set(points) {
             cache.points = points
         }
 
     var dynamicDeeplinks: ArrayList<String>
         get() = cache.dynamicDeeplinks ?: arrayListOf()
-        set(deeplinks) { cache.dynamicDeeplinks = deeplinks }
+        set(deeplinks) {
+            cache.dynamicDeeplinks = deeplinks
+        }
 
     val isDynamicDeeplinksSaved: Boolean
         get() = cache.isDynamicDeeplinksSaved
 
-    val miniAppSettings: MiniAppSdkConfig
-        get() = MiniAppSdkConfig(
-            baseUrl = baseUrl,
-            rasProjectId = projectId,
-            subscriptionKey = subscriptionKey,
-            // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
-            hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
-            isPreviewMode = isPreviewMode,
-            requireSignatureVerification = requireSignatureVerification,
-            // temporarily taking values from buildConfig, we may add UI for this later.
-            miniAppAnalyticsConfigList = listOf(
-                MiniAppAnalyticsConfig(
-                    BuildConfig.ADDITIONAL_ANALYTICS_ACC,
-                    BuildConfig.ADDITIONAL_ANALYTICS_AID
-                )
+    var maxStorageSizeLimitInBytes: String
+        get() = cache.maxStorageSizeLimitInBytes
+        set(maxStorageSizeLimitInBytes) {
+            cache.maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+        }
+
+    var isTab1Checked: Boolean
+        get() = cache.isTab1Checked
+        set(isTab1Checked) {
+            cache.isTab1Checked = isTab1Checked
+        }
+
+    var newMiniAppSdkConfig: MiniAppSdkConfig = miniAppSettings1
+    var miniAppInfoListKey = Cache.TAB_1_MINIAPP_INFO_LIST_KEY
+
+    fun setTab1MiniAppSdkConfig() {
+        newMiniAppSdkConfig = miniAppSettings1
+        miniAppInfoListKey = Cache.TAB_1_MINIAPP_INFO_LIST_KEY
+    }
+
+    fun setTab2MiniAppSdkConfig() {
+        newMiniAppSdkConfig = miniAppSettings2
+        miniAppInfoListKey = Cache.TAB_2_MINIAPP_INFO_LIST_KEY
+    }
+
+    val miniAppSettings1: MiniAppSdkConfig
+        get() {
+            val tab1Data = cache.rasConfigData.getTab1Data()
+            return MiniAppSdkConfig(
+                baseUrl = cache.getBaseUrl(tab1Data.isProduction),
+                rasProjectId = tab1Data.projectId,
+                subscriptionKey = tab1Data.subscriptionId,
+                // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isPreviewMode = tab1Data.isPreviewMode,
+                requireSignatureVerification = tab1Data.isVerificationRequired,
+                // temporarily taking values from buildConfig, we may add UI for this later.
+                miniAppAnalyticsConfigList = listOf(
+                    MiniAppAnalyticsConfig(
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                        BuildConfig.ADDITIONAL_ANALYTICS_AID
+                    )
+                ),
+                maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
             )
+        }
+
+    val miniAppSettings2: MiniAppSdkConfig
+        get() {
+            val tab2Data = cache.rasConfigData.getTab2Data()
+            return MiniAppSdkConfig(
+                baseUrl = cache.getBaseUrl(tab2Data.isProduction),
+                rasProjectId = tab2Data.projectId,
+                subscriptionKey = tab2Data.subscriptionId,
+                // no update for hostAppUserAgentInfo because SDK does not allow changing it at runtime
+                hostAppUserAgentInfo = manifestConfig.hostAppUserAgentInfo(),
+                isPreviewMode = tab2Data.isPreviewMode,
+                requireSignatureVerification = tab2Data.isVerificationRequired,
+                // temporarily taking values from buildConfig, we may add UI for this later.
+                miniAppAnalyticsConfigList = listOf(
+                    MiniAppAnalyticsConfig(
+                        BuildConfig.ADDITIONAL_ANALYTICS_ACC,
+                        BuildConfig.ADDITIONAL_ANALYTICS_AID
+                    )
+                ),
+                maxStorageSizeLimitInBytes = maxStorageSizeLimitInBytes
+            )
+        }
+
+    fun getCurrentTab1ConfigData(): MiniAppConfigData {
+        return cache.rasConfigData.getTab1CurrentData()
+    }
+
+    fun getDefaultConfigData(isTab1Checked: Boolean): MiniAppConfigData {
+        return when {
+            isTab1Checked -> getCurrentTab1ConfigData()
+            else -> {
+                getCurrentTab2ConfigData()
+            }
+        }
+    }
+
+    fun getCurrentTab2ConfigData(): MiniAppConfigData {
+        return cache.rasConfigData.getTab2CurrentData()
+    }
+
+    fun saveData() {
+        cache.rasConfigData.saveTab1Data()
+        cache.rasConfigData.saveTab2Data()
+    }
+
+    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>){
+        cache.rasConfigData.saveCurrentMiniAppInfoList(miniAppInfoList, miniAppInfoListKey)
+    }
+
+    fun saveTab1MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+        cache.rasConfigData.saveTab1MiniAppInfoList(miniAppInfoList)
+    }
+
+    fun getMiniAppinfoList(key: String): List<MiniAppInfo> =
+        cache.rasConfigData.getTabMiniAppInfoList(key) ?: emptyList()
+
+    fun saveTab2MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+        cache.rasConfigData.saveTab2MiniAppInfoList(miniAppInfoList)
+    }
+
+    fun setTempTab1ConfigData(
+        credentialData: MiniAppConfigData
+    ) {
+        cache.rasConfigData.setTempTab1Data(
+            credentialData
         )
+    }
+
+    fun setTempTab1IsProduction(isProduction: Boolean) {
+        cache.rasConfigData.setTempTab1IsProduction(isProduction)
+    }
+
+    fun setTempTab1IsVerificationRequired(isVerificationRequired: Boolean) {
+        cache.rasConfigData.setTempTab1IsVerificationRequired(isVerificationRequired)
+    }
+
+    fun setTempTab1IsPreviewMode(isPreviewMode: Boolean) {
+        cache.rasConfigData.setTempTab1IsPreviewMode(isPreviewMode)
+    }
+
+    fun setTempTab2IsProduction(isProduction: Boolean) {
+        cache.rasConfigData.setTempTab2IsProduction(isProduction)
+    }
+
+    fun setTempTab2IsVerificationRequired(isVerificationRequired: Boolean) {
+        cache.rasConfigData.setTempTab2IsVerificationRequired(isVerificationRequired)
+    }
+
+    fun setTempTab2IsPreviewMode(isPreviewMode: Boolean) {
+        cache.rasConfigData.setTempTab2IsPreviewMode(isPreviewMode)
+    }
+
+    fun setTempTab2ConfigData(
+        credentialData: MiniAppConfigData
+    ) {
+        cache.rasConfigData.setTempTab2Data(
+            credentialData
+        )
+    }
+
+    fun clearTempData() {
+        cache.rasConfigData.clearTempData()
+    }
+
+    fun clearAllMiniAppInfoList(){
+        cache.rasConfigData.clearAllMiniAppInfoList()
+    }
 
     companion object {
         lateinit var instance: AppSettings
+        const val DEFAULT_PROFILE_NAME = "MiniAppUser"
+        val DEFAULT_POINTS = Points(10, 20, 30)
+        val fakeFirstNames = arrayOf(
+            "Yvonne",
+            "Jamie",
+            "Leticia",
+            "Priscilla",
+            "Sidney",
+            "Nancy",
+            "Edmund",
+            "Bill",
+            "Megan"
+        )
+        val fakeLastNames = arrayOf(
+            "Andrews",
+            "Casey",
+            "Gross",
+            "Lane",
+            "Thomas",
+            "Patrick",
+            "Strickland",
+            "Nicolas",
+            "Freeman"
+        )
 
         fun init(context: Context) {
             instance = AppSettings(context)
         }
-    }
-}
-
-private class Settings(context: Context) {
-
-    private val gson = Gson()
-    private val prefs: SharedPreferences = context.getSharedPreferences(
-        "com.rakuten.tech.mobile.miniapp.sample.settings",
-        Context.MODE_PRIVATE
-    )
-
-    var isPreviewMode: Boolean?
-        get() =
-            if (prefs.contains(IS_PREVIEW_MODE))
-                prefs.getBoolean(IS_PREVIEW_MODE, true)
-            else
-                null
-        set(isPreviewMode) = prefs.edit().putBoolean(IS_PREVIEW_MODE, isPreviewMode!!).apply()
-
-    var requireSignatureVerification: Boolean?
-        get() =
-            if (prefs.contains(REQUIRE_SIGNATURE_VERIFICATION))
-                prefs.getBoolean(REQUIRE_SIGNATURE_VERIFICATION, true)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(REQUIRE_SIGNATURE_VERIFICATION, isRequired!!).apply()
-
-    var isProdVersionEnabled: Boolean?
-        get() =
-            if (prefs.contains(IS_PROD_VERSION_ENABLED))
-                prefs.getBoolean(IS_PROD_VERSION_ENABLED, false)
-            else
-                null
-        set(isRequired) = prefs.edit().putBoolean(IS_PROD_VERSION_ENABLED, isRequired!!).apply()
-
-    var baseUrl: String?
-        get() = prefs.getString(BASE_URL, null)
-        set(baseUrl) = prefs.edit().putString(BASE_URL, baseUrl).apply()
-
-    var projectId: String?
-        get() = prefs.getString(APP_ID, null)
-        set(appId) = prefs.edit().putString(APP_ID, appId).apply()
-
-    var subscriptionKey: String?
-        get() = prefs.getString(SUBSCRIPTION_KEY, null)
-        set(subscriptionKey) = prefs.edit().putString(SUBSCRIPTION_KEY, subscriptionKey).apply()
-
-    var uniqueId: String?
-        get() = prefs.getString(UNIQUE_ID, null)
-        set(uuid) = prefs.edit().putString(UNIQUE_ID, uuid).apply()
-
-    var uniqueIdError: String?
-        get() = prefs.getString(UNIQUE_ID_ERROR, null)
-        set(uniqueIdError) = prefs.edit().putString(UNIQUE_ID_ERROR, uniqueIdError).apply()
-
-    var messagingUniqueIdError: String?
-        get() = prefs.getString(MESSAGING_UNIQUE_ID_ERROR, null)
-        set(messagingUniqueIdError) = prefs.edit()
-            .putString(MESSAGING_UNIQUE_ID_ERROR, messagingUniqueIdError).apply()
-
-    var mauIdError: String?
-        get() = prefs.getString(MAUID_ERROR, null)
-        set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
-
-    var isSettingSaved: Boolean
-        get() = prefs.getBoolean(IS_SETTING_SAVED, false)
-        set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
-
-    var profileName: String?
-        get() = prefs.getString(PROFILE_NAME, null)
-        set(profileName) = prefs.edit().putString(PROFILE_NAME, profileName).apply()
-
-    var profilePictureUrl: String?
-        get() = prefs.getString(PROFILE_PICTURE_URL, null)
-        set(profilePictureUrl) = prefs.edit().putString(PROFILE_PICTURE_URL, profilePictureUrl)
-            .apply()
-
-    var profilePictureUrlBase64: String?
-        get() = prefs.getString(PROFILE_PICTURE_URL_BASE_64, null)
-        set(profilePictureUrlBase64) = prefs.edit().putString(PROFILE_PICTURE_URL_BASE_64, profilePictureUrlBase64)
-            .apply()
-
-    var tokenData: TokenData?
-        get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), TokenData::class.java)
-        set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
-            .apply()
-
-    var contacts: ArrayList<Contact>?
-        get() = Gson().fromJson(
-            prefs.getString(CONTACTS, null),
-            object : TypeToken<ArrayList<Contact>>() {}.type
-        )
-        set(contacts) = prefs.edit().putString(CONTACTS, Gson().toJson(contacts)).apply()
-
-    val isContactsSaved: Boolean
-        get() = prefs.contains(CONTACTS)
-
-    var urlParameters: String?
-        get() = prefs.getString(URL_PARAMETERS, null)
-        set(urlParameters) = prefs.edit().putString(URL_PARAMETERS, urlParameters).apply()
-
-    var miniAppAnalyticsConfigs: List<MiniAppAnalyticsConfig>?
-        get() = Gson().fromJson(
-            prefs.getString(ANALYTIC_CONFIGS, null),
-            object : TypeToken<List<MiniAppAnalyticsConfig>>() {}.type
-        )
-        set(miniAppAnalyticsConfigs) = prefs.edit().putString(ANALYTIC_CONFIGS, Gson().toJson(miniAppAnalyticsConfigs)).apply()
-
-    var accessTokenError: MiniAppAccessTokenError?
-        get() = gson.fromJson(prefs.getString(ACCESS_TOKEN_ERROR, null), MiniAppAccessTokenError::class.java)
-        set(accessTokenError) = prefs.edit().putString(ACCESS_TOKEN_ERROR, gson.toJson(accessTokenError))
-            .apply()
-
-    var points: Points?
-        get() = gson.fromJson(prefs.getString(POINTS, null), Points::class.java)
-        set(points) = prefs.edit().putString(POINTS, gson.toJson(points))
-                .apply()
-
-    var dynamicDeeplinks: ArrayList<String>?
-        get() = Gson().fromJson(
-                prefs.getString(DYNAMIC_DEEPLINKS, null),
-                object : TypeToken<ArrayList<String>>() {}.type
-        )
-        set(deeplinks) = prefs.edit().putString(DYNAMIC_DEEPLINKS, Gson().toJson(deeplinks)).apply()
-
-    val isDynamicDeeplinksSaved: Boolean
-        get() = prefs.contains(DYNAMIC_DEEPLINKS)
-
-    companion object {
-        private const val IS_PREVIEW_MODE = "is_preview_mode"
-        private const val REQUIRE_SIGNATURE_VERIFICATION = "require_signature_verification"
-        private const val IS_PROD_VERSION_ENABLED = "is_prod_version_enabled"
-        private const val BASE_URL = "base_url"
-        private const val APP_ID = "app_id"
-        private const val SUBSCRIPTION_KEY = "subscription_key"
-        private const val UNIQUE_ID = "unique_id"
-        private const val UNIQUE_ID_ERROR = "unique_id_error"
-        private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
-        private const val MAUID_ERROR = "mauid_error"
-        private const val IS_SETTING_SAVED = "is_setting_saved"
-        private const val PROFILE_NAME = "profile_name"
-        private const val PROFILE_PICTURE_URL = "profile_picture_url"
-        private const val PROFILE_PICTURE_URL_BASE_64 = "profile_picture_url_base_64"
-        private const val CONTACTS = "contacts"
-        private const val TOKEN_DATA = "token_data"
-        private const val URL_PARAMETERS = "url_parameters"
-        private const val ANALYTIC_CONFIGS = "analytic_configs"
-        private const val ACCESS_TOKEN_ERROR = "access_token_error"
-        private const val POINTS = "points"
-        private const val DYNAMIC_DEEPLINKS = "dynamic_deeplinks"
     }
 }

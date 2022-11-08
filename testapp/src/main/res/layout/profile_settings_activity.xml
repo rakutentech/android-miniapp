@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        tools:src="@drawable/r_logo" />
+        tools:src="@drawable/r_logo_default_profile" />
 
       <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/textEditPhoto"

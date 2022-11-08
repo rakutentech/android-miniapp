@@ -14,7 +14,7 @@ internal const val TEST_ID_MINIAPP = "5f0ed952-36ab-43e2-a285-b237c11e23cb"
 internal const val TEST_ID_MINIAPP_VERSION = "fa7e1522-adf2-4322-8146-84dca1f812a5"
 
 internal const val TEST_STORAGE_VERSION = 1
-internal const val TEST_MAX_STORAGE_SIZE_IN_KB = 5000
+internal const val TEST_MAX_STORAGE_SIZE_IN_BYTES = "52428800"
 
 internal const val TEST_BASE_PATH = "dummy"
 internal const val TEST_URL_FILE = "file.storage/test/file.abc"
@@ -31,8 +31,10 @@ internal const val TEST_MA_DISPLAY_NAME = "test_name"
 internal const val TEST_MA_ICON = "test_icon"
 internal const val TEST_MA_VERSION_TAG = "test_vtag"
 internal const val TEST_MA_VERSION_ID = "test_vid"
+internal const val TEST_MA_LANGUAGE_CODE = "default"
 internal const val TEST_MA_PREVIEW_CODE = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
+internal const val TEST_PACKAGE_NAME = "com.rakuten.tech.mobile.miniapp"
 internal const val TEST_HA_NAME = "test_hostapp_name"
 internal const val TEST_HA_ID_PROJECT = "test_project_id"
 internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subscription_key"
@@ -85,5 +87,3 @@ internal val TEST_HA_ANALYTICS_CONFIGS = listOf(TEST_CONFIG1, TEST_CONFIG2)
 
 internal const val TEST_PUBLIC_KEY_ID = "test_public_key_id"
 internal const val TEST_MANIFEST_SIGNATURE = "test_manifest_signature"
-
-internal const val TEST_LANG_MANIFEST_DEFAULT = "default"

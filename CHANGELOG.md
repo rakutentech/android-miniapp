@@ -1,13 +1,46 @@
 ## CHANGELOG
 
-### 4.2.0 (release date TBD)
+### 5.1.0 (xxxx-xx-xx)
+**Sample App**
+- **Feature:** Settings is moved to it's own tab.
+- **Feature:** Multiple MiniAppSdk configurations
+- **Feature:** Enabled PermissionSettings on MiniApp top bar
+
+### 5.0.0 (2022-10-25)
 **SDK**
+- **Feature:** Added `MiniAppView` to create multiple MiniApp views.
+- **Feature:** Added `MiniAppConfig` data class to hold configuration settings for the `MiniAppView`.
+- **Deprecated:** Old `create` and `createWithUrl` interfaces.
+- **Fix:** Made the `MaxStorageSize` Limit in Bytes.
+- **Fix:** Returning `onSuccess` for the Bulk Delete even if no items could be deleted.
+- **Update:** Refactored the `maxStorageSizeLimitInMB` parameter to `maxStorageSizeLimitInBytes` in `MiniAppSdkConfig`.
+
+**Sample App**
+- **Feature:** Demo App will now use a tabBar instead of a single screen.
+- **Feature:** Added List I and List II for displaying multiple MiniApps at the same time and configurable through settings.
+- **Feature:** Features tab started with URL feature to run MiniApps locally.
+
+### 4.3.0 (2022-08-09)
+**SDK**
+- **Feature:** Added `languageCode` in cached manifest to support localization of manifest.
+- **Fix:** Added bug fixes related to Secure storage feature.
+
+**Sample App**
+- **Feature:** Added bluetooth paired device detection on Android 12+ devices in QA settings screen.
+- **Feature:** Added UI in QA settings screen to upgrade the max storage size limit on runtime.
+- **Fix:** Displayed close confirmation dialog when MiniApp is closed using physical back button.
+- **Fix:** Added proper error message when name and email both inputs are empty in contact settings page.
+
+### 4.2.0 (2022-06-24)
+**SDK**
+- **Feature:** Added `MiniAppMessageBridge.getMessagingUniqueId` for supporting MAUID v2 and `MiniAppMessageBridge.getMauid` in MiniAppMessageDelegate for retrieving MAUID.
 - **Feature:** Added support for base64 `data:` URIs to the File Download feature in `MiniAppFileDownloader`.
-- **Feature:** Added secure storage support for storing, getting and removing data for MiniApps safely. HostApp can clear secured data using `MiniApp.clearSecureStorage`.
+- **Feature:** Added secure storage support for storing, getting and removing data for MiniApps safely. HostApp can clear secured data using `MiniApp.clearSecureStorage`. Also, `MiniAppSdkConfig` is extended with `storageMaxSizeKB` to set the maximum available space in bytes for secure storage.
 - **Feature:** Added `MiniAppMessageBridge.miniAppShouldClose()` function which would help the host app to check if any alert need to be displayed before closing the MiniApp.
 - **Feature:** Added `MiniAppTooManyRequestsError` which will be thrown from SDK if any API from platform sends `429` status code.
 
 **Sample App**
+- **Feature:** Added implementation of `MiniAppMessageBridge.getMessagingUniqueId` and `MiniAppMessageBridge.getMauid`.
 - **Feature:** Added a `Clear All` button to Settings/QA to remove all secure storages.
 - **Feature:** Added support to display error popup when there is `MiniAppTooManyRequestsError`.
 

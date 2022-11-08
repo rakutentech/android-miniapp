@@ -3,13 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js.chat
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
-import org.mockito.kotlin.*
-import com.rakuten.tech.mobile.miniapp.TestActivity
-import com.rakuten.tech.mobile.miniapp.TEST_CONTACT
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
-import com.rakuten.tech.mobile.miniapp.TEST_ERROR_MSG
-import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge.Companion.ERR_NO_PERMISSION_CONTACT_ID
@@ -25,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.kotlin.*
 
 open class BaseChatBridgeDispatcherSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
@@ -127,15 +122,7 @@ open class BaseChatBridgeDispatcherSpec {
     }
 
     private fun createMessageBridge(): MiniAppMessageBridge =
-        object : MiniAppMessageBridge() {
-
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
-        }
+        object : MiniAppMessageBridge() {}
 
     protected val sendingMessageJsonStr: String = Gson().toJson(
         CallbackObj(

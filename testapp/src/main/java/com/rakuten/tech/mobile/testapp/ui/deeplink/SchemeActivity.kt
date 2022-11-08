@@ -5,14 +5,14 @@ import android.util.Log
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.AppCoroutines
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRCodeErrorType
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.AppCoroutines
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -31,8 +31,8 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         super.onCreate(savedInstanceState)
         miniAppInfo = null
         miniAppSdkConfig = createSdkConfig(
-            AppSettings.instance.miniAppSettings.rasProjectId,
-            AppSettings.instance.miniAppSettings.subscriptionKey
+            AppSettings.instance.newMiniAppSdkConfig.rasProjectId,
+            AppSettings.instance.newMiniAppSdkConfig.subscriptionKey
         )
         miniAppSdkConfig?.let { config ->
             miniApp = MiniApp.instance(config, setConfigAsDefault = false)
@@ -103,12 +103,12 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
 
     private fun createSdkConfig(hostId: String, subscriptionKey: String): MiniAppSdkConfig {
         return MiniAppSdkConfig(
-            baseUrl = AppSettings.instance.miniAppSettings.baseUrl,
+            baseUrl = AppSettings.instance.newMiniAppSdkConfig.baseUrl,
             rasProjectId = hostId,
             subscriptionKey = subscriptionKey,
-            hostAppUserAgentInfo = AppSettings.instance.miniAppSettings.hostAppUserAgentInfo,
-            isPreviewMode = AppSettings.instance.miniAppSettings.isPreviewMode,
-            requireSignatureVerification = AppSettings.instance.miniAppSettings.requireSignatureVerification,
+            hostAppUserAgentInfo = AppSettings.instance.newMiniAppSdkConfig.hostAppUserAgentInfo,
+            isPreviewMode = AppSettings.instance.newMiniAppSdkConfig.isPreviewMode,
+            requireSignatureVerification = AppSettings.instance.newMiniAppSdkConfig.requireSignatureVerification,
             // temporarily taking values from buildConfig, we may add UI for this later.
             miniAppAnalyticsConfigList = listOf(
                 MiniAppAnalyticsConfig(
@@ -116,10 +116,15 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            sslPinningPublicKeyList = listOf(
-                getString(R.string.sslPublicKey),
-                getString(R.string.sslPublicKeyBackup)
-            )
+            sslPinningPublicKeyList = getSSlKeyList()
+        )
+    }
+
+    private fun getSSlKeyList(): List<String> {
+        return if (AppSettings.instance.miniAppSettings1.baseUrl != getString(R.string.prodBaseUrl)) listOf(
+            getString(R.string.sslPublicKey), getString(R.string.sslPublicKeyBackup)
+        ) else listOf(
+            getString(R.string.sslPublicKeyProd), getString(R.string.sslPublicKeyProdBackup)
         )
     }
 }

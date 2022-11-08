@@ -1,0 +1,276 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/textInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    tools:text="Build Info" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_section"
+                    android:paddingStart="@dimen/medium_16"
+                    android:paddingTop="@dimen/small_4"
+                    android:paddingEnd="@dimen/medium_16"
+                    android:paddingBottom="@dimen/small_4"
+                    android:text="@string/lb_ras" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleListGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:theme="@style/AppTheme.MaterialButtonToggleGroup"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/toggleList1"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="List I" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/toggleList2"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="List II" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchProdVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_enable_prod_version"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchPreviewModeTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_preview_mode"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATSwitch
+                    android:id="@+id/switchSignatureVerification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8"
+                    android:padding="@dimen/small_8"
+                    android:text="@string/lb_require_signature_verification"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/text_large_16"
+                    app:actionType="change_status"
+                    app:pageName="Settings"
+                    app:siteSection="Top" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/inputProjectId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_4"
+                    android:padding="@dimen/small_8"
+                    app:endIconMode="clear_text"
+                    app:errorTextAppearance="@style/SettingsError.TextAppearance">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editProjectId"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/large_48"
+                        android:hint="@string/hint_host_project_id"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/inputSubscriptionKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_4"
+                    android:padding="@dimen/small_8"
+                    app:endIconMode="clear_text"
+                    app:errorTextAppearance="@style/SettingsError.TextAppearance">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editSubscriptionKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/large_48"
+                        android:hint="@string/hint_subscription_key"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_section"
+                    android:paddingStart="@dimen/medium_16"
+                    android:paddingTop="@dimen/small_4"
+                    android:paddingEnd="@dimen/medium_16"
+                    android:paddingBottom="@dimen/small_4" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_profile"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonContacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_contacts"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonAccessToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/lb_access_token"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_points"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonDeeplink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_dynamic_deeplinks"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonQA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/action_qa"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_section"
+                    android:paddingStart="@dimen/medium_16"
+                    android:paddingTop="@dimen/small_4"
+                    android:paddingEnd="@dimen/medium_16"
+                    android:paddingBottom="@dimen/small_4"
+                    android:text="@string/lb_miniapp_url_parameters" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/small_8">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/editParametersUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/large_48"
+                        android:hint="@string/hint_miniapp_url_parameters"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        tools:ignore="SpeakableTextPresentCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+</layout>

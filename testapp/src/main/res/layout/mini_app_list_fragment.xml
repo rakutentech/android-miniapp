@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="fragment" type="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListFragment" />
+
+        <variable
+            name="fragment"
+            type="com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppListFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +18,6 @@
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/btnInput"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -31,33 +33,14 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-          android:id="@+id/emptyView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layout_margin="@dimen/large_24"
-          android:gravity="top|center"
-          android:text="@string/message_empty_miniapps"
-          android:textSize="@dimen/text_large_18"
-          android:visibility="gone"
-          tools:visibility="visible" />
-
-        <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
-            android:id="@+id/btnInput"
+            android:id="@+id/emptyView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> fragment.switchToInput()}"
-            android:foreground="?selectableItemBackground"
-            android:background="@color/colorAccent"
-            style="?android:attr/borderlessButtonStyle"
-            android:textColor="@android:color/white"
-            android:text="@string/action_go_input"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:siteSection="Top"
-            app:pageName="MiniAppList"
-            app:actionType="open"/>
-
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/large_24"
+            android:gravity="top|center"
+            android:text="@string/message_empty_miniapps"
+            android:textSize="@dimen/text_large_18"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -56,9 +56,9 @@ class PointsActivity : BaseActivity() {
 
     private fun renderScreen() {
         binding = DataBindingUtil.setContentView(this, R.layout.points_activity)
-        settings.points?.standard?.let { binding.edtPointStandard.setText(it.toString()) }
-        settings.points?.term?.let { binding.edtPointTimeLimited.setText(it.toString()) }
-        settings.points?.cash?.let { binding.edtPointRakutenCash.setText(it.toString()) }
+        settings.points.standard.let { binding.edtPointStandard.setText(it.toString()) }
+        settings.points.term.let { binding.edtPointTimeLimited.setText(it.toString()) }
+        settings.points.cash.let { binding.edtPointRakutenCash.setText(it.toString()) }
         updatePreferences()
     }
 

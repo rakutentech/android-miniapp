@@ -28,7 +28,7 @@ import java.io.File
 private const val SUB_DOMAIN_PATH = "miniapp"
 private const val MINI_APP_INTERFACE = "MiniAppAndroid"
 
-@Suppress("SetJavaScriptEnabled", "TooManyFunctions", "LargeClass", "ViewConstructor")
+@Suppress("SetJavaScriptEnabled", "TooManyFunctions", "LargeClass", "ViewConstructor", "LongParameterList")
 internal open class MiniAppWebView(
     context: Context,
     val basePath: String,
@@ -95,7 +95,7 @@ internal open class MiniAppWebView(
         }
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ImplicitDefaultLocale")
     protected fun commonInit() {
         layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -160,6 +160,7 @@ internal open class MiniAppWebView(
     fun destroyView() {
         stopLoading()
         defaultFileDownloader.cleanup()
+        secureStorageDispatcher.cleanUp()
         destroy()
     }
 
@@ -222,7 +223,8 @@ internal open class MiniAppWebView(
         return miniAppScheme.appendParametersToUrl(parentUrl, queryParams)
     }
 
-    protected open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
+    @VisibleForTesting
+    internal open fun getMiniAppWebViewClient(): MiniAppWebViewClient = MiniAppWebViewClient(
         context,
         getWebViewAssetLoader(),
         miniAppNavigator!!,

@@ -597,13 +597,6 @@ class UserInfoBridgeSpec {
     private fun createMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                onSuccess(TEST_CALLBACK_VALUE)
-            }
-
             override fun requestDevicePermission(
                 miniAppPermissionType: MiniAppDevicePermissionType,
                 callback: (isGranted: Boolean) -> Unit

@@ -1,15 +1,17 @@
 package com.rakuten.tech.mobile.miniapp.storage.verifier
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.mock
 import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.whenever
+import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import java.io.File
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class CachedMiniAppVerifierSpec {
     private val storeHashVerifier: StoreHashVerifier = mock()
     private val file: File = mock()

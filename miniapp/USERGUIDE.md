@@ -50,6 +50,7 @@ The SDK is configured via `meta-data` tags in your `AndroidManifest.xml`. The fo
 | RAS Project Subscription Key | String  | `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey`   | ❌         | 🚫        |
 | Host App User Agent Info     | String  | `com.rakuten.tech.mobile.miniapp.HostAppUserAgentInfo` | ✅         | 🚫        |
 | Enable [Ad Placement api](https://developers.google.com/ad-placement)      | Boolean | `com.rakuten.tech.mobile.miniapp.EnableH5Ads`          | ✅         | false     |
+| Secure Storage Max Size     | String  | `com.rakuten.tech.mobile.miniapp.MaxStorageSizeLimitInBytes` | ✅         | ✅          |
 
 **Note:**  
 * We don't currently host a public API, so you will need to provide your own Base URL for API requests.
@@ -192,6 +193,54 @@ class MiniAppActivity : Activity(), CoroutineScope {
 }
 ```
 </details>
+
+### #4 Create and display multiple Mini App views
+**API Docs:** [MiniAppView.init](api/com.rakuten.tech.mobile.miniapp.view/-mini-app-view/init.html), [MiniAppConfig](api/com.rakuten.tech.mobile.miniapp.view/-mini-app-config.html)
+`MiniAppView.init` is used to initialize the mini app view for displaying a specific mini app using `MiniAppDisplay` when `MiniAppView.load` is being called.  `MiniAppParameters` needed to send with the `MiniAppView.init` call. 
+
+Before calling `MiniAppView.init`, the Host App should first get the manifest using `MiniApp.getMiniAppManifest`, show permission prompt to user, then set the result with `MiniApp.setCustomPermissions`.
+If Host App wants to launch the miniapp without granting the required permissions, the SDK will throw `RequiredPermissionsNotGrantedException` to notify Host App.
+You must provide `MiniAppConfig` and `Context` while initializing `MiniAppView`. You must provide the mini app ID which you wish to create (you can get the mini app ID by [Fetching Mini App Info](#fetching-mini-app-info) first). 
+Calling `MiniAppView.load` will do the following:
+- Check what is the latest, published version of the mini app.
+- Check if the latest version of the mini app has been downloaded.
+  - If yes, return the already downloaded mini app.
+  - If no, download the latest version and then return the downloaded version.
+- If the device is disconnected from the internet and the device already has a version of the mini app downloaded, then the already downloaded version will be returned.
+- If the host app needs the cached version of the miniapp, set `fromCache` value to `true` will return already downloaded version.
+
+After calling `MiniAppView.load` and all the "required" manifest permissions have been granted, you will obtain an instance of `MiniAppDisplay` which represents the downloaded mini app. You can call `MiniAppDisplay.getMiniAppView` to obtain a `View` for displaying the mini app. You will get an instance of `MiniAppSdkException` you any exception happens.
+
+The following is a simplified example:
+```kotlin
+val param = MiniAppParameters.DefaultParams(
+            context = this,
+            config = MiniAppConfig(
+                miniAppSdkConfig = miniAppSdkConfig,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
+                queryParams = ""
+            ),
+            miniAppId = "id",
+            miniAppVersion = "version",
+            fromCache = false
+        )
+        
+val miniapp = MiniAppView.init(param)
+```
+To load the miniapp following load function needed to call
+```kotlin
+miniapp.load { miniAppDisplay, miniAppSdkException ->
+    if(miniAppDisplay != null) {
+      val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+      // view could be added to show the miniapp
+      runOnUithread {
+        rootView.addView(miniAppView)
+      }    
+    }       
+}
+```
 
 **Note:** 
 * **Clean-up:** 

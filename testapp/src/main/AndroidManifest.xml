@@ -7,6 +7,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Request Bluetooth permissions on Android 12+ -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- Request legacy Bluetooth permissions on older devices under Android 12 -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+
     <application
         android:name="com.rakuten.tech.mobile.testapp.SampleApplication"
         android:allowBackup="false"
@@ -20,14 +27,15 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.miniapplist.MiniAppListActivity"
-            android:launchMode="singleTop"
-            android:exported="true">
+            android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
 
             <meta-data
@@ -38,15 +46,10 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
-            android:label="@string/lb_display_input"
+            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppByUrlActivity"
+            android:label="@string/lb_display_url"
             android:theme="@style/MaterialAppTheme"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.settings.SettingsMenuActivity"
-            android:label="@string/lb_app_settings"
-            android:theme="@style/AppThemeSettings"
-            android:windowSoftInputMode="stateHidden" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
@@ -54,12 +57,6 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
             android:label="@string/action_contacts" />
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity"
-            android:label="Downloaded Mini App List" />
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity"
-            android:label="Permission Settings" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity"
             android:label="@string/action_qa" />
@@ -71,9 +68,9 @@
             android:label="@string/action_points" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeActivity"
+            android:exported="true"
             android:launchMode="singleTop"
-            android:permission="android.permission.CAMERA"
-            android:exported="true"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
+            android:permission="android.permission.CAMERA"> <!-- Added camera permission so that only apps(i.e QRcode scanner) with camera permission can open demo app. -->
             <intent-filter
                 android:autoVerify="true"
                 android:label="@string/lb_filter_view_miniapp">
@@ -126,8 +123,8 @@
             android:name="com.rakuten.tech.mobile.miniapp.EnableH5Ads"
             android:value="${enableH5Ads}" />
         <meta-data
-            android:name="com.rakuten.tech.mobile.miniapp.StorageMaxSizeKB"
-            android:value="${storageMaxSizeKB}" />
+            android:name="com.rakuten.tech.mobile.miniapp.MaxStorageSizeLimitInBytes"
+            android:value="${maxStorageSizeLimitInBytes}\" />
     </application>
 
 </manifest>

@@ -22,7 +22,7 @@ class RATFloatingActionButton @JvmOverloads constructor(
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.CLICK,
                 action = action,
@@ -45,7 +45,7 @@ class RATFloatingActionButton @JvmOverloads constructor(
                 it.recycle()
             }
 
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.APPEAR,
                 action = action,

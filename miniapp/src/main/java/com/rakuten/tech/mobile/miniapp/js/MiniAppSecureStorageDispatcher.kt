@@ -1,21 +1,24 @@
 package com.rakuten.tech.mobile.miniapp.js
 
-import android.app.Activity
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
+import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorageSize
 
 internal const val DB_NAME_PREFIX = "rmapp-"
 
 @Suppress("TooManyFunctions", "LargeClass")
 internal class MiniAppSecureStorageDispatcher(
-    private val storageMaxSizeKB: Int
+    internal var context: Context,
+    private var maxStorageSizeLimitInBytes: Long
 ) {
     private val databaseVersion = 1
     private lateinit var miniAppId: String
-    private lateinit var activity: Activity
-    private lateinit var bridgeExecutor: MiniAppBridgeExecutor
+
+    @VisibleForTesting
+    internal lateinit var bridgeExecutor: MiniAppBridgeExecutor
 
     @VisibleForTesting
     internal lateinit var onSuccess: () -> Unit
@@ -32,24 +35,22 @@ internal class MiniAppSecureStorageDispatcher(
     @VisibleForTesting
     internal lateinit var miniAppSecureStorage: MiniAppSecureStorage
 
-    fun setBridgeExecutor(activity: Activity, bridgeExecutor: MiniAppBridgeExecutor) {
-        this.activity = activity
-        this.bridgeExecutor = bridgeExecutor
-    }
-
     fun setMiniAppComponents(miniAppId: String) {
         this.miniAppId = miniAppId
         this.miniAppSecureStorage = MiniAppSecureStorage(
-            activity,
+            context,
             databaseVersion,
-            storageMaxSizeKB
+            maxStorageSizeLimitInBytes
         )
+    }
+
+    fun updateMiniAppStorageMaxLimit(maxStorageLimitInBytes: Long) {
+        maxStorageSizeLimitInBytes = maxStorageLimitInBytes
     }
 
     @Suppress("ComplexCondition")
     private fun <T> whenReady(callback: () -> T) {
         if (this::bridgeExecutor.isInitialized &&
-            this::activity.isInitialized &&
             this::miniAppId.isInitialized &&
             this::miniAppSecureStorage.isInitialized
         ) {
@@ -72,75 +73,63 @@ internal class MiniAppSecureStorageDispatcher(
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException", "ComplexMethod", "LongMethod")
     fun onSetItems(callbackId: String, jsonStr: String) = whenReady {
-        try {
-            val callbackObj: SecureStorageCallbackObj? =
-                Gson().fromJson(jsonStr, SecureStorageCallbackObj::class.java)
-            if (callbackObj != null) {
-                onSuccess = {
-                    bridgeExecutor.postValue(callbackId, SAVE_SUCCESS_SECURE_STORAGE)
-                }
-                onFailed = { errorSecure: MiniAppSecureStorageError ->
-                    bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
-                }
-                miniAppSecureStorage.insertItems(
-                    callbackObj.param.secureStorageItems,
-                    onSuccess,
-                    onFailed
-                )
-            } else {
-                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
+        val callbackObj: SecureStorageCallbackObj? =
+            Gson().fromJson(jsonStr, SecureStorageCallbackObj::class.java)
+        if (callbackObj?.param?.secureStorageItems != null) {
+            onSuccess = {
+                bridgeExecutor.postValue(callbackId, SAVE_SUCCESS_SECURE_STORAGE)
             }
-        } catch (e: Exception) {
+            onFailed = { errorSecure: MiniAppSecureStorageError ->
+                bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
+            }
+            miniAppSecureStorage.insertItems(
+                callbackObj.param.secureStorageItems,
+                onSuccess,
+                onFailed
+            )
+        } else {
             bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun onGetItem(callbackId: String, jsonStr: String) = whenReady {
-        try {
-            val callbackObj: GetItemCallbackObj? =
-                Gson().fromJson(jsonStr, GetItemCallbackObj::class.java)
-            if (callbackObj != null) {
-                onSuccessGetItem = { itemValue: String ->
-                    bridgeExecutor.postValue(callbackId, itemValue)
-                }
-                onFailed = { errorSecure: MiniAppSecureStorageError ->
-                    bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
-                }
-                miniAppSecureStorage.getItem(
-                    callbackObj.param.secureStorageKey,
-                    onSuccessGetItem,
-                    onFailed
-                )
-            } else {
-                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
+        val callbackObj: GetItemCallbackObj? =
+            Gson().fromJson(jsonStr, GetItemCallbackObj::class.java)
+        if (callbackObj?.param != null) {
+            onSuccessGetItem = { itemValue: String ->
+                bridgeExecutor.postValue(callbackId, itemValue)
             }
-        } catch (e: Exception) {
+            onFailed = { errorSecure: MiniAppSecureStorageError ->
+                bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
+            }
+            miniAppSecureStorage.getItem(
+                callbackObj.param.secureStorageKey,
+                onSuccessGetItem,
+                onFailed
+            )
+        } else {
             bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     fun onRemoveItems(callbackId: String, jsonStr: String) = whenReady {
-        try {
-            val callbackObj: DeleteItemsCallbackObj? =
-                Gson().fromJson(jsonStr, DeleteItemsCallbackObj::class.java)
-            if (callbackObj != null) {
-                onSuccess = {
-                    bridgeExecutor.postValue(callbackId, REMOVE_ITEMS_SUCCESS_SECURE_STORAGE)
-                }
-                onFailed = { errorSecure: MiniAppSecureStorageError ->
-                    bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
-                }
-                miniAppSecureStorage.deleteItems(
-                    callbackObj.param.secureStorageKeyList,
-                    onSuccess,
-                    onFailed
-                )
-            } else {
-                bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
+        val callbackObj: DeleteItemsCallbackObj? =
+            Gson().fromJson(jsonStr, DeleteItemsCallbackObj::class.java)
+        if (callbackObj?.param?.secureStorageKeyList != null) {
+            onSuccess = {
+                bridgeExecutor.postValue(callbackId, REMOVE_ITEMS_SUCCESS_SECURE_STORAGE)
             }
-        } catch (e: Exception) {
+            onFailed = { errorSecure: MiniAppSecureStorageError ->
+                bridgeExecutor.postError(callbackId, Gson().toJson(errorSecure))
+            }
+            miniAppSecureStorage.deleteItems(
+                callbackObj.param.secureStorageKeyList,
+                onSuccess,
+                onFailed
+            )
+        } else {
             bridgeExecutor.postError(callbackId, ERR_WRONG_JSON_FORMAT)
         }
     }
@@ -156,12 +145,11 @@ internal class MiniAppSecureStorageDispatcher(
     }
 
     @Suppress("MagicNumber")
-    @Deprecated("No Longer Needed")
     fun onSize(callbackId: String) = whenReady {
         onSuccessDBSize = { fileSize: Long ->
-            val maxSizeInBytes = storageMaxSizeKB * 1024
+            val maxSizeInBytes = maxStorageSizeLimitInBytes
             val storageSize =
-                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes.toLong()))
+                Gson().toJson(MiniAppSecureStorageSize(fileSize, maxSizeInBytes))
             bridgeExecutor.postValue(callbackId, storageSize)
         }
         miniAppSecureStorage.getDatabaseUsedSize(onSuccessDBSize)
@@ -171,15 +159,17 @@ internal class MiniAppSecureStorageDispatcher(
      * Will be invoked by MiniApp.clearSecureStorage(miniAppId: String).
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    fun clearSecureStorage(miniAppId: String) = whenReady {
-        clearSecureDatabase(miniAppId)
-    }
+    fun clearSecureStorage(miniAppId: String): Boolean = clearSecureDatabase(miniAppId)
 
     /**
      * Will be invoked by MiniApp.clearSecureStorage.
      */
-    fun clearSecureStorage() = whenReady {
+    fun clearSecureStorages() {
         clearAllSecureDatabases()
+    }
+
+    fun cleanUp() = whenReady {
+        miniAppSecureStorage.closeDatabase()
     }
 
     /**
@@ -188,13 +178,22 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the file to be deleted.
      */
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun clearSecureDatabase(miniAppId: String) {
+    private fun clearSecureDatabase(miniAppId: String): Boolean {
+        var isDeleted: Boolean
         try {
             val dbName = DB_NAME_PREFIX + miniAppId
-            activity.deleteDatabase(dbName)
+            context.deleteDatabase(dbName)
+            context.databaseList().forEach {
+                if (it == dbName) {
+                    isDeleted = false
+                }
+            }
+            isDeleted = true
         } catch (e: Exception) {
             // No callback needed. So Ignoring.
+            isDeleted = false
         }
+        return isDeleted
     }
 
     /**
@@ -204,9 +203,12 @@ internal class MiniAppSecureStorageDispatcher(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     internal fun clearAllSecureDatabases() {
         try {
-            activity.databaseList().forEach {
+            if (this::miniAppSecureStorage.isInitialized) {
+                miniAppSecureStorage.closeDatabase()
+            }
+            context.databaseList().forEach {
                 if (it.startsWith(DB_NAME_PREFIX)) {
-                    activity.deleteDatabase(it)
+                    context.deleteDatabase(it)
                 }
             }
         } catch (e: Exception) {

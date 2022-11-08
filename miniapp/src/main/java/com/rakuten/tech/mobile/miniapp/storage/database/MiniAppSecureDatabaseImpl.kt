@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.storage.database
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.NonNull
+import androidx.annotation.VisibleForTesting
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.rakuten.tech.mobile.miniapp.storage.util.MiniAppDatabaseEncryptionUtil
@@ -10,20 +11,25 @@ import net.sqlcipher.database.SupportFactory
 import java.io.IOException
 import java.sql.SQLException
 
+@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
 internal enum class MiniAppDatabaseStatus {
     DEFAULT,
     INITIATED,
     OPENED,
-    CLOSED,
     READY,
+    CLOSED,
+    UNAVAILABLE,
     BUSY,
-    FAILED
+    FAILED,
+    FULL,
+    CORRUPTED
 }
 
 /**
  * Database Implementation Wrapper.
  */
 @Suppress("TooManyFunctions")
+@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
 internal abstract class MiniAppSecureDatabaseImpl(
     @NonNull private var context: Context,
     var dbName: String, // MiniAppId will be the dbName
@@ -36,19 +42,25 @@ internal abstract class MiniAppSecureDatabaseImpl(
      * Method to create and open the secured database
      * for the mini apps to store the data.
      */
+    @Throws(RuntimeException::class)
+    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
     internal fun createAndOpenDatabase(): Boolean {
-        // Creating database here.
         var status = false
-        val configuration =
-            SupportSQLiteOpenHelper.Configuration.builder(context)
-                .name(dbName)
-                .callback(this)
-                .build()
-        sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
-        // Opening database here.
-        if (sqliteHelper != null) {
-            onDatabaseReady(sqliteHelper.writableDatabase)
-            status = true
+        try {
+            // Creating database here.
+            val configuration =
+                SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .name(dbName)
+                    .callback(this)
+                    .build()
+            sqliteHelper = getSqliteOpenHelperFactory().create(configuration)
+            // Opening database here.
+            if (sqliteHelper != null) {
+                onDatabaseReady(sqliteHelper.writableDatabase)
+                status = true
+            }
+        } catch (e: RuntimeException) {
+            throw e
         }
         return status
     }
@@ -67,8 +79,16 @@ internal abstract class MiniAppSecureDatabaseImpl(
         )
     }
 
+    override fun onConfigure(db: SupportSQLiteDatabase) {
+        onDatabaseConfiguration(db)
+    }
+
     override fun onCreate(db: SupportSQLiteDatabase) {
         onCreateDatabase(db)
+    }
+
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        onOpenDatabase(db)
     }
 
     override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -79,13 +99,28 @@ internal abstract class MiniAppSecureDatabaseImpl(
         onDatabaseCorrupted(db)
     }
 
-    protected abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
+    @Throws(SQLException::class)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onDatabaseConfiguration(db: SupportSQLiteDatabase)
 
-    protected abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
+    @Throws(SQLException::class)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onCreateDatabase(db: SupportSQLiteDatabase)
 
-    protected abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)
+    @Throws(SQLException::class)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onOpenDatabase(db: SupportSQLiteDatabase)
 
-    protected abstract fun onDatabaseReady(database: SupportSQLiteDatabase)
+    @Throws(SQLException::class)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onUpgradeDatabase(db: SupportSQLiteDatabase)
+
+    @Throws(SQLException::class)
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onDatabaseCorrupted(db: SupportSQLiteDatabase)
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun onDatabaseReady(database: SupportSQLiteDatabase)
 
     internal abstract fun isDatabaseOpen(): Boolean
 

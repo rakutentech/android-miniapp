@@ -63,8 +63,9 @@ internal class MiniAppCustomPermissionAdapter :
     /**
      * A RecyclerView ViewHolder contains View for each custom permission to be bound in Adapter.
      */
+    @VisibleForTesting
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    inner class PermissionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal class PermissionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val permissionName: TextView = itemView.findViewById(R.id.permissionText)
         val permissionDescription: TextView = itemView.findViewById(R.id.permissionDescription)
         val permissionSwitch: Switch = itemView.findViewById(R.id.permissionSwitch)

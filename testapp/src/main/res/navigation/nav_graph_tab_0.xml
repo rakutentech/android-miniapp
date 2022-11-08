@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_tab_0"
+    app:startDestination="@id/miniapplistFragment">
+
+    <fragment
+        android:id="@+id/miniapplistFragment"
+        android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppListFragment"
+        android:label="List I"
+        tools:layout="@layout/mini_app_list_fragment">
+        <action
+            android:id="@+id/action_miniapplistFragment_to_miniappdisplayFragment"
+            app:destination="@id/miniappdisplayFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/miniappdisplayFragment"
+        android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment"
+        android:label="Detail"
+        tools:layout="@layout/fragment_mini_app_display">
+        <argument
+            android:name="miniAppInfo"
+            app:argType="com.rakuten.tech.mobile.miniapp.MiniAppInfo" />
+    </fragment>
+</navigation>

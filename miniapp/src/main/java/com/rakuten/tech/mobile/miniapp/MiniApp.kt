@@ -68,6 +68,15 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun create(
         appId: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -100,6 +109,15 @@ abstract class MiniApp internal constructor() {
         MiniAppSdkException::class,
         RequiredPermissionsNotGrantedException::class
     )
+    @Suppress("LongParameterList", "LongMethod")
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun create(
         appInfo: MiniAppInfo,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -122,6 +140,14 @@ abstract class MiniApp internal constructor() {
      * @throws [MiniAppSdkException] when there is any other issue during loading or creating the view.
      */
     @Throws(MiniAppNotFoundException::class, MiniAppSdkException::class)
+    @Deprecated(
+        "This function has been deprecated.",
+        ReplaceWith(
+            "MiniAppView.init(param: MiniAppParameters).load {" +
+                    "miniAppDisplay: MiniAppDisplay ->" +
+                    "}"
+        )
+    )
     abstract suspend fun createWithUrl(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
@@ -172,15 +198,17 @@ abstract class MiniApp internal constructor() {
 
     /**
      * Clears all secure storage items for all mini apps.
+     * @param context will be used to find the storage to be deleted.
      * Host App should call this when they want to clear all sensitive and session data such as when a user logs out.
      */
-    abstract fun clearSecureStorage()
+    abstract fun clearSecureStorages(context: Context)
 
     /**
      * Clears the secure storage for a particular Mini App ID.
+     * @param context will be used to find the storage to be deleted.
      * @param miniAppId will be used to find the storage to be deleted.
      */
-    abstract fun clearSecureStorage(miniAppId: String)
+    abstract fun clearSecureStorage(context: Context, miniAppId: String): Boolean
 
     /**
      * Get the manifest information e.g. required and optional permissions.
@@ -266,7 +294,10 @@ abstract class MiniApp internal constructor() {
                 initManifestVerifier = { MiniAppManifestVerifier(context) },
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics = miniAppAnalytics),
-                secureStorageDispatcher = MiniAppSecureStorageDispatcher(miniAppSdkConfig.storageMaxSizeKB),
+                secureStorageDispatcher = MiniAppSecureStorageDispatcher(
+                    context,
+                    miniAppSdkConfig.maxStorageSizeLimitInBytes.toLong()
+                ),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads
             )
         }

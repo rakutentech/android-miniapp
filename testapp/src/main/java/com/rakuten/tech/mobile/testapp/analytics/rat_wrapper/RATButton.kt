@@ -22,7 +22,7 @@ class RATButton @JvmOverloads constructor(
 
     override fun performClick(): Boolean {
         val returnClick = super.performClick()
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.CLICK,
                 action = action,
@@ -40,11 +40,11 @@ class RATButton @JvmOverloads constructor(
             .let {
                 pageName = it.getString(R.styleable.RatCustomAttributes_pageName) ?: ""
                 siteSection = it.getString(R.styleable.RatCustomAttributes_siteSection) ?: ""
-                val index = it.getInt(R.styleable.RatCustomAttributes_actionType,0)
+                val index = it.getInt(R.styleable.RatCustomAttributes_actionType, 0)
                 if (index > -1) action = ActionType.values()[index]
                 it.recycle()
             }
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.APPEAR,
                 action = action,

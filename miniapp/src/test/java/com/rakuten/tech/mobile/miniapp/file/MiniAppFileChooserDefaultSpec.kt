@@ -11,14 +11,15 @@ import android.webkit.WebChromeClient
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.TestActivity
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.amshove.kluent.shouldBe
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.Mockito.*
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.Shadows.shadowOf
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -83,35 +84,109 @@ class MiniAppFileChooserDefaultSpec {
     }
 
     @Test
-    fun `onReceivedFiles should invoke value when intent data in intent after onShowFileChooser`() {
+    fun `onShowFileChooser should launch camera permission when isCaptureEnabled`() {
+        whenever(fileChooserParams?.isCaptureEnabled).thenReturn(true)
+        val actual = miniAppFileChooser.onShowFileChooser(mock(), fileChooserParams, context)
+        verify(miniAppFileChooser).launchCameraIntent()
+        assertTrue(actual)
+    }
+
+    @Test
+    fun `onShowFileChooser should add EXTRA_MIME_TYPES when acceptTypes is not empty`() {
+        val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
+        miniAppFileChooser.onShowFileChooser(
+            mock(),
+            fileChooserParams,
+            context,
+        )
+        verify(context as Activity).startActivityForResult(intent, requestCode)
+    }
+
+    @Test
+    fun `onShowFileChooser should return true when acceptTypes is not empty`() {
+        val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
+        val actual = miniAppFileChooser.onShowFileChooser(
+            mock(),
+            fileChooserParams,
+            context,
+        )
+        assertTrue(actual)
+    }
+
+    @Test
+    fun `onShowFileChooser Intent should add EXTRA_ALLOW_MULTIPLE extra if isOpenMultipleMode is true`() {
+        whenever(fileChooserParams?.mode).thenReturn(WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        verify(fileChooserParams?.createIntent())?.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+    }
+
+    @Test
+    fun `onShowFileChooser should return true when isOpenMultipleMode is true`() {
+        val actual =
+            miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+
+        assertTrue(actual)
+    }
+
+    @Test
+    fun `onShowFileChooser should call onReceivedFiles should call resetCallback`() {
         val intent: Intent = mock()
         val uri: Uri = mock()
-        When calling intent.data itReturns uri
+        whenever(intent.data).thenReturn(uri)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
+    }
+
+    @Test
+    fun `onShowFileChooser should receiveValue onReceivedFiles when onReceivedFiles is called`() {
+        val intent: Intent = mock()
+        val uri: Uri = mock()
+        whenever(intent.data).thenReturn(uri)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(arrayOf(uri))
     }
 
     @Test
-    fun `onReceivedFiles should invoke value when clip data in intent after onShowFileChooser`() {
+    fun `onReceivedFiles should call resetCallback when type is ClipData`() {
         val intent: Intent = mock()
         val clipData: ClipData = mock()
-        val uriList = mutableListOf<Uri>()
-        When calling intent.clipData itReturns clipData
+        whenever(intent.clipData).thenReturn(clipData)
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
+    }
+
+    @Test
+    fun `onReceivedFiles should call onReceiveValue when type is ClipData`() {
+        val intent: Intent = mock()
+        val clipData: ClipData = mock()
+        val uriList = mutableListOf<Uri>()
+        whenever(intent.clipData).thenReturn(clipData)
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(uriList.toTypedArray())
     }
 
     @Test
-    fun `onReceivedFiles should invoke value when photo path is available`() {
+    fun `onReceivedFiles should call resetCallback when photo path is available`() {
         val intent: Intent = mock()
         miniAppFileChooser.currentPhotoPath = "test-photo-path"
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
+        verify(callback).onReceiveValue(any())
+    }
+
+    @Test
+    fun `onReceivedFiles should call onReceiveValue when photo path is available`() {
+        val intent: Intent = mock()
+        miniAppFileChooser.currentPhotoPath = "test-photo-path"
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(any())
     }
 
@@ -122,36 +197,53 @@ class MiniAppFileChooserDefaultSpec {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
-        verify(callback, times(0)).onReceiveValue(any())
     }
 
     @Test
-    fun `onReceivedFiles should invoke null when no data in intent after onShowFileChooser`() {
+    fun `onReceivedFiles should call resetCallback when no data in intent after onShowFileChooser`() {
         val intent: Intent = mock()
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onReceivedFiles(intent)
         verify(miniAppFileChooser).resetCallback()
+    }
+
+    @Test
+    fun `onReceivedFiles should add null when no data in intent after onShowFileChooser`() {
+        val intent: Intent = mock()
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onReceivedFiles(intent)
         verify(callback).onReceiveValue(null)
     }
 
     @Test
-    fun `onReceivedFiles should not invoke onReceiveValue of file path callback is null`() {
+    fun `onReceivedFiles should not invoke onReceiveValue when file path callback is null`() {
         miniAppFileChooser.onShowFileChooser(null, fileChooserParams, context)
         verify(callback, times(0)).onReceiveValue(arrayOf())
     }
 
     @Test
-    fun `onCancel should invoke null to file path callback`() {
+    fun `onReceivedValue should add null to file path callback`() {
         miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
         miniAppFileChooser.onCancel()
         verify(callback).onReceiveValue(null)
+    }
+
+    @Test
+    fun `onCancel should call resetCallback`() {
+        miniAppFileChooser.onShowFileChooser(callback, fileChooserParams, context)
+        miniAppFileChooser.onCancel()
         verify(miniAppFileChooser).resetCallback()
     }
 
     @Test
-    fun `resetCallback should set null to appropriate properties`() {
+    fun `resetCallback should be null to appropriate properties`() {
         miniAppFileChooser.resetCallback()
         assertTrue(miniAppFileChooser.currentPhotoPath == null)
+    }
+
+    @Test
+    fun `currentPhotoPath should be null to appropriate properties`() {
+        miniAppFileChooser.resetCallback()
         assertTrue(miniAppFileChooser.callback == null)
     }
 

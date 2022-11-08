@@ -3,11 +3,6 @@ package com.rakuten.tech.mobile.miniapp.storage
 import android.content.Context
 import android.content.SharedPreferences
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_ATP_LIST
-import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
-import com.rakuten.tech.mobile.miniapp.TEST_MA_VERSION_ID
-import org.mockito.kotlin.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -17,10 +12,12 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import org.mockito.kotlin.*
 import java.io.File
+import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "LargeClass")
 class DownloadedManifestCacheSpec {
     private lateinit var manifestCache: DownloadedManifestCache
     private val mockSharedPrefs: SharedPreferences = mock()
@@ -159,7 +156,12 @@ class DownloadedManifestCacheSpec {
     @Test
     @SuppressWarnings("MaximumLineLength")
     fun `toCachedManifest should create correct CachedManifest`() {
-        val jsonStr = "{“miniAppManifest”:{“accessTokenPermissions”:[{“audience”:“aud”,“scopes”:[“scope1\",“scope2”]}],“optionalPermissions”:[{“first”:“CONTACT_LIST”,“second”:“reason here (optional).“}],“versionId”:“aaaa”},“versionId”:“bbbb”}"
+        val jsonStr =
+            "{“miniAppManifest”:{“accessTokenPermissions”:[{" +
+                    "“audience”:“aud”,“scopes”:[“scope1\",“scope2”]" +
+                    "}],“optionalPermissions”:[{" +
+                    "“first”:“CONTACT_LIST”,“second”:“reason here (optional).“" +
+                    "}],“versionId”:“aaaa”},“versionId”:“bbbb”}"
         manifestCache.toCachedManifest(jsonStr)?.apply {
             versionId shouldBeEqualTo "bbbb"
             miniAppManifest.accessTokenPermissions[0].audience shouldBeEqualTo "aud"
@@ -171,6 +173,20 @@ class DownloadedManifestCacheSpec {
     fun `getManifestFile should invoke with manifest file path`() {
         manifestCache.getManifestFile(TEST_MA_ID)
         verify(manifestCache).getManifestPath(TEST_MA_ID)
+    }
+
+    @Test(expected = FileNotFoundException::class)
+    fun `migrateToFileStorage should storeNewFile if prefs is not empty`() {
+        val allKeyValue = mutableMapOf<String, String>()
+        allKeyValue.put("key", "value")
+        doReturn(allKeyValue).whenever(mockSharedPrefs).all
+
+        manifestCache.migrateToFileStorage()
+
+        verify(manifestCache).storeNewFile(
+            TEST_MA_ID,
+            manifestCache.toCachedManifest(allKeyValue.get("key").toString())
+        )
     }
 
     private fun createCustomPermission(isAllowed: Boolean): MiniAppCustomPermission {

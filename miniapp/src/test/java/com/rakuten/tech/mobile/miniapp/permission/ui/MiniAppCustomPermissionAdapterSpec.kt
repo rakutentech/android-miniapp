@@ -1,23 +1,54 @@
 package com.rakuten.tech.mobile.miniapp.permission.ui
 
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
-import org.mockito.kotlin.*
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 import kotlin.test.assertEquals
 
+@Suppress("LargeClass")
 class MiniAppCustomPermissionAdapterSpec {
     private lateinit var permissionAdapter: MiniAppCustomPermissionAdapter
     private val names = arrayListOf<MiniAppCustomPermissionType>()
     private val results = arrayListOf<MiniAppCustomPermissionResult>()
     private val descriptions = arrayListOf<String>()
+    private val description = "dummy description"
+
+    @Suppress("MaxLineLength")
+    private fun withViewHolder(
+        onReady: (ViewGroup, MiniAppCustomPermissionAdapter.PermissionViewHolder) -> Unit
+    ) {
+        val viewGroup: ViewGroup = mock()
+        val permissionviewholder: MiniAppCustomPermissionAdapter.PermissionViewHolder = mock()
+        doReturn(permissionviewholder).whenever(permissionAdapter).onCreateViewHolder(viewGroup, 0)
+        onReady(viewGroup, permissionviewholder)
+    }
 
     @Before
     fun setup() {
         permissionAdapter = spy(MiniAppCustomPermissionAdapter())
+    }
+
+    private fun getItemView(): View {
+        val itemView: View = mock()
+        val permissionName: TextView = mock()
+        val permissionDescription: TextView = mock()
+        val permissionSwitch: Switch = mock()
+
+        doReturn(permissionName).whenever(itemView).findViewById<TextView>(R.id.permissionText)
+        doReturn(permissionDescription).whenever(itemView)
+            .findViewById<TextView>(R.id.permissionDescription)
+        doReturn(permissionSwitch).whenever(itemView).findViewById<Switch>(R.id.permissionSwitch)
+        return itemView
     }
 
     @Test
@@ -36,7 +67,7 @@ class MiniAppCustomPermissionAdapterSpec {
 
     @Test
     fun `permissionDescription should hold arrayListOf String`() {
-        descriptions.add("dummy description")
+        descriptions.add(description)
         doReturn(descriptions).whenever(permissionAdapter).permissionDescriptions
         assertEquals(permissionAdapter.permissionDescriptions.size, descriptions.size)
     }
@@ -47,8 +78,7 @@ class MiniAppCustomPermissionAdapterSpec {
             arrayListOf<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>()
         permissionPairs.add(
             Pair(
-                MiniAppCustomPermissionType.USER_NAME,
-                MiniAppCustomPermissionResult.DENIED
+                MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED
             )
         )
         doReturn(permissionPairs).whenever(permissionAdapter).permissionPairs
@@ -62,6 +92,26 @@ class MiniAppCustomPermissionAdapterSpec {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `PermissionViewHolder should register textviews inside it`() {
+        val itemView = getItemView()
+
+        val holder = spy(MiniAppCustomPermissionAdapter.PermissionViewHolder(itemView))
+
+        verify(itemView).findViewById<TextView>(R.id.permissionText)
+        verify(itemView).findViewById<TextView>(R.id.permissionDescription)
+        verify(itemView).findViewById<TextView>(R.id.permissionSwitch)
+        itemView.findViewById<TextView>(R.id.permissionText).shouldNotBeNull()
+        itemView.findViewById<TextView>(R.id.permissionDescription).shouldNotBeNull()
+        itemView.findViewById<TextView>(R.id.permissionSwitch).shouldNotBeNull()
+        holder.permissionName.shouldNotBeNull()
+        holder.permissionDescription.shouldNotBeNull()
+        holder.permissionSwitch.shouldNotBeNull()
+        holder.permissionName.shouldBeInstanceOf<TextView>()
+        holder.permissionDescription.shouldBeInstanceOf<TextView>()
+        holder.permissionSwitch.shouldBeInstanceOf<Switch>()
+    }
+
     @Test(expected = IndexOutOfBoundsException::class)
     fun `onBindViewHolder should invoke bindView`() {
         val mockTextView: TextView = mock()
@@ -73,13 +123,28 @@ class MiniAppCustomPermissionAdapterSpec {
         doReturn(mockTextView).whenever(mockHolder).permissionDescription
         doReturn(mockSwitch).whenever(mockHolder).permissionSwitch
 
-        permissionAdapter.bindViewHolder(mockHolder, position)
+        permissionAdapter.onBindViewHolder(mockHolder, position)
 
-        verify(permissionAdapter.bindView(mockHolder, position))
+        verify(permissionAdapter).bindView(mockHolder, position)
     }
 
     @Test
     fun `addPermissionList should add names, results and descriptions as expected`() {
+        doNothing().whenever(permissionAdapter).notifyDataSetChanged()
+
+        names.add(MiniAppCustomPermissionType.USER_NAME)
+        results.add(MiniAppCustomPermissionResult.DENIED)
+        descriptions.add(description)
+
+        permissionAdapter.addPermissionList(names, results, descriptions)
+
+        assertEquals(permissionAdapter.permissionNames.size, names.size)
+        assertEquals(permissionAdapter.permissionToggles.size, results.size)
+        assertEquals(permissionAdapter.permissionDescriptions.size, descriptions.size)
+    }
+
+    @Test
+    fun `bindView should register names, results and descriptions to views as expected`() {
         doNothing().whenever(permissionAdapter).notifyDataSetChanged()
 
         names.add(MiniAppCustomPermissionType.USER_NAME)
@@ -91,6 +156,21 @@ class MiniAppCustomPermissionAdapterSpec {
         assertEquals(permissionAdapter.permissionNames.size, names.size)
         assertEquals(permissionAdapter.permissionToggles.size, results.size)
         assertEquals(permissionAdapter.permissionDescriptions.size, descriptions.size)
+
+        // val permissionViewHolder = MiniAppCustomPermissionAdapter.PermissionViewHolder(getItemView())
+        val permissionViewHolder: MiniAppCustomPermissionAdapter.PermissionViewHolder = mock()
+        val permissionName: TextView = mock()
+        val permissionDescription: TextView = mock()
+        val permissionSwitch: Switch = mock()
+
+        doReturn(permissionName).whenever(permissionViewHolder).permissionName
+        doReturn(permissionDescription).whenever(permissionViewHolder).permissionDescription
+        doReturn(permissionSwitch).whenever(permissionViewHolder).permissionSwitch
+
+        permissionAdapter.bindView(permissionViewHolder, 0)
+        verify(permissionViewHolder).permissionName
+        verify(permissionViewHolder).permissionDescription
+        verify(permissionViewHolder, times(2)).permissionSwitch
     }
 
     /**
@@ -116,6 +196,46 @@ class MiniAppCustomPermissionAdapterSpec {
     fun `should parse profile photo type correctly`() {
         val type = MiniAppCustomPermissionType.PROFILE_PHOTO
         val expected = "Profile Photo"
+        val actual = permissionAdapter.parsePermissionName(type)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should parse access token type correctly`() {
+        val type = MiniAppCustomPermissionType.ACCESS_TOKEN
+        val expected = "Access Token"
+        val actual = permissionAdapter.parsePermissionName(type)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should parse send message type correctly`() {
+        val type = MiniAppCustomPermissionType.SEND_MESSAGE
+        val expected = "Send Message"
+        val actual = permissionAdapter.parsePermissionName(type)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should parse location correctly`() {
+        val type = MiniAppCustomPermissionType.LOCATION
+        val expected = "Device Location"
+        val actual = permissionAdapter.parsePermissionName(type)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should parse points correctly`() {
+        val type = MiniAppCustomPermissionType.POINTS
+        val expected = "Rakuten Points"
+        val actual = permissionAdapter.parsePermissionName(type)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should parse file download correctly`() {
+        val type = MiniAppCustomPermissionType.FILE_DOWNLOAD
+        val expected = "File Download"
         val actual = permissionAdapter.parsePermissionName(type)
         assertEquals(expected, actual)
     }
@@ -167,5 +287,21 @@ class MiniAppCustomPermissionAdapterSpec {
         val actual = permissionAdapter.permissionResultToChecked(result)
         assertEquals(expected, actual)
     }
+
     /** end region */
+
+    @Test
+    fun `onCreateViewHolder should return PermissionViewHolder`() {
+        withViewHolder { viewGroup, permissionViewHolder ->
+            permissionAdapter.onCreateViewHolder(viewGroup, 0).shouldBeEqualTo(permissionViewHolder)
+        }
+    }
+
+    @Test(expected = IndexOutOfBoundsException::class)
+    fun `onBindViewHolder should call bindView`() {
+        withViewHolder { _, permissionViewHolder ->
+            permissionAdapter.onBindViewHolder(permissionViewHolder, 0)
+            verify(permissionAdapter).bindView(permissionViewHolder, 0)
+        }
+    }
 }

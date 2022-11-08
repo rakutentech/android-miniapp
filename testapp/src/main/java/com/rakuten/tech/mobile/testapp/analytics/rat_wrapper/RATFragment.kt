@@ -9,7 +9,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
  */
 abstract class RATFragment : Fragment(), RatComponent {
     override fun onResume() {
-        DemoAppAnalytics.init(AppSettings.instance.projectId).sendAnalytics(
+        DemoAppAnalytics.init(AppSettings.instance.projectIdForAnalytics).sendAnalytics(
             RATEvent(
                 event = EventType.PAGE_LOAD,
                 pageName = pageName,
