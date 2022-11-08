@@ -3,14 +3,12 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -19,7 +17,6 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
 import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
@@ -29,18 +26,12 @@ import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.*
 
 
+@Suppress("TooManyFunctions")
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
-
-    // val args : MiniAppListFragmentArgs by navArgs()
-
-    companion object {
-        val TAG = MiniAppListFragment::class.java.canonicalName
-        fun newInstance(): MiniAppListFragment = MiniAppListFragment()
-    }
 
     private lateinit var viewModel: MiniAppListViewModel
     private lateinit var binding: MiniAppListFragmentBinding

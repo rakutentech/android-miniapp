@@ -20,7 +20,7 @@ import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModel
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*

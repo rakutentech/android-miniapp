@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppListCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

@@ -10,8 +10,6 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigCache
-import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
 
 internal class Cache(
     context: Context,
