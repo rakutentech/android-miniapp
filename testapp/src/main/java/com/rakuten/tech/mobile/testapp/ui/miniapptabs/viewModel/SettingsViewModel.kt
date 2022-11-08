@@ -43,15 +43,14 @@ class SettingsViewModel : ViewModel() {
             }
 
             jobs.joinAll()
+            if (!_errorData.value.isNullOrBlank()) {
+                _errorData.value = ""
+                return@launch
+            }
 
-            if (jobs.all { it.isCompleted } && _errorData.value.isNullOrBlank()) {
-                clearErrorData()
+            if (jobs.all { it.isCompleted }) {
                 onSuccess()
             }
         }
-    }
-
-    private fun clearErrorData() {
-        _errorData.value = ""
     }
 }

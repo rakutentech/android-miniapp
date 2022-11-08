@@ -61,15 +61,18 @@ class SettingsFragment : BaseFragment() {
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
             invalidateOptionsMenu(requireActivity())
-            if (isTab1Checked) {
-                binding.toggleList2.isEnabled = new
-            } else {
-                binding.toggleList1.isEnabled = new
-            }
+            toggleTabIsEnabled(new)
         }
     }
     private lateinit var viewModel: SettingsViewModel
 
+    private fun toggleTabIsEnabled(isEnabled: Boolean) {
+        if (isTab1Checked) {
+            binding.toggleList2.isEnabled = isEnabled
+        } else {
+            binding.toggleList1.isEnabled = isEnabled
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.settings_menu, menu)
@@ -115,6 +118,7 @@ class SettingsFragment : BaseFragment() {
                 content = getString(R.string.success_desc_parameter_saved),
                 negativeButton = "Ok"
             )
+            toggleTabIsEnabled(true)
         }
     }
 
@@ -130,7 +134,6 @@ class SettingsFragment : BaseFragment() {
                 hideProgressDialog()
             }
         }
-        saveViewEnabled = false
     }
 
     private fun Activity.hideProgressDialog() {
@@ -147,11 +150,11 @@ class SettingsFragment : BaseFragment() {
         viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
 
         viewModel.errorData.observe(viewLifecycleOwner) {
-            validateInputIDs()
-            if (it.isBlank()) return@observe
             with(requireActivity()) {
                 hideProgressDialog()
             }
+            validateInputIDs()
+            if (it.isBlank()) return@observe
             settings.clearAllMiniAppInfoList()
             Toast.makeText(requireActivity(), it, Toast.LENGTH_LONG).show()
         }
