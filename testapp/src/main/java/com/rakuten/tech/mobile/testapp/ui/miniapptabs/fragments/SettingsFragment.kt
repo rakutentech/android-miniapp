@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.view.*
+import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -152,7 +153,7 @@ class SettingsFragment : BaseFragment() {
                 hideProgressDialog()
             }
             settings.clearAllMiniAppInfoList()
-            showAlertDialog(requireActivity(), content = it)
+            Toast.makeText(requireActivity(), it, Toast.LENGTH_LONG).show()
         }
     }
 
