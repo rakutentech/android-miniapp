@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppListCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -25,14 +26,21 @@ class MiniAppListViewModel constructor(
         get() = _errorData
 
     //for brevity
-    fun getMiniAppList() = viewModelScope.launch(Dispatchers.IO) {
-        try {
-            val miniAppsList = miniapp.listMiniApp()
-            _miniAppListData.postValue(miniAppsList.sortedBy { it.id })
-        } catch (error: MiniAppSdkException) {
-            _errorData.postValue(error.message)
+    fun getMiniAppList(cachedMiniAppInfoList: List<MiniAppInfo>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                cachedMiniAppInfoList.let {
+                    if (it.isNotEmpty()) {
+                        _miniAppListData.postValue(it)
+                        return@launch
+                    }
+                }
+                val miniAppsList = miniapp.listMiniApp()
+                _miniAppListData.postValue(miniAppsList.sortedBy { it.id })
+            } catch (error: MiniAppSdkException) {
+                _errorData.postValue(error.message)
+            }
         }
-    }
 
     fun clearErrorData() {
         _errorData.value = ""

@@ -1,14 +1,17 @@
-package com.rakuten.tech.mobile.testapp.ui.settings
+package com.rakuten.tech.mobile.testapp.ui.settings.cache
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigCache
+import com.rakuten.tech.mobile.testapp.ui.settings.MiniAppConfigData
 
 internal class Cache(
     context: Context,
@@ -129,6 +132,8 @@ internal class Cache(
         private const val TAB_2_DATA_KEY = "tab_2_data"
         private const val TAB_1_TEMP_DATA_KEY = "tab_1_temp_data"
         private const val TAB_2_TEMP_DATA_KEY = "tab_2_temp_data"
+        internal const val TAB_1_MINIAPP_INFO_LIST_KEY = "tab_1_list"
+        internal const val TAB_2_MINIAPP_INFO_LIST_KEY = "tab_2_list"
 
         private const val UNIQUE_ID = "unique_id"
         private const val UNIQUE_ID_ERROR = "unique_id_error"
@@ -202,7 +207,7 @@ internal class Cache(
             prefs.edit().putBoolean(IS_TEMP_CLEARED, isCleared).commit()
         }
 
-        fun clearTempData(){
+        fun clearTempData() {
             val editor = prefs.edit()
             tab1TempMiniAppConfigCache.clear(editor)
             tab2TempMiniAppConfigCache.clear(editor)
@@ -235,6 +240,25 @@ internal class Cache(
             )
         }
 
+        fun getTabMiniAppInfoList(key: String): List<MiniAppInfo>? =
+            MiniAppListCache(key).getData(prefs)
+
+        fun saveCurrentMiniAppInfoList(miniAppInfoList: List<MiniAppInfo>, key: String){
+            MiniAppListCache(key).setData(prefs.edit(), miniAppInfoList)
+        }
+
+        fun saveTab1MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+            MiniAppListCache(TAB_1_MINIAPP_INFO_LIST_KEY).setData(prefs.edit(), miniAppInfoList)
+        }
+
+        fun saveTab2MiniAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
+            MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).setData(prefs.edit(), miniAppInfoList)
+        }
+
+        fun clearAllMiniAppInfoList(){
+            MiniAppListCache(TAB_1_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
+            MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
+        }
 
         fun setTempTab1IsProduction(isProduction: Boolean) {
             val projectIdSubsKeyPair = getDefaultProjectIdAndSubsKeyPair(isProduction)
