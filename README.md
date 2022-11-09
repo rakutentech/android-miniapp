@@ -30,6 +30,7 @@ HOST_APP_VERSION=test-host-app-version
 ADMOB_APP_ID=test-admob-id
 ```
 
+Contact [Rakuten Mini App Platform](https://developers.rakuten.com/miniapp/) for details.  
 Finally, you can build the project via Gradle:
 
 ```bash
