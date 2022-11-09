@@ -265,6 +265,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                         this@MiniAppDisplayActivity, url,
                         appId, appUrl, externalWebViewReqCode
                     )
+                    //finish()
                 }
             }
         }
@@ -456,8 +457,11 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
                     "External webview closed"
                 )
-                if (!isClosedByBackPressed)
+                if (!isClosedByBackPressed) {
                     sampleWebViewExternalResultHandler.emitResult(intent)
+                } else {
+                    finish()
+                }
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             miniAppFileChooser.onReceivedFiles(data)
