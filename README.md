@@ -11,6 +11,8 @@ For instructions on implementing in an android application, see the [User Guide]
 ## How to build
 
 This repository uses submodules for some configuration, so they must be initialized first.
+Make sure you have added [SSH Keys](https://github.com/settings/keys). [Read Adding a new SSH key to your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+Next, you can update the submodule and initialize:
 
 ```bash
 $ git submodule update --init
