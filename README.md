@@ -11,7 +11,7 @@ For instructions on implementing in an android application, see the [User Guide]
 ## How to build
 
 This repository uses submodules for some configuration, so they must be initialized first.
-Make sure you have added [SSH Keys](https://github.com/settings/keys). Read how to [Connect to Github with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).  
+Make sure you have added [SSH Keys](https://github.com/settings/keys) to your account. Read how to [Connect to Github with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).  
 Next, you can update the submodule and initialize:
 
 ```bash
