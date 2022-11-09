@@ -29,8 +29,9 @@ internal class MiniAppSecureStorage(
     @VisibleForTesting
     internal lateinit var miniAppSecureDatabase: MiniAppSecureDatabase
 
+    @VisibleForTesting
     @Suppress("MagicNumber")
-    private fun checkAndInitSecuredDatabase(miniAppId: String) {
+    internal fun checkAndInitSecuredDatabase(miniAppId: String) {
         if (!this::miniAppSecureDatabase.isInitialized) {
             setDatabaseName(miniAppId)
             miniAppSecureDatabase =
@@ -80,9 +81,7 @@ internal class MiniAppSecureStorage(
         scope.launch {
             try {
                 checkAndInitSecuredDatabase(miniAppId)
-                if (createOrOpenAndUnlockDatabase()) {
-                    onSuccess()
-                }
+                onSuccess()
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
