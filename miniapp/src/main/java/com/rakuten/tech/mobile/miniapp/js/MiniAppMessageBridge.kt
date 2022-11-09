@@ -53,7 +53,7 @@ open class MiniAppMessageBridge {
     private lateinit var miniAppId: String
 
     @VisibleForTesting
-    lateinit var activity: Activity
+    internal lateinit var activity: Activity
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
