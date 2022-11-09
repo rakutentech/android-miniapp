@@ -265,7 +265,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                         this@MiniAppDisplayActivity, url,
                         appId, appUrl, externalWebViewReqCode
                     )
-                    //finish()
                 }
             }
         }
