@@ -32,7 +32,12 @@ private const val GET_ALL_ITEMS_QUERY = "select * from $TABLE_NAME"
 
 @VisibleForTesting
 internal const val DROP_TABLE_QUERY = "DROP TABLE IF EXISTS $TABLE_NAME"
-private const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
+
+@VisibleForTesting
+internal const val DELETE_ALL_RECORDS_QUERY = "DELETE FROM $TABLE_NAME"
+
+@VisibleForTesting
+internal const val GET_ITEM_QUERY_PREFIX = "select * from $TABLE_NAME where $FIRST_COLUMN_NAME="
 
 @VisibleForTesting
 internal const val CREATE_TABLE_QUERY = "create table if not exists $TABLE_NAME (" +
@@ -215,7 +220,11 @@ internal class MiniAppSecureDatabase(
 
     override fun getDatabaseUsedSize(): Long {
         val dbFile = context.getDatabasePath(dbName)
-        return dbFile.length()
+        var fileSize = dbFile.length()
+        if (dbFile.length() > maxDBSizeLimitInBytes) {
+            fileSize = maxDBSizeLimitInBytes
+        }
+        return fileSize
     }
 
     @Suppress("ExpressionBodySyntax")
@@ -285,19 +294,13 @@ internal class MiniAppSecureDatabase(
                 val listOfItems = items.entries.stream().collect(Collectors.toList())
                 val chunked = listOfItems.chunked(DB_BATCH_SIZE)
                 chunked.forEach { outer ->
-                    if (isDatabaseFull()) {
-                        miniAppDatabaseStatus = MiniAppDatabaseStatus.FULL
-                        throw SQLiteFullException(DATABASE_SPACE_LIMIT_REACHED_ERROR)
-                    }
                     database.beginTransaction()
                     outer.forEach { inner ->
-                        if (miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY) {
-                            contentValues.put(FIRST_COLUMN_NAME, inner.key)
-                            contentValues.put(SECOND_COLUMN_NAME, inner.value)
-                            result = insert(contentValues)
-                            if (result > -1) {
-                                isInserted = true
-                            }
+                        contentValues.put(FIRST_COLUMN_NAME, inner.key)
+                        contentValues.put(SECOND_COLUMN_NAME, inner.value)
+                        result = insert(contentValues)
+                        if (result > -1) {
+                            isInserted = true
                         }
                     }
                     database.setTransactionSuccessful()
@@ -483,10 +486,9 @@ internal class MiniAppSecureDatabase(
         try {
             database.beginTransaction()
             miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
-            database.execSQL(DROP_TABLE_QUERY)
+            database.execSQL(DELETE_ALL_RECORDS_QUERY)
             database.setTransactionSuccessful()
             finishAnyPendingDBTransaction()
-            closeDatabase()
         } catch (e: IOException) {
             miniAppDatabaseStatus = MiniAppDatabaseStatus.FAILED
             throw e
@@ -501,9 +503,6 @@ internal class MiniAppSecureDatabase(
             throw e
         } finally {
             finalize()
-            if (miniAppDatabaseStatus != MiniAppDatabaseStatus.FAILED) {
-                miniAppDatabaseStatus = MiniAppDatabaseStatus.UNAVAILABLE
-            }
         }
     }
 }

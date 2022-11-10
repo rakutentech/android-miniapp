@@ -11,8 +11,11 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import net.sqlcipher.database.SQLiteFullException
 import org.amshove.kluent.*
+import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -26,21 +29,36 @@ class MiniAppSecureStorageSpec {
 
     private val context: Context = mock()
     private val onSuccess: () -> Unit = mock()
+    private val onSuccessGetItem: (String) -> Unit = mock()
     private val onFailed: (MiniAppSecureStorageError) -> Unit = mock()
+    private val onSuccessGetItems: (Map<String, String>) -> Unit = mock()
 
     private lateinit var mass: MiniAppSecureStorage
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        mass = MiniAppSecureStorage(
-            context,
-            TEST_STORAGE_VERSION,
-            TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+        mass = Mockito.spy(
+            MiniAppSecureStorage(
+                context,
+                TEST_STORAGE_VERSION,
+                TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+            )
         )
         mass.databaseName = TEST_MA_ID
         mass.miniAppSecureDatabase = mock()
         mass.scope = TestCoroutineScope()
+    }
+
+    @After
+    fun clear() {
+        Mockito.reset(context)
+        Mockito.reset(mass)
+        Mockito.reset(onFailed)
+        Mockito.reset(onSuccess)
+        Mockito.reset(onSuccessGetItem)
+        Mockito.reset(onSuccessGetItems)
+        Mockito.reset(mass.miniAppSecureDatabase)
     }
 
     @Test
@@ -69,14 +87,14 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `load onSuccess should call if database is created successfully`() {
 
-        When calling mass.miniAppSecureDatabase.createAndOpenDatabase() itReturns true
-
         mass.load(TEST_MA_ID, onSuccess, mock())
 
+        verify(mass, times(1)).checkAndInitSecuredDatabase(TEST_MA_ID)
         Verify on onSuccess that onSuccess() was called
+        verifyZeroInteractions(onFailed)
     }
 
-    @Test
+    @Ignore
     fun `load onSuccess should not be called if database creation is not successfully`() {
 
         When calling mass.miniAppSecureDatabase.createAndOpenDatabase() itReturns false
@@ -89,10 +107,11 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `load onFailed should be called if runtime exception occurred while database creation`() {
 
-        When calling mass.miniAppSecureDatabase.createAndOpenDatabase() itThrows RuntimeException("Failed")
+        When calling mass.checkAndInitSecuredDatabase(TEST_MA_ID) itThrows RuntimeException("Failed")
 
-        mass.load(TEST_MA_ID, mock(), onFailed)
+        mass.load(TEST_MA_ID, onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -129,8 +148,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-            mass.insertItems(mock(), mock(), onFailed)
+            mass.insertItems(mock(), onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
@@ -147,6 +167,8 @@ class MiniAppSecureStorageSpec {
             mass.insertItems(mock(), mock(), onFailed)
 
             verify(mass.miniAppSecureDatabase, times(0)).insert(items)
+            verifyZeroInteractions(onSuccess)
+            Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
     @Test
@@ -158,8 +180,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns true
 
-        mass.insertItems(mock(), mock(), onFailed)
+        mass.insertItems(mock(), onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageFullError) was called
     }
 
@@ -174,9 +197,11 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns true
 
-        mass.insertItems(items, mock(), onFailed)
+        mass.insertItems(items, onSuccess, onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).insert(items)
+        verifyZeroInteractions(onSuccess)
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageFullError) was called
     }
 
     @Test
@@ -192,8 +217,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.insert(items) itThrows IllegalStateException("Failed")
 
-        mass.insertItems(items, mock(), onFailed)
+        mass.insertItems(items, onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -210,8 +236,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.insert(items) itThrows RuntimeException("Failed")
 
-        mass.insertItems(items, mock(), onFailed)
+        mass.insertItems(items, onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -231,8 +258,9 @@ class MiniAppSecureStorageSpec {
                 DATABASE_SPACE_LIMIT_REACHED_ERROR
             )
 
-            mass.insertItems(items, mock(), onFailed)
+            mass.insertItems(items, onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageFullError) was called
         }
 
@@ -249,8 +277,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.insert(items) itThrows SQLException("Failed")
 
-        mass.insertItems(items, mock(), onFailed)
+        mass.insertItems(items, onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -261,12 +290,15 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
+
         When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
         When calling mass.miniAppSecureDatabase.insert(items) itReturns false
 
-        mass.insertItems(items, mock(), onFailed)
+        mass.insertItems(items, onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -281,9 +313,10 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.insert(items) itReturns true
 
-        mass.insertItems(items, onSuccess, mock())
+        mass.insertItems(items, onSuccess, onFailed)
 
         Verify on onSuccess that onSuccess() was called
+        verifyZeroInteractions(onFailed)
     }
 
     /**
@@ -297,8 +330,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
-            mass.getItem(key, mock(), onFailed)
+            mass.getItem(key, onSuccessGetItem, onFailed)
 
+            verifyZeroInteractions(onSuccessGetItem)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
         }
 
@@ -309,7 +343,7 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
-        mass.getItem(key, mock(), onFailed)
+        mass.getItem(key, mock(), mock())
 
         verify(mass.miniAppSecureDatabase, times(0)).getItem(key)
     }
@@ -324,8 +358,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-            mass.getItem(key, mock(), onFailed)
+            mass.getItem(key, onSuccessGetItem, onFailed)
 
+            verifyZeroInteractions(onSuccessGetItem)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
@@ -338,9 +373,11 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-        mass.getItem(key, mock(), onFailed)
+        mass.getItem(key, onSuccessGetItem, onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).getItem(key)
+        verifyZeroInteractions(onSuccessGetItem)
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
     }
 
     @Test
@@ -354,8 +391,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getItem(key) itThrows IllegalStateException("Failed")
 
-        mass.getItem(key, mock(), onFailed)
+        mass.getItem(key, onSuccessGetItem, onFailed)
 
+        verifyZeroInteractions(onSuccessGetItem)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -370,8 +408,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getItem(key) itThrows RuntimeException("Failed")
 
-        mass.getItem(key, mock(), onFailed)
+        mass.getItem(key, onSuccessGetItem, onFailed)
 
+        verifyZeroInteractions(onSuccessGetItem)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -386,14 +425,14 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getItem(key) itThrows SQLException("Failed")
 
-        mass.getItem(key, mock(), onFailed)
+        mass.getItem(key, onSuccessGetItem, onFailed)
 
+        verifyZeroInteractions(onSuccessGetItem)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
     @Test
     fun `get item onSuccess should be called if item fetched successfully`() = runBlockingTest {
-        val onSuccess: (String) -> Unit = mock()
         val key = "key"
         val value = "value"
 
@@ -403,9 +442,10 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getItem(key) itReturns value
 
-        mass.getItem(key, onSuccess, mock())
+        mass.getItem(key, onSuccessGetItem, onFailed)
 
-        Verify on onSuccess that onSuccess(value) was called
+        Verify on onSuccessGetItem that onSuccessGetItem(value) was called
+        verifyZeroInteractions(onFailed)
     }
 
     /**
@@ -418,8 +458,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
-            mass.getAllItems(mock(), onFailed)
+            mass.getAllItems(onSuccessGetItems, onFailed)
 
+            verifyZeroInteractions(onSuccessGetItems)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
         }
 
@@ -442,8 +483,10 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-            mass.getAllItems(mock(), onFailed)
+            mass.getAllItems(onSuccessGetItems, onFailed)
 
+            verifyZeroInteractions(onSuccessGetItems)
+            verify(mass.miniAppSecureDatabase, times(0)).getAllItems()
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
@@ -457,7 +500,9 @@ class MiniAppSecureStorageSpec {
 
             mass.getAllItems(mock(), onFailed)
 
+            verifyZeroInteractions(onSuccessGetItems)
             verify(mass.miniAppSecureDatabase, times(0)).getAllItems()
+            Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
     @Test
@@ -470,8 +515,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.getAllItems() itThrows IllegalStateException("Failed")
 
-            mass.getAllItems(mock(), onFailed)
+            mass.getAllItems(onSuccessGetItems, onFailed)
 
+            verifyZeroInteractions(onSuccessGetItems)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
         }
 
@@ -484,8 +530,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getAllItems() itThrows RuntimeException("Failed")
 
-        mass.getAllItems(mock(), onFailed)
+        mass.getAllItems(onSuccessGetItems, onFailed)
 
+        verifyZeroInteractions(onSuccessGetItems)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -498,8 +545,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.getAllItems() itThrows SQLException("Failed")
 
-        mass.getAllItems(mock(), onFailed)
+        mass.getAllItems(onSuccessGetItems, onFailed)
 
+        verifyZeroInteractions(onSuccessGetItems)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -507,7 +555,6 @@ class MiniAppSecureStorageSpec {
     fun `get all items onSuccess should be called if item fetched successfully`() =
         runBlockingTest {
 
-            val onSuccess: (Map<String, String>) -> Unit = mock()
             val items: Map<String, String> = mapOf(
                 "key1" to "value1",
                 "key2" to "value2"
@@ -518,16 +565,17 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.getAllItems() itReturns items
 
-            mass.getAllItems(onSuccess, mock())
+            mass.getAllItems(onSuccessGetItems, mock())
 
-            Verify on onSuccess that onSuccess(items) was called
+            Verify on onSuccessGetItems that onSuccessGetItems(items) was called
+            verifyZeroInteractions(onFailed)
         }
 
     @Test
     fun `get all items onSuccess with empty map should be called if no items present`() =
         runBlockingTest {
 
-            val onSuccess: (Map<String, String>) -> Unit = mock()
+            //val onSuccess: (Map<String, String>) -> Unit = mock()
             val items: Map<String, String> = emptyMap()
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
@@ -536,9 +584,10 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.getAllItems() itReturns items
 
-            mass.getAllItems(onSuccess, mock())
+            mass.getAllItems(onSuccessGetItems, onFailed)
 
-            Verify on onSuccess that onSuccess(items) was called
+            Verify on onSuccessGetItems that onSuccessGetItems(items) was called
+            verifyZeroInteractions(onFailed)
         }
 
     /**
@@ -550,8 +599,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
-            mass.deleteItems(mock(), mock(), onFailed)
+            mass.deleteItems(mock(), onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
         }
 
@@ -564,6 +614,8 @@ class MiniAppSecureStorageSpec {
             mass.deleteItems(mock(), mock(), onFailed)
 
             verify(mass.miniAppSecureDatabase, times(0)).deleteItems(any())
+            verifyZeroInteractions(onSuccess)
+            Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
         }
 
     @Test
@@ -574,8 +626,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-            mass.deleteItems(mock(), mock(), onFailed)
+            mass.deleteItems(mock(), onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
         }
 
@@ -589,6 +642,8 @@ class MiniAppSecureStorageSpec {
         mass.deleteItems(mock(), mock(), onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).deleteItems(any())
+        verifyZeroInteractions(onSuccess)
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
     }
 
     @Test
@@ -600,8 +655,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.deleteItems(any()) itThrows RuntimeException("Failed")
 
-        mass.deleteItems(mock(), mock(), onFailed)
+        mass.deleteItems(mock(), onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -617,8 +673,9 @@ class MiniAppSecureStorageSpec {
                 "Failed"
             )
 
-            mass.deleteItems(mock(), mock(), onFailed)
+            mass.deleteItems(mock(), onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
         }
 
@@ -631,8 +688,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.deleteItems(any()) itThrows SQLException("Failed")
 
-        mass.deleteItems(mock(), mock(), onFailed)
+        mass.deleteItems(mock(), onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -646,8 +704,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.deleteItems(any()) itReturns false
 
-            mass.deleteItems(mock(), mock(), onFailed)
+            mass.deleteItems(mock(), onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
         }
 
@@ -664,6 +723,7 @@ class MiniAppSecureStorageSpec {
             mass.deleteItems(mock(), onSuccess, mock())
 
             Verify on onSuccess that onSuccess() was called
+            verifyZeroInteractions(onFailed)
         }
 
     /**
@@ -675,8 +735,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
-            mass.delete(mock(), onFailed)
+            mass.delete(onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
         }
 
@@ -688,6 +749,8 @@ class MiniAppSecureStorageSpec {
         mass.delete(mock(), onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).deleteAllRecords()
+        verifyZeroInteractions(onSuccess)
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageUnavailableError) was called
     }
 
     @Test
@@ -697,8 +760,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
-        mass.delete(mock(), onFailed)
+        mass.delete(onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
     }
 
@@ -712,6 +776,8 @@ class MiniAppSecureStorageSpec {
         mass.delete(mock(), onFailed)
 
         verify(mass.miniAppSecureDatabase, times(0)).deleteAllRecords()
+        verifyZeroInteractions(onSuccess)
+        Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageBusyError) was called
     }
 
     @Test
@@ -723,8 +789,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows SQLException("Failed")
 
-        mass.delete(mock(), onFailed)
+        mass.delete(onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -737,8 +804,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows IOException("Failed")
 
-        mass.delete(mock(), onFailed)
+        mass.delete(onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -752,8 +820,9 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows RuntimeException("Failed")
 
-            mass.delete(mock(), onFailed)
+            mass.delete(onSuccess, onFailed)
 
+            verifyZeroInteractions(onSuccess)
             Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
         }
 
@@ -766,8 +835,9 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows IllegalStateException("Failed")
 
-        mass.delete(mock(), onFailed)
+        mass.delete(onSuccess, onFailed)
 
+        verifyZeroInteractions(onSuccess)
         Verify on onFailed that onFailed(MiniAppSecureStorageError.secureStorageIOError) was called
     }
 
@@ -783,8 +853,9 @@ class MiniAppSecureStorageSpec {
 
         mass.miniAppSecureDatabase.deleteAllRecords()
 
-        mass.delete(onSuccess, mock())
+        mass.delete(onSuccess, onFailed)
 
         Verify on onSuccess that onSuccess() was called
+        verifyZeroInteractions(onFailed)
     }
 }

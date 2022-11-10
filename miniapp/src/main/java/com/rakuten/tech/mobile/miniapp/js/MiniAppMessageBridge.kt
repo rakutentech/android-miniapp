@@ -53,7 +53,7 @@ open class MiniAppMessageBridge {
     private lateinit var miniAppId: String
 
     @VisibleForTesting
-    lateinit var activity: Activity
+    internal lateinit var activity: Activity
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
@@ -249,6 +249,9 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(
+                callbackObj.id
+            )
+            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)

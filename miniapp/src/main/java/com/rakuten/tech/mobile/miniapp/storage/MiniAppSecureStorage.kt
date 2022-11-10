@@ -29,8 +29,9 @@ internal class MiniAppSecureStorage(
     @VisibleForTesting
     internal lateinit var miniAppSecureDatabase: MiniAppSecureDatabase
 
+    @VisibleForTesting
     @Suppress("MagicNumber")
-    private fun checkAndInitSecuredDatabase(miniAppId: String) {
+    internal fun checkAndInitSecuredDatabase(miniAppId: String) {
         if (!this::miniAppSecureDatabase.isInitialized) {
             setDatabaseName(miniAppId)
             miniAppSecureDatabase =
@@ -80,9 +81,7 @@ internal class MiniAppSecureStorage(
         scope.launch {
             try {
                 checkAndInitSecuredDatabase(miniAppId)
-                if (createOrOpenAndUnlockDatabase()) {
-                    onSuccess()
-                }
+                onSuccess()
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
@@ -224,7 +223,7 @@ internal class MiniAppSecureStorage(
         scope.launch {
             try {
                 if (validatePreCheck(onFailed)) {
-                    clearDatabase(databaseName)
+                    miniAppSecureDatabase.deleteAllRecords()
                     onSuccess()
                 }
             } catch (e: IOException) {
@@ -236,16 +235,6 @@ internal class MiniAppSecureStorage(
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
-        }
-    }
-
-    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
-    private fun clearDatabase(dbName: String) {
-        try {
-            miniAppSecureDatabase.deleteAllRecords()
-            miniAppSecureDatabase.deleteWholeDatabase(dbName)
-        } catch (e: RuntimeException) {
-            throw e
         }
     }
 }
