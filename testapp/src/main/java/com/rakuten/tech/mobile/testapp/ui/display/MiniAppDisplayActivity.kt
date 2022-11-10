@@ -42,10 +42,7 @@ import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.AppPermission
-import com.rakuten.tech.mobile.testapp.helper.setResizableSoftInputMode
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
-import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
@@ -168,7 +165,11 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             }
             R.id.share_mini_app -> {
                 appInfo?.let {
-                    MiniAppShareWindow.getInstance(this).show(miniAppInfo = it)
+                    MiniAppShareWindow.getInstance(
+                        this,
+                        onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                        onDismiss = miniAppMessageBridge::dispatchOnResumeEvent,
+                    ).show(miniAppInfo = it)
                 }
                 true
             }
@@ -184,10 +185,14 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         appInfo?.let {
             preloadMiniAppWindow.initiate(
                 appInfo = appInfo,
-                it.id,
-                it.version.versionId,
+                miniAppIdAndVersionIdPair = Pair(
+                    it.id,
+                    it.version.versionId
+                ),
                 this,
-                shouldShowDialog = true
+                shouldShowDialog = true,
+                onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
             )
         }
 
@@ -505,15 +510,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onPause() {
         super.onPause()
-        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+        miniAppMessageBridge.dispatchOnPauseEvent()
     }
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(
-            NativeEventType.MINIAPP_ON_RESUME,
-            "MiniApp Resumed"
-        )
+        miniAppMessageBridge.dispatchOnResumeEvent()
     }
 
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
