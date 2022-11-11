@@ -107,7 +107,7 @@ internal class MiniAppSecureDatabase(
 
     @SuppressWarnings("ExpressionBodySyntax")
     internal fun isDatabaseBusy(): Boolean {
-        return miniAppDatabaseStatus == MiniAppDatabaseStatus.BUSY
+        return database.inTransaction()
     }
 
     @VisibleForTesting
