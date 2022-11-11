@@ -122,6 +122,8 @@ internal abstract class MiniAppSecureDatabaseImpl(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     abstract fun onDatabaseReady(database: SupportSQLiteDatabase)
 
+    internal abstract fun isDatabaseReady(): Boolean
+
     internal abstract fun isDatabaseOpen(): Boolean
 
     internal abstract fun isDatabaseAvailable(dbName: String): Boolean

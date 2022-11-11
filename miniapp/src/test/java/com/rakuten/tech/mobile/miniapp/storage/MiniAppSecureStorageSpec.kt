@@ -116,13 +116,38 @@ class MiniAppSecureStorageSpec {
     }
 
     /**
-     * Starting of insert item test cases
+     * Stating of loadDatabase Test Cases
      */
-    @Ignore
-    fun `createAndOpenDatabase should not be called from insert if database is available`() =
+    @Test
+    fun `loadDatabase should not load the database if it is ready`() =
         runBlockingTest {
 
-            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
+            mass.loadDatabase()
+
+            verify(mass.miniAppSecureDatabase, times(0)).createAndOpenDatabase()
+        }
+
+    @Test
+    fun `loadDatabase should load the database if it is not ready`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
+
+            mass.loadDatabase()
+
+            verify(mass.miniAppSecureDatabase, times(1)).createAndOpenDatabase()
+        }
+
+    /**
+     * Starting of insert item test cases
+     */
+    @Test
+    fun `createAndOpenDatabase should not be called if database is ready`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             mass.insertItems(mock(), mock(), onFailed)
 
@@ -130,8 +155,10 @@ class MiniAppSecureStorageSpec {
         }
 
     @Test
-    fun `createAndOpenDatabase should be called from insert if database is available`() =
+    fun `createAndOpenDatabase should be called if database is not ready`() =
         runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
 
             mass.insertItems(mock(), mock(), onFailed)
 
@@ -141,8 +168,6 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `insert onFailed should be called if pre check database is busy error occurred`() =
         runBlockingTest {
-
-            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
@@ -158,8 +183,6 @@ class MiniAppSecureStorageSpec {
 
             val items = mapOf("key" to "value")
 
-            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
             mass.insertItems(mock(), mock(), onFailed)
@@ -171,8 +194,6 @@ class MiniAppSecureStorageSpec {
 
     @Test
     fun `insert onFailed should be called if database is full`() = runBlockingTest {
-
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -188,8 +209,6 @@ class MiniAppSecureStorageSpec {
     fun `insert should not be called if database is full`() = runBlockingTest {
 
         val items = mapOf("key" to "value")
-
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -207,12 +226,6 @@ class MiniAppSecureStorageSpec {
 
         val items = mapOf("key" to "value")
 
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-        When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
-
-        When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
-
         When calling mass.miniAppSecureDatabase.insert(items) itThrows IllegalStateException("Failed")
 
         mass.insertItems(items, onSuccess, onFailed)
@@ -225,12 +238,6 @@ class MiniAppSecureStorageSpec {
     fun `insert onFailed should be called if runtime exception occurred`() = runBlockingTest {
 
         val items = mapOf("key" to "value")
-
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-        When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
-
-        When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
         When calling mass.miniAppSecureDatabase.insert(items) itThrows RuntimeException("Failed")
 
@@ -245,12 +252,6 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             val items = mapOf("key" to "value")
-
-            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-            When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
-
-            When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
             When calling mass.miniAppSecureDatabase.insert(items) itThrows SQLiteFullException(
                 DATABASE_SPACE_LIMIT_REACHED_ERROR
@@ -267,14 +268,6 @@ class MiniAppSecureStorageSpec {
 
         val items = mapOf("key" to "value")
 
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-        When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
-
-        When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
-
-        When calling mass.miniAppSecureDatabase.insert(items) itThrows SQLException("Failed")
-
         mass.insertItems(items, onSuccess, onFailed)
 
         verifyZeroInteractions(onSuccess)
@@ -285,12 +278,6 @@ class MiniAppSecureStorageSpec {
     fun `insert onFailed should be called if insert is false`() = runBlockingTest {
 
         val items = mapOf("key" to "value")
-
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-        When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
-
-        When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
 
         When calling mass.miniAppSecureDatabase.insert(items) itReturns false
 
@@ -305,10 +292,6 @@ class MiniAppSecureStorageSpec {
 
         val items = mapOf("key" to "value")
 
-        When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
-
-        When calling mass.miniAppSecureDatabase.isDatabaseFull() itReturns false
-
         When calling mass.miniAppSecureDatabase.insert(items) itReturns true
 
         mass.insertItems(items, onSuccess, onFailed)
@@ -320,6 +303,34 @@ class MiniAppSecureStorageSpec {
     /**
      * Starting of get item test cases
      */
+    @Test
+    fun `createAndOpenDatabase should not be called if database is ready for getItem`() =
+        runBlockingTest {
+            val key = "key"
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
+            mass.getItem(key, onSuccessGetItem, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(0)).createAndOpenDatabase()
+        }
+
+    @Test
+    fun `createAndOpenDatabase should be called if database is not ready for getItem`() =
+        runBlockingTest {
+            val key = "key"
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
+
+            mass.getItem(key, onSuccessGetItem, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(1)).createAndOpenDatabase()
+        }
+
     @Test
     fun `get item onFailed should be called if database is unavailable error occurred`() =
         runBlockingTest {
@@ -354,6 +365,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
             mass.getItem(key, onSuccessGetItem, onFailed)
@@ -368,6 +381,8 @@ class MiniAppSecureStorageSpec {
         val key = "key"
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
@@ -384,6 +399,8 @@ class MiniAppSecureStorageSpec {
         val key = "key"
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -402,6 +419,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.getItem(key) itThrows RuntimeException("Failed")
@@ -418,6 +437,8 @@ class MiniAppSecureStorageSpec {
         val key = "key"
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -436,6 +457,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.getItem(key) itReturns value
@@ -449,12 +472,39 @@ class MiniAppSecureStorageSpec {
     /**
      * Starting of get all items test cases
      */
+    @Test
+    fun `createAndOpenDatabase should not be called if database is ready for getItems`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
+            mass.getAllItems(onSuccessGetItems, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(0)).createAndOpenDatabase()
+        }
+
+    @Test
+    fun `createAndOpenDatabase should be called if database is not ready for getItems`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
+
+            mass.getAllItems(onSuccessGetItems, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(1)).createAndOpenDatabase()
+        }
 
     @Test
     fun `get all items onFailed should be called if database is unavailable error occurred`() =
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             mass.getAllItems(onSuccessGetItems, onFailed)
 
@@ -468,6 +518,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             mass.getAllItems(mock(), onFailed)
 
             verify(mass.miniAppSecureDatabase, times(0)).getAllItems()
@@ -478,6 +530,8 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
@@ -494,6 +548,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
             mass.getAllItems(mock(), onFailed)
@@ -508,6 +564,8 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -524,6 +582,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.getAllItems() itThrows RuntimeException("Failed")
@@ -538,6 +598,8 @@ class MiniAppSecureStorageSpec {
     fun `get all items onFailed should be called if sql exception occurs`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -557,7 +619,10 @@ class MiniAppSecureStorageSpec {
                 "key1" to "value1",
                 "key2" to "value2"
             )
+
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -573,10 +638,11 @@ class MiniAppSecureStorageSpec {
     fun `get all items onSuccess with empty map should be called if no items present`() =
         runBlockingTest {
 
-            //val onSuccess: (Map<String, String>) -> Unit = mock()
             val items: Map<String, String> = emptyMap()
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -592,10 +658,38 @@ class MiniAppSecureStorageSpec {
      * Starting of delete items test cases
      */
     @Test
+    fun `createAndOpenDatabase should not be called if database is ready for deleteItems`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
+            mass.deleteItems(mock(), onSuccess, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(0)).createAndOpenDatabase()
+        }
+
+    @Test
+    fun `createAndOpenDatabase should be called if database is not ready for deleteItems`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
+
+            mass.deleteItems(mock(), onSuccess, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(1)).createAndOpenDatabase()
+        }
+
+    @Test
     fun `delete items onFailed should be called if database is unavailable error occurred`() =
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             mass.deleteItems(mock(), onSuccess, onFailed)
 
@@ -608,6 +702,8 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             mass.deleteItems(mock(), mock(), onFailed)
 
@@ -622,6 +718,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
             mass.deleteItems(mock(), onSuccess, onFailed)
@@ -634,6 +732,8 @@ class MiniAppSecureStorageSpec {
     fun `delete items should not be called if database is busy`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
@@ -648,6 +748,8 @@ class MiniAppSecureStorageSpec {
     fun `delete items onFailed should be called if runtime exception occurs`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -664,6 +766,8 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -682,6 +786,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.deleteItems(any()) itThrows SQLException("Failed")
@@ -697,6 +803,8 @@ class MiniAppSecureStorageSpec {
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -714,6 +822,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
             When calling mass.miniAppSecureDatabase.deleteItems(any()) itReturns true
@@ -728,10 +838,38 @@ class MiniAppSecureStorageSpec {
      * Starting delete whole database test cases
      */
     @Test
+    fun `createAndOpenDatabase should not be called if database is ready for delete`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
+            mass.delete(onSuccess, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(0)).createAndOpenDatabase()
+        }
+
+    @Test
+    fun `createAndOpenDatabase should be called if database is not ready for delete`() =
+        runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns false
+
+            mass.delete(onSuccess, onFailed)
+
+            verify(mass.miniAppSecureDatabase, times(1)).createAndOpenDatabase()
+        }
+
+    @Test
     fun `delete onFailed should be called if database is unavailable error occurred`() =
         runBlockingTest {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
+
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
             mass.delete(onSuccess, onFailed)
 
@@ -743,6 +881,8 @@ class MiniAppSecureStorageSpec {
     fun `deleteAllRecords should not be called if database is unavailable`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         mass.delete(mock(), onFailed)
 
@@ -756,6 +896,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
         mass.delete(onSuccess, onFailed)
@@ -768,6 +910,8 @@ class MiniAppSecureStorageSpec {
     fun `deleteAllRecords should not be called if database is busy`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns true
 
@@ -783,6 +927,8 @@ class MiniAppSecureStorageSpec {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
         When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows SQLException("Failed")
@@ -797,6 +943,8 @@ class MiniAppSecureStorageSpec {
     fun `delete onFailed should be called if database io exception occurred`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -814,6 +962,8 @@ class MiniAppSecureStorageSpec {
 
             When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
 
+            When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
+
             When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
             When calling mass.miniAppSecureDatabase.deleteAllRecords() itThrows RuntimeException("Failed")
@@ -828,6 +978,8 @@ class MiniAppSecureStorageSpec {
     fun `delete onFailed should be called if IllegalStateException occurs`() = runBlockingTest {
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
@@ -846,6 +998,8 @@ class MiniAppSecureStorageSpec {
         mass.databaseName = TEST_MA_ID
 
         When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns true
+
+        When calling mass.miniAppSecureDatabase.isDatabaseReady() itReturns true
 
         When calling mass.miniAppSecureDatabase.isDatabaseBusy() itReturns false
 
