@@ -118,7 +118,7 @@ class MiniAppSecureStorageSpec {
     /**
      * Starting of insert item test cases
      */
-    @Ignore
+    @Test
     fun `createAndOpenDatabase should not be called from insert if database is available`() =
         runBlockingTest {
 
@@ -132,6 +132,8 @@ class MiniAppSecureStorageSpec {
     @Test
     fun `createAndOpenDatabase should be called from insert if database is available`() =
         runBlockingTest {
+
+            When calling mass.miniAppSecureDatabase.isDatabaseAvailable(mass.databaseName) itReturns false
 
             mass.insertItems(mock(), mock(), onFailed)
 

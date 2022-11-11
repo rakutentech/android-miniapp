@@ -107,7 +107,10 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                createOrOpenAndUnlockDatabase()
+                if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
+                    createOrOpenAndUnlockDatabase()
+                }
+
                 if (miniAppSecureDatabase.isDatabaseBusy()) {
                     onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                 } else if (miniAppSecureDatabase.isDatabaseFull()) {
