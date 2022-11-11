@@ -2245,15 +2245,21 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `isDatabasebusy should be false if miniAppDatabaseStatus is not BUSY`() {
-        When calling massDB.miniAppDatabaseStatus itReturns MiniAppDatabaseStatus.READY
-        massDB.isDatabaseBusy().shouldBeFalse()
+    fun `isDatabaseBusy should call inTransaction`() {
+        massDB.isDatabaseBusy()
+        verify(massDB.database, times(1)).inTransaction()
     }
 
     @Test
-    fun `isDatabasebusy should be true if miniAppDatabaseStatus is BUSY`() {
-        massDB.miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
+    fun `isDatabaseBusy should be true if miniAppDatabaseStatus is BUSY`() {
+        When calling massDB.database.inTransaction() itReturns true
         massDB.isDatabaseBusy().shouldBeTrue()
+    }
+
+    @Test
+    fun `isDatabasebusy should be false if miniAppDatabaseStatus is not BUSY`() {
+        When calling massDB.database.inTransaction() itReturns false
+        massDB.isDatabaseBusy().shouldBeFalse()
     }
 
     @Test
