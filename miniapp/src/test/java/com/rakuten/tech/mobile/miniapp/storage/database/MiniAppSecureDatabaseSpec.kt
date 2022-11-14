@@ -301,6 +301,14 @@ class MiniAppSecureDatabaseSpec {
     }
 
     /**
+     * isDatabaseReady test cases
+     */
+    @Test
+    fun `verify the isDatabaseReady should be true if lateinit var database isInitialized`() {
+        assertTrue(massDB.isDatabaseReady())
+    }
+
+    /**
      * isDatabaseOpen test cases
      */
     @Test

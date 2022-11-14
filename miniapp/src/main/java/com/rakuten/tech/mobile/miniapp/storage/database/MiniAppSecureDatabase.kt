@@ -197,6 +197,8 @@ internal class MiniAppSecureDatabase(
         }
     }
 
+    override fun  isDatabaseReady(): Boolean = this::database.isInitialized
+
     override fun isDatabaseOpen(): Boolean = database.isOpen
 
     @SuppressWarnings("ExpressionBodySyntax")
