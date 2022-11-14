@@ -11,6 +11,8 @@ For instructions on implementing in an android application, see the [User Guide]
 ## How to build
 
 This repository uses submodules for some configuration, so they must be initialized first.
+Make sure you have added [SSH Keys](https://github.com/settings/keys) to your account. Read how to [Connect to Github with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).  
+Next, you can update the submodule and initialize:
 
 ```bash
 $ git submodule update --init
@@ -28,6 +30,7 @@ HOST_APP_VERSION=test-host-app-version
 ADMOB_APP_ID=test-admob-id
 ```
 
+Contact [Rakuten Mini App Platform](https://developers.rakuten.com/miniapp/) for details.  
 Finally, you can build the project via Gradle:
 
 ```bash
