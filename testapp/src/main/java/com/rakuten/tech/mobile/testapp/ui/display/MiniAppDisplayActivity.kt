@@ -60,7 +60,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
-
+    private var isFromMiniAppByUrlActivity = false
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
     private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
@@ -108,6 +108,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         private const val appUrlTag = "app_url_tag"
         private const val sdkConfigTag = "sdk_config_tag"
         private const val updateTypeTag = "update_type_tag"
+        private const val isFromMiniAppByUrlActivityTag = "is_from_miniapp_by_url_tag"
 
         fun start(
             context: Context,
@@ -131,6 +132,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appUrlTag, appUrl)
                 putExtra(updateTypeTag, updatetype)
+                putExtra(isFromMiniAppByUrlActivityTag, true)
                 miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
@@ -210,6 +212,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
+        isFromMiniAppByUrlActivity = intent.getBooleanExtra(isFromMiniAppByUrlActivityTag, false)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
@@ -463,7 +466,9 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 )
                 if (!isClosedByBackPressed) {
                     sampleWebViewExternalResultHandler.emitResult(intent)
-                } else {
+                }
+
+                if(isFromMiniAppByUrlActivity){
                     finish()
                 }
             }
