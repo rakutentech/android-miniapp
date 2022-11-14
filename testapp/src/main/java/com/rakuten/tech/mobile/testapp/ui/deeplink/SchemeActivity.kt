@@ -58,9 +58,11 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                             miniAppInfo?.let { miniAppInfo ->
                                 miniApp?.let { miniApp ->
                                     preloadMiniAppWindow.initiate(
-                                        miniAppInfo,
-                                        miniAppInfo.id,
-                                        miniAppInfo.version.versionId,
+                                        appInfo = miniAppInfo,
+                                        miniAppIdAndVersionIdPair = Pair(
+                                            miniAppInfo.id,
+                                            miniAppInfo.version.versionId
+                                        ),
                                         this@SchemeActivity,
                                         miniApp = miniApp
                                     )
@@ -93,7 +95,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         finish()
     }
 
-    private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = "") {
+    private fun showErrorDialog(type: QRCodeErrorType) {
         AppCoroutines.main {
             QRErrorWindow.getInstance(this).showMiniAppQRCodeError(errorType = type) {
                 finish()

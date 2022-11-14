@@ -127,9 +127,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
             selectedMiniAppInfo = miniAppInfo
             activity?.let {
                 preloadMiniAppWindow.initiate(
-                    miniAppInfo,
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId,
+                    appInfo = miniAppInfo,
+                    miniAppIdAndVersionIdPair = Pair(
+                        miniAppInfo.id,
+                        miniAppInfo.version.versionId
+                    ),
                     this
                 )
             }

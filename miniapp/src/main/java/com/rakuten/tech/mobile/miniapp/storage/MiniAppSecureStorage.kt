@@ -223,7 +223,7 @@ internal class MiniAppSecureStorage(
         scope.launch {
             try {
                 if (validatePreCheck(onFailed)) {
-                    clearDatabase(databaseName)
+                    miniAppSecureDatabase.deleteAllRecords()
                     onSuccess()
                 }
             } catch (e: IOException) {
@@ -235,16 +235,6 @@ internal class MiniAppSecureStorage(
             } catch (e: RuntimeException) {
                 onFailed(MiniAppSecureStorageError.secureStorageIOError)
             }
-        }
-    }
-
-    @Suppress("RethrowCaughtException", "TooGenericExceptionCaught")
-    private fun clearDatabase(dbName: String) {
-        try {
-            miniAppSecureDatabase.deleteAllRecords()
-            miniAppSecureDatabase.deleteWholeDatabase(dbName)
-        } catch (e: RuntimeException) {
-            throw e
         }
     }
 }
