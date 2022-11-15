@@ -68,10 +68,12 @@ class DemoAppMainActivity : BaseActivity() {
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
-                R.id.nav_tab_0 -> AppSettings.instance.newMiniAppSdkConfig =
-                    AppSettings.instance.miniAppSettings1
-                R.id.nav_tab_1 -> AppSettings.instance.newMiniAppSdkConfig =
-                    AppSettings.instance.miniAppSettings2
+                R.id.nav_tab_0 -> {
+                    AppSettings.instance.setTab1MiniAppSdkConfig()
+                }
+                R.id.nav_tab_1 -> {
+                    AppSettings.instance.setTab2MiniAppSdkConfig()
+                }
                 R.id.nav_tab_2 -> {}
                 R.id.nav_tab_3 -> {}
 
@@ -123,7 +125,7 @@ class DemoAppMainActivity : BaseActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentVisibleFragment()?.let { fragment ->
             if (fragment is MiniAppDisplayFragment) {
-                fragment.handlePermissionResult(requestCode, permissions, grantResults)
+                fragment.handlePermissionResult(requestCode, grantResults)
             }
         }
     }

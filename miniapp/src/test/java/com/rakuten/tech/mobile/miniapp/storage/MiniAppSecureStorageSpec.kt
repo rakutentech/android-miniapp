@@ -267,7 +267,6 @@ class MiniAppSecureStorageSpec {
     fun `insert onFailed should be called if database is busy error occurred`() = runBlockingTest {
 
         val items = mapOf("key" to "value")
-
         mass.insertItems(items, onSuccess, onFailed)
 
         verifyZeroInteractions(onSuccess)

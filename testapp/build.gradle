@@ -90,6 +90,8 @@ android {
             resValue "string", "appcenter_secret", debugManifestPlaceholders.appCenterSecret
             resValue "string", "sslPublicKey", debugManifestPlaceholders.sslPublicKey
             resValue "string", "sslPublicKeyBackup", debugManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "sslPublicKeyProd", prodManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyProdBackup", prodManifestPlaceholders.sslPublicKeyBackup
             resValue "string", "stagingBaseUrl", stagingManifestPlaceholders.baseUrl
             resValue "string", "stagingProjectId", stagingManifestPlaceholders.projectId
             resValue "string", "stagingSubscriptionKey", stagingManifestPlaceholders.subscriptionKey
@@ -106,8 +108,10 @@ android {
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version
             resValue "string", "appcenter_secret", prodManifestPlaceholders.appCenterSecret
-            resValue "string", "sslPublicKey", prodManifestPlaceholders.sslPublicKey
-            resValue "string", "sslPublicKeyBackup", prodManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "sslPublicKey", debugManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyBackup", debugManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "sslPublicKeyProd", prodManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyProdBackup", prodManifestPlaceholders.sslPublicKeyBackup
             resValue "string", "stagingBaseUrl", stagingManifestPlaceholders.baseUrl
             resValue "string", "stagingProjectId", stagingManifestPlaceholders.projectId
             resValue "string", "stagingSubscriptionKey", stagingManifestPlaceholders.subscriptionKey
@@ -126,6 +130,8 @@ android {
             initWith release
             resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
             resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "sslPublicKeyProd", prodManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyProdBackup", prodManifestPlaceholders.sslPublicKeyBackup
             resValue "string", "stagingBaseUrl", stagingManifestPlaceholders.baseUrl
             resValue "string", "stagingProjectId", stagingManifestPlaceholders.projectId
             resValue "string", "stagingSubscriptionKey", stagingManifestPlaceholders.subscriptionKey
@@ -143,6 +149,8 @@ android {
             initWith release
             resValue "string", "sslPublicKey", stagingManifestPlaceholders.sslPublicKey
             resValue "string", "sslPublicKeyBackup", stagingManifestPlaceholders.sslPublicKeyBackup
+            resValue "string", "sslPublicKeyProd", prodManifestPlaceholders.sslPublicKey
+            resValue "string", "sslPublicKeyProdBackup", prodManifestPlaceholders.sslPublicKeyBackup
             resValue "string", "stagingBaseUrl", stagingManifestPlaceholders.baseUrl
             resValue "string", "stagingProjectId", stagingManifestPlaceholders.projectId
             resValue "string", "stagingSubscriptionKey", stagingManifestPlaceholders.subscriptionKey

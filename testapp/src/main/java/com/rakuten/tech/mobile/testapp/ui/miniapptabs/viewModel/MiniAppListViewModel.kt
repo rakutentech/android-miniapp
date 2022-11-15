@@ -25,12 +25,19 @@ class MiniAppListViewModel constructor(
         get() = _errorData
 
     //for brevity
-    fun getMiniAppList() = viewModelScope.launch(Dispatchers.IO) {
-        try {
-            val miniAppsList = miniapp.listMiniApp()
-            _miniAppListData.postValue(miniAppsList.sortedBy { it.id })
-        } catch (error: MiniAppSdkException) {
-            _errorData.postValue(error.message)
+    fun getMiniAppList(cachedMiniAppInfoList: List<MiniAppInfo>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                cachedMiniAppInfoList.let {
+                    if (it.isNotEmpty()) {
+                        _miniAppListData.postValue(it)
+                        return@launch
+                    }
+                }
+                val miniAppsList = miniapp.listMiniApp()
+                _miniAppListData.postValue(miniAppsList.sortedBy { it.id })
+            } catch (error: MiniAppSdkException) {
+                _errorData.postValue(error.message)
+            }
         }
-    }
 }

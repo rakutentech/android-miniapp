@@ -9,21 +9,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.GsonBuilder
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
-import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.WindowPreloadMiniappBinding
 import com.rakuten.tech.mobile.testapp.helper.isAvailable
 import com.rakuten.tech.mobile.testapp.helper.load
+import com.rakuten.tech.mobile.testapp.helper.registerOnShowAndOnDismissEvent
 import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
-import java.lang.StringBuilder
+import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
 class PreloadMiniAppWindow(
     private val context: Context,
@@ -39,12 +38,15 @@ class PreloadMiniAppWindow(
     private var versionId: String = ""
     private val permissionAdapter = PreloadMiniAppPermissionAdapter()
 
+    @Suppress("LongParameterList")
     fun initiate(
         appInfo: MiniAppInfo?,
-        miniAppId: String,
-        versionId: String,
+        miniAppIdAndVersionIdPair: Pair<String, String>,
         lifecycleOwner: LifecycleOwner,
-        miniApp: MiniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig)
+        miniApp: MiniApp = MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig),
+        shouldShowDialog: Boolean = false,
+        onShow: () -> Unit = {},
+        onDismiss: () -> Unit = {}
     ) {
         this.lifecycleOwner = lifecycleOwner
         this.miniApp = miniApp
@@ -54,11 +56,15 @@ class PreloadMiniAppWindow(
             this.miniAppId = miniAppInfo!!.id
             this.versionId = miniAppInfo!!.version.versionId
         } else {
-            this.miniAppId = miniAppId
-            this.versionId = versionId
+            this.miniAppId = miniAppIdAndVersionIdPair.first
+            this.versionId = miniAppIdAndVersionIdPair.second
         }
 
-        if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow()
+        if (miniAppId.isNotEmpty() && versionId.isNotEmpty()) initDefaultWindow(
+            shouldShowDialog = shouldShowDialog,
+            onShow = onShow,
+            onDismiss = onDismiss
+        )
     }
 
     private fun launchScreen() {
@@ -66,14 +72,25 @@ class PreloadMiniAppWindow(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initDefaultWindow() {
+    private fun initDefaultWindow(
+        shouldShowDialog: Boolean,
+        onShow: () -> Unit,
+        onDismiss: () -> Unit
+    ) {
         // set ui components
         val layoutInflater = LayoutInflater.from(context)
         binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.window_preload_miniapp, null, false
         )
-        preloadMiniAppAlertDialog = AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
+
+        if (shouldShowDialog) {
+            binding.preloadTutorial.visibility = View.INVISIBLE
+        }
+
+        preloadMiniAppAlertDialog =
+            AlertDialog.Builder(context, R.style.AppTheme_DefaultWindow).create()
         preloadMiniAppAlertDialog.setView(binding.root)
+        preloadMiniAppAlertDialog.registerOnShowAndOnDismissEvent(onShow = onShow, onDismiss = onDismiss)
 
         // set data to ui
         if (miniAppInfo != null) {
@@ -83,7 +100,8 @@ class PreloadMiniAppWindow(
                 }
             }
             binding.preloadMiniAppName.text = miniAppInfo?.displayName.toString()
-            binding.preloadMiniAppVersion.text = LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
+            binding.preloadMiniAppVersion.text =
+                LABEL_VERSION + miniAppInfo?.version?.versionTag.toString()
         } else {
             binding.preloadMiniAppName.text = ERR_NO_INFO
         }
@@ -95,25 +113,25 @@ class PreloadMiniAppWindow(
         binding.listPreloadPermission.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
-        val factory = PreloadMiniAppFactory(miniApp = miniApp)
+        val factory = PreloadMiniAppFactory(miniApp = miniApp, shouldShowDialog)
         viewModel = factory.create(PreloadMiniAppViewModel::class.java)
-                .apply {
-                    miniAppManifest.observe(lifecycleOwner, Observer { apiManifest ->
-                        if (apiManifest != null) onShowManifest(apiManifest)
-                        else onAccept()
-                    })
-
-                    manifestErrorData.observe(lifecycleOwner, Observer {
-                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                    })
-
-                    containTooManyRequestsError.observe(lifecycleOwner) {
-                        showErrorDialog(
-                            context,
-                            context.getString(R.string.error_desc_miniapp_too_many_request)
-                        )
-                    }
+            .apply {
+                miniAppManifest.observe(lifecycleOwner) { apiManifest ->
+                    if (apiManifest != null) onShowManifest(apiManifest)
+                    else onAccept()
                 }
+
+                manifestErrorData.observe(lifecycleOwner) {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
+
+                containTooManyRequestsError.observe(lifecycleOwner) {
+                    showErrorDialog(
+                        context,
+                        context.getString(R.string.error_desc_miniapp_too_many_request)
+                    )
+                }
+            }
 
         viewModel.checkMiniAppManifest(miniAppId, versionId)
 
@@ -145,7 +163,7 @@ class PreloadMiniAppWindow(
         }
 
         // add scopes requested for the RAE audience
-        var scope = ""
+        var scope: String
         manifestPermissions.find {
             it.type == MiniAppCustomPermissionType.ACCESS_TOKEN
         }.let {
@@ -155,11 +173,11 @@ class PreloadMiniAppWindow(
                 }.let {
                     val scopes: List<String> = it?.scopes ?: emptyList()
                     scope = scopes.joinToString(
-                            separator = ", ",
-                            prefix = "",
-                            postfix = "",
-                            truncated = "",
-                            limit = scopes.size
+                        separator = ", ",
+                        prefix = "",
+                        postfix = "",
+                        truncated = "",
+                        limit = scopes.size
                     )
                 }
 
@@ -167,7 +185,13 @@ class PreloadMiniAppWindow(
             }
         }
 
-        permissionAdapter.addManifestPermissionList(manifestPermissions)
+        permissionAdapter.addManifestPermissionList(
+            manifestPermissions = manifestPermissions,
+            miniApp = miniApp,
+            miniAppId = miniAppId,
+            shouldShowDialog = viewModel.shouldshowDialog
+        )
+
         prepareBottomText(binding.preloadMiniAppMetaData, manifest)
 
         launchScreen()

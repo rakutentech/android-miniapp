@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListManifestPermissionBinding
@@ -26,14 +27,14 @@ class PreloadMiniAppPermissionAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.permissionName.text = toReadableName(manifestPermissions[position].type)
+        holder.permissionName.text = manifestPermissions[position].type.toReadableName()
         holder.permissionSwitch.visibility =
             if (manifestPermissions[position].isRequired) View.GONE else View.VISIBLE
         holder.permissionStatus.visibility =
             if (manifestPermissions[position].isRequired) View.VISIBLE else View.GONE
 
         holder.permissionSwitch.isChecked =
-            permissionResultToChecked(MiniAppCustomPermissionResult.ALLOWED)
+            permissionResultToChecked(manifestPermissionPairs[position].second)
         if (manifestPermissions[position].reason.isNotEmpty())
             holder.permissionReason.text = manifestPermissions[position].reason
 
@@ -58,14 +59,30 @@ class PreloadMiniAppPermissionAdapter :
 
     override fun getItemCount(): Int = manifestPermissions.size
 
-    fun addManifestPermissionList(permissions: MutableList<PreloadManifestPermission>) {
+    fun addManifestPermissionList(
+        manifestPermissions: MutableList<PreloadManifestPermission>,
+        miniApp: MiniApp,
+        miniAppId: String,
+        shouldShowDialog: Boolean
+    ) {
         manifestPermissionPairs.clear()
-        manifestPermissions = permissions
-        manifestPermissions.forEachIndexed { position, (type, _) ->
-            manifestPermissionPairs.add(position, Pair(type, MiniAppCustomPermissionResult.ALLOWED))
+        this.manifestPermissions = manifestPermissions
+        if (shouldShowDialog) {
+            val customPermissionResultList = miniApp.getCustomPermissions(miniAppId).pairValues
+            this.manifestPermissions.forEachIndexed { position, (_, _) ->
+                manifestPermissionPairs.add(position, customPermissionResultList[position])
+            }
+        } else {
+            this.manifestPermissions.forEachIndexed { position, (type, _) ->
+                manifestPermissionPairs.add(
+                    position,
+                    Pair(type, MiniAppCustomPermissionResult.ALLOWED)
+                )
+            }
         }
         notifyDataSetChanged()
     }
+
 
     inner class ViewHolder(itemView: ItemListManifestPermissionBinding) :
         RecyclerView.ViewHolder(itemView.root) {

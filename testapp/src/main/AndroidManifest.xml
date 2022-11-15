@@ -46,8 +46,8 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppInputActivity"
-            android:label="@string/lb_display_input"
+            android:name="com.rakuten.tech.mobile.testapp.ui.input.MiniAppByUrlActivity"
+            android:label="@string/lb_display_url"
             android:theme="@style/MaterialAppTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity" />
@@ -57,12 +57,6 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactListActivity"
             android:label="@string/action_contacts" />
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity"
-            android:label="Downloaded Mini App List" />
-        <activity
-            android:name="com.rakuten.tech.mobile.testapp.ui.permission.MiniAppPermissionSettingsActivity"
-            android:label="Permission Settings" />
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity"
             android:label="@string/action_qa" />

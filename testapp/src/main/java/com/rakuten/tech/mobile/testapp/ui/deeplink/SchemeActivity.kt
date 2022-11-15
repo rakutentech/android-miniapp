@@ -5,14 +5,14 @@ import android.util.Log
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import com.rakuten.tech.mobile.miniapp.testapp.R
+import com.rakuten.tech.mobile.testapp.helper.AppCoroutines
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRCodeErrorType
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.miniapp.testapp.R
-import com.rakuten.tech.mobile.testapp.helper.AppCoroutines
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -58,9 +58,11 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                             miniAppInfo?.let { miniAppInfo ->
                                 miniApp?.let { miniApp ->
                                     preloadMiniAppWindow.initiate(
-                                        miniAppInfo,
-                                        miniAppInfo.id,
-                                        miniAppInfo.version.versionId,
+                                        appInfo = miniAppInfo,
+                                        miniAppIdAndVersionIdPair = Pair(
+                                            miniAppInfo.id,
+                                            miniAppInfo.version.versionId
+                                        ),
                                         this@SchemeActivity,
                                         miniApp = miniApp
                                     )
@@ -93,7 +95,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
         finish()
     }
 
-    private fun showErrorDialog(type: QRCodeErrorType, miniAppVersion: String = "") {
+    private fun showErrorDialog(type: QRCodeErrorType) {
         AppCoroutines.main {
             QRErrorWindow.getInstance(this).showMiniAppQRCodeError(errorType = type) {
                 finish()
@@ -116,10 +118,15 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                     BuildConfig.ADDITIONAL_ANALYTICS_AID
                 )
             ),
-            sslPinningPublicKeyList = listOf(
-                getString(R.string.sslPublicKey),
-                getString(R.string.sslPublicKeyBackup)
-            )
+            sslPinningPublicKeyList = getSSlKeyList()
+        )
+    }
+
+    private fun getSSlKeyList(): List<String> {
+        return if (AppSettings.instance.miniAppSettings1.baseUrl != getString(R.string.prodBaseUrl)) listOf(
+            getString(R.string.sslPublicKey), getString(R.string.sslPublicKeyBackup)
+        ) else listOf(
+            getString(R.string.sslPublicKeyProd), getString(R.string.sslPublicKeyProdBackup)
         )
     }
 }

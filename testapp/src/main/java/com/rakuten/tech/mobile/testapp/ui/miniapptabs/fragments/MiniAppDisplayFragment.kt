@@ -8,7 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
+import android.view.*
 import android.widget.TableLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
@@ -40,29 +40,20 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.FragmentMiniAppDispla
 import com.rakuten.tech.mobile.miniapp.view.MiniAppConfig
 import com.rakuten.tech.mobile.miniapp.view.MiniAppParameters
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
-import com.rakuten.tech.mobile.testapp.helper.AppPermission
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
-import com.rakuten.tech.mobile.testapp.helper.showErrorDialog
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
 import com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity
+import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import android.view.MenuInflater
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.view.Menu
-import android.view.MenuItem
 
 
-class MiniAppDisplayFragment : BaseFragment() {
+@Suppress("TooManyFunctions", "MagicNumber", "VariableNaming")
+class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -83,6 +74,7 @@ class MiniAppDisplayFragment : BaseFragment() {
     private lateinit var appId: String
     private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
     private lateinit var miniAppFileDownloader: MiniAppFileDownloaderDefault
+    private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(requireActivity(), this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,6 +116,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         return binding.root
     }
 
+    @Suppress("LongMethod", "ComplexMethod")
     private fun initializeMiniAppDisplay(activity: Activity) {
         toggleProgressLoading(true)
         setUpFileChooserAndDownloader(activity)
@@ -209,6 +202,7 @@ class MiniAppDisplayFragment : BaseFragment() {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun setUpNavigator(activity: Activity) {
         miniAppNavigator = object : MiniAppNavigator {
             override fun openExternalUrl(
@@ -442,7 +436,6 @@ class MiniAppDisplayFragment : BaseFragment() {
 
     fun handlePermissionResult(
         requestCode: Int,
-        permissions: Array<String>,
         grantResults: IntArray
     ) {
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
@@ -465,14 +458,23 @@ class MiniAppDisplayFragment : BaseFragment() {
             }
             R.id.share_mini_app -> {
                 appInfo?.let {
-                    MiniAppShareWindow.getInstance(requireActivity()).show(miniAppInfo = it)
+                    MiniAppShareWindow.getInstance(
+                        context = requireActivity(),
+                        onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                        onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
+                    ).show(miniAppInfo = it)
                 }
+                true
+            }
+            R.id.settings_permission_mini_app -> {
+                launchCustomPermissionDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun checkCloseAlert() {
         try {
             val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
@@ -511,15 +513,12 @@ class MiniAppDisplayFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
-        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+        miniAppMessageBridge.dispatchOnPauseEvent()
     }
 
     override fun onResume() {
         super.onResume()
-        miniAppMessageBridge.dispatchNativeEvent(
-            NativeEventType.MINIAPP_ON_RESUME,
-            "MiniApp Resumed"
-        )
+        miniAppMessageBridge.dispatchOnResumeEvent()
     }
 
     private fun createMiniAppInfoParam(
@@ -538,6 +537,26 @@ class MiniAppDisplayFragment : BaseFragment() {
             miniAppInfo = miniAppInfo,
             fromCache = false
         )
+    }
+
+    private fun launchCustomPermissionDialog() {
+        appInfo?.let {
+            preloadMiniAppWindow.initiate(
+                appInfo = appInfo,
+                miniAppIdAndVersionIdPair = Pair(
+                    it.id,
+                    it.version.versionId
+                ),
+                this,
+                shouldShowDialog = true,
+                onShow = miniAppMessageBridge::dispatchOnPauseEvent,
+                onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
+            )
+        }
+    }
+
+    override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
+        //intent
     }
 
 }

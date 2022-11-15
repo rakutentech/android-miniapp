@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
+import android.app.Dialog
 import android.content.Context
 import android.text.InputType
 import android.util.Patterns
@@ -17,6 +18,8 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -49,7 +52,12 @@ fun parseStringToDate(givenFormat: String, str: String): Date {
     return Date()
 }
 
-fun showAlertDialog(activity: Activity, title: String = "Alert", content: String) {
+fun showAlertDialog(
+    activity: Activity,
+    title: String = "Alert",
+    content: String,
+    negativeButton: String = "Close"
+) {
     // prepare an EditText where the content can be copied by long press
     val editText = EditText(activity)
     editText.setText(content)
@@ -73,7 +81,7 @@ fun showAlertDialog(activity: Activity, title: String = "Alert", content: String
     val alertDialog = AlertDialog.Builder(activity)
     alertDialog.setTitle(title)
     alertDialog.setView(container)
-    alertDialog.setNegativeButton("Close") { dialog, _ ->
+    alertDialog.setNegativeButton(negativeButton) { dialog, _ ->
         dialog.dismiss()
     }
     alertDialog.create().show()
@@ -90,19 +98,21 @@ fun showErrorDialog(
     alert.show()
 }
 
-fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) = Glide.with(context)
-    .load(res)
-    .placeholder(placeholder)
-    .into(this)
+fun ImageView.load(context: Context, res: String, placeholder: Int = R.drawable.ic_default) =
+    Glide.with(context)
+        .load(res)
+        .placeholder(placeholder)
+        .into(this)
 
 fun String.isEmailValid(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
 fun hideSoftKeyboard(view: View) {
-    val imm: InputMethodManager? = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+    val imm: InputMethodManager? =
+        view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
     imm?.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun setResizableSoftInputMode(activity: Activity){
+fun setResizableSoftInputMode(activity: Activity) {
     activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 }
 
@@ -142,3 +152,19 @@ fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterData
             observeUIState()
         }
     }
+
+
+fun Dialog.registerOnShowAndOnDismissEvent(onShow: () -> Unit, onDismiss: () -> Unit) {
+    setOnShowListener { onShow() }
+    setOnDismissListener { onDismiss() }
+}
+
+fun MiniAppMessageBridge.dispatchOnPauseEvent() {
+    dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+}
+
+fun MiniAppMessageBridge.dispatchOnResumeEvent() {
+    dispatchNativeEvent(
+        NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed"
+    )
+}

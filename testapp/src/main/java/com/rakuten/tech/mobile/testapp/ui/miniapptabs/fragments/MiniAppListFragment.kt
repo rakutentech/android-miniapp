@@ -26,16 +26,12 @@ import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.*
 
 
+@Suppress("TooManyFunctions")
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     SearchView.OnQueryTextListener, PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
-
-    companion object {
-        val TAG = MiniAppListFragment::class.java.canonicalName
-        fun newInstance(): MiniAppListFragment = MiniAppListFragment()
-    }
 
     private lateinit var viewModel: MiniAppListViewModel
     private lateinit var binding: MiniAppListFragmentBinding
@@ -73,17 +69,23 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         super.onStart()
         binding.swipeRefreshLayout.post {
             binding.swipeRefreshLayout.isRefreshing = true
+            updateEmptyView(emptyList())
             executeLoadingList()
         }
     }
 
-    private fun executeLoadingList() {
-        viewModel.getMiniAppList()
+    private fun executeLoadingList(
+        cachedMiniAppListInfo: List<MiniAppInfo> = AppSettings.instance.getMiniAppinfoList(
+            AppSettings.instance.miniAppInfoListKey
+        )
+    ) {
+        viewModel.getMiniAppList(cachedMiniAppListInfo)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val factory = MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
+        val factory =
+            MiniAppListViewModelFactory(MiniApp.instance(AppSettings.instance.newMiniAppSdkConfig))
 
         viewModel = ViewModelProvider(this, factory).get(MiniAppListViewModel::class.java)
 
@@ -92,13 +94,14 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
             addMiniAppList(it)
         }
         viewModel.errorData.observe(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
             updateEmptyView(emptyList())
             addMiniAppList(emptyList())
-            binding.swipeRefreshLayout.isRefreshing = false
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            executeLoadingList()
+            updateEmptyView(emptyList())
+            executeLoadingList(emptyList())
             resetSearchBox()
         }
     }
@@ -124,9 +127,11 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
             selectedMiniAppInfo = miniAppInfo
             activity?.let {
                 preloadMiniAppWindow.initiate(
-                    miniAppInfo,
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId,
+                    appInfo = miniAppInfo,
+                    miniAppIdAndVersionIdPair = Pair(
+                        miniAppInfo.id,
+                        miniAppInfo.version.versionId
+                    ),
                     this
                 )
             }
@@ -211,9 +216,16 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     }
 
     private fun updateEmptyView(collection: List<MiniAppInfo>) {
-        if (collection.isEmpty())
+        if (collection.isEmpty() && !binding.swipeRefreshLayout.isRefreshing)
             binding.emptyView.visibility = View.VISIBLE
         else
             binding.emptyView.visibility = View.GONE
+    }
+
+    override fun onStop() {
+        viewModel.miniAppListData.value?.let {
+            AppSettings.instance.saveCurrentAppInfoList(it)
+        }
+        super.onStop()
     }
 }

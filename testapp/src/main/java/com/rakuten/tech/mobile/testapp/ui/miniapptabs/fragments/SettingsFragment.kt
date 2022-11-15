@@ -1,32 +1,41 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
+import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.view.*
+import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
+import androidx.lifecycle.ViewModelProvider
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
-import com.rakuten.tech.mobile.testapp.BuildVariant
-import com.rakuten.tech.mobile.testapp.helper.isAvailable
-import com.rakuten.tech.mobile.testapp.helper.isInputEmpty
-import com.rakuten.tech.mobile.testapp.helper.isInvalidUuid
-import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
+import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
-import com.rakuten.tech.mobile.testapp.ui.permission.MiniAppDownloadedListActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModel
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.android.synthetic.main.settings_fragment.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.security.SecureRandom
+import java.util.*
 import kotlin.properties.Delegates
 
+@Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -37,24 +46,31 @@ class SettingsFragment : BaseFragment() {
     private var isTab1Checked = true
     private val settingsTextWatcher = object : TextWatcher {
         private var old_text = ""
-        override fun afterTextChanged(s: Editable?) {}
+        override fun afterTextChanged(s: Editable?) {
+            //empty function intended
+        }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             old_text = binding.editProjectId.text.toString()
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            validateInputIDs(old_text != s.toString())
+            validateInputIDs()
         }
     }
     private var saveViewEnabled by Delegates.observable(true) { _, old, new ->
         if (new != old) {
-             invalidateOptionsMenu(requireActivity())
-            if(isTab1Checked){
-                binding.toggleList2.isEnabled = new
-            } else {
-                binding.toggleList1.isEnabled = new
-            }
+            invalidateOptionsMenu(requireActivity())
+            toggleTabIsEnabled(new)
+        }
+    }
+    private lateinit var viewModel: SettingsViewModel
+
+    private fun toggleTabIsEnabled(isEnabled: Boolean) {
+        if (isTab1Checked) {
+            binding.toggleList2.isEnabled = isEnabled
+        } else {
+            binding.toggleList1.isEnabled = isEnabled
         }
     }
 
@@ -67,8 +83,8 @@ class SettingsFragment : BaseFragment() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             R.id.settings_menu_save -> {
+                saveViewEnabled = false
                 onSaveAction()
-                item.isEnabled = false
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -80,177 +96,115 @@ class SettingsFragment : BaseFragment() {
             settingsProgressDialog.show()
         }
 
-        val tab1ProjectIdSubscriptionKeyPair: Pair<String, String>
-        val tab2ProjectIdSubscriptionKeyPair: Pair<String, String>
+        val currentConfigData = getCurrentTypedConfigData()
 
-        if (!isTab1Checked) {
-            tab1ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
-            tab2ProjectIdSubscriptionKeyPair = settings.getCurrentTab2ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
+        if (isTab1Checked) {
+            settings.setTempTab1ConfigData(currentConfigData)
         } else {
-            tab1ProjectIdSubscriptionKeyPair = settings.getCurrentTab1ProjectIdSubscriptionKeyPair(binding.switchProdVersion.isChecked)
-            tab2ProjectIdSubscriptionKeyPair = getTypedSubscriptionKeyProjectIdPair()
+            settings.setTempTab2ConfigData(currentConfigData)
         }
 
-        updateSetupIdSubscriptionData(
-            tab1ProjectIdSubscriptionKeyPair,
-            tab2ProjectIdSubscriptionKeyPair
-        )
-
-        updateSettings(
-            binding.editProjectId.text.toString(),
-            binding.editSubscriptionKey.text.toString(),
-            binding.editParametersUrl.text.toString(),
-            binding.switchPreviewMode.isChecked,
-            binding.switchSignatureVerification.isChecked,
-            binding.switchProdVersion.isChecked
-        )
+        settings.saveData()
+        viewModel.getEachTabMiniAppList(
+            arrayListOf(
+                Pair(settings.miniAppSettings1, settings::saveTab1MiniAppInfoList),
+                Pair(settings.miniAppSettings2, settings::saveTab2MiniAppInfoList)
+            )
+        ) {
+            updateSettings()
+            showAlertDialog(
+                requireActivity(),
+                title = getString(R.string.success_title_parameters_saved),
+                content = getString(R.string.success_desc_parameter_saved),
+                negativeButton = "Ok"
+            )
+            toggleTabIsEnabled(true)
+        }
     }
 
-
-
-    private fun updateSettings(
-        projectId: String,
-        subscriptionKey: String,
-        urlParameters: String,
-        isPreviewMode: Boolean,
-        requireSignatureVerification: Boolean,
-        isProdVersionEnabled: Boolean
-    ) {
-        val appIdHolder = settings.projectId
-        val subscriptionKeyHolder = settings.subscriptionKey
-        val urlParametersHolder = settings.urlParameters
-        val isPreviewModeHolder = settings.isPreviewMode
-        val requireSignatureVerificationHolder = settings.requireSignatureVerification
-        if (toggleList1.isChecked) {
-            settings.projectId = projectId
-            settings.subscriptionKey = subscriptionKey
-        } else {
-            settings.projectId2 = projectId
-            settings.subscriptionKey2 = subscriptionKey
-        }
-        settings.urlParameters = urlParameters
-        settings.isPreviewMode = isPreviewMode
-        settings.requireSignatureVerification = requireSignatureVerification
-        settings.isProdVersionEnabled = isProdVersionEnabled
-
+    private fun updateSettings() {
+        settings.urlParameters = binding.editParametersUrl.text.toString()
         launch {
-            try {
-                URL("https://www.test-param.com?$urlParameters").toURI()
-
-                settings.isSettingSaved = true
-                requireActivity().runOnUiThread {
-                    if (requireActivity().isAvailable) {
-                        settingsProgressDialog.cancel()
-                    }
-                    validateInputIDs()
+            URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
+            settings.isSettingSaved = true
+            with(requireActivity()) {
+                currentFocus?.let {
+                    hideSoftKeyboard(it)
                 }
-            } catch (error: MiniAppTooManyRequestsError) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "Error",
-                    getString(R.string.error_desc_miniapp_too_many_request)
-                )
-            } catch (error: MiniAppSdkException) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "MiniApp SDK",
-                    error.message.toString()
-                )
-            } catch (error: Exception) {
-                onUpdateError(
-                    appIdHolder,
-                    subscriptionKeyHolder,
-                    urlParametersHolder,
-                    isPreviewModeHolder,
-                    requireSignatureVerificationHolder,
-                    "URL parameter",
-                    error.message.toString()
-                )
+                hideProgressDialog()
             }
         }
     }
 
-    private fun onUpdateError(
-        appIdHolder: String,
-        subscriptionKeyHolder: String,
-        urlParametersHolder: String,
-        isPreviewModeHolder: Boolean,
-        requireSignatureVerificationHolder: Boolean,
-        errTitle: String,
-        errMsg: String
-    ) {
-        settings.projectId = appIdHolder
-        settings.subscriptionKey = subscriptionKeyHolder
-        settings.urlParameters = urlParametersHolder
-        settings.isPreviewMode = isPreviewModeHolder
-        settings.requireSignatureVerification = requireSignatureVerificationHolder
-        requireActivity().runOnUiThread {
-            if (requireActivity().isAvailable) {
+    private fun Activity.hideProgressDialog() {
+        runOnUiThread {
+            if (isAvailable) {
                 settingsProgressDialog.cancel()
             }
-            showAlertDialog(requireActivity(), errTitle, errMsg)
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val factory = SettingsViewModelFactory()
+        viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
+
+        viewModel.errorData.observe(viewLifecycleOwner) {
+            with(requireActivity()) {
+                hideProgressDialog()
+            }
+            validateInputIDs()
+            if (it.isBlank()) return@observe
+            settings.clearAllMiniAppInfoList()
+            Toast.makeText(requireActivity(), it, Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
         settings = AppSettings.instance
+        isTab1Checked = settings.isTab1Checked
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.settings_fragment,
-            container,
-            false
+            inflater, R.layout.settings_fragment, container, false
         )
         settingsProgressDialog = SettingsProgressDialog(requireActivity())
-        renderAppSettingsScreen()
+
         return binding.root
     }
 
-    private fun validateInputIDs(inputChanged: Boolean = false) {
-        val isAppIdInvalid = !isInputIDValid()
+    override fun onStart() {
+        super.onStart()
+        renderAppSettingsScreen()
+        setViewsListener()
+        validateInputIDs()
+    }
 
-        saveViewEnabled = !(isInputEmpty(binding.editProjectId)
-                || isInputEmpty(binding.editSubscriptionKey)
-                || isAppIdInvalid) && inputChanged
+    private fun validateInputIDs() {
+        val isInputValid = isInputIDValid()
 
-        if (isInputEmpty(binding.editProjectId) || isAppIdInvalid)
-            binding.inputProjectId.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editProjectId) || !isInputValid) binding.inputProjectId.error =
+            getString(R.string.error_invalid_input)
         else binding.inputProjectId.error = null
 
-        if (isInputEmpty(binding.editSubscriptionKey))
-            binding.inputSubscriptionKey.error = getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editSubscriptionKey)) binding.inputSubscriptionKey.error =
+            getString(R.string.error_invalid_input)
         else binding.inputSubscriptionKey.error = null
+
+
+        saveViewEnabled =
+            binding.inputProjectId.error == null && binding.inputSubscriptionKey.error == null
     }
 
     private fun isInputIDValid(): Boolean {
         return !binding.editProjectId.text.toString().isInvalidUuid()
     }
 
-    private fun renderAppSettingsScreen() {
+    @Suppress("LongMethod")
+    private fun setViewsListener() {
         binding.textInfo.text = createBuildInfo()
-        binding.editParametersUrl.setText(settings.urlParameters)
-        binding.switchPreviewMode.isChecked = settings.isPreviewMode
-        binding.switchSignatureVerification.isChecked = settings.requireSignatureVerification
-        binding.switchProdVersion.isChecked = settings.isProdVersionEnabled
-        if(BuildConfig.BUILD_TYPE == BuildVariant.RELEASE.value && !AppSettings.instance.isSettingSaved){
-            switchProdVersion.isChecked = true
-        }
-
-        val projectIdSubscriptionKeyPair = settings.getDefaultProjectIdSubscriptionKeyPair()
-        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
-
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
@@ -260,10 +214,6 @@ class SettingsFragment : BaseFragment() {
 
         binding.buttonContacts.setOnClickListener {
             ContactListActivity.start(requireActivity())
-        }
-
-        binding.buttonCustomPermissions.setOnClickListener {
-            MiniAppDownloadedListActivity.start(requireActivity())
         }
 
         binding.buttonAccessToken.setOnClickListener {
@@ -282,76 +232,163 @@ class SettingsFragment : BaseFragment() {
             QASettingsActivity.start(requireActivity())
         }
 
-        binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                settings.baseUrl = getString(R.string.prodBaseUrl)
-            } else {
-                settings.baseUrl = getString(R.string.stagingBaseUrl)
-            }
-            updateProjectIdAndSubscription()
+        binding.toggleListGroup.addOnButtonCheckedListener { group, checkedId, _ ->
+            if (group.checkedButtonId == -1) group.check(checkedId)
         }
 
         binding.toggleList1.setOnClickListener {
-            if(isTab1Checked) return@setOnClickListener
+            binding.toggleList1.isChecked = true
+            if (isTab1Checked) {
+                return@setOnClickListener
+            }
             isTab1Checked = true
-            settings.setTab2CredentialData(getTypedSubscriptionKeyProjectIdPair())
-            updateProjectIdAndSubscription()
+            settings.setTempTab2ConfigData(getCurrentTypedConfigData())
+            updateTabProjectIdAndSubscription()
+            validateInputIDs()
         }
 
         binding.toggleList2.setOnClickListener {
-            if(!isTab1Checked) return@setOnClickListener
+            binding.toggleList2.isChecked = true
+            if (!isTab1Checked) {
+                return@setOnClickListener
+            }
             isTab1Checked = false
-            settings.setTab1CredentialData(getTypedSubscriptionKeyProjectIdPair())
-            updateProjectIdAndSubscription()
+            settings.setTempTab1ConfigData(getCurrentTypedConfigData())
+            updateTabProjectIdAndSubscription()
+            validateInputIDs()
         }
 
-        // enable the save button first time.
-        validateInputIDs(true)
+        binding.switchPreviewModeTab.setOnCheckedChangeListener { _, isChecked ->
+            if (isTab1Checked) {
+                settings.setTempTab1IsPreviewMode(isChecked)
+            } else {
+                settings.setTempTab2IsPreviewMode(isChecked)
+            }
+            binding.switchPreviewModeTab.isChecked = isChecked
+            validateInputIDs()
+        }
+
+        binding.switchProdVersion.setOnCheckedChangeListener { _, isChecked ->
+            if (isTab1Checked) {
+                settings.setTempTab1IsProduction(isChecked)
+            } else {
+                settings.setTempTab2IsProduction(isChecked)
+            }
+            binding.switchProdVersion.isChecked = isChecked
+            updateTabProjectIdAndSubscription()
+            validateInputIDs()
+        }
+
+        binding.switchSignatureVerification.setOnCheckedChangeListener { _, isChecked ->
+            if (isTab1Checked) {
+                settings.setTempTab1IsVerificationRequired(isChecked)
+            } else {
+                settings.setTempTab2IsVerificationRequired(isChecked)
+            }
+            binding.switchSignatureVerification.isChecked = isChecked
+        }
     }
 
-    fun getTypedSubscriptionKeyProjectIdPair(): Pair<String, String> {
-        return Pair(
-            binding.editProjectId.text.toString(),
-            binding.editSubscriptionKey.text.toString()
+    private fun renderAppSettingsScreen() {
+        binding.editParametersUrl.setText(settings.urlParameters)
+        binding.toggleListGroup.check(if (isTab1Checked) binding.toggleList1.id else binding.toggleList2.id)
+
+        val defaultConfigData = settings.getDefaultConfigData(isTab1Checked)
+        setupConfigDataToView(defaultConfigData)
+        // add the default profile pic initially.
+        updateProfileImageBase64()
+        // add the default contacts initially.
+        addDefaultContactList()
+    }
+
+    private fun getCurrentTypedConfigData(): MiniAppConfigData {
+        return MiniAppConfigData(
+            isProduction = binding.switchProdVersion.isChecked,
+            isPreviewMode = binding.switchPreviewModeTab.isChecked,
+            isVerificationRequired = binding.switchSignatureVerification.isChecked,
+            projectId = binding.editProjectId.text.toString().trim(),
+            subscriptionId = binding.editSubscriptionKey.text.toString().trim()
         )
     }
 
-    private fun updateSetupIdSubscriptionData(
-        tab1ProjectIdSubscriptionKeyPair: Pair<String, String>,
-        tab2ProjectIdSubscriptionKeyPair: Pair<String, String>,
-    ) {
-        settings.projectId = tab1ProjectIdSubscriptionKeyPair.first
-        settings.subscriptionKey = tab1ProjectIdSubscriptionKeyPair.second
-        settings.projectId2 = tab2ProjectIdSubscriptionKeyPair.first
-        settings.subscriptionKey2 = tab2ProjectIdSubscriptionKeyPair.second
-    }
-
-    private fun updateProjectIdAndSubscription() {
-        val projectIdSubscriptionKeyPair: Pair<String, String> = if (isTab1Checked) {
-            settings.getCurrentTab1ProjectIdSubscriptionKeyPair(
-                binding.switchProdVersion.isChecked
-            )
+    private fun updateTabProjectIdAndSubscription() {
+        val configData: MiniAppConfigData = if (isTab1Checked) {
+            settings.getCurrentTab1ConfigData()
         } else {
-            settings.getCurrentTab2ProjectIdSubscriptionKeyPair(
-                binding.switchProdVersion.isChecked
-            )
+            settings.getCurrentTab2ConfigData()
         }
-        setUpIdSubscriptionView(projectIdSubscriptionKeyPair)
+        setupConfigDataToView(configData)
     }
 
-    private fun setUpIdSubscriptionView(projectIdAndSubscriptionKeyPair: Pair<String, String>) {
-        binding.editProjectId.setText(projectIdAndSubscriptionKeyPair.first)
-        binding.editSubscriptionKey.setText(projectIdAndSubscriptionKeyPair.second)
-    }
-
-    private fun setUpIdSubscriptionView(projectId: String, subscriptionKey: String){
-        binding.editProjectId.setText(projectId)
-        binding.editSubscriptionKey.setText(subscriptionKey)
+    private fun setupConfigDataToView(configData: MiniAppConfigData) {
+        binding.switchProdVersion.isChecked = configData.isProduction
+        binding.switchPreviewModeTab.isChecked = configData.isPreviewMode
+        binding.switchSignatureVerification.isChecked = configData.isVerificationRequired
+        binding.editProjectId.setText(configData.projectId)
+        binding.editSubscriptionKey.setText(configData.subscriptionId)
     }
 
     private fun createBuildInfo(): String {
         val sdkVersion = getString(R.string.miniapp_sdk_version)
         val buildVersion = getString(R.string.build_version)
         return "Build $sdkVersion - $buildVersion"
+    }
+
+    private fun updateProfileImageBase64() {
+        if (AppSettings.instance.profilePictureUrlBase64 == "") {
+            encodeImageForMiniApp()
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun encodeImageForMiniApp() {
+        launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val bitmap =
+                        BitmapFactory.decodeResource(resources, R.drawable.r_logo_default_profile)
+                    val byteStream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream)
+                    val byteArray = byteStream.toByteArray()
+                    val base64DataPrefix = "data:image/png;base64,"
+                    val profileUrlBase64 = base64DataPrefix + Base64.encodeToString(
+                        byteArray, Base64.DEFAULT
+                    )
+                    AppSettings.instance.profilePictureUrlBase64 = profileUrlBase64
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun addDefaultContactList() {
+        if (!settings.isContactsSaved) {
+            settings.contacts = createRandomContactList()
+        }
+    }
+
+    @Suppress("UnusedPrivateMember", "MagicNumber")
+    private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
+        for (i in 1..10) {
+            this.add(createRandomContact())
+        }
+    }
+
+    @Suppress("MaxLineLength")
+    private fun createRandomContact(): Contact {
+        val firstName =
+            AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
+        val lastName =
+            AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
+        val email =
+            firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
+    }
+
+    override fun onStop() {
+        settings.isTab1Checked = isTab1Checked
+        settings.clearTempData()
+        super.onStop()
     }
 }

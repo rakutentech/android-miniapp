@@ -6,12 +6,12 @@
     <string name="lb_app_settings">Settings</string>
     <string name="lb_preview_mode">Preview Mode</string>
     <string name="lb_require_signature_verification">Require Signature Verification</string>
-    <string name="lb_enable_prod_version">PRD</string>
+    <string name="lb_enable_prod_version">Production</string>
     <string name="lb_ras">RAS</string>
     <string name="lb_miniapp_url_parameters">MiniApp URL Query Parameters</string>
     <string name="lb_access_token">Access Token</string>
     <string name="lb_valid_until">Expired Date</string>
-    <string name="lb_display_input">Display by Input</string>
+    <string name="lb_display_url">Display by URL</string>
     <string name="lb_unique_id">Unique ID</string>
     <string name="lb_filter_view_miniapp">Open MiniApp</string>
     <string name="lb_secure_storage">Secure Storage</string>
@@ -59,7 +59,8 @@
     <string name="chat_tutorial">Would you like to send the message?</string>
 
     <string name="action_display">Display</string>
-    <string name="action_go_input">Display Miniapp From Input</string>
+    <string name="action_go_input_url">URL</string>
+    <string name="action_go_input_url_details">Open a miniapp via url</string>
     <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
@@ -105,6 +106,9 @@
     <string name="error_desc_promotional_text_missing">Promotional text is not available</string>
     <string name="error_desc_miniapp_too_many_request">"Mini app is requested too many times.</string>
 
+    <string name="success_title_parameters_saved">Parameters saved</string>
+    <string name="success_desc_parameter_saved">Configuration is saved and Miniapp list is updated</string>
+
     <string name="help_center_text">Help Center</string>
     <string name="lb_close">Close</string>
 
@@ -116,4 +120,6 @@
     <string name="deeplink_activity_input_hint">Input here</string>
     <string name="deeplink_activity_no_deeplink">No deeplink available!</string>
     <string name="deeplink_activity_not_saved">No deeplink has been saved yet.</string>
+    <string name="miniapp_by_url">MiniApp By URL</string>
+
 </resources>
