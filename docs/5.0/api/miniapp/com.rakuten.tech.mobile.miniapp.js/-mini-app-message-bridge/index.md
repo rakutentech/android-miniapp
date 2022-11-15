@@ -32,9 +32,3 @@ Bridge interface for communicating with mini app.
 | [setMiniAppFileDownloader](set-mini-app-file-downloader.md) | [androidJvm]<br>fun [setMiniAppFileDownloader](set-mini-app-file-downloader.md)(miniAppFileDownloader: [MiniAppFileDownloader](../../com.rakuten.tech.mobile.miniapp.file/-mini-app-file-downloader/index.md))<br>Set implemented file downloader. Can use the default provided class from sdk [MiniAppFileDownloaderDefault](../../com.rakuten.tech.mobile.miniapp.file/-mini-app-file-downloader-default/index.md). |
 | [setUserInfoBridgeDispatcher](set-user-info-bridge-dispatcher.md) | [androidJvm]<br>fun [setUserInfoBridgeDispatcher](set-user-info-bridge-dispatcher.md)(bridgeDispatcher: [UserInfoBridgeDispatcher](../../com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/index.md))<br>Set implemented userInfoBridgeDispatcher. Can use the default provided class from sdk [UserInfoBridgeDispatcher](../../com.rakuten.tech.mobile.miniapp.js.userinfo/-user-info-bridge-dispatcher/index.md). |
 | [shareContent](share-content.md) | [androidJvm]<br>open fun [shareContent](share-content.md)(content: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), callback: (isSuccess: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?) -&gt; [Unit](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html))<br>Share content info ShareInfo. This info is provided by mini app. |
-
-## Properties
-
-| Name | Summary |
-|---|---|
-| [activity](activity.md) | [androidJvm]<br>lateinit var [activity](activity.md): [Activity](https://developer.android.com/reference/kotlin/android/app/Activity.html) |
