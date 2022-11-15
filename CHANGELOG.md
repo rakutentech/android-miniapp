@@ -1,5 +1,12 @@
 ## CHANGELOG
 
+### 5.0.1 (2022-11-15)
+**SDK**
+- **Fix:** Added bug fixes related to Secure storage feature.
+
+**Sample App**
+- **Fix:** Added bug fixes related to Settings page.
+
 ### 5.0.0 (2022-10-25)
 **SDK**
 - **Feature:** Added `MiniAppView` to create multiple MiniApp views.
