@@ -111,7 +111,7 @@ class ContactListActivity : BaseActivity(), ContactListener {
                 setDialogTitle("Contact Input")
             }
 
-            setPositiveListener(View.OnClickListener {
+            setPositiveListener {
                 val id: String = edtContactId.text.toString().trim()
                 val name: String = edtContactName.text.toString().trim()
                 val email: String = edtContactEmail.text.toString().trim()
@@ -123,7 +123,7 @@ class ContactListActivity : BaseActivity(), ContactListener {
 
                     this.dialog?.cancel()
                 }
-            })
+            }
         }.show()
     }
 
