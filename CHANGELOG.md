@@ -6,6 +6,17 @@
 - **Feature:** Multiple MiniAppSdk configurations
 - **Feature:** Enabled PermissionSettings on MiniApp top bar
 
+### 5.0.1 (2022-11-15)
+**SDK**
+- **Update:** Secure Storage performance enhancement.
+- **Update:** Secured DB won't be available if a MiniApp isn't storing any data.
+- **Update:** Clear Storage will delete all the records from the Table and will not delete the DB.
+- **Fix:** Added available size implementation in Secure Storage.
+- **Fix:** Changed the DB creation and load time for a MiniApp.
+
+**Sample App**
+- **Fix:** Added bug fixes related to Settings page.
+
 ### 5.0.0 (2022-10-25)
 **SDK**
 - **Feature:** Added `MiniAppView` to create multiple MiniApp views.

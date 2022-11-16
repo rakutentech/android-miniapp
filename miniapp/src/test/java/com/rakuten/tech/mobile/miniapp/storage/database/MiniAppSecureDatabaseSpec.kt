@@ -301,6 +301,14 @@ class MiniAppSecureDatabaseSpec {
     }
 
     /**
+     * isDatabaseReady test cases
+     */
+    @Test
+    fun `verify the isDatabaseReady should be true if lateinit var database isInitialized`() {
+        assertTrue(massDB.isDatabaseReady())
+    }
+
+    /**
      * isDatabaseOpen test cases
      */
     @Test
@@ -2245,14 +2253,20 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
+    fun `isDatabasebusy should call inTrnsaction`() {
+        massDB.isDatabaseBusy()
+        verify(massDB.database, times(1)).inTransaction()
+    }
+
+    @Test
     fun `isDatabasebusy should be false if miniAppDatabaseStatus is not BUSY`() {
-        When calling massDB.miniAppDatabaseStatus itReturns MiniAppDatabaseStatus.READY
+        When calling massDB.database.inTransaction() itReturns false
         massDB.isDatabaseBusy().shouldBeFalse()
     }
 
     @Test
     fun `isDatabasebusy should be true if miniAppDatabaseStatus is BUSY`() {
-        massDB.miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
+        When calling massDB.database.inTransaction() itReturns true
         massDB.isDatabaseBusy().shouldBeTrue()
     }
 

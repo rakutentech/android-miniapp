@@ -59,17 +59,26 @@ internal class MiniAppSecureStorage(
         return status
     }
 
-    private fun validatePreCheck(onFailed: (MiniAppSecureStorageError) -> Unit): Boolean {
-        val status: Boolean = if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
+    private fun isPreCheckPasses(onFailed: (MiniAppSecureStorageError) -> Unit): Boolean {
+        return if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
             onFailed(MiniAppSecureStorageError.secureStorageUnavailableError)
             false
+        } else if (!miniAppSecureDatabase.isDatabaseReady()) {
+            createOrOpenAndUnlockDatabase()
+            true
         } else if (miniAppSecureDatabase.isDatabaseBusy()) {
             onFailed(MiniAppSecureStorageError.secureStorageBusyError)
             false
         } else {
             true
         }
-        return status
+    }
+
+    @VisibleForTesting
+    internal fun loadDatabase() {
+        if (!miniAppSecureDatabase.isDatabaseReady()) {
+            createOrOpenAndUnlockDatabase()
+        }
     }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
@@ -107,10 +116,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                if (!miniAppSecureDatabase.isDatabaseAvailable(databaseName)) {
-                    createOrOpenAndUnlockDatabase()
-                }
-
+                loadDatabase()
                 if (miniAppSecureDatabase.isDatabaseBusy()) {
                     onFailed(MiniAppSecureStorageError.secureStorageBusyError)
                 } else if (miniAppSecureDatabase.isDatabaseFull()) {
@@ -142,7 +148,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                if (validatePreCheck(onFailed)) {
+                if (isPreCheckPasses(onFailed)) {
                     val value = miniAppSecureDatabase.getItem(key)
                     onSuccess(value)
                 }
@@ -166,7 +172,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                if (validatePreCheck(onFailed)) {
+                if (isPreCheckPasses(onFailed)) {
                     val value = miniAppSecureDatabase.getAllItems()
                     if (value.isNotEmpty()) {
                         onSuccess(value)
@@ -195,7 +201,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                if (validatePreCheck(onFailed)) {
+                if (isPreCheckPasses(onFailed)) {
                     if (miniAppSecureDatabase.deleteItems(keySet)) {
                         onSuccess()
                     } else {
@@ -222,7 +228,7 @@ internal class MiniAppSecureStorage(
     ) {
         scope.launch {
             try {
-                if (validatePreCheck(onFailed)) {
+                if (isPreCheckPasses(onFailed)) {
                     miniAppSecureDatabase.deleteAllRecords()
                     onSuccess()
                 }
