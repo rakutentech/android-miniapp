@@ -176,9 +176,3 @@ fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
         onFinished()
     }, durationInMillis)
 }
-
-fun Context.isValidMiniAppUrl(url: String): Boolean = url.startsWith(
-    "${getString(R.string.miniappdemo_scheme)}://${getString(R.string.miniappdemo_host)}${
-        getString(R.string.miniappdemo_pathprefix)
-    }"
-)

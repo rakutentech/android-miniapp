@@ -127,12 +127,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             context: Context,
             appUrl: String,
             miniAppSdkConfig: MiniAppSdkConfig? = null,
-            updatetype: Boolean = false
+            updatetype: Boolean = false,
+            isFromMiniAppActivity: Boolean = true,
         ) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appUrlTag, appUrl)
                 putExtra(updateTypeTag, updatetype)
-                putExtra(isFromMiniAppByUrlActivityTag, true)
+                putExtra(isFromMiniAppByUrlActivityTag, isFromMiniAppActivity)
                 miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
@@ -227,7 +228,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                         WebView.setWebContentsDebuggingEnabled(true)
 
-                    //action: display webviewi
+                    //action: display webview
 
                     addLifeCycleObserver(lifecycle)
                     setContentView(it)

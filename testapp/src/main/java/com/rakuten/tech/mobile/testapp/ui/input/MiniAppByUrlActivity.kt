@@ -1,7 +1,5 @@
 package com.rakuten.tech.mobile.testapp.ui.input
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,9 +8,7 @@ import android.webkit.URLUtil
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppInputActivityBinding
-import com.rakuten.tech.mobile.testapp.helper.isValidMiniAppUrl
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
-import com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeByUrlActivity
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 
@@ -25,18 +21,10 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
 
     sealed class InputDisplay(val input: String) {
         class Url(input: String) : InputDisplay(input)
-        class MiniAppUrl(input: String) : InputDisplay(input)
         class None : InputDisplay("")
     }
 
     private var display: InputDisplay = InputDisplay.None()
-    private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {
-        if (it) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(display.input.trim()))
-            startActivity(intent)
-        }
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,25 +62,17 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     private fun isValidAppUrl(input: String): Boolean = URLUtil.isValidUrl(input)
             && Patterns.WEB_URL.matcher(input).matches()
 
-    fun validateInput(input: String) {
+    private fun validateInput(input: String) {
         if (input.isBlank())
             binding.btnDisplayAppId.isEnabled = false
         else {
-            display =
-                when {
-                    (isValidAppUrl(input)) -> {
-                        onValidUI()
-                        InputDisplay.Url(input)
-                    }
-                    isValidMiniAppUrl(input) -> {
-                        onValidUI()
-                        InputDisplay.MiniAppUrl(input)
-                    }
-                    else -> {
-                        onInvalidUI()
-                        InputDisplay.None()
-                    }
-                }
+            display = if (isValidAppUrl(input)) {
+                onValidUI()
+                InputDisplay.Url(input)
+            } else {
+                onInvalidUI()
+                InputDisplay.None()
+            }
         }
     }
 
@@ -111,12 +91,6 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
             MiniAppDisplayActivity.startUrl(
                 this,
                 display.input.trim(),
-            )
-        }
-        is InputDisplay.MiniAppUrl -> {
-            SchemeByUrlActivity.start(
-                this,
-                display.input.trim()
             )
         }
         is InputDisplay.None -> {
