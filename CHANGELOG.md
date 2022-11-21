@@ -5,6 +5,7 @@
 - **Feature:** Settings is moved to it's own tab.
 - **Feature:** Multiple MiniAppSdk configurations
 - **Feature:** Enabled PermissionSettings on MiniApp top bar
+- **Feature:** Enabled open Mini App using Mini App URL Scheme
 
 ### 5.0.0 (2022-10-25)
 **SDK**

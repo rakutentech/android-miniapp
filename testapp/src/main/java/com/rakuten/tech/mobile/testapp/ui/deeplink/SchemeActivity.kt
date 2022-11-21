@@ -17,7 +17,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 /**
  * This activity will be the gateway of all deeplink scheme.
  */
-class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
+open class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""

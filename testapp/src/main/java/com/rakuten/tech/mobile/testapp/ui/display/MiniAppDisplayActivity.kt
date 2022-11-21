@@ -212,7 +212,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
         val appUrl = intent.getStringExtra(appUrlTag)
-        isFromMiniAppByUrlActivity = intent.getBooleanExtra(isFromMiniAppByUrlActivityTag, false)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
@@ -228,13 +227,17 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
                         WebView.setWebContentsDebuggingEnabled(true)
 
-                    //action: display webview
+                    //action: display webviewi
+
                     addLifeCycleObserver(lifecycle)
                     setContentView(it)
                 }
 
                 errorData.observe(this@MiniAppDisplayActivity) {
                     Toast.makeText(this@MiniAppDisplayActivity, it, Toast.LENGTH_LONG).show()
+                    delayUIThread {
+                        finish()
+                    }
                 }
 
                 isLoading.observe(this@MiniAppDisplayActivity) {
@@ -257,6 +260,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 url: String,
                 externalResultHandler: ExternalResultHandler
             ) {
+                isFromMiniAppByUrlActivity =
+                    intent.getBooleanExtra(isFromMiniAppByUrlActivityTag, false)
                 if (AppSettings.instance.dynamicDeeplinks.contains(url)) {
                     try {
                         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
@@ -270,8 +275,11 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 } else {
                     sampleWebViewExternalResultHandler = externalResultHandler
                     WebViewActivity.startForResult(
-                        this@MiniAppDisplayActivity, url,
-                        appId, appUrl, externalWebViewReqCode
+                        activity = this@MiniAppDisplayActivity,
+                        url = url,
+                        appId = appId,
+                        appUrl = appUrl,
+                        externalWebViewReqCode = externalWebViewReqCode,
                     )
                 }
             }
@@ -468,9 +476,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     sampleWebViewExternalResultHandler.emitResult(intent)
                 }
 
-                if(isFromMiniAppByUrlActivity){
-                    finish()
-                }
+                handleRedirectUrlPage()
             }
         } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
             miniAppFileChooser.onReceivedFiles(data)
@@ -478,6 +484,17 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             data?.data?.let { destinationUri ->
                 miniAppFileDownloader.onReceivedResult(destinationUri)
             }
+        }
+    }
+
+    /**
+     * Handles a blank page caused by a redirect url.
+     * The valid state is whenever either this page is entered from deeplink or by url,
+     * would not navigate to external webview right away,
+     */
+    private fun handleRedirectUrlPage() {
+        if (isFromMiniAppByUrlActivity) {
+            finish()
         }
     }
 

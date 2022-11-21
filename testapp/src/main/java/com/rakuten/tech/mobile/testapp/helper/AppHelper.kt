@@ -6,6 +6,8 @@ import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.util.Patterns
 import android.view.View
@@ -168,3 +170,15 @@ fun MiniAppMessageBridge.dispatchOnResumeEvent() {
         NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed"
     )
 }
+
+fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
+    Handler(Looper.getMainLooper()).postDelayed({
+        onFinished()
+    }, durationInMillis)
+}
+
+fun Context.isValidMiniAppUrl(url: String): Boolean = url.startsWith(
+    "${getString(R.string.miniappdemo_scheme)}://${getString(R.string.miniappdemo_host)}${
+        getString(R.string.miniappdemo_pathprefix)
+    }"
+)
