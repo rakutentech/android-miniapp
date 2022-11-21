@@ -87,7 +87,6 @@
         </activity>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.deeplink.SchemeByUrlActivity"
-            android:exported="true"
             android:launchMode="singleTop">
         </activity>
         <activity
