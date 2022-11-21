@@ -16,6 +16,7 @@
     <dimen name="medium_16">16dp</dimen>
     <dimen name="large_24">24dp</dimen>
     <dimen name="large_32">32dp</dimen>
+    <dimen name="large_40">40dp</dimen>
     <dimen name="large_44">44dp</dimen>
     <dimen name="large_48">48dp</dimen>
     <dimen name="large_52">52dp</dimen>

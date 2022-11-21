@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,13 +22,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="@dimen/medium_16">
+                android:layout_marginBottom="@dimen/medium_16"
+                app:endIconMode="clear_text"
+                app:errorTextAppearance="@style/SettingsError.TextAppearance">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtAppId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:paddingEnd="@dimen/large_40"
+                    tools:ignore="RtlSymmetry" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
