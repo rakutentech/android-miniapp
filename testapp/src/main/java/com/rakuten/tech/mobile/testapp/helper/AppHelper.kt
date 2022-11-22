@@ -6,6 +6,8 @@ import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.util.Patterns
 import android.view.View
@@ -167,4 +169,10 @@ fun MiniAppMessageBridge.dispatchOnResumeEvent() {
     dispatchNativeEvent(
         NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed"
     )
+}
+
+fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
+    Handler(Looper.getMainLooper()).postDelayed({
+        onFinished()
+    }, durationInMillis)
 }

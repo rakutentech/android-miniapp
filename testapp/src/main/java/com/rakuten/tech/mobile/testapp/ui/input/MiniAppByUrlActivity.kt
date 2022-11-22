@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.input
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Patterns
 import android.webkit.URLUtil
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -58,12 +59,14 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
         finish()
     }
 
+    private fun isValidAppUrl(input: String): Boolean = URLUtil.isValidUrl(input)
+            && Patterns.WEB_URL.matcher(input).matches()
 
     private fun validateInput(input: String) {
         if (input.isBlank())
             binding.btnDisplayAppId.isEnabled = false
         else {
-            display = if (URLUtil.isValidUrl(input)) {
+            display = if (isValidAppUrl(input)) {
                 onValidUI()
                 InputDisplay.Url(input)
             } else {
@@ -84,7 +87,12 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     }
 
     private fun displayMiniApp() = when (display) {
-        is InputDisplay.Url -> MiniAppDisplayActivity.startUrl(this, display.input.trim())
+        is InputDisplay.Url -> {
+            MiniAppDisplayActivity.startUrl(
+                this,
+                display.input.trim(),
+            )
+        }
         is InputDisplay.None -> {
             //intended
         }
