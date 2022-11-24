@@ -1,0 +1,22 @@
+name: Create pull request from candidate to master
+on:
+  release:
+    types: [published]
+jobs:
+  candidateToMaster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+      - name: Reset candidate
+        run: |
+          git fetch origin candidate:candidate
+          git reset --hard candidate
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: Candidate
+          body: This is the candidate merge after a successful SDK release
+          labels: SDK
+          branch: candidate
