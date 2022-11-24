@@ -87,3 +87,6 @@ internal val TEST_HA_ANALYTICS_CONFIGS = listOf(TEST_CONFIG1, TEST_CONFIG2)
 
 internal const val TEST_PUBLIC_KEY_ID = "test_public_key_id"
 internal const val TEST_MANIFEST_SIGNATURE = "test_manifest_signature"
+
+internal const val JAVA7_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+internal const val JAVA8_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
