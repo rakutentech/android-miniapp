@@ -14,6 +14,7 @@ import org.robolectric.util.ReflectionHelpers
 import javax.crypto.spec.IvParameterSpec
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class MiniAppDatabaseEncryptionUtilSpec {
@@ -43,7 +44,10 @@ class MiniAppDatabaseEncryptionUtilSpec {
     @Test
     fun `encrypt the given passcode with SHA1 algorithm it should match after the decryption`() {
 
+        val saltByteLength = 8
         val passcode = TEST_MA_ID
+        val encryptionAlgorithm = "AES"
+
         ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 24)
 
         val salt = MiniAppDatabaseEncryptionUtil.generateSalt()
@@ -60,12 +64,17 @@ class MiniAppDatabaseEncryptionUtilSpec {
         )
 
         assertEquals(passcode, decryptedPasscode)
+        assertTrue((salt.size == saltByteLength))
+        assertEquals(secretKey.algorithm, encryptionAlgorithm)
     }
 
     @Test
     fun `encrypt the given passcode with SHA256 algorithm it should match after the decryption`() {
 
+        val saltByteLength = 8
         val passcode = TEST_MA_ID
+        val encryptionAlgorithm = "AES"
+
         ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 25)
 
         val salt = MiniAppDatabaseEncryptionUtil.generateSalt()
@@ -82,6 +91,8 @@ class MiniAppDatabaseEncryptionUtilSpec {
         )
 
         assertEquals(passcode, decryptedPasscode)
+        assertTrue((salt.size == saltByteLength))
+        assertEquals(secretKey.algorithm, encryptionAlgorithm)
     }
 
     @Test
