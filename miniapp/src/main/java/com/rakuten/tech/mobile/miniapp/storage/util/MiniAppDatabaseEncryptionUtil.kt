@@ -21,7 +21,8 @@ private const val ENCRYPTION_ALGORITHM = "AES"
 private const val SHARED_PREFERENCE_KEY = "PASSCODE"
 private const val SHARED_PREFERENCE_NAME = "MiniAppDatabase"
 private const val CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding"
-private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
+private const val JAVA7_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+private const val JAVA8_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
 
 /**
  * Container for everything needed for decrypting the database.
@@ -54,8 +55,16 @@ internal object MiniAppDatabaseEncryptionUtil {
 
     @VisibleForTesting
     @SuppressWarnings("MagicNumber")
+    internal fun getSecretKeyAlgorithm() = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+        SecretKeyFactory.getInstance(JAVA7_SECRET_KEY_ALGORITHM)
+    } else {
+        SecretKeyFactory.getInstance(JAVA8_SECRET_KEY_ALGORITHM)
+    }
+
+    @VisibleForTesting
+    @SuppressWarnings("MagicNumber")
     internal fun getSecretKeyFromPassword(password: String, salt: ByteArray): SecretKey {
-        val factory: SecretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM)
+        val factory: SecretKeyFactory = getSecretKeyAlgorithm()
         val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 256)
         return SecretKeySpec(
             factory.generateSecret(spec)
