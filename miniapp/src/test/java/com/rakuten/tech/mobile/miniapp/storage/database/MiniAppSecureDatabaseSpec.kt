@@ -301,6 +301,14 @@ class MiniAppSecureDatabaseSpec {
     }
 
     /**
+     * isDatabaseReady test cases
+     */
+    @Test
+    fun `verify the isDatabaseReady should be true if lateinit var database isInitialized`() {
+        assertTrue(massDB.isDatabaseReady())
+    }
+
+    /**
      * isDatabaseOpen test cases
      */
     @Test
@@ -1918,7 +1926,7 @@ class MiniAppSecureDatabaseSpec {
 
         massDB.deleteAllRecords()
 
-        verify(massDB.database, times(1)).execSQL(DROP_TABLE_QUERY)
+        verify(massDB.database, times(1)).execSQL(DELETE_ALL_RECORDS_QUERY)
     }
 
     @Test
@@ -1969,12 +1977,13 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
-    fun `verify status in finally after deleteAllRecords is successful`() = runBlockingTest {
+    fun `verify status should be ready in finally after deleteAllRecords is successful`() =
+        runBlockingTest {
 
-        massDB.deleteAllRecords()
+            massDB.deleteAllRecords()
 
-        assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.UNAVAILABLE)
-    }
+            assertTrue(massDB.miniAppDatabaseStatus == MiniAppDatabaseStatus.READY)
+        }
 
     @Test
     fun `verify database isn't opened if all the records in the table are deleted successfully`() =
@@ -1996,34 +2005,35 @@ class MiniAppSecureDatabaseSpec {
         }
 
     @Test
-    fun `verify deleteAllRecords closes the database`() = runBlockingTest {
-
-        When calling massDB.database.isOpen itReturns true
-
-        massDB.deleteAllRecords()
-
-        Verify on massDB.database that massDB.database.close() was called
-    }
-
-    @Test
-    fun `verify finishAnyPendingDBTransaction was called twice after deleteAllRecords`() =
+    fun `verify deleteAllRecords should only delete all the records and not close the database`() =
         runBlockingTest {
 
             When calling massDB.database.isOpen itReturns true
 
             massDB.deleteAllRecords()
 
-            verify(massDB, times(2)).finishAnyPendingDBTransaction()
+            verify(massDB.database, times(0)).close()
         }
 
     @Test
-    fun `verify inTransaction was called thrice when closes database`() = runBlockingTest {
+    fun `verify finishAnyPendingDBTransaction was called after deleteAllRecords`() =
+        runBlockingTest {
+
+            When calling massDB.database.isOpen itReturns true
+
+            massDB.deleteAllRecords()
+
+            verify(massDB, times(1)).finishAnyPendingDBTransaction()
+        }
+
+    @Test
+    fun `verify inTransaction was called twice after deleting all records`() = runBlockingTest {
 
         When calling massDB.database.isOpen itReturns true
 
         massDB.deleteAllRecords()
 
-        verify(massDB.database, times(3)).inTransaction()
+        verify(massDB.database, times(2)).inTransaction()
     }
 
     @Test
@@ -2156,7 +2166,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-1`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2170,7 +2180,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-2`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2184,7 +2194,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-3`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2198,7 +2208,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-4`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2212,7 +2222,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-5`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2226,7 +2236,7 @@ class MiniAppSecureDatabaseSpec {
     @Test
     fun `verify after tasks when RuntimeException was thrown-6`() {
 
-        When calling massDB.database.execSQL(DROP_TABLE_QUERY) itThrows RuntimeException(
+        When calling massDB.database.execSQL(DELETE_ALL_RECORDS_QUERY) itThrows RuntimeException(
             RUNTIME_EXCEPTION_ERROR_MSG
         )
 
@@ -2243,14 +2253,20 @@ class MiniAppSecureDatabaseSpec {
     }
 
     @Test
+    fun `isDatabasebusy should call inTrnsaction`() {
+        massDB.isDatabaseBusy()
+        verify(massDB.database, times(1)).inTransaction()
+    }
+
+    @Test
     fun `isDatabasebusy should be false if miniAppDatabaseStatus is not BUSY`() {
-        When calling massDB.miniAppDatabaseStatus itReturns MiniAppDatabaseStatus.READY
+        When calling massDB.database.inTransaction() itReturns false
         massDB.isDatabaseBusy().shouldBeFalse()
     }
 
     @Test
     fun `isDatabasebusy should be true if miniAppDatabaseStatus is BUSY`() {
-        massDB.miniAppDatabaseStatus = MiniAppDatabaseStatus.BUSY
+        When calling massDB.database.inTransaction() itReturns true
         massDB.isDatabaseBusy().shouldBeTrue()
     }
 

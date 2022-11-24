@@ -52,6 +52,7 @@ class ProfileSettingsActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
+                hideSoftKeyboard(binding.root)
                 finish()
                 return true
             }

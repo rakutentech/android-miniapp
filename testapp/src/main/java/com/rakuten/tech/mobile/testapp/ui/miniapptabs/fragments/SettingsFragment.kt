@@ -185,14 +185,13 @@ class SettingsFragment : BaseFragment() {
     private fun validateInputIDs() {
         val isInputValid = isInputIDValid()
 
-        if (isInputEmpty(binding.editProjectId) || !isInputValid) binding.inputProjectId.error =
-            getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editProjectId) || !isInputValid)
+            binding.inputProjectId.error = getString(R.string.error_invalid_input)
         else binding.inputProjectId.error = null
 
-        if (isInputEmpty(binding.editSubscriptionKey)) binding.inputSubscriptionKey.error =
-            getString(R.string.error_invalid_input)
+        if (isInputEmpty(binding.editSubscriptionKey))
+            binding.inputSubscriptionKey.error = getString(R.string.error_invalid_input)
         else binding.inputSubscriptionKey.error = null
-
 
         saveViewEnabled =
             binding.inputProjectId.error == null && binding.inputSubscriptionKey.error == null

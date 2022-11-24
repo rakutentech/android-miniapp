@@ -41,7 +41,8 @@
 
       <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:endIconMode="clear_text">
 
         <androidx.appcompat.widget.AppCompatEditText
           android:id="@+id/editProfileName"

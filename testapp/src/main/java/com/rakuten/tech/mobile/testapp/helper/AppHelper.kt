@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
+import android.app.Dialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.util.Patterns
 import android.view.View
@@ -17,6 +20,8 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -149,3 +154,25 @@ fun getAdapterDataObserver(observeUIState: () -> Unit): RecyclerView.AdapterData
             observeUIState()
         }
     }
+
+
+fun Dialog.registerOnShowAndOnDismissEvent(onShow: () -> Unit, onDismiss: () -> Unit) {
+    setOnShowListener { onShow() }
+    setOnDismissListener { onDismiss() }
+}
+
+fun MiniAppMessageBridge.dispatchOnPauseEvent() {
+    dispatchNativeEvent(NativeEventType.MINIAPP_ON_PAUSE, "MiniApp Paused")
+}
+
+fun MiniAppMessageBridge.dispatchOnResumeEvent() {
+    dispatchNativeEvent(
+        NativeEventType.MINIAPP_ON_RESUME, "MiniApp Resumed"
+    )
+}
+
+fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
+    Handler(Looper.getMainLooper()).postDelayed({
+        onFinished()
+    }, durationInMillis)
+}

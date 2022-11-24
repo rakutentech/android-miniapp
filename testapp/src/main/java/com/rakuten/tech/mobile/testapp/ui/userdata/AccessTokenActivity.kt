@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.AccessTokenSettingsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.helper.parseDateToString
 import com.rakuten.tech.mobile.testapp.helper.parseStringToDate
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
@@ -53,6 +54,7 @@ class AccessTokenActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
+                hideSoftKeyboard(binding.root)
                 finish()
                 return true
             }
@@ -85,6 +87,7 @@ class AccessTokenActivity : BaseActivity() {
 
     private fun update() {
         settings.tokenData = TokenData(accessToken, expiredDate)
+        hideSoftKeyboard(binding.root)
         finish()
     }
 
