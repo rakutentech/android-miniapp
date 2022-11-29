@@ -23,7 +23,9 @@ data class ProductPrice(
 data class PurchasedProduct(
     val product: Product,
     val transactionId: String,
-    val transactionDate: String
+    val purchaseToken: String,
+    val transactionReceipt: String,
+    val transactionDate: Long
 )
 
 /** An object to include the [PurchasedProduct] with response status. */

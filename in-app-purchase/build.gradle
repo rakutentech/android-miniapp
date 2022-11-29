@@ -29,8 +29,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "com.android.billingclient:billing-ktx:$billing_version"
-
-    compileOnly project(':miniapp')
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

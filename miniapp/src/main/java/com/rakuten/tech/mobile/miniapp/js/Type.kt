@@ -26,7 +26,8 @@ internal enum class ActionType(val action: String) {
     SECURE_STORAGE_CLEAR("clearSecureStorage"),
     SECURE_STORAGE_SIZE("getSecureStorageSize"),
     SET_CLOSE_ALERT("setCloseAlert"),
-    PURCHASE_ITEM("purchaseItem"),
+    PURCHASE_ITEM("purchaseProductWith"),
+    GET_PURCHASE_ITEM_LIST("prepareProductsList"),
 }
 
 internal enum class DialogType {

@@ -2,14 +2,8 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
 import com.android.billingclient.api.*
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
 /**
@@ -138,7 +132,13 @@ class InAppPurchaseProviderDefault(
                         val product = Product(
                             it.sku, it.title, it.description, productPrice
                         )
-                        val purchasedProduct = PurchasedProduct(product, "", "")
+                        val purchasedProduct = PurchasedProduct(
+                            product = product,
+                            transactionId = purchase.orderId,
+                            purchaseToken = purchase.purchaseToken,
+                            transactionReceipt = purchase.originalJson,
+                            transactionDate = purchase.purchaseTime
+                        )
                         val purchasedProductResponse = PurchasedProductResponse(
                             PurchasedProductResponseStatus.PURCHASED,
                             purchasedProduct

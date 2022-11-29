@@ -163,7 +163,7 @@ internal data class PurchasedProductCallbackObj(
 
     @Keep
     internal data class ProductItem(
-        val itemId: String
+        val product_id: String
     )
 }
 // end region

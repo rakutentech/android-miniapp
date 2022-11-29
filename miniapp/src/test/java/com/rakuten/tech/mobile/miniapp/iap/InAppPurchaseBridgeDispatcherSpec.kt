@@ -25,18 +25,20 @@ class InAppPurchaseBridgeDispatcherSpec {
     )
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
-    private val productPrice = ProductPrice(
+    private val productPrice = com.rakuten.tech.mobile.miniapp.iap.ProductPrice(
         "JPY", "1234"
     )
-    private val product = Product(
+    private val product = com.rakuten.tech.mobile.miniapp.iap.Product(
         "itemId", "title", "description", productPrice
     )
-    private val purchasedProduct = PurchasedProduct(
+    private val purchasedProduct = com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct(
         product, "dummy_transactionId", "YYYY-MM-DD"
     )
-    private val purchasedProductResponse = PurchasedProductResponse(
-        PurchasedProductResponseStatus.UNKNOWN, purchasedProduct
-    )
+    private val purchasedProductResponse =
+        PurchasedProductResponse(
+            PurchasedProductResponseStatus.UNKNOWN,
+            purchasedProduct
+        )
     private val purchaseJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.PURCHASE_ITEM.action,
@@ -55,7 +57,8 @@ class InAppPurchaseBridgeDispatcherSpec {
             customPermissionCache = mock(),
             downloadedManifestCache = mock(),
             miniAppId = TEST_MA.id,
-            ratDispatcher = mock()
+            ratDispatcher = mock(),
+            secureStorageDispatcher = mock()
         )
     }
 
@@ -115,8 +118,9 @@ class InAppPurchaseBridgeDispatcherSpec {
     private fun createPurchaseProvider(
         shouldCreate: Boolean,
         canPurchase: Boolean
-    ): InAppPurchaseProvider {
-        return if (shouldCreate) object : InAppPurchaseProvider {
+    ): com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider {
+        return if (shouldCreate) object :
+            com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider {
 
             override fun purchaseItem(
                 itemId: String,
@@ -133,7 +137,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         }
     }
 
-    private fun createIAPBridgeWrapper(provider: InAppPurchaseProvider): InAppPurchaseBridgeDispatcher {
+    private fun createIAPBridgeWrapper(provider: com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider): InAppPurchaseBridgeDispatcher {
         val wrapper = InAppPurchaseBridgeDispatcher()
         wrapper.setMiniAppComponents(
             bridgeExecutor,

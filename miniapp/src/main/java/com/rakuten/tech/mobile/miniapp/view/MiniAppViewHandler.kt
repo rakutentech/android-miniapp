@@ -193,6 +193,7 @@ internal class MiniAppViewHandler(
             miniAppDownloader.getCachedMiniApp(miniAppId)
         }
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+        config.miniAppMessageBridge.setComponentsIAPDispatcher(apiClient)
         return displayer.createMiniAppDisplay(
             basePath,
             miniAppInfo,
@@ -220,6 +221,7 @@ internal class MiniAppViewHandler(
             miniAppDownloader.getCachedMiniApp(miniAppInfo)
         }
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+        config.miniAppMessageBridge.setComponentsIAPDispatcher(apiClient)
         return displayer.createMiniAppDisplay(
             basePath,
             miniAppInfo,

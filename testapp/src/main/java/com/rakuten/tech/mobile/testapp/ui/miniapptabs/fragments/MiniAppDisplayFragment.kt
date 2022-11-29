@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProviderDefault
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
@@ -406,6 +407,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+
+        // setup InAppPurchaseProvider
+        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseProviderDefault(requireActivity()))
     }
 
 

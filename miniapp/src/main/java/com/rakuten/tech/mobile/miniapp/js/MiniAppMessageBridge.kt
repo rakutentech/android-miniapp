@@ -12,15 +12,13 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_CLOSE_ALERT
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
@@ -28,14 +26,9 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -73,6 +66,7 @@ open class MiniAppMessageBridge {
     internal lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
+    private lateinit var apiClient: ApiClient
 
     /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
     fun miniAppShouldClose() = miniAppCloseAlertInfo
@@ -105,8 +99,7 @@ open class MiniAppMessageBridge {
             bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId)
-
+        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId, apiClient)
         miniAppViewInitialized = true
     }
 
@@ -259,6 +252,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(callbackObj.id)
             ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -470,6 +464,10 @@ open class MiniAppMessageBridge {
             return
         }
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
+    }
+
+    internal fun setComponentsIAPDispatcher(apiClient: ApiClient) {
+        this.apiClient = apiClient
     }
 }
 
