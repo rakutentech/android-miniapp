@@ -438,7 +438,7 @@ open class MiniAppMessageBridge {
                 return
             }
         }
-        onError("${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank")
+        onError(ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE)
     }
 
     @SuppressWarnings("TooGenericExceptionCaught")
@@ -504,7 +504,7 @@ internal object ErrorBridgeMessage {
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
         "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
-    const val ERR_UNIVERSAL_BRIDGE = "Cannot send the universal bridge:"
+    const val ERR_UNIVERSAL_BRIDGE = "Please check the String and try again."
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"

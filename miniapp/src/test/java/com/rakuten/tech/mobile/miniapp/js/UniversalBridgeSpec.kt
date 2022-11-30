@@ -73,7 +73,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     @Test
     fun `should invoke onError if universal bridge content is empty`() {
         val onError: (String) -> Unit = Mockito.spy { }
-        val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
+        val errorMessage = ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE
         miniAppBridge.sendJsonToHostApp("", onSuccess = {}, onError = onError)
         verify(onError).invoke(errorMessage)
     }
@@ -107,7 +107,7 @@ class UniversalBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             val webViewListener =
-                spy(createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"))
+                spy(createErrorWebViewListener(ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             When calling webViewListener.runSuccessCallback(
                 any(),

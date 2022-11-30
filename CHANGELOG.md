@@ -2,7 +2,8 @@
 
 ### 5.1.0 (xxxx-xx-xx)
 **SDK**
-- **Feature:** Added `Universal Bridge` to communicate between MiniApps and the HostApp
+- **Feature:** Added `MiniAppMessageBridge.sendJsonToHostApp` interface to provide `Universal Bridge`, receiving messages from a MiniApp to the HostApp.
+- **Feature:** Added `NativeEventType.RECEIVE_UNIVERSAL_JSON_INFO` to provide `Universal Bridge`, sending messages from the HostApp to active MiniApps.
 
 **Sample App**
 - **Feature:** Settings is moved to it's own tab.
