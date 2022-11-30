@@ -24,15 +24,9 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
-import org.json.JSONObject
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -414,8 +408,7 @@ open class MiniAppMessageBridge {
     }
 
     @VisibleForTesting
-    internal fun onSendJsonToHostApp(callbackObj: CallbackObj) = try {
-        JSONObject(callbackObj.param.toString())
+    internal fun onSendJsonToHostApp(callbackObj: CallbackObj)  {
         sendJsonToHostApp(
             content = callbackObj.param,
             onSuccess = { value ->
@@ -427,11 +420,6 @@ open class MiniAppMessageBridge {
                     message
                 )
             }
-        )
-    } catch (e: Exception) {
-        bridgeExecutor.postError(
-            callbackObj.id,
-            "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} ${e.message}"
         )
     }
 
