@@ -89,15 +89,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     @Test
     fun `bridgeExecutor should call postValue if universal bridge json is valid`() {
         miniAppBridge.postMessage(universalBridgeJsonStr)
-        verify(bridgeExecutor).postValue(
-            universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
-        )
-    }
-
-    @Test
-    fun `webViewListener runSuccessCallback if universal bridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
-        verify(webViewListener).runSuccessCallback(
+        verify(bridgeExecutor, times(1)).postValue(
             universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
         )
     }
@@ -219,15 +211,6 @@ class UniversalBridgeSpec : BridgeCommon() {
     fun `miniAppBridge post message should throw an exception if bridge executor is not initialized`() {
         val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
         miniAppBridge.postMessage(universalBridgeJsonStr)
-    }
-
-    @Test
-    fun `bridge executor should call postValue if universalBridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
-        verify(bridgeExecutor, times(1)).postValue(
-            TEST_CALLBACK_ID,
-            universalBridgeCallbackObj.param.toString(),
-        )
     }
 
     @Test
