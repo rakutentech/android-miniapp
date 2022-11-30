@@ -118,9 +118,9 @@ class InAppPurchaseBridgeDispatcherSpec {
     private fun createPurchaseProvider(
         shouldCreate: Boolean,
         canPurchase: Boolean
-    ): com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider {
+    ): InAppPurchaseProvider {
         return if (shouldCreate) object :
-            com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider {
+            InAppPurchaseProvider {
 
             override fun purchaseItem(
                 itemId: String,
@@ -137,7 +137,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         }
     }
 
-    private fun createIAPBridgeWrapper(provider: com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider): InAppPurchaseBridgeDispatcher {
+    private fun createIAPBridgeWrapper(provider: InAppPurchaseProvider): InAppPurchaseBridgeDispatcher {
         val wrapper = InAppPurchaseBridgeDispatcher()
         wrapper.setMiniAppComponents(
             bridgeExecutor,

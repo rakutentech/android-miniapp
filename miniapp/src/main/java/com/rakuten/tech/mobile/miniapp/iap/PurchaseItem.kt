@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
-data class PurchaseItem(
+internal data class PurchaseItem(
     val androidStoreId: String,
     val productId: String
 )

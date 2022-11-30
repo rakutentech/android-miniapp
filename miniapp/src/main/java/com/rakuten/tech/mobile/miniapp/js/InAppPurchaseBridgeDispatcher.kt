@@ -2,12 +2,16 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.*
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponseStatus
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
+import com.rakuten.tech.mobile.miniapp.iap.TransactionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 /** Check whether hostapp provides InAppPurchase dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
@@ -73,7 +77,7 @@ internal class InAppPurchaseBridgeDispatcher {
                     }
                 }
                 inAppPurchaseProvider.purchaseItem(
-                    callbackObj.param.product_id,
+                    callbackObj.param.productId,
                     successCallback,
                     createErrorCallback(callbackId)
                 )
@@ -108,7 +112,7 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun formatTransactionDate(time: Long): String{
+    private fun formatTransactionDate(time: Long): String {
         val date = Date(time)
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         return format.format(date)

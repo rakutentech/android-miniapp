@@ -2,8 +2,14 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
 import com.android.billingclient.api.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
 /**
@@ -100,7 +106,9 @@ class InAppPurchaseProviderDefault(
         withContext(Dispatchers.IO) {
             billingClient.querySkuDetails(params.build())
         }.let {
-            if (it.billingResult.responseCode == BillingClient.BillingResponseCode.OK && !it.skuDetailsList.isNullOrEmpty()) {
+            if (it.billingResult.responseCode == BillingClient.BillingResponseCode.OK &&
+                !it.skuDetailsList.isNullOrEmpty()
+            ) {
                 for (skuDetails in it.skuDetailsList!!) {
                     this.skuDetails = skuDetails
                 }
