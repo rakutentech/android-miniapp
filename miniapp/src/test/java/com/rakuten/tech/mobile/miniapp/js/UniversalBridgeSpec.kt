@@ -71,7 +71,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     }
 
     @Test
-    fun `should invoke onError if universal bridge json is not valid`() {
+    fun `should invoke onError if universal bridge content is empty`() {
         val onError: (String) -> Unit = Mockito.spy { }
         val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
         miniAppBridge.sendJsonToHostApp("", onSuccess = {}, onError = onError)
@@ -179,8 +179,7 @@ class UniversalBridgeSpec : BridgeCommon() {
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
-        verify(bridgeExecutor).postError(universalBridgeCallbackObj.id, errorMessage)
+        verify(bridgeExecutor).postError(eq(universalBridgeCallbackObj.id), any())
     }
 
     @Test
@@ -191,8 +190,7 @@ class UniversalBridgeSpec : BridgeCommon() {
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
-        verify(webViewListener).runErrorCallback(universalBridgeCallbackObj.id, errorMessage)
+        verify(webViewListener).runErrorCallback(eq(universalBridgeCallbackObj.id), any())
     }
 
     @Test
@@ -203,8 +201,7 @@ class UniversalBridgeSpec : BridgeCommon() {
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
-        verify(bridgeExecutor).postError(universalBridgeCallbackObj.id, errorMessage)
+        verify(bridgeExecutor).postError(eq(universalBridgeCallbackObj.id), any())
     }
 
     @Test(expected = UninitializedPropertyAccessException::class)

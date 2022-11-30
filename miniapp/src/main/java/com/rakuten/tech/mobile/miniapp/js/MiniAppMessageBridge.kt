@@ -32,6 +32,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import org.json.JSONObject
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -413,7 +414,8 @@ open class MiniAppMessageBridge {
     }
 
     @VisibleForTesting
-    internal fun onSendJsonToHostApp(callbackObj: CallbackObj) {
+    internal fun onSendJsonToHostApp(callbackObj: CallbackObj) = try {
+        JSONObject(callbackObj.param.toString())
         sendJsonToHostApp(
             content = callbackObj.param,
             onSuccess = { value ->
@@ -425,6 +427,11 @@ open class MiniAppMessageBridge {
                     message
                 )
             }
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackObj.id,
+            "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} ${e.message}"
         )
     }
 
