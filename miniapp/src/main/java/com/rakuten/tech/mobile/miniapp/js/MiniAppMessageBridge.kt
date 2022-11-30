@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -255,6 +256,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
+            ActionType.UNIVERSAL_BRIDGE.action -> onSendJsonToHostApp(callbackObj)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -411,6 +413,40 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
     }
 
+    @VisibleForTesting
+    internal fun onSendJsonToHostApp(callbackObj: CallbackObj) {
+        sendJsonToHostApp(
+            content = callbackObj.param,
+            onSuccess = { value ->
+                bridgeExecutor.postValue(callbackObj.id, value.toString())
+            },
+            onError = { message ->
+                bridgeExecutor.postError(
+                    callbackObj.id,
+                    message
+                )
+            }
+        )
+    }
+
+    /**
+     * handle Universal Bridge that represented as a json  from MiniApp.
+     **/
+    open fun sendJsonToHostApp(
+        content: Any?,
+        onSuccess: (content: Any) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        content?.let {
+            val contentJsonStr = it.toString()
+            if (contentJsonStr.isNotBlank()) {
+                onSuccess(contentJsonStr)
+                return
+            }
+        }
+        onError("${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank")
+    }
+
     @SuppressWarnings("TooGenericExceptionCaught")
     @VisibleForTesting
     internal fun onGetHostEnvironmentInfo(callbackId: String) {
@@ -474,6 +510,7 @@ internal object ErrorBridgeMessage {
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
         "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
+    const val ERR_UNIVERSAL_BRIDGE = "Cannot send the universal bridge:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"

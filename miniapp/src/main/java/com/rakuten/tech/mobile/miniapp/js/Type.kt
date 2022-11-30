@@ -26,6 +26,7 @@ internal enum class ActionType(val action: String) {
     SECURE_STORAGE_CLEAR("clearSecureStorage"),
     SECURE_STORAGE_SIZE("getSecureStorageSize"),
     SET_CLOSE_ALERT("setCloseAlert"),
+    UNIVERSAL_BRIDGE("sendJsonToHostapp")
 }
 
 internal enum class DialogType {
@@ -51,5 +52,6 @@ enum class NativeEventType(val value: String) {
     MINIAPP_ON_PAUSE("miniapppause"),
     MINIAPP_ON_RESUME("miniappresume"),
     MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready"),
-    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror")
+    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror"),
+    RECEIVE_UNIVERSAL_JSON_INFO("miniappreceivejsoninfo")
 }

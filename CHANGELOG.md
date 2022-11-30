@@ -1,6 +1,9 @@
 ## CHANGELOG
 
 ### 5.1.0 (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `Universal Bridge` to communicate between MiniApps and the HostApp
+
 **Sample App**
 - **Feature:** Settings is moved to it's own tab.
 - **Feature:** Multiple MiniAppSdk configurations
