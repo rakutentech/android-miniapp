@@ -2,13 +2,12 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
-import com.rakuten.tech.mobile.miniapp.iap.TransactionState
+import com.rakuten.tech.mobile.miniapp.iap.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 /** Check whether hostapp provides InAppPurchase dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
@@ -58,16 +57,20 @@ internal class InAppPurchaseBridgeDispatcher {
                 val callbackObj: PurchasedProductCallbackObj =
                     Gson().fromJson(jsonStr, PurchasedProductCallbackObj::class.java)
                 val successCallback = { response: PurchasedProductResponse ->
-                    val purchaseRequest = MiniAppPurchaseRequest(
-                        platform = PLATFORM,
-                        productId = response.purchasedProduct.product.id ?: "",
-                        transactionState = TransactionState.PURCHASED.state,
-                        transactionId = response.purchasedProduct.transactionId,
-                        transactionDate = "2022-10-19T01:40:41.078Z",
-                        transactionReceipt = response.purchasedProduct.transactionReceipt,
-                        purchaseToken = response.purchasedProduct.purchaseToken
-                    )
-                    notifyMiniApp(callbackId, purchaseRequest)
+                    if (response.status == PurchasedProductResponseStatus.PURCHASED) {
+                        val purchaseRequest = MiniAppPurchaseRequest(
+                            platform = PLATFORM,
+                            productId = response.purchasedProduct.product.id,
+                            transactionState = TransactionState.PURCHASED.state,
+                            transactionId = response.purchasedProduct.transactionId,
+                            transactionDate = formatTransactionDate(response.purchasedProduct.transactionDate),
+                            transactionReceipt = response.purchasedProduct.transactionReceipt,
+                            purchaseToken = response.purchasedProduct.purchaseToken
+                        )
+                        notifyMiniApp(callbackId, purchaseRequest)
+                    } else {
+                        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${response.status}")
+                    }
                 }
                 inAppPurchaseProvider.purchaseItem(
                     callbackObj.param.product_id,
@@ -103,6 +106,12 @@ internal class InAppPurchaseBridgeDispatcher {
                 bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${e.message}")
             }
         }
+    }
+
+    private fun formatTransactionDate(time: Long): String{
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        return format.format(date)
     }
 
     companion object {
