@@ -7,17 +7,21 @@ import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.permission.*
-import org.amshove.kluent.*
+import org.amshove.kluent.When
+import org.amshove.kluent.calling
+import org.amshove.kluent.itReturns
+import org.amshove.kluent.itThrows
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
-import kotlin.test.assertFails
 
 @RunWith(AndroidJUnit4::class)
-class UnversalBridgeSpec : BridgeCommon() {
+@Suppress( "LargeClass")
+class UniversalBridgeSpec : BridgeCommon() {
 
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
         createDefaultMiniAppMessageBridge()
@@ -48,7 +52,6 @@ class UnversalBridgeSpec : BridgeCommon() {
         }
     }
 
-
     @Test
     fun `miniAppBridge should call onSendJsonToHostApp if universal bridge json is valid`() {
         miniAppBridge.postMessage(universalBridgeJsonStr)
@@ -62,14 +65,14 @@ class UnversalBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(universalBridgeJsonStr)
         verify(miniAppBridge).sendJsonToHostApp(
             eq(universalBridgeCallbackObj.param),
-            org.amshove.kluent.any(),
-            org.amshove.kluent.any()
+            any(),
+            any()
         )
     }
 
     @Test
     fun `should invoke onError if universal bridge json is not valid`() {
-        val onError: (String) -> Unit = Mockito.spy { message -> }
+        val onError: (String) -> Unit = Mockito.spy { }
         val errorMessage = "${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"
         miniAppBridge.sendJsonToHostApp("", onSuccess = {}, onError = onError)
         verify(onError).invoke(errorMessage)
@@ -77,7 +80,7 @@ class UnversalBridgeSpec : BridgeCommon() {
 
     @Test
     fun `should invoke onSuccess if universal bridge json is valid`() {
-        val onSuccess: (Any) -> Unit = Mockito.spy { message -> }
+        val onSuccess: (Any) -> Unit = Mockito.spy { }
         val content = "{\"content\": \"test\"}"
         miniAppBridge.sendJsonToHostApp(content, onSuccess = onSuccess, onError = { })
         verify(onSuccess).invoke(content)
@@ -115,8 +118,8 @@ class UnversalBridgeSpec : BridgeCommon() {
                 spy(createErrorWebViewListener("${ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE} null or blank"))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             When calling webViewListener.runSuccessCallback(
-                org.amshove.kluent.any(),
-                org.amshove.kluent.any()
+                any(),
+                any()
             ) itThrows RuntimeException()
             miniAppBridge.init(
                 activity = activity,
@@ -163,7 +166,7 @@ class UnversalBridgeSpec : BridgeCommon() {
             miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
             given(
                 bridgeExecutor.postError(
-                    universalBridgeCallbackObj.id, org.amshove.kluent.any()
+                    universalBridgeCallbackObj.id, any()
                 )
             ).willThrow(RuntimeException())
         }
@@ -227,7 +230,6 @@ class UnversalBridgeSpec : BridgeCommon() {
         )
     }
 
-
     @Test
     fun `bridgeExecutor postValue should not be called if it is not initialized`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
@@ -253,6 +255,4 @@ class UnversalBridgeSpec : BridgeCommon() {
     fun `native event type should return the correct value`() {
         NativeEventType.RECEIVE_UNIVERSAL_JSON_INFO.value shouldBeEqualTo "miniappreceivejsoninfo"
     }
-
-
 }
