@@ -20,7 +20,7 @@ import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
 
 @RunWith(AndroidJUnit4::class)
-@Suppress( "LargeClass")
+@Suppress("LargeClass")
 class UniversalBridgeSpec : BridgeCommon() {
 
     private val miniAppBridge: MiniAppMessageBridge = Mockito.spy(
