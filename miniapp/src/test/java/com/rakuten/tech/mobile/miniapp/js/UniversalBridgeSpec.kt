@@ -27,13 +27,11 @@ class UniversalBridgeSpec : BridgeCommon() {
         createDefaultMiniAppMessageBridge()
     )
 
-    private fun createJsonInfoCallback(content: String) = JsonInfoCallbackObj.JsonInfoParam(
-        JsonInfo(content)
+    private fun createJsonInfoCallbackJsonStr() = Gson().toJson(
+        JsonInfoCallbackObj.JsonInfoParam(
+            JsonInfo("content")
+        )
     )
-
-    inner class ErrorJsonInfoCallbackObj(data: Int)
-
-    private fun createJsonInfoCallbackJsonStr() = Gson().toJson(createJsonInfoCallback("content"))
 
     private fun createJsonInfoCallbackJsonStr(content: String) = Gson().toJson(
         CallbackObj(
@@ -43,19 +41,10 @@ class UniversalBridgeSpec : BridgeCommon() {
         )
     )
 
-    private fun createErrorJsonInfoCallbackJsonStr(data: Int) = Gson().toJson(
-        CallbackObj(
-            action = ActionType.JSON_INFO.action,
-            param = ErrorJsonInfoCallbackObj(data),
-            id = TEST_CALLBACK_ID
-        )
-    )
-
     private val jsonInfoJsonStr = createJsonInfoCallbackJsonStr(createJsonInfoCallbackJsonStr())
 
     @Before
     fun setUp() {
-        println("$jsonInfoJsonStr")
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
 
