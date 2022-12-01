@@ -321,7 +321,7 @@ class QASettingsActivity : BaseActivity() {
         }
 
         settings.universalBridgeMessage = with(binding.edtUniversalBridgeMessage.text) {
-            if (isNullOrBlank()) "" else this.toString()
+            this?.toString() ?: ""
         }
         // post tasks
         hideSoftKeyboard(binding.root)
