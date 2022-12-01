@@ -254,6 +254,6 @@ class UniversalBridgeSpec : BridgeCommon() {
 
     @Test
     fun `native event type should return the correct value`() {
-        NativeEventType.RECEIVE_UNIVERSAL_JSON_INFO.value shouldBeEqualTo "miniappreceivejsoninfo"
+        NativeEventType.MINIAPP_RECEIVE_JSON_INFO.value shouldBeEqualTo "miniappreceivejsoninfo"
     }
 }

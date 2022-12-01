@@ -173,7 +173,7 @@ fun MiniAppMessageBridge.dispatchOnResumeEvent() {
 
 fun MiniAppMessageBridge.dispatchUniversalBridgeEvent(message: String){
     dispatchNativeEvent(
-        NativeEventType.RECEIVE_UNIVERSAL_JSON_INFO, message
+        NativeEventType.MINIAPP_RECEIVE_JSON_INFO, message
     )
 }
 

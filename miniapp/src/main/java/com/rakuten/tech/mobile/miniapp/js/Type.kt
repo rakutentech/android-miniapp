@@ -53,5 +53,5 @@ enum class NativeEventType(val value: String) {
     MINIAPP_ON_RESUME("miniappresume"),
     MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready"),
     MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror"),
-    RECEIVE_UNIVERSAL_JSON_INFO("miniappreceivejsoninfo")
+    MINIAPP_RECEIVE_JSON_INFO("miniappreceivejsoninfo")
 }

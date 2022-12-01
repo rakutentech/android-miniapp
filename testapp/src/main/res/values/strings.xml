@@ -105,6 +105,8 @@
     <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
     <string name="error_desc_promotional_text_missing">Promotional text is not available</string>
     <string name="error_desc_miniapp_too_many_request">"Mini app is requested too many times.</string>
+    <string name="error_send_json_to_host_app_invalid_string">Unable to send the message: please check the string and try again</string>
+    <string name="error_send_json_to_host_app_context_is_not_ready">Unable to send the message: please try again</string>
 
     <string name="success_title_parameters_saved">Parameters saved</string>
     <string name="success_desc_parameter_saved">Configuration is saved and Miniapp list is updated</string>
@@ -125,7 +127,6 @@
     <string name="universal_bridge">Universal Bridge</string>
     <string name="hint_universal_bridge_message">Universal Bridge Message</string>
     <string name="action_send_to_miniapp">Send to MiniApp</string>
-    <string name="error_send_json_to_host_app_invalid_string">Unable to send the message: please check the string and try again</string>
-    <string name="error_send_json_to_host_app_context_is_not_ready">Unable to send the message: please try again</string>
+    <string name="universal_message_bridge_has_been_sent">Universal Bridge has been sent</string>
 
 </resources>
