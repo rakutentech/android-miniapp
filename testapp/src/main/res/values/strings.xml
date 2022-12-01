@@ -122,4 +122,10 @@
     <string name="deeplink_activity_not_saved">No deeplink has been saved yet.</string>
     <string name="miniapp_by_url">MiniApp By URL</string>
 
+    <string name="universal_bridge">Universal Bridge</string>
+    <string name="hint_universal_bridge_message">Universal Bridge Message</string>
+    <string name="action_send_to_miniapp">Send to MiniApp</string>
+    <string name="error_send_json_to_host_app_invalid_string">Unable to send the message: please check the string and try again</string>
+    <string name="error_send_json_to_host_app_context_is_not_ready">Unable to send the message: please try again</string>
+
 </resources>

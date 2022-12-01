@@ -79,7 +79,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isloadNew = true
-
     }
 
     override fun onDetach() {
@@ -94,7 +93,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val activity = requireActivity()
         setHasOptionsMenu(true)
         appInfo = args.miniAppInfo
         appId = args.miniAppInfo.id
@@ -104,6 +102,12 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             container,
             false
         )
+        loadMiniApp()
+        return binding.root
+    }
+
+    private fun loadMiniApp() {
+        val activity = requireActivity()
         if (isloadNew) {
             isloadNew = false
             initializeMiniAppDisplay(activity)
@@ -113,7 +117,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             else
                 initializeMiniAppDisplay(activity)
         }
-        return binding.root
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -160,6 +163,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                                             addMiniAppChildView(activity, miniAppDisplay)
                                         } ?: kotlin.run {
                                             toggleProgressLoading(false)
+
                                             miniAppSdkException?.let { e ->
                                                 when (e) {
                                                     is MiniAppNotFoundException ->
@@ -198,6 +202,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 (miniAppChildView?.parent as? ViewGroup)?.removeView(miniAppChildView)
                 binding.linRoot.addView(miniAppChildView)
                 toggleProgressLoading(false)
+                dispatchUniversalBridgeEvent()
             }
         }
     }
@@ -314,6 +319,24 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
+            }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    val requireActivity = requireActivity()
+                    Toast.makeText(
+                        requireActivity,
+                        if (it.isNotBlank() && requireActivity.isAvailable) it
+                        else getString(R.string.error_send_json_to_host_app_context_is_not_ready),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return
+                }
+                onError(getString(R.string.error_send_json_to_host_app_invalid_string))
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activity))
@@ -447,6 +470,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.miniapp_display_menu, menu)
+        menu.findItem(R.id.refresh).isVisible = AppSettings.instance.universalBridgeMessage.isNotBlank()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -468,6 +492,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             }
             R.id.settings_permission_mini_app -> {
                 launchCustomPermissionDialog()
+                true
+            }
+            R.id.refresh -> {
+                miniAppMessageBridge.dispatchUniversalBridgeEvent(AppSettings.instance.universalBridgeMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -508,6 +536,14 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     fun onBackPressed() {
         if (!canGoBackwards()) {
             checkCloseAlert()
+        }
+    }
+
+    private fun dispatchUniversalBridgeEvent() {
+        AppSettings.instance.universalBridgeMessage.let {
+            if (it.isNotBlank()) {
+                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
+            }
         }
     }
 

@@ -101,6 +101,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     )
 
     private var appInfo: MiniAppInfo? = null
+    private var appUrl: String? = null
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -156,6 +157,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        menu.findItem(R.id.refresh).isVisible =
+            AppSettings.instance.universalBridgeMessage.isNotBlank()
         return true
     }
 
@@ -180,6 +183,10 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 launchCustomPermissionDialog()
                 true
             }
+            R.id.refresh -> {
+                miniAppMessageBridge.dispatchUniversalBridgeEvent(AppSettings.instance.universalBridgeMessage)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -198,7 +205,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
             )
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,13 +218,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         //Three different ways to get miniapp.
         appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
-        val appUrl = intent.getStringExtra(appUrlTag)
+        appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
         if (miniAppSdkConfig == null)
             miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig
-
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
@@ -286,18 +291,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             }
         }
 
-        if (appUrl != null) {
-            viewModel.obtainNewMiniAppDisplayUrl(
-                this@MiniAppDisplayActivity,
-                appUrl,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                miniAppFileChooser,
-                AppSettings.instance.urlParameters
-            )
-        } else {
-            appInfo?.let {
-                viewModel.obtainMiniAppDisplay(
+        loadMiniApp()
+    }
+
+    private fun loadMiniApp() {
+        appUrl?.let {
+            if (it.isNotBlank()) {
+                viewModel.obtainNewMiniAppDisplayUrl(
                     this@MiniAppDisplayActivity,
                     it,
                     miniAppMessageBridge,
@@ -306,6 +306,17 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     AppSettings.instance.urlParameters
                 )
             }
+            return
+        }
+        appInfo?.let {
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                it,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                AppSettings.instance.urlParameters
+            )
         }
     }
 
@@ -351,6 +362,23 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
+            }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    Toast.makeText(
+                        this@MiniAppDisplayActivity,
+                        if (it.isNotBlank() && isAvailable) it
+                        else getString(R.string.error_send_json_to_host_app_context_is_not_ready),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return
+                }
+                onError("Error Sending Json to Host App: Please check the string and try again.")
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))

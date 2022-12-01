@@ -52,6 +52,11 @@ internal class Cache(
         get() = prefs.getString(MAUID_ERROR, null)
         set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
 
+    var universalBridgeMessage: String?
+        get() = prefs.getString(UNIVERSAL_BRIDGE_MESSAGE, null)
+        set(universalBridgeError) = prefs.edit()
+            .putString(UNIVERSAL_BRIDGE_MESSAGE, universalBridgeError).apply()
+
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
         set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()
@@ -137,6 +142,7 @@ internal class Cache(
         private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
         private const val MAUID_ERROR = "mauid_error"
+        private const val UNIVERSAL_BRIDGE_MESSAGE = "universal_bridge_error"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
@@ -241,7 +247,7 @@ internal class Cache(
         fun getTabMiniAppInfoList(key: String): List<MiniAppInfo>? =
             MiniAppListCache(key).getData(prefs)
 
-        fun saveCurrentMiniAppInfoList(miniAppInfoList: List<MiniAppInfo>, key: String){
+        fun saveCurrentMiniAppInfoList(miniAppInfoList: List<MiniAppInfo>, key: String) {
             MiniAppListCache(key).setData(prefs.edit(), miniAppInfoList)
         }
 
@@ -253,7 +259,7 @@ internal class Cache(
             MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).setData(prefs.edit(), miniAppInfoList)
         }
 
-        fun clearAllMiniAppInfoList(){
+        fun clearAllMiniAppInfoList() {
             MiniAppListCache(TAB_1_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
             MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
         }

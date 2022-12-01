@@ -15,9 +15,11 @@ import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
+import com.rakuten.tech.mobile.testapp.helper.dispatchUniversalBridgeEvent
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -33,6 +35,7 @@ class QASettingsActivity : BaseActivity() {
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
+    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
 
     companion object {
         fun start(activity: Activity) {
@@ -44,6 +47,7 @@ class QASettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
         accessTokenErrorCacheData = settings.accessTokenError
+        setupMiniAppMessageBridge()
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.qa_settings_activity)
         binding.activity = this
@@ -117,6 +121,28 @@ class QASettingsActivity : BaseActivity() {
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage Bytes")
 
         invalidateMaxStorageField()
+
+        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeMessage)
+    }
+
+    private fun setupMiniAppMessageBridge(
+    ) {
+        miniAppMessageBridge = object : MiniAppMessageBridge() {
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (content: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    if (it.toString().isNotBlank()) {
+                        onSuccess(it)
+                        Toast.makeText(this@QASettingsActivity, it.toString(), Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+                onError(getString(R.string.error_send_json_to_host_app_invalid_string))
+            }
+        }
     }
 
     private fun startListeners() {
@@ -150,6 +176,12 @@ class QASettingsActivity : BaseActivity() {
 
             if (bluetoothDelegate.hasBTConnectPermission())
                 detectPairDeviceOnSchedule()
+        }
+
+        binding.btnSendToMiniApp.setOnClickListener {
+            binding.edtUniversalBridgeMessage.text?.toString()?.let {
+                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
+            }
         }
     }
 
@@ -288,6 +320,9 @@ class QASettingsActivity : BaseActivity() {
             settings.maxStorageSizeLimitInBytes = binding.edtMaxStorageLimit.text.toString()
         }
 
+        settings.universalBridgeMessage = with(binding.edtUniversalBridgeMessage.text) {
+            if (isNullOrBlank()) "" else this.toString()
+        }
         // post tasks
         hideSoftKeyboard(binding.root)
         finish()

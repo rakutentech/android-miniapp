@@ -132,6 +132,20 @@ open class BridgeCommon {
             ) {
                 onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
             }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (jsonStr: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    if (it.contains("content")) {
+                        onSuccess(it)
+                        return
+                    }
+                }
+                onError(ErrorBridgeMessage.ERR_JSON_INFO)
+            }
         }
 
     internal fun createErrorWebViewListener(errMsg: String): WebViewListener =

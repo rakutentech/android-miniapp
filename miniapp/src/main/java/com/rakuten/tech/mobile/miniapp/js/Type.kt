@@ -26,7 +26,7 @@ internal enum class ActionType(val action: String) {
     SECURE_STORAGE_CLEAR("clearSecureStorage"),
     SECURE_STORAGE_SIZE("getSecureStorageSize"),
     SET_CLOSE_ALERT("setCloseAlert"),
-    UNIVERSAL_BRIDGE("sendJsonToHostapp")
+    JSON_INFO("sendJsonToHostapp")
 }
 
 internal enum class DialogType {

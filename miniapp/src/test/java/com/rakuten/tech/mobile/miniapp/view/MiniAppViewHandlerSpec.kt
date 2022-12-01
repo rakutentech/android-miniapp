@@ -88,9 +88,8 @@ open class MiniAppViewHandlerSpec {
             ) itReturns dummyManifest
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
-            When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
-                deniedPermission
-            ) itReturns true
+            When calling miniAppViewHandler.downloadedManifestCache
+                .isRequiredPermissionDenied(deniedPermission) itReturns true
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         }
@@ -104,8 +103,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
-                deniedPermission
-            ) itReturns true
+                deniedPermission) itReturns true
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
         }
@@ -116,8 +114,7 @@ open class MiniAppViewHandlerSpec {
             val allowedPermission = MiniAppCustomPermission(
                 TEST_MA_ID, listOf(
                     Pair(
-                        MiniAppCustomPermissionType.USER_NAME,
-                        MiniAppCustomPermissionResult.ALLOWED
+                        MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
                     )
                 )
             )
@@ -158,8 +155,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
-                deniedPermission
-            ) itReturns deniedPermission.pairValues
+                deniedPermission) itReturns deniedPermission.pairValues
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, differentVersionId)
 
@@ -183,8 +179,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.miniAppManifestVerifier.verify(
-                TEST_MA_ID, file
-            ) itReturns false
+                TEST_MA_ID, file) itReturns false
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
@@ -338,8 +333,8 @@ open class MiniAppViewHandlerSpec {
         }
 
     @Test(expected = NullPointerException::class)
-    @Suppress("LongMethod", "MaxLineLength")
-    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppInfo from cache`() =
+    @Suppress("LongMethod")
+    fun `should invoke displayer createMiniAppDisplay while mini app view creation by miniAppInfo from cache`() =
         runBlockingTest {
 
             withMiniAppViewHandler { getMiniAppResult, testMiniAppInfo ->

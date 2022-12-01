@@ -53,6 +53,12 @@ class AppSettings private constructor(context: Context) {
             cache.mauIdError = mauIdError
         }
 
+    var universalBridgeMessage: String
+        get() = cache.universalBridgeMessage ?: ""
+        set(universalBridgeMessage) {
+            cache.universalBridgeMessage = universalBridgeMessage
+        }
+
     var isSettingSaved: Boolean
         get() = cache.isSettingSaved
         set(isSettingSaved) {
@@ -210,7 +216,7 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.saveTab2Data()
     }
 
-    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>){
+    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
         cache.rasConfigData.saveCurrentMiniAppInfoList(miniAppInfoList, miniAppInfoListKey)
     }
 
@@ -269,7 +275,7 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.clearTempData()
     }
 
-    fun clearAllMiniAppInfoList(){
+    fun clearAllMiniAppInfoList() {
         cache.rasConfigData.clearAllMiniAppInfoList()
     }
 

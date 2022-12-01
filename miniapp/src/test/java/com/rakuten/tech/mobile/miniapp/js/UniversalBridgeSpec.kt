@@ -27,16 +27,35 @@ class UniversalBridgeSpec : BridgeCommon() {
         createDefaultMiniAppMessageBridge()
     )
 
-    private val universalBridgeCallbackObj = CallbackObj(
-        action = ActionType.UNIVERSAL_BRIDGE.action,
-        param = "{\"content\": \"test\"}",
-        id = TEST_CALLBACK_ID
+    private fun createJsonInfoCallback(content: String) = JsonInfoCallbackObj.JsonInfoParam(
+        JsonInfo(content)
     )
 
-    private val universalBridgeJsonStr = Gson().toJson(universalBridgeCallbackObj)
+    inner class ErrorJsonInfoCallbackObj(data: Int)
+
+    private fun createJsonInfoCallbackJsonStr() = Gson().toJson(createJsonInfoCallback("content"))
+
+    private fun createJsonInfoCallbackJsonStr(content: String) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.JSON_INFO.action, param = JsonInfoCallbackObj.JsonInfoParam(
+                JsonInfo(content)
+            ), id = TEST_CALLBACK_ID
+        )
+    )
+
+    private fun createErrorJsonInfoCallbackJsonStr(data: Int) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.JSON_INFO.action,
+            param = ErrorJsonInfoCallbackObj(data),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    private val jsonInfoJsonStr = createJsonInfoCallbackJsonStr(createJsonInfoCallbackJsonStr())
 
     @Before
     fun setUp() {
+        println("$jsonInfoJsonStr")
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
 
@@ -54,17 +73,17 @@ class UniversalBridgeSpec : BridgeCommon() {
 
     @Test
     fun `miniAppBridge should call onSendJsonToHostApp if universal bridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
         verify(miniAppBridge).onSendJsonToHostApp(
-            universalBridgeCallbackObj
+            TEST_CALLBACK_ID, jsonInfoJsonStr
         )
     }
 
     @Test
     fun `miniAppBridge should call sendJsonToHostApp if universal bridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
         verify(miniAppBridge).sendJsonToHostApp(
-            eq(universalBridgeCallbackObj.param),
+            eq(createJsonInfoCallbackJsonStr()),
             any(),
             any()
         )
@@ -73,9 +92,22 @@ class UniversalBridgeSpec : BridgeCommon() {
     @Test
     fun `should invoke onError if universal bridge content is empty`() {
         val onError: (String) -> Unit = Mockito.spy { }
-        val errorMessage = ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE
+        val errorMessage = ErrorBridgeMessage.ERR_JSON_INFO
         miniAppBridge.sendJsonToHostApp("", onSuccess = {}, onError = onError)
         verify(onError).invoke(errorMessage)
+    }
+
+    @Test
+    fun `should invoke postError if universal bridge content is not valid`() {
+        miniAppBridge.postMessage(createJsonInfoCallbackJsonStr("error"))
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, ErrorBridgeMessage.ERR_JSON_INFO)
+    }
+
+    @Test
+    fun `should invoke onError if universal bridge content is not valid`() {
+        val onError: (String) -> Unit = Mockito.spy { }
+        miniAppBridge.sendJsonToHostApp("error", onSuccess = {}, onError = onError)
+        verify(onError).invoke(ErrorBridgeMessage.ERR_JSON_INFO)
     }
 
     @Test
@@ -88,17 +120,17 @@ class UniversalBridgeSpec : BridgeCommon() {
 
     @Test
     fun `bridgeExecutor should call postValue if universal bridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
         verify(bridgeExecutor, times(1)).postValue(
-            universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
+            TEST_CALLBACK_ID, createJsonInfoCallbackJsonStr(),
         )
     }
 
     @Test
     fun `webViewListener should call runSuccessCallback if universal bridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
         verify(webViewListener).runSuccessCallback(
-            universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
+            TEST_CALLBACK_ID, createJsonInfoCallbackJsonStr(),
         )
     }
 
@@ -107,7 +139,7 @@ class UniversalBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             val webViewListener =
-                spy(createErrorWebViewListener(ErrorBridgeMessage.ERR_UNIVERSAL_BRIDGE))
+                spy(createErrorWebViewListener(ErrorBridgeMessage.ERR_JSON_INFO))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             When calling webViewListener.runSuccessCallback(
                 any(),
@@ -123,10 +155,10 @@ class UniversalBridgeSpec : BridgeCommon() {
                 secureStorageDispatcher = mock()
             )
 
-            miniAppBridge.postMessage(universalBridgeJsonStr)
+            miniAppBridge.postMessage(jsonInfoJsonStr)
             given(
                 bridgeExecutor.postValue(
-                    universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
+                    TEST_CALLBACK_ID, any()
                 )
             ).willThrow(RuntimeException())
         }
@@ -152,13 +184,13 @@ class UniversalBridgeSpec : BridgeCommon() {
             )
 
             val nullUniversalBridge = CallbackObj(
-                action = ActionType.UNIVERSAL_BRIDGE.action, param = null, id = TEST_CALLBACK_ID
+                action = ActionType.JSON_INFO.action, param = null, id = TEST_CALLBACK_ID
             )
 
             miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
             given(
                 bridgeExecutor.postError(
-                    universalBridgeCallbackObj.id, any()
+                    TEST_CALLBACK_ID, any()
                 )
             ).willThrow(RuntimeException())
         }
@@ -166,48 +198,48 @@ class UniversalBridgeSpec : BridgeCommon() {
 
     @Test
     fun `bridgeExecutor should call postValue if universalBridge json is valid`() {
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
         verify(bridgeExecutor).postValue(
-            universalBridgeCallbackObj.id, universalBridgeCallbackObj.param.toString()
+            TEST_CALLBACK_ID, createJsonInfoCallbackJsonStr(),
         )
     }
 
     @Test
     fun `bridgeExecutor should call postError if universalBridge json is null`() {
         val nullUniversalBridge = CallbackObj(
-            action = ActionType.UNIVERSAL_BRIDGE.action, param = null, id = TEST_CALLBACK_ID
+            action = ActionType.JSON_INFO.action, param = null, id = TEST_CALLBACK_ID
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        verify(bridgeExecutor).postError(eq(universalBridgeCallbackObj.id), any())
+        verify(bridgeExecutor).postError(eq(TEST_CALLBACK_ID), any())
     }
 
     @Test
     fun `webViewListener should call runErrorCallback if universalBridge json is not valid`() {
 
         val nullUniversalBridge = CallbackObj(
-            action = ActionType.UNIVERSAL_BRIDGE.action, param = null, id = TEST_CALLBACK_ID
+            action = ActionType.JSON_INFO.action, param = null, id = TEST_CALLBACK_ID
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        verify(webViewListener).runErrorCallback(eq(universalBridgeCallbackObj.id), any())
+        verify(webViewListener).runErrorCallback(eq(TEST_CALLBACK_ID), any())
     }
 
     @Test
     fun `bridgeExecutor should call postError if universalBridge json is not valid`() {
 
         val nullUniversalBridge = CallbackObj(
-            action = ActionType.UNIVERSAL_BRIDGE.action, param = "", id = TEST_CALLBACK_ID
+            action = ActionType.JSON_INFO.action, param = "", id = TEST_CALLBACK_ID
         )
 
         miniAppBridge.postMessage(Gson().toJson(nullUniversalBridge))
-        verify(bridgeExecutor).postError(eq(universalBridgeCallbackObj.id), any())
+        verify(bridgeExecutor).postError(eq(TEST_CALLBACK_ID), any())
     }
 
     @Test(expected = UninitializedPropertyAccessException::class)
     fun `miniAppBridge post message should throw an exception if bridge executor is not initialized`() {
         val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-        miniAppBridge.postMessage(universalBridgeJsonStr)
+        miniAppBridge.postMessage(jsonInfoJsonStr)
     }
 
     @Test
@@ -223,11 +255,11 @@ class UniversalBridgeSpec : BridgeCommon() {
                 ratDispatcher = mock(),
                 secureStorageDispatcher = mock()
             )
-            miniAppBridge.postMessage(universalBridgeJsonStr)
+            miniAppBridge.postMessage(jsonInfoJsonStr)
 
             verify(
                 bridgeExecutor, times(0)
-            ).postValue(universalBridgeCallbackObj.id, "")
+            ).postValue(TEST_CALLBACK_ID, "")
         }
     }
 
