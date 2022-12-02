@@ -70,12 +70,6 @@ class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
     )
 
 /**
- * Exception which is thrown when the HostApp doesn't implement sendJsonToHostApp interface.
- */
-class JsonInfoNotImplementedException :
-    MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_JSON_INFO)
-
-/**
  * Exception indicating that there was an issue with network connectivity.
  *
  * This usually means the device doesn't have internet access currently,

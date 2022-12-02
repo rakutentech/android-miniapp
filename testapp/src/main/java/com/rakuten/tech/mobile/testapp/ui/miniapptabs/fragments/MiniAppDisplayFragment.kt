@@ -328,15 +328,21 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             ) {
                 jsonStr.let {
                     val requireActivity = requireActivity()
-                    Toast.makeText(
-                        requireActivity,
-                        if (it.isNotBlank() && requireActivity.isAvailable) it
-                        else getString(R.string.error_send_json_to_host_app_context_is_not_ready),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return
+                    val message: String
+                    if (it.isNotBlank()){
+                        message = it
+                        onSuccess(message)
+                    } else {
+                        message = getString(R.string.error_send_json_to_host_app_context_is_not_ready)
+                        onError(message)
+                    }
+                    if(requireActivity.isAvailable){
+                        Toast.makeText(
+                            requireActivity,
+                            message,
+                            Toast.LENGTH_LONG).show()
+                    }
                 }
-                onError(getString(R.string.error_send_json_to_host_app_invalid_string))
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activity))

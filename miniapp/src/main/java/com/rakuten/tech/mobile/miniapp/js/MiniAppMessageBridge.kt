@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.JsonInfoNotImplementedException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
@@ -172,7 +171,7 @@ open class MiniAppMessageBridge {
         onSuccess: (jsonStr: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        throw JsonInfoNotImplementedException()
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
 
     /**

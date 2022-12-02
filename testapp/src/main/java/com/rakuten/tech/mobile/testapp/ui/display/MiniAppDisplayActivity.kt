@@ -191,6 +191,14 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
+    private fun dispatchUniversalBridgeEvent() {
+        AppSettings.instance.universalBridgeMessage.let {
+            if (it.isNotBlank()) {
+                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
+            }
+        }
+    }
+
     private fun launchCustomPermissionDialog() {
         appInfo?.let {
             preloadMiniAppWindow.initiate(
@@ -237,6 +245,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
                     addLifeCycleObserver(lifecycle)
                     setContentView(it)
+                    dispatchUniversalBridgeEvent()
                 }
 
                 errorData.observe(this@MiniAppDisplayActivity) {
@@ -370,15 +379,21 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 onError: (message: String) -> Unit
             ) {
                 jsonStr.let {
-                    Toast.makeText(
-                        this@MiniAppDisplayActivity,
-                        if (it.isNotBlank() && isAvailable) it
-                        else getString(R.string.error_send_json_to_host_app_context_is_not_ready),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return
+                    val message: String
+                    if (it.isNotBlank()){
+                        message = it
+                        onSuccess(message)
+                    } else {
+                        message = getString(R.string.error_send_json_to_host_app_context_is_not_ready)
+                        onError(message)
+                    }
+                    if(isAvailable){
+                        Toast.makeText(
+                            this@MiniAppDisplayActivity,
+                            message,
+                            Toast.LENGTH_LONG).show()
+                    }
                 }
-                onError("Error Sending Json to Host App: Please check the string and try again.")
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))

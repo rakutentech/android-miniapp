@@ -270,7 +270,7 @@
                     android:layout_marginBottom="@dimen/small_4"
                     android:hint="@string/hint_universal_bridge_message"
                     android:imeOptions="actionDone"
-                    android:inputType="text" />
+                    android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
