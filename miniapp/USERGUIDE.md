@@ -536,7 +536,7 @@ You can also choose to override the default functionality and instead share the 
 The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
     
 ### Send Json To Host App
-**API Docs:** [MiniAppMessageBridge.getHostEnvironmentInfo](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
+**API Docs:** [MiniAppMessageBridge.sendJsonToHostApp](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
 
 The MiniApp is able to send the Universal Bridge. It can be either a message or an event for any purposea according their need in `json` format. 
     
@@ -589,9 +589,9 @@ Mini apps are able to get events for custom event types which are defined by the
 - External webview close (`NativeEventType.EXTERNAL_WEBVIEW_CLOSE`)
 - Pause (`NativeEventType.MINIAPP_ON_PAUSE`)
 - Resume (`NativeEventType.MINIAPP_ON_RESUME`)
-- Secure Storage Ready (`miniappsecurestorageready`)
-- Secure Storage Load Error(`miniappsecurestorageloaderror`)
-- Receive Json Info(`miniappreceivejsoninfo`)
+- Secure Storage Ready (`NativeEventType.MINIAPP_SECURE_STORAGE_READY`)
+- Secure Storage Load Error(`NativeEventType.MINIAPP_SECURE_STORAGE_LOAD_ERROR`)
+- Receive Json Info(`NativeEventType.MINIAPP_RECEIVE_JSON_INFO`)
 
 **Note:** Host app can send these events whenever these events occur and MiniApp will be able to get those events.
 
