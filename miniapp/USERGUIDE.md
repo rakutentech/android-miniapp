@@ -270,7 +270,7 @@ There are some methods have a default implementation but the host app can overri
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 | getHostEnvironmentInfo       | ✅       |
-| sendjsonToHostApp            | 🚫       |
+| sendJsonToHostApp            | 🚫       |
 
 The `UserInfoBridgeDispatcher`:
 
