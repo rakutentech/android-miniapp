@@ -125,3 +125,8 @@ If you would like to submit a pull request for a major feature, please follow th
     * [Detekt](https://detekt.github.io/detekt/) and [our Detekt rules](https://github.com/rakutentech/android-buildconfig/blob/master/quality/detekt/detekt-config.yml)
     * [ktlint](https://github.com/pinterest/ktlint)
 * Learn about [Semantic versioning](https://semver.org/spec/v2.0.0.html).
+
+## Implementing a New Feature or an Enhancement
+Once you have done your code for a new feature along with its unit tests, please make sure to update the [USERGUIDE](../miniapp/USERGUIDE.md). Also, any change that has been made either in the SDK or the [testApp](../testapp), the [CHANGELOG](../CHANGELOG.md) must be updated as well.
+
+

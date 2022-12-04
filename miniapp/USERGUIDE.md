@@ -270,7 +270,7 @@ There are some methods have a default implementation but the host app can overri
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 | getHostEnvironmentInfo       | ✅       |
-| sendjsonToHostApp            | 🚫       |
+| sendJsonToHostApp            | 🚫       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -538,7 +538,7 @@ The default functionality will provide information using `HostEnvironmentInfo` o
 ### Send Json To Host App
 **API Docs:** [MiniAppMessageBridge.sendJsonToHostApp](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
 
-The MiniApp is able to send the Universal Bridge. It can be either a message or an event for any purposea according their need in `json` format. 
+The MiniApp is able to send the Universal Bridge. It can be either a message or an event for any purpose according to your need in `json` format. 
     
 
 ### User Info
