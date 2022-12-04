@@ -157,8 +157,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.miniapp_display_menu, menu)
-        menu.findItem(R.id.refresh).isVisible =
-            AppSettings.instance.universalBridgeMessage.isNotBlank()
         return true
     }
 
@@ -183,19 +181,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 launchCustomPermissionDialog()
                 true
             }
-            R.id.refresh -> {
-                miniAppMessageBridge.dispatchUniversalBridgeEvent(AppSettings.instance.universalBridgeMessage)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun dispatchUniversalBridgeEvent() {
-        AppSettings.instance.universalBridgeMessage.let {
-            if (it.isNotBlank()) {
-                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
-            }
         }
     }
 
@@ -245,7 +231,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
                     addLifeCycleObserver(lifecycle)
                     setContentView(it)
-                    dispatchUniversalBridgeEvent()
                 }
 
                 errorData.observe(this@MiniAppDisplayActivity) {
@@ -372,6 +357,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
+
+
 
             override fun sendJsonToHostApp(
                 jsonStr: String,
@@ -509,24 +496,28 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             miniAppFileDownloader.onCancel()
         }
 
-        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
-                    "External webview closed"
-                )
-                if (!isClosedByBackPressed) {
-                    sampleWebViewExternalResultHandler.emitResult(intent)
-                }
+        when {
+            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+                data?.let { intent ->
+                    val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
+                    miniAppMessageBridge.dispatchNativeEvent(
+                        NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
+                        "External webview closed"
+                    )
+                    if (!isClosedByBackPressed) {
+                        sampleWebViewExternalResultHandler.emitResult(intent)
+                    }
 
-                handleRedirectUrlPage()
+                    handleRedirectUrlPage()
+                }
             }
-        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            miniAppFileChooser.onReceivedFiles(data)
-        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
-            data?.data?.let { destinationUri ->
-                miniAppFileDownloader.onReceivedResult(destinationUri)
+            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+                miniAppFileChooser.onReceivedFiles(data)
+            }
+            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
+                data?.data?.let { destinationUri ->
+                    miniAppFileDownloader.onReceivedResult(destinationUri)
+                }
             }
         }
     }

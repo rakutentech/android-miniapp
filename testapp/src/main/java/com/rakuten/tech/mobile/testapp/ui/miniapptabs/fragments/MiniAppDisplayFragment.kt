@@ -46,6 +46,7 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
 import com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -117,6 +118,11 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             else
                 initializeMiniAppDisplay(activity)
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        dispatchUniversalBridgeEvent()
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -202,7 +208,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 (miniAppChildView?.parent as? ViewGroup)?.removeView(miniAppChildView)
                 binding.linRoot.addView(miniAppChildView)
                 toggleProgressLoading(false)
-                dispatchUniversalBridgeEvent()
             }
         }
     }
@@ -329,18 +334,20 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 jsonStr.let {
                     val requireActivity = requireActivity()
                     val message: String
-                    if (it.isNotBlank()){
+                    if (it.isNotBlank()) {
                         message = it
                         onSuccess(message)
                     } else {
-                        message = getString(R.string.error_send_json_to_host_app_context_is_not_ready)
+                        message =
+                            getString(R.string.error_send_json_to_host_app_context_is_not_ready)
                         onError(message)
                     }
-                    if(requireActivity.isAvailable){
+                    if (requireActivity.isAvailable) {
                         Toast.makeText(
                             requireActivity,
                             message,
-                            Toast.LENGTH_LONG).show()
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -444,21 +451,26 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             miniAppFileDownloader.onCancel()
         }
 
-        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
-                    "External webview closed"
-                )
-                if (!isClosedByBackPressed)
-                    sampleWebViewExternalResultHandler.emitResult(intent)
+        when {
+            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+                data?.let { intent ->
+                    val isClosedByBackPressed =
+                        intent.getBooleanExtra("isClosedByBackPressed", false)
+                    miniAppMessageBridge.dispatchNativeEvent(
+                        NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
+                        "External webview closed"
+                    )
+                    if (!isClosedByBackPressed)
+                        sampleWebViewExternalResultHandler.emitResult(intent)
+                }
             }
-        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            miniAppFileChooser.onReceivedFiles(data)
-        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
-            data?.data?.let { destinationUri ->
-                miniAppFileDownloader.onReceivedResult(destinationUri)
+            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+                miniAppFileChooser.onReceivedFiles(data)
+            }
+            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
+                data?.data?.let { destinationUri ->
+                    miniAppFileDownloader.onReceivedResult(destinationUri)
+                }
             }
         }
     }
@@ -476,7 +488,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.miniapp_display_menu, menu)
-        menu.findItem(R.id.refresh).isVisible = AppSettings.instance.universalBridgeMessage.isNotBlank()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -498,10 +509,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             }
             R.id.settings_permission_mini_app -> {
                 launchCustomPermissionDialog()
-                true
-            }
-            R.id.refresh -> {
-                miniAppMessageBridge.dispatchUniversalBridgeEvent(AppSettings.instance.universalBridgeMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -546,10 +553,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     private fun dispatchUniversalBridgeEvent() {
-        AppSettings.instance.universalBridgeMessage.let {
-            if (it.isNotBlank()) {
-                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
-            }
+        val activity = requireActivity() as DemoAppMainActivity
+        activity.universalBridgeState?.handleOnMiniAppLoaded {
+            miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
+            activity.universalBridgeState = null
         }
     }
 

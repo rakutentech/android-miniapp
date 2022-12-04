@@ -13,16 +13,16 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
+import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
-import com.rakuten.tech.mobile.testapp.helper.dispatchUniversalBridgeEvent
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.UniversalBridgeState
 import java.util.*
 
 class QASettingsActivity : BaseActivity() {
@@ -35,11 +35,18 @@ class QASettingsActivity : BaseActivity() {
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
-    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
+    var univesalBridgeState = UniversalBridgeState()
 
     companion object {
+        const val UNIVERSAL_BRIDGE_STATE_REQUEST_CODE = 1
+        const val UNIVERSAL_BRIDGE_STATE_KEY = "universalBridgeState"
+
         fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, QASettingsActivity::class.java))
+            //activity.startActivity(Intent(activity, QASettingsActivity::class.java))
+            activity.startActivityForResult(
+                Intent(activity, QASettingsActivity::class.java),
+                UNIVERSAL_BRIDGE_STATE_REQUEST_CODE
+            )
         }
     }
 
@@ -47,7 +54,6 @@ class QASettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
         accessTokenErrorCacheData = settings.accessTokenError
-        setupMiniAppMessageBridge()
         showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.qa_settings_activity)
         binding.activity = this
@@ -72,7 +78,7 @@ class QASettingsActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                exitPage()
                 return true
             }
             R.id.qa_menu_save -> {
@@ -125,26 +131,6 @@ class QASettingsActivity : BaseActivity() {
         binding.edtUniversalBridgeMessage.setText(settings.universalBridgeMessage)
     }
 
-    private fun setupMiniAppMessageBridge(
-    ) {
-        miniAppMessageBridge = object : MiniAppMessageBridge() {
-            override fun sendJsonToHostApp(
-                jsonStr: String,
-                onSuccess: (content: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                jsonStr.let {
-                    if (it.toString().isNotBlank()) {
-                        onSuccess(it)
-                        Toast.makeText(this@QASettingsActivity, it.toString(), Toast.LENGTH_LONG)
-                            .show()
-                    }
-                }
-                onError(getString(R.string.error_send_json_to_host_app_invalid_string))
-            }
-        }
-    }
-
     private fun startListeners() {
         binding.switchAuthFailure.setOnCheckedChangeListener(accessTokenListener)
         binding.switchOtherError.setOnCheckedChangeListener(accessTokenListener)
@@ -180,10 +166,10 @@ class QASettingsActivity : BaseActivity() {
 
         binding.btnSendToMiniApp.setOnClickListener {
             binding.edtUniversalBridgeMessage.text?.toString()?.let {
-                miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
+                univesalBridgeState.update(true, it)
                 Toast.makeText(
                     this@QASettingsActivity,
-                    this@QASettingsActivity.getString(R.string.universal_message_bridge_has_been_sent),
+                    this@QASettingsActivity.getString(R.string.universal_message_bridge_will_be_sent),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -330,6 +316,17 @@ class QASettingsActivity : BaseActivity() {
         }
         // post tasks
         hideSoftKeyboard(binding.root)
+        exitPage()
+    }
+
+    override fun onBackPressed() {
+        exitPage()
+    }
+
+    private fun exitPage() {
+        val intent = Intent()
+        intent.putExtra(UNIVERSAL_BRIDGE_STATE_KEY, Gson().toJson(univesalBridgeState))
+        setResult(Activity.RESULT_OK, intent)
         finish()
     }
 

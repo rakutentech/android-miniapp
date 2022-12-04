@@ -127,6 +127,6 @@
     <string name="universal_bridge">Universal Bridge</string>
     <string name="hint_universal_bridge_message">Universal Bridge Message</string>
     <string name="action_send_to_miniapp">Send to MiniApp</string>
-    <string name="universal_message_bridge_has_been_sent">The Json info has been sent successfully to MiniApp via universal bridge.</string>
+    <string name="universal_message_bridge_will_be_sent">The Json info will be sent to MiniApp via universal bridge.</string>
 
 </resources>

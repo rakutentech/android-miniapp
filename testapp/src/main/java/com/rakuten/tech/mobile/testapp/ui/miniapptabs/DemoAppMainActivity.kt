@@ -8,18 +8,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.UniversalBridgeState
+import com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
 
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
     private lateinit var binding: MiniAppMainLayoutBinding
+    internal var universalBridgeState : UniversalBridgeState? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +67,11 @@ class DemoAppMainActivity : BaseActivity() {
 
     private val onDestinationChangedListener =
         NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            Log.d("TAG", "controller: $controller, destination: $destination, arguments: $arguments")
-            Log.d("TAG","controller graph: ${controller.graph.id}")
+            Log.d(
+                "TAG",
+                "controller: $controller, destination: $destination, arguments: $arguments"
+            )
+            Log.d("TAG", "controller graph: ${controller.graph.id}")
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
@@ -110,9 +117,16 @@ class DemoAppMainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         getCurrentVisibleFragment()?.let { fragment ->
             if (fragment is MiniAppDisplayFragment) {
                 fragment.handleOnActivityResult(requestCode, resultCode, data)
+            }
+        }
+
+        if (resultCode == RESULT_OK && requestCode == QASettingsActivity.UNIVERSAL_BRIDGE_STATE_REQUEST_CODE) {
+            data?.getStringExtra(QASettingsActivity.UNIVERSAL_BRIDGE_STATE_KEY)?.let {
+                universalBridgeState = Gson().fromJson(it, UniversalBridgeState::class.java)
             }
         }
     }
@@ -135,7 +149,6 @@ class DemoAppMainActivity : BaseActivity() {
             if (fragment is MiniAppDisplayFragment) {
                 fragment.onBackPressed()
             } else super.onBackPressed()
-
         }
     }
 
