@@ -42,7 +42,6 @@ class QASettingsActivity : BaseActivity() {
         const val UNIVERSAL_BRIDGE_STATE_KEY = "universalBridgeState"
 
         fun start(activity: Activity) {
-            //activity.startActivity(Intent(activity, QASettingsActivity::class.java))
             activity.startActivityForResult(
                 Intent(activity, QASettingsActivity::class.java),
                 UNIVERSAL_BRIDGE_STATE_REQUEST_CODE
