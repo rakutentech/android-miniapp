@@ -125,11 +125,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        dispatchUniversalBridgeEvent()
-    }
-
     @Suppress("LongMethod", "ComplexMethod")
     private fun initializeMiniAppDisplay(activity: DemoAppMainActivity) {
         toggleProgressLoading(true)
@@ -568,14 +563,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     fun onBackPressed() {
         if (!canGoBackwards()) {
             checkCloseAlert()
-        }
-    }
-
-    private fun dispatchUniversalBridgeEvent() {
-        val activity = requireActivity() as DemoAppMainActivity
-        activity.universalBridgeState?.handleOnMiniAppLoaded {
-            miniAppMessageBridge.dispatchUniversalBridgeEvent(it)
-            activity.universalBridgeState = null
         }
     }
 
