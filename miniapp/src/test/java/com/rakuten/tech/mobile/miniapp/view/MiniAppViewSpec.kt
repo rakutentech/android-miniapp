@@ -66,10 +66,6 @@ open class MiniAppViewSpec {
         miniAppConfig.queryParams.shouldNotBeNull()
         miniAppConfig.queryParams.shouldBeEmpty()
 
-        miniAppConfig.universalBridgeMessage.shouldBeInstanceOf<String>()
-        miniAppConfig.universalBridgeMessage.shouldNotBeNull()
-        miniAppConfig.universalBridgeMessage.shouldBeEmpty()
-
         miniAppConfig.queryParams = TEST_URL_PARAMS
         miniAppConfig.queryParams.shouldBeEqualTo(TEST_URL_PARAMS)
     }
@@ -87,18 +83,6 @@ open class MiniAppViewSpec {
     }
 
     @Test
-    fun `MiniAppConfig universalBridgeMessage defaultValue should be empty`() {
-        val miniAppConfig = MiniAppConfig(
-            mock(),
-            mock(),
-            mock(),
-            mock(),
-        )
-
-        miniAppConfig.universalBridgeMessage.shouldBeEmpty()
-    }
-
-    @Test
     fun `MiniAppConfig miniAppNavigator and miniAppFileChooser should be null`() {
         val miniAppConfig = MiniAppConfig(
             mock(),
@@ -106,7 +90,6 @@ open class MiniAppViewSpec {
             null,
             null,
             "",
-            ""
         )
 
         miniAppConfig.shouldBeInstanceOf<MiniAppConfig>()

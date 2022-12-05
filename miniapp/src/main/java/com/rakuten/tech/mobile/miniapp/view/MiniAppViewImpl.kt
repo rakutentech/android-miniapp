@@ -67,12 +67,12 @@ internal class MiniAppViewImpl(
         }
     }
 
-    override fun sendJsonToMiniApp() {
-        miniAppParameters.config.universalBridgeMessage.let {
+    override fun sendJsonToMiniApp(message: String) {
+        message.let {
             if (it.isNotBlank()) {
                 miniAppParameters.config.miniAppMessageBridge.dispatchNativeEvent(
                     NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
-                    miniAppParameters.config.universalBridgeMessage
+                    message
                 )
             }
         }

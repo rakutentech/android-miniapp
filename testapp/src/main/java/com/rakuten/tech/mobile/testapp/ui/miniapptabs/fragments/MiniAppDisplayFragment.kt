@@ -601,7 +601,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 miniAppNavigator = miniAppNavigator,
                 miniAppFileChooser = miniAppFileChooser,
                 queryParams = AppSettings.instance.urlParameters,
-                universalBridgeMessage = AppSettings.instance.universalBridgeMessage.message
             ),
             miniAppInfo = miniAppInfo,
             fromCache = false

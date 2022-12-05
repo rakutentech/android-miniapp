@@ -56,7 +56,7 @@ class MiniAppViewImplSpec {
                 secureStorageDispatcher = mock()
             )
         }
-        miniAppConfig = MiniAppConfig(mock(), miniAppBridge, mock(), mock(), "", "")
+        miniAppConfig = MiniAppConfig(mock(), miniAppBridge, mock(), mock(), "")
     }
 
     private fun withMiniAppDefaultParams(onReady: (MiniAppViewImpl) -> Unit) {
@@ -188,8 +188,7 @@ class MiniAppViewImplSpec {
     @Test
     fun `should do nothing when universalBridgeMessage is blank`() {
         withMiniAppDefaultParams { miniAppViewImpl ->
-            miniAppViewImpl.sendJsonToMiniApp()
-            miniAppViewImpl.miniAppParameters.config.universalBridgeMessage shouldBeEqualTo ""
+            miniAppViewImpl.sendJsonToMiniApp("")
             verifyZeroInteractions(
                 bridgeExecutor
             )
@@ -198,9 +197,8 @@ class MiniAppViewImplSpec {
 
     @Test
     fun `should call miniAppMessageBridge dispatchNativeEvent when universalBridgeMessage is not blank`() {
-        miniAppConfig.universalBridgeMessage = TEST_BODY_CONTENT
         withMiniAppDefaultParams { miniAppViewImpl ->
-            miniAppViewImpl.sendJsonToMiniApp()
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT)
             verify(miniAppBridge).dispatchNativeEvent(
                 NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
                 TEST_BODY_CONTENT

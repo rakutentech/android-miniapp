@@ -159,8 +159,10 @@ class QASettingsActivity : BaseActivity() {
         }
 
         binding.btnSendToMiniApp.setOnClickListener {
-            binding.edtUniversalBridgeMessage.text?.toString()?.let {
+            binding.edtUniversalBridgeMessage.text?.toString()?.let { text ->
+                univesalBridgeState.message = text
                 univesalBridgeState.shouldSendMessage = true
+                settings.universalBridgeMessage = univesalBridgeState
                 Toast.makeText(
                     this@QASettingsActivity,
                     this@QASettingsActivity.getString(R.string.universal_message_bridge_will_be_sent),
