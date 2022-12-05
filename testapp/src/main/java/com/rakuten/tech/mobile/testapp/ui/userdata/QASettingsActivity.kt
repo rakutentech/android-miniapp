@@ -33,7 +33,7 @@ class QASettingsActivity : BaseActivity() {
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
-    private val univesalBridgeState = AppSettings.instance.universalBridgeMessage
+    private val univesalBridgeState = AppSettings.instance.universalBridgeState
 
     companion object {
 
@@ -122,7 +122,9 @@ class QASettingsActivity : BaseActivity() {
 
         invalidateMaxStorageField()
 
-        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeMessage.message)
+        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeState.message)
+        univesalBridgeState.shouldSendMessage = false
+        AppSettings.instance.universalBridgeState = univesalBridgeState
     }
 
     private fun startListeners() {
@@ -162,7 +164,7 @@ class QASettingsActivity : BaseActivity() {
             binding.edtUniversalBridgeMessage.text?.toString()?.let { text ->
                 univesalBridgeState.message = text
                 univesalBridgeState.shouldSendMessage = true
-                settings.universalBridgeMessage = univesalBridgeState
+                settings.universalBridgeState = univesalBridgeState
                 Toast.makeText(
                     this@QASettingsActivity,
                     this@QASettingsActivity.getString(R.string.universal_message_bridge_will_be_sent),
@@ -307,7 +309,7 @@ class QASettingsActivity : BaseActivity() {
             settings.maxStorageSizeLimitInBytes = binding.edtMaxStorageLimit.text.toString()
         }
 
-        settings.universalBridgeMessage = with(binding.edtUniversalBridgeMessage.text) {
+        settings.universalBridgeState = with(binding.edtUniversalBridgeMessage.text) {
             univesalBridgeState.message = this?.toString() ?: ""
             univesalBridgeState
         }

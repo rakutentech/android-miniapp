@@ -54,10 +54,10 @@ class AppSettings private constructor(context: Context) {
             cache.mauIdError = mauIdError
         }
 
-    var universalBridgeMessage: UniversalBridgeState
+    var universalBridgeState: UniversalBridgeState
         get() = cache.universalBridgeMessage
-        set(universalBridgeMessage) {
-            cache.universalBridgeMessage = universalBridgeMessage
+        set(universalBridgeState) {
+            cache.universalBridgeMessage = universalBridgeState
         }
 
     var isSettingSaved: Boolean

@@ -158,7 +158,7 @@ class DemoAppMainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         miniAppIdAndViewMap.forEach {
-            with(AppSettings.instance.universalBridgeMessage) {
+            with(AppSettings.instance.universalBridgeState) {
                 if (shouldSendMessage) {
                     it.value.sendJsonToMiniApp(message)
                 }

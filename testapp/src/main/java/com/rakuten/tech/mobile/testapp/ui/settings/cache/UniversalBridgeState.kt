@@ -9,7 +9,7 @@ class UniversalBridgeState(
 ) {
     companion object {
         internal fun fromJson(prefs: SharedPreferences): UniversalBridgeState {
-            val universalBridgeStateData = prefs.getString(Cache.UNIVERSAL_BRIDGE_MESSAGE, null)
+            val universalBridgeStateData = prefs.getString(Cache.UNIVERSAL_BRIDGE_STATE, null)
                 ?: return UniversalBridgeState()
             return Gson().fromJson(universalBridgeStateData, UniversalBridgeState::class.java)
         }
