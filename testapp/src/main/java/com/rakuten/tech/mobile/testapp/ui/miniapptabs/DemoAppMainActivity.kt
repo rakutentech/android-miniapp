@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.mini_app_main_layout.*
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
     private lateinit var binding: MiniAppMainLayoutBinding
-    internal var universalBridgeState: UniversalBridgeState? = null
     val miniAppIdAndViewMap = hashMapOf<String, MiniAppView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
