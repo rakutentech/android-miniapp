@@ -464,11 +464,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
     }
 
-    private fun updateMiniAppIdAndViewMap(miniAppView: MiniAppView) {
-        val activity = requireActivity() as DemoAppMainActivity
-        activity.miniAppIdAndViewMap[appId] = miniAppView
-    }
-
     fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (Activity.RESULT_OK != resultCode) {
             miniAppFileChooser.onCancel()
