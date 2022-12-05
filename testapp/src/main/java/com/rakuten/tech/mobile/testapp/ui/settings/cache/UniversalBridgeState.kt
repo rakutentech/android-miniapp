@@ -17,9 +17,4 @@ class UniversalBridgeState(
 
     internal fun toJsonString() = Gson().toJson(this)
 
-    fun handleOnMiniAppLoaded(onMessageReady: (String) -> Unit) {
-        if (shouldSendMessage) {
-            onMessageReady(message)
-        }
-    }
 }

@@ -171,12 +171,6 @@ fun MiniAppMessageBridge.dispatchOnResumeEvent() {
     )
 }
 
-fun MiniAppMessageBridge.dispatchUniversalBridgeEvent(message: String){
-    dispatchNativeEvent(
-        NativeEventType.MINIAPP_RECEIVE_JSON_INFO, message
-    )
-}
-
 fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
     Handler(Looper.getMainLooper()).postDelayed({
         onFinished()
