@@ -13,7 +13,6 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
-import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -22,7 +21,6 @@ import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.cache.UniversalBridgeState
 import java.util.*
 
 class QASettingsActivity : BaseActivity() {
@@ -35,16 +33,13 @@ class QASettingsActivity : BaseActivity() {
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
-    var univesalBridgeState = UniversalBridgeState()
+    private val univesalBridgeState = AppSettings.instance.universalBridgeMessage
 
     companion object {
-        const val UNIVERSAL_BRIDGE_STATE_REQUEST_CODE = 1
-        const val UNIVERSAL_BRIDGE_STATE_KEY = "universalBridgeState"
 
         fun start(activity: Activity) {
-            activity.startActivityForResult(
+            activity.startActivity(
                 Intent(activity, QASettingsActivity::class.java),
-                UNIVERSAL_BRIDGE_STATE_REQUEST_CODE
             )
         }
     }
@@ -127,7 +122,7 @@ class QASettingsActivity : BaseActivity() {
 
         invalidateMaxStorageField()
 
-        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeMessage)
+        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeMessage.message)
     }
 
     private fun startListeners() {
@@ -165,7 +160,7 @@ class QASettingsActivity : BaseActivity() {
 
         binding.btnSendToMiniApp.setOnClickListener {
             binding.edtUniversalBridgeMessage.text?.toString()?.let {
-                univesalBridgeState.update(true, it)
+                univesalBridgeState.shouldSendMessage = true
                 Toast.makeText(
                     this@QASettingsActivity,
                     this@QASettingsActivity.getString(R.string.universal_message_bridge_will_be_sent),
@@ -311,7 +306,8 @@ class QASettingsActivity : BaseActivity() {
         }
 
         settings.universalBridgeMessage = with(binding.edtUniversalBridgeMessage.text) {
-            this?.toString() ?: ""
+            univesalBridgeState.message = this?.toString() ?: ""
+            univesalBridgeState
         }
         // post tasks
         hideSoftKeyboard(binding.root)
@@ -323,9 +319,6 @@ class QASettingsActivity : BaseActivity() {
     }
 
     private fun exitPage() {
-        val intent = Intent()
-        intent.putExtra(UNIVERSAL_BRIDGE_STATE_KEY, Gson().toJson(univesalBridgeState))
-        setResult(Activity.RESULT_OK, intent)
         finish()
     }
 

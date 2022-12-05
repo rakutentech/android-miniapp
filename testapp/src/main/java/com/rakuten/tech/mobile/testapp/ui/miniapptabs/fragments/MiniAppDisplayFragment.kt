@@ -108,15 +108,20 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     private fun loadMiniApp() {
-        val activity = requireActivity()
+        val activity = requireActivity() as DemoAppMainActivity
         if (isloadNew) {
             isloadNew = false
             initializeMiniAppDisplay(activity)
         } else {
-            if (this::miniAppDisplay.isInitialized)
-                addMiniAppChildView(activity, miniAppDisplay)
-            else
+            if (this::miniAppDisplay.isInitialized) {
+                addMiniAppChildView(
+                    activity,
+                    miniAppView = activity.miniAppIdAndViewMap[appId],
+                    miniAppDisplay = miniAppDisplay
+                )
+            } else {
                 initializeMiniAppDisplay(activity)
+            }
         }
     }
 
@@ -126,7 +131,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     @Suppress("LongMethod", "ComplexMethod")
-    private fun initializeMiniAppDisplay(activity: Activity) {
+    private fun initializeMiniAppDisplay(activity: DemoAppMainActivity) {
         toggleProgressLoading(true)
         setUpFileChooserAndDownloader(activity)
         setUpNavigator(activity)
@@ -136,7 +141,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             activity.runOnUiThread {
                 miniAppDisplay?.let {
                     this.miniAppDisplay = miniAppDisplay
-                    addMiniAppChildView(activity, miniAppDisplay)
+                    addMiniAppChildView(activity, miniAppView, miniAppDisplay)
                 } ?: kotlin.run {
                     miniAppSdkException?.let {
                         toggleProgressLoading(false)
@@ -166,7 +171,11 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                                     activity.runOnUiThread {
                                         miniAppDisplay?.let {
                                             this.miniAppDisplay = miniAppDisplay
-                                            addMiniAppChildView(activity, miniAppDisplay)
+                                            addMiniAppChildView(
+                                                activity,
+                                                miniAppView,
+                                                miniAppDisplay
+                                            )
                                         } ?: kotlin.run {
                                             toggleProgressLoading(false)
 
@@ -196,7 +205,11 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
-    private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay) {
+    private fun addMiniAppChildView(
+        activity: DemoAppMainActivity,
+        miniAppView: MiniAppView?,
+        miniAppDisplay: MiniAppDisplay
+    ) {
         CoroutineScope(Dispatchers.Default).launch {
             val miniAppChildView = miniAppDisplay.getMiniAppView(activity)
             activity.runOnUiThread {
@@ -208,6 +221,13 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 (miniAppChildView?.parent as? ViewGroup)?.removeView(miniAppChildView)
                 binding.linRoot.addView(miniAppChildView)
                 toggleProgressLoading(false)
+            }
+            miniAppView?.let {
+                with(activity.miniAppIdAndViewMap) {
+                    if (!containsKey(appId)) {
+                        this[appId] = it
+                    }
+                }
             }
         }
     }
@@ -444,6 +464,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
     }
 
+    private fun updateMiniAppIdAndViewMap(miniAppView: MiniAppView) {
+        val activity = requireActivity() as DemoAppMainActivity
+        activity.miniAppIdAndViewMap[appId] = miniAppView
+    }
 
     fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (Activity.RESULT_OK != resultCode) {
@@ -581,7 +605,8 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
                 miniAppFileChooser = miniAppFileChooser,
-                queryParams = AppSettings.instance.urlParameters
+                queryParams = AppSettings.instance.urlParameters,
+                universalBridgeMessage = AppSettings.instance.universalBridgeMessage.message
             ),
             miniAppInfo = miniAppInfo,
             fromCache = false

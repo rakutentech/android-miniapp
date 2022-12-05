@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,17 @@ internal class MiniAppViewImpl(
                 }
             } catch (miniAppSdkException: MiniAppSdkException) {
                 onComplete(null, miniAppSdkException)
+            }
+        }
+    }
+
+    override fun sendJsonToMiniApp() {
+        miniAppParameters.config.universalBridgeMessage.let {
+            if (it.isNotBlank()) {
+                miniAppParameters.config.miniAppMessageBridge.dispatchNativeEvent(
+                    NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                    miniAppParameters.config.universalBridgeMessage
+                )
             }
         }
     }

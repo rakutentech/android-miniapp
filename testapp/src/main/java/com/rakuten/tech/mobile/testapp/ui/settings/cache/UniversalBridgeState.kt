@@ -1,16 +1,24 @@
 package com.rakuten.tech.mobile.testapp.ui.settings.cache
 
+import android.content.SharedPreferences
+import com.google.gson.Gson
+
 class UniversalBridgeState(
-    private var shouldSendMessage: Boolean = false,
-    private var message: String = ""
-){
-    fun update(shouldSendMessage: Boolean, message: String){
-        this.shouldSendMessage = shouldSendMessage
-        this.message = message
+    var shouldSendMessage: Boolean = false,
+    var message: String = ""
+) {
+    companion object {
+        internal fun fromJson(prefs: SharedPreferences): UniversalBridgeState {
+            val universalBridgeStateData = prefs.getString(Cache.UNIVERSAL_BRIDGE_MESSAGE, null)
+                ?: return UniversalBridgeState()
+            return Gson().fromJson(universalBridgeStateData, UniversalBridgeState::class.java)
+        }
     }
 
-    fun handleOnMiniAppLoaded(onMessageReady: (String) -> Unit){
-        if(shouldSendMessage){
+    internal fun toJsonString() = Gson().toJson(this)
+
+    fun handleOnMiniAppLoaded(onMessageReady: (String) -> Unit) {
+        if (shouldSendMessage) {
             onMessageReady(message)
         }
     }

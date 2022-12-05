@@ -47,7 +47,6 @@ class UniversalBridgeSpec : BridgeCommon() {
     fun setUp() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

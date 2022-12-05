@@ -109,7 +109,7 @@ open class BridgeCommon {
         }
     }
 
-    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
+    fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
             override fun getMessagingUniqueId(

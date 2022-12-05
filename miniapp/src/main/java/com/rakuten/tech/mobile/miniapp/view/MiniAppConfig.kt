@@ -12,11 +12,13 @@ import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
  * @param miniAppNavigator allow host app to handle specific urls such as external link.
  * @param miniAppFileChooser allow host app to get the file path while choosing file inside the webview.
  * @param queryParams the parameters will be appended with the miniapp url scheme.
+ * @param universalBridgeMessage allow host app to send a message for any purpose
  */
 data class MiniAppConfig(
     val miniAppSdkConfig: MiniAppSdkConfig,
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
     val miniAppFileChooser: MiniAppFileChooser?,
-    var queryParams: String = ""
+    var queryParams: String = "",
+    var universalBridgeMessage: String = "",
 )

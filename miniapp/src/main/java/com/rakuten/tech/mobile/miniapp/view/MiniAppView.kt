@@ -63,4 +63,10 @@ abstract class MiniAppView internal constructor() {
         fromCache: Boolean = false,
         onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
     )
+
+    /**
+     * send a generic message
+     * to MiniApp using [com.rakuten.tech.mobile.miniapp.js.NativeEventType.MINIAPP_RECEIVE_JSON_INFO].
+     */
+    abstract fun sendJsonToMiniApp()
 }

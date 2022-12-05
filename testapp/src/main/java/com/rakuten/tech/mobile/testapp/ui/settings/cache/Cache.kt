@@ -52,10 +52,10 @@ internal class Cache(
         get() = prefs.getString(MAUID_ERROR, null)
         set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
 
-    var universalBridgeMessage: String?
-        get() = prefs.getString(UNIVERSAL_BRIDGE_MESSAGE, null)
-        set(universalBridgeError) = prefs.edit()
-            .putString(UNIVERSAL_BRIDGE_MESSAGE, universalBridgeError).apply()
+    var universalBridgeMessage:UniversalBridgeState
+        get() = UniversalBridgeState.fromJson(prefs)
+        set(universalBridgeState) = prefs.edit()
+            .putString(UNIVERSAL_BRIDGE_MESSAGE, universalBridgeState.toJsonString()).apply()
 
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
@@ -142,7 +142,7 @@ internal class Cache(
         private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
         private const val MAUID_ERROR = "mauid_error"
-        private const val UNIVERSAL_BRIDGE_MESSAGE = "universal_bridge_message"
+        internal const val UNIVERSAL_BRIDGE_MESSAGE = "universal_bridge_message"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
