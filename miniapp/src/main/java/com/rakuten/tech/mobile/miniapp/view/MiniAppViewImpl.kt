@@ -79,7 +79,7 @@ internal class MiniAppViewImpl(
                         (miniAppParameters as MiniAppParameters.UrlParams).config.miniAppMessageBridge
                 }
                 miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.MINIAPP_RECEIVE_JSON_INFO, message
+                    NativeEventType.MINIAPP_RECEIVE_JSON_INFO, it
                 )
             } else {
                 onFailed()
