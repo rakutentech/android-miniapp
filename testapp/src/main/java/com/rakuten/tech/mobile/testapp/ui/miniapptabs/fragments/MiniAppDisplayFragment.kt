@@ -354,7 +354,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                         onSuccess(message)
                     } else {
                         message =
-                            getString(R.string.error_send_json_to_host_app_context_is_not_ready)
+                            getString(R.string.error_send_json_to_host_app_please_try_again)
                         onError(message)
                     }
                     if (requireActivity.isAvailable) {
