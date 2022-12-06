@@ -19,10 +19,11 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
 
+val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
+
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
     private lateinit var binding: MiniAppMainLayoutBinding
-    val miniAppIdAndViewMap = hashMapOf<String, MiniAppView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +49,7 @@ class DemoAppMainActivity : BaseActivity() {
             containerId = R.id.activity_main_nav_host_fragment,
             intent = intent
         )
+
 
         controller.observe(this) { navController ->
             setupActionBarWithNavController(navController)
@@ -107,6 +109,8 @@ class DemoAppMainActivity : BaseActivity() {
         bottomNavigationView.selectedItemId = page
     }
 
+    fun getCurrentSelectedId() = bottomNavigationView.selectedItemId
+
     companion object {
         private const val PAGE_1 = R.id.nav_tab_0
         private const val PAGE_2 = R.id.nav_tab_1
@@ -152,22 +156,5 @@ class DemoAppMainActivity : BaseActivity() {
         return if (fragment is Fragment) {
             fragment
         } else null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        miniAppIdAndViewMap.forEach {
-            with(AppSettings.instance.universalBridgeState) {
-                if (shouldSendMessage) {
-                    it.value.sendJsonToMiniApp(message) {
-                        Toast.makeText(
-                            this@DemoAppMainActivity,
-                            getString(R.string.error_send_json_to_mini_app_message_cannot_be_empty),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
     }
 }

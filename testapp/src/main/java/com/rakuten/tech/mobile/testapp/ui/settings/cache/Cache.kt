@@ -52,11 +52,6 @@ internal class Cache(
         get() = prefs.getString(MAUID_ERROR, null)
         set(mauIdError) = prefs.edit().putString(MAUID_ERROR, mauIdError).apply()
 
-    var universalBridgeMessage:UniversalBridgeState
-        get() = UniversalBridgeState.fromJson(prefs)
-        set(universalBridgeState) = prefs.edit()
-            .putString(UNIVERSAL_BRIDGE_STATE, universalBridgeState.toJsonString()).apply()
-
     var isSettingSaved: Boolean
         get() = prefs.getBoolean(IS_SETTING_SAVED, false)
         set(isSettingSaved) = prefs.edit().putBoolean(IS_SETTING_SAVED, isSettingSaved).apply()

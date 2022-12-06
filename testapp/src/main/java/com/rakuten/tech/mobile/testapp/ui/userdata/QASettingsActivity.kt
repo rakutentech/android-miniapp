@@ -19,7 +19,10 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
+import com.rakuten.tech.mobile.testapp.helper.showToastMessage
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.miniAppIdAndViewMap
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -33,7 +36,6 @@ class QASettingsActivity : BaseActivity() {
     private val bluetoothDelegate = MiniAppBluetoothDelegate()
     private lateinit var menuBluetooth: MenuItem
     private val btDeviceTimer = Timer()
-    private val univesalBridgeState = AppSettings.instance.universalBridgeState
 
     companion object {
 
@@ -121,10 +123,6 @@ class QASettingsActivity : BaseActivity() {
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage Bytes")
 
         invalidateMaxStorageField()
-
-        binding.edtUniversalBridgeMessage.setText(settings.universalBridgeState.message)
-        univesalBridgeState.shouldSendMessage = false
-        AppSettings.instance.universalBridgeState = univesalBridgeState
     }
 
     private fun startListeners() {
@@ -162,20 +160,16 @@ class QASettingsActivity : BaseActivity() {
 
         binding.btnSendToMiniApp.setOnClickListener {
             binding.edtUniversalBridgeMessage.text?.toString()?.let { text ->
-                val toastMessage: String
-                if(text.isEmpty()){
-                    toastMessage = getString(R.string.please_input_the_message)
+                if (text.isEmpty()) {
+                    showToastMessage(getString(R.string.please_input_the_message))
                 } else {
-                    univesalBridgeState.message = text
-                    univesalBridgeState.shouldSendMessage = true
-                    settings.universalBridgeState = univesalBridgeState
-                    toastMessage = getString(R.string.universal_message_bridge_will_be_sent)
+                    miniAppIdAndViewMap.forEach {
+                        it.value.sendJsonToMiniApp(text) {
+                            showToastMessage(getString(R.string.error_send_json_to_mini_app_message_cannot_be_empty))
+                        }
+                    }
                 }
-                Toast.makeText(
-                    this@QASettingsActivity,
-                    toastMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToastMessage(getString(R.string.universal_message_bridge_will_be_sent))
             }
         }
     }
@@ -315,10 +309,6 @@ class QASettingsActivity : BaseActivity() {
             settings.maxStorageSizeLimitInBytes = binding.edtMaxStorageLimit.text.toString()
         }
 
-        settings.universalBridgeState = with(binding.edtUniversalBridgeMessage.text) {
-            univesalBridgeState.message = this?.toString() ?: ""
-            univesalBridgeState
-        }
         // post tasks
         hideSoftKeyboard(binding.root)
         exitPage()

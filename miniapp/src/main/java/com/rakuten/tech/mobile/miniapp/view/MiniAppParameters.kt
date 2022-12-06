@@ -6,9 +6,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 /**
  * This class can be used in the HostApp to create the mini app views using mini app id.
  */
-sealed class MiniAppParameters(
-    open val config: MiniAppConfig,
-) {
+sealed class MiniAppParameters {
     /**
      * This class can be used in the HostApp to create the mini app views using mini app id.
      * @param context is used by the view for initializing the internal services.
@@ -19,11 +17,11 @@ sealed class MiniAppParameters(
      */
     data class DefaultParams(
         val context: Context,
-        override val config: MiniAppConfig,
+        val config: MiniAppConfig,
         val miniAppId: String,
         val miniAppVersion: String,
         var fromCache: Boolean = false
-    ) : MiniAppParameters(config = config)
+    ) : MiniAppParameters()
 
     /**
      * This class can be used in the HostApp to create the mini app views using mini app id.
@@ -35,10 +33,10 @@ sealed class MiniAppParameters(
      */
     data class InfoParams(
         val context: Context,
-        override val config: MiniAppConfig,
+        val config: MiniAppConfig,
         val miniAppInfo: MiniAppInfo,
         var fromCache: Boolean = false
-    ) : MiniAppParameters(config)
+    ) : MiniAppParameters()
 
     /**
      * This class can be used in the HostApp to create the mini app views using provided url.
@@ -51,7 +49,7 @@ sealed class MiniAppParameters(
      */
     data class UrlParams(
         val context: Context,
-        override val config: MiniAppConfig,
+        val config: MiniAppConfig,
         val miniAppUrl: String
-    ) : MiniAppParameters(config)
+    ) : MiniAppParameters()
 }

@@ -358,8 +358,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 )
             }
 
-
-
             override fun sendJsonToHostApp(
                 jsonStr: String,
                 onSuccess: (String) -> Unit,
@@ -367,18 +365,15 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             ) {
                 jsonStr.let {
                     val message: String
-                    if (it.isNotBlank()){
+                    if (it.isNotBlank()) {
                         message = it
                         onSuccess(message)
                     } else {
                         message = getString(R.string.error_send_json_to_host_app_please_try_again)
                         onError(message)
                     }
-                    if(isAvailable){
-                        Toast.makeText(
-                            this@MiniAppDisplayActivity,
-                            message,
-                            Toast.LENGTH_LONG).show()
+                    if (isAvailable) {
+                        showToastMessage(message)
                     }
                 }
             }
@@ -499,7 +494,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         when {
             requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
                 data?.let { intent ->
-                    val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
+                    val isClosedByBackPressed =
+                        intent.getBooleanExtra("isClosedByBackPressed", false)
                     miniAppMessageBridge.dispatchNativeEvent(
                         NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
                         "External webview closed"

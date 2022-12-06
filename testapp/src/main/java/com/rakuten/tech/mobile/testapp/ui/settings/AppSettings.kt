@@ -12,7 +12,6 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
 import com.rakuten.tech.mobile.miniapp.testapp.BuildConfig
 import com.rakuten.tech.mobile.testapp.ui.settings.cache.Cache
 import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
-import com.rakuten.tech.mobile.testapp.ui.settings.cache.UniversalBridgeState
 import java.util.*
 
 @Suppress("TooManyFunctions")
@@ -52,12 +51,6 @@ class AppSettings private constructor(context: Context) {
         get() = cache.mauIdError ?: ""
         set(mauIdError) {
             cache.mauIdError = mauIdError
-        }
-
-    var universalBridgeState: UniversalBridgeState
-        get() = cache.universalBridgeMessage
-        set(universalBridgeState) {
-            cache.universalBridgeMessage = universalBridgeState
         }
 
     var isSettingSaved: Boolean

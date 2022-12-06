@@ -47,6 +47,7 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
 import com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.miniAppIdAndViewMap
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -116,7 +117,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             if (this::miniAppDisplay.isInitialized) {
                 addMiniAppChildView(
                     activity,
-                    miniAppView = activity.miniAppIdAndViewMap[appId],
+                    miniAppView = miniAppIdAndViewMap[Pair(activity.getCurrentSelectedId(), appId)],
                     miniAppDisplay = miniAppDisplay
                 )
             } else {
@@ -218,9 +219,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 toggleProgressLoading(false)
             }
             miniAppView?.let {
-                with(activity.miniAppIdAndViewMap) {
-                    if (!containsKey(appId)) {
-                        this[appId] = it
+                with(miniAppIdAndViewMap) {
+                    val pairTabAndMiniAppId = Pair(activity.getCurrentSelectedId(), appId)
+                    if (!containsKey(pairTabAndMiniAppId)) {
+                        this[pairTabAndMiniAppId] = it
                     }
                 }
             }
@@ -358,11 +360,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                         onError(message)
                     }
                     if (requireActivity.isAvailable) {
-                        Toast.makeText(
-                            requireActivity,
-                            message,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        requireActivity.showToastMessage(message)
                     }
                 }
             }

@@ -188,7 +188,7 @@ class MiniAppViewImplSpec {
     @Test
     fun `should do nothing when universalBridgeMessage is blank`() {
         withMiniAppDefaultParams { miniAppViewImpl ->
-            val onFailed : () -> Unit = mock()
+            val onFailed: () -> Unit = mock()
             miniAppViewImpl.sendJsonToMiniApp("", onFailed)
             verifyZeroInteractions(
                 bridgeExecutor
@@ -201,7 +201,7 @@ class MiniAppViewImplSpec {
     fun `should call miniAppMessageBridge dispatchNativeEvent when universalBridgeMessage is not blank`() {
         withMiniAppDefaultParams { miniAppViewImpl ->
             miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
-                //empty intended
+                // empty intended
             }
             verify(miniAppBridge).dispatchNativeEvent(
                 NativeEventType.MINIAPP_RECEIVE_JSON_INFO,

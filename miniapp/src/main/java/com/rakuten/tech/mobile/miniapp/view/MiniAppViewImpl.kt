@@ -70,9 +70,16 @@ internal class MiniAppViewImpl(
     override fun sendJsonToMiniApp(message: String, onFailed: () -> Unit) {
         message.let {
             if (it.isNotBlank()) {
-                miniAppParameters.config.miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
-                    message
+                val miniAppMessageBridge = when (miniAppParameters) {
+                    is MiniAppParameters.DefaultParams ->
+                        (miniAppParameters as MiniAppParameters.DefaultParams).config.miniAppMessageBridge
+                    is MiniAppParameters.InfoParams ->
+                        (miniAppParameters as MiniAppParameters.InfoParams).config.miniAppMessageBridge
+                    is MiniAppParameters.UrlParams ->
+                        (miniAppParameters as MiniAppParameters.UrlParams).config.miniAppMessageBridge
+                }
+                miniAppMessageBridge.dispatchNativeEvent(
+                    NativeEventType.MINIAPP_RECEIVE_JSON_INFO, message
                 )
             } else {
                 onFailed()
