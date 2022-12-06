@@ -65,9 +65,10 @@ abstract class MiniAppView internal constructor() {
     )
 
     /**
-     * send a generic message
-     * to MiniApp using [com.rakuten.tech.mobile.miniapp.js.NativeEventType.MINIAPP_RECEIVE_JSON_INFO].
+     * Send a generic message to MiniApp using
+     * [com.rakuten.tech.mobile.miniapp.js.NativeEventType.MINIAPP_RECEIVE_JSON_INFO].
      * @param message the content that will send to the MiniApp
+     * @param onFailed invoked when the validation does not pass to send the message
      */
-    abstract fun sendJsonToMiniApp(message: String)
+    abstract fun sendJsonToMiniApp(message: String, onFailed: () -> Unit)
 }

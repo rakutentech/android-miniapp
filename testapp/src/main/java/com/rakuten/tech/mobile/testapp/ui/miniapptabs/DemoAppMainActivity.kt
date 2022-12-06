@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -158,7 +159,13 @@ class DemoAppMainActivity : BaseActivity() {
         miniAppIdAndViewMap.forEach {
             with(AppSettings.instance.universalBridgeState) {
                 if (shouldSendMessage) {
-                    it.value.sendJsonToMiniApp(message)
+                    it.value.sendJsonToMiniApp(message) {
+                        Toast.makeText(
+                            this@DemoAppMainActivity,
+                            getString(R.string.error_send_json_to_mini_app_message_cannot_be_empty),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }

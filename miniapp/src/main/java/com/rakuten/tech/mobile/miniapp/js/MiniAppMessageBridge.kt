@@ -164,7 +164,8 @@ open class MiniAppMessageBridge {
     }
 
     /**
-     * handle Universal Bridge that represented as a json  from MiniApp.
+     * handle Universal Bridge that represented as a json from MiniApp.
+     * @param jsonStr: JSON/String that is sent from the MiniApp
      **/
     open fun sendJsonToHostApp(
         jsonStr: String,

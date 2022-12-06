@@ -67,13 +67,15 @@ internal class MiniAppViewImpl(
         }
     }
 
-    override fun sendJsonToMiniApp(message: String) {
+    override fun sendJsonToMiniApp(message: String, onFailed: () -> Unit) {
         message.let {
             if (it.isNotBlank()) {
                 miniAppParameters.config.miniAppMessageBridge.dispatchNativeEvent(
                     NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
                     message
                 )
+            } else {
+                onFailed()
             }
         }
     }

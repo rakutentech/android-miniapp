@@ -162,12 +162,18 @@ class QASettingsActivity : BaseActivity() {
 
         binding.btnSendToMiniApp.setOnClickListener {
             binding.edtUniversalBridgeMessage.text?.toString()?.let { text ->
-                univesalBridgeState.message = text
-                univesalBridgeState.shouldSendMessage = true
-                settings.universalBridgeState = univesalBridgeState
+                val toastMessage: String
+                if(text.isEmpty()){
+                    toastMessage = getString(R.string.please_input_the_message)
+                } else {
+                    univesalBridgeState.message = text
+                    univesalBridgeState.shouldSendMessage = true
+                    settings.universalBridgeState = univesalBridgeState
+                    toastMessage = getString(R.string.universal_message_bridge_will_be_sent)
+                }
                 Toast.makeText(
                     this@QASettingsActivity,
-                    this@QASettingsActivity.getString(R.string.universal_message_bridge_will_be_sent),
+                    toastMessage,
                     Toast.LENGTH_SHORT
                 ).show()
             }
