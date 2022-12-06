@@ -209,4 +209,30 @@ class MiniAppViewImplSpec {
             )
         }
     }
+
+    @Test
+    fun `should call miniAppMessageBridge  using urLParams`() {
+        withMiniAppUrlParams { miniAppViewImpl ->
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
+                // empty intended
+            }
+            verify(miniAppBridge).dispatchNativeEvent(
+                NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                TEST_BODY_CONTENT
+            )
+        }
+    }
+
+    @Test
+    fun `should call miniAppMessageBridge  using infoParams`() {
+        withMiniAppInfoParams { miniAppViewImpl ->
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
+                // empty intended
+            }
+            verify(miniAppBridge).dispatchNativeEvent(
+                NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                TEST_BODY_CONTENT
+            )
+        }
+    }
 }
