@@ -137,7 +137,6 @@ internal class Cache(
         private const val UNIQUE_ID_ERROR = "unique_id_error"
         private const val MESSAGING_UNIQUE_ID_ERROR = "messaging_unique_id_error"
         private const val MAUID_ERROR = "mauid_error"
-        internal const val UNIVERSAL_BRIDGE_STATE = "universal_bridge_state"
         private const val IS_SETTING_SAVED = "is_setting_saved"
         private const val PROFILE_NAME = "profile_name"
         private const val PROFILE_PICTURE_URL = "profile_picture_url"
