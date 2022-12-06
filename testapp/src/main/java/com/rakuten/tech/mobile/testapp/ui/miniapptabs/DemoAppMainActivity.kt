@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData

@@ -21,7 +21,6 @@ import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.helper.showToastMessage
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.miniAppIdAndViewMap
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
