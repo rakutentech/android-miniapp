@@ -109,7 +109,7 @@ open class BridgeCommon {
         }
     }
 
-    protected fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
+    fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =
         object : MiniAppMessageBridge() {
 
             override fun getMessagingUniqueId(
@@ -131,6 +131,20 @@ open class BridgeCommon {
                 callback: (isGranted: Boolean) -> Unit
             ) {
                 onRequestDevicePermissionsResult(TEST_CALLBACK_ID, false)
+            }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (jsonStr: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    if (it.contains("content")) {
+                        onSuccess(it)
+                        return
+                    }
+                }
+                onError(ErrorBridgeMessage.ERR_JSON_INFO)
             }
         }
 

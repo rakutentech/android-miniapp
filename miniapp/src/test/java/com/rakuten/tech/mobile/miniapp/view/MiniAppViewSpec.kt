@@ -89,7 +89,7 @@ open class MiniAppViewSpec {
             mock(),
             null,
             null,
-            ""
+            "",
         )
 
         miniAppConfig.shouldBeInstanceOf<MiniAppConfig>()

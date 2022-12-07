@@ -6,25 +6,31 @@ import org.mockito.kotlin.mock
 
 class UnimplementedMessageBridgeSpec : BridgeCommon() {
 
-    private val unImplementedMessageBrdige = object : MiniAppMessageBridge() {}
+    private val unimplementedMessageBridge = object : MiniAppMessageBridge() {}
 
     @Test(expected = MiniAppSdkException::class)
     fun `getMessaginguniqueId should throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.getMessagingUniqueId(mock(), mock())
+        unimplementedMessageBridge.getMessagingUniqueId(mock(), mock())
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `getMauid should throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.getMauid(mock(), mock())
+        unimplementedMessageBridge.getMauid(mock(), mock())
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `requestDevicepPermission throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.requestDevicePermission(mock(), mock())
+        unimplementedMessageBridge.requestDevicePermission(mock(), mock())
     }
 
     @Test(expected = MiniAppSdkException::class)
     fun `requestCustomPermissions throw MiniAppSdkException when it is not implemented`() {
-        unImplementedMessageBrdige.requestCustomPermissions(mock(), mock())
+        unimplementedMessageBridge.requestCustomPermissions(mock(), mock())
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `sendJsonToHostApp throw MiniAppSdkException when it is not implemented`() {
+        val mockFunction: (Any) -> Unit = {}
+        unimplementedMessageBridge.sendJsonToHostApp("", mockFunction, mockFunction)
     }
 }

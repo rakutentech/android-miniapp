@@ -7,10 +7,10 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
-import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
+import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -26,12 +26,12 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
-import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
+import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -164,6 +164,18 @@ open class MiniAppMessageBridge {
     }
 
     /**
+     * handle Universal Bridge that represented as a json from MiniApp.
+     * @param jsonStr: JSON/String that is sent from the MiniApp
+     **/
+    open fun sendJsonToHostApp(
+        jsonStr: String,
+        onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
      * @param callback The executed action status should be notified back to mini app.
@@ -255,6 +267,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
+            ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -411,6 +424,27 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
     }
 
+    @VisibleForTesting
+    internal fun onSendJsonToHostApp(callbackId: String, jsonStr: String) = try {
+        val jsonInfoCallbackObj = Gson().fromJson(jsonStr, JsonInfoCallbackObj::class.java)
+        sendJsonToHostApp(
+            jsonStr = jsonInfoCallbackObj.param.jsonInfo.content,
+            onSuccess = { value ->
+                bridgeExecutor.postValue(callbackId, value.toString())
+            },
+            onError = { message ->
+                bridgeExecutor.postError(
+                    callbackId,
+                    message
+                )
+            }
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackId, "${ErrorBridgeMessage.ERR_JSON_INFO} ${e.message}"
+        )
+    }
+
     @SuppressWarnings("TooGenericExceptionCaught")
     @VisibleForTesting
     internal fun onGetHostEnvironmentInfo(callbackId: String) {
@@ -473,7 +507,9 @@ internal object ErrorBridgeMessage {
         "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
         "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
+    const val NO_IMPLEMENT_JSON_INFO = "The `MiniAppMessageBridge.sendJsonToHostApp` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
+    const val ERR_JSON_INFO = "Cannot send jsonInfo:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"

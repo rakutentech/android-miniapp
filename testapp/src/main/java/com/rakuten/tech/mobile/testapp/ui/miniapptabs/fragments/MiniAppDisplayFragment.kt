@@ -46,6 +46,8 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.MiniAppShareWindow
 import com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.miniAppIdAndViewMap
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,7 +81,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isloadNew = true
-
     }
 
     override fun onDetach() {
@@ -94,7 +95,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val activity = requireActivity()
         setHasOptionsMenu(true)
         appInfo = args.miniAppInfo
         appId = args.miniAppInfo.id
@@ -104,16 +104,26 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             container,
             false
         )
+        loadMiniApp()
+        return binding.root
+    }
+
+    private fun loadMiniApp() {
+        val activity = requireActivity()
         if (isloadNew) {
             isloadNew = false
             initializeMiniAppDisplay(activity)
         } else {
-            if (this::miniAppDisplay.isInitialized)
-                addMiniAppChildView(activity, miniAppDisplay)
-            else
+            if (this::miniAppDisplay.isInitialized && activity is DemoAppMainActivity) {
+                addMiniAppChildView(
+                    activity,
+                    miniAppView = miniAppIdAndViewMap[Pair(activity.getCurrentSelectedId(), appId)],
+                    miniAppDisplay = miniAppDisplay
+                )
+            } else {
                 initializeMiniAppDisplay(activity)
+            }
         }
-        return binding.root
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -127,7 +137,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             activity.runOnUiThread {
                 miniAppDisplay?.let {
                     this.miniAppDisplay = miniAppDisplay
-                    addMiniAppChildView(activity, miniAppDisplay)
+                    addMiniAppChildView(activity, miniAppView, miniAppDisplay)
                 } ?: kotlin.run {
                     miniAppSdkException?.let {
                         toggleProgressLoading(false)
@@ -157,9 +167,14 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                                     activity.runOnUiThread {
                                         miniAppDisplay?.let {
                                             this.miniAppDisplay = miniAppDisplay
-                                            addMiniAppChildView(activity, miniAppDisplay)
+                                            addMiniAppChildView(
+                                                activity,
+                                                miniAppView,
+                                                miniAppDisplay
+                                            )
                                         } ?: kotlin.run {
                                             toggleProgressLoading(false)
+
                                             miniAppSdkException?.let { e ->
                                                 when (e) {
                                                     is MiniAppNotFoundException ->
@@ -186,7 +201,11 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
-    private fun addMiniAppChildView(activity: Activity, miniAppDisplay: MiniAppDisplay) {
+    private fun addMiniAppChildView(
+        activity: Activity,
+        miniAppView: MiniAppView?,
+        miniAppDisplay: MiniAppDisplay
+    ) {
         CoroutineScope(Dispatchers.Default).launch {
             val miniAppChildView = miniAppDisplay.getMiniAppView(activity)
             activity.runOnUiThread {
@@ -198,6 +217,16 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 (miniAppChildView?.parent as? ViewGroup)?.removeView(miniAppChildView)
                 binding.linRoot.addView(miniAppChildView)
                 toggleProgressLoading(false)
+            }
+            miniAppView?.let {
+                with(miniAppIdAndViewMap) {
+                    if (activity is DemoAppMainActivity) {
+                        val pairTabAndMiniAppId = Pair(activity.getCurrentSelectedId(), appId)
+                        if (!containsKey(pairTabAndMiniAppId)) {
+                            this[pairTabAndMiniAppId] = it
+                        }
+                    }
+                }
             }
         }
     }
@@ -315,6 +344,28 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    val requireActivity = requireActivity()
+                    val message: String
+                    if (it.isNotBlank()) {
+                        message = it
+                        onSuccess(message)
+                    } else {
+                        message =
+                            getString(R.string.error_send_json_to_host_app_please_try_again)
+                        onError(message)
+                    }
+                    if (requireActivity.isAvailable) {
+                        requireActivity.showToastMessage(message)
+                    }
+                }
+            }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activity))
         miniAppMessageBridge.allowScreenOrientation(true)
@@ -408,28 +459,32 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
     }
 
-
     fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (Activity.RESULT_OK != resultCode) {
             miniAppFileChooser.onCancel()
             miniAppFileDownloader.onCancel()
         }
 
-        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
-                    "External webview closed"
-                )
-                if (!isClosedByBackPressed)
-                    sampleWebViewExternalResultHandler.emitResult(intent)
+        when {
+            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+                data?.let { intent ->
+                    val isClosedByBackPressed =
+                        intent.getBooleanExtra("isClosedByBackPressed", false)
+                    miniAppMessageBridge.dispatchNativeEvent(
+                        NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
+                        "External webview closed"
+                    )
+                    if (!isClosedByBackPressed)
+                        sampleWebViewExternalResultHandler.emitResult(intent)
+                }
             }
-        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            miniAppFileChooser.onReceivedFiles(data)
-        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
-            data?.data?.let { destinationUri ->
-                miniAppFileDownloader.onReceivedResult(destinationUri)
+            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+                miniAppFileChooser.onReceivedFiles(data)
+            }
+            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
+                data?.data?.let { destinationUri ->
+                    miniAppFileDownloader.onReceivedResult(destinationUri)
+                }
             }
         }
     }
@@ -532,7 +587,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 miniAppMessageBridge = miniAppMessageBridge,
                 miniAppNavigator = miniAppNavigator,
                 miniAppFileChooser = miniAppFileChooser,
-                queryParams = AppSettings.instance.urlParameters
+                queryParams = AppSettings.instance.urlParameters,
             ),
             miniAppInfo = miniAppInfo,
             fromCache = false

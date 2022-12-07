@@ -19,7 +19,9 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
+import com.rakuten.tech.mobile.testapp.helper.showToastMessage
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.miniAppIdAndViewMap
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.util.*
 
@@ -35,8 +37,11 @@ class QASettingsActivity : BaseActivity() {
     private val btDeviceTimer = Timer()
 
     companion object {
+
         fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, QASettingsActivity::class.java))
+            activity.startActivity(
+                Intent(activity, QASettingsActivity::class.java),
+            )
         }
     }
 
@@ -68,7 +73,7 @@ class QASettingsActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                exitPage()
                 return true
             }
             R.id.qa_menu_save -> {
@@ -150,6 +155,21 @@ class QASettingsActivity : BaseActivity() {
 
             if (bluetoothDelegate.hasBTConnectPermission())
                 detectPairDeviceOnSchedule()
+        }
+
+        binding.btnSendToMiniApp.setOnClickListener {
+            binding.edtUniversalBridgeMessage.text?.toString()?.let { text ->
+                if (text.isEmpty()) {
+                    showToastMessage(getString(R.string.please_input_the_message))
+                } else {
+                    miniAppIdAndViewMap.forEach {
+                        it.value.sendJsonToMiniApp(text) {
+                            showToastMessage(getString(R.string.error_send_json_to_mini_app_message_cannot_be_empty))
+                        }
+                    }
+                }
+                showToastMessage(getString(R.string.universal_message_bridge_will_be_sent))
+            }
         }
     }
 
@@ -290,6 +310,14 @@ class QASettingsActivity : BaseActivity() {
 
         // post tasks
         hideSoftKeyboard(binding.root)
+        exitPage()
+    }
+
+    override fun onBackPressed() {
+        exitPage()
+    }
+
+    private fun exitPage() {
         finish()
     }
 

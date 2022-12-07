@@ -101,6 +101,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     )
 
     private var appInfo: MiniAppInfo? = null
+    private var appUrl: String? = null
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -198,7 +199,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 onDismiss = miniAppMessageBridge::dispatchOnResumeEvent
             )
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,13 +212,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         //Three different ways to get miniapp.
         appInfo = intent.getParcelableExtra(miniAppTag)
         val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
-        val appUrl = intent.getStringExtra(appUrlTag)
+        appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
 
         if (miniAppSdkConfig == null)
             miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig
-
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_display_activity)
 
         val factory = MiniAppDisplayViewModelFactory(MiniApp.instance(miniAppSdkConfig, updateType))
@@ -286,18 +285,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             }
         }
 
-        if (appUrl != null) {
-            viewModel.obtainNewMiniAppDisplayUrl(
-                this@MiniAppDisplayActivity,
-                appUrl,
-                miniAppMessageBridge,
-                miniAppNavigator,
-                miniAppFileChooser,
-                AppSettings.instance.urlParameters
-            )
-        } else {
-            appInfo?.let {
-                viewModel.obtainMiniAppDisplay(
+        loadMiniApp()
+    }
+
+    private fun loadMiniApp() {
+        appUrl?.let {
+            if (it.isNotBlank()) {
+                viewModel.obtainNewMiniAppDisplayUrl(
                     this@MiniAppDisplayActivity,
                     it,
                     miniAppMessageBridge,
@@ -306,6 +300,17 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     AppSettings.instance.urlParameters
                 )
             }
+            return
+        }
+        appInfo?.let {
+            viewModel.obtainMiniAppDisplay(
+                this@MiniAppDisplayActivity,
+                it,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                AppSettings.instance.urlParameters
+            )
         }
     }
 
@@ -351,6 +356,26 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     AppPermission.getDevicePermissionRequest(miniAppPermissionType),
                     AppPermission.getDeviceRequestCode(miniAppPermissionType)
                 )
+            }
+
+            override fun sendJsonToHostApp(
+                jsonStr: String,
+                onSuccess: (String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                jsonStr.let {
+                    val message: String
+                    if (it.isNotBlank()) {
+                        message = it
+                        onSuccess(message)
+                    } else {
+                        message = getString(R.string.error_send_json_to_host_app_please_try_again)
+                        onError(message)
+                    }
+                    if (isAvailable) {
+                        showToastMessage(message)
+                    }
+                }
             }
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
@@ -466,24 +491,29 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             miniAppFileDownloader.onCancel()
         }
 
-        if (requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK) {
-            data?.let { intent ->
-                val isClosedByBackPressed = intent.getBooleanExtra("isClosedByBackPressed", false)
-                miniAppMessageBridge.dispatchNativeEvent(
-                    NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
-                    "External webview closed"
-                )
-                if (!isClosedByBackPressed) {
-                    sampleWebViewExternalResultHandler.emitResult(intent)
-                }
+        when {
+            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+                data?.let { intent ->
+                    val isClosedByBackPressed =
+                        intent.getBooleanExtra("isClosedByBackPressed", false)
+                    miniAppMessageBridge.dispatchNativeEvent(
+                        NativeEventType.EXTERNAL_WEBVIEW_CLOSE,
+                        "External webview closed"
+                    )
+                    if (!isClosedByBackPressed) {
+                        sampleWebViewExternalResultHandler.emitResult(intent)
+                    }
 
-                handleRedirectUrlPage()
+                    handleRedirectUrlPage()
+                }
             }
-        } else if (requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK) {
-            miniAppFileChooser.onReceivedFiles(data)
-        } else if (requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE) {
-            data?.data?.let { destinationUri ->
-                miniAppFileDownloader.onReceivedResult(destinationUri)
+            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+                miniAppFileChooser.onReceivedFiles(data)
+            }
+            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
+                data?.data?.let { destinationUri ->
+                    miniAppFileDownloader.onReceivedResult(destinationUri)
+                }
             }
         }
     }

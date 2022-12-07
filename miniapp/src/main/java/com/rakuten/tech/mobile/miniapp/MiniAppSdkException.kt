@@ -64,8 +64,10 @@ internal class CustomPermissionsNotImplementedException :
  */
 @Suppress("MaxLineLength")
 class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
-    MiniAppSdkException("Mini App has not been granted all of the required permissions " +
-            "for the provided Mini App Id: $appId and the version id: $versionId")
+    MiniAppSdkException(
+        "Mini App has not been granted all of the required permissions " +
+                "for the provided Mini App Id: $appId and the version id: $versionId"
+    )
 
 /**
  * Exception indicating that there was an issue with network connectivity.
@@ -73,7 +75,8 @@ class RequiredPermissionsNotGrantedException(appId: String, versionId: String) :
  * This usually means the device doesn't have internet access currently,
  * so you should display the cached mini app version.
  */
-class MiniAppNetException(message: String, cause: Throwable?) : MiniAppSdkException(message, cause) {
+class MiniAppNetException(message: String, cause: Throwable?) :
+    MiniAppSdkException(message, cause) {
 
     constructor(e: Exception) : this("Found some problem, ${e.message}", e)
 
@@ -92,10 +95,12 @@ internal fun sdkExceptionForInternalServerError() = MiniAppSdkException("Interna
 @Suppress("FunctionMaxLength")
 internal fun sdkExceptionForInvalidArguments(message: String = "") =
     MiniAppSdkException(
-        "Invalid arguments${when {
-            message.isNotBlank() -> ": $message"
-            else -> ""
-        }}"
+        "Invalid arguments${
+            when {
+                message.isNotBlank() -> ": $message"
+                else -> ""
+            }
+        }"
     )
 
 @Suppress("FunctionMaxLength")

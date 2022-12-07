@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -175,4 +176,8 @@ fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
     Handler(Looper.getMainLooper()).postDelayed({
         onFinished()
     }, durationInMillis)
+}
+
+fun Context.showToastMessage(text: String, duration: Int = Toast.LENGTH_LONG){
+    Toast.makeText(this, text, duration).show()
 }
