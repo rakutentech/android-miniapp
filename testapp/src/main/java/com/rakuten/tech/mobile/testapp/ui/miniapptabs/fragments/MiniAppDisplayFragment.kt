@@ -109,12 +109,12 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     private fun loadMiniApp() {
-        val activity = requireActivity() as DemoAppMainActivity
+        val activity = requireActivity()
         if (isloadNew) {
             isloadNew = false
             initializeMiniAppDisplay(activity)
         } else {
-            if (this::miniAppDisplay.isInitialized) {
+            if (this::miniAppDisplay.isInitialized && activity is DemoAppMainActivity) {
                 addMiniAppChildView(
                     activity,
                     miniAppView = miniAppIdAndViewMap[Pair(activity.getCurrentSelectedId(), appId)],
@@ -127,7 +127,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     @Suppress("LongMethod", "ComplexMethod")
-    private fun initializeMiniAppDisplay(activity: DemoAppMainActivity) {
+    private fun initializeMiniAppDisplay(activity: Activity) {
         toggleProgressLoading(true)
         setUpFileChooserAndDownloader(activity)
         setUpNavigator(activity)
@@ -202,7 +202,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     private fun addMiniAppChildView(
-        activity: DemoAppMainActivity,
+        activity: Activity,
         miniAppView: MiniAppView?,
         miniAppDisplay: MiniAppDisplay
     ) {
@@ -220,9 +220,11 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             }
             miniAppView?.let {
                 with(miniAppIdAndViewMap) {
-                    val pairTabAndMiniAppId = Pair(activity.getCurrentSelectedId(), appId)
-                    if (!containsKey(pairTabAndMiniAppId)) {
-                        this[pairTabAndMiniAppId] = it
+                    if (activity is DemoAppMainActivity) {
+                        val pairTabAndMiniAppId = Pair(activity.getCurrentSelectedId(), appId)
+                        if (!containsKey(pairTabAndMiniAppId)) {
+                            this[pairTabAndMiniAppId] = it
+                        }
                     }
                 }
             }
