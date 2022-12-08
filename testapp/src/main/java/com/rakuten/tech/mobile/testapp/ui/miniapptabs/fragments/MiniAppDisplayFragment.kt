@@ -121,14 +121,18 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     miniAppDisplay = miniAppDisplay
                 )
             } else {
+
                 initializeMiniAppDisplay(activity)
             }
         }
     }
 
     private fun getMiniAppView(activity: Activity): MiniAppView {
-        if(activity is DemoAppMainActivity) {
-            miniAppIdAndViewMap.remove(Pair(activity.getCurrentSelectedId(), appId))
+        if (activity is DemoAppMainActivity) {
+            val keyPair = Pair(activity.getCurrentSelectedId(), appId)
+            if (miniAppIdAndViewMap.containsKey(keyPair)) {
+                miniAppIdAndViewMap.remove(keyPair)
+            }
         }
         return MiniAppView.init(createMiniAppInfoParam(activity, args.miniAppInfo))
     }
