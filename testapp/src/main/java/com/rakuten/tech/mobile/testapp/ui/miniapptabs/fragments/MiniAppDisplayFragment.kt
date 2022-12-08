@@ -126,12 +126,22 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
+    private fun removeCachedMiniAppViewIfExists(activity: Activity) {
+        if (activity is DemoAppMainActivity) {
+            val keyPair = Pair(activity.getCurrentSelectedId(), appId)
+            if (miniAppIdAndViewMap.containsKey(keyPair)) {
+                miniAppIdAndViewMap.remove(keyPair)
+            }
+        }
+    }
+
     @Suppress("LongMethod", "ComplexMethod")
     private fun initializeMiniAppDisplay(activity: Activity) {
         toggleProgressLoading(true)
         setUpFileChooserAndDownloader(activity)
         setUpNavigator(activity)
         setupMiniAppMessageBridge(requireActivity(), miniAppFileDownloader)
+        removeCachedMiniAppViewIfExists(activity)
         val miniAppView = MiniAppView.init(createMiniAppInfoParam(activity, args.miniAppInfo))
         miniAppView.load { miniAppDisplay, miniAppSdkException ->
             activity.runOnUiThread {
