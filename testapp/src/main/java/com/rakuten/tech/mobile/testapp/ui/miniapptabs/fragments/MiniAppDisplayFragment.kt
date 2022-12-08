@@ -121,7 +121,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     miniAppDisplay = miniAppDisplay
                 )
             } else {
-
                 initializeMiniAppDisplay(activity)
             }
         }
