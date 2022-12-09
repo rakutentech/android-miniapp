@@ -177,7 +177,8 @@ internal object MiniAppDatabaseEncryptionUtil {
      * in that case we'll decrypt the encrypted passcode
      * to match with the given passcode.
      */
-    private fun decryptPasscode(context: Context, passcode: String): String {
+    @VisibleForTesting
+    internal fun decryptPasscode(context: Context, passcode: String): String {
         val holder = getPasscodeHolder(context)
         if (holder != null) {
             val iv = Base64.decode(holder.iv, Base64.DEFAULT)

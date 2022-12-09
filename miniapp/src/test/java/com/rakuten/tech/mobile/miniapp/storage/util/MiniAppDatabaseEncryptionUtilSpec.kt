@@ -100,4 +100,10 @@ class MiniAppDatabaseEncryptionUtilSpec {
         MiniAppDatabaseEncryptionUtil.encryptPasscode(getApplicationContext(), TEST_MA_ID)
             .shouldBeInstanceOf<String>()
     }
+
+    @Test
+    fun `decryptPasscode should return a string`() {
+        MiniAppDatabaseEncryptionUtil.decryptPasscode(getApplicationContext(), TEST_MA_ID)
+            .shouldBeInstanceOf<String>()
+    }
 }
