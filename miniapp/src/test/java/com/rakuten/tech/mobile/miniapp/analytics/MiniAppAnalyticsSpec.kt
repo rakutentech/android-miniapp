@@ -4,6 +4,7 @@ import com.rakuten.tech.mobile.miniapp.*
 import org.amshove.kluent.shouldBeEqualTo
 import org.json.JSONObject
 import org.junit.Test
+import org.mockito.Mockito
 
 class MiniAppAnalyticsSpec {
     // setup MiniApp info.
@@ -40,5 +41,23 @@ class MiniAppAnalyticsSpec {
         )
 
         params.toString() shouldBeEqualTo testParam.toString()
+    }
+
+    @Test
+    fun `sendAnalytics will work to send data to analytics`() {
+        val miniAppAnalytics = MiniAppAnalytics(
+            rasProjectId = TEST_HA_ID_PROJECT,
+            configs = listOf(TEST_CONFIG1)
+        )
+
+        miniAppAnalytics.sendAnalytics(
+            eType = Etype.APPEAR,
+            actype = Actype.OPEN,
+            miniAppInfo = miniAppInfo
+        )
+
+        Mockito.mockStatic(MiniAppAnalytics::class.java).use { utilities ->
+            utilities.verifyNoMoreInteractions()
+        }
     }
 }

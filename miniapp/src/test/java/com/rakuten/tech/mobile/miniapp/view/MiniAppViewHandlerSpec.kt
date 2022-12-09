@@ -222,9 +222,39 @@ open class MiniAppViewHandlerSpec {
             listOf(
                 Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
                 Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")
-            ), listOf(), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
+            ), listOf(
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason"),
+                Pair(MiniAppCustomPermissionType.ACCESS_TOKEN, "reason")
+            ), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         miniAppViewHandler.isManifestEqual(dummyApiManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffMetaManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            TEST_ATP_LIST,
+            mapOf(Pair("abc", "bcd")),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffMetaManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffReqPermManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+            listOf(),
+            TEST_ATP_LIST,
+            mapOf(),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffReqPermManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffOptPermManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")),
+            TEST_ATP_LIST,
+            mapOf(Pair("abc", "bcd")),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffOptPermManifest, dummyManifest) shouldBeEqualTo false
     }
 
     @Test

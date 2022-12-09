@@ -155,7 +155,7 @@ internal object MiniAppDatabaseEncryptionUtil {
 
         val holder = getPasscodeHolder(context)
 
-        if (holder == null || (holder.salt == null || holder.iv == null || holder.encryptedPasscode == null)) {
+        if (holder == null) {
             val salt = generateSalt()
             val iv: IvParameterSpec = generateIv()
             val secretKey = getSecretKeyFromPassword(passcode, salt)

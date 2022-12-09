@@ -186,6 +186,16 @@ class MiniAppViewImplSpec {
         }
 
     @Test
+    fun `urlParams queryParams should not be the same with load queryParams if it's empty`() =
+        runBlocking {
+            withMiniAppUrlParams { miniAppViewImpl ->
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit = spy { _, _ -> }
+                miniAppViewImpl.load(queryParams = "", fromCache = false, onComplete)
+                urlParams.config.queryParams shouldBeEqualTo ""
+            }
+        }
+
+    @Test
     fun `should do nothing when universalBridgeMessage is blank`() {
         withMiniAppDefaultParams { miniAppViewImpl ->
             val onFailed: () -> Unit = mock()
