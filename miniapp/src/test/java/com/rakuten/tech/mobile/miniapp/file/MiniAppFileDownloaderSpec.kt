@@ -241,4 +241,21 @@ class MiniAppFileDownloaderSpec {
 
         verify(onFailed).invoke(MiniAppDownloadFileError.saveFailureError)
     }
+
+    @Test
+    fun `error descriptions of MiniAppDownloadFileError should be found as expected`() {
+        assertEquals(
+            MiniAppDownloadFileError.errorDescription(MiniAppDownloadFileError.DownloadFailedError),
+            "Failed to download the file."
+        )
+        assertEquals(
+            MiniAppDownloadFileError.errorDescription(MiniAppDownloadFileError.InvalidUrlError),
+            "URL is invalid."
+        )
+        assertEquals(
+            MiniAppDownloadFileError.errorDescription(MiniAppDownloadFileError.SaveFailureError),
+            "Save file temporarily failed"
+        )
+        assertEquals(MiniAppDownloadFileError.errorDescription(""), "")
+    }
 }

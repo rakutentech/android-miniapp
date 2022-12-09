@@ -4,6 +4,7 @@ import android.content.Context
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_SPACE_LIMIT_REACHED_ERROR
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +23,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyZeroInteractions
 import java.io.IOException
 import java.sql.SQLException
+import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
@@ -1008,5 +1010,26 @@ class MiniAppSecureStorageSpec {
 
         Verify on onSuccess that onSuccess() was called
         verifyZeroInteractions(onFailed)
+    }
+
+    @Test
+    fun `error descriptions of MiniAppSecureStorageError should be found as expected`() {
+        assertEquals(
+            MiniAppSecureStorageError.errorDescription(MiniAppSecureStorageError.SecureStorageIOError),
+            "Database I/O operation failed."
+        )
+        assertEquals(
+            MiniAppSecureStorageError.errorDescription(MiniAppSecureStorageError.SecureStorageBusyError),
+            "Database is busy doing another operation."
+        )
+        assertEquals(
+            MiniAppSecureStorageError.errorDescription(MiniAppSecureStorageError.SecureStorageFullError),
+            "Can't insert new items. Database reached to max space limit."
+        )
+        assertEquals(
+            MiniAppSecureStorageError.errorDescription(MiniAppSecureStorageError.SecureStorageUnavailableError),
+            "Database does not exist."
+        )
+        assertEquals(MiniAppSecureStorageError.errorDescription(""), "")
     }
 }
