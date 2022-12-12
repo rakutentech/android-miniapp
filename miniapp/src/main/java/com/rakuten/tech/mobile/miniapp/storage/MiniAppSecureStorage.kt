@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
