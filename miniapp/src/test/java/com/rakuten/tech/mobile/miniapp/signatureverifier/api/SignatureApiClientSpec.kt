@@ -14,8 +14,6 @@ import org.junit.Test
 import java.util.logging.Level
 import java.util.logging.LogManager
 
-
-
 class SignatureApiClientSpec : RobolectricBaseSpec() {
 
     private val server = MockWebServer()
