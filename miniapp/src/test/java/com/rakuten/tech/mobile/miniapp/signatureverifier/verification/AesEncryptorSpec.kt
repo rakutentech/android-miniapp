@@ -18,7 +18,6 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-
 open class AesEncryptorSpec : RobolectricBaseSpec() {
 
     internal val mockKeyStore = Mockito.mock(KeyStore::class.java)

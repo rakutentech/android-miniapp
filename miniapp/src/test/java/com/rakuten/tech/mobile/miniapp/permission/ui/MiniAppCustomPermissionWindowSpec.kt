@@ -31,7 +31,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import java.io.File
 
-
 @Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
