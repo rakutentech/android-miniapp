@@ -116,6 +116,7 @@ class MiniAppDisplayViewModel constructor(
         lifecycle.addObserver(miniAppDisplay)
     }
 
+    //NOSONAR
     fun canGoBackwards(): Boolean =
         if (::miniAppDisplay.isInitialized)
             miniAppDisplay.navigateBackward()

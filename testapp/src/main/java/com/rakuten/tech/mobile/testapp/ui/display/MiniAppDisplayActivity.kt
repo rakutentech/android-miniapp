@@ -314,6 +314,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
+    //NOSONAR
     @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge() {
         // setup MiniAppMessageBridge
@@ -534,6 +535,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         false -> binding.pb.visibility = View.GONE
     }
 
+    @Suppress("TooGenericExceptionCaught","SwallowedException")
     private fun checkCloseAlert() {
         try {
             val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()

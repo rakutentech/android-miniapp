@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier.api
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
+import com.rakuten.tech.mobile.miniapp.TEST_BODY
+import com.rakuten.tech.mobile.miniapp.TEST_PATH
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
@@ -11,6 +13,8 @@ import org.junit.Before
 import org.junit.Test
 import java.util.logging.Level
 import java.util.logging.LogManager
+
+
 
 class SignatureApiClientSpec : RobolectricBaseSpec() {
 
@@ -39,7 +43,7 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         val client = createClient()
         enqueueResponse("test_body")
 
-        client.fetchPath("test-path", null).body!!.string() shouldBeEqualTo "test_body"
+        client.fetchPath(TEST_PATH, null).body!!.string() shouldBeEqualTo "test_body"
     }
 
     @Test
@@ -47,7 +51,7 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         val client = createClient()
         enqueueResponse()
 
-        client.fetchPath("test-path", null)
+        client.fetchPath(TEST_PATH, null)
 
         server.takeRequest().requestUrl.toString() shouldStartWith baseUrl
     }
@@ -68,9 +72,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         enqueueResponse(etag = "etag_value")
         enqueueResponse()
 
-        client.fetchPath("test-path", null).body!!.string()
+        client.fetchPath(TEST_PATH, null).body!!.string()
         server.takeRequest()
-        client.fetchPath("test-path", null).body!!.string()
+        client.fetchPath(TEST_PATH, null).body!!.string()
 
         server.takeRequest().headers["If-None-Match"] shouldBeEqualTo "etag_value"
     }
@@ -78,22 +82,22 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
     @Test
     fun `should return cached body for 304 response code`() {
         val client = createClient()
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
 
-        client.fetchPath("test-path", null).body!!.string()
+        client.fetchPath(TEST_PATH, null).body!!.string()
 
-        client.fetchPath("test-path", null).body!!.string() shouldBeEqualTo "test-body"
+        client.fetchPath(TEST_PATH, null).body!!.string() shouldBeEqualTo TEST_BODY
     }
 
     @Test
     fun `should cache the body between App launches`() {
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
 
-        createClient().fetchPath("test-path", null).body!!.string()
+        createClient().fetchPath(TEST_PATH, null).body!!.string()
 
-        createClient().fetchPath("test-path", null).body!!.string() shouldBeEqualTo "test-body"
+        createClient().fetchPath(TEST_PATH, null).body!!.string() shouldBeEqualTo TEST_BODY
     }
 
     @Test
@@ -103,9 +107,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         paramMap["key2"] = "value2"
         val client = SignatureApiClient(baseUrl, "key", mockContext)
 
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
-        val response = client.fetchPath("test-path", paramMap)
+        val response = client.fetchPath(TEST_PATH, paramMap)
 
         for ((k, v) in paramMap) response.request.url.queryParameter(k) shouldBe v
     }
@@ -117,9 +121,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         paramMap["key2"] = ""
         val client = SignatureApiClient(baseUrl, "key", mockContext)
 
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
-        val response = client.fetchPath("test-path", paramMap)
+        val response = client.fetchPath(TEST_PATH, paramMap)
 
         response.request.url.queryParameterNames.size shouldBe 1
         response.request.url.queryParameter("key1") shouldBe "value1"
@@ -133,9 +137,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         paramMap[""] = "value2"
         val client = SignatureApiClient(baseUrl, "key", mockContext)
 
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
-        val response = client.fetchPath("test-path", paramMap)
+        val response = client.fetchPath(TEST_PATH, paramMap)
 
         response.request.url.queryParameterNames.size shouldBe 1
         response.request.url.queryParameter("key1") shouldBe "value1"
@@ -149,9 +153,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         paramMap[""] = ""
         val client = SignatureApiClient(baseUrl, "key", mockContext)
 
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
-        val response = client.fetchPath("test-path", paramMap)
+        val response = client.fetchPath(TEST_PATH, paramMap)
 
         response.request.url.queryParameterNames.size shouldBe 1
         response.request.url.queryParameter("key1") shouldBe "value1"
@@ -163,9 +167,9 @@ class SignatureApiClientSpec : RobolectricBaseSpec() {
         val paramMap = HashMap<String, String>()
         val client = SignatureApiClient(baseUrl, "key", mockContext)
 
-        enqueueResponse("test-body")
+        enqueueResponse(TEST_BODY)
         server.enqueue(MockResponse().setResponseCode(304))
-        val response = client.fetchPath("test-path", paramMap)
+        val response = client.fetchPath(TEST_PATH, paramMap)
 
         response.request.url.queryParameterNames.shouldBeEmpty()
     }

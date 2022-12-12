@@ -8,6 +8,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.rakuten.tech.mobile.miniapp.testapp.R
 
+//NOSONAR
 /**
  * Manages the various graphs needed for a [BottomNavigationView].
  *

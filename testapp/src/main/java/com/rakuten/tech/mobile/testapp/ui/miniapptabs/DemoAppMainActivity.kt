@@ -75,14 +75,18 @@ class DemoAppMainActivity : BaseActivity() {
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
-                R.id.nav_tab_0 -> {
+                PAGE_1 -> {
                     AppSettings.instance.setTab1MiniAppSdkConfig()
                 }
-                R.id.nav_tab_1 -> {
+                PAGE_2 -> {
                     AppSettings.instance.setTab2MiniAppSdkConfig()
                 }
-                R.id.nav_tab_2 -> {}
-                R.id.nav_tab_3 -> {}
+                PAGE_FEATURES -> {
+                    //do nothing intended
+                }
+                PAGE_SETTINGS -> {
+                    //do nothung intended
+                }
 
             }
             // if you need to show/hide bottom nav or toolbar based on destination

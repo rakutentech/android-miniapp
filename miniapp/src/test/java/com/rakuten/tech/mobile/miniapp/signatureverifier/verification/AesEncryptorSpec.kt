@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.signatureverifier.verification
 
 import com.google.gson.JsonParseException
 import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
+import com.rakuten.tech.mobile.miniapp.TEST_DATA
 import org.amshove.kluent.*
 import org.amshove.kluent.any
 import org.junit.Before
@@ -16,6 +17,7 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
+
 
 open class AesEncryptorSpec : RobolectricBaseSpec() {
 
@@ -35,16 +37,16 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
     fun `it should encrypt the data`() {
         val encryptor = createAesEncryptor()
 
-        val data = encryptor.encrypt("test data")
+        val data = encryptor.encrypt(TEST_DATA)
         data.shouldNotBeNull()
-        data.shouldNotContain("test data")
+        data.shouldNotContain(TEST_DATA)
     }
 
     @Test
     fun `it should attach IV`() {
         val encryptor = createAesEncryptor()
 
-        val data = encryptor.encrypt("test data")
+        val data = encryptor.encrypt(TEST_DATA)
         data.shouldNotBeNull()
         data.shouldContain("\"iv\":")
     }
@@ -53,10 +55,10 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
     fun `it should decrypt the data`() {
         val encryptor = createAesEncryptor()
 
-        val encryptedData = encryptor.encrypt("test data")
+        val encryptedData = encryptor.encrypt(TEST_DATA)
 
         encryptedData.shouldNotBeNull()
-        encryptor.decrypt(encryptedData)!! shouldBeEqualTo "test data"
+        encryptor.decrypt(encryptedData)!! shouldBeEqualTo TEST_DATA
     }
 
     @Test
@@ -64,7 +66,7 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
         When calling mockKeyStore.getEntry(any(), anyOrNull()) itReturns null
         val encryptor = createAesEncryptor()
 
-        encryptor.encrypt("test data")
+        encryptor.encrypt(TEST_DATA)
 
         Mockito.verify(mockKeyGenerator).generateKey()
     }
@@ -74,7 +76,7 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
         When calling mockKeyGenerator.generateKey() itReturns mock()
         val encryptor = createAesEncryptor()
 
-        encryptor.encrypt("test data")
+        encryptor.encrypt(TEST_DATA)
 
         Mockito.verify(mockKeyGenerator, never()).generateKey()
     }
@@ -84,7 +86,7 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
         val mockRsaKeyEntry: KeyStore.PrivateKeyEntry = mock()
         When calling mockKeyStore.getEntry(any(), anyOrNull()) itReturns mockRsaKeyEntry
         val encryptor = createAesEncryptor()
-        encryptor.encrypt("test data")
+        encryptor.encrypt(TEST_DATA)
 
         Mockito.verify(mockKeyGenerator).generateKey()
     }
@@ -102,8 +104,6 @@ open class AesEncryptorSpec : RobolectricBaseSpec() {
 }
 
 open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
-
-    private val function: (ex: Exception) -> Unit = {}
 
     @Before
     override fun setup() {
@@ -154,19 +154,19 @@ open class AesEncryptorExceptionSpec : AesEncryptorSpec() {
             any(SecretKey::class)) itThrows InvalidKeyException()
         val encryptor = createAesEncryptor()
 
-        encryptor.encrypt("test data", mockCipher).shouldBeNull()
-        encryptor.decrypt("test data", mockCipher).shouldBeNull()
+        encryptor.encrypt(TEST_DATA, mockCipher).shouldBeNull()
+        encryptor.decrypt(TEST_DATA, mockCipher).shouldBeNull()
     }
 
     private fun verifyFunction(encryptor: AesEncryptor, isValid: Boolean) {
         if (isValid) {
-            val data = encryptor.encrypt("test data")
+            val data = encryptor.encrypt(TEST_DATA)
             data.shouldNotBeNull()
-            data.shouldNotContain("test data")
+            data.shouldNotContain(TEST_DATA)
             encryptor.decrypt(data).shouldNotBeNull()
         } else {
-            encryptor.encrypt("test data").shouldBeNull()
-            encryptor.decrypt("test data").shouldBeNull()
+            encryptor.encrypt(TEST_DATA).shouldBeNull()
+            encryptor.decrypt(TEST_DATA).shouldBeNull()
         }
     }
 }

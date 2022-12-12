@@ -308,6 +308,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         false -> binding.pb.visibility = View.GONE
     }
 
+    //NOSONAR
     @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge(
         activity: Activity,
@@ -564,6 +565,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
+    //NOSONAR
     private fun canGoBackwards(): Boolean =
         if (::miniAppDisplay.isInitialized)
             miniAppDisplay.navigateBackward()
