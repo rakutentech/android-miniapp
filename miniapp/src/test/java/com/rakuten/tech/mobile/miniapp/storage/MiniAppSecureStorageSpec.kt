@@ -4,7 +4,6 @@ import android.content.Context
 import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_STORAGE_VERSION
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_SPACE_LIMIT_REACHED_ERROR
 import kotlinx.coroutines.ExperimentalCoroutinesApi
