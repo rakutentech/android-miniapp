@@ -16,8 +16,6 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import java.io.File
 
-
-
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class StoreHashVerifierSpec {
@@ -57,16 +55,17 @@ class StoreHashVerifierSpec {
     }
 
     @Test
-    fun `should fail to verify hash when files in subdirectories have been modified`() = runBlockingTest {
-        val folder = tempFolder.newFolder(TEST_MINI_APP_FOLDER, "sub-folder")
-        val file = File(folder, TEST_FILE_HTML)
-        file.writeText(TEST_CONTENT)
+    fun `should fail to verify hash when files in subdirectories have been modified`() =
+        runBlockingTest {
+            val folder = tempFolder.newFolder(TEST_MINI_APP_FOLDER, "sub-folder")
+            val file = File(folder, TEST_FILE_HTML)
+            file.writeText(TEST_CONTENT)
 
-        verifier.storeHashAsync(id, folder)
-        file.writeText("modified content")
+            verifier.storeHashAsync(id, folder)
+            file.writeText("modified content")
 
-        verifier.verify(id, folder) shouldBe false
-    }
+            verifier.verify(id, folder) shouldBe false
+        }
 
     @Test
     fun `should fail to verify hash when mini app files are deleted`() = runBlockingTest {

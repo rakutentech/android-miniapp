@@ -117,7 +117,8 @@ internal class MiniAppDownloader(
 
     @SuppressWarnings("MaximumLineLength")
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
-        val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+        val versionPath =
+            storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
         if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
                 miniAppInfo.id,
@@ -161,7 +162,11 @@ internal class MiniAppDownloader(
 
     @SuppressWarnings("NestedBlockDepth")
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest {
+    suspend fun fetchMiniAppManifest(
+        appId: String,
+        versionId: String,
+        languageCode: String
+    ): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
             try {
@@ -285,7 +290,6 @@ internal class MiniAppDownloader(
             }
         }
     }
-
 
     private suspend fun isSignatureValid(
         inputStream: InputStream,

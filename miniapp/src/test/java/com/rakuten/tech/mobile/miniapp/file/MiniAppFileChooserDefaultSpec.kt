@@ -35,10 +35,8 @@ class MiniAppFileChooserDefaultSpec {
     private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
 
-
     private val jpegMimeType = "image/jpeg"
     private val pngMimeType = "image/png"
-
 
     private val gifMimeType = "image/gif"
 
