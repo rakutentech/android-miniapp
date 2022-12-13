@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
-import java.lang.IllegalArgumentException
 
 class RetrofitCreatorUtilsSpec private constructor(
     private val mockServer: MockWebServer
@@ -42,6 +41,17 @@ class RetrofitCreatorUtilsSpec private constructor(
     fun `should attach the required Accept-Encoding type to requests`() {
         executeCreateClient()
 
+        mockServer.takeRequest().getHeader("Accept-Encoding") shouldBeEqualTo "identity"
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should attach the required Accept-Encoding type to requests with non-empty pubKeys`() {
+        val retrofitClient = createRetrofitClient(
+            baseUrl = baseUrl,
+            pubKeyList = listOf("pubKey01"),
+            headers = mockRasSdkHeaders
+        )
+        retrofitClient.create(TestApi::class.java).fetch().execute()
         mockServer.takeRequest().getHeader("Accept-Encoding") shouldBeEqualTo "identity"
     }
 

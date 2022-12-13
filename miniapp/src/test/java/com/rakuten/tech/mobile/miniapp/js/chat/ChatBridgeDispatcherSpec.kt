@@ -323,9 +323,13 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     @Test
     fun `createMessage should produce proper data`() {
         chatBridgeOnSuccess.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
-        val json = "{\"action\":\"sendMessage\",\"param\":{\"messageToContact\":{\"text\":\"Contact\"}}}"
+        val json = "{\"action\":\"sendMessage\",\"param\":{\"messageToContact\":{\"image\":\"Image\", \"text\":\"Contact\", \"caption\":\"Caption\", \"action\":\"Action\", \"bannerMessage\":\"Banner Message\"}}}"
         val message = chatBridgeOnSuccess.createMessage(json)
+        message.apply { image shouldBeEqualTo "Image" }
         message.apply { text shouldBeEqualTo "Contact" }
+        message.apply { caption shouldBeEqualTo "Caption" }
+        message.apply { action shouldBeEqualTo "Action" }
+        message.apply { bannerMessage shouldBeEqualTo "Banner Message" }
     }
 
     private fun setSendMessagePermission(isAllowed: Boolean) = whenever(

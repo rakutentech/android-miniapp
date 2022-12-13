@@ -49,7 +49,31 @@ class MiniAppCustomPermissionCacheSpec {
 
         actual shouldBeEqualTo expected
     }
+
+    @Test
+    fun `readPermissions should return correct value when it has stored any data`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val prefsRead = context.getSharedPreferences("test-cache-read", Context.MODE_PRIVATE)
+        val cache = spy(MiniAppCustomPermissionCache(prefsRead, prefsRead))
+        prefsRead.edit().putString(TEST_MA_ID, "").apply()
+        val actual = cache.readPermissions(TEST_MA_ID)
+        val expected = MiniAppCustomPermission(TEST_MA_ID, listOf())
+
+        actual shouldBeEqualTo expected
+    }
     /** end region */
+
+    @Test
+    fun `migration should work properly`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val prefsNE = context.getSharedPreferences("test-cache-non-encrypted", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
+        val cache = spy(MiniAppCustomPermissionCache(prefsNE, prefs))
+        prefsNE.edit().putString("test-data", "data").apply()
+        cache.migrateToEncryptedPref()
+
+        prefs.getString("test-data", "") shouldBe "data"
+    }
 
     @Test
     fun `removePermissionsNotMatching will invoke necessary function to save value`() {
