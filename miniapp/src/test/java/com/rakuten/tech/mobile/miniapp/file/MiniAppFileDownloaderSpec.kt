@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -27,6 +28,7 @@ import org.mockito.Mockito.timeout
 import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
 import org.robolectric.Shadows
+import org.robolectric.util.ReflectionHelpers
 import java.io.OutputStream
 import java.lang.NullPointerException
 import kotlin.test.assertEquals
@@ -82,6 +84,13 @@ class MiniAppFileDownloaderSpec {
     fun `getMimeType should return the default mimeType for incorrect extension`() {
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(activity, 100)
         miniAppFileDownloader.getMimeType("") shouldBeEqualTo "text/plain"
+    }
+
+    @Test
+    fun `getMimeType should return the all mimeType for android api level 29`() {
+        val miniAppFileDownloader = MiniAppFileDownloaderDefault(activity, 100)
+        ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 29)
+        miniAppFileDownloader.getMimeType(TEST_FILENAME) shouldBeEqualTo "*/*"
     }
 
     @Test
