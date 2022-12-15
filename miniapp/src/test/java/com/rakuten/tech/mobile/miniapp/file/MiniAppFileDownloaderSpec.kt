@@ -90,7 +90,7 @@ class MiniAppFileDownloaderSpec {
     fun `getMimeType should return the all mimeType for android api level 29`() {
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(activity, 100)
         ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 29)
-        miniAppFileDownloader.getMimeType(TEST_FILENAME) shouldBeEqualTo "*/*"
+        miniAppFileDownloader.getMimeType(testFileName) shouldBeEqualTo "*/*"
     }
 
     @Test
