@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.file
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import android.webkit.MimeTypeMap
@@ -165,16 +166,21 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         else
             ""
         val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-        return if (!mimetype.isNullOrBlank())
-            mimetype
-        else
-            "text/plain"
+
+        return if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            return "*/*"
+        } else {
+            if (!mimetype.isNullOrBlank())
+                mimetype
+            else
+                "text/plain"
+        }
     }
 
     @VisibleForTesting
     internal fun createRequest(url: String, headers: Map<String, String>): Request {
         val builder = Request.Builder()
-        headers?.forEach { header ->
+        headers.forEach { header ->
             builder.addHeader(header.key, header.value)
         }
         return builder.url(url).build()
