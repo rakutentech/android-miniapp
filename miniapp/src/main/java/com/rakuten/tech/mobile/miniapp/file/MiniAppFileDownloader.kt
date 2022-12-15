@@ -171,7 +171,7 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         // while specifying mimetype in Android API 29 platform,
         // It needs to set "*/*" to prevent this issue.
         return if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            return "*/*"
+            "*/*"
         } else {
             if (!mimetype.isNullOrBlank())
                 mimetype
