@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 
-import android.content.Context
 import androidx.test.core.app.ActivityScenario
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -8,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
@@ -21,10 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.expect
 
@@ -51,7 +48,6 @@ class MiniAppSecureStorageDispatcherSpec {
         param = SecureStorageKeyList(setOf(testKey)),
         id = TEST_CALLBACK_ID
     )
-    private val context: Context = mock()
     private val setItemsJsonStr = Gson().toJson(secureStorageCallbackObj)
     private val getItemsJsonStr = Gson().toJson(getItemCallbackObj)
     private val deleteItemsJsonStr = Gson().toJson(deleteItemsCallbackObj)
@@ -88,6 +84,21 @@ class MiniAppSecureStorageDispatcherSpec {
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).load(TEST_MA_ID,
             {},
             {})
+    }
+
+    @Test
+    fun `onLoad should be working if initialization is completed`() {
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+
+        miniAppSecureStorageDispatcher.onSuccess = {}
+        miniAppSecureStorageDispatcher.onFailed = { _: MiniAppSecureStorageError -> }
+
+        miniAppSecureStorageDispatcher.onLoad()
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).load(
+            TEST_MA_ID,
+            miniAppSecureStorageDispatcher.onSuccess,
+            miniAppSecureStorageDispatcher.onFailed
+        )
     }
 
     /**
@@ -203,6 +214,7 @@ class MiniAppSecureStorageDispatcherSpec {
 
     /** end region */
 
+    /** region: onGetItem from secure storage */
     @Test
     fun `onGetItem should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =

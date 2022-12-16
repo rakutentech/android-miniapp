@@ -112,6 +112,20 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
         }
 
     @Test
+    fun `removeMiniApp should invoke removing app from storage`() {
+        downloader.removeMiniApp(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, "log")
+        verify(storage).removeApp(TEST_ID_MINIAPP)
+        verify(miniAppStatus).setVersionDownloaded(TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, false)
+    }
+
+    @Test
+    fun `removeMiniApp should not invoke setVersionDownloaded from miniAppStatus`() {
+        downloader.removeMiniApp(TEST_ID_MINIAPP, "", "log")
+        verify(storage).removeApp(TEST_ID_MINIAPP)
+        verify(miniAppStatus, times(0)).setVersionDownloaded(TEST_ID_MINIAPP, "", false)
+    }
+
+    @Test
     fun `doesManifestFileExist returns true for valid Manifest`() {
         val manifestEntity = ManifestEntity(
             files = listOf(TEST_URL_HTTPS_1, TEST_URL_HTTPS_2),

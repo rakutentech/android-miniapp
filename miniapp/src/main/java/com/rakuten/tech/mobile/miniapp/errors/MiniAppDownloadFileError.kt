@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
 import androidx.annotation.Keep
+import androidx.annotation.VisibleForTesting
 
 /**
  * A class to provide the custom errors specific for file download.
@@ -10,9 +11,9 @@ class MiniAppDownloadFileError(val type: String? = null, val message: String? = 
     MiniAppBridgeError(type, message) {
 
     companion object {
-        private const val DownloadFailedError = "DownloadFailedError"
-        private const val InvalidUrlError = "InvalidUrlError"
-        private const val SaveFailureError = "SaveFailureError"
+        @VisibleForTesting internal const val DownloadFailedError = "DownloadFailedError"
+        @VisibleForTesting internal const val InvalidUrlError = "InvalidUrlError"
+        @VisibleForTesting internal const val SaveFailureError = "SaveFailureError"
         private const val DownloadHttpError = "DownloadHttpError"
 
         // Failed to download file.
@@ -29,7 +30,8 @@ class MiniAppDownloadFileError(val type: String? = null, val message: String? = 
             message = message
         )
 
-        private fun errorDescription(error: String): String {
+        @VisibleForTesting
+        internal fun errorDescription(error: String): String {
             return when (error) {
                 DownloadFailedError -> "Failed to download the file."
                 InvalidUrlError -> "URL is invalid."

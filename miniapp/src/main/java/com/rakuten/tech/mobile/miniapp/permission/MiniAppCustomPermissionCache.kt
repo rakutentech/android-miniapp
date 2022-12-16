@@ -31,7 +31,8 @@ internal class MiniAppCustomPermissionCache constructor(
         migrateToEncryptedPref()
     }
 
-    private fun migrateToEncryptedPref() {
+    @VisibleForTesting
+    internal fun migrateToEncryptedPref() {
         if (nonEncryptedPreferences.all.isNotEmpty()) {
             nonEncryptedPreferences.copyTo(prefs)
             nonEncryptedPreferences.edit().clear().apply()

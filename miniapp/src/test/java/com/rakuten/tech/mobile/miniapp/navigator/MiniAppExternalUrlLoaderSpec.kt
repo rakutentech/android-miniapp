@@ -3,9 +3,6 @@ package com.rakuten.tech.mobile.miniapp.navigator
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
-import com.rakuten.tech.mobile.miniapp.TEST_PHONE_URI
-import com.rakuten.tech.mobile.miniapp.TEST_URL_HTTPS_1
 import org.amshove.kluent.shouldBe
 import org.junit.After
 import org.junit.Before

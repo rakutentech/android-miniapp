@@ -8,13 +8,13 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import org.amshove.kluent.*
+import org.amshove.kluent.any
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.mockito.kotlin.*
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
 
 @Suppress("LargeClass")
 @RunWith(AndroidJUnit4::class)

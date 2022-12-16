@@ -144,7 +144,6 @@ internal class MiniAppSecureStorageDispatcher(
         miniAppSecureStorage.delete(onSuccess, onFailed)
     }
 
-    @Suppress("MagicNumber")
     fun onSize(callbackId: String) = whenReady {
         onSuccessDBSize = { fileSize: Long ->
             val maxSizeInBytes = maxStorageSizeLimitInBytes
