@@ -85,7 +85,7 @@ class DemoAppMainActivity : BaseActivity() {
                     //do nothing intended
                 }
                 PAGE_SETTINGS -> {
-                    //do nothung intended
+                    //do nothing intended
                 }
 
             }

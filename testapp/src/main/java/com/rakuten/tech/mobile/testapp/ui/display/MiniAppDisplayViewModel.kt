@@ -116,12 +116,16 @@ class MiniAppDisplayViewModel constructor(
         lifecycle.addObserver(miniAppDisplay)
     }
 
-    //NOSONAR
-    fun canGoBackwards(): Boolean =
-        if (::miniAppDisplay.isInitialized)
-            miniAppDisplay.navigateBackward()
-        else
-            false
+    fun onBackPressed(onCloseAlertShowing: () -> Unit) {
+        if (::miniAppDisplay.isInitialized) {
+            if (!canGoBackwards()) {
+                onCloseAlertShowing()
+            }
+        }
+    }
+
+    private fun canGoBackwards(): Boolean =
+        miniAppDisplay.navigateBackward()
 
     fun obtainNewMiniAppDisplayUrl(
         context: Context,

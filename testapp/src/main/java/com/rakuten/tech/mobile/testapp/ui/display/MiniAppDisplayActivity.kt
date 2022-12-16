@@ -54,7 +54,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
 
-    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
     private lateinit var miniAppNavigator: MiniAppNavigator
     private var miniappPermissionCallback: (isGranted: Boolean) -> Unit = {}
     private var miniappCameraPermissionCallback: (isGranted: Boolean) -> Unit = {}
@@ -102,6 +101,150 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     private var appInfo: MiniAppInfo? = null
     private var appUrl: String? = null
+
+    private var miniAppMessageBridge: MiniAppMessageBridge = object : MiniAppMessageBridge() {
+
+        override fun getUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            val errorMsg = AppSettings.instance.uniqueIdError
+            if (errorMsg.isNotEmpty()) onError(errorMsg)
+            else onSuccess(AppSettings.instance.uniqueId)
+        }
+
+        override fun getMessagingUniqueId(
+            onSuccess: (uniqueId: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            val errorMsg = AppSettings.instance.uniqueIdError
+            if (errorMsg.isNotEmpty()) onError(errorMsg)
+            else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
+        }
+
+        override fun getMauid(
+            onSuccess: (mauid: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            val errorMsg = AppSettings.instance.mauIdError
+            if (errorMsg.isNotEmpty()) onError(errorMsg)
+            else onSuccess("TEST-MAUID-01234-56789")
+        }
+
+        override fun requestDevicePermission(
+            miniAppPermissionType: MiniAppDevicePermissionType,
+            callback: (isGranted: Boolean) -> Unit
+        ) {
+            miniappPermissionCallback = callback
+            ActivityCompat.requestPermissions(
+                this@MiniAppDisplayActivity,
+                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+            )
+        }
+
+        override fun sendJsonToHostApp(
+            jsonStr: String,
+            onSuccess: (String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            jsonStr.let {
+                val message: String
+                if (it.isNotBlank()) {
+                    message = it
+                    onSuccess(message)
+                } else {
+                    message = getString(R.string.error_send_json_to_host_app_please_try_again)
+                    onError(message)
+                }
+                if (isAvailable) {
+                    showToastMessage(message)
+                }
+            }
+        }
+    }
+
+    val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
+
+        override fun getUserName(
+            onSuccess: (userName: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            val name = AppSettings.instance.profileName
+            if (name.isNotEmpty()) onSuccess(name)
+            else onError("User name is not found.")
+        }
+
+        override fun getProfilePhoto(
+            onSuccess: (profilePhoto: String) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            val photo = AppSettings.instance.profilePictureUrlBase64
+            if (photo.isNotEmpty()) onSuccess(photo)
+            else onError("Profile photo is not found.")
+        }
+
+        override fun getAccessToken(
+            miniAppId: String,
+            accessTokenScope: AccessTokenScope,
+            onSuccess: (tokenData: TokenData) -> Unit,
+            onError: (tokenError: MiniAppAccessTokenError) -> Unit
+        ) {
+            if (AppSettings.instance.accessTokenError != null) {
+                onError(AppSettings.instance.accessTokenError!!)
+            } else {
+                onSuccess(AppSettings.instance.tokenData)
+            }
+        }
+
+        override fun getContacts(
+            onSuccess: (contacts: ArrayList<Contact>) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (AppSettings.instance.isContactsSaved)
+                onSuccess(AppSettings.instance.contacts)
+            else
+                onError("There is no contact found in HostApp.")
+        }
+
+        override fun getPoints(
+            onSuccess: (points: Points) -> Unit,
+            onError: (pointsError: MiniAppPointsError) -> Unit
+        ) {
+            val points = AppSettings.instance.points
+            if (points != null) onSuccess(points)
+            else onError(MiniAppPointsError.custom("There is no points found in HostApp."))
+        }
+    }
+
+    val chatWindow = ChatWindow(this@MiniAppDisplayActivity)
+    val chatBridgeDispatcher = object : ChatBridgeDispatcher {
+
+        override fun sendMessageToContact(
+            message: MessageToContact,
+            onSuccess: (contactId: String?) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            chatWindow.openSingleContactSelection(message, onSuccess, onError)
+        }
+
+        override fun sendMessageToContactId(
+            contactId: String,
+            message: MessageToContact,
+            onSuccess: (contactId: String?) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            chatWindow.openSpecificContactIdSelection(contactId, message, onSuccess, onError)
+        }
+
+        override fun sendMessageToMultipleContacts(
+            message: MessageToContact,
+            onSuccess: (contactIds: List<String>?) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            chatWindow.openMultipleContactSelections(message, onSuccess, onError)
+        }
+    }
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -314,158 +457,14 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
-    //NOSONAR
     @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge() {
-        // setup MiniAppMessageBridge
-        miniAppMessageBridge = object : MiniAppMessageBridge() {
-
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.uniqueIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess(AppSettings.instance.uniqueId)
-            }
-
-            override fun getMessagingUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.uniqueIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
-            }
-
-            override fun getMauid(
-                onSuccess: (mauid: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.mauIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess("TEST-MAUID-01234-56789")
-            }
-
-            override fun requestDevicePermission(
-                miniAppPermissionType: MiniAppDevicePermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                miniappPermissionCallback = callback
-                ActivityCompat.requestPermissions(
-                    this@MiniAppDisplayActivity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
-                )
-            }
-
-            override fun sendJsonToHostApp(
-                jsonStr: String,
-                onSuccess: (String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                jsonStr.let {
-                    val message: String
-                    if (it.isNotBlank()) {
-                        message = it
-                        onSuccess(message)
-                    } else {
-                        message = getString(R.string.error_send_json_to_host_app_please_try_again)
-                        onError(message)
-                    }
-                    if (isAvailable) {
-                        showToastMessage(message)
-                    }
-                }
-            }
-        }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
         miniAppMessageBridge.allowScreenOrientation(true)
 
-        // setup UserInfoBridgeDispatcher
-        val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
-
-            override fun getUserName(
-                onSuccess: (userName: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val name = AppSettings.instance.profileName
-                if (name.isNotEmpty()) onSuccess(name)
-                else onError("User name is not found.")
-            }
-
-            override fun getProfilePhoto(
-                onSuccess: (profilePhoto: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val photo = AppSettings.instance.profilePictureUrlBase64
-                if (photo.isNotEmpty()) onSuccess(photo)
-                else onError("Profile photo is not found.")
-            }
-
-            override fun getAccessToken(
-                miniAppId: String,
-                accessTokenScope: AccessTokenScope,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (tokenError: MiniAppAccessTokenError) -> Unit
-            ) {
-                if (AppSettings.instance.accessTokenError != null) {
-                    onError(AppSettings.instance.accessTokenError!!)
-                } else {
-                    onSuccess(AppSettings.instance.tokenData)
-                }
-            }
-
-            override fun getContacts(
-                onSuccess: (contacts: ArrayList<Contact>) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                if (AppSettings.instance.isContactsSaved)
-                    onSuccess(AppSettings.instance.contacts)
-                else
-                    onError("There is no contact found in HostApp.")
-            }
-
-            override fun getPoints(
-                onSuccess: (points: Points) -> Unit,
-                onError: (pointsError: MiniAppPointsError) -> Unit
-            ) {
-                val points = AppSettings.instance.points
-                if (points != null) onSuccess(points)
-                else onError(MiniAppPointsError.custom("There is no points found in HostApp."))
-            }
-        }
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
         // setup ChatBridgeDispatcher
-        val chatWindow = ChatWindow(this@MiniAppDisplayActivity)
-        val chatBridgeDispatcher = object : ChatBridgeDispatcher {
-
-            override fun sendMessageToContact(
-                message: MessageToContact,
-                onSuccess: (contactId: String?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openSingleContactSelection(message, onSuccess, onError)
-            }
-
-            override fun sendMessageToContactId(
-                contactId: String,
-                message: MessageToContact,
-                onSuccess: (contactId: String?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openSpecificContactIdSelection(contactId, message, onSuccess, onError)
-            }
-
-            override fun sendMessageToMultipleContacts(
-                message: MessageToContact,
-                onSuccess: (contactIds: List<String>?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openMultipleContactSelections(message, onSuccess, onError)
-            }
-        }
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
@@ -535,7 +534,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         false -> binding.pb.visibility = View.GONE
     }
 
-    @Suppress("TooGenericExceptionCaught","SwallowedException")
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun checkCloseAlert() {
         try {
             val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
@@ -561,7 +560,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     override fun onBackPressed() {
-        if (!viewModel.canGoBackwards()) {
+        viewModel.onBackPressed {
             checkCloseAlert()
         }
     }
