@@ -48,7 +48,14 @@ class MiniAppDisplayViewModel constructor(
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+            miniAppDisplay = createMiniAppDisplay(
+                appInfo,
+                appId,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                appParameters
+            )
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -59,10 +66,18 @@ class MiniAppDisplayViewModel constructor(
                     _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                 is MiniAppTooManyRequestsError ->
                     _containTooManyRequestsError.postValue(true)
-                else ->{
+                else -> {
                     //try to load MiniApp from cache
                     try {
-                        miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
+                        miniAppDisplay = createMiniAppDisplay(
+                            appInfo,
+                            appId,
+                            miniAppMessageBridge,
+                            miniAppNavigator,
+                            miniAppFileChooser,
+                            appParameters,
+                            true
+                        )
                         _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
                     } catch (e: MiniAppSdkException) {
                         when (e) {
@@ -87,9 +102,23 @@ class MiniAppDisplayViewModel constructor(
         appParameters: String,
         fromCache: Boolean = false
     ): MiniAppDisplay = if (appInfo != null)
-        miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
+        miniapp.create(
+            appInfo,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            miniAppFileChooser,
+            appParameters,
+            fromCache
+        )
     else
-        miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
+        miniapp.create(
+            appId,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            miniAppFileChooser,
+            appParameters,
+            fromCache
+        )
 
     fun obtainMiniAppDisplayUrl(
         context: Context,
@@ -102,11 +131,17 @@ class MiniAppDisplayViewModel constructor(
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.createWithUrl(
+                    appUrl,
+                    miniAppMessageBridge,
+                    miniAppNavigator,
+                    miniAppFileChooser,
+                    appParameters
+                )
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
-             _errorData.postValue(e.message)
+            _errorData.postValue(e.message)
         } finally {
             _isLoading.postValue(false)
         }
@@ -117,10 +152,8 @@ class MiniAppDisplayViewModel constructor(
     }
 
     fun onBackPressed(onCloseAlertShowing: () -> Unit) {
-        if (::miniAppDisplay.isInitialized) {
-            if (!canGoBackwards()) {
-                onCloseAlertShowing()
-            }
+        if (::miniAppDisplay.isInitialized && !canGoBackwards()) {
+            onCloseAlertShowing()
         }
     }
 
@@ -165,7 +198,7 @@ class MiniAppDisplayViewModel constructor(
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooserDefault,
         urlParameters: String
-    ){
+    ) {
         val miniAppView = MiniAppView.init(
             createMiniAppInfoParam(
                 context,
@@ -189,7 +222,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    private fun handleErrors(e: MiniAppSdkException){
+    private fun handleErrors(e: MiniAppSdkException) {
         e.printStackTrace()
         when (e) {
             is MiniAppHasNoPublishedVersionException ->
