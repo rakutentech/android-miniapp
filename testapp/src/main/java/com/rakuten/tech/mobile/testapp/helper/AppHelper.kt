@@ -178,6 +178,6 @@ fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
     }, durationInMillis)
 }
 
-fun Context.showToastMessage(text: String, duration: Int = Toast.LENGTH_LONG){
+fun Context.showToastMessage(text: String, duration: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, text, duration).show()
 }
