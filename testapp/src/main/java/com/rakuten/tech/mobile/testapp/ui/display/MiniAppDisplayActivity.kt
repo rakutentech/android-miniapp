@@ -102,33 +102,50 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private var appInfo: MiniAppInfo? = null
     private var appUrl: String? = null
 
+    private fun hasMessage(message: String): Boolean {
+        return message.isNotEmpty()
+    }
+
+
     private var miniAppMessageBridge: MiniAppMessageBridge = object : MiniAppMessageBridge() {
 
         override fun getUniqueId(
             onSuccess: (uniqueId: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            val errorMsg = AppSettings.instance.uniqueIdError
-            if (errorMsg.isNotEmpty()) onError(errorMsg)
-            else onSuccess(AppSettings.instance.uniqueId)
+            AppSettings.instance.uniqueIdError.let {
+                if (hasMessage(it)) {
+                    onError(it)
+                    return
+                }
+            }
+            onSuccess(AppSettings.instance.uniqueId)
         }
 
         override fun getMessagingUniqueId(
             onSuccess: (uniqueId: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            val errorMsg = AppSettings.instance.uniqueIdError
-            if (errorMsg.isNotEmpty()) onError(errorMsg)
-            else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
+            AppSettings.instance.messagingUniqueIdError.let {
+                if (hasMessage(it)) {
+                    onError(it)
+                    return
+                }
+            }
+            onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
         }
 
         override fun getMauid(
             onSuccess: (mauid: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            val errorMsg = AppSettings.instance.mauIdError
-            if (errorMsg.isNotEmpty()) onError(errorMsg)
-            else onSuccess("TEST-MAUID-01234-56789")
+            AppSettings.instance.mauIdError.let {
+                if (hasMessage(it)) {
+                    onError(it)
+                    return
+                }
+            }
+            onSuccess("TEST-MAUID-01234-56789")
         }
 
         override fun requestDevicePermission(
@@ -164,24 +181,32 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
 
-    val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
+    private val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
 
         override fun getUserName(
             onSuccess: (userName: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            val name = AppSettings.instance.profileName
-            if (name.isNotEmpty()) onSuccess(name)
-            else onError("User name is not found.")
+            AppSettings.instance.profileName.let {
+                if (hasMessage(it)) {
+                    onSuccess(it)
+                    return
+                }
+            }
+            onError("User name is not found.")
         }
 
         override fun getProfilePhoto(
             onSuccess: (profilePhoto: String) -> Unit,
             onError: (message: String) -> Unit
         ) {
-            val photo = AppSettings.instance.profilePictureUrlBase64
-            if (photo.isNotEmpty()) onSuccess(photo)
-            else onError("Profile photo is not found.")
+            AppSettings.instance.profilePictureUrlBase64.let {
+                if (hasMessage(it)) {
+                    onSuccess(it)
+                    return
+                }
+            }
+            onError("Profile photo is not found.")
         }
 
         override fun getAccessToken(
