@@ -15,6 +15,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private const val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
+private const val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
+
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
 ) : ViewModel() {
@@ -24,9 +27,6 @@ class MiniAppDisplayViewModel constructor(
     private val _errorData = MutableLiveData<String>()
     private val _isLoading = MutableLiveData<Boolean>()
     private val _containTooManyRequestsError = MutableLiveData<Boolean>()
-
-    private val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
-    private val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
 
     val miniAppView: LiveData<View>
         get() = _miniAppView
