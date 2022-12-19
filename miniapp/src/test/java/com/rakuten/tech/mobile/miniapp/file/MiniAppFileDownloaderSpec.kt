@@ -278,9 +278,7 @@ class MiniAppFileDownloaderSpec {
 
     @Test
     fun `should dslete file if exists`() {
-        val file: DocumentFile = mock()
         val miniAppFileDownloader = spy(MiniAppFileDownloaderDefault(activity, 100))
-
         whenever(miniAppFileDownloader.deleteCreateFile(testDestUri)).itReturns(true)
         assertTrue(miniAppFileDownloader.deleteCreateFile(testDestUri))
     }
