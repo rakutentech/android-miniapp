@@ -18,7 +18,7 @@ class MessageBridgeRatDispatcherSpec {
     private val ratDispatcher: MessageBridgeRatDispatcher = MessageBridgeRatDispatcher(
         miniAppAnalytics
     )
-    private val testActionValues = mapOf<String, Actype>(
+    private val testActionValues = mapOf(
         ActionType.REQUEST_PERMISSION.action to Actype.REQUEST_PERMISSION,
         ActionType.REQUEST_CUSTOM_PERMISSIONS.action to Actype.REQUEST_CUSTOM_PERMISSIONS,
         ActionType.SHARE_INFO.action to Actype.SHARE_INFO,

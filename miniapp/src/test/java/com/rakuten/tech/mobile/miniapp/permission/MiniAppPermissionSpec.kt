@@ -37,6 +37,17 @@ class MiniAppPermissionSpec {
     }
 
     @Test
+    fun `should get unknown device permission type when there is no permission type match`() {
+        MiniAppDevicePermissionType.getValue("") shouldBe MiniAppDevicePermissionType.UNKNOWN
+    }
+
+    @Test
+    fun `should get known device permission type when there is permission type match`() {
+        MiniAppDevicePermissionType.getValue(MiniAppDevicePermissionType.LOCATION.type) shouldBe
+                MiniAppDevicePermissionType.LOCATION
+    }
+
+    @Test
     fun `should keep the predefined results of custom permissions in enum`() {
         MiniAppCustomPermissionResult.ALLOWED.name shouldBe "ALLOWED"
         MiniAppCustomPermissionResult.DENIED.name shouldBe "DENIED"
