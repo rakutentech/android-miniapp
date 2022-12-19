@@ -14,7 +14,7 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
         Class.forName("com.rakuten.tech.mobile.analytics.Event")
         callback.invoke()
     } catch (e: ClassNotFoundException) {
-        //do nothing intended
+        // do nothing intended
     }
 }
 

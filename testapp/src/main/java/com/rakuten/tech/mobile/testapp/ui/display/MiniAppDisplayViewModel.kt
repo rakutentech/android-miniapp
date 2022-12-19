@@ -37,6 +37,7 @@ class MiniAppDisplayViewModel constructor(
     val containTooManyRequestsError: LiveData<Boolean>
         get() = _containTooManyRequestsError
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplay(
         context: Context,
         appInfo: MiniAppInfo?,
@@ -93,6 +94,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     private suspend fun createMiniAppDisplay(
         appInfo: MiniAppInfo?,
         appId: String,
@@ -120,6 +122,7 @@ class MiniAppDisplayViewModel constructor(
             fromCache
         )
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplayUrl(
         context: Context,
         appUrl: String,
@@ -152,14 +155,12 @@ class MiniAppDisplayViewModel constructor(
     }
 
     fun onBackPressed(onCloseAlertShowing: () -> Unit) {
-        if (::miniAppDisplay.isInitialized && !canGoBackwards()) {
+        if (!::miniAppDisplay.isInitialized || !miniAppDisplay.navigateBackward()) {
             onCloseAlertShowing()
         }
     }
 
-    private fun canGoBackwards(): Boolean =
-        miniAppDisplay.navigateBackward()
-
+    @Suppress("LongParameterList")
     fun obtainNewMiniAppDisplayUrl(
         context: Context,
         appUrl: String,
@@ -191,6 +192,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplay(
         context: Context,
         miniAppInfo: MiniAppInfo,

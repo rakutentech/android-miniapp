@@ -246,7 +246,7 @@ class SocketTimeOutCall : BaseCall() {
 open class BaseCall : Call<String> {
 
     override fun enqueue(callback: Callback<String>) {
-        //do nothing intended
+        // do nothing intended
     }
 
     override fun isExecuted(): Boolean = true
@@ -258,7 +258,7 @@ open class BaseCall : Call<String> {
     override fun isCanceled(): Boolean = false
 
     override fun cancel() {
-        //do nothing intended
+        // do nothing intended
     }
 
     @Suppress("TodoComment")
