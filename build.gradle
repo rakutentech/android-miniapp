@@ -34,6 +34,7 @@ buildscript {
     ext.json_test = '20210307'
     ext.sqlite_db = '2.2.0'
     ext.sqlcipher = '4.5.0'
+    ext.documentFile = '1.0.1'
 
 //  Build Config.
     apply from: 'config/index.gradle'

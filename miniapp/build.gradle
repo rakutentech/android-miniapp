@@ -67,6 +67,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$androidx_constraintLayout"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.browser:browser:$custom_tab"
+    implementation "androidx.documentfile:documentfile:$documentFile"
 
     kapt "io.github.rakutentech.manifestconfig:manifest-config-processor:$manifest_config"
     implementation "io.github.rakutentech.manifestconfig:manifest-config-annotations:$manifest_config"
