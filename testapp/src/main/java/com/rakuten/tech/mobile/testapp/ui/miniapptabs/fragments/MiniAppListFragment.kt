@@ -15,8 +15,8 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListAdapter
-import com.rakuten.tech.mobile.testapp.adapter.MiniAppListener
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
@@ -24,7 +24,6 @@ import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewM
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
 import java.util.*
-
 
 @Suppress("TooManyFunctions")
 class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
@@ -45,7 +44,7 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
 
         // Inflate the layout for this fragment

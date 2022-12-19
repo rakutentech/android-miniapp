@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
 import com.rakuten.tech.mobile.testapp.helper.*
@@ -24,6 +23,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.android.synthetic.main.settings_fragment.view.*
 import kotlinx.coroutines.Dispatchers
@@ -31,11 +31,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.net.URL
-import java.security.SecureRandom
 import java.util.*
 import kotlin.properties.Delegates
 
-@Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
+@Suppress("WildcardImport", "TooManyFunctions", "EmptyFunctionBlock")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -365,24 +364,6 @@ class SettingsFragment : BaseFragment() {
         if (!settings.isContactsSaved) {
             settings.contacts = createRandomContactList()
         }
-    }
-
-    @Suppress("UnusedPrivateMember", "MagicNumber")
-    private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
-        for (i in 1..10) {
-            this.add(createRandomContact())
-        }
-    }
-
-    @Suppress("MaxLineLength")
-    private fun createRandomContact(): Contact {
-        val firstName =
-            AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
-        val lastName =
-            AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
-        val email =
-            firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
 
     override fun onStop() {

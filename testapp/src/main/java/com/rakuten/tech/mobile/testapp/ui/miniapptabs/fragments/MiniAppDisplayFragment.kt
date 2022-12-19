@@ -53,7 +53,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 @Suppress("TooManyFunctions", "MagicNumber", "VariableNaming")
 class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
@@ -288,8 +287,8 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 miniappCameraPermissionCallback = permissionRequestCallback
                 ActivityCompat.requestPermissions(
                     activity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                    AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
         }
@@ -350,8 +349,8 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 miniappPermissionCallback = callback
                 ActivityCompat.requestPermissions(
                     activity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                    AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
 
@@ -505,7 +504,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     ) {
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when (requestCode) {
-            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            AppDevicePermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
     }

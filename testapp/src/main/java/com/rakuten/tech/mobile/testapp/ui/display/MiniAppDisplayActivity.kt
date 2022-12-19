@@ -48,7 +48,6 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
-
 class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -63,7 +62,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private var isFromMiniAppByUrlActivity = false
     private val externalWebViewReqCode = 100
     private val fileChoosingReqCode = 10101
-    private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
+    private val fileDownloadReqCode = 10102
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
@@ -85,8 +84,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             miniappCameraPermissionCallback = permissionRequestCallback
             ActivityCompat.requestPermissions(
                 this@MiniAppDisplayActivity,
-                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
             )
         }
     }
@@ -97,7 +96,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     private val miniAppFileDownloader = MiniAppFileDownloaderDefault(
         activity = this,
-        requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
+        requestCode = fileDownloadReqCode
     )
 
     private var appInfo: MiniAppInfo? = null
@@ -353,8 +352,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 miniappPermissionCallback = callback
                 ActivityCompat.requestPermissions(
                     this@MiniAppDisplayActivity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                    AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                    AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
                 )
             }
 
@@ -478,7 +477,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when (requestCode) {
-            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            AppDevicePermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
     }
@@ -510,7 +509,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
                 miniAppFileChooser.onReceivedFiles(data)
             }
-            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
+            requestCode == fileDownloadReqCode -> {
                 data?.data?.let { destinationUri ->
                     miniAppFileDownloader.onReceivedResult(destinationUri)
                 }

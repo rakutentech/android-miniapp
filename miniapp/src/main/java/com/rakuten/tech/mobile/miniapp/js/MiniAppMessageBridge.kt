@@ -41,8 +41,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
     "ComplexMethod",
     "LongParameterList",
     " MaximumLineLength",
-    "FunctionMaxLength",
-    "Deprecation"
+    "FunctionMaxLength"
 )
 /** Bridge interface for communicating with mini app. **/
 open class MiniAppMessageBridge {

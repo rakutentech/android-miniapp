@@ -151,10 +151,11 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
 
     @VisibleForTesting
     internal fun openCreateDocIntent(activity: Activity, fileName: String) {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = getMimeType(fileName)
-        intent.putExtra(Intent.EXTRA_TITLE, fileName)
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = getMimeType(fileName)
+            putExtra(Intent.EXTRA_TITLE, fileName)
+        }
         activity.startActivityForResult(intent, requestCode)
     }
 

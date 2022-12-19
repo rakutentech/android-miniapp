@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.testapp.adapter
+package com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
