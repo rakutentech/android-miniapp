@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
 import android.content.Context
-import androidx.annotation.NonNull
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
@@ -15,7 +14,7 @@ import java.sql.SQLException
 
 @Suppress("LargeClass", "TooManyFunctions")
 internal class MiniAppSecureStorage(
-    @NonNull private val context: Context,
+    private val context: Context,
     private val databaseVersion: Int,
     private val maxDatabaseSizeInBytes: Long
 ) {
@@ -50,7 +49,7 @@ internal class MiniAppSecureStorage(
 
     @SuppressWarnings("ExpressionBodySyntax", "RethrowCaughtException", "TooGenericExceptionCaught")
     private fun createOrOpenAndUnlockDatabase(): Boolean {
-        var status: Boolean
+        val status: Boolean
         try {
             status = miniAppSecureDatabase.createAndOpenDatabase()
         } catch (e: RuntimeException) {
@@ -108,7 +107,7 @@ internal class MiniAppSecureStorage(
             miniAppSecureDatabase.closeDatabase()
     }
 
-    @Suppress("ComplexMethod", "SwallowedException", "TooGenericExceptionCaught")
+    @Suppress("ComplexMethod", "SwallowedException", "TooGenericExceptionCaught", "CognitiveComplexity")
     fun insertItems(
         items: Map<String, String>,
         onSuccess: () -> Unit,

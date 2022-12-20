@@ -17,7 +17,6 @@ import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFr
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
-
 val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
 
 class DemoAppMainActivity : BaseActivity() {
@@ -75,14 +74,18 @@ class DemoAppMainActivity : BaseActivity() {
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
-                R.id.nav_tab_0 -> {
+                PAGE_1 -> {
                     AppSettings.instance.setTab1MiniAppSdkConfig()
                 }
-                R.id.nav_tab_1 -> {
+                PAGE_2 -> {
                     AppSettings.instance.setTab2MiniAppSdkConfig()
                 }
-                R.id.nav_tab_2 -> {}
-                R.id.nav_tab_3 -> {}
+                PAGE_FEATURES -> {
+                    //do nothing intended
+                }
+                PAGE_SETTINGS -> {
+                    //do nothing intended
+                }
 
             }
             // if you need to show/hide bottom nav or toolbar based on destination
