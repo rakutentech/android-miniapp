@@ -17,13 +17,10 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBindi
 import com.rakuten.tech.mobile.testapp.helper.getAdapterDataObserver
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.security.SecureRandom
-import java.util.*
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 
 private const val CONTACT_LIST_REQUEST_CODE = 1
-import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContact
-import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
-import kotlin.collections.ArrayList
+
 
 class ContactListActivity : BaseActivity(), ContactListener {
     override val pageName: String = this::class.simpleName ?: ""
@@ -144,6 +141,7 @@ class ContactListActivity : BaseActivity(), ContactListener {
                         adapter.updateContact(position, contact)
                     } else {
                         adapter.addContact(adapter.itemCount, contact)
+                        binding.listContacts.smoothScrollToPosition(adapter.itemCount)
                     }
                     settings.contacts = adapter.provideContactEntries()
                 }

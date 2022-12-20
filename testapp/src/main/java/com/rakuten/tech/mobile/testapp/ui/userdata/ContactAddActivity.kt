@@ -53,29 +53,6 @@ class ContactAddActivity : BaseActivity() {
     private var isUpdate = false
     private var position = 0
 
-    private val fakeFirstNames = arrayOf(
-        "Yvonne",
-        "Jamie",
-        "Leticia",
-        "Priscilla",
-        "Sidney",
-        "Nancy",
-        "Edmund",
-        "Bill",
-        "Megan"
-    )
-    private val fakeLastNames = arrayOf(
-        "Andrews",
-        "Casey",
-        "Gross",
-        "Lane",
-        "Thomas",
-        "Patrick",
-        "Strickland",
-        "Nicolas",
-        "Freeman"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settings = AppSettings.instance
@@ -178,8 +155,8 @@ class ContactAddActivity : BaseActivity() {
     }
 
     private fun createRandomContact(): Contact {
-        val firstName = fakeFirstNames[(SecureRandom().nextDouble() * fakeFirstNames.size).toInt()]
-        val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
+        val firstName = ContactHelper.fakeFirstNames[(SecureRandom().nextDouble() * ContactHelper.fakeFirstNames.size).toInt()]
+        val lastName = ContactHelper.fakeLastNames[(SecureRandom().nextDouble() * ContactHelper.fakeLastNames.size).toInt()]
         val email =
             firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
         return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)

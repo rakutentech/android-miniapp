@@ -5,7 +5,7 @@ import java.security.SecureRandom
 import java.util.*
 
 object ContactHelper {
-    private val fakeFirstNames = arrayOf(
+    val fakeFirstNames = arrayOf(
         "Yvonne",
         "Jamie",
         "Leticia",
@@ -16,7 +16,7 @@ object ContactHelper {
         "Bill",
         "Megan"
     )
-    private val fakeLastNames = arrayOf(
+    val fakeLastNames = arrayOf(
         "Andrews",
         "Casey",
         "Gross",
