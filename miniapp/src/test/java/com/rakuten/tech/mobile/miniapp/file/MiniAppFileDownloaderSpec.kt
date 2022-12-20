@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
-import androidx.documentfile.provider.DocumentFile
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.TestActivity
@@ -31,7 +30,6 @@ import org.mockito.kotlin.mock
 import org.robolectric.Shadows
 import org.robolectric.util.ReflectionHelpers
 import java.io.OutputStream
-import java.lang.NullPointerException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
