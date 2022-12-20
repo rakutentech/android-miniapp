@@ -39,6 +39,10 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+private const val MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE = 100
+private const val MINI_APP_FILE_CHOOSING_REQUEST_CODE = 10101
+private const val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
+
 class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -51,9 +55,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
     private var isFromMiniAppByUrlActivity = false
-    private val externalWebViewReqCode = 100
-    private val fileChoosingReqCode = 10101
-    private val fileDownloadReqCode = 10102
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
@@ -81,13 +82,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
     }
     private val miniAppFileChooser = MiniAppFileChooserDefault(
-        requestCode = fileChoosingReqCode,
+        requestCode = MINI_APP_FILE_CHOOSING_REQUEST_CODE,
         miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
     )
 
     private val miniAppFileDownloader = MiniAppFileDownloaderDefault(
         activity = this,
-        requestCode = fileDownloadReqCode
+        requestCode = MINI_APP_FILE_DOWNLOAD_REQUEST_CODE
     )
 
     private var appInfo: MiniAppInfo? = null
@@ -269,7 +270,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                         url = url,
                         appId = appId,
                         appUrl = appUrl,
-                        externalWebViewReqCode = externalWebViewReqCode,
+                        externalWebViewReqCode = MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE,
                     )
                 }
             }
@@ -345,7 +346,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
 
         when {
-            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 data?.let { intent ->
                     val isClosedByBackPressed =
                         intent.getBooleanExtra("isClosedByBackPressed", false)
@@ -360,10 +361,10 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     handleRedirectUrlPage()
                 }
             }
-            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_FILE_CHOOSING_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 miniAppFileChooser.onReceivedFiles(data)
             }
-            requestCode == fileDownloadReqCode -> {
+            requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
                 data?.data?.let { destinationUri ->
                     miniAppFileDownloader.onReceivedResult(destinationUri)
                 }
