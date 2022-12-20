@@ -68,6 +68,8 @@
     <string name="action_update">Update</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
+    <string name="action_contact_add">Add Contact</string>
+    <string name="action_contact_update">Update Contact</string>
     <string name="action_points">Points</string>
     <string name="action_dynamic_deeplinks">Dynamic DeepLinks</string>
     <string name="action_qa">QA</string>
@@ -129,4 +131,6 @@
     <string name="universal_message_bridge_will_be_sent">The Json info will be sent to MiniApp via universal bridge.</string>
     <string name="please_input_the_message">Please input the message</string>
     <string name="error_send_json_to_mini_app_message_cannot_be_empty">Unable to send the message: The message cannot be empty</string>
+    <string name="lb_general">General</string>
+
 </resources>

@@ -159,6 +159,21 @@
                     android:paddingBottom="@dimen/small_4" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonGeneral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:rightArrowEnable="true"
+                    app:titleLabel="@string/lb_general"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -242,33 +257,6 @@
                     app:actionType="open"
                     app:pageName="Settings"
                     app:siteSection="Top"/>
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bg_section"
-                    android:paddingStart="@dimen/medium_16"
-                    android:paddingTop="@dimen/small_4"
-                    android:paddingEnd="@dimen/medium_16"
-                    android:paddingBottom="@dimen/small_4"
-                    android:text="@string/lb_miniapp_url_parameters" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/small_8"
-                    app:endIconMode="clear_text"
-                    app:errorTextAppearance="@style/SettingsError.TextAppearance">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/editParametersUrl"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/large_48"
-                        android:hint="@string/hint_miniapp_url_parameters"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        tools:ignore="SpeakableTextPresentCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
