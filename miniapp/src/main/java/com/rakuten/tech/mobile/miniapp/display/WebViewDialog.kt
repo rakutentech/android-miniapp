@@ -42,7 +42,7 @@ private fun onOkBuild(
     dialogBuilder: AlertDialog.Builder,
     result: JsResult?
 ) {
-    dialogBuilder.setPositiveButton(android.R.string.ok) { dialog, which ->
+    dialogBuilder.setPositiveButton(android.R.string.ok) { dialog, _ ->
         result?.confirm()
         dialog.dismiss()
     }
@@ -58,7 +58,7 @@ private fun onPromptBuild(
     inputText.setText(defaultValue ?: "")
     dialogBuilder.setEditText(inputText)
 
-    dialogBuilder.setPositiveButton(android.R.string.ok) { dialog, which ->
+    dialogBuilder.setPositiveButton(android.R.string.ok) { dialog, _ ->
         if (result != null && result is JsPromptResult)
             result.confirm(inputText.text.toString())
         dialog.dismiss()
@@ -66,7 +66,7 @@ private fun onPromptBuild(
 }
 
 private fun onCancelBuild(dialogBuilder: AlertDialog.Builder, result: JsResult?) {
-    dialogBuilder.setNegativeButton(android.R.string.cancel) { dialog, which ->
+    dialogBuilder.setNegativeButton(android.R.string.cancel) { dialog, _ ->
         result?.cancel()
         dialog.dismiss()
     }

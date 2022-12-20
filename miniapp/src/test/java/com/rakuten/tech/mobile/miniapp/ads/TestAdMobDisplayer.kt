@@ -24,7 +24,11 @@ internal class TestAdMobDisplayer : MiniAppAdDisplayer {
         throw Exception()
     }
 
-    override fun loadRewardedAd(adUnitId: String, onLoaded: () -> Unit, onFailed: (String) -> Unit) {
+    override fun loadRewardedAd(
+        adUnitId: String,
+        onLoaded: () -> Unit,
+        onFailed: (String) -> Unit
+    ) {
         onLoaded.invoke()
         onFailed.invoke(TEST_ERROR_MSG)
         throw Exception()

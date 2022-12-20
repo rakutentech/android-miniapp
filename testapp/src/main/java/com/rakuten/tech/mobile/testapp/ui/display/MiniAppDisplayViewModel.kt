@@ -15,6 +15,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private const val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
+private const val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
+
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
 ) : ViewModel() {
@@ -25,9 +28,6 @@ class MiniAppDisplayViewModel constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     private val _containTooManyRequestsError = MutableLiveData<Boolean>()
 
-    private val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
-    private val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
-
     val miniAppView: LiveData<View>
         get() = _miniAppView
     val errorData: LiveData<String>
@@ -37,6 +37,7 @@ class MiniAppDisplayViewModel constructor(
     val containTooManyRequestsError: LiveData<Boolean>
         get() = _containTooManyRequestsError
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplay(
         context: Context,
         appInfo: MiniAppInfo?,
@@ -48,7 +49,14 @@ class MiniAppDisplayViewModel constructor(
     ) = viewModelScope.launch(Dispatchers.IO) {
         try {
             _isLoading.postValue(true)
-            miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+            miniAppDisplay = createMiniAppDisplay(
+                appInfo,
+                appId,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
+                appParameters
+            )
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
@@ -59,10 +67,18 @@ class MiniAppDisplayViewModel constructor(
                     _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
                 is MiniAppTooManyRequestsError ->
                     _containTooManyRequestsError.postValue(true)
-                else ->{
+                else -> {
                     //try to load MiniApp from cache
                     try {
-                        miniAppDisplay = createMiniAppDisplay(appInfo, appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, true)
+                        miniAppDisplay = createMiniAppDisplay(
+                            appInfo,
+                            appId,
+                            miniAppMessageBridge,
+                            miniAppNavigator,
+                            miniAppFileChooser,
+                            appParameters,
+                            true
+                        )
                         _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
                     } catch (e: MiniAppSdkException) {
                         when (e) {
@@ -78,6 +94,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     private suspend fun createMiniAppDisplay(
         appInfo: MiniAppInfo?,
         appId: String,
@@ -87,10 +104,25 @@ class MiniAppDisplayViewModel constructor(
         appParameters: String,
         fromCache: Boolean = false
     ): MiniAppDisplay = if (appInfo != null)
-        miniapp.create(appInfo, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
+        miniapp.create(
+            appInfo,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            miniAppFileChooser,
+            appParameters,
+            fromCache
+        )
     else
-        miniapp.create(appId, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters, fromCache)
+        miniapp.create(
+            appId,
+            miniAppMessageBridge,
+            miniAppNavigator,
+            miniAppFileChooser,
+            appParameters,
+            fromCache
+        )
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplayUrl(
         context: Context,
         appUrl: String,
@@ -102,11 +134,17 @@ class MiniAppDisplayViewModel constructor(
         try {
             _isLoading.postValue(true)
             miniAppDisplay =
-                miniapp.createWithUrl(appUrl, miniAppMessageBridge, miniAppNavigator, miniAppFileChooser, appParameters)
+                miniapp.createWithUrl(
+                    appUrl,
+                    miniAppMessageBridge,
+                    miniAppNavigator,
+                    miniAppFileChooser,
+                    appParameters
+                )
             _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
         } catch (e: MiniAppSdkException) {
             e.printStackTrace()
-             _errorData.postValue(e.message)
+            _errorData.postValue(e.message)
         } finally {
             _isLoading.postValue(false)
         }
@@ -116,12 +154,13 @@ class MiniAppDisplayViewModel constructor(
         lifecycle.addObserver(miniAppDisplay)
     }
 
-    fun canGoBackwards(): Boolean =
-        if (::miniAppDisplay.isInitialized)
-            miniAppDisplay.navigateBackward()
-        else
-            false
+    fun onBackPressed(onCloseAlertShowing: () -> Unit) {
+        if (!::miniAppDisplay.isInitialized || !miniAppDisplay.navigateBackward()) {
+            onCloseAlertShowing()
+        }
+    }
 
+    @Suppress("LongParameterList")
     fun obtainNewMiniAppDisplayUrl(
         context: Context,
         appUrl: String,
@@ -153,6 +192,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
     fun obtainMiniAppDisplay(
         context: Context,
         miniAppInfo: MiniAppInfo,
@@ -160,7 +200,7 @@ class MiniAppDisplayViewModel constructor(
         miniAppNavigator: MiniAppNavigator,
         miniAppFileChooser: MiniAppFileChooserDefault,
         urlParameters: String
-    ){
+    ) {
         val miniAppView = MiniAppView.init(
             createMiniAppInfoParam(
                 context,
@@ -184,7 +224,7 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
-    private fun handleErrors(e: MiniAppSdkException){
+    private fun handleErrors(e: MiniAppSdkException) {
         e.printStackTrace()
         when (e) {
             is MiniAppHasNoPublishedVersionException ->
