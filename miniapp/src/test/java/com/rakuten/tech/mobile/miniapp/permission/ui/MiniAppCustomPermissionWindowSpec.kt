@@ -45,9 +45,9 @@ class MiniAppCustomPermissionWindowSpec {
     private lateinit var permissionWindow: MiniAppCustomPermissionWindow
     private val miniAppId = TEST_CALLBACK_ID
     private val deniedPermissions = listOf(
-        Pair(MiniAppCustomPermissionType.USER_NAME, "dummy description"),
-        Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "dummy description"),
-        Pair(MiniAppCustomPermissionType.CONTACT_LIST, "dummy description")
+        Pair(MiniAppCustomPermissionType.USER_NAME, TEST_DUMMY_DESCRIPTION),
+        Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, TEST_DUMMY_DESCRIPTION),
+        Pair(MiniAppCustomPermissionType.CONTACT_LIST, TEST_DUMMY_DESCRIPTION)
     )
     private lateinit var cachedCustomPermission: MiniAppCustomPermission
 

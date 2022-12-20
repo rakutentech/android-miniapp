@@ -1,9 +1,8 @@
 package com.rakuten.tech.mobile.miniapp
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 class MiniAppSpec {
 

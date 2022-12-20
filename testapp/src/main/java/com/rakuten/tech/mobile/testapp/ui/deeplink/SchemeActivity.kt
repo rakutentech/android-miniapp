@@ -27,6 +27,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
     private var miniAppSdkConfig: MiniAppSdkConfig? = null
     private var miniApp: MiniApp? = null
 
+    @Suppress("TooGenericExceptionCaught")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         miniAppInfo = null
@@ -69,17 +70,31 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                                 }
                             }
                         }
-                    } catch (e: MiniAppNotFoundException) {
-                        showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
-                    } catch (e: MiniAppHostException) {
-                        showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
-                    } catch (e: SSLCertificatePinningException) {
-                        Log.e("SSLCertificatePinningException", e.message ?: "")
-                        finish()
-                    } catch (e: MiniAppSdkException) {
-                        showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
+                    } catch (e: Exception) {
+                        handleException(e)
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleException(e: Exception) {
+        when (e) {
+            is MiniAppNotFoundException -> {
+                showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
+            }
+            is MiniAppHostException -> {
+                showErrorDialog(QRCodeErrorType.MiniAppNoPermission)
+            }
+            is SSLCertificatePinningException -> {
+                Log.e("SSLCertificatePinningException", e.message ?: "")
+                finish()
+            }
+            is MiniAppSdkException -> {
+                showErrorDialog(QRCodeErrorType.MiniAppNoLongerExist)
+            }
+            else -> {
+                e.printStackTrace()
             }
         }
     }
