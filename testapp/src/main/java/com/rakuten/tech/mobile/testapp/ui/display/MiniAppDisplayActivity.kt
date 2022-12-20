@@ -39,6 +39,9 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+private const val MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE = 100
+private const val MINI_APP_FILE_CHOOSING_REQUEST_CODE = 10101
+private const val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
 
 class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
@@ -52,9 +55,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
     private var isFromMiniAppByUrlActivity = false
-    private val externalWebViewReqCode = 100
-    private val fileChoosingReqCode = 10101
-    private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
@@ -76,13 +76,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             miniappCameraPermissionCallback = permissionRequestCallback
             ActivityCompat.requestPermissions(
                 this@MiniAppDisplayActivity,
-                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
             )
         }
     }
     private val miniAppFileChooser = MiniAppFileChooserDefault(
-        requestCode = fileChoosingReqCode,
+        requestCode = MINI_APP_FILE_CHOOSING_REQUEST_CODE,
         miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
     )
 
@@ -270,7 +270,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                         url = url,
                         appId = appId,
                         appUrl = appUrl,
-                        externalWebViewReqCode = externalWebViewReqCode,
+                        externalWebViewReqCode = MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE,
                     )
                 }
             }
@@ -332,7 +332,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when (requestCode) {
-            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            AppDevicePermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
     }
@@ -346,7 +346,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
 
         when {
-            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 data?.let { intent ->
                     val isClosedByBackPressed =
                         intent.getBooleanExtra("isClosedByBackPressed", false)
@@ -361,7 +361,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     handleRedirectUrlPage()
                 }
             }
-            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_FILE_CHOOSING_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 miniAppFileChooser.onReceivedFiles(data)
             }
             requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {

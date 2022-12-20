@@ -57,8 +57,8 @@ fun getMessageBridge(
         onDevicePermissionResultCallback.invoke(callback)
         ActivityCompat.requestPermissions(
             activity,
-            AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-            AppPermission.getDeviceRequestCode(miniAppPermissionType)
+            AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+            AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
         )
     }
 

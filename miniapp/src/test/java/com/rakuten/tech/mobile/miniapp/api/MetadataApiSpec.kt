@@ -80,6 +80,19 @@ class MetadataApiRequestSpec : MetadataApiSpec() {
     }
 
     @Test
+    fun `should have empty test endpoint when no test mode`() {
+        mockServer.enqueue(createResponse())
+        retrofit.create(MetadataApi::class.java)
+            .fetchMetadataPreviewMode(
+                hostId = TEST_HA_ID_PROJECT,
+                miniAppId = TEST_ID_MINIAPP,
+                versionId = TEST_ID_MINIAPP_VERSION,
+                lang = TEST_MA_LANGUAGE_CODE
+            ).execute()
+        mockServer.takeRequest().path!! shouldContain ""
+    }
+
+    @Test
     fun `should fetch metadata of a mini app using the 'lang' query`() {
         executeMetadataCallByRetrofit()
         val requestUrl = mockServer.takeRequest().requestUrl!!

@@ -17,7 +17,6 @@ import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFr
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
-
 val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
 
 class DemoAppMainActivity : BaseActivity() {
