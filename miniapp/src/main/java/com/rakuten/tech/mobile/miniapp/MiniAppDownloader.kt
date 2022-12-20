@@ -117,7 +117,8 @@ internal class MiniAppDownloader(
 
     @SuppressWarnings("MaximumLineLength")
     private fun retrieveDownloadedVersionPath(miniAppInfo: MiniAppInfo): String? {
-        val versionPath = storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
+        val versionPath =
+            storage.getMiniAppVersionPath(miniAppInfo.id, miniAppInfo.version.versionId)
 
         if (!apiClient.isPreviewMode && miniAppStatus.isVersionDownloaded(
                 miniAppInfo.id,
@@ -161,7 +162,11 @@ internal class MiniAppDownloader(
 
     @SuppressWarnings("NestedBlockDepth")
     @Throws(MiniAppSdkException::class)
-    suspend fun fetchMiniAppManifest(appId: String, versionId: String, languageCode: String): MiniAppManifest {
+    suspend fun fetchMiniAppManifest(
+        appId: String,
+        versionId: String,
+        languageCode: String
+    ): MiniAppManifest {
         if (versionId.isEmpty()) throw MiniAppSdkException("Provided Mini App Version ID is invalid.")
         else {
             try {
@@ -171,12 +176,19 @@ internal class MiniAppDownloader(
                     prepareMiniAppManifest(apiResponse, versionId)
                 } else {
                     // every version should have it's own manifest information or null
-                    val cachedLatestManifest = manifestApiCache.readManifest(appId, versionId, languageCode)
+                    val cachedLatestManifest =
+                        manifestApiCache.readManifest(appId, versionId, languageCode)
                     if (cachedLatestManifest != null) cachedLatestManifest
                     else {
-                        val apiResponse = apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
+                        val apiResponse =
+                            apiClient.fetchMiniAppManifest(appId, versionId, languageCode)
                         val latestManifest = prepareMiniAppManifest(apiResponse, versionId)
-                        manifestApiCache.storeManifest(appId, versionId, languageCode, latestManifest)
+                        manifestApiCache.storeManifest(
+                            appId,
+                            versionId,
+                            languageCode,
+                            latestManifest
+                        )
                         latestManifest
                     }
                 }
@@ -189,13 +201,17 @@ internal class MiniAppDownloader(
 
     @VisibleForTesting
     fun prepareMiniAppManifest(metadataEntity: MetadataEntity, versionId: String): MiniAppManifest {
-        val requiredPermissions = listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
-        val optionalPermissions = listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
+        val requiredPermissions =
+            listOfPermissions(metadataEntity.metadata?.requiredPermissions ?: emptyList())
+        val optionalPermissions =
+            listOfPermissions(metadataEntity.metadata?.optionalPermissions ?: emptyList())
         val customMetadata = metadataEntity.metadata?.customMetaData ?: emptyMap()
         val accessTokenPermission = metadataEntity.metadata?.accessTokenPermissions ?: emptyList()
 
-        return MiniAppManifest(requiredPermissions, optionalPermissions,
-            accessTokenPermission, customMetadata, versionId)
+        return MiniAppManifest(
+            requiredPermissions, optionalPermissions,
+            accessTokenPermission, customMetadata, versionId
+        )
     }
 
     @VisibleForTesting
@@ -223,26 +239,12 @@ internal class MiniAppDownloader(
             doesManifestFileExist(manifest.first) -> {
                 for (file in manifest.first.files) {
                     try {
-                        if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
-                            miniAppAnalytics.sendAnalytics(
-                                eType = Etype.CLICK,
-                                actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
-                                miniAppInfo = miniAppInfo
-                            )
-                        } else {
-                            miniAppAnalytics.sendAnalytics(
-                                eType = Etype.CLICK,
-                                actype = Actype.SIGNATURE_VALIDATION_FAIL,
-                                miniAppInfo = miniAppInfo
-                            )
-                            if (requireSignatureVerification) {
-                                removeMiniApp(appId, versionId, "$SIGNATURE_VERIFICATION_ERR " +
-                                        "The files will be deleted.")
-                                throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
-                            }
-                        }
-
-                        storage.saveFile(file, baseSavePath, apiClient.downloadFile(file).byteStream())
+                        checkSignatureValidation(file, versionId, manifest, miniAppInfo, appId)
+                        storage.saveFile(
+                            file,
+                            baseSavePath,
+                            apiClient.downloadFile(file).byteStream()
+                        )
                     } catch (error: MiniAppTooManyRequestsError) {
                         removeMiniApp(appId, versionId, TOO_MANY_REQUEST_ERR_LOG)
                         throw MiniAppTooManyRequestsError(error.message)
@@ -260,15 +262,44 @@ internal class MiniAppDownloader(
         }
     }
 
+    private suspend fun checkSignatureValidation(
+        file: String,
+        versionId: String,
+        manifest: Pair<ManifestEntity, ManifestHeader>,
+        miniAppInfo: MiniAppInfo,
+        appId: String
+    ) {
+        if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
+            miniAppAnalytics.sendAnalytics(
+                eType = Etype.CLICK,
+                actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                miniAppInfo = miniAppInfo
+            )
+        } else {
+            miniAppAnalytics.sendAnalytics(
+                eType = Etype.CLICK,
+                actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                miniAppInfo = miniAppInfo
+            )
+            if (requireSignatureVerification) {
+                removeMiniApp(
+                    appId, versionId, "$SIGNATURE_VERIFICATION_ERR " +
+                            "The files will be deleted."
+                )
+                throw MiniAppVerificationException(SIGNATURE_VERIFICATION_ERR)
+            }
+        }
+    }
+
     private suspend fun isSignatureValid(
         inputStream: InputStream,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>
     ): Boolean = signatureVerifier?.verify(
-            manifest.first.publicKeyId,
-            versionId,
-            inputStream,
-            manifest.second.signature.toString()
+        manifest.first.publicKeyId,
+        versionId,
+        inputStream,
+        manifest.second.signature.toString()
     ) ?: false
 
     fun getDownloadedMiniAppList(): List<MiniAppInfo> = miniAppStatus.getDownloadedMiniAppList()
@@ -299,7 +330,9 @@ internal class MiniAppDownloader(
                 versionId = appInfo.version.versionId,
                 versionPath = storage.getMiniAppVersionPath(appInfo.id, appInfo.version.versionId)
             )
-        ) onGetCachedMiniApp(appInfo) else throw MiniAppNotFoundException(MINIAPP_NOT_FOUND_OR_CORRUPTED)
+        ) onGetCachedMiniApp(appInfo) else throw MiniAppNotFoundException(
+            MINIAPP_NOT_FOUND_OR_CORRUPTED
+        )
     }
 
     @VisibleForTesting
@@ -312,8 +345,11 @@ internal class MiniAppDownloader(
 
     companion object {
         private const val TAG = "MiniAppDownloader"
-        private const val SIGNATURE_VERIFICATION_ERR = "Failed to verify the signature of MiniApp's zip."
-        internal const val MINIAPP_NOT_FOUND_OR_CORRUPTED = "Mini app is not downloaded properly or corrupted"
-        internal const val TOO_MANY_REQUEST_ERR_LOG = "The files will be deleted for too many requests error."
+        private const val SIGNATURE_VERIFICATION_ERR =
+            "Failed to verify the signature of MiniApp's zip."
+        internal const val MINIAPP_NOT_FOUND_OR_CORRUPTED =
+            "Mini app is not downloaded properly or corrupted"
+        internal const val TOO_MANY_REQUEST_ERR_LOG =
+            "The files will be deleted for too many requests error."
     }
 }

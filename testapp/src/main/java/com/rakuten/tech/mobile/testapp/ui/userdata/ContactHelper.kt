@@ -1,0 +1,47 @@
+package com.rakuten.tech.mobile.testapp.ui.userdata
+
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
+import java.security.SecureRandom
+import java.util.*
+
+object ContactHelper {
+    private val fakeFirstNames = arrayOf(
+        "Yvonne",
+        "Jamie",
+        "Leticia",
+        "Priscilla",
+        "Sidney",
+        "Nancy",
+        "Edmund",
+        "Bill",
+        "Megan"
+    )
+    private val fakeLastNames = arrayOf(
+        "Andrews",
+        "Casey",
+        "Gross",
+        "Lane",
+        "Thomas",
+        "Patrick",
+        "Strickland",
+        "Nicolas",
+        "Freeman"
+    )
+
+
+    @Suppress("UnusedPrivateMember", "MagicNumber")
+    fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
+        for (i in 1..10) {
+            this.add(createRandomContact())
+        }
+    }
+
+    @Suppress("MaxLineLength")
+    fun createRandomContact(): Contact {
+        val firstName = fakeFirstNames[(SecureRandom().nextDouble() * fakeFirstNames.size).toInt()]
+        val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
+        val email =
+            firstName.lowercase(Locale.ROOT) + "." + lastName.lowercase(Locale.ROOT) + "@example.com"
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
+    }
+}

@@ -3,7 +3,7 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.Manifest
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 
-object AppPermission {
+object AppDevicePermission {
 
     object ReqCode {
         const val LOCATION = 1001

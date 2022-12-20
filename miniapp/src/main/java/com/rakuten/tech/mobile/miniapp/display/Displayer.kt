@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 @Suppress("LongParameterList", "LongMethod")
 internal class Displayer(private val hostAppUserAgentInfo: String) {
 
+    @Suppress("LongParameterList")
     fun createMiniAppDisplay(
         basePath: String,
         miniAppInfo: MiniAppInfo,
@@ -43,6 +44,7 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         enableH5Ads = enableH5Ads
     )
 
+    @Suppress("LongParameterList")
     fun createMiniAppDisplay(
         appUrl: String,
         miniAppMessageBridge: MiniAppMessageBridge,
