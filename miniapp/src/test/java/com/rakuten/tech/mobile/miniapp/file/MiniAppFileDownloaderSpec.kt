@@ -6,33 +6,32 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
+import androidx.core.net.toUri
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppDownloadFileError
 import kotlinx.coroutines.test.TestCoroutineScope
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.amshove.kluent.When
-import org.amshove.kluent.calling
-import org.amshove.kluent.itReturns
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.timeout
+import org.mockito.Mockito.verify
 import org.mockito.kotlin.*
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.robolectric.Shadows
 import org.robolectric.util.ReflectionHelpers
 import java.io.OutputStream
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
 
 @RunWith(AndroidJUnit4::class)
 @Suppress("LargeClass")
@@ -46,9 +45,74 @@ class MiniAppFileDownloaderSpec {
             "ABzQ+pjAAAAC0lEQVQI12NgQAAAAAwAAeQ06mYAAAAASUVORK5CYII="
     private val testMimeType = "image/jpeg"
     private val testExpectedBytes = byteArrayOf(
-        -119, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82,
-        0, 0, 0, 3, 0, 0, 0, 3, 8, 0, 0, 0, 0, 115, 67, -22, 99, 0, 0, 0, 11, 73, 68, 65, 84, 8, -41, 99,
-        96, 64, 0, 0, 0, 12, 0, 1, -28, 52, -22, 102, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        -119,
+        80,
+        78,
+        71,
+        13,
+        10,
+        26,
+        10,
+        0,
+        0,
+        0,
+        13,
+        73,
+        72,
+        68,
+        82,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        3,
+        8,
+        0,
+        0,
+        0,
+        0,
+        115,
+        67,
+        -22,
+        99,
+        0,
+        0,
+        0,
+        11,
+        73,
+        68,
+        65,
+        84,
+        8,
+        -41,
+        99,
+        96,
+        64,
+        0,
+        0,
+        0,
+        12,
+        0,
+        1,
+        -28,
+        52,
+        -22,
+        102,
+        0,
+        0,
+        0,
+        0,
+        73,
+        69,
+        78,
+        68,
+        -82,
+        66,
+        96,
+        -126
     )
     private lateinit var mockServer: MockWebServer
     private val mockContentResolver: ContentResolver = mock()
@@ -109,23 +173,23 @@ class MiniAppFileDownloaderSpec {
 
     @Test
     fun `startDownloading should invoke success callback if request is successful`() {
-            mockServer.enqueue(MockResponse().setBody(""))
-            mockServer.start()
-            val url: String = mockServer.url("/sample/com/test.jpg").toString()
+        mockServer.enqueue(MockResponse().setBody(""))
+        mockServer.start()
+        val url: String = mockServer.url("/sample/com/test.jpg").toString()
 
-            val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
-            miniAppFileDownloader.scope = TestCoroutineScope()
-            miniAppFileDownloader.onDownloadSuccess = {
-                it shouldBe testFileName
-            }
-            miniAppFileDownloader.onDownloadFailed = {}
-            miniAppFileDownloader.url = url
-            miniAppFileDownloader.headers = testHeaders
-            miniAppFileDownloader.fileName = testFileName
-
-            miniAppFileDownloader.onReceivedResult(testDestUri)
-            verify(miniAppFileDownloader).onDownloadSuccess
+        val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
+        miniAppFileDownloader.scope = TestCoroutineScope()
+        miniAppFileDownloader.onDownloadSuccess = {
+            it shouldBe testFileName
         }
+        miniAppFileDownloader.onDownloadFailed = {}
+        miniAppFileDownloader.url = url
+        miniAppFileDownloader.headers = testHeaders
+        miniAppFileDownloader.fileName = testFileName
+
+        miniAppFileDownloader.onReceivedResult(testDestUri)
+        verify(miniAppFileDownloader).onDownloadSuccess
+    }
 
     @Test
     fun `startDownloading should invoke fail callback if request isn't successful`() {
@@ -151,7 +215,12 @@ class MiniAppFileDownloaderSpec {
     fun `onStartFileDownload when called with data URI should launch an Intent to create a new document`() {
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(mockActivity, 100)
 
-        miniAppFileDownloader.onStartFileDownload(testFileName, testBase64DataUri, testHeaders, {}, {})
+        miniAppFileDownloader.onStartFileDownload(
+            testFileName,
+            testBase64DataUri,
+            testHeaders,
+            {},
+            {})
 
         verify(mockActivity).startActivityForResult(
             argWhere { intent ->
@@ -219,7 +288,12 @@ class MiniAppFileDownloaderSpec {
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(mockActivity, 100)
         When calling mockContentResolver.openOutputStream(destinationUri) itReturns outputStream
 
-        miniAppFileDownloader.onStartFileDownload(testFileName, testBase64DataUri, testHeaders, {}, {})
+        miniAppFileDownloader.onStartFileDownload(
+            testFileName,
+            testBase64DataUri,
+            testHeaders,
+            {},
+            {})
         miniAppFileDownloader.onReceivedResult(destinationUri)
 
         verify(outputStream).write(argWhere {
@@ -235,7 +309,13 @@ class MiniAppFileDownloaderSpec {
         val destinationUri: Uri = mock()
         val miniAppFileDownloader = MiniAppFileDownloaderDefault(mockActivity, 100)
 
-        miniAppFileDownloader.onStartFileDownload(testFileName, invalidDataUri, testHeaders, {}, onFailed)
+        miniAppFileDownloader.onStartFileDownload(
+            testFileName,
+            invalidDataUri,
+            testHeaders,
+            {},
+            onFailed
+        )
         miniAppFileDownloader.onReceivedResult(destinationUri)
 
         verify(onFailed).invoke(MiniAppDownloadFileError.saveFailureError)
@@ -269,15 +349,56 @@ class MiniAppFileDownloaderSpec {
     }
 
     @Test
-    fun `should not delete file if not exist`() {
+    fun `onReceivedResult should invoke onDownloadFailed if its not valid url`() {
         val miniAppFileDownloader = spy(MiniAppFileDownloaderDefault(activity, 100))
-        assertFalse(miniAppFileDownloader.deleteCreateFile(testDestUri))
+        val onDownloadFailed: (MiniAppDownloadFileError) -> Unit = spy({})
+        miniAppFileDownloader.url = "testInvalidUrl"
+        miniAppFileDownloader.onDownloadFailed = onDownloadFailed
+        miniAppFileDownloader.onReceivedResult("testinvaliduri".toUri())
+        verify(onDownloadFailed).invoke(MiniAppDownloadFileError.invalidUrlError)
     }
 
-    @Test
-    fun `should dslete file if exists`() {
+    @Test(expected = RuntimeException::class)
+    fun `should call invokeOnDownloadFailed when startDownloading throws an IOException `() {
         val miniAppFileDownloader = spy(MiniAppFileDownloaderDefault(activity, 100))
-        whenever(miniAppFileDownloader.deleteCreateFile(testDestUri)).itReturns(true)
-        assertTrue(miniAppFileDownloader.deleteCreateFile(testDestUri))
+        val client = OkHttpClient().newBuilder().build()
+
+        val expectedReq = Request.Builder()
+            .url(testFileUrl)
+            .addHeader("auth", "123")
+            .addHeader("token", "abc")
+            .build()
+
+        val onDownloadFailed: (MiniAppDownloadFileError) -> Unit = spy({})
+        miniAppFileDownloader.url = "testInvalidUrl"
+        miniAppFileDownloader.onDownloadFailed = onDownloadFailed
+
+
+        Mockito.`when`(
+            miniAppFileDownloader .startDownloading(
+                testDestUri,
+                testFileName,
+                client,
+                expectedReq,
+                mock(),
+                onDownloadFailed
+        )).thenThrow(RuntimeException::class.java)
+
+        miniAppFileDownloader.startDownloading(
+            testDestUri,
+            testFileName,
+            client,
+            expectedReq,
+            mock(),
+            onDownloadFailed
+        )
+
+        verify(miniAppFileDownloader).invokeOnDownloadFailed(
+            testDestUri,
+            MiniAppDownloadFileError.invalidUrlError,
+            onDownloadFailed
+        )
     }
+
+
 }

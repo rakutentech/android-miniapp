@@ -151,7 +151,8 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         }
     }
 
-    private fun invokeOnDownloadFailed(
+    @VisibleForTesting
+    internal fun invokeOnDownloadFailed(
         uri: Uri,
         miniAppDownloadFileError: MiniAppDownloadFileError,
         onDownloadFailed: (MiniAppDownloadFileError) -> Unit
@@ -160,10 +161,9 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         onDownloadFailed.invoke(miniAppDownloadFileError)
     }
 
-    @VisibleForTesting
-    internal fun deleteCreateFile(uri: Uri): Boolean {
+    private fun deleteCreateFile(uri: Uri) {
         val file = DocumentFile.fromSingleUri(activity, uri)
-        return file?.delete() ?: false
+        file?.delete()
     }
 
     override fun onStartFileDownload(
