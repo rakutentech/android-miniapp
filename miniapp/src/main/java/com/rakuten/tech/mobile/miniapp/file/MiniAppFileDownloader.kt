@@ -157,11 +157,11 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
         miniAppDownloadFileError: MiniAppDownloadFileError,
         onDownloadFailed: (MiniAppDownloadFileError) -> Unit
     ) {
-        deleteCreateFile(uri)
+        deleteCreatedFile(uri)
         onDownloadFailed.invoke(miniAppDownloadFileError)
     }
 
-    private fun deleteCreateFile(uri: Uri) {
+    private fun deleteCreatedFile(uri: Uri) {
         val file = DocumentFile.fromSingleUri(activity, uri)
         file?.delete()
     }
