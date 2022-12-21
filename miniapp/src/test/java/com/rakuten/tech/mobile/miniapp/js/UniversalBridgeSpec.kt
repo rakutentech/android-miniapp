@@ -109,7 +109,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     @Test
     fun `bridgeExecutor should call postValue if universal bridge json is valid`() {
         miniAppBridge.postMessage(jsonInfoJsonStr)
-        verify(bridgeExecutor, times(1)).postValue(
+        verify(bridgeExecutor).postValue(
             TEST_CALLBACK_ID, createJsonInfoCallbackJsonStr(),
         )
     }

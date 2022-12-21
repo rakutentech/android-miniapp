@@ -31,8 +31,9 @@ private const val JAVA8_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
  * @param salt cryptographic salt
  * @param encryptedPasscode encrypted database key
  */
+@VisibleForTesting
 @Keep
-private data class EncryptedPasscodeDataHolder(
+internal data class EncryptedPasscodeDataHolder(
     val iv: String,
     val salt: String,
     val encryptedPasscode: String
@@ -94,7 +95,8 @@ internal object MiniAppDatabaseEncryptionUtil {
     }
 
     @SuppressWarnings("SwallowedException")
-    private fun getPasscodeHolder(context: Context): EncryptedPasscodeDataHolder? {
+    @VisibleForTesting
+    internal fun getPasscodeHolder(context: Context): EncryptedPasscodeDataHolder? {
         val prefs = context.getSharedPreferences(
             SHARED_PREFERENCE_NAME,
             Context.MODE_PRIVATE
