@@ -1,10 +1,9 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
-
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
@@ -54,7 +53,8 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
-internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email")
+internal val TEST_EMAIL_LIST = listOf("test@sample.com", "test@example.com")
+internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email", TEST_EMAIL_LIST)
 internal const val TEST_PROMOTIONAL_URL = "http://testImageurl.co"
 internal const val TEST_PROMOTIONAL_TEXT = "test_promotional_text"
 
