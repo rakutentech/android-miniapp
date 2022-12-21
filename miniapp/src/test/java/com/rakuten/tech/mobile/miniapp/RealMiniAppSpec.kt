@@ -394,7 +394,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
 
         realMiniApp.clearSecureStorages(context = context)
 
-        verify(context, times(1)).deleteDatabase(DB_NAME_PREFIX + TEST_MA_ID)
+        verify(context).deleteDatabase(DB_NAME_PREFIX + TEST_MA_ID)
         verify(context, times(0)).deleteDatabase("sample_database")
     }
 
