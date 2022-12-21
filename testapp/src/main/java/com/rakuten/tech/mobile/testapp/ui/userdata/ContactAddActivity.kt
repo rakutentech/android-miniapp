@@ -96,10 +96,12 @@ class ContactAddActivity : BaseActivity() {
         if (!isVerifiedContact()) {
             return
         }
+        // TODO: Need to update the all emailList from empty to valid.
         contact = Contact(
             id = binding.edtContactId.text.toString(),
             email = binding.edtContactEmail.text.toString(),
-            name = binding.edtContactName.text.toString()
+            name = binding.edtContactName.text.toString(),
+            allEmailList = emptyList()
         )
         val returnIntent = Intent().apply {
             putExtra(contactTag, Gson().toJson(contact))
@@ -159,7 +161,8 @@ class ContactAddActivity : BaseActivity() {
         val lastName = ContactHelper.fakeLastNames[(SecureRandom().nextDouble() * ContactHelper.fakeLastNames.size).toInt()]
         val email =
             firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
+        // TODO: Need to update the all emailList from empty to valid.
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email, emptyList())
     }
 
 }

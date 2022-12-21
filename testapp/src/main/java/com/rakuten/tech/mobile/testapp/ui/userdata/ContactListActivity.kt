@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.databinding.DataBindingUtil
@@ -20,7 +21,6 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 
 private const val CONTACT_LIST_REQUEST_CODE = 1
-
 
 class ContactListActivity : BaseActivity(), ContactListener {
     override val pageName: String = this::class.simpleName ?: ""
