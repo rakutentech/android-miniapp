@@ -6,6 +6,7 @@
 - **Feature:** Added `NativeEventType.MINIAPP_RECEIVE_JSON_INFO` to provide `Universal Bridge` for receiving messages from the HostApp to MiniApps.
 - **Feature:** Added `sendJsonToMiniApp` in `MiniAppView` and `MiniAppViewImpl` for receiving messages from the HostApp to MiniApps.
 - **Fix:** Prevent file creation with zero byte with appending a single dot(.) at the end of file's name while downloading a file using `MiniAppFileDownloader` in Android 10.
+- **Update:** Added `allEmailList` field to support multiple emails for contacts.
 
 **Sample App**
 - **Feature:** Settings is moved to it's own tab.
