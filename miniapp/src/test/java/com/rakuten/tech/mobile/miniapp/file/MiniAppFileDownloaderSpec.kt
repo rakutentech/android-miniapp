@@ -32,7 +32,6 @@ import org.robolectric.util.ReflectionHelpers
 import java.io.OutputStream
 import kotlin.test.assertEquals
 
-
 @RunWith(AndroidJUnit4::class)
 @Suppress("LargeClass")
 class MiniAppFileDownloaderSpec {
@@ -308,16 +307,16 @@ class MiniAppFileDownloaderSpec {
         miniAppFileDownloader.url = "testInvalidUrl"
         miniAppFileDownloader.onDownloadFailed = onDownloadFailed
 
-
         Mockito.`when`(
-            miniAppFileDownloader .startDownloading(
+            miniAppFileDownloader.startDownloading(
                 testDestUri,
                 testFileName,
                 client,
                 expectedReq,
                 mock(),
                 onDownloadFailed
-        )).thenThrow(RuntimeException::class.java)
+            )
+        ).thenThrow(RuntimeException::class.java)
 
         miniAppFileDownloader.startDownloading(
             testDestUri,
@@ -334,6 +333,4 @@ class MiniAppFileDownloaderSpec {
             onDownloadFailed
         )
     }
-
-
 }
