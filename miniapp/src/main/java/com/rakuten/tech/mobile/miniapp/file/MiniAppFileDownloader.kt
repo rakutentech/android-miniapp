@@ -207,18 +207,18 @@ class MiniAppFileDownloaderDefault(var activity: Activity, var requestCode: Int)
 
     @VisibleForTesting
     internal fun getMimeType(fileName: String): String {
-        val extension = if (fileName.contains('.'))
-            fileName.split('.').last()
-        else
-            ""
-        val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-
         // Intent.ACTION_CREATE_DOCUMENT creates files with 0 bytes
-        // while specifying mimetype in Android API 29 platform,
+        // while appending a single dot(.) at the end of file's name in Android API 29 platform,
         // It needs to set "*/*" to prevent this issue.
         return if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             "*/*"
         } else {
+            val extension = if (fileName.contains('.'))
+                fileName.split('.').last()
+            else
+                ""
+            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+
             if (!mimetype.isNullOrBlank())
                 mimetype
             else

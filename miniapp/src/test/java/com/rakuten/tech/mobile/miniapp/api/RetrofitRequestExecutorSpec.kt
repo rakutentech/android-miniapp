@@ -33,6 +33,8 @@ open class RetrofitRequestExecutorSpec private constructor(
     private lateinit var baseUrl: String
     internal val mockRequestExecutor: RetrofitRequestExecutor = mock()
 
+    internal suspend fun fetchApi() = createRequestExecutor().executeRequest(createApi().fetch())
+
     @Before
     fun baseSetup() {
         baseUrl = mockServer.url("/").toString()
@@ -70,7 +72,7 @@ open class RetrofitRequestExecutorNormalSpec : RetrofitRequestExecutorSpec() {
     fun `should return the body`() = runBlockingTest {
         mockServer.enqueue(createTestApiResponse(testValue = TEST_VALUE))
 
-        val response = createRequestExecutor().executeRequest(createApi().fetch())
+        val response = fetchApi()
 
         response.body()?.testKey shouldBeEqualTo TEST_VALUE
     }
@@ -93,7 +95,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     fun `should throw exception when the response returned by server is not of type T`() =
         runBlockingTest {
             mockServer.enqueue(createInvalidTestApiResponse())
-            createRequestExecutor().executeRequest(createApi().fetch())
+            fetchApi()
         }
 
     @Test
@@ -101,7 +103,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
-            createRequestExecutor().executeRequest(createApi().fetch())
+            fetchApi()
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
@@ -114,7 +116,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         mockServer.enqueue(createErrorResponse(message = TEST_ERROR_MSG))
 
         try {
-            createRequestExecutor().executeRequest(createApi().fetch())
+            fetchApi()
 
             TestCase.fail("Should have thrown ErrorResponseException.")
         } catch (exception: MiniAppSdkException) {
@@ -128,7 +130,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
             mockServer.enqueue(MockResponse().setResponseCode(406).setBody("{}"))
 
             try {
-                createRequestExecutor().executeRequest(createApi().fetch())
+                fetchApi()
 
                 TestCase.fail("Should have thrown ErrorResponseException.")
             } catch (exception: MiniAppSdkException) {
@@ -141,7 +143,7 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
         runBlockingTest {
             try {
                 mockServer.enqueue(MockResponse().setResponseCode(500))
-                createRequestExecutor().executeRequest(createApi().fetch())
+                fetchApi()
             } catch (exception: MiniAppNetException) {
                 exception.message.toString() shouldContain "Found some problem, timeout"
             }
@@ -186,21 +188,21 @@ open class RetrofitRequestExecutorErrorSpec : RetrofitRequestExecutorSpec() {
     fun `should throw MiniAppNotFoundException when the server returns 404`() = runBlockingTest {
         mockServer.enqueue(MockResponse().setResponseCode(404))
 
-        createRequestExecutor().executeRequest(createApi().fetch())
+        fetchApi()
     }
 
     @Test(expected = MiniAppHostException::class)
     fun `should throw MiniAppHostException when the server returns 400`() = runBlockingTest {
         mockServer.enqueue(MockResponse().setResponseCode(400))
 
-        createRequestExecutor().executeRequest(createApi().fetch())
+        fetchApi()
     }
 
     @Test(expected = MiniAppTooManyRequestsError::class)
     fun `should throw MiniAppTooManyRequestsError when the server returns 429`() = runBlockingTest {
         mockServer.enqueue(MockResponse().setResponseCode(429))
 
-        createRequestExecutor().executeRequest(createApi().fetch())
+        fetchApi()
     }
 
     private val standardErrorBody = { code: Int, message: String ->
@@ -243,7 +245,9 @@ class SocketTimeOutCall : BaseCall() {
 @Suppress("EmptyFunctionBlock", "NotImplementedDeclaration")
 open class BaseCall : Call<String> {
 
-    override fun enqueue(callback: Callback<String>) {}
+    override fun enqueue(callback: Callback<String>) {
+        // do nothing intended
+    }
 
     override fun isExecuted(): Boolean = true
 
@@ -253,7 +257,9 @@ open class BaseCall : Call<String> {
 
     override fun isCanceled(): Boolean = false
 
-    override fun cancel() {}
+    override fun cancel() {
+        // do nothing intended
+    }
 
     @Suppress("TodoComment")
     override fun execute(): Response<String> = TODO("Not yet implemented")

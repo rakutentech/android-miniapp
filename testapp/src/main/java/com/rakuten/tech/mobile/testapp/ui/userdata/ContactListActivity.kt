@@ -21,9 +21,8 @@ import com.rakuten.tech.mobile.testapp.helper.getAdapterDataObserver
 import com.rakuten.tech.mobile.testapp.helper.isEmailValid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import java.security.SecureRandom
-import java.util.Locale
-import java.util.UUID
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContact
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 import kotlin.collections.ArrayList
 
 class ContactListActivity : BaseActivity(), ContactListener {
@@ -38,9 +37,6 @@ class ContactListActivity : BaseActivity(), ContactListener {
         set(value) {
             contactListPrefs?.edit()?.putBoolean(IS_FIRST_TIME, value)?.apply()
         }
-
-    private val fakeFirstNames = arrayOf("Yvonne", "Jamie", "Leticia", "Priscilla", "Sidney", "Nancy", "Edmund", "Bill", "Megan")
-    private val fakeLastNames = arrayOf("Andrews", "Casey", "Gross", "Lane", "Thomas", "Patrick", "Strickland", "Nicolas", "Freeman")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,19 +168,6 @@ class ContactListActivity : BaseActivity(), ContactListener {
             val randomList = createRandomContactList()
             renderAdapter(randomList)
         }
-    }
-
-    private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
-        for (i in 1..10) {
-            this.add(createRandomContact())
-        }
-    }
-
-    private fun createRandomContact(): Contact {
-        val firstName = fakeFirstNames[(SecureRandom().nextDouble() * fakeFirstNames.size).toInt()]
-        val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
-        val email = firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
     }
 
     private fun renderAdapter(contactNames: ArrayList<Contact>) {
