@@ -240,7 +240,7 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `getItem should be called if can successfully parse the jsonStr and cached item is null`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage,).getItem(
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).getItem(
             testKey,
             miniAppSecureStorageDispatcher.onSuccessGetItem,
             miniAppSecureStorageDispatcher.onFailed
