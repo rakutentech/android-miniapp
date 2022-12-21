@@ -22,6 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+private const val THE_MESSAGE_SENT_WAS_EMPTY = "The message sent was empty."
+
+@Suppress("TooManyFunctions")
 class ChatWindow(private val activity: Activity) {
     private lateinit var contactSelectionAlertDialog: AlertDialog
     private lateinit var contactSelectionAdapter: ContactSelectionAdapter
@@ -161,7 +164,7 @@ class ChatWindow(private val activity: Activity) {
             return
         }
         when {
-            message.isEmpty -> onErrorContact("The message sent was empty.")
+            message.isEmpty -> onErrorContact(THE_MESSAGE_SENT_WAS_EMPTY)
             contactSelectionAdapter.singleContact?.contact?.id?.isEmpty()!! -> {
                 onErrorContact("Provided contact ID is invalid.")
             }
@@ -180,7 +183,7 @@ class ChatWindow(private val activity: Activity) {
             return
         }
         when {
-            message.isEmpty -> onErrorContact("The message sent was empty.")
+            message.isEmpty -> onErrorContact(THE_MESSAGE_SENT_WAS_EMPTY)
             else -> {
                 val contactIds = arrayListOf<String>()
                 contactSelectionAdapter.multipleContacts.forEach {
@@ -196,7 +199,7 @@ class ChatWindow(private val activity: Activity) {
 
     private fun onSendToSpecificContactId() {
         when {
-            message.isEmpty -> onErrorContact("The message sent was empty.")
+            message.isEmpty -> onErrorContact(THE_MESSAGE_SENT_WAS_EMPTY)
             specificContactId.isNullOrEmpty() -> {
                 onErrorContact("Provided contact ID is invalid.")
             }

@@ -296,7 +296,7 @@ class QASettingsActivity : BaseActivity() {
             settings.messagingUniqueIdError = binding.edtMessagingUniqueIdError.text.toString()
         }
 
-        //Save mauID error response
+        //Save MAUID error response
         if (binding.edtMauidError.text.isNullOrEmpty()) {
             settings.mauIdError = ""
         } else {

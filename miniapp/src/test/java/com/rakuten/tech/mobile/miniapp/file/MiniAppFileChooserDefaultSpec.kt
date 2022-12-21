@@ -35,6 +35,11 @@ class MiniAppFileChooserDefaultSpec {
     private var fileChooserParams: WebChromeClient.FileChooserParams? = mock()
     private val intent: Intent = mock()
 
+    private val jpegMimeType = "image/jpeg"
+    private val pngMimeType = "image/png"
+
+    private val gifMimeType = "image/gif"
+
     @Before
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
@@ -44,10 +49,10 @@ class MiniAppFileChooserDefaultSpec {
         }
         // setup for the MimeTypeMap
         val mtm = MimeTypeMap.getSingleton()
-        shadowOf(mtm).addExtensionMimeTypMapping("jpg", "image/jpeg")
-        shadowOf(mtm).addExtensionMimeTypMapping("jpeg", "image/jpeg")
-        shadowOf(mtm).addExtensionMimeTypMapping("png", "image/png")
-        shadowOf(mtm).addExtensionMimeTypMapping("gif", "image/gif")
+        shadowOf(mtm).addExtensionMimeTypMapping("jpg", jpegMimeType)
+        shadowOf(mtm).addExtensionMimeTypMapping("jpeg", jpegMimeType)
+        shadowOf(mtm).addExtensionMimeTypMapping("png", pngMimeType)
+        shadowOf(mtm).addExtensionMimeTypMapping("gif", gifMimeType)
         shadowOf(mtm).addExtensionMimeTypMapping("pdf", "application/pdf")
     }
 
@@ -93,7 +98,7 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `onShowFileChooser should add EXTRA_MIME_TYPES when acceptTypes is not empty`() {
-        val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        val fileChooserParamsAcceptTypes = arrayOf(pngMimeType, "image/jpg")
         whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
         miniAppFileChooser.onShowFileChooser(
             mock(),
@@ -105,7 +110,7 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `onShowFileChooser should return true when acceptTypes is not empty`() {
-        val fileChooserParamsAcceptTypes = arrayOf("image/png", "image/jpg")
+        val fileChooserParamsAcceptTypes = arrayOf(pngMimeType, "image/jpg")
         whenever(fileChooserParams?.acceptTypes).itReturns(fileChooserParamsAcceptTypes)
         val actual = miniAppFileChooser.onShowFileChooser(
             mock(),
@@ -250,7 +255,7 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `extractValidMimeTypes should return the correct MimeType`() {
         val invalidMimeTypes = listOf(".jpg", ".jpeg", ".png", ".gif", ".pdf")
-        val expectedMimeTypes = listOf("image/jpeg", "image/png", "image/gif", "application/pdf")
+        val expectedMimeTypes = listOf(jpegMimeType, pngMimeType, gifMimeType, "application/pdf")
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
@@ -260,7 +265,7 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `extractValidMimeTypes should remove duplicate MimeType`() {
         val invalidMimeTypes = listOf(".jpg", ".jpeg", ".jpg")
-        val expectedMimeTypes = listOf("image/jpeg")
+        val expectedMimeTypes = listOf(jpegMimeType)
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
@@ -270,7 +275,7 @@ class MiniAppFileChooserDefaultSpec {
     @Test
     fun `extractValidMimeTypes should remove bad MimeType`() {
         val invalidMimeTypes = listOf(".jpg", ".badMime")
-        val expectedMimeTypes = listOf("image/jpeg")
+        val expectedMimeTypes = listOf(jpegMimeType)
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())
@@ -279,8 +284,8 @@ class MiniAppFileChooserDefaultSpec {
 
     @Test
     fun `extractValidMimeTypes should not effect proper MimeType`() {
-        val invalidMimeTypes = listOf(".png", "image/jpeg")
-        val expectedMimeTypes = listOf("image/png", "image/jpeg")
+        val invalidMimeTypes = listOf(".png", jpegMimeType)
+        val expectedMimeTypes = listOf(pngMimeType, jpegMimeType)
         assertEquals(
             expectedMimeTypes,
             miniAppFileChooser.extractValidMimeTypes(invalidMimeTypes.toTypedArray())

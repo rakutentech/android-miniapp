@@ -23,22 +23,13 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
-import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
-import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
-import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
-import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
-import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppDisplayActivityBinding
@@ -48,6 +39,9 @@ import com.rakuten.tech.mobile.testapp.ui.chat.ChatWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 
+private const val MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE = 100
+private const val MINI_APP_FILE_CHOOSING_REQUEST_CODE = 10101
+private const val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
 
 class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
@@ -61,9 +55,6 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     private lateinit var sampleWebViewExternalResultHandler: ExternalResultHandler
     private lateinit var binding: MiniAppDisplayActivityBinding
     private var isFromMiniAppByUrlActivity = false
-    private val externalWebViewReqCode = 100
-    private val fileChoosingReqCode = 10101
-    private val MINI_APP_FILE_DOWNLOAD_REQUEST_CODE = 10102
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(this, this) }
     private val miniAppCameraPermissionDispatcher = object : MiniAppCameraPermissionDispatcher {
         override fun getCameraPermission(permissionCallback: (isGranted: Boolean) -> Unit) {
@@ -85,13 +76,13 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
             miniappCameraPermissionCallback = permissionRequestCallback
             ActivityCompat.requestPermissions(
                 this@MiniAppDisplayActivity,
-                AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                AppPermission.getDeviceRequestCode(miniAppPermissionType)
+                AppDevicePermission.getDevicePermissionRequest(miniAppPermissionType),
+                AppDevicePermission.getDeviceRequestCode(miniAppPermissionType)
             )
         }
     }
     private val miniAppFileChooser = MiniAppFileChooserDefault(
-        requestCode = fileChoosingReqCode,
+        requestCode = MINI_APP_FILE_CHOOSING_REQUEST_CODE,
         miniAppCameraPermissionDispatcher = miniAppCameraPermissionDispatcher
     )
 
@@ -279,7 +270,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                         url = url,
                         appId = appId,
                         appUrl = appUrl,
-                        externalWebViewReqCode = externalWebViewReqCode,
+                        externalWebViewReqCode = MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE,
                     )
                 }
             }
@@ -316,157 +307,20 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     @Suppress("OverridingDeprecatedMember")
     private fun setupMiniAppMessageBridge() {
-        // setup MiniAppMessageBridge
-        miniAppMessageBridge = object : MiniAppMessageBridge() {
-
-            override fun getUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.uniqueIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess(AppSettings.instance.uniqueId)
-            }
-
-            override fun getMessagingUniqueId(
-                onSuccess: (uniqueId: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.uniqueIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess("TEST-MESSAGE_UNIQUE-ID-01234")
-            }
-
-            override fun getMauid(
-                onSuccess: (mauid: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val errorMsg = AppSettings.instance.mauIdError
-                if (errorMsg.isNotEmpty()) onError(errorMsg)
-                else onSuccess("TEST-MAUID-01234-56789")
-            }
-
-            override fun requestDevicePermission(
-                miniAppPermissionType: MiniAppDevicePermissionType,
-                callback: (isGranted: Boolean) -> Unit
-            ) {
-                miniappPermissionCallback = callback
-                ActivityCompat.requestPermissions(
-                    this@MiniAppDisplayActivity,
-                    AppPermission.getDevicePermissionRequest(miniAppPermissionType),
-                    AppPermission.getDeviceRequestCode(miniAppPermissionType)
-                )
-            }
-
-            override fun sendJsonToHostApp(
-                jsonStr: String,
-                onSuccess: (String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                jsonStr.let {
-                    val message: String
-                    if (it.isNotBlank()) {
-                        message = it
-                        onSuccess(message)
-                    } else {
-                        message = getString(R.string.error_send_json_to_host_app_please_try_again)
-                        onError(message)
-                    }
-                    if (isAvailable) {
-                        showToastMessage(message)
-                    }
-                }
-            }
+        miniAppMessageBridge = getMessageBridge(this) { onDevicePermissionResultCallback ->
+            miniappPermissionCallback = onDevicePermissionResultCallback
         }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(this@MiniAppDisplayActivity))
         miniAppMessageBridge.allowScreenOrientation(true)
 
         // setup UserInfoBridgeDispatcher
-        val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
-
-            override fun getUserName(
-                onSuccess: (userName: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val name = AppSettings.instance.profileName
-                if (name.isNotEmpty()) onSuccess(name)
-                else onError("User name is not found.")
-            }
-
-            override fun getProfilePhoto(
-                onSuccess: (profilePhoto: String) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                val photo = AppSettings.instance.profilePictureUrlBase64
-                if (photo.isNotEmpty()) onSuccess(photo)
-                else onError("Profile photo is not found.")
-            }
-
-            override fun getAccessToken(
-                miniAppId: String,
-                accessTokenScope: AccessTokenScope,
-                onSuccess: (tokenData: TokenData) -> Unit,
-                onError: (tokenError: MiniAppAccessTokenError) -> Unit
-            ) {
-                if (AppSettings.instance.accessTokenError != null) {
-                    onError(AppSettings.instance.accessTokenError!!)
-                } else {
-                    onSuccess(AppSettings.instance.tokenData)
-                }
-            }
-
-            override fun getContacts(
-                onSuccess: (contacts: ArrayList<Contact>) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                if (AppSettings.instance.isContactsSaved)
-                    onSuccess(AppSettings.instance.contacts)
-                else
-                    onError("There is no contact found in HostApp.")
-            }
-
-            override fun getPoints(
-                onSuccess: (points: Points) -> Unit,
-                onError: (pointsError: MiniAppPointsError) -> Unit
-            ) {
-                val points = AppSettings.instance.points
-                if (points != null) onSuccess(points)
-                else onError(MiniAppPointsError.custom("There is no points found in HostApp."))
-            }
-        }
+        val userInfoBridgeDispatcher = getUserInfoBridgeDispatcher()
         miniAppMessageBridge.setUserInfoBridgeDispatcher(userInfoBridgeDispatcher)
 
         // setup ChatBridgeDispatcher
         val chatWindow = ChatWindow(this@MiniAppDisplayActivity)
-        val chatBridgeDispatcher = object : ChatBridgeDispatcher {
-
-            override fun sendMessageToContact(
-                message: MessageToContact,
-                onSuccess: (contactId: String?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openSingleContactSelection(message, onSuccess, onError)
-            }
-
-            override fun sendMessageToContactId(
-                contactId: String,
-                message: MessageToContact,
-                onSuccess: (contactId: String?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openSpecificContactIdSelection(contactId, message, onSuccess, onError)
-            }
-
-            override fun sendMessageToMultipleContacts(
-                message: MessageToContact,
-                onSuccess: (contactIds: List<String>?) -> Unit,
-                onError: (message: String) -> Unit
-            ) {
-                chatWindow.openMultipleContactSelections(message, onSuccess, onError)
-            }
-        }
+        val chatBridgeDispatcher = getChatBridgeDispatcher(chatWindow)
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
-
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
     }
 
@@ -478,7 +332,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val isGranted = !grantResults.contains(PackageManager.PERMISSION_DENIED)
         when (requestCode) {
-            AppPermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
+            AppDevicePermission.ReqCode.CAMERA -> miniappCameraPermissionCallback.invoke(isGranted)
             else -> miniappPermissionCallback.invoke(isGranted)
         }
     }
@@ -492,7 +346,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         }
 
         when {
-            requestCode == externalWebViewReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_EXTERNAL_WEBVIEW_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 data?.let { intent ->
                     val isClosedByBackPressed =
                         intent.getBooleanExtra("isClosedByBackPressed", false)
@@ -507,7 +361,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     handleRedirectUrlPage()
                 }
             }
-            requestCode == fileChoosingReqCode && resultCode == Activity.RESULT_OK -> {
+            requestCode == MINI_APP_FILE_CHOOSING_REQUEST_CODE && resultCode == Activity.RESULT_OK -> {
                 miniAppFileChooser.onReceivedFiles(data)
             }
             requestCode == MINI_APP_FILE_DOWNLOAD_REQUEST_CODE -> {
@@ -534,6 +388,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         false -> binding.pb.visibility = View.GONE
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun checkCloseAlert() {
         try {
             val closeAlertInfo = miniAppMessageBridge.miniAppShouldClose()
@@ -559,7 +414,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     }
 
     override fun onBackPressed() {
-        if (!viewModel.canGoBackwards()) {
+        viewModel.onBackPressed {
             checkCloseAlert()
         }
     }

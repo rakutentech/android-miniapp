@@ -1,13 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_BASE_PATH
-import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP
-import com.rakuten.tech.mobile.miniapp.TEST_ID_MINIAPP_VERSION
-import com.rakuten.tech.mobile.miniapp.TEST_URL_FILE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
@@ -16,6 +9,8 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
