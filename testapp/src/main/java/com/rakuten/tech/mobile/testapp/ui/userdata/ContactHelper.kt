@@ -1,3 +1,4 @@
+
 package com.rakuten.tech.mobile.testapp.ui.userdata
 
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
@@ -27,6 +28,17 @@ object ContactHelper {
         "Nicolas",
         "Freeman"
     )
+    private val fakeEmails = listOf(
+        "andrews@sample.com",
+        "casey@sample.com",
+        "gross@sample.com",
+        "lane@sample.com",
+        "thomas@sample.com",
+        "patrick@sample.com",
+        "strickland@sample.com",
+        "nicolas@sample.com",
+        "freeman@sample.com"
+    )
 
 
     @Suppress("UnusedPrivateMember", "MagicNumber")
@@ -42,6 +54,6 @@ object ContactHelper {
         val lastName = fakeLastNames[(SecureRandom().nextDouble() * fakeLastNames.size).toInt()]
         val email =
             firstName.lowercase(Locale.ROOT) + "." + lastName.lowercase(Locale.ROOT) + "@example.com"
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
+        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email, fakeEmails)
     }
 }

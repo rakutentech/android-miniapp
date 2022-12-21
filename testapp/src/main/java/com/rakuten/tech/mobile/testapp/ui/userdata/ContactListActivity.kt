@@ -47,6 +47,11 @@ class ContactListActivity : BaseActivity(), ContactListener {
         binding.fabAddContact.setOnClickListener { onAddAction() }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {

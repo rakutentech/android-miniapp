@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.storage.util
 
+import android.content.Context
 import android.os.Build
 import android.util.Base64
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -21,7 +22,6 @@ class MiniAppDatabaseEncryptionUtilSpec {
 
     @Test
     fun `verify it returns the SHA1 algorithm for SDK below Android 7`() {
-
         ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 24)
 
         val key = MiniAppDatabaseEncryptionUtil.getSecretKeyAlgorithm()
@@ -32,7 +32,6 @@ class MiniAppDatabaseEncryptionUtilSpec {
 
     @Test
     fun `verify it returns the SHA256 algorithm for SDK above Android 7`() {
-
         ReflectionHelpers.setStaticField(Build.VERSION::class.java, "SDK_INT", 25)
 
         val key = MiniAppDatabaseEncryptionUtil.getSecretKeyAlgorithm()
@@ -43,7 +42,6 @@ class MiniAppDatabaseEncryptionUtilSpec {
 
     @Test
     fun `encrypt the given passcode with SHA1 algorithm it should match after the decryption`() {
-
         val saltByteLength = 8
         val passcode = TEST_MA_ID
         val encryptionAlgorithm = "AES"
@@ -70,7 +68,6 @@ class MiniAppDatabaseEncryptionUtilSpec {
 
     @Test
     fun `encrypt the given passcode with SHA256 algorithm it should match after the decryption`() {
-
         val saltByteLength = 8
         val passcode = TEST_MA_ID
         val encryptionAlgorithm = "AES"
@@ -105,5 +102,14 @@ class MiniAppDatabaseEncryptionUtilSpec {
     fun `decryptPasscode should return a string`() {
         MiniAppDatabaseEncryptionUtil.decryptPasscode(getApplicationContext(), TEST_MA_ID)
             .shouldBeInstanceOf<String>()
+    }
+
+    @Test
+    fun `getPasscodeHolder should return null when empty passcode`() {
+        val context: Context = getApplicationContext()
+        val prefs = context.getSharedPreferences("MiniAppDatabase", Context.MODE_PRIVATE)
+        prefs.edit().putString("PASSCODE", "").apply()
+
+        MiniAppDatabaseEncryptionUtil.getPasscodeHolder(context) shouldBe null
     }
 }
