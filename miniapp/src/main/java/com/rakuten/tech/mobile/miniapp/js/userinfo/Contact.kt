@@ -8,5 +8,5 @@ data class Contact(
     val id: String,
     var name: String?,
     var email: String?,
-    var allEmailList: List<String> = emptyList()
+    var allEmailList: List<String>?
 )

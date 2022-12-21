@@ -113,7 +113,8 @@ class ContactListActivity : BaseActivity(), ContactListener {
                 val email: String = edtContactEmail.text.toString().trim()
 
                 if (isVerifiedContact(id, name, email)) {
-                    val contact = Contact(id = id, name = name, email = email)
+                    // TODO: Need to update the all emailList from empty to valid.
+                    val contact = Contact(id = id, name = name, email = email, allEmailList = emptyList())
                     if (isUpdate) position?.let { adapter.updateContact(it, contact) }
                     else adapter.addContact(adapter.itemCount, contact)
 
