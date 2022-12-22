@@ -30,6 +30,7 @@
     <dimen name="text_small_12">12sp</dimen>
 
     <dimen name="sec_icon_size">20dp</dimen>
+    <dimen name="settings_icon_size">24dp</dimen>
     <dimen name="miniapp_icon_size">48dp</dimen>
     <dimen name="miniapp_logo_size">86dp</dimen>
 
