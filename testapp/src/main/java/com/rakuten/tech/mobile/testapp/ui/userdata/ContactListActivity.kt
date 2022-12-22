@@ -59,6 +59,11 @@ class ContactListActivity : BaseActivity(), ContactListener {
                 finish()
                 return true
             }
+            R.id.settings_menu_save -> {
+                onSaveAction()
+                finish()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -68,6 +73,10 @@ class ContactListActivity : BaseActivity(), ContactListener {
             this,
             requestCode = CONTACT_LIST_REQUEST_CODE
         )
+    }
+
+    private fun onSaveAction() {
+        settings.contacts = adapter.provideContactEntries()
     }
 
     override fun onResume() {
@@ -148,7 +157,7 @@ class ContactListActivity : BaseActivity(), ContactListener {
                         adapter.addContact(adapter.itemCount, contact)
                         binding.listContacts.smoothScrollToPosition(adapter.itemCount)
                     }
-                    settings.contacts = adapter.provideContactEntries()
+                    onSaveAction()
                 }
             }
         }
