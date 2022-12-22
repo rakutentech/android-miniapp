@@ -57,5 +57,10 @@
         app:pageName="Settings"
         app:siteSection="Top"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/horizontal_divider_height"
+        android:background="@color/bg_section" />
+
   </LinearLayout>
 </layout>

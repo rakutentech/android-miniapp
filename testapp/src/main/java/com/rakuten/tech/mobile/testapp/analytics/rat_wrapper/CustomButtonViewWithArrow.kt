@@ -1,8 +1,8 @@
 package com.rakuten.tech.mobile.testapp.analytics.rat_wrapper
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
@@ -45,12 +45,6 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
                     it.getBoolean(R.styleable.CustomButtonViewWithArrow_rightArrowEnable, true)
                 tv_label.text = btnLabel
                 tv_details.text = btnDetails
-//                try {
-//                    val iconRes = it.getDrawable(R.styleable.CustomButtonViewWithArrow_iconRes)
-//                    img_icon.background = iconRes
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
                 if (isArrowEnable) img_arrow_right.visibility =
                     View.VISIBLE else img_arrow_right.visibility = View.INVISIBLE
 
@@ -82,4 +76,6 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
         )
         return returnClick
     }
+
+    fun setIcon(iconRes: Drawable?) = iconRes?.let { img_icon.background = it }
 }

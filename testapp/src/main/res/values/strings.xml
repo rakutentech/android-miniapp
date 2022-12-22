@@ -74,7 +74,7 @@
     <string name="action_dynamic_deeplinks">Dynamic DeepLinks</string>
     <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Custom Permissions</string>
-    <string name="action_first_time_accept">Accept</string>
+    <string name="action_first_time_accept">ACCEPT</string>
     <string name="action_message_send">SEND</string>
     <string name="action_clear_all">Clear All</string>
     <string name="action_clear_miniapp">Clear MiniApp Storage</string>

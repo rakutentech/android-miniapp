@@ -162,71 +162,11 @@
                     android:id="@+id/buttonGeneral"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/lb_general"
                     app:actionType="open"
                     app:pageName="Settings"
-                    app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonProfile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_profile"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonContacts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_contacts"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonAccessToken"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/lb_access_token"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonPoints"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_points"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"/>
+                    app:siteSection="Top"
+                    app:titleLabel="@string/lb_general" />
 
                 <View
                     android:layout_width="match_parent"
@@ -237,15 +177,73 @@
                     android:id="@+id/buttonQA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_qa"
                     app:actionType="open"
                     app:pageName="Settings"
-                    app:siteSection="Top"/>
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleLabel="@string/action_qa" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleLabel="@string/action_profile" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonContacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleLabel="@string/action_contacts" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonAccessToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleLabel="@string/lb_access_token" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/buttonPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionType="open"
+                    app:pageName="Settings"
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleLabel="@string/action_points" />
 
             </LinearLayout>
-
         </ScrollView>
-
     </RelativeLayout>
 </layout>

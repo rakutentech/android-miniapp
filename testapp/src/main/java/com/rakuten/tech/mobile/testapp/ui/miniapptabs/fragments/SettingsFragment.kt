@@ -10,6 +10,7 @@ import android.util.Base64
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -293,6 +294,8 @@ class SettingsFragment : BaseFragment() {
         updateProfileImageBase64()
         // add the default contacts initially.
         addDefaultContactList()
+
+        setIcons()
     }
 
     private fun getCurrentTypedConfigData(): MiniAppConfigData {
@@ -360,6 +363,15 @@ class SettingsFragment : BaseFragment() {
         if (!settings.isContactsSaved) {
             settings.contacts = createRandomContactList()
         }
+    }
+
+    private fun setIcons() {
+        binding.buttonGeneral.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_general))
+        binding.buttonQA.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_qa))
+        binding.buttonProfile.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_profile))
+        binding.buttonContacts.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_contacts))
+        binding.buttonAccessToken.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_access_token))
+        binding.buttonPoints.setIcon(requireActivity().getDrawable(R.drawable.ic_settings_points))
     }
 
     override fun onStop() {

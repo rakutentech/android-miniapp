@@ -172,7 +172,8 @@
                 android:padding="@dimen/small_12"
                 android:text="@string/action_message_send"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_large_16" />
+                android:textSize="@dimen/text_large_16"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/chatActionCancel"

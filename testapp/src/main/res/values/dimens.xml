@@ -22,12 +22,12 @@
     <dimen name="large_52">52dp</dimen>
     <dimen name="large_72">72dp</dimen>
 
-    <dimen name="text_large_18">18sp</dimen>
+    <dimen name="text_small_12">12sp</dimen>
+    <dimen name="text_medium_14">14sp</dimen>
     <dimen name="text_large_16">16sp</dimen>
     <dimen name="text_large_17">17sp</dimen>
+    <dimen name="text_large_18">18sp</dimen>
     <dimen name="text_large_22">22sp</dimen>
-    <dimen name="text_medium_14">14sp</dimen>
-    <dimen name="text_small_12">12sp</dimen>
 
     <dimen name="sec_icon_size">20dp</dimen>
     <dimen name="settings_icon_size">24dp</dimen>
