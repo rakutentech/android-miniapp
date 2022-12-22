@@ -12,8 +12,9 @@ import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.custom_button_view_with_arrow.view.*
 
 /**
- * This is custom View with a label and arrow.
+ * This is custom View with an icon, label and arrow.
  * It can also handle rat analytics.
+ * icon can be set by CustomButtonViewWithArrow.setIcon(drawableRes).
  * label can be set by app:titleLabel.
  * right arrow can be hide and show by app:rightArrowEnable = true/false.
  */
