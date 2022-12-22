@@ -163,30 +163,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:actionType="open"
-                    app:pageName="Settings"
-                    app:siteSection="Top"
-                    app:titleLabel="@string/lb_general" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/horizontal_divider_height"
-                    android:background="@color/bg_section" />
-
-                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonQA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_qa"
+                    app:titleLabel="@string/lb_general"
                     app:actionType="open"
                     app:pageName="Settings"
                     app:siteSection="Top"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
                     android:id="@+id/buttonProfile"
@@ -249,15 +234,18 @@
                     android:background="@color/bg_section" />
 
                 <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
-                    android:id="@+id/buttonDeeplink"
+                    android:id="@+id/buttonQA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:rightArrowEnable="true"
-                    app:titleLabel="@string/action_dynamic_deeplinks"
+                    app:titleLabel="@string/action_qa"
                     app:actionType="open"
                     app:pageName="Settings"
                     app:siteSection="Top"/>
+
             </LinearLayout>
+
         </ScrollView>
+
     </RelativeLayout>
 </layout>
