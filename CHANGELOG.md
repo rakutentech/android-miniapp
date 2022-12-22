@@ -12,6 +12,8 @@
 - **Feature:** Settings is moved to it's own tab.
 - **Feature:** Multiple MiniAppSdk configurations
 - **Feature:** Enabled PermissionSettings on MiniApp top bar
+- **Update:** Move the Query Parameters and Deeplink to General Settings
+- **Update:** Add/Edit Contact from Dialog to Its Own Activity
 
 ### 5.0.1 (2022-11-15)
 **SDK**

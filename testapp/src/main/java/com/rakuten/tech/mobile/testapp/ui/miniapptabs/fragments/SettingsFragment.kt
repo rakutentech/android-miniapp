@@ -16,12 +16,11 @@ import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
 import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
-import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModel
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -30,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.net.URL
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -122,9 +120,7 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun updateSettings() {
-        settings.urlParameters = binding.editParametersUrl.text.toString()
         launch {
-            URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
             settings.isSettingSaved = true
             with(requireActivity()) {
                 currentFocus?.let {
@@ -206,6 +202,11 @@ class SettingsFragment : BaseFragment() {
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
+
+        binding.buttonGeneral.setOnClickListener {
+            GeneralSettingsActivity.start(requireActivity())
+        }
+
         binding.buttonProfile.setOnClickListener {
             ProfileSettingsActivity.start(requireActivity())
         }
@@ -220,10 +221,6 @@ class SettingsFragment : BaseFragment() {
 
         binding.buttonPoints.setOnClickListener {
             PointsActivity.start(requireActivity())
-        }
-
-        binding.buttonDeeplink.setOnClickListener {
-            DynamicDeepLinkActivity.start(requireActivity())
         }
 
         binding.buttonQA.setOnClickListener {
@@ -288,7 +285,6 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun renderAppSettingsScreen() {
-        binding.editParametersUrl.setText(settings.urlParameters)
         binding.toggleListGroup.check(if (isTab1Checked) binding.toggleList1.id else binding.toggleList2.id)
 
         val defaultConfigData = settings.getDefaultConfigData(isTab1Checked)

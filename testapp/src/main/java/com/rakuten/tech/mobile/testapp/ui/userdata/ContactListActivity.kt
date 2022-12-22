@@ -5,25 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ContactsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.getAdapterDataObserver
-import com.rakuten.tech.mobile.testapp.helper.isEmailValid
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContact
 import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
-import kotlin.collections.ArrayList
+
+private const val CONTACT_LIST_REQUEST_CODE = 1
 
 class ContactListActivity : BaseActivity(), ContactListener {
     override val pageName: String = this::class.simpleName ?: ""
@@ -64,95 +61,22 @@ class ContactListActivity : BaseActivity(), ContactListener {
             }
             R.id.settings_menu_save -> {
                 onSaveAction()
+                finish()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private fun onAddAction() {
+        ContactAddActivity.start(
+            this,
+            requestCode = CONTACT_LIST_REQUEST_CODE
+        )
+    }
+
     private fun onSaveAction() {
         settings.contacts = adapter.provideContactEntries()
-        finish()
-    }
-
-    private fun onAddAction() {
-        showDialog(isUpdate = false)
-    }
-
-    private fun showDialog(isUpdate: Boolean, position: Int? = null){
-        val contactView = layoutInflater.inflate(R.layout.dialog_add_contact, null)
-        val edtContactId = contactView.findViewById<AppCompatEditText>(R.id.edtContactId)
-        val edtContactName = contactView.findViewById<AppCompatEditText>(R.id.edtContactName)
-        val edtContactEmail = contactView.findViewById<AppCompatEditText>(R.id.edtContactEmail)
-
-        ContactInputDialog.Builder().build(this).apply {
-            val randomContact = createRandomContact()
-            edtContactId.setText(randomContact.id)
-            edtContactName.setText(randomContact.name)
-            edtContactEmail.setText(randomContact.email)
-
-            setView(contactView)
-
-            if (isUpdate) {
-                setPositiveButton(getString(R.string.action_update))
-                setDialogTitle("Contact Update")
-                position?.let {
-                    val existingContact = adapter.provideContactEntries()[it]
-                    edtContactId.setText(existingContact.id)
-                    edtContactName.setText(existingContact.name)
-                    edtContactEmail.setText(existingContact.email)
-                }
-            } else {
-                setPositiveButton(getString(R.string.action_add))
-                setDialogTitle("Contact Input")
-            }
-
-            setPositiveListener {
-                val id: String = edtContactId.text.toString().trim()
-                val name: String = edtContactName.text.toString().trim()
-                val email: String = edtContactEmail.text.toString().trim()
-
-                if (isVerifiedContact(id, name, email)) {
-                    // TODO: Need to update the all emailList from empty to valid.
-                    val contact = Contact(id = id, name = name, email = email, allEmailList = emptyList())
-                    if (isUpdate) position?.let { adapter.updateContact(it, contact) }
-                    else adapter.addContact(adapter.itemCount, contact)
-
-                    this.dialog?.cancel()
-                }
-            }
-        }.show()
-    }
-
-    private fun isVerifiedContact(id: String, name: String, email: String): Boolean {
-        var isVerified = true
-
-        if (id.isEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_id))
-        } else if (name.isEmpty() && email.isNotEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name))
-        } else if (email.isEmpty() && name.isNotEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_email))
-        } else if (name.isEmpty() && email.isEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name_email))
-        }
-
-        if (email.isNotEmpty() && !email.isEmailValid()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
-        }
-
-        return isVerified
-    }
-
-    private fun showContactInputWarning(message: String) {
-        Toast.makeText(this@ContactListActivity, message, Toast.LENGTH_LONG)
-                .apply { setGravity(Gravity.TOP, 0, 100) }
-                .show()
     }
 
     override fun onResume() {
@@ -207,6 +131,35 @@ class ContactListActivity : BaseActivity(), ContactListener {
     }
 
     override fun onContactItemClick(position: Int) {
-        showDialog(isUpdate = true, position = position)
+        val existingContact = adapter.provideContactEntries()[position]
+
+        ContactAddActivity.start(
+            this,
+            CONTACT_LIST_REQUEST_CODE,
+            existingContact,
+            position
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == CONTACT_LIST_REQUEST_CODE) {
+            data?.let { intent ->
+                val contactJsonStr = intent.getStringExtra(ContactAddActivity.contactTag)
+                val isUpdate = intent.getBooleanExtra(ContactAddActivity.isUpdateTag, false)
+                val position = intent.getIntExtra(ContactAddActivity.positionTag, 0)
+                contactJsonStr?.let {
+                    val contact = Gson().fromJson(it, Contact::class.java)
+                    if (isUpdate) {
+                        adapter.updateContact(position, contact)
+                    } else {
+                        adapter.addContact(adapter.itemCount, contact)
+                        binding.listContacts.smoothScrollToPosition(adapter.itemCount)
+                    }
+                    onSaveAction()
+                }
+            }
+        }
     }
 }
