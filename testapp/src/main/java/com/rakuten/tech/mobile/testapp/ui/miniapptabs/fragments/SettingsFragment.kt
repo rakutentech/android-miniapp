@@ -10,7 +10,6 @@ import android.util.Base64
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.testapp.R
