@@ -70,7 +70,6 @@ class GeneralSettingsActivity : BaseActivity() {
     }
 
     private fun renderScreen() {
-        binding.buttonDeeplink.setIcon(getDrawable(R.drawable.ic_settings_deeplink))
         binding.editParametersUrl.setText(settings.urlParameters)
     }
 

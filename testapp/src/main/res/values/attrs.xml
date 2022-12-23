@@ -3,6 +3,7 @@
     <declare-styleable name="CustomButtonViewWithArrow">
         <attr name="titleLabel" format="string" localization="suggested" />
         <attr name="titleDetails" format="string" localization="suggested" />
+        <attr name="iconRes" format="reference" />
         <attr name="rightArrowEnable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="RatCustomAttributes">

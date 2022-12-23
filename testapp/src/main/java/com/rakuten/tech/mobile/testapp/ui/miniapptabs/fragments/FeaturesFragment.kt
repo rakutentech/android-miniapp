@@ -29,7 +29,6 @@ class FeaturesFragment : BaseFragment() {
             false
         )
         binding.fragment = this
-        binding.btnInput.setIcon(requireActivity().getDrawable(R.drawable.ic_feature_url_miniapp))
         return binding.root
     }
 
