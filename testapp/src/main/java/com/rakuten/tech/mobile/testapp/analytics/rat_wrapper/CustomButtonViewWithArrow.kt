@@ -39,7 +39,7 @@ class CustomButtonViewWithArrow @JvmOverloads constructor(
                 val isArrowEnable =
                     it.getBoolean(R.styleable.CustomButtonViewWithArrow_rightArrowEnable, true)
 
-                val iconRes = it.getDrawable(R.styleable.CustomButtonViewWithArrow_iconRes)
+                val iconRes = it.getDrawable(R.styleable.CustomButtonViewWithArrow_icon)
 
                 tv_label.text = btnLabel
                 tv_details.text = btnDetails

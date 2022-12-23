@@ -3,16 +3,16 @@
     <declare-styleable name="CustomButtonViewWithArrow">
         <attr name="titleLabel" format="string" localization="suggested" />
         <attr name="titleDetails" format="string" localization="suggested" />
-        <attr name="iconRes" format="reference" />
+        <attr name="icon" format="reference" />
         <attr name="rightArrowEnable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="RatCustomAttributes">
         <attr name="siteSection" format="string" localization="suggested" />
         <attr name="pageName" format="string" localization="suggested" />
         <attr name="actionType" format="enum">
-            <enum name="open" value="0"></enum>
-            <enum name="close" value="1"></enum>
-            <enum name="change_status" value="2"></enum>
+            <enum name="open" value="0" />
+            <enum name="close" value="1" />
+            <enum name="change_status" value="2" />
         </attr>
     </declare-styleable>
 </resources>
