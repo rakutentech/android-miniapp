@@ -61,7 +61,6 @@
     <string name="action_display">Display</string>
     <string name="action_go_input_url">URL</string>
     <string name="action_go_input_url_details">Open a miniapp via url</string>
-    <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">CANCEL</string>
@@ -74,7 +73,7 @@
     <string name="action_dynamic_deeplinks">Dynamic DeepLinks</string>
     <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Custom Permissions</string>
-    <string name="action_first_time_accept">Accept</string>
+    <string name="action_first_time_accept">ACCEPT</string>
     <string name="action_message_send">SEND</string>
     <string name="action_clear_all">Clear All</string>
     <string name="action_clear_miniapp">Clear MiniApp Storage</string>

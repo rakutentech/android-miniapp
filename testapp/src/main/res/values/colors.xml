@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#BF0000</color>
     <color name="colorPrimaryDark">#800000</color>
-    <color name="colorAccent">#BF0000</color>
+    <color name="colorAccent">#E85353</color>
     <color name="colorBg">#FFF</color>
     <color name="colorAlternate">#AAA</color>
     <color name="color_bg_default_icon">#F5F1F1</color>
@@ -12,4 +12,5 @@
     <color name="link_blue">#358ED7</color>
     <color name="colorPink">#33BE0000</color>
     <color name="btn_disable_grey">#D3D3D3</color>
+    <color name="bg_settings_icon">#FFE85353</color>
 </resources>

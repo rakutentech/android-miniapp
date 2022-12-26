@@ -51,11 +51,17 @@
         android:id="@+id/buttonDeeplink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:rightArrowEnable="true"
-        app:titleLabel="@string/action_dynamic_deeplinks"
         app:actionType="open"
+        app:icon="@drawable/ic_settings_deeplink"
         app:pageName="Settings"
-        app:siteSection="Top"/>
+        app:rightArrowEnable="true"
+        app:siteSection="Top"
+        app:titleLabel="@string/action_dynamic_deeplinks" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/horizontal_divider_height"
+        android:background="@color/bg_section" />
 
   </LinearLayout>
 </layout>

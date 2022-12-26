@@ -30,7 +30,6 @@ class FeaturesFragment : BaseFragment() {
         )
         binding.fragment = this
         return binding.root
-
     }
 
     fun switchToInput() {

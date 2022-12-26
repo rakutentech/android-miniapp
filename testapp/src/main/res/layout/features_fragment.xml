@@ -27,6 +27,7 @@
                     android:layout_height="wrap_content"
                     android:onClick="@{() -> fragment.switchToInput()}"
                     app:actionType="open"
+                    app:icon="@drawable/ic_feature_url_miniapp"
                     app:pageName="feature"
                     app:rightArrowEnable="true"
                     app:siteSection="Top"

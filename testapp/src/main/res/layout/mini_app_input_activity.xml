@@ -51,19 +51,5 @@
                 app:siteSection="Top" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/btnDisplayList"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="?selectableItemBackground"
-            android:background="@color/colorAccent"
-            android:text="@string/action_display_list"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

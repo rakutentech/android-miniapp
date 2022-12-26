@@ -14,7 +14,7 @@
         android:title="Features" />
     <item
         android:id="@+id/nav_tab_3"
-        android:icon="@drawable/ic_wheel"
+        android:icon="@drawable/ic_settings"
         android:title="Settings" />
 
 </menu>
