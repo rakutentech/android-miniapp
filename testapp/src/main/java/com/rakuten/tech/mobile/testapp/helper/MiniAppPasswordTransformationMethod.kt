@@ -11,10 +11,10 @@ class MiniAppPasswordTransformationMethod(private val maskStartIndex: Int = 5) :
     PasswordTransformationMethod() {
 
     override fun getTransformation(source: CharSequence, view: View): CharSequence {
-        return PasswordCharSequence(source, maskStartIndex)
+        return MaskedCharSequence(source, maskStartIndex)
     }
 
-    inner class PasswordCharSequence(
+    inner class MaskedCharSequence(
         private val source: CharSequence,
         private val maskStartIndex: Int
     ) : CharSequence {
