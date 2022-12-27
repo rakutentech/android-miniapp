@@ -6,10 +6,12 @@ import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
 import android.util.Patterns
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -117,6 +119,38 @@ fun hideSoftKeyboard(view: View) {
 
 fun setResizableSoftInputMode(activity: Activity) {
     activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE + WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+}
+
+/**
+ * To use MiniAppPasswordTransformationMethod class for masking.
+ */
+fun EditText.maskInput() {
+    this.transformationMethod = MiniAppPasswordTransformationMethod()
+}
+
+/**
+ * To reset [TransformationMethod] for the given [EditText].
+ */
+fun EditText.unMaskInput() {
+    this.transformationMethod = null
+}
+
+/**
+ * To clear all the cursor focus in the entire layout.
+ * This function needs to be called at inside [Activity.dispatchTouchEvent].
+ */
+fun clearAllCursorFocus(event: MotionEvent, activity: Activity) {
+    if (event.action == MotionEvent.ACTION_DOWN) {
+        val view: View? = activity.currentFocus
+        if (view is EditText) {
+            val outRect = Rect()
+            view.getGlobalVisibleRect(outRect)
+            if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                view.clearFocus()
+                hideSoftKeyboard(view)
+            }
+        }
+    }
 }
 
 /**

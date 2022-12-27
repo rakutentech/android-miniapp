@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Base64
 import android.view.*
@@ -68,6 +69,25 @@ class SettingsFragment : BaseFragment() {
             binding.toggleList2.isEnabled = isEnabled
         } else {
             binding.toggleList1.isEnabled = isEnabled
+        }
+    }
+
+    private fun maskIdInputsOnFocus() {
+        binding.editProjectId.maskInput()
+        binding.editSubscriptionKey.maskInput()
+
+        binding.editProjectId.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.editProjectId.isCursorVisible) {
+                binding.editProjectId.unMaskInput()
+                binding.editProjectId.inputType = InputType.TYPE_CLASS_TEXT
+            } else binding.editProjectId.maskInput()
+        }
+
+        binding.editSubscriptionKey.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.editSubscriptionKey.isCursorVisible) {
+                binding.editSubscriptionKey.unMaskInput()
+                binding.editSubscriptionKey.inputType = InputType.TYPE_CLASS_TEXT
+            } else binding.editSubscriptionKey.maskInput()
         }
     }
 
@@ -285,6 +305,7 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun renderAppSettingsScreen() {
+        maskIdInputsOnFocus()
         binding.toggleListGroup.check(if (isTab1Checked) binding.toggleList1.id else binding.toggleList2.id)
 
         val defaultConfigData = settings.getDefaultConfigData(isTab1Checked)
