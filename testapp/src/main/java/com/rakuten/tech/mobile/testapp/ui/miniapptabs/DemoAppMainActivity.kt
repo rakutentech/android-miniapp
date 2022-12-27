@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -11,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
+import com.rakuten.tech.mobile.testapp.helper.clearAllCursorFocus
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
@@ -31,6 +33,11 @@ class DemoAppMainActivity : BaseActivity() {
             setUpBottomNavigationBar()
         }
         launchMiniApps()
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        clearAllCursorFocus(event, this@DemoAppMainActivity)
+        return super.dispatchTouchEvent(event)
     }
 
     private fun setUpBottomNavigationBar() {
