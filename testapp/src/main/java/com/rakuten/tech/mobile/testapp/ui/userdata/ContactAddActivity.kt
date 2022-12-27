@@ -88,7 +88,6 @@ class ContactAddActivity : BaseActivity() {
         }
     }
 
-
     private fun addOptionalEmailView() {
         val inflatedView = layoutInflater.inflate(
             R.layout.item_optional_email_address,
