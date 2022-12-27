@@ -25,6 +25,7 @@ import kotlin.properties.Delegates
 private const val START_OPTIONAL_EMAIL_EDIT_TEXT_CHILD_INDEX = 3
 private const val MAX_OPTIONAL_EMAIL_ADDRESS = 4
 
+@Suppress("TooManyFunctions", "ReturnCount", "MagicNumber")
 class ContactAddActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
