@@ -123,9 +123,7 @@ class ContactAddActivity : BaseActivity() {
         for (i in START_OPTIONAL_EMAIL_EDIT_TEXT_CHILD_INDEX until childCount) {
             with(binding.layoutFields.getChildAt(i)) {
                 val text = (this as TextInputLayout).editText?.text.toString()
-                text.let {
-                    return isOptionalEmailTextValid(it)
-                }
+                return isOptionalEmailTextValid(text)
             }
         }
         return true
