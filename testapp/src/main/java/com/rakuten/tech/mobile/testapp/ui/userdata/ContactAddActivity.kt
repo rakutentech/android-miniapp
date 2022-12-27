@@ -134,11 +134,13 @@ class ContactAddActivity : BaseActivity() {
     }
 
     private fun isOptionalEmailTextValid(email: String): Boolean {
-        if (email.isBlank() || !email.isEmailValid()) {
-            showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
-            return false
+        if (email.isNotBlank()) {
+            if (!email.isEmailValid()) {
+                showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
+                return false
+            }
+            optionalEmailList.add(email)
         }
-        optionalEmailList.add(email)
         return true
     }
 
