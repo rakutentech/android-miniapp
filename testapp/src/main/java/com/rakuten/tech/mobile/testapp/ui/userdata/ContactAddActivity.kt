@@ -61,7 +61,7 @@ class ContactAddActivity : BaseActivity() {
     private var position = 0
     private val optionalEmailList = arrayListOf<String>()
 
-    private var currentOptionalEmailAddressCount by Delegates.observable(0) { _, old, new ->
+    private var currentOptionalEmailAddressCount by Delegates.observable(0) { _, _, new ->
         binding.btnAddOptionalEmailField.isEnabled = new < MAX_OPTIONAL_EMAIL_ADDRESS
     }
 
