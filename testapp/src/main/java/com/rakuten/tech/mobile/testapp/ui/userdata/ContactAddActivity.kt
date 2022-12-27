@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.textfield.TextInputLayout
@@ -83,18 +84,19 @@ class ContactAddActivity : BaseActivity() {
         renderScreen()
 
         binding.btnAddOptionalEmailField.setOnClickListener {
-            addOptionalEmailView()
-            currentOptionalEmailAddressCount += 1
+            getOptionalEmailEditText()
         }
     }
 
-    private fun addOptionalEmailView() {
+    private fun getOptionalEmailEditText(): EditText {
         val inflatedView = layoutInflater.inflate(
             R.layout.item_optional_email_address,
             null,
             false
         ) as TextInputLayout
         binding.layoutFields.addView(inflatedView)
+        currentOptionalEmailAddressCount += 1
+        return inflatedView.editText!!
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -123,7 +125,9 @@ class ContactAddActivity : BaseActivity() {
         for (i in START_OPTIONAL_EMAIL_EDIT_TEXT_CHILD_INDEX until childCount) {
             with(binding.layoutFields.getChildAt(i)) {
                 val text = (this as TextInputLayout).editText?.text.toString()
-                return isOptionalEmailTextValid(text)
+                if (!isOptionalEmailTextValid(text)) {
+                    return false
+                }
             }
         }
         return true
@@ -164,6 +168,15 @@ class ContactAddActivity : BaseActivity() {
             binding.edtContactId.setText(id)
             binding.edtContactName.setText(name)
             binding.edtContactEmail.setText(email)
+            allEmailList?.let { emailList ->
+                if (emailList.isNotEmpty()) {
+                    emailList.forEachIndexed { index, email ->
+                        if (index > 4) return
+                        val editText = getOptionalEmailEditText()
+                        editText.setText(email)
+                    }
+                }
+            }
         }
     }
 
