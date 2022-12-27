@@ -9,7 +9,8 @@ import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.ItemListContactBinding
 
-class ContactListAdapter(private val contactListener: ContactListener) : RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
+class ContactListAdapter(private val contactListener: ContactListener) :
+    RecyclerView.Adapter<ContactListAdapter.ViewHolder?>(),
     ContactAdapterPresenter {
     private var contactEntries = ArrayList<Contact>()
 
@@ -24,9 +25,14 @@ class ContactListAdapter(private val contactListener: ContactListener) : Recycle
         bindNonVisibleView("Id: ", contact.id, holder.contactId)
         bindNonVisibleView("Name: ", contact.name, holder.contactName)
         bindNonVisibleView("Email: ", contact.email, holder.contactEmail)
+        bindNonVisibleView(
+            "Optional Email(s): ",
+            contact.allEmailList?.joinToString(),
+            holder.contactOptionalEmail
+        )
 
         holder.contactRemoveButton.setOnClickListener { removeContactAt(position) }
-        holder.rootView.setOnClickListener{
+        holder.rootView.setOnClickListener {
             contactListener.onContactItemClick(position)
         }
     }
@@ -34,7 +40,8 @@ class ContactListAdapter(private val contactListener: ContactListener) : Recycle
     private fun bindNonVisibleView(prefix: String, text: String?, holderView: TextView) {
         if (text != null) {
             holderView.visibility = View.VISIBLE
-            holderView.text = holderView.context.getString(R.string.prefix_placeholder, prefix, text)
+            holderView.text =
+                holderView.context.getString(R.string.prefix_placeholder, prefix, text)
         } else
             holderView.visibility = View.GONE
     }
@@ -64,10 +71,12 @@ class ContactListAdapter(private val contactListener: ContactListener) : Recycle
 
     override fun provideContactEntries() = contactEntries
 
-    inner class ViewHolder(itemView: ItemListContactBinding) : RecyclerView.ViewHolder(itemView.root) {
+    inner class ViewHolder(itemView: ItemListContactBinding) :
+        RecyclerView.ViewHolder(itemView.root) {
         val contactId = itemView.tvId
         val contactName = itemView.tvName
         val contactEmail = itemView.tvEmail
+        val contactOptionalEmail = itemView.tvOptionalEmail
         val contactRemoveButton = itemView.buttonRemoveContact
         val rootView = itemView.root
     }

@@ -51,6 +51,7 @@
     <string name="userdata_contact_id">Contact id</string>
     <string name="userdata_contact_name">Contact name</string>
     <string name="userdata_contact_email">Contact email</string>
+    <string name="userdata_email_address_optional">Email Address (Optional)</string>
 
     <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
     <string name="miniapp_preload_perm_status_required">(Required)</string>
@@ -131,5 +132,6 @@
     <string name="please_input_the_message">Please input the message</string>
     <string name="error_send_json_to_mini_app_message_cannot_be_empty">Unable to send the message: The message cannot be empty</string>
     <string name="lb_general">General</string>
+    <string name="add_new_email">Add new email</string>
 
 </resources>
