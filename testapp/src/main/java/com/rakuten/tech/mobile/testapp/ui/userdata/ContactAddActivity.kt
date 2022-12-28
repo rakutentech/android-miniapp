@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -18,7 +20,13 @@ import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import java.security.SecureRandom
 import java.util.*
+import kotlin.properties.Delegates
 
+
+private const val START_OPTIONAL_EMAIL_EDIT_TEXT_CHILD_INDEX = 3
+private const val MAX_OPTIONAL_EMAIL_ADDRESS = 4
+
+@Suppress("TooManyFunctions", "ReturnCount", "MagicNumber")
 class ContactAddActivity : BaseActivity() {
     override val pageName: String = this::class.simpleName ?: ""
     override val siteSection: String = this::class.simpleName ?: ""
@@ -52,6 +60,11 @@ class ContactAddActivity : BaseActivity() {
     private var contact: Contact? = null
     private var isUpdate = false
     private var position = 0
+    private val optionalEmailList = arrayListOf<String>()
+
+    private var currentOptionalEmailAddressCount by Delegates.observable(0) { _, _, new ->
+        binding.btnAddOptionalEmailField.isEnabled = new < MAX_OPTIONAL_EMAIL_ADDRESS
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +83,20 @@ class ContactAddActivity : BaseActivity() {
         }
         renderScreen()
 
+        binding.btnAddOptionalEmailField.setOnClickListener {
+            getOptionalEmailEditText()
+        }
+    }
+
+    private fun getOptionalEmailEditText(): EditText {
+        val inflatedView = layoutInflater.inflate(
+            R.layout.item_optional_email_address,
+            null,
+            false
+        ) as TextInputLayout
+        binding.layoutFields.addView(inflatedView)
+        currentOptionalEmailAddressCount += 1
+        return inflatedView.editText!!
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -92,16 +119,41 @@ class ContactAddActivity : BaseActivity() {
         }
     }
 
+    private fun isOptionalEmailValid(): Boolean {
+        val childCount = binding.layoutFields.childCount
+
+        for (i in START_OPTIONAL_EMAIL_EDIT_TEXT_CHILD_INDEX until childCount) {
+            with(binding.layoutFields.getChildAt(i)) {
+                val text = (this as TextInputLayout).editText?.text.toString()
+                if (!isOptionalEmailTextValid(text)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun isOptionalEmailTextValid(email: String): Boolean {
+        if (email.isNotBlank()) {
+            if (!email.isEmailValid()) {
+                showContactInputWarning(getString(R.string.userdata_error_invalid_contact_email))
+                return false
+            }
+            optionalEmailList.add(email)
+        }
+        return true
+    }
+
     private fun onSaveAction() {
-        if (!isVerifiedContact()) {
+        if (!isVerifiedContact() || !isOptionalEmailValid()) {
             return
         }
-        // TODO: Need to update the all emailList from empty to valid.
+
         contact = Contact(
             id = binding.edtContactId.text.toString(),
             email = binding.edtContactEmail.text.toString(),
             name = binding.edtContactName.text.toString(),
-            allEmailList = emptyList()
+            allEmailList = optionalEmailList
         )
         val returnIntent = Intent().apply {
             putExtra(contactTag, Gson().toJson(contact))
@@ -118,6 +170,15 @@ class ContactAddActivity : BaseActivity() {
             binding.edtContactId.setText(id)
             binding.edtContactName.setText(name)
             binding.edtContactEmail.setText(email)
+            allEmailList?.let { emailList ->
+                if (emailList.isNotEmpty()) {
+                    emailList.forEachIndexed { index, email ->
+                        if (index > MAX_OPTIONAL_EMAIL_ADDRESS) return
+                        val editText = getOptionalEmailEditText()
+                        editText.setText(email)
+                    }
+                }
+            }
         }
     }
 
@@ -157,12 +218,18 @@ class ContactAddActivity : BaseActivity() {
     }
 
     private fun createRandomContact(): Contact {
-        val firstName = ContactHelper.fakeFirstNames[(SecureRandom().nextDouble() * ContactHelper.fakeFirstNames.size).toInt()]
-        val lastName = ContactHelper.fakeLastNames[(SecureRandom().nextDouble() * ContactHelper.fakeLastNames.size).toInt()]
+        val firstName =
+            ContactHelper.fakeFirstNames[(SecureRandom().nextDouble() * ContactHelper.fakeFirstNames.size).toInt()]
+        val lastName =
+            ContactHelper.fakeLastNames[(SecureRandom().nextDouble() * ContactHelper.fakeLastNames.size).toInt()]
         val email =
-            firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
-        // TODO: Need to update the all emailList from empty to valid.
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email, emptyList())
+            firstName.lowercase(Locale.ROOT) + "." + lastName.lowercase(Locale.ROOT) + "@example.com"
+        return Contact(
+            UUID.randomUUID().toString().trimEnd(),
+            "$firstName $lastName",
+            email,
+            emptyList()
+        )
     }
 
 }
