@@ -25,11 +25,19 @@ class ContactListAdapter(private val contactListener: ContactListener) :
         bindNonVisibleView("Id: ", contact.id, holder.contactId)
         bindNonVisibleView("Name: ", contact.name, holder.contactName)
         bindNonVisibleView("Email: ", contact.email, holder.contactEmail)
-        bindNonVisibleView(
-            "Optional Email(s): ",
-            contact.allEmailList?.joinToString(),
-            holder.contactOptionalEmail
-        )
+
+        with(contact.allEmailList) {
+            if(isNullOrEmpty()) {
+                holder.contactOptionalEmail.visibility = View.GONE
+            } else {
+                bindNonVisibleView(
+                    "Optional Email(s): ",
+                    joinToString(),
+                    holder.contactOptionalEmail
+                )
+            }
+        }
+
 
         holder.contactRemoveButton.setOnClickListener { removeContactAt(position) }
         holder.rootView.setOnClickListener {

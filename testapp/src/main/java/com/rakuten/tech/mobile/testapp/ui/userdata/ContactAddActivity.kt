@@ -173,7 +173,7 @@ class ContactAddActivity : BaseActivity() {
             allEmailList?.let { emailList ->
                 if (emailList.isNotEmpty()) {
                     emailList.forEachIndexed { index, email ->
-                        if (index > 4) return
+                        if (index > MAX_OPTIONAL_EMAIL_ADDRESS) return
                         val editText = getOptionalEmailEditText()
                         editText.setText(email)
                     }
