@@ -309,6 +309,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge = getMessageBridge(activity) { onDevicePermissionResultCallback ->
             miniappPermissionCallback = onDevicePermissionResultCallback
         }
+        miniAppMessageBridge.setMiniAppCloseListener { withConfirmation ->
+            if (withConfirmation) checkCloseAlert() else findNavController().navigateUp()
+        }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activity))
         miniAppMessageBridge.allowScreenOrientation(true)
 

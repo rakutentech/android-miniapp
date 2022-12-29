@@ -322,6 +322,9 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         val chatBridgeDispatcher = getChatBridgeDispatcher(chatWindow)
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+        miniAppMessageBridge.setMiniAppCloseListener { withConfirmation ->
+            if (withConfirmation) checkCloseAlert() else finish()
+        }
     }
 
     override fun onRequestPermissionsResult(

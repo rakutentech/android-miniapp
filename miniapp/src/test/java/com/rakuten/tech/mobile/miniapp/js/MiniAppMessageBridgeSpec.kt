@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import kotlin.test.assertEquals
@@ -43,7 +44,6 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         param = Gson().toJson(DevicePermission(MiniAppDevicePermissionType.LOCATION.type)),
         id = TEST_CALLBACK_ID
     )
-
     private val permissionJsonStr = Gson().toJson(permissionCallbackObj)
 
     private val hostEnvInfoCallbackObj = CallbackObj(
@@ -307,6 +307,59 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     }
 
     /** end region */
+
+    @Test
+    fun `close listener should be invoked with correct param`() {
+        var closeMiniAppCallbackObj = CallbackObj(
+            action = ActionType.CLOSE_MINIAPP.action,
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = true)),
+            id = TEST_CALLBACK_ID
+        )
+        var miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
+
+        val callback: (Boolean) -> Unit = mock()
+        miniAppBridge.setMiniAppCloseListener(callback)
+        miniAppBridge.postMessage(miniAppCloseJsonStr)
+        verify(callback).invoke(true)
+
+        closeMiniAppCallbackObj = CallbackObj(
+            action = ActionType.CLOSE_MINIAPP.action,
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = false)),
+            id = TEST_CALLBACK_ID
+        )
+        miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
+
+        miniAppBridge.postMessage(miniAppCloseJsonStr)
+        verify(callback).invoke(false)
+    }
+
+    @Test
+    fun `close listener should not be invoked when param is null`() {
+        val closeMiniAppCallbackObj = CallbackObj(
+            action = ActionType.CLOSE_MINIAPP.action,
+            param = null,
+            id = TEST_CALLBACK_ID
+        )
+        val miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
+        val callback: (Boolean) -> Unit = mock()
+        miniAppBridge.setMiniAppCloseListener(callback)
+        miniAppBridge.postMessage(miniAppCloseJsonStr)
+        verify(callback, never()).invoke(any())
+
+        miniAppBridge.postMessage(miniAppCloseJsonStr)
+        verify(miniAppBridge.miniAppCloseListener, never()).invoke(any())
+    }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `close listener should not be invoked if miniAppCloseListener is not initialized`() {
+        val closeMiniAppCallbackObj = CallbackObj(
+            action = ActionType.CLOSE_MINIAPP.action,
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = false)),
+            id = TEST_CALLBACK_ID
+        )
+        val miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
+        miniAppBridge.postMessage(miniAppCloseJsonStr)
+    }
 
     @Test
     fun `all error bridge messages should be expected`() {
