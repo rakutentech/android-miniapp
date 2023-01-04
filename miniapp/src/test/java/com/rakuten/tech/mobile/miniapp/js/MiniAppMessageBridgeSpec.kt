@@ -333,7 +333,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         verify(callback).invoke(false)
     }
 
-    @Test
+    @Test(expected = MiniAppSdkException::class)
     fun `close listener should not be invoked when param is null`() {
         val closeMiniAppCallbackObj = CallbackObj(
             action = ActionType.CLOSE_MINIAPP.action,
