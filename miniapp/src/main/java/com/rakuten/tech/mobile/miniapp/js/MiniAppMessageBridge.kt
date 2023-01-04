@@ -531,6 +531,6 @@ internal object ErrorBridgeMessage {
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
-    const val ERR_CLOSE_ALERT = "There is an error occurred when setting close alert info."
-    const val ERR_CLOSE_MINIAPP = "There is an error occurred when trying to close miniapp."
+    const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
+    const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
 }
