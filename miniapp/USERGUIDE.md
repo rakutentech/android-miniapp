@@ -635,8 +635,8 @@ See [here](https://developer.android.com/guide/topics/resources/runtime-changes#
 
 The mini app is able to request host app to close itself.
 ```kotlin
-miniAppMessageBridge.setMiniAppCloseListener { withConfirmation ->
-    //... if miniapp wants to show a confirmation alert before closing withConfirmation will be true.
+miniAppMessageBridge.setMiniAppCloseListener { withConfirmationAlert ->
+    //... if miniapp wants to show a confirmation alert before closing withConfirmationAlert will be true.
 }
 ```
 

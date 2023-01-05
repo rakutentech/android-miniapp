@@ -497,7 +497,7 @@ open class MiniAppMessageBridge {
     }
 
     /** Allow Host app to receive the miniapp close event. */
-    fun setMiniAppCloseListener(callback: (Boolean) -> Unit) {
+    fun setMiniAppCloseListener(callback: (withConfirmationAlert: Boolean) -> Unit) {
         miniAppCloseListener = callback
     }
 
