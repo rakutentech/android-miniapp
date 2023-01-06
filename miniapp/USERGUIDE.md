@@ -630,6 +630,16 @@ There are several ways to prevent the view from being reset.
 In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
 See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
 
+### MiniApp Close
+**API Docs:** [MiniAppMessageBridge.setMiniAppCloseListener](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-mini-app-close-listener.html)
+
+The mini app is able to request host app to close itself.
+```kotlin
+miniAppMessageBridge.setMiniAppCloseListener { withConfirmationAlert ->
+    //... if miniapp wants to show a confirmation alert before closing withConfirmationAlert will be true.
+}
+```
+
 ## Fetching Mini App Info
 **API Docs:** [MiniApp.listMiniApp](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-mini-app.html), [MiniApp.fetchInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app/fetch-info.html), [MiniAppInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app-info/)
 

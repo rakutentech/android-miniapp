@@ -33,6 +33,7 @@ class ActionTypeSpec {
         ActionType.SECURE_STORAGE_SIZE.action shouldBeEqualTo "getSecureStorageSize"
         ActionType.SET_CLOSE_ALERT.action shouldBeEqualTo "setCloseAlert"
         ActionType.JSON_INFO.action shouldBeEqualTo "sendJsonToHostapp"
+        ActionType.CLOSE_MINIAPP.action shouldBeEqualTo "closeMiniApp"
     }
 
     @Test

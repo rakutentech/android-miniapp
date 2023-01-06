@@ -69,6 +69,8 @@ open class MiniAppMessageBridge {
     internal lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
+    @VisibleForTesting
+    internal lateinit var miniAppCloseListener: (Boolean) -> Unit
 
     /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
     fun miniAppShouldClose() = miniAppCloseAlertInfo
@@ -267,6 +269,7 @@ open class MiniAppMessageBridge {
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
             ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
+            ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -492,6 +495,21 @@ open class MiniAppMessageBridge {
         }
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
     }
+
+    /** Allow Host app to receive the miniapp close event. */
+    fun setMiniAppCloseListener(callback: (withConfirmationAlert: Boolean) -> Unit) {
+        miniAppCloseListener = callback
+    }
+
+    private fun onCloseMiniApp(callbackObj: CallbackObj) {
+        val closeCallbackObj: CloseMiniAppCallbackObj? =
+            Gson().fromJson(callbackObj.param.toString(), CloseMiniAppCallbackObj::class.java)
+        if (this::miniAppCloseListener.isInitialized && closeCallbackObj != null) {
+            miniAppCloseListener.invoke(closeCallbackObj.withConfirmationAlert)
+        } else {
+            throw MiniAppSdkException(ErrorBridgeMessage.ERR_CLOSE_MINIAPP)
+        }
+    }
 }
 
 internal object ErrorBridgeMessage {
@@ -513,5 +531,6 @@ internal object ErrorBridgeMessage {
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
-    const val ERR_CLOSE_ALERT = "There is an error occurred when setting close alert info."
+    const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
+    const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
 }

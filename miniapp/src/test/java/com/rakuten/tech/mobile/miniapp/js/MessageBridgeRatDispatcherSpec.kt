@@ -44,7 +44,8 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.SECURE_STORAGE_CLEAR.action to Actype.SECURE_STORAGE_CLEAR,
         ActionType.SECURE_STORAGE_SIZE.action to Actype.SECURE_STORAGE_SIZE,
         ActionType.JSON_INFO.action to Actype.JSON_INFO,
-    )
+        ActionType.CLOSE_MINIAPP.action to Actype.CLOSE_MINIAPP,
+        )
 
     @Test
     fun `should send analytics with correct params`() = runBlockingTest {

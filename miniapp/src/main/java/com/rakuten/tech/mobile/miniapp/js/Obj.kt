@@ -151,6 +151,10 @@ internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam?) {
     @Keep
     internal data class CloseAlertInfoParam(val closeAlertInfo: MiniAppCloseAlertInfo)
 }
+
+@Keep
+internal data class CloseMiniAppCallbackObj(val withConfirmationAlert: Boolean)
+
 // end region
 
 // universal bridge region

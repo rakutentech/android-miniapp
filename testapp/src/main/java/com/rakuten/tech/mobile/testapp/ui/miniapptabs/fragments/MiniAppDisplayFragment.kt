@@ -309,6 +309,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         miniAppMessageBridge = getMessageBridge(activity) { onDevicePermissionResultCallback ->
             miniappPermissionCallback = onDevicePermissionResultCallback
         }
+        miniAppMessageBridge.setMiniAppCloseListener { withConfirmationAlert ->
+            if (withConfirmationAlert) checkCloseAlert() else findNavController().navigateUp()
+        }
         miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activity))
         miniAppMessageBridge.allowScreenOrientation(true)
 
@@ -402,7 +405,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
-                                findNavController().navigateUp()
+                                requireActivity().runOnUiThread {
+                                    findNavController().navigateUp()
+                                }
                             }
                         }
                     }
