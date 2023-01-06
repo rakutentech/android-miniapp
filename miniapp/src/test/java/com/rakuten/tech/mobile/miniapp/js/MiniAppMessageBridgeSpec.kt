@@ -312,7 +312,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `close listener should be invoked with correct param`() {
         var closeMiniAppCallbackObj = CallbackObj(
             action = ActionType.CLOSE_MINIAPP.action,
-            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = true)),
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmationAlert = true)),
             id = TEST_CALLBACK_ID
         )
         var miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
@@ -324,7 +324,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
 
         closeMiniAppCallbackObj = CallbackObj(
             action = ActionType.CLOSE_MINIAPP.action,
-            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = false)),
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmationAlert = false)),
             id = TEST_CALLBACK_ID
         )
         miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)
@@ -354,7 +354,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun `close listener should not be invoked if miniAppCloseListener is not initialized`() {
         val closeMiniAppCallbackObj = CallbackObj(
             action = ActionType.CLOSE_MINIAPP.action,
-            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmation = false)),
+            param = Gson().toJson(CloseMiniAppCallbackObj(withConfirmationAlert = false)),
             id = TEST_CALLBACK_ID
         )
         val miniAppCloseJsonStr = Gson().toJson(closeMiniAppCallbackObj)

@@ -405,7 +405,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
-                                findNavController().navigateUp()
+                                requireActivity().runOnUiThread {
+                                    findNavController().navigateUp()
+                                }
                             }
                         }
                     }

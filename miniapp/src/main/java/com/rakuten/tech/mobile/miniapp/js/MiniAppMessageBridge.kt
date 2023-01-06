@@ -505,7 +505,7 @@ open class MiniAppMessageBridge {
         val closeCallbackObj: CloseMiniAppCallbackObj? =
             Gson().fromJson(callbackObj.param.toString(), CloseMiniAppCallbackObj::class.java)
         if (this::miniAppCloseListener.isInitialized && closeCallbackObj != null) {
-            miniAppCloseListener.invoke(closeCallbackObj.withConfirmation)
+            miniAppCloseListener.invoke(closeCallbackObj.withConfirmationAlert)
         } else {
             throw MiniAppSdkException(ErrorBridgeMessage.ERR_CLOSE_MINIAPP)
         }
