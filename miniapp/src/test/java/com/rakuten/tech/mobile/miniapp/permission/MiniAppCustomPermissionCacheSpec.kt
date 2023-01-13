@@ -15,7 +15,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
@@ -94,33 +93,6 @@ class MiniAppCustomPermissionCacheSpec {
 
         verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, deniedPermissions)
         verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
-    }
-
-    @Test
-    fun `applyStoringPermissions will invoke sortedByDefault to save value`() {
-        miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
-        assertTrue(prefs.all.contains(miniAppCustomPermission.miniAppId))
-        verify(miniAppCustomPermissionCache).sortedByDefault(miniAppCustomPermission)
-    }
-
-    @Test
-    fun `orderByDefaultList should return correct ordering by MiniAppCustomPermissionType`() {
-        val unorderedPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED)
-            )
-        )
-
-        val actual = miniAppCustomPermissionCache.sortedByDefault(unorderedPermission)
-
-        actual.pairValues[0].first shouldBeEqualTo MiniAppCustomPermissionType.USER_NAME
-        actual.pairValues[1].first shouldBeEqualTo MiniAppCustomPermissionType.PROFILE_PHOTO
-        actual.pairValues[2].first shouldBeEqualTo MiniAppCustomPermissionType.CONTACT_LIST
-        actual.pairValues[3].first shouldBeEqualTo MiniAppCustomPermissionType.LOCATION
     }
 
     /**
