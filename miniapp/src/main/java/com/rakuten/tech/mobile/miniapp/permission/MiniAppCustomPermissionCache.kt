@@ -115,14 +115,6 @@ internal class MiniAppCustomPermissionCache constructor(
         prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
     }
 
-    // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
-    // [NOT_USED]
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
-        val sortedPairValues = miniAppCustomPermission.pairValues.sortedBy { it.first.ordinal }
-        return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
-    }
-
     /**
      * Prepare all the permissions supplied from HostApp including the permissions which was already
      * cached. It removes the old cached results if HostApp supplies the new results.
