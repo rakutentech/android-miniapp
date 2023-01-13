@@ -97,10 +97,10 @@ class MiniAppCustomPermissionCacheSpec {
     }
 
     @Test
-    fun `applyStoringPermissions will invoke sortedByDefault to save value`() {
+    fun `applyStoringPermissions will not invoke sortedByDefault to save value`() {
         miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
         assertTrue(prefs.all.contains(miniAppCustomPermission.miniAppId))
-        verify(miniAppCustomPermissionCache).sortedByDefault(miniAppCustomPermission)
+        verify(miniAppCustomPermissionCache, never()).sortedByDefault(miniAppCustomPermission)
     }
 
     @Test
