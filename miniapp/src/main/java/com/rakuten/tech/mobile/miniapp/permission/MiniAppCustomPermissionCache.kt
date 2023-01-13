@@ -111,11 +111,12 @@ internal class MiniAppCustomPermissionCache constructor(
 
     @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
-        val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))
+        val jsonToStore: String = Gson().toJson(miniAppCustomPermission)
         prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
     }
 
     // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
+    // [NOT_USED]
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
         val sortedPairValues = miniAppCustomPermission.pairValues.sortedBy { it.first.ordinal }

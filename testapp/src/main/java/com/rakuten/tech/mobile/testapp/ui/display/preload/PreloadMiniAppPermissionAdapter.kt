@@ -69,8 +69,10 @@ class PreloadMiniAppPermissionAdapter :
         this.manifestPermissions = manifestPermissions
         if (shouldShowDialog) {
             val customPermissionResultList = miniApp.getCustomPermissions(miniAppId).pairValues
-            this.manifestPermissions.forEachIndexed { position, (_, _) ->
-                manifestPermissionPairs.add(position, customPermissionResultList[position])
+            manifestPermissions.forEach { manifestPermission ->
+                customPermissionResultList.find { (permissionType) ->
+                    manifestPermission.type == permissionType
+                }?.let { manifestPermissionPairs.add(Pair(manifestPermission.type, it.second)) }
             }
         } else {
             this.manifestPermissions.forEachIndexed { position, (type, _) ->
