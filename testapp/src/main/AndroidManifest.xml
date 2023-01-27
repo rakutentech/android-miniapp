@@ -29,7 +29,8 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
