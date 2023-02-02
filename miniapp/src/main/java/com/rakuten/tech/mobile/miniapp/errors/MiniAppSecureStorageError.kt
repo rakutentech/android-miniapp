@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.errors
 
 import androidx.annotation.Keep
+import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_BUSY_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_IO_ERROR
 import com.rakuten.tech.mobile.miniapp.storage.database.DATABASE_UNAVAILABLE_ERROR
@@ -14,10 +15,10 @@ internal class MiniAppSecureStorageError(val type: String? = null, val message: 
     MiniAppBridgeError(type, message) {
 
     companion object {
-        private const val SecureStorageIOError = "SecureStorageIOError"
-        private const val SecureStorageFullError = "SecureStorageFullError"
-        private const val SecureStorageBusyError = "SecureStorageBusyError"
-        private const val SecureStorageUnavailableError = "SecureStorageUnavailableError"
+        @VisibleForTesting internal const val SecureStorageIOError = "SecureStorageIOError"
+        @VisibleForTesting internal const val SecureStorageFullError = "SecureStorageFullError"
+        @VisibleForTesting internal const val SecureStorageBusyError = "SecureStorageBusyError"
+        @VisibleForTesting internal const val SecureStorageUnavailableError = "SecureStorageUnavailableError"
 
         // Failed to read/write secure storage.
         val secureStorageIOError =
@@ -44,7 +45,8 @@ internal class MiniAppSecureStorageError(val type: String? = null, val message: 
                 errorDescription(SecureStorageUnavailableError)
             )
 
-        private fun errorDescription(error: String): String {
+        @VisibleForTesting
+        internal fun errorDescription(error: String): String {
             return when (error) {
                 SecureStorageIOError -> DATABASE_IO_ERROR
                 SecureStorageBusyError -> DATABASE_BUSY_ERROR

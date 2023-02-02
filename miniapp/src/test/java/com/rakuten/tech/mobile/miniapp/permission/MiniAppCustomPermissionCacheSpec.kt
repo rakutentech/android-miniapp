@@ -15,7 +15,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @Suppress("LongMethod", "LargeClass")
 @RunWith(AndroidJUnit4::class)
@@ -49,7 +48,31 @@ class MiniAppCustomPermissionCacheSpec {
 
         actual shouldBeEqualTo expected
     }
+
+    @Test
+    fun `readPermissions should return correct value when it has stored any data`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val prefsRead = context.getSharedPreferences("test-cache-read", Context.MODE_PRIVATE)
+        val cache = spy(MiniAppCustomPermissionCache(prefsRead, prefsRead))
+        prefsRead.edit().putString(TEST_MA_ID, "").apply()
+        val actual = cache.readPermissions(TEST_MA_ID)
+        val expected = MiniAppCustomPermission(TEST_MA_ID, listOf())
+
+        actual shouldBeEqualTo expected
+    }
     /** end region */
+
+    @Test
+    fun `migration should work properly`() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val prefsNE = context.getSharedPreferences("test-cache-non-encrypted", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)
+        val cache = spy(MiniAppCustomPermissionCache(prefsNE, prefs))
+        prefsNE.edit().putString("test-data", "data").apply()
+        cache.migrateToEncryptedPref()
+
+        prefs.getString("test-data", "") shouldBe "data"
+    }
 
     @Test
     fun `removePermissionsNotMatching will invoke necessary function to save value`() {
@@ -70,33 +93,6 @@ class MiniAppCustomPermissionCacheSpec {
 
         verify(miniAppCustomPermissionCache).prepareAllPermissionsToStore(TEST_MA_ID, deniedPermissions)
         verify(miniAppCustomPermissionCache).applyStoringPermissions(miniAppCustomPermission)
-    }
-
-    @Test
-    fun `applyStoringPermissions will invoke sortedByDefault to save value`() {
-        miniAppCustomPermissionCache.applyStoringPermissions(miniAppCustomPermission)
-        assertTrue(prefs.all.contains(miniAppCustomPermission.miniAppId))
-        verify(miniAppCustomPermissionCache).sortedByDefault(miniAppCustomPermission)
-    }
-
-    @Test
-    fun `orderByDefaultList should return correct ordering by MiniAppCustomPermissionType`() {
-        val unorderedPermission = MiniAppCustomPermission(
-            TEST_MA_ID,
-            listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.LOCATION, MiniAppCustomPermissionResult.DENIED),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, MiniAppCustomPermissionResult.DENIED)
-            )
-        )
-
-        val actual = miniAppCustomPermissionCache.sortedByDefault(unorderedPermission)
-
-        actual.pairValues[0].first shouldBeEqualTo MiniAppCustomPermissionType.USER_NAME
-        actual.pairValues[1].first shouldBeEqualTo MiniAppCustomPermissionType.PROFILE_PHOTO
-        actual.pairValues[2].first shouldBeEqualTo MiniAppCustomPermissionType.CONTACT_LIST
-        actual.pairValues[3].first shouldBeEqualTo MiniAppCustomPermissionType.LOCATION
     }
 
     /**

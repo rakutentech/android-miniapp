@@ -51,6 +51,7 @@
     <string name="userdata_contact_id">Contact id</string>
     <string name="userdata_contact_name">Contact name</string>
     <string name="userdata_contact_email">Contact email</string>
+    <string name="userdata_email_address_optional">Email Address (Optional)</string>
 
     <string name="miniapp_preload_tutorial">Would you like to download this miniapp?</string>
     <string name="miniapp_preload_perm_status_required">(Required)</string>
@@ -61,18 +62,19 @@
     <string name="action_display">Display</string>
     <string name="action_go_input_url">URL</string>
     <string name="action_go_input_url_details">Open a miniapp via url</string>
-    <string name="action_display_list">Display Miniapp From List</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">CANCEL</string>
     <string name="action_update">Update</string>
     <string name="action_profile">Profile</string>
     <string name="action_contacts">Contacts</string>
+    <string name="action_contact_add">Add Contact</string>
+    <string name="action_contact_update">Update Contact</string>
     <string name="action_points">Points</string>
     <string name="action_dynamic_deeplinks">Dynamic DeepLinks</string>
     <string name="action_qa">QA</string>
     <string name="action_custom_permissions">Custom Permissions</string>
-    <string name="action_first_time_accept">Accept</string>
+    <string name="action_first_time_accept">ACCEPT</string>
     <string name="action_message_send">SEND</string>
     <string name="action_clear_all">Clear All</string>
     <string name="action_clear_miniapp">Clear MiniApp Storage</string>
@@ -105,6 +107,7 @@
     <string name="error_desc_miniapp_version_mismatch">Please check with the project \nadministrator. See our Help Center for \nmore details.</string>
     <string name="error_desc_promotional_text_missing">Promotional text is not available</string>
     <string name="error_desc_miniapp_too_many_request">"Mini app is requested too many times.</string>
+    <string name="error_send_json_to_host_app_please_try_again">Unable to send the message: please try again</string>
 
     <string name="success_title_parameters_saved">Parameters saved</string>
     <string name="success_desc_parameter_saved">Configuration is saved and Miniapp list is updated</string>
@@ -121,5 +124,14 @@
     <string name="deeplink_activity_no_deeplink">No deeplink available!</string>
     <string name="deeplink_activity_not_saved">No deeplink has been saved yet.</string>
     <string name="miniapp_by_url">MiniApp By URL</string>
+
+    <string name="universal_bridge">Universal Bridge</string>
+    <string name="hint_universal_bridge_message">Universal Bridge Message</string>
+    <string name="action_send_to_miniapp">Send to MiniApp</string>
+    <string name="universal_message_bridge_will_be_sent">The Json info will be sent to MiniApp via universal bridge.</string>
+    <string name="please_input_the_message">Please input the message</string>
+    <string name="error_send_json_to_mini_app_message_cannot_be_empty">Unable to send the message: The message cannot be empty</string>
+    <string name="lb_general">General</string>
+    <string name="add_new_email">Add new email</string>
 
 </resources>

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
+import android.view.Menu
+import android.view.MenuItem
 import android.webkit.URLUtil
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -28,6 +30,7 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        showBackIcon()
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_input_activity)
 
         binding.inputLayout.hint = getString(R.string.lb_app_url)
@@ -50,13 +53,10 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
         binding.btnDisplayAppId.setOnClickListener {
             raceExecutor.run { displayMiniApp() }
         }
-        binding.btnDisplayList.setOnClickListener {
-            finish()
-        }
     }
 
     override fun onBackPressed() {
-        finish()
+        exitPage()
     }
 
     private fun isValidAppUrl(input: String): Boolean = URLUtil.isValidUrl(input)
@@ -101,5 +101,25 @@ class MiniAppByUrlActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniApp
     override fun onPreloadMiniAppResponse(isAccepted: Boolean) {
         if (isAccepted)
             MiniAppDisplayActivity.start(this, display.input)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            android.R.id.home -> {
+                exitPage()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun exitPage() {
+        finish()
     }
 }

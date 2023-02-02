@@ -26,12 +26,7 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoErr
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
-import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.*
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
@@ -42,9 +37,8 @@ import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
     "LargeClass",
     "ComplexMethod",
     "LongParameterList",
-    " MaximumLineLength",
-    "FunctionMaxLength",
-    "Deprecation"
+    "MaximumLineLength",
+    "FunctionMaxLength"
 )
 /** Bridge interface for communicating with mini app. **/
 open class MiniAppMessageBridge {
@@ -59,9 +53,11 @@ open class MiniAppMessageBridge {
     private val userInfoBridge = UserInfoBridge()
     private val chatBridge = ChatBridge()
     private val adBridgeDispatcher = AdBridgeDispatcher()
+
     @VisibleForTesting
     internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
     private val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
+
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
@@ -72,6 +68,9 @@ open class MiniAppMessageBridge {
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
     private lateinit var apiClient: ApiClient
+
+    @VisibleForTesting
+    internal lateinit var miniAppCloseListener: (Boolean) -> Unit
 
     /** provide MiniAppCloseAlertInfo to HostApp to show close alert popup. */
     fun miniAppShouldClose() = miniAppCloseAlertInfo
@@ -166,6 +165,18 @@ open class MiniAppMessageBridge {
     }
 
     /**
+     * handle Universal Bridge that represented as a json from MiniApp.
+     * @param jsonStr: JSON/String that is sent from the MiniApp
+     **/
+    open fun sendJsonToHostApp(
+        jsonStr: String,
+        onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
      * @param callback The executed action status should be notified back to mini app.
@@ -257,8 +268,15 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
-            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(callbackObj.id)
-            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(callbackObj.id, jsonStr)
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(
+                callbackObj.id
+            )
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
+            ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -422,6 +440,27 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, "${ErrorBridgeMessage.ERR_SHARE_CONTENT} ${e.message}")
     }
 
+    @VisibleForTesting
+    internal fun onSendJsonToHostApp(callbackId: String, jsonStr: String) = try {
+        val jsonInfoCallbackObj = Gson().fromJson(jsonStr, JsonInfoCallbackObj::class.java)
+        sendJsonToHostApp(
+            jsonStr = jsonInfoCallbackObj.param.jsonInfo.content,
+            onSuccess = { value ->
+                bridgeExecutor.postValue(callbackId, value.toString())
+            },
+            onError = { message ->
+                bridgeExecutor.postError(
+                    callbackId,
+                    message
+                )
+            }
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackId, "${ErrorBridgeMessage.ERR_JSON_INFO} ${e.message}"
+        )
+    }
+
     @SuppressWarnings("TooGenericExceptionCaught")
     @VisibleForTesting
     internal fun onGetHostEnvironmentInfo(callbackId: String) {
@@ -474,6 +513,21 @@ open class MiniAppMessageBridge {
     internal fun setComponentsIAPDispatcher(apiClient: ApiClient) {
         this.apiClient = apiClient
     }
+
+    /** Allow Host app to receive the miniapp close event. */
+    fun setMiniAppCloseListener(callback: (withConfirmationAlert: Boolean) -> Unit) {
+        miniAppCloseListener = callback
+    }
+
+    private fun onCloseMiniApp(callbackObj: CallbackObj) {
+        val closeCallbackObj: CloseMiniAppCallbackObj? =
+            Gson().fromJson(callbackObj.param.toString(), CloseMiniAppCallbackObj::class.java)
+        if (this::miniAppCloseListener.isInitialized && closeCallbackObj != null) {
+            miniAppCloseListener.invoke(closeCallbackObj.withConfirmationAlert)
+        } else {
+            throw MiniAppSdkException(ErrorBridgeMessage.ERR_CLOSE_MINIAPP)
+        }
+    }
 }
 
 internal object ErrorBridgeMessage {
@@ -488,10 +542,13 @@ internal object ErrorBridgeMessage {
         "The `MiniAppMessageBridge.requestDevicePermission` $NO_IMPL"
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
         "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
+    const val NO_IMPLEMENT_JSON_INFO = "The `MiniAppMessageBridge.sendJsonToHostApp` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
+    const val ERR_JSON_INFO = "Cannot send jsonInfo:"
     const val ERR_LOAD_AD = "Cannot load ad:"
     const val ERR_SHOW_AD = "Cannot show ad:"
     const val ERR_SCREEN_ACTION = "Cannot request screen action:"
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
-    const val ERR_CLOSE_ALERT = "There is an error occurred when setting close alert info."
+    const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
+    const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
 }

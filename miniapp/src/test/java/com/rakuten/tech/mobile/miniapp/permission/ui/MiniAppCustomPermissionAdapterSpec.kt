@@ -157,7 +157,6 @@ class MiniAppCustomPermissionAdapterSpec {
         assertEquals(permissionAdapter.permissionToggles.size, results.size)
         assertEquals(permissionAdapter.permissionDescriptions.size, descriptions.size)
 
-        // val permissionViewHolder = MiniAppCustomPermissionAdapter.PermissionViewHolder(getItemView())
         val permissionViewHolder: MiniAppCustomPermissionAdapter.PermissionViewHolder = mock()
         val permissionName: TextView = mock()
         val permissionDescription: TextView = mock()

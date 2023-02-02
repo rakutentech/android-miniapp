@@ -31,7 +31,8 @@ internal class MiniAppCustomPermissionCache constructor(
         migrateToEncryptedPref()
     }
 
-    private fun migrateToEncryptedPref() {
+    @VisibleForTesting
+    internal fun migrateToEncryptedPref() {
         if (nonEncryptedPreferences.all.isNotEmpty()) {
             nonEncryptedPreferences.copyTo(prefs)
             nonEncryptedPreferences.edit().clear().apply()
@@ -110,15 +111,8 @@ internal class MiniAppCustomPermissionCache constructor(
 
     @VisibleForTesting
     fun applyStoringPermissions(miniAppCustomPermission: MiniAppCustomPermission) {
-        val jsonToStore: String = Gson().toJson(sortedByDefault(miniAppCustomPermission))
+        val jsonToStore: String = Gson().toJson(miniAppCustomPermission)
         prefs.edit().putString(miniAppCustomPermission.miniAppId, jsonToStore).apply()
-    }
-
-    // Sort the `pairValues` by ordinal of [MiniAppCustomPermissionType].
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun sortedByDefault(miniAppCustomPermission: MiniAppCustomPermission): MiniAppCustomPermission {
-        val sortedPairValues = miniAppCustomPermission.pairValues.sortedBy { it.first.ordinal }
-        return MiniAppCustomPermission(miniAppCustomPermission.miniAppId, sortedPairValues)
     }
 
     /**

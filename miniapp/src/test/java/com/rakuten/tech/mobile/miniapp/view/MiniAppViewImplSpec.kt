@@ -4,20 +4,26 @@ import android.app.Activity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.js.BridgeCommon
+import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.mock
-import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.any
 import org.mockito.Mockito.spy
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
 
 @Suppress("LargeClass", "MaximumLineLength")
 @RunWith(AndroidJUnit4::class)
 class MiniAppViewImplSpec {
+    internal val webViewListener: WebViewListener = mock()
 
     private val coroutineDispatcher = CoroutineScope(Dispatchers.Unconfined)
     private lateinit var miniAppDefaultParams: MiniAppParameters.DefaultParams
@@ -25,14 +31,32 @@ class MiniAppViewImplSpec {
     private lateinit var urlParams: MiniAppParameters.UrlParams
     private lateinit var miniAppViewHandler: MiniAppViewHandler
     private val testQuery = "testquery"
-    val miniAppConfig = MiniAppConfig(
-        mock(), mock(), mock(), mock(), ""
-    )
+    private val miniAppBridge = spy(BridgeCommon().createDefaultMiniAppMessageBridge())
+    internal val bridgeExecutor = spy(MiniAppBridgeExecutor(webViewListener))
+
+    private lateinit var miniAppConfig: MiniAppConfig
 
     private fun withRealActivity(onReady: (Activity) -> Unit) {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             onReady(activity)
         }
+    }
+
+    @Before
+    fun setUp() {
+        withRealActivity { activity ->
+            When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.init(
+                activity = activity,
+                webViewListener = webViewListener,
+                customPermissionCache = mock(),
+                downloadedManifestCache = mock(),
+                miniAppId = TEST_MA_ID,
+                ratDispatcher = mock(),
+                secureStorageDispatcher = mock()
+            )
+        }
+        miniAppConfig = MiniAppConfig(mock(), miniAppBridge, mock(), mock(), "")
     }
 
     private fun withMiniAppDefaultParams(onReady: (MiniAppViewImpl) -> Unit) {
@@ -160,4 +184,65 @@ class MiniAppViewImplSpec {
                 urlParams.config.queryParams shouldBeEqualTo testQuery
             }
         }
+
+    @Test
+    fun `urlParams queryParams should not be the same with load queryParams if it's empty`() =
+        runBlocking {
+            withMiniAppUrlParams { miniAppViewImpl ->
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit = spy { _, _ -> }
+                miniAppViewImpl.load(queryParams = "", fromCache = false, onComplete)
+                urlParams.config.queryParams shouldBeEqualTo ""
+            }
+        }
+
+    @Test
+    fun `should do nothing when universalBridgeMessage is blank`() {
+        withMiniAppDefaultParams { miniAppViewImpl ->
+            val onFailed: () -> Unit = mock()
+            miniAppViewImpl.sendJsonToMiniApp("", onFailed)
+            verifyZeroInteractions(
+                bridgeExecutor
+            )
+            verify(onFailed).invoke()
+        }
+    }
+
+    @Test
+    fun `should call miniAppMessageBridge dispatchNativeEvent when universalBridgeMessage is not blank`() {
+        withMiniAppDefaultParams { miniAppViewImpl ->
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
+                // empty intended
+            }
+            verify(miniAppBridge).dispatchNativeEvent(
+                NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                TEST_BODY_CONTENT
+            )
+        }
+    }
+
+    @Test
+    fun `should call miniAppMessageBridge  using urLParams`() {
+        withMiniAppUrlParams { miniAppViewImpl ->
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
+                // empty intended
+            }
+            verify(miniAppBridge).dispatchNativeEvent(
+                NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                TEST_BODY_CONTENT
+            )
+        }
+    }
+
+    @Test
+    fun `should call miniAppMessageBridge  using infoParams`() {
+        withMiniAppInfoParams { miniAppViewImpl ->
+            miniAppViewImpl.sendJsonToMiniApp(TEST_BODY_CONTENT) {
+                // empty intended
+            }
+            verify(miniAppBridge).dispatchNativeEvent(
+                NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+                TEST_BODY_CONTENT
+            )
+        }
+    }
 }

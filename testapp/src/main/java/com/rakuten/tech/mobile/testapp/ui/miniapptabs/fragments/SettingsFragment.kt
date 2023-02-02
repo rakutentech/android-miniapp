@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Base64
 import android.view.*
@@ -12,30 +13,27 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.SettingsFragmentBinding
 import com.rakuten.tech.mobile.testapp.helper.*
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
-import com.rakuten.tech.mobile.testapp.ui.deeplink.DynamicDeepLinkActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModel
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.SettingsViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
-import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.settings.SettingsProgressDialog
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 import com.rakuten.tech.mobile.testapp.ui.userdata.*
+import com.rakuten.tech.mobile.testapp.ui.userdata.ContactHelper.createRandomContactList
 import kotlinx.android.synthetic.main.settings_fragment.*
 import kotlinx.android.synthetic.main.settings_fragment.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.net.URL
-import java.security.SecureRandom
 import java.util.*
 import kotlin.properties.Delegates
 
-@Suppress("WildcardImport", "TooManyFunctions", "Deprecation", "EmptyFunctionBlock")
+@Suppress("WildcardImport", "TooManyFunctions", "EmptyFunctionBlock")
 class SettingsFragment : BaseFragment() {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -71,6 +69,25 @@ class SettingsFragment : BaseFragment() {
             binding.toggleList2.isEnabled = isEnabled
         } else {
             binding.toggleList1.isEnabled = isEnabled
+        }
+    }
+
+    private fun maskIdInputsOnFocus() {
+        binding.editProjectId.maskInput()
+        binding.editSubscriptionKey.maskInput()
+
+        binding.editProjectId.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.editProjectId.isCursorVisible) {
+                binding.editProjectId.unMaskInput()
+                binding.editProjectId.inputType = InputType.TYPE_CLASS_TEXT
+            } else binding.editProjectId.maskInput()
+        }
+
+        binding.editSubscriptionKey.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && binding.editSubscriptionKey.isCursorVisible) {
+                binding.editSubscriptionKey.unMaskInput()
+                binding.editSubscriptionKey.inputType = InputType.TYPE_CLASS_TEXT
+            } else binding.editSubscriptionKey.maskInput()
         }
     }
 
@@ -123,9 +140,7 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun updateSettings() {
-        settings.urlParameters = binding.editParametersUrl.text.toString()
         launch {
-            URL("https://www.test-param.com?${binding.editParametersUrl.text.toString()}").toURI()
             settings.isSettingSaved = true
             with(requireActivity()) {
                 currentFocus?.let {
@@ -207,6 +222,11 @@ class SettingsFragment : BaseFragment() {
         binding.editProjectId.addTextChangedListener(settingsTextWatcher)
         binding.editSubscriptionKey.addTextChangedListener(settingsTextWatcher)
 
+
+        binding.buttonGeneral.setOnClickListener {
+            GeneralSettingsActivity.start(requireActivity())
+        }
+
         binding.buttonProfile.setOnClickListener {
             ProfileSettingsActivity.start(requireActivity())
         }
@@ -221,10 +241,6 @@ class SettingsFragment : BaseFragment() {
 
         binding.buttonPoints.setOnClickListener {
             PointsActivity.start(requireActivity())
-        }
-
-        binding.buttonDeeplink.setOnClickListener {
-            DynamicDeepLinkActivity.start(requireActivity())
         }
 
         binding.buttonQA.setOnClickListener {
@@ -289,7 +305,7 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun renderAppSettingsScreen() {
-        binding.editParametersUrl.setText(settings.urlParameters)
+        maskIdInputsOnFocus()
         binding.toggleListGroup.check(if (isTab1Checked) binding.toggleList1.id else binding.toggleList2.id)
 
         val defaultConfigData = settings.getDefaultConfigData(isTab1Checked)
@@ -367,27 +383,8 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    @Suppress("UnusedPrivateMember", "MagicNumber")
-    private fun createRandomContactList(): ArrayList<Contact> = ArrayList<Contact>().apply {
-        for (i in 1..10) {
-            this.add(createRandomContact())
-        }
-    }
-
-    @Suppress("MaxLineLength")
-    private fun createRandomContact(): Contact {
-        val firstName =
-            AppSettings.fakeFirstNames[(SecureRandom().nextDouble() * AppSettings.fakeFirstNames.size).toInt()]
-        val lastName =
-            AppSettings.fakeLastNames[(SecureRandom().nextDouble() * AppSettings.fakeLastNames.size).toInt()]
-        val email =
-            firstName.toLowerCase(Locale.ROOT) + "." + lastName.toLowerCase(Locale.ROOT) + "@example.com"
-        return Contact(UUID.randomUUID().toString().trimEnd(), "$firstName $lastName", email)
-    }
-
     override fun onStop() {
         settings.isTab1Checked = isTab1Checked
-        settings.clearTempData()
         super.onStop()
     }
 }

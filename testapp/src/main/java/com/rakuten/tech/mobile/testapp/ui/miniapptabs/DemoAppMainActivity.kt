@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -10,12 +11,15 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
+import com.rakuten.tech.mobile.miniapp.view.MiniAppView
+import com.rakuten.tech.mobile.testapp.helper.clearAllCursorFocus
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
+val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
 
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
@@ -29,6 +33,11 @@ class DemoAppMainActivity : BaseActivity() {
             setUpBottomNavigationBar()
         }
         launchMiniApps()
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        clearAllCursorFocus(event, this@DemoAppMainActivity)
+        return super.dispatchTouchEvent(event)
     }
 
     private fun setUpBottomNavigationBar() {
@@ -45,6 +54,7 @@ class DemoAppMainActivity : BaseActivity() {
             containerId = R.id.activity_main_nav_host_fragment,
             intent = intent
         )
+
 
         controller.observe(this) { navController ->
             setupActionBarWithNavController(navController)
@@ -63,19 +73,26 @@ class DemoAppMainActivity : BaseActivity() {
 
     private val onDestinationChangedListener =
         NavController.OnDestinationChangedListener { controller, destination, arguments ->
-            Log.d("TAG", "controller: $controller, destination: $destination, arguments: $arguments")
-            Log.d("TAG","controller graph: ${controller.graph.id}")
+            Log.d(
+                "TAG",
+                "controller: $controller, destination: $destination, arguments: $arguments"
+            )
+            Log.d("TAG", "controller graph: ${controller.graph.id}")
 
             //Set the mini app settings depending on the tab.
             when (controller.graph.id) {
-                R.id.nav_tab_0 -> {
+                PAGE_1 -> {
                     AppSettings.instance.setTab1MiniAppSdkConfig()
                 }
-                R.id.nav_tab_1 -> {
+                PAGE_2 -> {
                     AppSettings.instance.setTab2MiniAppSdkConfig()
                 }
-                R.id.nav_tab_2 -> {}
-                R.id.nav_tab_3 -> {}
+                PAGE_FEATURES -> {
+                    //do nothing intended
+                }
+                PAGE_SETTINGS -> {
+                    //do nothing intended
+                }
 
             }
             // if you need to show/hide bottom nav or toolbar based on destination
@@ -101,6 +118,8 @@ class DemoAppMainActivity : BaseActivity() {
         bottomNavigationView.selectedItemId = page
     }
 
+    fun getCurrentSelectedId() = bottomNavigationView.selectedItemId
+
     companion object {
         private const val PAGE_1 = R.id.nav_tab_0
         private const val PAGE_2 = R.id.nav_tab_1
@@ -110,6 +129,7 @@ class DemoAppMainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         getCurrentVisibleFragment()?.let { fragment ->
             if (fragment is MiniAppDisplayFragment) {
                 fragment.handleOnActivityResult(requestCode, resultCode, data)
@@ -135,7 +155,6 @@ class DemoAppMainActivity : BaseActivity() {
             if (fragment is MiniAppDisplayFragment) {
                 fragment.onBackPressed()
             } else super.onBackPressed()
-
         }
     }
 

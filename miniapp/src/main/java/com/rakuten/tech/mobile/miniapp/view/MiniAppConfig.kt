@@ -18,5 +18,5 @@ data class MiniAppConfig(
     val miniAppMessageBridge: MiniAppMessageBridge,
     val miniAppNavigator: MiniAppNavigator?,
     val miniAppFileChooser: MiniAppFileChooser?,
-    var queryParams: String = ""
+    var queryParams: String = "",
 )

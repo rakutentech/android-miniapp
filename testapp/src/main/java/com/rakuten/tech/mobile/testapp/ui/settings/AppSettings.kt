@@ -210,7 +210,7 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.saveTab2Data()
     }
 
-    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>){
+    fun saveCurrentAppInfoList(miniAppInfoList: List<MiniAppInfo>) {
         cache.rasConfigData.saveCurrentMiniAppInfoList(miniAppInfoList, miniAppInfoListKey)
     }
 
@@ -269,36 +269,14 @@ class AppSettings private constructor(context: Context) {
         cache.rasConfigData.clearTempData()
     }
 
-    fun clearAllMiniAppInfoList(){
+    fun clearAllMiniAppInfoList() {
         cache.rasConfigData.clearAllMiniAppInfoList()
     }
 
     companion object {
         lateinit var instance: AppSettings
-        const val DEFAULT_PROFILE_NAME = "MiniAppUser"
-        val DEFAULT_POINTS = Points(10, 20, 30)
-        val fakeFirstNames = arrayOf(
-            "Yvonne",
-            "Jamie",
-            "Leticia",
-            "Priscilla",
-            "Sidney",
-            "Nancy",
-            "Edmund",
-            "Bill",
-            "Megan"
-        )
-        val fakeLastNames = arrayOf(
-            "Andrews",
-            "Casey",
-            "Gross",
-            "Lane",
-            "Thomas",
-            "Patrick",
-            "Strickland",
-            "Nicolas",
-            "Freeman"
-        )
+        private const val DEFAULT_PROFILE_NAME = "MiniAppUser"
+        private val DEFAULT_POINTS = Points(10, 20, 30)
 
         fun init(context: Context) {
             instance = AppSettings(context)

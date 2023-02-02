@@ -35,5 +35,7 @@ internal enum class Actype(val value: String) {
     SECURE_STORAGE_REMOVE_ITEMS("mini_app_secure_storage_remove_items"),
     SECURE_STORAGE_CLEAR("mini_app_secure_storage_clear"),
     SECURE_STORAGE_SIZE("mini_app_secure_storage_size"),
+    JSON_INFO("mini_app_send_json_to_host_app"),
+    CLOSE_MINIAPP("mini_app_close"),
     DEFAULT("")
 }

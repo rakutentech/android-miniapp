@@ -18,7 +18,7 @@ class MessageBridgeRatDispatcherSpec {
     private val ratDispatcher: MessageBridgeRatDispatcher = MessageBridgeRatDispatcher(
         miniAppAnalytics
     )
-    private val testActionValues = mapOf<String, Actype>(
+    private val testActionValues = mapOf(
         ActionType.REQUEST_PERMISSION.action to Actype.REQUEST_PERMISSION,
         ActionType.REQUEST_CUSTOM_PERMISSIONS.action to Actype.REQUEST_CUSTOM_PERMISSIONS,
         ActionType.SHARE_INFO.action to Actype.SHARE_INFO,
@@ -37,9 +37,15 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.FILE_DOWNLOAD.action to Actype.FILE_DOWNLOAD,
         ActionType.GET_UNIQUE_ID.action to Actype.GET_UNIQUE_ID,
         ActionType.GET_MESSAGING_UNIQUE_ID.action to Actype.GET_MESSAGING_UNIQUE_ID,
-        ActionType.GET_MAUID.action to Actype.GET_MAUID
-
-    )
+        ActionType.GET_MAUID.action to Actype.GET_MAUID,
+        ActionType.SECURE_STORAGE_SET_ITEMS.action to Actype.SECURE_STORAGE_SET_ITEMS,
+        ActionType.SECURE_STORAGE_GET_ITEM.action to Actype.SECURE_STORAGE_GET_ITEM,
+        ActionType.SECURE_STORAGE_REMOVE_ITEMS.action to Actype.SECURE_STORAGE_REMOVE_ITEMS,
+        ActionType.SECURE_STORAGE_CLEAR.action to Actype.SECURE_STORAGE_CLEAR,
+        ActionType.SECURE_STORAGE_SIZE.action to Actype.SECURE_STORAGE_SIZE,
+        ActionType.JSON_INFO.action to Actype.JSON_INFO,
+        ActionType.CLOSE_MINIAPP.action to Actype.CLOSE_MINIAPP,
+        )
 
     @Test
     fun `should send analytics with correct params`() = runBlockingTest {

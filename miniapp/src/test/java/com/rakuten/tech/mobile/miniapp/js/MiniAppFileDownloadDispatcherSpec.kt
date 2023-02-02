@@ -23,12 +23,12 @@ import org.robolectric.Shadows
 
 @RunWith(AndroidJUnit4::class)
 class MiniAppFileDownloadDispatcherSpec {
-    private val TEST_FILENAME = "test.jpg"
-    private val TEST_FILE_URL = "https://sample/com/test.jpg"
-    private val TEST_HEADER_OBJECT: Map<String, String> = mock()
+    private val testFileName = "test.jpg"
+    private val testFileUrl = "https://sample/com/test.jpg"
+    private val testHeaders: Map<String, String> = mock()
     private val fileDownloadCallbackObj = FileDownloadCallbackObj(
         action = ActionType.FILE_DOWNLOAD.action,
-        param = FileDownloadParams(TEST_FILENAME, TEST_FILE_URL, TEST_HEADER_OBJECT),
+        param = FileDownloadParams(testFileName, testFileUrl, testHeaders),
         id = TEST_CALLBACK_ID
     )
     private val fileDownloadJsonStr = Gson().toJson(fileDownloadCallbackObj)
@@ -100,6 +100,6 @@ class MiniAppFileDownloadDispatcherSpec {
         val miniAppFileDownloader = Mockito.spy(MiniAppFileDownloaderDefault(activity, 100))
         miniAppFileDownloadDispatcher.setFileDownloader(miniAppFileDownloader = miniAppFileDownloader)
         miniAppFileDownloadDispatcher.onFileDownload(TEST_CALLBACK_ID, fileDownloadJsonStr)
-        verify(miniAppFileDownloader).openCreateDocIntent(activity, TEST_FILENAME)
+        verify(miniAppFileDownloader).openCreateDocIntent(activity, testFileName)
     }
 }

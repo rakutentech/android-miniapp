@@ -119,6 +119,7 @@
           android:text="@string/action_first_time_accept"
           android:textColor="@android:color/white"
           android:textSize="@dimen/text_large_16"
+          android:textStyle="bold"
           app:actionType="open"
           app:pageName="MiniAppPermission"
           app:siteSection="PreloadMiniApp" />

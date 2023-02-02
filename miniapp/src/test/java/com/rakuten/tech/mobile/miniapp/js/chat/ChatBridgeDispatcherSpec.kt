@@ -24,9 +24,7 @@ import org.mockito.kotlin.*
 open class BaseChatBridgeDispatcherSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     internal val singleChatCallbackObj = CallbackObj(
-        action = ActionType.SEND_MESSAGE_TO_CONTACT.action,
-        param = null,
-        id = TEST_CALLBACK_ID
+        action = ActionType.SEND_MESSAGE_TO_CONTACT.action, param = null, id = TEST_CALLBACK_ID
     )
     internal val multipleChatCallbackObj = CallbackObj(
         action = ActionType.SEND_MESSAGE_TO_MULTIPLE_CONTACTS.action,
@@ -34,9 +32,7 @@ open class BaseChatBridgeDispatcherSpec {
         id = TEST_CALLBACK_ID
     )
     internal val specificIdCallbackObj = CallbackObj(
-        action = ActionType.SEND_MESSAGE_TO_CONTACT_ID.action,
-        param = null,
-        id = TEST_CALLBACK_ID
+        action = ActionType.SEND_MESSAGE_TO_CONTACT_ID.action, param = null, id = TEST_CALLBACK_ID
     )
     internal val customPermissionCache: MiniAppCustomPermissionCache = mock()
     private val downloadedManifestCache: DownloadedManifestCache = mock()
@@ -115,14 +111,12 @@ open class BaseChatBridgeDispatcherSpec {
     ): ChatBridge {
         val chatBridge = ChatBridge()
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, TEST_MA.id)
-        if (isImplement)
-            chatBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
+        if (isImplement) chatBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
 
         return chatBridge
     }
 
-    private fun createMessageBridge(): MiniAppMessageBridge =
-        object : MiniAppMessageBridge() {}
+    private fun createMessageBridge(): MiniAppMessageBridge = object : MiniAppMessageBridge() {}
 
     protected val sendingMessageJsonStr: String = Gson().toJson(
         CallbackObj(
@@ -157,6 +151,7 @@ open class BaseChatBridgeDispatcherSpec {
     )
 }
 
+@Suppress("LargeClass")
 @RunWith(AndroidJUnit4::class)
 class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     @Test
@@ -172,7 +167,9 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     fun `postError should be called when hostapp doesn't implement the chat dispatcher for multiple chat`() {
         val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, false))
-        chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, multipleMessageJsonStr)
+        chatBridge.onSendMessageToMultipleContacts(
+            multipleChatCallbackObj.id, multipleMessageJsonStr
+        )
 
         verify(bridgeExecutor).postError(multipleChatCallbackObj.id, ErrorBridgeMessage.NO_IMPL)
     }
@@ -208,8 +205,7 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postError should be called when hostapp can't send message to a contact id`() {
-        val chatMessageBridgeDispatcher =
-            Mockito.spy(createChatMessageBridgeDispatcher(false))
+        val chatMessageBridgeDispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false))
         val chatBridge = Mockito.spy(createChatBridge(chatMessageBridgeDispatcher, true))
         val errMsg = "$ERR_SEND_MESSAGE $TEST_ERROR_MSG"
 
@@ -238,8 +234,7 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
             multipleChatCallbackObj.id, multipleMessageJsonStr
         )
         verify(bridgeExecutor).postValue(
-            multipleChatCallbackObj.id,
-            Gson().toJson(listOf(TEST_CONTACT.id)).toString()
+            multipleChatCallbackObj.id, Gson().toJson(listOf(TEST_CONTACT.id)).toString()
         )
     }
 
@@ -248,7 +243,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     /** region: onSuccess with null when cancellation */
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to single contact`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
         verify(bridgeExecutor).postValue(singleChatCallbackObj.id, "null")
@@ -256,7 +252,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to specific contact id`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
@@ -265,9 +262,12 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postValue should be called when hostapp wants to cancel sending message to multiple contacts`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
-        chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, multipleMessageJsonStr)
+        chatBridge.onSendMessageToMultipleContacts(
+            multipleChatCallbackObj.id, multipleMessageJsonStr
+        )
         verify(bridgeExecutor).postValue(multipleChatCallbackObj.id, "null")
     }
 
@@ -276,7 +276,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     /** region: postError when exception */
     @Test
     fun `postError should be called when for exception when sending message to single contact`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, true, false, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToContact(singleChatCallbackObj.id, "")
         verify(bridgeExecutor).postError(singleChatCallbackObj.id, "Cannot send message: null")
@@ -284,7 +285,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postError should be called when for exception when sending message to specific contact id`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, true, false, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, "")
@@ -293,7 +295,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postError should be called when for exception when sending message to multiple contacts`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, false, true))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         chatBridge.onSendMessageToMultipleContacts(multipleChatCallbackObj.id, "")
         verify(bridgeExecutor).postError(multipleChatCallbackObj.id, "Cannot send message: ")
@@ -303,7 +306,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postValue should be called with null when hostapp wants to send a different specific contact id`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         setSendMessagePermission(true)
         chatBridge.onSendMessageToContactId(specificIdCallbackObj.id, specificMessageJsonStr)
@@ -312,7 +316,8 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
 
     @Test
     fun `postError should be called when send message permission hasn't been allowed for specific contact id`() {
-        val dispatcher = Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
+        val dispatcher =
+            Mockito.spy(createChatMessageBridgeDispatcher(false, false, false, true, false))
         val chatBridge = Mockito.spy(createChatBridge(dispatcher, true))
         val errMsg = "$ERR_SEND_MESSAGE $ERR_NO_PERMISSION_CONTACT_ID"
         setSendMessagePermission(false)
@@ -323,9 +328,20 @@ class ChatBridgeDispatcherSpec : BaseChatBridgeDispatcherSpec() {
     @Test
     fun `createMessage should produce proper data`() {
         chatBridgeOnSuccess.onSendMessageToContact(singleChatCallbackObj.id, sendingMessageJsonStr)
-        val json = "{\"action\":\"sendMessage\",\"param\":{\"messageToContact\":{\"text\":\"Contact\"}}}"
+        val json =
+            "{\"action\":\"sendMessage\"," +
+                    "\"param\":{\"messageToContact\":" +
+                    "{\"image\":\"Image\", " +
+                    "\"text\":\"Contact\", " +
+                    "\"caption\":\"Caption\", " +
+                    "\"action\":\"Action\", " +
+                    "\"bannerMessage\":\"Banner Message\"}}}"
         val message = chatBridgeOnSuccess.createMessage(json)
+        message.apply { image shouldBeEqualTo "Image" }
         message.apply { text shouldBeEqualTo "Contact" }
+        message.apply { caption shouldBeEqualTo "Caption" }
+        message.apply { action shouldBeEqualTo "Action" }
+        message.apply { bannerMessage shouldBeEqualTo "Banner Message" }
     }
 
     private fun setSendMessagePermission(isAllowed: Boolean) = whenever(

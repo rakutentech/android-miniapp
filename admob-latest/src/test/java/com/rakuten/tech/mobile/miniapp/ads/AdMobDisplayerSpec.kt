@@ -31,8 +31,17 @@ class AdMobDisplayerSpec {
         adLoadCallback: InterstitialAdLoadCallback
     ) -> Unit = mock()
     private val testShowInterstitialAd: (context: Activity, ad: InterstitialAd) -> Unit = mock()
-    private val testLoadRewardedAd: (context: Activity, adUnitId: String, adRequest: AdRequest, RewardedAdLoadCallback) -> Unit = mock()
-    private val testShowRewardedAd: (context: Activity, ad: RewardedAd, rewardListener: OnUserEarnedRewardListener) -> Unit = mock()
+    private val testLoadRewardedAd: (
+        context: Activity,
+        adUnitId: String,
+        adRequest: AdRequest,
+        RewardedAdLoadCallback
+    ) -> Unit = mock()
+    private val testShowRewardedAd: (
+        context: Activity,
+        ad: RewardedAd,
+        rewardListener: OnUserEarnedRewardListener
+    ) -> Unit = mock()
 
     @Before
     fun setup() {

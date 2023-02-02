@@ -151,6 +151,22 @@ internal data class CloseAlertInfoCallbackObj(val param: CloseAlertInfoParam?) {
     @Keep
     internal data class CloseAlertInfoParam(val closeAlertInfo: MiniAppCloseAlertInfo)
 }
+
+@Keep
+internal data class CloseMiniAppCallbackObj(val withConfirmationAlert: Boolean)
+
+// end region
+
+// universal bridge region
+@Keep
+internal data class JsonInfo(val content: String)
+
+@Keep
+internal data class JsonInfoCallbackObj(val param: JsonInfoParam) {
+
+    @Keep
+    internal data class JsonInfoParam(val jsonInfo: JsonInfo)
+}
 // end region
 
 // In-App Purchase region

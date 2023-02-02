@@ -29,13 +29,13 @@
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
 
             <meta-data
@@ -51,6 +51,12 @@
             android:theme="@style/MaterialAppTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.rakuten.tech.mobile.testapp.ui.display.WebViewActivity" />
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.GeneralSettingsActivity"
+            android:label="@string/lb_general" />
+        <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ContactAddActivity">
+        </activity>
         <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.ProfileSettingsActivity"
             android:label="@string/action_profile" />

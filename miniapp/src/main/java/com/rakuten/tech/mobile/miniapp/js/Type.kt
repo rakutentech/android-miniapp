@@ -28,6 +28,8 @@ internal enum class ActionType(val action: String) {
     SET_CLOSE_ALERT("setCloseAlert"),
     PURCHASE_ITEM("purchaseProductWith"),
     GET_PURCHASE_ITEM_LIST("prepareProductsList"),
+    JSON_INFO("sendJsonToHostapp"),
+    CLOSE_MINIAPP("closeMiniApp")
 }
 
 internal enum class DialogType {
@@ -53,5 +55,6 @@ enum class NativeEventType(val value: String) {
     MINIAPP_ON_PAUSE("miniapppause"),
     MINIAPP_ON_RESUME("miniappresume"),
     MINIAPP_SECURE_STORAGE_READY("miniappsecurestorageready"),
-    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror")
+    MINIAPP_SECURE_STORAGE_LOAD_ERROR("miniappsecurestorageloaderror"),
+    MINIAPP_RECEIVE_JSON_INFO("miniappreceivejsoninfo")
 }

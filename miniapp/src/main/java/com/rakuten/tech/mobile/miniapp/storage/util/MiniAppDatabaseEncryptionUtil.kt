@@ -21,7 +21,8 @@ private const val ENCRYPTION_ALGORITHM = "AES"
 private const val SHARED_PREFERENCE_KEY = "PASSCODE"
 private const val SHARED_PREFERENCE_NAME = "MiniAppDatabase"
 private const val CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding"
-private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
+private const val JAVA7_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+private const val JAVA8_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
 
 /**
  * Container for everything needed for decrypting the database.
@@ -30,8 +31,9 @@ private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
  * @param salt cryptographic salt
  * @param encryptedPasscode encrypted database key
  */
+@VisibleForTesting
 @Keep
-private data class EncryptedPasscodeDataHolder(
+internal data class EncryptedPasscodeDataHolder(
     val iv: String,
     val salt: String,
     val encryptedPasscode: String
@@ -54,8 +56,16 @@ internal object MiniAppDatabaseEncryptionUtil {
 
     @VisibleForTesting
     @SuppressWarnings("MagicNumber")
+    internal fun getSecretKeyAlgorithm() = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+        SecretKeyFactory.getInstance(JAVA7_SECRET_KEY_ALGORITHM)
+    } else {
+        SecretKeyFactory.getInstance(JAVA8_SECRET_KEY_ALGORITHM)
+    }
+
+    @VisibleForTesting
+    @SuppressWarnings("MagicNumber")
     internal fun getSecretKeyFromPassword(password: String, salt: ByteArray): SecretKey {
-        val factory: SecretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM)
+        val factory: SecretKeyFactory = getSecretKeyAlgorithm()
         val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 256)
         return SecretKeySpec(
             factory.generateSecret(spec)
@@ -85,7 +95,8 @@ internal object MiniAppDatabaseEncryptionUtil {
     }
 
     @SuppressWarnings("SwallowedException")
-    private fun getPasscodeHolder(context: Context): EncryptedPasscodeDataHolder? {
+    @VisibleForTesting
+    internal fun getPasscodeHolder(context: Context): EncryptedPasscodeDataHolder? {
         val prefs = context.getSharedPreferences(
             SHARED_PREFERENCE_NAME,
             Context.MODE_PRIVATE
@@ -146,7 +157,7 @@ internal object MiniAppDatabaseEncryptionUtil {
 
         val holder = getPasscodeHolder(context)
 
-        if (holder == null || (holder.salt == null || holder.iv == null || holder.encryptedPasscode == null)) {
+        if (holder == null) {
             val salt = generateSalt()
             val iv: IvParameterSpec = generateIv()
             val secretKey = getSecretKeyFromPassword(passcode, salt)
@@ -168,7 +179,8 @@ internal object MiniAppDatabaseEncryptionUtil {
      * in that case we'll decrypt the encrypted passcode
      * to match with the given passcode.
      */
-    private fun decryptPasscode(context: Context, passcode: String): String {
+    @VisibleForTesting
+    internal fun decryptPasscode(context: Context, passcode: String): String {
         val holder = getPasscodeHolder(context)
         if (holder != null) {
             val iv = Base64.decode(holder.iv, Base64.DEFAULT)

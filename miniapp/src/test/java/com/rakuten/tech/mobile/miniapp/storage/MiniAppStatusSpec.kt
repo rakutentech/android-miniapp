@@ -14,6 +14,8 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.spy
+import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class MiniAppStatusSpec {
@@ -34,6 +36,15 @@ class MiniAppStatusSpec {
     fun `isVersionDownloaded should be false if no app has been saved`() {
         miniAppStatus.isVersionDownloaded(
             TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_BASE_PATH) shouldBe false
+    }
+
+    @Test
+    fun `isVersionDownloaded should be true if app has been saved`() {
+        val spyMiniAppStatus = spy(miniAppStatus)
+        whenever(spyMiniAppStatus.isExisted(TEST_BASE_PATH)).thenReturn(true)
+        prefs.edit().putBoolean(TEST_ID_MINIAPP + TEST_ID_MINIAPP_VERSION, true).apply()
+        spyMiniAppStatus.isVersionDownloaded(
+            TEST_ID_MINIAPP, TEST_ID_MINIAPP_VERSION, TEST_BASE_PATH) shouldBe true
     }
 
     @Test

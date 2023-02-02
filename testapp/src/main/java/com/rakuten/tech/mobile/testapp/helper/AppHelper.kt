@@ -6,10 +6,12 @@ import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
 import android.util.Patterns
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -17,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -119,6 +122,38 @@ fun setResizableSoftInputMode(activity: Activity) {
 }
 
 /**
+ * To use MiniAppPasswordTransformationMethod class for masking.
+ */
+fun EditText.maskInput() {
+    this.transformationMethod = MiniAppPasswordTransformationMethod()
+}
+
+/**
+ * To reset [TransformationMethod] for the given [EditText].
+ */
+fun EditText.unMaskInput() {
+    this.transformationMethod = null
+}
+
+/**
+ * To clear all the cursor focus in the entire layout.
+ * This function needs to be called at inside [Activity.dispatchTouchEvent].
+ */
+fun clearAllCursorFocus(event: MotionEvent, activity: Activity) {
+    if (event.action == MotionEvent.ACTION_DOWN) {
+        val view: View? = activity.currentFocus
+        if (view is EditText) {
+            val outRect = Rect()
+            view.getGlobalVisibleRect(outRect)
+            if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                view.clearFocus()
+                hideSoftKeyboard(view)
+            }
+        }
+    }
+}
+
+/**
  * Return true if this [Context] is available.
  * Availability is defined as the following:
  * + [Context] is not null
@@ -175,4 +210,8 @@ fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
     Handler(Looper.getMainLooper()).postDelayed({
         onFinished()
     }, durationInMillis)
+}
+
+fun Context.showToastMessage(text: String, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(this, text, duration).show()
 }

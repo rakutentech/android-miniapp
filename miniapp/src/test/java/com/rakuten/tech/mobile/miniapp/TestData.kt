@@ -1,10 +1,9 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
-
-import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 
 internal const val TEST_BODY_CONTENT = "lorem ipsum"
 internal const val TEST_ERROR_MSG = "error_message"
@@ -54,7 +53,8 @@ internal const val INVALID_FILE_URL_PATH = "https://78d85043-d04f-486a-8212-bf26
 
 internal const val TEST_USER_NAME = "test_user_name"
 internal const val TEST_PROFILE_PHOTO = "data:image/png;base64,encodedValue"
-internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email")
+internal val TEST_EMAIL_LIST = listOf("test@sample.com", "test@example.com")
+internal val TEST_CONTACT = Contact("test_contact_id", "test_contact_name", "test_contact_email", TEST_EMAIL_LIST)
 internal const val TEST_PROMOTIONAL_URL = "http://testImageurl.co"
 internal const val TEST_PROMOTIONAL_TEXT = "test_promotional_text"
 
@@ -87,3 +87,13 @@ internal val TEST_HA_ANALYTICS_CONFIGS = listOf(TEST_CONFIG1, TEST_CONFIG2)
 
 internal const val TEST_PUBLIC_KEY_ID = "test_public_key_id"
 internal const val TEST_MANIFEST_SIGNATURE = "test_manifest_signature"
+
+internal const val JAVA7_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+internal const val JAVA8_SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
+internal const val TEST_DUMMY_DESCRIPTION = "dummy description"
+internal const val TEST_PATH = "test-path"
+internal const val TEST_BODY = "test-body"
+internal const val TEST_DATA = "test data"
+internal const val TEST_MINI_APP_FOLDER = "mini-app-folder"
+internal const val TEST_CONTENT = "test content"
+internal const val TEST_FILE_HTML = "file1.html"

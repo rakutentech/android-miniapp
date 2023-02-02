@@ -2,14 +2,10 @@ package com.rakuten.tech.mobile.miniapp.display
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.FileProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.test.TestCoroutineScope
-import org.amshove.kluent.Verify
-import org.amshove.kluent.called
-import org.amshove.kluent.on
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.that
-import org.amshove.kluent.was
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,10 +48,25 @@ class WebViewFileDownloaderSpec {
     }
 
     @Test
+    fun `onDownloadStart should not launch a Chooser Intent when wrong url`() {
+        fileDownloader.onDownloadStart("abc:url", mimeType) {}
+
+        VerifyNotCalled on context that context.startActivity(argThat {
+            action == Intent.ACTION_CHOOSER
+        }) was called
+    }
+
+    @Test
     fun `cleanup should delete the cache folder`() {
         fileDownloader.onDownloadStart(dataUrl, mimeType) {}
         fileDownloader.cleanup()
 
         cache.exists() shouldBe false
+    }
+
+    @Test
+    fun `defaultFileProvider should be FileProvider`() {
+        val defaultFileProvider = MiniAppDefaultFileProvider()
+        defaultFileProvider shouldBeInstanceOf FileProvider::class
     }
 }

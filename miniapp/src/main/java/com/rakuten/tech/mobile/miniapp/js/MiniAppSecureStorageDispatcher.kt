@@ -144,7 +144,6 @@ internal class MiniAppSecureStorageDispatcher(
         miniAppSecureStorage.delete(onSuccess, onFailed)
     }
 
-    @Suppress("MagicNumber")
     fun onSize(callbackId: String) = whenReady {
         onSuccessDBSize = { fileSize: Long ->
             val maxSizeInBytes = maxStorageSizeLimitInBytes
@@ -178,7 +177,8 @@ internal class MiniAppSecureStorageDispatcher(
      * @param miniAppId will be used to find the file to be deleted.
      */
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun clearSecureDatabase(miniAppId: String): Boolean {
+    @VisibleForTesting
+    internal fun clearSecureDatabase(miniAppId: String): Boolean {
         var isDeleted: Boolean
         try {
             val dbName = DB_NAME_PREFIX + miniAppId

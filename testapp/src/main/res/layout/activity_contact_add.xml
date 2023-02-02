@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/small_12"
+        android:paddingTop="@dimen/small_12"
+        tools:context="com.rakuten.tech.mobile.testapp.ui.userdata.ContactAddActivity">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <LinearLayout
+                android:id="@+id/layout_fields"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContactId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtContactId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/small_4"
+                        android:hint="@string/userdata_contact_id"
+                        android:imeOptions="actionNext"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContactName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtContactName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/small_4"
+                        android:hint="@string/userdata_contact_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContactEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edtContactEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/small_4"
+                        android:hint="@string/userdata_contact_email"
+                        android:imeOptions="actionDone"
+                        android:inputType="textEmailAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+                android:id="@+id/btnAddOptionalEmailField"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/large_44"
+                android:layout_margin="@dimen/medium_16"
+                android:background="@drawable/bg_red_curve"
+                android:gravity="center"
+                android:padding="@dimen/small_4"
+                android:text="@string/add_new_email"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_large_16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_fields"
+                app:pageName="Add Contact"
+                app:siteSection="Contacts" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

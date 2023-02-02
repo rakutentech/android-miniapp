@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.securestoragedispatcher
 
-import android.content.Context
+import android.app.Activity
 import androidx.test.core.app.ActivityScenario
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MAX_STORAGE_SIZE_IN_BYTES
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TestActivity
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppSecureStorageError
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppSecureStorage
 import com.rakuten.tech.mobile.miniapp.storage.database.MiniAppSecureDatabase
@@ -21,10 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.expect
 
@@ -51,7 +49,6 @@ class MiniAppSecureStorageDispatcherSpec {
         param = SecureStorageKeyList(setOf(testKey)),
         id = TEST_CALLBACK_ID
     )
-    private val context: Context = mock()
     private val setItemsJsonStr = Gson().toJson(secureStorageCallbackObj)
     private val getItemsJsonStr = Gson().toJson(getItemCallbackObj)
     private val deleteItemsJsonStr = Gson().toJson(deleteItemsCallbackObj)
@@ -59,15 +56,16 @@ class MiniAppSecureStorageDispatcherSpec {
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
     private lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
-    private val testMaxStorageSizeInKB = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
+    private val testMaxStorageSizeInBytes = TEST_MAX_STORAGE_SIZE_IN_BYTES.toLong()
     private val miniAppSecureStorage: MiniAppSecureStorage = mock()
     private val testJsonError = "Can not parse secure storage json object."
+    private val dbName = "database"
 
     @Before
     fun setUp() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppSecureStorageDispatcher =
-                MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInKB)
+                MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInBytes)
             miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
             miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
@@ -82,12 +80,27 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onLoad should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInBytes))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onLoad()
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).load(TEST_MA_ID,
             {},
             {})
+    }
+
+    @Test
+    fun `onLoad should be working if initialization is completed`() {
+        miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
+
+        miniAppSecureStorageDispatcher.onSuccess = {}
+        miniAppSecureStorageDispatcher.onFailed = { _: MiniAppSecureStorageError -> }
+
+        miniAppSecureStorageDispatcher.onLoad()
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).load(
+            TEST_MA_ID,
+            miniAppSecureStorageDispatcher.onSuccess,
+            miniAppSecureStorageDispatcher.onFailed
+        )
     }
 
     /**
@@ -96,7 +109,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onSetItems should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInBytes))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).insertItems(testItems,
@@ -109,14 +122,14 @@ class MiniAppSecureStorageDispatcherSpec {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, "")
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `insertItems should be called if successfully parsed the jsonStr`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).insertItems(
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).insertItems(
             testItems,
             miniAppSecureStorageDispatcher.onSuccess,
             miniAppSecureStorageDispatcher.onFailed
@@ -196,17 +209,18 @@ class MiniAppSecureStorageDispatcherSpec {
         }
         miniAppSecureStorageDispatcher.onSetItems(TEST_CALLBACK_ID, setItemsJsonStr)
         miniAppSecureStorageDispatcher.onSuccess.invoke().shouldBe(job)
-        verify(webViewListener, times(1)).runSuccessCallback(
+        verify(webViewListener).runSuccessCallback(
             TEST_CALLBACK_ID, MiniAppSecureStorageDispatcher.SAVE_SUCCESS_SECURE_STORAGE
         )
     }
 
     /** end region */
 
+    /** region: onGetItem from secure storage */
     @Test
     fun `onGetItem should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInBytes))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).getItem(
@@ -219,14 +233,14 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `postError should be called if can not parse the jsonStr for getItem`() {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, "")
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `getItem should be called if can successfully parse the jsonStr and cached item is null`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onGetItem(TEST_CALLBACK_ID, getItemsJsonStr)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).getItem(
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).getItem(
             testKey,
             miniAppSecureStorageDispatcher.onSuccessGetItem,
             miniAppSecureStorageDispatcher.onFailed
@@ -252,7 +266,7 @@ class MiniAppSecureStorageDispatcherSpec {
     @Test
     fun `onRemoveItems should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInBytes))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, deleteItemsJsonStr)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).deleteItems(
@@ -265,14 +279,14 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `postError should be called if can not parse the jsonStr for removeItems`() {
         val errMsg = testJsonError
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, "")
-        verify(bridgeExecutor, times(1)).postError(TEST_CALLBACK_ID, errMsg)
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
     }
 
     @Test
     fun `deleteItems should be called if can successfully parse the jsonStr`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onRemoveItems(TEST_CALLBACK_ID, deleteItemsJsonStr)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).deleteItems(
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).deleteItems(
             setOf(testKey),
             miniAppSecureStorageDispatcher.onSuccess,
             miniAppSecureStorageDispatcher.onFailed
@@ -283,14 +297,14 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `onSize should be called if can successfully parse the jsonStr`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onSize(TEST_CALLBACK_ID)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1))
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage)
             .getDatabaseUsedSize(miniAppSecureStorageDispatcher.onSuccessDBSize)
     }
 
     @Test
     fun `onClearAll should not be working if initialization is not completed`() {
         val miniAppSecureStorageDispatcher =
-            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInKB))
+            Mockito.spy(MiniAppSecureStorageDispatcher(mock(), testMaxStorageSizeInBytes))
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onClearAll(TEST_CALLBACK_ID)
         verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(0)).delete({}, {})
@@ -300,17 +314,16 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `delete should be called for onClearAll`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.onClearAll(TEST_CALLBACK_ID)
-        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)).delete(
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).delete(
             miniAppSecureStorageDispatcher.onSuccess, miniAppSecureStorageDispatcher.onFailed
         )
     }
 
     @Test
     fun `clearSecureStorage should be called with the same mini app id`() {
-        val dbName = "database"
         miniAppSecureStorageDispatcher.context = mock()
         miniAppSecureStorageDispatcher.clearSecureStorage(dbName)
-        verify(miniAppSecureStorageDispatcher.context, times(1)).deleteDatabase(
+        verify(miniAppSecureStorageDispatcher.context).deleteDatabase(
             DB_NAME_PREFIX + dbName
         )
     }
@@ -319,19 +332,73 @@ class MiniAppSecureStorageDispatcherSpec {
     fun `clearSecureStorage should be called without the mini app id`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.clearSecureStorages()
-        verify(
-            miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)
-        ).closeDatabase()
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).closeDatabase()
+    }
+
+    @Test
+    fun `clearSecureDatabase should be false as default`() {
+        miniAppSecureStorageDispatcher.context = mock()
+        miniAppSecureStorageDispatcher.clearSecureDatabase(dbName) shouldBe false
+        verify(miniAppSecureStorageDispatcher.context).deleteDatabase(
+            DB_NAME_PREFIX + dbName
+        )
+    }
+
+    @Test
+    fun `clearSecureDatabase should be true when empty database list`() {
+        miniAppSecureStorageDispatcher.context = mock()
+        whenever(miniAppSecureStorageDispatcher.context.databaseList()).thenReturn(arrayOf())
+        miniAppSecureStorageDispatcher.clearSecureDatabase(dbName) shouldBe true
+        verify(miniAppSecureStorageDispatcher.context).deleteDatabase(
+            DB_NAME_PREFIX + dbName
+        )
+    }
+
+    @Test
+    fun `clearSecureDatabase should be true when expected database list`() {
+        miniAppSecureStorageDispatcher.context = mock()
+        whenever(miniAppSecureStorageDispatcher.context.databaseList()).thenReturn(
+            arrayOf((DB_NAME_PREFIX + dbName))
+        )
+        miniAppSecureStorageDispatcher.clearSecureDatabase(dbName) shouldBe true
     }
 
     @Test
     fun `cleanUp should call miniAppSecureStorage closeDatabase`() {
         miniAppSecureStorageDispatcher.miniAppSecureStorage = miniAppSecureStorage
         miniAppSecureStorageDispatcher.cleanUp()
-        verify(
-            miniAppSecureStorageDispatcher.miniAppSecureStorage, times(1)
-        ).closeDatabase()
+        verify(miniAppSecureStorageDispatcher.miniAppSecureStorage).closeDatabase()
+    }
+
+    @Test
+    fun `clearAllSecureDatabases should delete the appropriate database`() {
+        val activity = mock<Activity> { }
+        whenever(activity.databaseList()).thenReturn(arrayOf(DB_NAME_PREFIX))
+        miniAppSecureStorageDispatcher =
+            spy(MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInBytes))
+        miniAppSecureStorageDispatcher.clearAllSecureDatabases()
+        verify(activity).deleteDatabase(DB_NAME_PREFIX)
+    }
+
+    @Test
+    fun `clearAllSecureDatabases should not delete the database when doesn't match with db prefix`() {
+        val activity = mock<Activity> { }
+        whenever(activity.databaseList()).thenReturn(arrayOf("abc"))
+        miniAppSecureStorageDispatcher =
+            spy(MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInBytes))
+        miniAppSecureStorageDispatcher.clearAllSecureDatabases()
+        verify(activity, times(0)).deleteDatabase(DB_NAME_PREFIX)
     }
 
     /** end region */
+
+    @Test
+    fun `updateMiniAppStorageMaxLimit should not delete the database when doesn't match with db prefix`() {
+        val activity = mock<Activity> { }
+        whenever(activity.databaseList()).thenReturn(arrayOf("abc"))
+        miniAppSecureStorageDispatcher =
+            spy(MiniAppSecureStorageDispatcher(activity, testMaxStorageSizeInBytes))
+        miniAppSecureStorageDispatcher.updateMiniAppStorageMaxLimit(testMaxStorageSizeInBytes)
+        verify(activity, times(0)).deleteDatabase(DB_NAME_PREFIX)
+    }
 }

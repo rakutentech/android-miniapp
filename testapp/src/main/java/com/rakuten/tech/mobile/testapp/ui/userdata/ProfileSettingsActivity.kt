@@ -107,7 +107,7 @@ class ProfileSettingsActivity : BaseActivity() {
                     inputStream?.use {
                         val bitmap = BitmapFactory.decodeStream(inputStream)
                         val byteArrayOutputStream = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
                         val bytes: ByteArray = byteArrayOutputStream.toByteArray()
                         profileUrlBase64 = BASE_64_DATA_PREFIX + Base64.encodeToString(
                             bytes,

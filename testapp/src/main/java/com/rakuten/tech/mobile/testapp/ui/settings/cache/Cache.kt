@@ -241,7 +241,7 @@ internal class Cache(
         fun getTabMiniAppInfoList(key: String): List<MiniAppInfo>? =
             MiniAppListCache(key).getData(prefs)
 
-        fun saveCurrentMiniAppInfoList(miniAppInfoList: List<MiniAppInfo>, key: String){
+        fun saveCurrentMiniAppInfoList(miniAppInfoList: List<MiniAppInfo>, key: String) {
             MiniAppListCache(key).setData(prefs.edit(), miniAppInfoList)
         }
 
@@ -253,7 +253,7 @@ internal class Cache(
             MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).setData(prefs.edit(), miniAppInfoList)
         }
 
-        fun clearAllMiniAppInfoList(){
+        fun clearAllMiniAppInfoList() {
             MiniAppListCache(TAB_1_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
             MiniAppListCache(TAB_2_MINIAPP_INFO_LIST_KEY).clear(prefs.edit())
         }

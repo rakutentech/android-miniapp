@@ -270,6 +270,7 @@ There are some methods have a default implementation but the host app can overri
 | requestCustomPermissions     | ✅       |
 | shareContent                 | ✅       |
 | getHostEnvironmentInfo       | ✅       |
+| sendJsonToHostApp            | 🚫       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -349,6 +350,20 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         else
             onError(hostEnvironmentError) // reject miniapp to send host environment info with message explanation.
     }
+    
+    override fun sendJsonToHostApp(
+        jsonStr: String,
+        onSuccess: (String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        //validation preference for incoming json message
+        if(jsonStr.isNotBlank()){
+            onSuccess(jsonStr)
+        } else {
+            onError(jsonStr)
+        }
+    }
+        
 }
 
 val userInfoBridgeDispatcher = object : UserInfoBridgeDispatcher {
@@ -519,6 +534,12 @@ You can also choose to override the default functionality and instead share the 
 **API Docs:** [MiniAppMessageBridge.getHostEnvironmentInfo](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-environment.html)
 
 The default functionality will provide information using `HostEnvironmentInfo` object to Mini App. Also, Host App can send it's environment information by implementing this function.
+    
+### Send Json To Host App
+**API Docs:** [MiniAppMessageBridge.sendJsonToHostApp](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
+
+The MiniApp is able to send the Universal Bridge in `json` string format. 
+    
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
@@ -568,6 +589,9 @@ Mini apps are able to get events for custom event types which are defined by the
 - External webview close (`NativeEventType.EXTERNAL_WEBVIEW_CLOSE`)
 - Pause (`NativeEventType.MINIAPP_ON_PAUSE`)
 - Resume (`NativeEventType.MINIAPP_ON_RESUME`)
+- Secure Storage Ready (`NativeEventType.MINIAPP_SECURE_STORAGE_READY`)
+- Secure Storage Load Error(`NativeEventType.MINIAPP_SECURE_STORAGE_LOAD_ERROR`)
+- Receive Json Info(`NativeEventType.MINIAPP_RECEIVE_JSON_INFO`)
 
 **Note:** Host app can send these events whenever these events occur and MiniApp will be able to get those events.
 
@@ -605,6 +629,16 @@ In case miniapp is allowed to control, please ensure that your activity handles 
 There are several ways to prevent the view from being reset.
 In our Demo App, we set the config on activity `android:configChanges="orientation|screenSize"`.
 See [here](https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange).
+
+### MiniApp Close
+**API Docs:** [MiniAppMessageBridge.setMiniAppCloseListener](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-mini-app-close-listener.html)
+
+The mini app is able to request host app to close itself.
+```kotlin
+miniAppMessageBridge.setMiniAppCloseListener { withConfirmationAlert ->
+    //... if miniapp wants to show a confirmation alert before closing withConfirmationAlert will be true.
+}
+```
 
 ## Fetching Mini App Info
 **API Docs:** [MiniApp.listMiniApp](api/com.rakuten.tech.mobile.miniapp/-mini-app/list-mini-app.html), [MiniApp.fetchInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app/fetch-info.html), [MiniAppInfo](api/com.rakuten.tech.mobile.miniapp/-mini-app-info/)

@@ -88,9 +88,8 @@ open class MiniAppViewHandlerSpec {
             ) itReturns dummyManifest
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
-            When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
-                deniedPermission
-            ) itReturns true
+            When calling miniAppViewHandler.downloadedManifestCache
+                .isRequiredPermissionDenied(deniedPermission) itReturns true
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
         }
@@ -104,8 +103,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.isRequiredPermissionDenied(
-                deniedPermission
-            ) itReturns true
+                deniedPermission) itReturns true
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID, true)
         }
@@ -116,8 +114,7 @@ open class MiniAppViewHandlerSpec {
             val allowedPermission = MiniAppCustomPermission(
                 TEST_MA_ID, listOf(
                     Pair(
-                        MiniAppCustomPermissionType.USER_NAME,
-                        MiniAppCustomPermissionResult.ALLOWED
+                        MiniAppCustomPermissionType.USER_NAME, MiniAppCustomPermissionResult.ALLOWED
                     )
                 )
             )
@@ -158,8 +155,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.downloadedManifestCache.getAllPermissions(
-                deniedPermission
-            ) itReturns deniedPermission.pairValues
+                deniedPermission) itReturns deniedPermission.pairValues
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, differentVersionId)
 
@@ -183,8 +179,7 @@ open class MiniAppViewHandlerSpec {
             When calling miniAppViewHandler.miniAppCustomPermissionCache
                 .readPermissions(TEST_MA_ID) itReturns deniedPermission
             When calling miniAppViewHandler.miniAppManifestVerifier.verify(
-                TEST_MA_ID, file
-            ) itReturns false
+                TEST_MA_ID, file) itReturns false
 
             miniAppViewHandler.verifyManifest(TEST_MA_ID, TEST_MA_VERSION_ID)
 
@@ -227,9 +222,39 @@ open class MiniAppViewHandlerSpec {
             listOf(
                 Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
                 Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")
-            ), listOf(), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
+            ), listOf(
+                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason"),
+                Pair(MiniAppCustomPermissionType.ACCESS_TOKEN, "reason")
+            ), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         miniAppViewHandler.isManifestEqual(dummyApiManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffMetaManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(),
+            TEST_ATP_LIST,
+            mapOf(Pair("abc", "bcd")),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffMetaManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffReqPermManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+            listOf(),
+            TEST_ATP_LIST,
+            mapOf(),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffReqPermManifest, dummyManifest) shouldBeEqualTo false
+
+        val diffOptPermManifest = MiniAppManifest(
+            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")),
+            TEST_ATP_LIST,
+            mapOf(Pair("abc", "bcd")),
+            TEST_MA_VERSION_ID
+        )
+        miniAppViewHandler.isManifestEqual(diffOptPermManifest, dummyManifest) shouldBeEqualTo false
     }
 
     @Test
@@ -338,8 +363,8 @@ open class MiniAppViewHandlerSpec {
         }
 
     @Test(expected = NullPointerException::class)
-    @Suppress("LongMethod", "MaxLineLength")
-    fun `should invoke MiniAppDownloader, Displayer and verifyManifest while mini app view creation by miniAppInfo from cache`() =
+    @Suppress("LongMethod")
+    fun `should invoke displayer createMiniAppDisplay while mini app view creation by miniAppInfo from cache`() =
         runBlockingTest {
 
             withMiniAppViewHandler { getMiniAppResult, testMiniAppInfo ->
