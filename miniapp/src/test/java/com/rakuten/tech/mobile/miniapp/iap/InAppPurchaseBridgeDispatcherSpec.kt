@@ -31,8 +31,8 @@ class InAppPurchaseBridgeDispatcherSpec {
     private val product = com.rakuten.tech.mobile.miniapp.iap.Product(
         "itemId", "title", "description", productPrice
     )
-    private val purchasedProduct = com.rakuten.tech.mobile.miniapp.iap.PurchasedProduct(
-        product, "dummy_transactionId", "YYYY-MM-DD"
+    private val purchasedProduct = PurchasedProduct(
+        product, "dummy_transactionId", "YYYY-MM-DD", "", 0
     )
     private val purchasedProductResponse =
         PurchasedProductResponse(
@@ -141,7 +141,8 @@ class InAppPurchaseBridgeDispatcherSpec {
         val wrapper = InAppPurchaseBridgeDispatcher()
         wrapper.setMiniAppComponents(
             bridgeExecutor,
-            TEST_MA.id
+            TEST_MA.id,
+            mock()
         )
         wrapper.setInAppPurchaseProvider(provider)
         return wrapper
