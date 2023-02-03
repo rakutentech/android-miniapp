@@ -87,7 +87,7 @@ class CustomPermissionBridgeSpec : BridgeCommon() {
             customPermissionWindow =
                 spy(MiniAppCustomPermissionWindow(activity, customPermissionBridgeDispatcher))
             customPermissionBridgeDispatcher.permissionsAsManifest = customPermissionManifest
-
+            miniappMessageBridge.setComponentsIAPDispatcher(mock())
             miniappMessageBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

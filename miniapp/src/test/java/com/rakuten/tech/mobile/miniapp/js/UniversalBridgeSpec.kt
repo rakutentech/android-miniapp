@@ -47,6 +47,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     fun setUp() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -133,6 +134,7 @@ class UniversalBridgeSpec : BridgeCommon() {
                 any(),
                 any()
             ) itThrows RuntimeException()
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -161,6 +163,7 @@ class UniversalBridgeSpec : BridgeCommon() {
                 org.amshove.kluent.any(),
                 org.amshove.kluent.any()
             ) itThrows RuntimeException()
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -234,6 +237,7 @@ class UniversalBridgeSpec : BridgeCommon() {
     fun `bridgeExecutor postValue should not be called if it is not initialized`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

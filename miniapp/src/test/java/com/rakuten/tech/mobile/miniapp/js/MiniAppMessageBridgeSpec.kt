@@ -54,6 +54,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -80,6 +81,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 createErrorWebViewListener("${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} null")
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -107,6 +109,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val errMsg = "${ErrorBridgeMessage.ERR_MESSAGING_UNIQUE_ID} $testErrorMessage"
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             mockIsValid = false
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -136,6 +139,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val webViewListener = createErrorWebViewListener("${ErrorBridgeMessage.ERR_MAUID} null")
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -157,6 +161,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val errMsg = "${ErrorBridgeMessage.ERR_MAUID} $testErrorMessage"
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             mockIsValid = false
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -179,6 +184,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val errMsg = "Denied"
             val webViewListener = createErrorWebViewListener("dummy message")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -203,6 +209,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val webViewListener =
                 createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -230,6 +237,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val webViewListener =
                 createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -291,6 +299,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             val webViewListener =
                 createErrorWebViewListener("${ErrorBridgeMessage.ERR_REQ_DEVICE_PERMISSION} null")
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

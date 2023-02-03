@@ -398,7 +398,7 @@ open class MiniAppViewHandlerSpec {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppViewHandler.miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns getMiniAppResult
-
+            When calling miniAppConfig.miniAppMessageBridge itReturns mock()
             miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig, true)
             verify(miniAppViewHandler.miniAppDownloader).getCachedMiniApp(TEST_MA_ID)
         }
@@ -410,7 +410,8 @@ open class MiniAppViewHandlerSpec {
             onGettingManifestWhileCreate()
             val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
             When calling miniAppViewHandler.miniAppDownloader.getMiniApp(TEST_MA_ID) itReturns getMiniAppResult
-
+            miniAppViewHandler.apiClient = mock()
+            When calling miniAppConfig.miniAppMessageBridge itReturns mock()
             miniAppViewHandler.createMiniAppView(TEST_MA_ID, miniAppConfig, false)
             verify(miniAppViewHandler.miniAppDownloader).getMiniApp(TEST_MA_ID)
         }

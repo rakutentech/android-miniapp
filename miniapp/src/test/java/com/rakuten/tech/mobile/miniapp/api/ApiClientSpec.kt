@@ -24,6 +24,7 @@ open class ApiClientSpec {
     private val mockManifestApi: ManifestApi = mock()
     private val mockMetadataApi: MetadataApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
+    private val mockIAPApi: InAppPurchaseApi = mock()
 
     private val miniAppInfo = MiniAppInfo(
         id = TEST_MA_ID,
@@ -197,6 +198,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(AppInfoApi::class.java) itReturns mockAppInfoApi
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(MetadataApi::class.java) itReturns mockMetadataApi
+        When calling mockRetrofitClient.create(InAppPurchaseApi::class.java) itReturns mockIAPApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
         ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
@@ -241,6 +243,7 @@ open class ApiClientSpec {
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         metadataApi: MetadataApi = mockMetadataApi,
+        inAppPurchaseApi: InAppPurchaseApi = mockIAPApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
@@ -250,6 +253,7 @@ open class ApiClientSpec {
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,
         metadataApi = metadataApi,
+        inAppPurchaseApi = inAppPurchaseApi,
         downloadApi = downloadApi
     )
 }

@@ -1,21 +1,31 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
 import com.rakuten.tech.mobile.miniapp.TEST_MA
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
+import java.text.SimpleDateFormat
+import java.util.*
 
+@RunWith(RobolectricTestRunner::class)
 class InAppPurchaseBridgeDispatcherSpec {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val callbackObj = CallbackObj(
@@ -36,7 +46,7 @@ class InAppPurchaseBridgeDispatcherSpec {
     )
     private val purchasedProductResponse =
         PurchasedProductResponse(
-            PurchasedProductResponseStatus.UNKNOWN,
+            PurchasedProductResponseStatus.PURCHASED,
             purchasedProduct
         )
     private val purchaseJsonStr: String = Gson().toJson(
@@ -46,10 +56,33 @@ class InAppPurchaseBridgeDispatcherSpec {
             id = TEST_CALLBACK_ID
         )
     )
+    private val apiClient: ApiClient = mock()
 
+    private fun createPurchaseRequest() =  MiniAppPurchaseRequest(
+        platform = InAppPurchaseBridgeDispatcher.PLATFORM,
+        productId = purchasedProductResponse.purchasedProduct.product.id,
+        transactionState = TransactionState.PURCHASED.state,
+        transactionId = purchasedProductResponse.purchasedProduct.transactionId,
+        transactionDate = formatTransactionDate(purchasedProductResponse.purchasedProduct.transactionDate),
+        transactionReceipt = purchasedProductResponse.purchasedProduct.transactionReceipt,
+        purchaseToken = purchasedProductResponse.purchasedProduct.purchaseToken
+    )
+
+    private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(
+        "",
+        "",
+        ""
+    )
+
+    private fun formatTransactionDate(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        return format.format(date)
+    }
     @Before
     fun setup() {
         miniAppBridge = Mockito.spy(createMessageBridge())
+        miniAppBridge.apiClient = apiClient
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         miniAppBridge.init(
             activity = TestActivity(),
@@ -100,6 +133,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         )
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `postValue should be called when purchasing item successfully`() {
         val provider = Mockito.spy(
@@ -108,10 +142,13 @@ class InAppPurchaseBridgeDispatcherSpec {
                 canPurchase = true
             )
         )
-        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
-        wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+        runBlockingTest {
+            When calling apiClient.purchaseItem(TEST_MA_ID, createPurchaseRequest()) itReturns createMiniAppPurchaseResponse()
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
 
-        verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(purchasedProductResponse))
+            verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(createMiniAppPurchaseResponse()))
+        }
     }
 
     @Suppress("EmptyFunctionBlock")
@@ -142,7 +179,7 @@ class InAppPurchaseBridgeDispatcherSpec {
         wrapper.setMiniAppComponents(
             bridgeExecutor,
             TEST_MA.id,
-            mock()
+            apiClient
         )
         wrapper.setInAppPurchaseProvider(provider)
         return wrapper

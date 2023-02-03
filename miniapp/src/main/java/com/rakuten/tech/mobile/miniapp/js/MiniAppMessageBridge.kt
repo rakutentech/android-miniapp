@@ -67,7 +67,8 @@ open class MiniAppMessageBridge {
     internal lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
-    private lateinit var apiClient: ApiClient
+    @VisibleForTesting
+    internal lateinit var apiClient: ApiClient
 
     @VisibleForTesting
     internal lateinit var miniAppCloseListener: (Boolean) -> Unit

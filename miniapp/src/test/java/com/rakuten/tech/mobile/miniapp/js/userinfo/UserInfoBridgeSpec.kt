@@ -80,6 +80,7 @@ class UserInfoBridgeSpec {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             miniAppBridge = Mockito.spy(createMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
