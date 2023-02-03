@@ -2,14 +2,13 @@ package com.rakuten.tech.mobile.miniapp.iap
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
-import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
-import com.rakuten.tech.mobile.miniapp.TEST_MA
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
@@ -137,7 +136,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
                 canPurchase = true
             )
         )
-        runBlockingTest {
+        TestCoroutineScope().launch {
             When calling apiClient.purchaseItem(TEST_MA_ID, createPurchaseRequest()) itReturns createMiniAppPurchaseResponse()
             val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
             wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
