@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_ID
@@ -10,23 +9,19 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
 import java.text.SimpleDateFormat
 import java.util.*
 
-@RunWith(RobolectricTestRunner::class)
-class InAppPurchaseBridgeDispatcherSpec {
+class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val callbackObj = CallbackObj(
         action = ActionType.PURCHASE_ITEM.action,
@@ -58,7 +53,7 @@ class InAppPurchaseBridgeDispatcherSpec {
     )
     private val apiClient: ApiClient = mock()
 
-    private fun createPurchaseRequest() =  MiniAppPurchaseRequest(
+    private fun createPurchaseRequest() = MiniAppPurchaseRequest(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
         productId = purchasedProductResponse.purchasedProduct.product.id,
         transactionState = TransactionState.PURCHASED.state,
