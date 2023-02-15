@@ -83,7 +83,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
+            //applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
             resValue "string", "build_version", buildVersion
             resValue "string", "miniapp_sdk_version", project.version

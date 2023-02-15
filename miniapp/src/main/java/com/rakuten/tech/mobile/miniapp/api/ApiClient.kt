@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseItemListResponse
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseResponse
 import com.rakuten.tech.mobile.miniapp.iap.PurchaseItem
@@ -90,9 +91,8 @@ internal class ApiClient @VisibleForTesting constructor(
             hostId = hostId,
             miniAppId = appId,
         )
-        val itemList = requestExecutor.executeRequest(request).body() as List<PurchaseItem>
-
-        return itemList.ifEmpty {
+        val response = requestExecutor.executeRequest(request).body() as MiniAppPurchaseItemListResponse
+        return response.items.ifEmpty {
             emptyList()
         }
     }

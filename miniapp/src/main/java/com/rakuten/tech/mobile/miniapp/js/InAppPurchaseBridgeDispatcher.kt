@@ -77,7 +77,7 @@ internal class InAppPurchaseBridgeDispatcher {
                     }
                 }
                 inAppPurchaseProvider.purchaseItem(
-                    callbackObj.param.productId,
+                    callbackObj.param.product_id,
                     successCallback,
                     createErrorCallback(callbackId)
                 )
