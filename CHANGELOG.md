@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.1.0 (xxxx-xx-xx)
+### 5.1.0 (2023-02-06)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.sendJsonToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.
 - **Feature:** Added `NativeEventType.MINIAPP_RECEIVE_JSON_INFO` to provide `Universal Bridge` for receiving messages from the HostApp to MiniApps.
@@ -9,13 +9,12 @@
 - **Fix:** Prevent file creation with zero byte while downloading a file using `MiniAppFileDownloader` while host app is offline, also added support for Android 10.
 - **Feature:** Added `MiniAppMessageBridge.setMiniAppCloseListener` interface to enable HostApp to receive event from a MiniApp to close.
 
-
 **Sample App**
 - **Feature:** Settings is moved to it's own tab.
-- **Feature:** Multiple MiniAppSdk configurations
-- **Feature:** Enabled PermissionSettings on MiniApp top bar
-- **Update:** Move the Query Parameters and Deeplink to General Settings
-- **Update:** Add/Edit Contact from Dialog to Its Own Activity
+- **Feature:** Multiple MiniAppSdk configurations.
+- **Feature:** Enabled PermissionSettings on MiniApp top bar.
+- **Update:** Move the Query Parameters and Deeplink to General Settings.
+- **Update:** Add/Edit Contact from Dialog to Its Own Activity.
 
 ### 5.0.1 (2022-11-15)
 **SDK**
