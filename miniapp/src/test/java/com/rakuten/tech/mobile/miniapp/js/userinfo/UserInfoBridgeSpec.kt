@@ -88,7 +88,8 @@ class UserInfoBridgeSpec {
                 downloadedManifestCache = downloadedManifestCache,
                 miniAppId = TEST_MA.id,
                 ratDispatcher = ratDispatcher,
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
 

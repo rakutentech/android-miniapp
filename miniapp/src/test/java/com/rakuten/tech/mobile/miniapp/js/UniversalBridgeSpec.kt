@@ -55,7 +55,8 @@ class UniversalBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -142,7 +143,8 @@ class UniversalBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             miniAppBridge.postMessage(jsonInfoJsonStr)
@@ -171,7 +173,8 @@ class UniversalBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             val nullUniversalBridge = CallbackObj(
@@ -245,7 +248,8 @@ class UniversalBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(jsonInfoJsonStr)
 

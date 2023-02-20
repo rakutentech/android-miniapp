@@ -6,6 +6,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -40,6 +41,7 @@ open class BaseRealMiniAppSpec {
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
     internal val manifestVerifier: MiniAppManifestVerifier = mock()
+    internal val miniAppIAPVerifier: MiniAppIAPVerifier= mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()
@@ -66,7 +68,8 @@ open class BaseRealMiniAppSpec {
                 miniAppAnalytics = miniAppAnalytics,
                 ratDispatcher = ratDispatcher,
                 secureStorageDispatcher = secureStorageDispatcher,
-                enableH5Ads = false
+                enableH5Ads = false,
+                initMiniAppIAPVerifier = { miniAppIAPVerifier }
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
@@ -159,7 +162,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                false
+                false,
+                miniAppIAPVerifier
             )
         }
 
@@ -191,7 +195,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                false
+                false,
+                miniAppIAPVerifier
             )
 
             When calling miniAppDownloader.getCachedMiniApp(TEST_MA) itReturns getMiniAppResult
@@ -215,7 +220,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                false
+                false,
+                miniAppIAPVerifier
             )
         }
 
@@ -254,7 +260,8 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                enableH5Ads = false
+                enableH5Ads = false,
+                miniAppIAPVerifier
             )
         }
 
@@ -273,7 +280,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
             verify(displayer).createMiniAppDisplay(
                 TEST_MA_URL, miniAppMessageBridge, null, null,
                 miniAppCustomPermissionCache, downloadedManifestCache, "", miniAppAnalytics,
-                ratDispatcher, secureStorageDispatcher, false
+                ratDispatcher, secureStorageDispatcher, false, miniAppIAPVerifier
             )
         }
 

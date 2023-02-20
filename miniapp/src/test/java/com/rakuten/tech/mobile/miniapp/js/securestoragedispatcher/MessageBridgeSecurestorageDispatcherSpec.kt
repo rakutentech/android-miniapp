@@ -64,7 +64,8 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniappMessageBridge.setMiniAppFileDownloader(mock())
             miniappMessageBridge.setChatBridgeDispatcher(mock())

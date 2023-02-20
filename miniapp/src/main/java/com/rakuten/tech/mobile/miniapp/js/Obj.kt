@@ -182,4 +182,18 @@ internal data class PurchasedProductCallbackObj(
         val product_id: String
     )
 }
+
+@Keep
+internal data class ConsumePurchaseCallbackObj(
+    val action: String,
+    val param: Purchase,
+    var id: String
+) {
+
+    @Keep
+    internal data class Purchase(
+        val product_id: String,
+        val transaction_id: String,
+        )
+}
 // end region

@@ -52,7 +52,8 @@ open class BaseChatBridgeDispatcherSpec {
                 downloadedManifestCache = downloadedManifestCache,
                 miniAppId = TEST_MA.id,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }

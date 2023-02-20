@@ -51,6 +51,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
     )
     private val apiClient: ApiClient = mock()
+    private val miniAppIAPVerifier: MiniAppIAPVerifier = mock()
 
     private fun createPurchaseRequest() = MiniAppPurchaseRequest(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
@@ -85,7 +86,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             downloadedManifestCache = mock(),
             miniAppId = TEST_MA.id,
             ratDispatcher = mock(),
-            secureStorageDispatcher = mock()
+            secureStorageDispatcher = mock(),
+            miniAppIAPVerifier
         )
     }
 
@@ -123,7 +125,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
 
         verify(bridgeExecutor).postError(
             callbackObj.id,
-            InAppPurchaseBridgeDispatcher.ERR_IN_APP_PURCHASE + " "
+            InAppPurchaseBridgeDispatcher.ERR_IN_APP_PURCHASE + " " +InAppPurchaseBridgeDispatcher.ERR_PRODUCT_ID_INVALID
         )
     }
 
@@ -153,13 +155,21 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         return if (shouldCreate) object :
             InAppPurchaseProvider {
 
-            override fun purchaseItem(
-                itemId: String,
+            override fun purchaseProductWith(
+                product_id: String,
                 onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
                 onError: (message: String) -> Unit
             ) {
                 if (canPurchase) onSuccess(purchasedProductResponse)
                 else onError("")
+            }
+
+            override fun consumePurchaseWIth(
+                product_id: String,
+                transaction_id: String,
+                onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
             }
 
             override fun onEndConnection() {}
@@ -173,7 +183,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         wrapper.setMiniAppComponents(
             bridgeExecutor,
             TEST_MA.id,
-            apiClient
+            apiClient,
+            miniAppIAPVerifier
         )
         wrapper.setInAppPurchaseProvider(provider)
         return wrapper

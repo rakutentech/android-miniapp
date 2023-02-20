@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -28,6 +29,7 @@ internal class RealMiniApp(
     initCustomPermissionCache: () -> MiniAppCustomPermissionCache,
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
+    initMiniAppIAPVerifier: () -> MiniAppIAPVerifier,
     private var miniAppAnalytics: MiniAppAnalytics,
     private var ratDispatcher: MessageBridgeRatDispatcher,
     private var secureStorageDispatcher: MiniAppSecureStorageDispatcher,
@@ -37,6 +39,7 @@ internal class RealMiniApp(
     private val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy { initCustomPermissionCache() }
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
     private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
+    private val miniAppIAPVerifier: MiniAppIAPVerifier by lazy { initMiniAppIAPVerifier() }
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -135,7 +138,8 @@ internal class RealMiniApp(
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                enableH5Ads
+                enableH5Ads,
+                miniAppIAPVerifier
             )
         }
     }
@@ -168,7 +172,8 @@ internal class RealMiniApp(
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                enableH5Ads
+                enableH5Ads,
+                miniAppIAPVerifier
             )
         }
     }
@@ -194,7 +199,8 @@ internal class RealMiniApp(
                 miniAppAnalytics,
                 ratDispatcher,
                 secureStorageDispatcher,
-                enableH5Ads
+                enableH5Ads,
+                miniAppIAPVerifier
             )
         }
     }

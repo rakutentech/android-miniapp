@@ -319,7 +319,8 @@ open class MiniAppViewHandlerSpec {
                 miniAppViewHandler.miniAppAnalytics,
                 miniAppViewHandler.ratDispatcher,
                 miniAppViewHandler.secureStorageDispatcher,
-                false
+                false,
+                miniAppViewHandler.miniAppIAPVerifier
             )
         }
 
@@ -357,7 +358,8 @@ open class MiniAppViewHandlerSpec {
                     miniAppViewHandler.miniAppAnalytics,
                     miniAppViewHandler.ratDispatcher,
                     miniAppViewHandler.secureStorageDispatcher,
-                    false
+                    false,
+                    miniAppViewHandler.miniAppIAPVerifier
                 )
             }
         }
@@ -387,7 +389,9 @@ open class MiniAppViewHandlerSpec {
                     miniAppViewHandler.miniAppAnalytics,
                     miniAppViewHandler.ratDispatcher,
                     miniAppViewHandler.secureStorageDispatcher,
-                    false
+                    false,
+                    miniAppViewHandler.miniAppIAPVerifier
+
                 )
             }
         }
@@ -435,7 +439,8 @@ open class MiniAppViewHandlerSpec {
                 miniAppViewHandler.miniAppAnalytics,
                 miniAppViewHandler.ratDispatcher,
                 miniAppViewHandler.secureStorageDispatcher,
-                false
+                false,
+                miniAppViewHandler.miniAppIAPVerifier
             )
         }
     /** end region */

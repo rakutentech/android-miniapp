@@ -19,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
@@ -89,7 +90,8 @@ open class MiniAppMessageBridge {
         downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String,
         ratDispatcher: MessageBridgeRatDispatcher,
-        secureStorageDispatcher: MiniAppSecureStorageDispatcher
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
+        miniAppIAPVerifier: MiniAppIAPVerifier
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -109,7 +111,7 @@ open class MiniAppMessageBridge {
             bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId, apiClient)
+        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId, apiClient, miniAppIAPVerifier)
         miniAppViewInitialized = true
     }
 
@@ -278,6 +280,10 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher.onConsumePurchase(
                 callbackObj.id,
                 jsonStr
             )

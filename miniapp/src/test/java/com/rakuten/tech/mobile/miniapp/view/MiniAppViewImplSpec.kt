@@ -54,7 +54,8 @@ class MiniAppViewImplSpec {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
         miniAppConfig = MiniAppConfig(mock(), miniAppBridge, mock(), mock(), "")

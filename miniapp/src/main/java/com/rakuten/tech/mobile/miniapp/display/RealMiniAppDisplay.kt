@@ -15,6 +15,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
@@ -39,7 +40,8 @@ internal class RealMiniAppDisplay(
     val miniAppAnalytics: MiniAppAnalytics,
     val ratDispatcher: MessageBridgeRatDispatcher,
     val secureStorageDispatcher: MiniAppSecureStorageDispatcher,
-    val enableH5Ads: Boolean
+    val enableH5Ads: Boolean,
+    val miniAppIAPVerifier: MiniAppIAPVerifier
 ) : MiniAppDisplay {
 
     var appUrl: String? = null
@@ -61,7 +63,8 @@ internal class RealMiniAppDisplay(
         miniAppAnalytics: MiniAppAnalytics,
         ratDispatcher: MessageBridgeRatDispatcher,
         secureStorageDispatcher: MiniAppSecureStorageDispatcher,
-        enableH5Ads: Boolean
+        enableH5Ads: Boolean,
+        miniAppIAPVerifier: MiniAppIAPVerifier
     ) : this(
         "",
         MiniAppInfo.forUrl(),
@@ -75,7 +78,8 @@ internal class RealMiniAppDisplay(
         miniAppAnalytics,
         ratDispatcher,
         secureStorageDispatcher,
-        enableH5Ads
+        enableH5Ads,
+        miniAppIAPVerifier
     ) {
         this.appUrl = appUrl
     }
@@ -146,6 +150,7 @@ internal class RealMiniAppDisplay(
                     ratDispatcher = ratDispatcher,
                     secureStorageDispatcher = secureStorageDispatcher,
                     enableH5Ads = enableH5Ads,
+                    miniAppIAPVerifier = miniAppIAPVerifier
                 )
             } else {
                 miniAppWebView = MiniAppWebView(
@@ -161,7 +166,8 @@ internal class RealMiniAppDisplay(
                     queryParams = queryParams,
                     ratDispatcher = ratDispatcher,
                     secureStorageDispatcher = secureStorageDispatcher,
-                    enableH5Ads = enableH5Ads
+                    enableH5Ads = enableH5Ads,
+                    miniAppIAPVerifier = miniAppIAPVerifier
                 )
             }
 

@@ -95,7 +95,8 @@ class CustomPermissionBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = downloadedManifestCache,
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             When calling miniappMessageBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor

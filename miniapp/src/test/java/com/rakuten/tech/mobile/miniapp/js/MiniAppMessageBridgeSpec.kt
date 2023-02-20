@@ -62,7 +62,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -89,7 +90,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(messagingUniqueIdJsonStr)
 
@@ -117,7 +119,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(messagingUniqueIdJsonStr)
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
@@ -147,7 +150,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(mauIdJsonStr)
 
@@ -169,7 +173,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(mauIdJsonStr)
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
@@ -192,7 +197,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             miniAppBridge.postMessage(permissionJsonStr)
@@ -217,7 +223,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             miniAppBridge.postMessage(permissionJsonStr)
@@ -245,7 +252,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
 
             miniAppBridge.postMessage(permissionJsonStr)
@@ -307,7 +315,8 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             val info = HostEnvironmentInfo(activity, "en")
             miniAppBridge.onGetHostEnvironmentInfo(hostEnvInfoCallbackObj.id)

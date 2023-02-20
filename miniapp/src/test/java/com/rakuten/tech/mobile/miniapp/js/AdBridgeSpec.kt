@@ -51,7 +51,8 @@ class AdBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
         miniAppBridge.setAdMobDisplayer(TestAdMobDisplayer())
@@ -120,7 +121,8 @@ class ScreenBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -141,7 +143,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
-                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock()
+                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock(), mock()
             )
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
@@ -179,7 +181,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
-                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock()
+                activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock(), mock()
             )
             val alertInfo = MiniAppCloseAlertInfo(true, "title", "desc")
             val closeAlertJsonStr = Gson().toJson(

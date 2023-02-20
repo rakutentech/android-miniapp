@@ -158,7 +158,7 @@ class InAppPurchaseProviderDefault(
         }
     }
 
-    override fun purchaseItem(
+    override fun purchaseProductWith(
         itemId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
@@ -168,6 +168,15 @@ class InAppPurchaseProviderDefault(
         this.onSuccess = onSuccess
         this.onError = onError
         startPurchasingProduct(itemId)
+    }
+
+    override fun consumePurchaseWIth(
+        product_id: String,
+        transaction_id: String,
+        onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        TODO("Not yet implemented")
     }
 
     override fun onEndConnection() {

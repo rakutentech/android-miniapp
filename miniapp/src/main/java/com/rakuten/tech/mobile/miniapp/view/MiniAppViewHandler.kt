@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.display.Displayer
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
@@ -55,6 +56,7 @@ internal class MiniAppViewHandler(
     internal var downloadedManifestCache: DownloadedManifestCache
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    internal lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
@@ -83,6 +85,7 @@ internal class MiniAppViewHandler(
         downloadedManifestCache = DownloadedManifestCache(context)
         miniAppManifestVerifier = MiniAppManifestVerifier(context)
         miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+        miniAppIAPVerifier = MiniAppIAPVerifier(context)
 
         apiClientRepository = ApiClientRepository().apply {
             registerApiClient(config, apiClient)
@@ -206,7 +209,8 @@ internal class MiniAppViewHandler(
             miniAppAnalytics,
             ratDispatcher,
             secureStorageDispatcher,
-            enableH5Ads
+            enableH5Ads,
+            miniAppIAPVerifier
         )
     }
 
@@ -234,7 +238,8 @@ internal class MiniAppViewHandler(
             miniAppAnalytics,
             ratDispatcher,
             secureStorageDispatcher,
-            enableH5Ads
+            enableH5Ads,
+            miniAppIAPVerifier
         )
     }
 
@@ -254,7 +259,8 @@ internal class MiniAppViewHandler(
             miniAppAnalytics,
             ratDispatcher,
             secureStorageDispatcher,
-            enableH5Ads
+            enableH5Ads,
+            miniAppIAPVerifier
         )
     }
 }

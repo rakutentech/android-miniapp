@@ -35,7 +35,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -66,7 +67,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                     downloadedManifestCache = mock(),
                     miniAppId = TEST_MA_ID,
                     ratDispatcher = mock(),
-                    secureStorageDispatcher = mock()
+                    secureStorageDispatcher = mock(),
+                    miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(hostEnvJsonStr)
             verify(bridgeExecutor).postValue(hostEnvCallbackObj.id, Gson().toJson(hostEnvironmentInfo))
@@ -90,7 +92,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(hostEnvJsonStr)
 

@@ -87,7 +87,8 @@ open class BaseWebViewSpec {
         queryParams = TEST_URL_PARAMS,
         ratDispatcher = mock(),
         secureStorageDispatcher = mock(),
-        enableH5Ads = false
+        enableH5Ads = false,
+        miniAppIAPVerifier = mock()
     )
 
     @Test
@@ -131,7 +132,8 @@ class MiniAppHTTPWebViewSpec : BaseWebViewSpec() {
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
             secureStorageDispatcher = mock(),
-            enableH5Ads = false
+            enableH5Ads = false,
+            miniAppIAPVerifier = mock()
         )
     }
 
@@ -210,7 +212,8 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             queryParams = TEST_URL_PARAMS,
             ratDispatcher = mock(),
             secureStorageDispatcher = mock(),
-            enableH5Ads = false
+            enableH5Ads = false,
+            miniAppIAPVerifier = mock()
         )
         miniAppWebView.settings.userAgentString shouldNotEndWith TEST_HA_NAME
     }
@@ -235,7 +238,8 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
                 queryParams = TEST_URL_PARAMS,
                 ratDispatcher = mock(),
                 secureStorageDispatcher = mock(),
-                enableH5Ads = true
+                enableH5Ads = true,
+                miniAppIAPVerifier = mock()
             )
         ).itThrows(AssertionError())
     }
@@ -290,7 +294,8 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             TEST_URL_PARAMS,
             mock(),
             mock(),
-            false
+            false,
+            mock()
         )
         val miniAppWebViewForMiniapp2 = MiniAppWebView(
             context,
@@ -306,7 +311,8 @@ class MiniAppWebViewSpec : BaseWebViewSpec() {
             TEST_URL_PARAMS,
             mock(),
             mock(),
-            false
+            false,
+            mock()
         )
         miniAppWebViewForMiniapp1.url!! shouldNotBeEqualTo miniAppWebViewForMiniapp2.url!!
     }
@@ -466,7 +472,8 @@ class MiniAppWebClientSpec : BaseWebViewSpec() {
                 queryParams = TEST_URL_PARAMS,
                 ratDispatcher = mock(),
                 secureStorageDispatcher = mock(),
-                enableH5Ads = false
+                enableH5Ads = false,
+                miniAppIAPVerifier = mock()
             )
         )
         val miniAppNavigator = Mockito.spy(displayer.miniAppNavigator)
