@@ -29,6 +29,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines"
     implementation "androidx.core:core-ktx:$androidx_coreKtx"
     implementation "com.android.billingclient:billing-ktx:$billing_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "androidx.security:security-crypto:$androidx_crypto"
 }
 
 apply from: "../config/quality/checkstyle/android.gradle"

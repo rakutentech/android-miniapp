@@ -48,20 +48,29 @@ class InAppPurchaseProviderDefault(
     private var skuDetails: SkuDetails? = null
     private lateinit var onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit
     private lateinit var onError: (message: String) -> Unit
+    private val inAppPurchaseVerifier = InAppPurchaseVerifier(context)
 
     private fun startPurchasingProduct(itemID: String) = startConnection(itemID)
 
     private fun startConnection(productID: String) {
         if (billingClient.isReady) {
             launch {
-                querySkuDetails(productID)
+                val skuDetails = querySkuDetails(productID)
+                if (skuDetails != null)
+                    launchPurchaseFlow()
+                else
+                    onError(ERR_PURCHASING_ITEM)
             }
         } else {
             billingClient.startConnection(object : BillingClientStateListener {
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         launch {
-                           querySkuDetails(productID)
+                            val skuDetails = querySkuDetails(productID)
+                            if (skuDetails != null)
+                                launchPurchaseFlow()
+                            else
+                                onError(ERR_PURCHASING_ITEM)
                         }
                     }
                 }
@@ -96,7 +105,7 @@ class InAppPurchaseProviderDefault(
         return waitTime.toLong()
     }
 
-    private suspend fun querySkuDetails(productID: String) {
+    private suspend fun querySkuDetails(productID: String): SkuDetails? {
         val skuList = ArrayList<String>()
         skuList.add(productID)
         val params = SkuDetailsParams.newBuilder()
@@ -111,13 +120,13 @@ class InAppPurchaseProviderDefault(
             ) {
                 for (skuDetails in it.skuDetailsList!!) {
                     this.skuDetails = skuDetails
+                    return skuDetails
                 }
-
-                launchPurchaseFlow()
             } else {
-                onError(ERR_PURCHASING_ITEM)
+               return null
             }
         }
+        return null
     }
 
     private fun launchPurchaseFlow() {
@@ -130,6 +139,37 @@ class InAppPurchaseProviderDefault(
     }
 
     private fun handlePurchase(purchase: Purchase) {
+        skuDetails?.let {
+            val productPrice = ProductPrice(it.priceCurrencyCode, it.price)
+            val product = Product(
+                it.sku, it.title, it.description, productPrice
+            )
+            val purchasedProduct = PurchasedProduct(
+                product = product,
+                transactionId = purchase.orderId,
+                purchaseToken = purchase.purchaseToken,
+                transactionReceipt = purchase.originalJson,
+                transactionDate = purchase.purchaseTime
+            )
+            val purchasedProductResponse = PurchasedProductResponse(
+                PurchasedProductResponseStatus.PURCHASED,
+                purchasedProduct
+            )
+            onSuccess(purchasedProductResponse)
+        }
+    }
+
+    private fun consumePurcahse(productID: String, purchase: Purchase){
+        launch {
+            val skuDetails = querySkuDetails(productID)
+            if (skuDetails != null)
+                launchConsumeFlow(purchase)
+            else
+                onError(ERR_PURCHASING_ITEM)
+        }
+    }
+
+    private fun launchConsumeFlow(purchase: Purchase) {
         val params = ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
         billingClient.consumeAsync(params) { billingResult, _ ->
             when (billingResult.responseCode) {
@@ -156,18 +196,19 @@ class InAppPurchaseProviderDefault(
                 } else -> onError(billingResult.debugMessage)
             }
         }
+
     }
 
     override fun purchaseProductWith(
-        itemId: String,
+        product_id: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        if (itemId.isEmpty()) return
+        if (product_id.isEmpty()) return
 
         this.onSuccess = onSuccess
         this.onError = onError
-        startPurchasingProduct(itemId)
+        startPurchasingProduct(product_id)
     }
 
     override fun consumePurchaseWIth(
@@ -176,7 +217,13 @@ class InAppPurchaseProviderDefault(
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        TODO("Not yet implemented")
+        this.onSuccess = onSuccess
+        this.onError = onError
+        val purchase = inAppPurchaseVerifier.getPurchaseByTransactionId(transaction_id)
+        if (purchase != null)
+            consumePurcahse(product_id, purchase)
+        else
+            onError(ERR_CONSUME_PURCHASE)
     }
 
     override fun onEndConnection() {
@@ -189,6 +236,7 @@ class InAppPurchaseProviderDefault(
         const val ERR_ITEM_UNAVAILABLE = "This product is unavailable."
         const val ERR_USER_CANCELLED = "User has cancelled the purchase."
         const val ERR_PURCHASING_ITEM = "There is an error happened while purchasing item."
+        const val ERR_CONSUME_PURCHASE = "There is an error happened while consuming purchase."
         const val BILLING_SERVICE_DISCONNECTED = "Billing service has been disconnected."
     }
 }
