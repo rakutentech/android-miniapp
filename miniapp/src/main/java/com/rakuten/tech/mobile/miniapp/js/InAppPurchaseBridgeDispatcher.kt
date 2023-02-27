@@ -2,7 +2,10 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.*
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponseStatus
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
 import com.rakuten.tech.mobile.miniapp.iap.TransactionState
 import kotlinx.coroutines.CoroutineScope
@@ -61,7 +64,7 @@ internal class InAppPurchaseBridgeDispatcher {
             try {
                 val callbackObj: PurchasedProductCallbackObj =
                     Gson().fromJson(jsonStr, PurchasedProductCallbackObj::class.java)
-                if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.product_id)) {
+                if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.productId)) {
                     val successCallback = { response: PurchasedProductResponse ->
                         if (response.status == PurchasedProductResponseStatus.PURCHASED) {
                             val purchaseRequest = MiniAppPurchaseRequest(
@@ -82,20 +85,23 @@ internal class InAppPurchaseBridgeDispatcher {
                         }
                     }
                     inAppPurchaseProvider.purchaseProductWith(
-                        callbackObj.param.product_id,
+                        callbackObj.param.productId,
                         successCallback,
                         createErrorCallback(callbackId)
                     )
                 } else {
-                    bridgeExecutor.postError(
-                        callbackId, "$ERR_IN_APP_PURCHASE $ERR_PRODUCT_ID_INVALID")
+                    errorCallback(callbackId, ERR_PRODUCT_ID_INVALID)
                 }
             } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${e.message}")
+                errorCallback(callbackId, e.message.toString())
             }
         }
 
     private fun createErrorCallback(callbackId: String) = { errMessage: String ->
+        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
+    }
+
+    private fun errorCallback(callbackId: String, errMessage: String) {
         bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
     }
 
@@ -106,7 +112,7 @@ internal class InAppPurchaseBridgeDispatcher {
                 bridgeExecutor.postValue(callbackId, Gson().toJson(purchaseItemList))
                 miniAppIAPVerifier.storePurchaseItemsAsync(miniAppId, purchaseItemList)
             } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${e.message}")
+                errorCallback(callbackId, e.message.toString())
             }
         }
     }
@@ -115,22 +121,20 @@ internal class InAppPurchaseBridgeDispatcher {
         try {
             val callbackObj: ConsumePurchaseCallbackObj =
                 Gson().fromJson(jsonStr, ConsumePurchaseCallbackObj::class.java)
-            if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.product_id)) {
+            if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.productId)) {
                 val successCallback = { _: PurchasedProductResponse ->
-                    //TODO: Activate the Purchase.
                 }
                 inAppPurchaseProvider.consumePurchaseWIth(
-                    callbackObj.param.product_id,
-                    callbackObj.param.transaction_id,
+                    callbackObj.param.productId,
+                    callbackObj.param.transactionId,
                     successCallback,
                     createErrorCallback(callbackId)
                 )
             } else {
-                bridgeExecutor.postError(
-                    callbackId, "$ERR_IN_APP_PURCHASE $ERR_PRODUCT_ID_INVALID")
+                errorCallback(callbackId, ERR_PRODUCT_ID_INVALID)
             }
         } catch (e: Exception) {
-            bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${e.message}")
+            errorCallback(callbackId, e.message.toString())
         }
     }
 
@@ -138,10 +142,9 @@ internal class InAppPurchaseBridgeDispatcher {
         scope.launch {
             try {
                 val miniAppPurchaseResponse = apiClient.purchaseItem(miniAppId, purchaseRequest)
-                // TODO: Cache the purchase.
                 bridgeExecutor.postValue(callbackId, Gson().toJson(miniAppPurchaseResponse))
             } catch (e: Exception) {
-                bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE ${e.message}")
+                errorCallback(callbackId, e.message.toString())
             }
         }
     }

@@ -41,7 +41,7 @@ open class BaseRealMiniAppSpec {
     internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache = mock()
     internal val downloadedManifestCache: DownloadedManifestCache = mock()
     internal val manifestVerifier: MiniAppManifestVerifier = mock()
-    internal val miniAppIAPVerifier: MiniAppIAPVerifier= mock()
+    internal val miniAppIAPVerifier: MiniAppIAPVerifier = mock()
     val miniAppMessageBridge: MiniAppMessageBridge = mock()
     val miniAppNavigator: MiniAppNavigator = mock()
     val miniAppFileChooser: MiniAppFileChooser = mock()

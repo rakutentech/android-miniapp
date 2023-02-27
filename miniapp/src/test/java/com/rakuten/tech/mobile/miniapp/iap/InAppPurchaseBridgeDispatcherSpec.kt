@@ -122,10 +122,10 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
-
+        val errorMsg = "Cannot purchase item: Invalid Product Id."
         verify(bridgeExecutor).postError(
             callbackObj.id,
-            InAppPurchaseBridgeDispatcher.ERR_IN_APP_PURCHASE + " " +InAppPurchaseBridgeDispatcher.ERR_PRODUCT_ID_INVALID
+            errorMsg
         )
     }
 
@@ -139,11 +139,17 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             )
         )
         TestCoroutineScope().launch {
-            When calling apiClient.purchaseItem(TEST_MA_ID, createPurchaseRequest()) itReturns createMiniAppPurchaseResponse()
+            When calling apiClient.purchaseItem(
+                TEST_MA_ID,
+                createPurchaseRequest()
+            ) itReturns createMiniAppPurchaseResponse()
             val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
             wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
 
-            verify(bridgeExecutor).postValue(callbackObj.id, Gson().toJson(createMiniAppPurchaseResponse()))
+            verify(bridgeExecutor).postValue(
+                callbackObj.id,
+                Gson().toJson(createMiniAppPurchaseResponse())
+            )
         }
     }
 
@@ -156,7 +162,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             InAppPurchaseProvider {
 
             override fun purchaseProductWith(
-                product_id: String,
+                productId: String,
                 onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
                 onError: (message: String) -> Unit
             ) {
@@ -165,8 +171,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             }
 
             override fun consumePurchaseWIth(
-                product_id: String,
-                transaction_id: String,
+                productId: String,
+                transactionId: String,
                 onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
                 onError: (message: String) -> Unit
             ) {

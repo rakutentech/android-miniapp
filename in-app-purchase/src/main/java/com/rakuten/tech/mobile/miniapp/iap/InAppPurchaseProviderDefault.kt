@@ -1,21 +1,29 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
 import android.app.Activity
-import com.android.billingclient.api.*
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.querySkuDetails
+import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.ConsumeParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kotlin.math.pow
 
 /**
  * This class acts as a default implementation of [InAppPurchaseProvider].
  * @param context should use the same activity context for #MiniAppDisplay.getMiniAppView.
  */
+@Suppress("LargeClass", "TooManyFunctions")
 class InAppPurchaseProviderDefault(
     private val context: Activity
 ) : InAppPurchaseProvider, CoroutineScope {
@@ -57,14 +65,13 @@ class InAppPurchaseProviderDefault(
             onError(BILLING_SERVICE_DISCONNECTED)
     }
 
-    private fun startPurchasingProduct(product_id: String) = whenBillingClientReady {
-        launchPurchaseFlow(product_id = product_id)
+    private fun startPurchasingProduct(productId: String) = whenBillingClientReady {
+        launchPurchaseFlow(productId = productId)
     }
 
-    private fun startConsumingPurchase(product_id: String, transaction_id: String) = whenBillingClientReady {
-        launchConsumeFlow(product_id = product_id, transaction_id = transaction_id)
+    private fun startConsumingPurchase(productId: String, transactionId: String) = whenBillingClientReady {
+        launchConsumeFlow(productId = productId, transactionId = transactionId)
     }
-
 
     private fun startConnection(callback: (connected: Boolean) -> Unit) {
         if (billingClient.isReady) {
@@ -84,9 +91,9 @@ class InAppPurchaseProviderDefault(
         }
     }
 
-    private suspend fun querySkuDetails(product_id: String): SkuDetails? {
+    private suspend fun querySkuDetails(productId: String): SkuDetails? {
         val skuList = ArrayList<String>()
-        skuList.add(product_id)
+        skuList.add(productId)
         val params = SkuDetailsParams.newBuilder()
         // proceed with In-App type
         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
@@ -107,9 +114,9 @@ class InAppPurchaseProviderDefault(
         return null
     }
 
-    private fun launchPurchaseFlow(product_id: String) {
+    private fun launchPurchaseFlow(productId: String) {
         launch {
-            skuDetails = querySkuDetails(product_id)
+            skuDetails = querySkuDetails(productId)
             skuDetails?.let {
                 val flowParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(it)
@@ -147,11 +154,11 @@ class InAppPurchaseProviderDefault(
         }
     }
 
-    private fun launchConsumeFlow(product_id: String, transaction_id: String) {
+    private fun launchConsumeFlow(productId: String, transactionId: String) {
         launch {
-            skuDetails = querySkuDetails(product_id)
+            skuDetails = querySkuDetails(productId)
             skuDetails?.let {
-                val purchase = inAppPurchaseVerifier.getPurchaseByTransactionId(transaction_id)
+                val purchase = inAppPurchaseVerifier.getPurchaseByTransactionId(transactionId)
                 if (purchase != null) {
                     val params = ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
                     billingClient.consumeAsync(params) { billingResult, _ ->
@@ -189,27 +196,26 @@ class InAppPurchaseProviderDefault(
     }
 
     override fun purchaseProductWith(
-        product_id: String,
+        productId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        if (product_id.isEmpty()) return
+        if (productId.isEmpty()) return
 
         this.onSuccess = onSuccess
         this.onError = onError
-        startPurchasingProduct(product_id)
+        startPurchasingProduct(productId)
     }
 
     override fun consumePurchaseWIth(
-        product_id: String,
-        transaction_id: String,
+        productId: String,
+        transactionId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
         this.onSuccess = onSuccess
         this.onError = onError
-        startConsumingPurchase(product_id, transaction_id)
-
+        startConsumingPurchase(productId, transactionId)
     }
 
     override fun onEndConnection() {
