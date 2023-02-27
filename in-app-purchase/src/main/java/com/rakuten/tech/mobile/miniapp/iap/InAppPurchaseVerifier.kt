@@ -14,6 +14,6 @@ internal class InAppPurchaseVerifier(context: Context) {
         miniAppPurchaseCache.getPurchaseByTransactionId(transactionId)
 
     /** Stores IAP items in encrypted shared preferences. */
-    suspend fun storePurchaseAsync(transactionId: String, items: List<Purchase>) =
-        miniAppPurchaseCache.storePurchaseItemsAsync(transactionId, items)
+    suspend fun storePurchaseAsync(transactionId: String, item: Purchase) =
+        miniAppPurchaseCache.storePurchaseItemsAsync(transactionId, item)
 }

@@ -31,10 +31,10 @@ internal class InAppPurchaseCache @VisibleForTesting constructor(
         return null
     }
 
-    suspend fun storePurchaseItemsAsync(appId: String, items: List<Purchase>) =
+    suspend fun storePurchaseItemsAsync(appId: String, item: Purchase) =
         withContext(coroutineDispatcher) {
             async {
-                val itemListStr = Gson().toJson(items)
+                val itemListStr = Gson().toJson(item)
                 prefs.edit().putString(appId, itemListStr).apply()
             }
         }
