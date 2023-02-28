@@ -69,6 +69,7 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
     private lateinit var miniAppFileDownloader: MiniAppFileDownloaderDefault
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(requireActivity(), this) }
+    private var previousClickTimeMillis = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -389,7 +390,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 true
             }
             R.id.settings_permission_mini_app -> {
-                launchCustomPermissionDialog()
+                singleSafeClick(previousClickTimeMillis) { tappedTime ->
+                    previousClickTimeMillis = tappedTime
+                    launchCustomPermissionDialog()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
