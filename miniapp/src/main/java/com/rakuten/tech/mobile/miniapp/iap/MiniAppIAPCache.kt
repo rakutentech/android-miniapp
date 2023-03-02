@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -26,15 +27,15 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
     fun verify(appId: String, productId: String): Boolean {
         val itemListStr = prefs.getString(appId, null)
         itemListStr?.let {
-            val purchaseItemList = Gson().fromJson<List<PurchaseItem>>(it, PurchaseItem::class.java)
+            val purchaseItemList = Gson().fromJson(it, Array<Product>::class.java).asList()
             purchaseItemList.forEach { item ->
-                if (item.productId == productId) return true
+                if (item.id == productId) return true
             }
         }
         return false
     }
 
-    suspend fun storePurchaseItemsAsync(appId: String, items: List<PurchaseItem>) =
+    suspend fun storePurchaseItemsAsync(appId: String, items: List<Product>) =
         withContext(coroutineDispatcher) {
             async {
                 val itemListStr = Gson().toJson(items)

@@ -1,11 +1,10 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import com.google.gson.Gson
+import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.*
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponseStatus
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
 import com.rakuten.tech.mobile.miniapp.iap.TransactionState
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +58,29 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
+    fun onGetPurchaseItems(callbackId: String) = whenReady(callbackId) {
+        scope.launch {
+            try {
+                val purchaseItemList = apiClient.fetchPurchaseItemList(miniAppId)
+                if (purchaseItemList.isNotEmpty()) {
+                    val listOfProductIds = purchaseItemList.map { it.androidStoreId }
+                    val successCallback = { products: List<Product> ->
+                        scope.launch {
+                            miniAppIAPVerifier.storePurchaseItemsAsync(miniAppId, products)
+                        }
+                        bridgeExecutor.postValue(callbackId, Gson().toJson(products))
+                    }
+                    inAppPurchaseProvider.getAllProducts(
+                        listOfProductIds, successCallback, createErrorCallback(callbackId)
+                    )
+                }
+
+            } catch (e: Exception) {
+                errorCallback(callbackId, e.message.toString())
+            }
+        }
+    }
+
     fun onPurchaseItem(callbackId: String, jsonStr: String) =
         whenReady(callbackId) {
             try {
@@ -97,32 +119,16 @@ internal class InAppPurchaseBridgeDispatcher {
             }
         }
 
-    private fun createErrorCallback(callbackId: String) = { errMessage: String ->
-        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
-    }
-
-    private fun errorCallback(callbackId: String, errMessage: String) {
-        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
-    }
-
-    fun onGetPurchaseItems(callbackId: String) = whenReady(callbackId) {
-        scope.launch {
-            try {
-                val purchaseItemList = apiClient.fetchPurchaseItemList(miniAppId)
-                bridgeExecutor.postValue(callbackId, Gson().toJson(purchaseItemList))
-                miniAppIAPVerifier.storePurchaseItemsAsync(miniAppId, purchaseItemList)
-            } catch (e: Exception) {
-                errorCallback(callbackId, e.message.toString())
-            }
-        }
-    }
-
     fun onConsumePurchase(callbackId: String, jsonStr: String) = whenReady(callbackId) {
         try {
             val callbackObj: ConsumePurchaseCallbackObj =
                 Gson().fromJson(jsonStr, ConsumePurchaseCallbackObj::class.java)
             if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.productId)) {
-                val successCallback = { _: PurchasedProductResponse ->
+                val successCallback = { title: String, description: String ->
+                    bridgeExecutor.postValue(
+                        callbackId,
+                        Gson().toJson(MiniAppResponseInfo(title, description))
+                    )
                 }
                 inAppPurchaseProvider.consumePurchaseWIth(
                     callbackObj.param.productId,
@@ -147,6 +153,14 @@ internal class InAppPurchaseBridgeDispatcher {
                 errorCallback(callbackId, e.message.toString())
             }
         }
+    }
+
+    private fun createErrorCallback(callbackId: String) = { errMessage: String ->
+        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
+    }
+
+    private fun errorCallback(callbackId: String, errMessage: String) {
+        bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
     }
 
     private fun formatTransactionDate(time: Long): String {
