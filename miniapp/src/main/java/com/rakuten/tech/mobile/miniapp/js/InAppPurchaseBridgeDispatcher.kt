@@ -3,7 +3,10 @@ package com.rakuten.tech.mobile.miniapp.js
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.*
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.Product
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponseStatus
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
 import com.rakuten.tech.mobile.miniapp.iap.TransactionState
@@ -74,7 +77,6 @@ internal class InAppPurchaseBridgeDispatcher {
                         listOfProductIds, successCallback, createErrorCallback(callbackId)
                     )
                 }
-
             } catch (e: Exception) {
                 errorCallback(callbackId, e.message.toString())
             }
