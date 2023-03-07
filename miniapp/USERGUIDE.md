@@ -254,6 +254,8 @@ There are several different types of exceptions which could be thrown by `MiniAp
 You can handle each exception type differently if you would like different behavior for different cases.
 For example you may wish to display a different error message when the server contains no published versions of a mini app.
 See the full list of exceptions in the [API docs](api/com.rakuten.tech.mobile.miniapp/-mini-app/create.html).
+* **Universal Bridge:** 
+Sending data from host app to miniapp. `MiniAppDisplay.sendJsonToHostApp` is required to be called when host app wants to send data to miniapp.
 
 ## Mini App Features
 **API Docs:** [MiniAppMessageBridge](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge)
