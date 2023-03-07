@@ -43,4 +43,11 @@ interface MiniAppDisplay : LifecycleObserver {
      * Navigates one level forward from current position, in the call hierarchy, if possible.
      */
     fun navigateForward(): Boolean
+
+    /**
+     * Send a generic message to MiniApp using
+     * [com.rakuten.tech.mobile.miniapp.js.NativeEventType.MINIAPP_RECEIVE_JSON_INFO].
+     * @param message the content that will send to the MiniApp
+     */
+    fun sendJsonToMiniApp(message: String)
 }
