@@ -16,6 +16,7 @@ import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
@@ -180,5 +181,14 @@ class RealMiniAppDisplaySpec {
 
         displayer.navigateBackward() shouldBe true
         displayer.navigateForward() shouldBe true
+    }
+
+    @Test
+    fun `sendJsonToMiniApp should invoke dipatch event`() = runBlockingTest {
+        realDisplay.sendJsonToMiniApp(TEST_BODY_CONTENT)
+        verify(miniAppMessageBridge).dispatchNativeEvent(
+            NativeEventType.MINIAPP_RECEIVE_JSON_INFO,
+            TEST_BODY_CONTENT
+        )
     }
 }
