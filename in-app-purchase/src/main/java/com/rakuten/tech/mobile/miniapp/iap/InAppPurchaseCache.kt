@@ -22,7 +22,6 @@ internal class InAppPurchaseCache @VisibleForTesting constructor(
         coroutineDispatcher = Dispatchers.IO
     )
 
-    /** Verifies that the the product id is in cached data. */
     fun getPurchaseByTransactionId(transactionId: String): Purchase? {
         val purhcasetStr = prefs.getString(transactionId, null)
         purhcasetStr?.let {
@@ -31,11 +30,18 @@ internal class InAppPurchaseCache @VisibleForTesting constructor(
         return null
     }
 
-    suspend fun storePurchaseItemsAsync(appId: String, item: Purchase) =
+    suspend fun storePurchaseItemsAsync(transactionId: String, item: Purchase) =
         withContext(coroutineDispatcher) {
             async {
-                val itemListStr = Gson().toJson(item)
-                prefs.edit().putString(appId, itemListStr).apply()
+                val itemStr = Gson().toJson(item)
+                prefs.edit().putString(transactionId, itemStr).apply()
+            }
+        }
+
+    suspend fun removePurchaseItemAsync(transactionId: String) =
+        withContext(coroutineDispatcher) {
+            async {
+                prefs.edit().remove(transactionId).apply()
             }
         }
 }

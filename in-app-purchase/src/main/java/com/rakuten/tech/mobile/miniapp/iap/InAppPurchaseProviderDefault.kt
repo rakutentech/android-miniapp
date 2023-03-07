@@ -212,6 +212,9 @@ class InAppPurchaseProviderDefault(
                     billingClient.consumeAsync(params) { billingResult, _ ->
                         when (billingResult.responseCode) {
                             BillingClient.BillingResponseCode.OK -> {
+                                launch {
+                                    inAppPurchaseVerifier.removePurchaseItemAsync(transactionId)
+                                }
                                 onConsumeSuccess("Consume", "successful")
                             }
                             else -> onError(billingResult.debugMessage)
