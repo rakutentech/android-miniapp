@@ -94,6 +94,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     private var appInfo: MiniAppInfo? = null
     private var appUrl: String? = null
+    private var previousClickTimeMillis = 0L
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -170,7 +171,10 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 true
             }
             R.id.settings_permission_mini_app -> {
-                launchCustomPermissionDialog()
+                singleSafeClick(previousClickTimeMillis) { tappedTime ->
+                    previousClickTimeMillis = tappedTime
+                    launchCustomPermissionDialog()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)

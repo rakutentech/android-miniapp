@@ -215,3 +215,14 @@ fun delayUIThread(durationInMillis: Long = 3500L, onFinished: () -> Unit) {
 fun Context.showToastMessage(text: String, duration: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, text, duration).show()
 }
+
+private var DELAY_MILLIS = 1000
+fun singleSafeClick(
+    previousClickTimeMillis: Long,
+    block: (previousClickTimeMillis: Long) -> Unit
+) {
+    val currentTimeMillis = System.currentTimeMillis()
+    if (currentTimeMillis < previousClickTimeMillis || currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
+        block(currentTimeMillis)
+    }
+}
