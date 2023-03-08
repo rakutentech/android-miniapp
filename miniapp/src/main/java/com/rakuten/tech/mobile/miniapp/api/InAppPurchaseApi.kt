@@ -1,7 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.api
 
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseItemListResponse
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRecord
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -20,7 +20,7 @@ internal interface InAppPurchaseApi {
     fun purchaseItem(
         @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
-        @Body request: MiniAppPurchaseRequest
+        @Body request: MiniAppPurchaseRecord
     ): Call<MiniAppPurchaseResponse>
 
     @GET("host/{hostId}/miniapp/{miniappId}/transaction/{transactionToken}")

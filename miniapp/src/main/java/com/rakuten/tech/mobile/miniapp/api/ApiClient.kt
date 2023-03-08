@@ -13,7 +13,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseItemListResponse
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRequest
+import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRecord
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseResponse
 import com.rakuten.tech.mobile.miniapp.iap.PurchaseItem
 import kotlinx.coroutines.delay
@@ -100,7 +100,7 @@ internal class ApiClient @VisibleForTesting constructor(
     @Throws(MiniAppSdkException::class)
     suspend fun purchaseItem(
         appId: String,
-        purchaseRequest: MiniAppPurchaseRequest
+        purchaseRequest: MiniAppPurchaseRecord
     ): MiniAppPurchaseResponse {
         val request = inAppPurchaseApi.purchaseItem(
             hostId = hostId,

@@ -26,7 +26,7 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
     fun verify(appId: String, productId: String): Boolean {
         val itemListStr = prefs.getString(appId, null)
         itemListStr?.let {
-            val purchaseItemList = Gson().fromJson(it, Array<Product>::class.java).asList()
+            val purchaseItemList = Gson().fromJson(it, Array<ProductInfo>::class.java).asList()
             purchaseItemList.forEach { item ->
                 if (item.id == productId) return true
             }
@@ -34,7 +34,7 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
         return false
     }
 
-    suspend fun storePurchaseItemsAsync(appId: String, items: List<Product>) =
+    suspend fun storePurchaseItemsAsync(appId: String, items: List<ProductInfo>) =
         withContext(coroutineDispatcher) {
             async {
                 val itemListStr = Gson().toJson(items)

@@ -32,16 +32,16 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private val productPrice = com.rakuten.tech.mobile.miniapp.iap.ProductPrice(
         "JPY", "1234"
     )
-    private val product = com.rakuten.tech.mobile.miniapp.iap.Product(
+    private val productInfo = com.rakuten.tech.mobile.miniapp.iap.ProductInfo(
         "itemId", "title", "description", productPrice
     )
-    private val purchasedProduct = PurchasedProduct(
-        product, "dummy_transactionId", "YYYY-MM-DD", "", 0
+    private val purchasedProductInfo = PurchasedProductInfo(
+        productInfo, "dummy_transactionId", "YYYY-MM-DD", "", 0
     )
     private val purchasedProductResponse =
         PurchasedProductResponse(
             PurchasedProductResponseStatus.PURCHASED,
-            purchasedProduct
+            purchasedProductInfo
         )
     private val purchaseJsonStr: String = Gson().toJson(
         CallbackObj(
@@ -53,14 +53,14 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private val apiClient: ApiClient = mock()
     private val miniAppIAPVerifier: MiniAppIAPVerifier = mock()
 
-    private fun createPurchaseRequest() = MiniAppPurchaseRequest(
+    private fun createPurchaseRequest() = MiniAppPurchaseRecord(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
-        productId = purchasedProductResponse.purchasedProduct.product.id,
+        productId = purchasedProductResponse.purchasedProductInfo.productInfo.id,
         transactionState = TransactionState.PURCHASED.state,
-        transactionId = purchasedProductResponse.purchasedProduct.transactionId,
-        transactionDate = formatTransactionDate(purchasedProductResponse.purchasedProduct.transactionDate),
-        transactionReceipt = purchasedProductResponse.purchasedProduct.transactionReceipt,
-        purchaseToken = purchasedProductResponse.purchasedProduct.purchaseToken
+        transactionId = purchasedProductResponse.purchasedProductInfo.transactionId,
+        transactionDate = formatTransactionDate(purchasedProductResponse.purchasedProductInfo.transactionDate),
+        transactionReceipt = purchasedProductResponse.purchasedProductInfo.transactionReceipt,
+        purchaseToken = purchasedProductResponse.purchasedProductInfo.purchaseToken
     )
 
     private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(

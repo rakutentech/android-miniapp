@@ -193,7 +193,7 @@ internal data class ConsumePurchaseCallbackObj(
     @Keep
     internal data class Purchase(
         val productId: String,
-        val transactionId: String,
+        val productTransactionId: String,
     )
 }
 // end region

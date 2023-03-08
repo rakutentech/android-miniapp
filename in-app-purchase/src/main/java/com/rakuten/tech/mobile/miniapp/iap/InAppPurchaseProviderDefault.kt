@@ -85,7 +85,7 @@ class InAppPurchaseProviderDefault(
 
     override fun getAllProducts(
         productIds: List<String>,
-        onSuccess: (products: List<Product>) -> Unit,
+        onSuccess: (productInfos: List<ProductInfo>) -> Unit,
         onError: (message: String) -> Unit
     ) {
         whenBillingClientReady {
@@ -123,7 +123,7 @@ class InAppPurchaseProviderDefault(
         billingClient.endConnection()
     }
 
-    private suspend fun getProductByIds(ids: List<String>): List<Product> {
+    private suspend fun getProductByIds(ids: List<String>): List<ProductInfo> {
         return createProductListFromSKuDetailList(querySkuDetails(ids))
     }
 
@@ -145,16 +145,16 @@ class InAppPurchaseProviderDefault(
         return skuDetailsList
     }
 
-    private fun createProductListFromSKuDetailList(skuDetailsList: List<SkuDetails>): List<Product> {
-        var productList = ArrayList<Product>()
+    private fun createProductListFromSKuDetailList(skuDetailsList: List<SkuDetails>): List<ProductInfo> {
+        var productInfoList = ArrayList<ProductInfo>()
         for (skuDetails in skuDetailsList) {
             val productPrice = ProductPrice(skuDetails.priceCurrencyCode, skuDetails.price)
-            val product = Product(
+            val productInfo = ProductInfo(
                 skuDetails.sku, skuDetails.title, skuDetails.description, productPrice
             )
-            productList.add(product)
+            productInfoList.add(productInfo)
         }
-        return productList
+        return productInfoList
     }
 
     private fun startPurchasingProduct(productId: String) = whenBillingClientReady {
@@ -181,16 +181,17 @@ class InAppPurchaseProviderDefault(
                 inAppPurchaseVerifier.storePurchaseAsync(purchase.orderId, purchase)
             }
             val product = createProductListFromSKuDetailList(listOf(it)).first()
-            val purchasedProduct = PurchasedProduct(
-                product = product,
+            val purchasedProductInfo = PurchasedProductInfo(
+                productInfo = product,
                 transactionId = purchase.orderId,
-                purchaseToken = purchase.purchaseToken,
-                transactionReceipt = purchase.originalJson,
                 transactionDate = purchase.purchaseTime
             )
+            purchase.purchaseState
             val purchasedProductResponse = PurchasedProductResponse(
-                PurchasedProductResponseStatus.PURCHASED,
-                purchasedProduct
+                status = PurchasedProductResponseStatus.PURCHASED,
+                purchasedProductInfo = purchasedProductInfo,
+                purchaseToken = purchase.purchaseToken,
+                transactionReceipt = purchase.originalJson,
             )
             onSuccess(purchasedProductResponse)
         } ?: run {

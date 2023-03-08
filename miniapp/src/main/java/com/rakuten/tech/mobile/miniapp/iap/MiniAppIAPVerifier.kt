@@ -13,6 +13,6 @@ internal class MiniAppIAPVerifier(context: Context) {
         miniAppIAPCache.verify(appId, productId)
 
     /** Stores IAP items in encrypted shared preferences. */
-    suspend fun storePurchaseItemsAsync(appId: String, items: List<Product>) =
+    suspend fun storePurchaseItemsAsync(appId: String, items: List<ProductInfo>) =
         miniAppIAPCache.storePurchaseItemsAsync(appId, items)
 }

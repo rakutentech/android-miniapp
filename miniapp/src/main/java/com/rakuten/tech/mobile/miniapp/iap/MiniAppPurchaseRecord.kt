@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.iap
 
-internal data class MiniAppPurchaseRequest(
+internal data class MiniAppPurchaseRecord(
     val platform: String,
     val productId: String,
     val transactionState: Int,
