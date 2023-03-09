@@ -34,7 +34,6 @@ class InAppPurchaseProviderDefault(
     private lateinit var onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit
     private lateinit var onConsumeSuccess: (title: String, description: String) -> Unit
     private lateinit var onError: (message: String) -> Unit
-    private val inAppPurchaseVerifier = InAppPurchaseVerifier(context)
 
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
@@ -109,14 +108,13 @@ class InAppPurchaseProviderDefault(
     }
 
     override fun consumePurchaseWIth(
-        productId: String,
-        transactionId: String,
+        purchaseToken: String,
         onSuccess: (title: String, description: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
         this.onConsumeSuccess = onSuccess
         this.onError = onError
-        startConsumingPurchase(productId, transactionId)
+        startConsumingPurchase(purchaseToken)
     }
 
     override fun onEndConnection() {
@@ -177,9 +175,6 @@ class InAppPurchaseProviderDefault(
 
     private fun handlePurchase(purchase: Purchase) {
         skuDetails?.let {
-            launch {
-                inAppPurchaseVerifier.storePurchaseAsync(purchase.orderId, purchase)
-            }
             val product = createProductListFromSKuDetailList(listOf(it)).first()
             val purchasedProductInfo = PurchasedProductInfo(
                 productInfo = product,
@@ -199,32 +194,18 @@ class InAppPurchaseProviderDefault(
         }
     }
 
-    private fun startConsumingPurchase(productId: String, transactionId: String) = whenBillingClientReady {
-        launchConsumeFlow(productId = productId, transactionId = transactionId)
+    private fun startConsumingPurchase(productId: String) = whenBillingClientReady {
+        launchConsumeFlow(purchaseToken = productId)
     }
 
-    private fun launchConsumeFlow(productId: String, transactionId: String) {
-        launch {
-            skuDetails = querySkuDetails(listOf(productId)).first()
-            skuDetails?.let {
-                val purchase = inAppPurchaseVerifier.getPurchaseByTransactionId(transactionId)
-                if (purchase != null) {
-                    val params = ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build()
-                    billingClient.consumeAsync(params) { billingResult, _ ->
-                        when (billingResult.responseCode) {
-                            BillingClient.BillingResponseCode.OK -> {
-                                launch {
-                                    inAppPurchaseVerifier.removePurchaseItemAsync(transactionId)
-                                }
-                                onConsumeSuccess("Consume", "successful")
-                            }
-                            else -> onError(billingResult.debugMessage)
-                        }
-                    }
-                } else
-                    onError(ERR_CONSUME_PURCHASE)
-            } ?: run {
-                onError(ERR_CONSUME_PURCHASE)
+    private fun launchConsumeFlow(purchaseToken: String) {
+        val params = ConsumeParams.newBuilder().setPurchaseToken(purchaseToken).build()
+        billingClient.consumeAsync(params) { billingResult, _ ->
+            when (billingResult.responseCode) {
+                BillingClient.BillingResponseCode.OK -> {
+                    onConsumeSuccess("Consume", "successful")
+                }
+                else -> onError(billingResult.debugMessage)
             }
         }
     }

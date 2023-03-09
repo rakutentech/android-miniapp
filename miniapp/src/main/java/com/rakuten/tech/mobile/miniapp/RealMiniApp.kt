@@ -8,7 +8,7 @@ import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
 import com.rakuten.tech.mobile.miniapp.display.Displayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.DB_NAME_PREFIX
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge

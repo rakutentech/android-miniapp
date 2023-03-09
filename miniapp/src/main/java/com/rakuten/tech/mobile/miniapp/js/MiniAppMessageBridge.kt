@@ -19,12 +19,13 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
+import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache

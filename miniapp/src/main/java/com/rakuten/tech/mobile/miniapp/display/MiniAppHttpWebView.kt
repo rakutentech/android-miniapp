@@ -5,7 +5,7 @@ import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppIAPVerifier
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher

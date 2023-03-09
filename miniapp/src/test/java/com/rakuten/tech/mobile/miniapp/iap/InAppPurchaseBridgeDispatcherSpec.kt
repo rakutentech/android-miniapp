@@ -5,6 +5,7 @@ import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.js.iap.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch

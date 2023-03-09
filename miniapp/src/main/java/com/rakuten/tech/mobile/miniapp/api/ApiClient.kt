@@ -12,10 +12,10 @@ import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppHostException
 import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseItemListResponse
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRecord
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseResponse
-import com.rakuten.tech.mobile.miniapp.iap.PurchaseItem
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseItemListResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseRecord
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.PurchaseItem
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
 import retrofit2.Retrofit

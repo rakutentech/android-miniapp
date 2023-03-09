@@ -1,8 +1,8 @@
 package com.rakuten.tech.mobile.miniapp.api
 
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseItemListResponse
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseRecord
-import com.rakuten.tech.mobile.miniapp.iap.MiniAppPurchaseResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseItemListResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseRecord
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

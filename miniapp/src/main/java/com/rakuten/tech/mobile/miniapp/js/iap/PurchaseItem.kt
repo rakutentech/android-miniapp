@@ -1,4 +1,4 @@
-package com.rakuten.tech.mobile.miniapp.iap
+package com.rakuten.tech.mobile.miniapp.js.iap
 
 import androidx.annotation.Keep
 

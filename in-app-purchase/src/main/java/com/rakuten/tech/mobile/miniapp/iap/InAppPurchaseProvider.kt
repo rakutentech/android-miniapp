@@ -31,14 +31,12 @@ interface InAppPurchaseProvider {
 
     /**
      * Triggered when user wants to consume an purchased item.
-     * [productId] item to be consumed.
-     * [transactionId] of the purchased item.
+     * [purhcaseToken] token of the item to be consumed.
      * Should invoke [onSuccess] with title and description when user can consume an purchase successfully.
      * Should invoke [onError] when there was an error.
      */
     fun consumePurchaseWIth(
-        productId: String,
-        transactionId: String,
+        purhcaseToken: String,
         onSuccess: (title: String, description: String) -> Unit,
         onError: (message: String) -> Unit
     )

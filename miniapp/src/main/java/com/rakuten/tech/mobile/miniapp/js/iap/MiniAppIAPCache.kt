@@ -1,12 +1,16 @@
-package com.rakuten.tech.mobile.miniapp.iap
+package com.rakuten.tech.mobile.miniapp.js.iap
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
+import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -41,6 +45,40 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
                 prefs.edit().putString(appId, itemListStr).apply()
             }
         }
+
+    suspend fun storePurchaseRecordAsync(
+        appId: String,
+        productId: String,
+        transactionId: String,
+        miniAppPurchaseRecordCache: MiniAppPurchaseRecordCache
+    ) = withContext(coroutineDispatcher) {
+        async {
+            val jsonToStore: String = Gson().toJson(miniAppPurchaseRecordCache)
+            prefs.edit().putString(primaryKey(appId, productId, transactionId), jsonToStore)
+                .apply()
+        }
+    }
+
+    fun getPurchaseRecord(
+        appId: String,
+        productId: String,
+        transactionId: String
+    ): MiniAppPurchaseRecordCache? {
+        val manifestJsonStr =
+            prefs.getString(primaryKey(appId, productId, transactionId), null) ?: return null
+        return try {
+            Gson().fromJson(
+                manifestJsonStr,
+                object : TypeToken<MiniAppPurchaseRecordCache>() {}.type
+            )
+        } catch (e: Exception) {
+            Log.e(this::class.java.canonicalName, e.message.toString())
+            null
+        }
+    }
+
+    private fun primaryKey(miniAppId: String, productId: String, transactionId: String) =
+        "$miniAppId-$productId-$transactionId"
 }
 
 @SuppressWarnings("SwallowedException", "TooGenericExceptionCaught")

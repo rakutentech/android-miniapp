@@ -40,8 +40,8 @@ data class PurchasedProductResponse(
 @Keep
 enum class PurchasedProductResponseStatus(val type: String) {
     PURCHASED("PURCHASED"),
-    FAILED("FAILED"),
-    RESTORED("RESTORED"),
+    CANCELLED("CANCELLED"),
+    PENDING("PENDING"),
     UNKNOWN("UNKNOWN");
 
     internal companion object {
