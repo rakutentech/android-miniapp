@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.2.0 (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `MiniAppDisplay.sendJsonToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.
+
 ### 5.1.0 (2023-02-06)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.sendJsonToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.

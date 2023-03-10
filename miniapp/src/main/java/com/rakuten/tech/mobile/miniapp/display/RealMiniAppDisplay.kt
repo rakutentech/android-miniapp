@@ -19,6 +19,7 @@ import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
+import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForNoActivityContext
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
@@ -127,6 +128,10 @@ internal class RealMiniAppDisplay(
             else -> false
         }
     } else false
+
+    override fun sendJsonToMiniApp(message: String) {
+        miniAppMessageBridge.dispatchNativeEvent(NativeEventType.MINIAPP_RECEIVE_JSON_INFO, message)
+    }
 
     @Suppress("LongMethod")
     private suspend fun provideMiniAppWebView(context: Context): MiniAppWebView =
