@@ -3,8 +3,11 @@ package com.rakuten.tech.mobile.miniapp.js.iap
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.iap.*
-import com.rakuten.tech.mobile.miniapp.js.*
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponseStatus
+import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductInfo
 import com.rakuten.tech.mobile.miniapp.js.ConsumePurchaseCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -13,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
 
 /** Check whether hostapp provides InAppPurchase dependency. */
 @Suppress("EmptyCatchBlock", "SwallowedException")
@@ -24,7 +26,7 @@ private inline fun <T> whenHasInAppPurchase(callback: () -> T) {
     } catch (e: ClassNotFoundException) {}
 }
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LargeClass")
 internal class InAppPurchaseBridgeDispatcher {
     private lateinit var bridgeExecutor: MiniAppBridgeExecutor
     private lateinit var miniAppId: String
@@ -120,16 +122,23 @@ internal class InAppPurchaseBridgeDispatcher {
             }
         }
 
+    @Suppress("LongMethod", "ComplexCondition")
     fun onConsumePurchase(callbackId: String, jsonStr: String) = whenReady(callbackId) {
         try {
             val callbackObj: ConsumePurchaseCallbackObj =
                 Gson().fromJson(jsonStr, ConsumePurchaseCallbackObj::class.java)
             val record =
-                miniAppIAPVerifier.getPurchaseRecordCache(miniAppId, callbackObj.param.productId, callbackObj.param.productTransactionId)
+                miniAppIAPVerifier.getPurchaseRecordCache(
+                    miniAppId,
+                    callbackObj.param.productId,
+                    callbackObj.param.productTransactionId
+                )
 
-            if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.productId)
-                && record != null
-                && record.purchasedRecordStatus == PurchasedRecordStatus.RECORDED) {
+            if (miniAppIAPVerifier.verify(miniAppId, callbackObj.param.productId) &&
+                record != null &&
+                record.transactionState == TransactionState.PURCHASED &&
+                record.consumeStatus == ConsumeStatus.NOT_CONSUMED
+            ) {
 
                 val successCallback = { title: String, description: String ->
                     scope.launch {
@@ -138,7 +147,8 @@ internal class InAppPurchaseBridgeDispatcher {
                             record.miniAppPurchaseRecord.transactionId,
                             record.miniAppPurchaseRecord,
                             record.purchasedRecordStatus,
-                            ConsumeStatus.CONSUMED
+                            ConsumeStatus.CONSUMED,
+                            record.transactionState
                         )
                     }
                     bridgeExecutor.postValue(
@@ -146,11 +156,11 @@ internal class InAppPurchaseBridgeDispatcher {
                         Gson().toJson(MiniAppResponseInfo(title, description))
                     )
                 }
-                    inAppPurchaseProvider.consumePurchaseWIth(
-                        record.miniAppPurchaseRecord.purchaseToken,
-                        successCallback,
-                        createErrorCallback(callbackId)
-                    )
+                inAppPurchaseProvider.consumePurchaseWIth(
+                    record.miniAppPurchaseRecord.purchaseToken,
+                    successCallback,
+                    createErrorCallback(callbackId)
+                )
             } else {
                 errorCallback(callbackId, ERR_PRODUCT_ID_INVALID)
             }
@@ -171,53 +181,52 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord.transactionId,
                     miniAppPurchaseRecord,
                     PurchasedRecordStatus.NOT_RECORDED,
-                    ConsumeStatus.NOT_CONSUMED
+                    ConsumeStatus.NOT_CONSUMED,
+                    TransactionState.DEFAULT // NOT SURE
                 )
                 val miniAppPurchaseResponse = apiClient.purchaseItem(miniAppId, miniAppPurchaseRecord)
-                when (miniAppPurchaseResponse.transactionState) {
-                    TransactionState.PURCHASED.name-> {
-                        // PURCHASED
-                        updatePurchaseRecordCache(
-                            purchasedProductInfo.productInfo.id,
-                            miniAppPurchaseRecord.transactionId,
-                            miniAppPurchaseRecord,
-                            PurchasedRecordStatus.RECORDED,
-                            ConsumeStatus.NOT_CONSUMED
-                        )
-                        bridgeExecutor.postValue(callbackId, Gson().toJson(purchasedProductInfo))
-                    }
-                    TransactionState.CANCELLED.name -> {
-                        // CANCELLED
-                    }
-                    TransactionState.PENDING.name -> {
-                        // PENDING
-                    }
-                }
+                updatePurchaseRecordCache(
+                    purchasedProductInfo.productInfo.id,
+                    miniAppPurchaseRecord.transactionId,
+                    miniAppPurchaseRecord,
+                    PurchasedRecordStatus.RECORDED,
+                    ConsumeStatus.NOT_CONSUMED,
+                    TransactionState.getState(miniAppPurchaseResponse.transactionState)
+                )
+                bridgeExecutor.postValue(callbackId, Gson().toJson(purchasedProductInfo))
             } catch (e: Exception) {
                 updatePurchaseRecordCache(
                     purchasedProductInfo.productInfo.id,
                     miniAppPurchaseRecord.transactionId,
                     miniAppPurchaseRecord,
                     PurchasedRecordStatus.NOT_RECORDED,
-                    ConsumeStatus.NOT_CONSUMED
+                    ConsumeStatus.NOT_CONSUMED,
+                    TransactionState.PENDING // NOT SURE
                 )
                 errorCallback(callbackId, e.message.toString())
             }
         }
     }
 
+    @Suppress("LongParameterList")
     private suspend fun updatePurchaseRecordCache(
         productId: String,
         transactionId: String,
         miniAppPurchaseRecord: MiniAppPurchaseRecord,
         purchasedRecordStatus: PurchasedRecordStatus,
-        consumeStatus: ConsumeStatus
+        consumeStatus: ConsumeStatus,
+        transactionState: TransactionState
     ) {
         miniAppIAPVerifier.storePurchaseRecordAsync(
             miniAppId,
             productId,
             transactionId,
-            MiniAppPurchaseRecordCache(miniAppPurchaseRecord, purchasedRecordStatus, consumeStatus)
+            MiniAppPurchaseRecordCache(
+                miniAppPurchaseRecord = miniAppPurchaseRecord,
+                purchasedRecordStatus = purchasedRecordStatus,
+                consumeStatus = consumeStatus,
+                transactionState = transactionState
+            )
         )
     }
 

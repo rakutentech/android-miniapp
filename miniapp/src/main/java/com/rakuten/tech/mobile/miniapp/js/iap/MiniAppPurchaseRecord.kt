@@ -10,19 +10,19 @@ internal data class MiniAppPurchaseRecord(
     val purchaseToken: String
 )
 
-internal enum class PurchasedRecordStatus() {
-    PENDING,
+internal enum class PurchasedRecordStatus {
     RECORDED,
     NOT_RECORDED
 }
 
-internal enum class ConsumeStatus() {
+internal enum class ConsumeStatus {
     CONSUMED,
     NOT_CONSUMED
 }
 
 internal data class MiniAppPurchaseRecordCache(
     val miniAppPurchaseRecord: MiniAppPurchaseRecord,
-    val purchasedRecordStatus: PurchasedRecordStatus = PurchasedRecordStatus.NOT_RECORDED,
-    val consumeStatus: ConsumeStatus = ConsumeStatus.NOT_CONSUMED
+    val purchasedRecordStatus: PurchasedRecordStatus,
+    val consumeStatus: ConsumeStatus,
+    val transactionState: TransactionState
 )
