@@ -37,12 +37,14 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         "itemId", "title", "description", productPrice
     )
     private val purchasedProductInfo = PurchasedProductInfo(
-        productInfo, "dummy_transactionId", "YYYY-MM-DD", "", 0
+        productInfo, "dummy_transactionId", 0
     )
     private val purchasedProductResponse =
         PurchasedProductResponse(
             PurchasedProductResponseStatus.PURCHASED,
-            purchasedProductInfo
+            purchasedProductInfo,
+            "",
+            ""
         )
     private val purchaseJsonStr: String = Gson().toJson(
         CallbackObj(
@@ -60,8 +62,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         transactionState = TransactionState.PURCHASED.state,
         transactionId = purchasedProductResponse.purchasedProductInfo.transactionId,
         transactionDate = formatTransactionDate(purchasedProductResponse.purchasedProductInfo.transactionDate),
-        transactionReceipt = purchasedProductResponse.purchasedProductInfo.transactionReceipt,
-        purchaseToken = purchasedProductResponse.purchasedProductInfo.purchaseToken
+        transactionReceipt = purchasedProductResponse.transactionReceipt,
+        purchaseToken = purchasedProductResponse.purchaseToken
     )
 
     private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(
@@ -161,6 +163,12 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     ): InAppPurchaseProvider {
         return if (shouldCreate) object :
             InAppPurchaseProvider {
+            override fun getAllProducts(
+                productIds: List<String>,
+                onSuccess: (productInfos: List<ProductInfo>) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+            }
 
             override fun purchaseProductWith(
                 productId: String,
@@ -172,9 +180,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             }
 
             override fun consumePurchaseWIth(
-                productId: String,
-                transactionId: String,
-                onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+                purhcaseToken: String,
+                onSuccess: (title: String, description: String) -> Unit,
                 onError: (message: String) -> Unit
             ) {
             }

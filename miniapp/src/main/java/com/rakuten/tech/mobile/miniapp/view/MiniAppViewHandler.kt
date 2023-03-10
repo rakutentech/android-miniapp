@@ -56,7 +56,7 @@ internal class MiniAppViewHandler(
     internal var downloadedManifestCache: DownloadedManifestCache
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
-    internal lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
+    internal var miniAppIAPVerifier: MiniAppIAPVerifier
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
