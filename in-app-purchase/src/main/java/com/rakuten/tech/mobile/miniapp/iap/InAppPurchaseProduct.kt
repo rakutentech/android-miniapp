@@ -5,7 +5,7 @@ import androidx.annotation.Keep
 /** An object to include in-app purchase product's information. */
 @Keep
 data class ProductInfo(
-    val id: String,
+    var id: String,
     val title: String,
     val description: String,
     val productPriceInfo: ProductPrice

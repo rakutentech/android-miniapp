@@ -7,24 +7,24 @@ interface InAppPurchaseProvider {
 
     /**
      * Triggered when user wants to get all the products from google store.
-     * [productIds] list of product ids needs to fetch details.
+     * [androidStoreIds] list of product ids needs to fetch details.
      * Should invoke [onSuccess] with list of [ProductInfo] when user get products successfully.
      * Should invoke [onError] when there was an error.
      */
     fun getAllProducts(
-        productIds: List<String>,
+        androidStoreIds: List<String>,
         onSuccess: (productInfos: List<ProductInfo>) -> Unit,
         onError: (message: String) -> Unit
     )
 
     /**
      * Triggered when user wants to purchase an item.
-     * [productId] item to be purchased.
+     * [androidStoreId] item to be purchased.
      * Should invoke [onSuccess] with [PurchasedProductResponse] when user can purchase an item successfully.
      * Should invoke [onError] when there was an error.
      */
     fun purchaseProductWith(
-        productId: String,
+        androidStoreId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     )

@@ -124,6 +124,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             )
         )
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns ""
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
         val errorMsg = "Cannot purchase item: Invalid Product Id."
         verify(bridgeExecutor).postError(
@@ -164,14 +165,14 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         return if (shouldCreate) object :
             InAppPurchaseProvider {
             override fun getAllProducts(
-                productIds: List<String>,
+                androidStoreIds: List<String>,
                 onSuccess: (productInfos: List<ProductInfo>) -> Unit,
                 onError: (message: String) -> Unit
             ) {
             }
 
             override fun purchaseProductWith(
-                productId: String,
+                androidStoreId: String,
                 onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
                 onError: (message: String) -> Unit
             ) {

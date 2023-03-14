@@ -9,11 +9,8 @@ import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
-import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 
 internal class MiniAppIAPCache @VisibleForTesting constructor(
     private val prefs: SharedPreferences,
@@ -29,43 +26,41 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
     fun verify(appId: String, productId: String): Boolean {
         val itemListStr = prefs.getString(appId, null)
         itemListStr?.let {
-            val purchaseItemList = Gson().fromJson(it, Array<ProductInfo>::class.java).asList()
+            val purchaseItemList = Gson().fromJson<List<PurchaseItem>>(
+                it,
+                object : TypeToken<Collection<PurchaseItem?>?>() {}.type
+            )
             purchaseItemList.forEach { item ->
-                if (item.id == productId) return true
+                if (item.productId == productId) return true
             }
         }
         return false
     }
 
-    suspend fun storePurchaseItemsAsync(appId: String, items: List<ProductInfo>) =
-        withContext(coroutineDispatcher) {
-            async {
-                val itemListStr = Gson().toJson(items)
-                prefs.edit().putString(appId, itemListStr).apply()
-            }
-        }
+    fun storePurchaseItems(appId: String, items: List<PurchaseItem>) {
+        val itemListStr = Gson().toJson(items)
+        prefs.edit().putString(appId, itemListStr).apply()
+    }
 
-    suspend fun storePurchaseRecordAsync(
+    fun storePurchaseRecord(
         appId: String,
-        productId: String,
+        androidStoreId: String,
         transactionId: String,
         miniAppPurchaseRecordCache: MiniAppPurchaseRecordCache
-    ) = withContext(coroutineDispatcher) {
-        async {
-            val jsonToStore: String = Gson().toJson(miniAppPurchaseRecordCache)
-            prefs.edit().putString(primaryKey(appId, productId, transactionId), jsonToStore)
-                .apply()
-        }
+    ) {
+        val jsonToStore: String = Gson().toJson(miniAppPurchaseRecordCache)
+        prefs.edit().putString(primaryKey(appId, androidStoreId, transactionId), jsonToStore)
+            .apply()
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun getPurchaseRecord(
         appId: String,
-        productId: String,
+        androidStoreId: String,
         transactionId: String
     ): MiniAppPurchaseRecordCache? {
         val manifestJsonStr =
-            prefs.getString(primaryKey(appId, productId, transactionId), null) ?: return null
+            prefs.getString(primaryKey(appId, androidStoreId, transactionId), null) ?: return null
         return try {
             Gson().fromJson(
                 manifestJsonStr,
@@ -79,6 +74,34 @@ internal class MiniAppIAPCache @VisibleForTesting constructor(
 
     private fun primaryKey(miniAppId: String, productId: String, transactionId: String) =
         "$miniAppId-$productId-$transactionId"
+
+    fun getProductIdByStoreId(appId: String, androidStoreId: String): String {
+        val itemListStr = prefs.getString(appId, null)
+        itemListStr?.let {
+            val purchaseItemList = Gson().fromJson<List<PurchaseItem>>(
+                it,
+                object : TypeToken<Collection<PurchaseItem?>?>() {}.type
+            )
+            purchaseItemList.forEach { item ->
+                if (item.androidStoreId == androidStoreId) return item.productId
+            }
+        }
+        return ""
+    }
+
+    fun getStoreIdByProductId(appId: String, productId: String): String {
+        val itemListStr = prefs.getString(appId, null)
+        itemListStr?.let {
+            val purchaseItemList = Gson().fromJson<List<PurchaseItem>>(
+                it,
+                object : TypeToken<Collection<PurchaseItem?>?>() {}.type
+            )
+            purchaseItemList.forEach { item ->
+                if (item.productId == productId) return item.androidStoreId
+            }
+        }
+        return ""
+    }
 }
 
 @SuppressWarnings("SwallowedException", "TooGenericExceptionCaught")

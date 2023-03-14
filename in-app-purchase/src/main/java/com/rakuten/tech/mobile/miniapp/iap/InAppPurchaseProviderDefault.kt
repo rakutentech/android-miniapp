@@ -83,28 +83,28 @@ class InAppPurchaseProviderDefault(
     }
 
     override fun getAllProducts(
-        productIds: List<String>,
+        androidStoreIds: List<String>,
         onSuccess: (productInfos: List<ProductInfo>) -> Unit,
         onError: (message: String) -> Unit
     ) {
         whenBillingClientReady {
             launch {
-                val products = getProductByIds(productIds)
+                val products = getProductByIds(androidStoreIds)
                 if (products.isNotEmpty()) onSuccess(products) else onError(ERR_ITEM_UNAVAILABLE)
             }
         }
     }
 
     override fun purchaseProductWith(
-        productId: String,
+        androidStoreId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        if (productId.isEmpty()) return
+        if (androidStoreId.isEmpty()) return
 
         this.onSuccess = onSuccess
         this.onError = onError
-        startPurchasingProduct(productId)
+        startPurchasingProduct(androidStoreId)
     }
 
     override fun consumePurchaseWIth(
@@ -156,12 +156,12 @@ class InAppPurchaseProviderDefault(
     }
 
     private fun startPurchasingProduct(productId: String) = whenBillingClientReady {
-        launchPurchaseFlow(productId = productId)
+        launchPurchaseFlow(androidStoreId = productId)
     }
 
-    private fun launchPurchaseFlow(productId: String) {
+    private fun launchPurchaseFlow(androidStoreId: String) {
         launch {
-            skuDetails = querySkuDetails(listOf(productId)).first()
+            skuDetails = querySkuDetails(listOf(androidStoreId)).first()
             skuDetails?.let {
                 val flowParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(it)
