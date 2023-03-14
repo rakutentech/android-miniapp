@@ -164,9 +164,14 @@ internal class InAppPurchaseBridgeDispatcher {
                 ) {
                     consumePurchase(callbackId, record)
                 } else {
-                    if (record != null && record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED) {
+                    if (record != null &&
+                        record.transactionState == TransactionState.PURCHASED &&
+                        record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED) {
                         // try to record again
-                        recordPurchase(record.miniAppPurchaseRecord.productId, record.miniAppPurchaseRecord) { isRecorded, errorMsg ->
+                        recordPurchase(
+                            androidStoreId = record.miniAppPurchaseRecord.productId,
+                            miniAppPurchaseRecord = record.miniAppPurchaseRecord
+                        ) { isRecorded, errorMsg ->
                             if (isRecorded) {
                                 // consume it again
                                 consumePurchase(callbackId, record)
