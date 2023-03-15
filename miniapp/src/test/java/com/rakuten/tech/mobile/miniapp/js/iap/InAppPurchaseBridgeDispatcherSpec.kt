@@ -1,9 +1,10 @@
-package com.rakuten.tech.mobile.miniapp.iap
+package com.rakuten.tech.mobile.miniapp.js.iap
 
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.iap.*
 import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.js.iap.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -30,10 +31,10 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     )
     private val webViewListener: WebViewListener = mock()
     private val bridgeExecutor = Mockito.spy(MiniAppBridgeExecutor(webViewListener))
-    private val productPrice = com.rakuten.tech.mobile.miniapp.iap.ProductPrice(
+    private val productPrice = ProductPrice(
         "JPY", "1234"
     )
-    private val productInfo = com.rakuten.tech.mobile.miniapp.iap.ProductInfo(
+    private val productInfo = ProductInfo(
         "itemId", "title", "description", productPrice
     )
     private val purchasedProductInfo = PurchasedProductInfo(
@@ -41,7 +42,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     )
     private val purchasedProductResponse =
         PurchasedProductResponse(
-            PurchasedProductResponseStatus.PURCHASED,
+            1,
             purchasedProductInfo,
             "",
             ""
@@ -167,23 +168,23 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             override fun getAllProducts(
                 androidStoreIds: List<String>,
                 onSuccess: (productInfos: List<ProductInfo>) -> Unit,
-                onError: (message: String) -> Unit
+                onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
             }
 
             override fun purchaseProductWith(
                 androidStoreId: String,
                 onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
-                onError: (message: String) -> Unit
+                onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
                 if (canPurchase) onSuccess(purchasedProductResponse)
-                else onError("")
+                else onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
             }
 
             override fun consumePurchaseWIth(
                 purhcaseToken: String,
                 onSuccess: (title: String, description: String) -> Unit,
-                onError: (message: String) -> Unit
+                onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
             }
 

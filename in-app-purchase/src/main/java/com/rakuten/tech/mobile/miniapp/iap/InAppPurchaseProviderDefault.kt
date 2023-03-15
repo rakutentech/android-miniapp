@@ -33,7 +33,7 @@ class InAppPurchaseProviderDefault(
     private var skuDetails: SkuDetails? = null
     private lateinit var onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit
     private lateinit var onConsumeSuccess: (title: String, description: String) -> Unit
-    private lateinit var onError: (message: String) -> Unit
+    private lateinit var onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
 
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
@@ -42,12 +42,12 @@ class InAppPurchaseProviderDefault(
                     handlePurchase(purchase)
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
-                onError(ERR_ITEM_ALREADY_OWNED)
+                onError(MiniAppInAppPurchaseErrorType.productPurchasedAlreadyError)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_UNAVAILABLE) {
-                onError(ERR_ITEM_UNAVAILABLE)
+                onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                onError(ERR_USER_CANCELLED)
-            } else onError(ERR_PURCHASING_ITEM)
+                onError(MiniAppInAppPurchaseErrorType.userCancelledPurchaseError)
+            } else onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
         }
 
     private val billingClient: BillingClient by lazy {
@@ -61,7 +61,7 @@ class InAppPurchaseProviderDefault(
         if (connected)
             callback.invoke()
         else
-            onError(BILLING_SERVICE_DISCONNECTED)
+            onError(MiniAppInAppPurchaseErrorType.unknownError("Billing Client is not ready."))
     }
 
     private fun startConnection(callback: (connected: Boolean) -> Unit) {
@@ -85,12 +85,14 @@ class InAppPurchaseProviderDefault(
     override fun getAllProducts(
         androidStoreIds: List<String>,
         onSuccess: (productInfos: List<ProductInfo>) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     ) {
         whenBillingClientReady {
             launch {
                 val products = getProductByIds(androidStoreIds)
-                if (products.isNotEmpty()) onSuccess(products) else onError(ERR_ITEM_UNAVAILABLE)
+                if (products.isNotEmpty()) onSuccess(products) else onError(
+                    MiniAppInAppPurchaseErrorType.productNotFoundError
+                )
             }
         }
     }
@@ -98,7 +100,7 @@ class InAppPurchaseProviderDefault(
     override fun purchaseProductWith(
         androidStoreId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     ) {
         if (androidStoreId.isEmpty()) return
 
@@ -110,7 +112,7 @@ class InAppPurchaseProviderDefault(
     override fun consumePurchaseWIth(
         purchaseToken: String,
         onSuccess: (title: String, description: String) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     ) {
         this.onConsumeSuccess = onSuccess
         this.onError = onError
@@ -168,7 +170,7 @@ class InAppPurchaseProviderDefault(
                     .build()
                 billingClient.launchBillingFlow(context, flowParams).responseCode
             } ?: run {
-                onError(ERR_PURCHASING_ITEM)
+                onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
             }
         }
     }
@@ -183,14 +185,15 @@ class InAppPurchaseProviderDefault(
             )
             purchase.purchaseState
             val purchasedProductResponse = PurchasedProductResponse(
-                status = PurchasedProductResponseStatus.PURCHASED,
+                purchaseState = purchase.purchaseState,
                 purchasedProductInfo = purchasedProductInfo,
                 purchaseToken = purchase.purchaseToken,
                 transactionReceipt = purchase.originalJson,
             )
             onSuccess(purchasedProductResponse)
         } ?: run {
-            onError(ERR_PURCHASING_ITEM)
+            if (this::onError.isInitialized)
+                onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
         }
     }
 
@@ -205,18 +208,8 @@ class InAppPurchaseProviderDefault(
                 BillingClient.BillingResponseCode.OK -> {
                     onConsumeSuccess("Consume", "successful")
                 }
-                else -> onError(billingResult.debugMessage)
+                else -> onError(MiniAppInAppPurchaseErrorType.consumeFailedError)
             }
         }
-    }
-
-    private companion object {
-        private const val TOTAL_RETRIES = 5
-        const val ERR_ITEM_ALREADY_OWNED = "This product has been already owned."
-        const val ERR_ITEM_UNAVAILABLE = "This product is unavailable."
-        const val ERR_USER_CANCELLED = "User has cancelled the purchase."
-        const val ERR_PURCHASING_ITEM = "There is an error happened while purchasing item."
-        const val ERR_CONSUME_PURCHASE = "There is an error happened while consuming purchase."
-        const val BILLING_SERVICE_DISCONNECTED = "Billing service has been disconnected."
     }
 }

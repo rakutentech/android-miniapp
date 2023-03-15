@@ -30,21 +30,8 @@ data class PurchasedProductInfo(
 /** An object to include the [PurchasedProductInfo] with response status. */
 @Keep
 data class PurchasedProductResponse(
-    val status: PurchasedProductResponseStatus,
+    val purchaseState: Int,
     val purchasedProductInfo: PurchasedProductInfo,
     val purchaseToken: String,
     val transactionReceipt: String,
 )
-
-/** Status of Purchased Product Response. **/
-@Keep
-enum class PurchasedProductResponseStatus(val type: String) {
-    PURCHASED("PURCHASED"),
-    CANCELLED("CANCELLED"),
-    PENDING("PENDING"),
-    UNKNOWN("UNKNOWN");
-
-    internal companion object {
-        internal fun getValue(type: String) = values().find { it.type == type } ?: UNKNOWN
-    }
-}

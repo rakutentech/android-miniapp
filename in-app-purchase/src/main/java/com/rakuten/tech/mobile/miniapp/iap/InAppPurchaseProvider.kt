@@ -14,7 +14,7 @@ interface InAppPurchaseProvider {
     fun getAllProducts(
         androidStoreIds: List<String>,
         onSuccess: (productInfos: List<ProductInfo>) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     )
 
     /**
@@ -26,7 +26,7 @@ interface InAppPurchaseProvider {
     fun purchaseProductWith(
         androidStoreId: String,
         onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     )
 
     /**
@@ -38,7 +38,7 @@ interface InAppPurchaseProvider {
     fun consumePurchaseWIth(
         purhcaseToken: String,
         onSuccess: (title: String, description: String) -> Unit,
-        onError: (message: String) -> Unit
+        onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     )
 
     /**
