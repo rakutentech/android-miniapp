@@ -108,21 +108,17 @@ internal class InAppPurchaseBridgeDispatcher {
                             recordPurchase(
                                 androidStoreId = response.purchasedProductInfo.productInfo.id,
                                 miniAppPurchaseRecord = miniAppPurchaseRecord
-                            ) { isRecorded, errorMsg ->
-                                if (isRecorded) {
-                                    // Replace android store id with product id
-                                    response.purchasedProductInfo.productInfo.id =
-                                        miniAppIAPVerifier.getProductIdByStoreId(
-                                            miniAppId,
-                                            response.purchasedProductInfo.productInfo.id
-                                        )
-                                    bridgeExecutor.postValue(
-                                        callbackId,
-                                        Gson().toJson(response.purchasedProductInfo)
+                            ) { _, _ ->
+                                // Replace android store id with product id
+                                response.purchasedProductInfo.productInfo.id =
+                                    miniAppIAPVerifier.getProductIdByStoreId(
+                                        miniAppId,
+                                        response.purchasedProductInfo.productInfo.id
                                     )
-                                } else {
-                                    genericErrorCallback(callbackId, errorMsg ?: "")
-                                }
+                                bridgeExecutor.postValue(
+                                    callbackId,
+                                    Gson().toJson(response.purchasedProductInfo)
+                                )
                             }
                     }
 
