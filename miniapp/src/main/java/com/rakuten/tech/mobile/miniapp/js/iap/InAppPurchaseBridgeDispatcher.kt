@@ -148,25 +148,19 @@ internal class InAppPurchaseBridgeDispatcher {
         try {
             val callbackObj: ConsumePurchaseCallbackObj =
                 Gson().fromJson(jsonStr, ConsumePurchaseCallbackObj::class.java)
-            val androidStoreId = miniAppIAPVerifier.getStoreIdByProductId(miniAppId, callbackObj.param.productId)
+            val androidStoreId =
+                miniAppIAPVerifier.getStoreIdByProductId(miniAppId, callbackObj.param.productId)
             if (androidStoreId.isNotEmpty()) {
-                val record =
-                    miniAppIAPVerifier.getPurchaseRecordCache(
-                        miniAppId,
-                        androidStoreId,
-                        callbackObj.param.productTransactionId
-                    )
+                val record = miniAppIAPVerifier.getPurchaseRecordCache(
+                    miniAppId,
+                    androidStoreId,
+                    callbackObj.param.productTransactionId
+                )
 
-                if (record != null &&
-                    record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
-                    record.transactionState == TransactionState.PURCHASED &&
-                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED
-                ) {
+                if (record != null && checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
                     consumePurchase(callbackId, record)
                 } else {
-                    if (record != null &&
-                        record.transactionState == TransactionState.PURCHASED &&
-                        record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED) {
+                    if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
                         // try to record again
                         recordPurchase(
                             androidStoreId = record.miniAppPurchaseRecord.productId,
@@ -179,6 +173,16 @@ internal class InAppPurchaseBridgeDispatcher {
                                 genericErrorCallback(callbackId, errorMsg ?: "")
                             }
                         }
+                    } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
+                        checkPurchaseState(record) { state ->
+                            when (state) {
+                                TransactionState.PURCHASED -> consumePurchase(callbackId, record)
+                                TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+                                TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
+                            }
+                        }
+                    } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
+                        genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
                     } else {
                         genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
                     }
@@ -257,6 +261,39 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
+    private fun checkPurchaseState(
+        recordCache: MiniAppPurchaseRecordCache,
+        callback: (state: TransactionState) -> Unit
+    ) {
+        scope.launch {
+            try {
+                val miniAppPurchaseState = apiClient.getTransactionStatus(
+                    miniAppId,
+                    recordCache.miniAppPurchaseRecord.purchaseToken
+                )
+                updatePurchaseRecordCache(
+                    androidStoreId = recordCache.miniAppPurchaseRecord.productId,
+                    transactionId = recordCache.miniAppPurchaseRecord.transactionId,
+                    miniAppPurchaseRecord = recordCache.miniAppPurchaseRecord,
+                    platformRecordStatus = recordCache.platformRecordStatus,
+                    productConsumeStatus = recordCache.productConsumeStatus,
+                    transactionState = TransactionState.getState(miniAppPurchaseState.transactionState)
+                )
+                callback.invoke(TransactionState.getState(miniAppPurchaseState.transactionState))
+            } catch (e: Exception) {
+                updatePurchaseRecordCache(
+                    androidStoreId = recordCache.miniAppPurchaseRecord.productId,
+                    transactionId = recordCache.miniAppPurchaseRecord.transactionId,
+                    miniAppPurchaseRecord = recordCache.miniAppPurchaseRecord,
+                    platformRecordStatus = recordCache.platformRecordStatus,
+                    productConsumeStatus = recordCache.productConsumeStatus,
+                    transactionState = TransactionState.PENDING
+                )
+                callback.invoke(TransactionState.PENDING)
+            }
+        }
+    }
+
     @Suppress("LongParameterList")
     private fun updatePurchaseRecordCache(
         androidStoreId: String,
@@ -279,6 +316,26 @@ internal class InAppPurchaseBridgeDispatcher {
         )
     }
 
+    private fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache, state: State): Boolean {
+        return when (state) {
+            State.RECORDED_NOT_CONSUMED -> record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
+                    record.transactionState == TransactionState.PURCHASED &&
+                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED
+            State.NOT_RECORDED_PURCHASED -> record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED &&
+                    record.transactionState == TransactionState.PURCHASED &&
+                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED
+            State.PENDING_PURCHASE -> record.transactionState == TransactionState.PENDING
+            State.CANCEL_PURCHASE -> record.transactionState == TransactionState.CANCELLED
+        }
+    }
+
+    private enum class State {
+        RECORDED_NOT_CONSUMED,
+        NOT_RECORDED_PURCHASED,
+        PENDING_PURCHASE,
+        CANCEL_PURCHASE
+    }
+
     private fun genericErrorCallback(callbackId: String, errMessage: String) {
         bridgeExecutor.postError(callbackId, "$ERR_IN_APP_PURCHASE $errMessage")
     }
@@ -293,6 +350,8 @@ internal class InAppPurchaseBridgeDispatcher {
         const val ERR_IN_APP_PURCHASE = "Cannot purchase item:"
         const val ERR_PRODUCT_ID_INVALID = "Invalid Product Id."
         const val ERR_INVALID_PURCHASE = "Invalid Purhcase."
+        const val ERR_PENDING_PURCHASE = "Pending Purchase"
+        const val ERR_CANCEL_PURCHASE = "Purchase Cancelled"
         const val PLATFORM = "ANDROID"
     }
 }
