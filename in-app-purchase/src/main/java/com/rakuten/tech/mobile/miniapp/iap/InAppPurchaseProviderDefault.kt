@@ -42,12 +42,12 @@ class InAppPurchaseProviderDefault(
                     handlePurchase(purchase)
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
-                onError(MiniAppInAppPurchaseErrorType.productPurchasedAlreadyError)
+                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productPurchasedAlreadyError)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_UNAVAILABLE) {
-                onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
+                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                onError(MiniAppInAppPurchaseErrorType.userCancelledPurchaseError)
-            } else onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
+                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.userCancelledPurchaseError)
+            } else if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
         }
 
     private val billingClient: BillingClient by lazy {
@@ -190,7 +190,7 @@ class InAppPurchaseProviderDefault(
                 purchaseToken = purchase.purchaseToken,
                 transactionReceipt = purchase.originalJson,
             )
-            onSuccess(purchasedProductResponse)
+            if (this::onError.isInitialized) onSuccess(purchasedProductResponse)
         } ?: run {
             if (this::onError.isInitialized)
                 onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)

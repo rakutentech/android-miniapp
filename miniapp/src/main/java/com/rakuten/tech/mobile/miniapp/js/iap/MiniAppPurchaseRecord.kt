@@ -24,5 +24,6 @@ internal data class MiniAppPurchaseRecordCache(
     val miniAppPurchaseRecord: MiniAppPurchaseRecord,
     val platformRecordStatus: PlatformRecordStatus,
     val productConsumeStatus: ProductConsumeStatus,
-    val transactionState: TransactionState
+    val transactionState: TransactionState,
+    val transactionToken: String
 )

@@ -501,6 +501,7 @@ open class MiniAppMessageBridge {
 
     internal fun onWebViewDetach() {
         screenBridgeDispatcher.releaseLock()
+        iapBridgeDispatcher.disconnectIAPBillingClient()
     }
 
     /** Allow miniapp to change screen orientation. The default setting is false. */

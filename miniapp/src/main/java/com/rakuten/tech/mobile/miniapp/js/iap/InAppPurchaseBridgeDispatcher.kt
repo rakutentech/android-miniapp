@@ -203,7 +203,8 @@ internal class InAppPurchaseBridgeDispatcher {
                 miniAppPurchaseRecord = record.miniAppPurchaseRecord,
                 platformRecordStatus = record.platformRecordStatus,
                 productConsumeStatus = ProductConsumeStatus.CONSUMED,
-                transactionState = record.transactionState
+                transactionState = record.transactionState,
+                transactionToken = record.transactionToken
             )
 
             bridgeExecutor.postValue(
@@ -222,6 +223,7 @@ internal class InAppPurchaseBridgeDispatcher {
         )
     }
 
+    @Suppress("LongMethod")
     private fun recordPurchase(
         androidStoreId: String,
         miniAppPurchaseRecord: MiniAppPurchaseRecord,
@@ -235,7 +237,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord = miniAppPurchaseRecord,
                     platformRecordStatus = PlatformRecordStatus.NOT_RECORDED,
                     productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
-                    transactionState = TransactionState.PENDING
+                    transactionState = TransactionState.PENDING,
+                    transactionToken = ""
                 )
                 val miniAppPurchaseResponse = apiClient.purchaseItem(miniAppId, miniAppPurchaseRecord)
                 updatePurchaseRecordCache(
@@ -244,7 +247,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord = miniAppPurchaseRecord,
                     platformRecordStatus = PlatformRecordStatus.RECORDED,
                     productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
-                    transactionState = TransactionState.getState(miniAppPurchaseResponse.transactionState)
+                    transactionState = TransactionState.getState(miniAppPurchaseResponse.transactionState),
+                    transactionToken = miniAppPurchaseResponse.transactionToken
                 )
                 callback.invoke(true, null)
             } catch (e: Exception) {
@@ -254,7 +258,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord = miniAppPurchaseRecord,
                     platformRecordStatus = PlatformRecordStatus.NOT_RECORDED,
                     productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
-                    transactionState = TransactionState.PENDING
+                    transactionState = TransactionState.PENDING,
+                    transactionToken = ""
                 )
                 callback.invoke(false, e.message.toString())
             }
@@ -269,7 +274,7 @@ internal class InAppPurchaseBridgeDispatcher {
             try {
                 val miniAppPurchaseState = apiClient.getTransactionStatus(
                     miniAppId,
-                    recordCache.miniAppPurchaseRecord.purchaseToken
+                    recordCache.transactionToken
                 )
                 updatePurchaseRecordCache(
                     androidStoreId = recordCache.miniAppPurchaseRecord.productId,
@@ -277,7 +282,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord = recordCache.miniAppPurchaseRecord,
                     platformRecordStatus = recordCache.platformRecordStatus,
                     productConsumeStatus = recordCache.productConsumeStatus,
-                    transactionState = TransactionState.getState(miniAppPurchaseState.transactionState)
+                    transactionState = TransactionState.getState(miniAppPurchaseState.transactionState),
+                    transactionToken = miniAppPurchaseState.transactionToken
                 )
                 callback.invoke(TransactionState.getState(miniAppPurchaseState.transactionState))
             } catch (e: Exception) {
@@ -287,7 +293,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     miniAppPurchaseRecord = recordCache.miniAppPurchaseRecord,
                     platformRecordStatus = recordCache.platformRecordStatus,
                     productConsumeStatus = recordCache.productConsumeStatus,
-                    transactionState = TransactionState.PENDING
+                    transactionState = TransactionState.PENDING,
+                    transactionToken = ""
                 )
                 callback.invoke(TransactionState.PENDING)
             }
@@ -301,7 +308,8 @@ internal class InAppPurchaseBridgeDispatcher {
         miniAppPurchaseRecord: MiniAppPurchaseRecord,
         platformRecordStatus: PlatformRecordStatus,
         productConsumeStatus: ProductConsumeStatus,
-        transactionState: TransactionState
+        transactionState: TransactionState,
+        transactionToken: String
     ) {
         miniAppIAPVerifier.storePurchaseRecord(
             miniAppId,
@@ -311,7 +319,8 @@ internal class InAppPurchaseBridgeDispatcher {
                 miniAppPurchaseRecord = miniAppPurchaseRecord,
                 platformRecordStatus = platformRecordStatus,
                 productConsumeStatus = productConsumeStatus,
-                transactionState = transactionState
+                transactionState = transactionState,
+                transactionToken = transactionToken
             )
         )
     }
@@ -344,6 +353,10 @@ internal class InAppPurchaseBridgeDispatcher {
         val date = Date(time)
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         return format.format(date)
+    }
+
+    internal fun disconnectIAPBillingClient() = whenHasInAppPurchase {
+        inAppPurchaseProvider.onEndConnection()
     }
 
     companion object {
