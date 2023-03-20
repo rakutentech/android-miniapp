@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
+import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
 import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
 import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductInfo
@@ -29,6 +30,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.amshove.kluent.When
 import org.amshove.kluent.calling
 import org.amshove.kluent.itReturns
+import org.amshove.kluent.itThrows
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -37,6 +39,7 @@ import org.mockito.kotlin.verify
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("LargeClass")
 class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val callbackObj = CallbackObj(
@@ -55,6 +58,9 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private val purchasedProductInfo = PurchasedProductInfo(
         productInfo, "dummy_transactionId", 0
     )
+    private val samplePurchaseItem = PurchaseItem(
+        "123", "1234"
+    )
     private val purchasedProductResponse =
         PurchasedProductResponse(
             1,
@@ -69,8 +75,10 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             id = TEST_CALLBACK_ID
         )
     )
+
     private val apiClient: ApiClient = mock()
     private val miniAppIAPVerifier: MiniAppIAPVerifier = mock()
+    private val listOfProductFromGooglePlay = listOf(productInfo)
 
     private fun createPurchaseRequest() = MiniAppPurchaseRecord(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
@@ -125,7 +133,9 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         val provider = Mockito.spy(
             createPurchaseProvider(
                 shouldCreate = false,
-                canPurchase = false
+                canGetItems = true,
+                canPurchase = false,
+                canConsume = false
             )
         )
         miniAppBridge.setInAppPurchaseProvider(provider)
@@ -136,13 +146,15 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         val provider = Mockito.spy(
             createPurchaseProvider(
                 shouldCreate = true,
-                canPurchase = false
+                canGetItems = true,
+                canPurchase = false,
+                canConsume = true
             )
         )
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns ""
         wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
-        val errorMsg = "Cannot purchase item: Invalid Product Id."
+        val errorMsg = "InApp Purchase Error: Invalid Product Id."
         verify(bridgeExecutor).postError(
             callbackObj.id,
             errorMsg
@@ -155,7 +167,9 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         val provider = Mockito.spy(
             createPurchaseProvider(
                 shouldCreate = true,
-                canPurchase = true
+                canGetItems = true,
+                canPurchase = true,
+                canConsume = true
             )
         )
         TestCoroutineScope().launch {
@@ -173,10 +187,112 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `postError should be called when fetch empty items`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = true,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling apiClient.fetchPurchaseItemList(TEST_MA_ID) itReturns emptyList()
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onGetPurchaseItems(callbackObj.id)
+
+            val errorMsg = "InApp Purchase Error: Empty product list."
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                errorMsg
+            )
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `postError should be called when throw exception in fetch empty items`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = true,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling apiClient.fetchPurchaseItemList(TEST_MA_ID) itThrows Exception("message")
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onGetPurchaseItems(callbackObj.id)
+
+            val errorMsg = "InApp Purchase Error: message"
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                errorMsg
+            )
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `postValue should be called when successfully fetch items from google play console`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = true,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling apiClient.fetchPurchaseItemList(TEST_MA_ID) itReturns listOf(
+                samplePurchaseItem
+            )
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onGetPurchaseItems(callbackObj.id)
+
+            verify(bridgeExecutor).postValue(
+                callbackObj.id,
+                Gson().toJson(listOfProductFromGooglePlay)
+            )
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `postError should be called when failed to fetch items from google play console`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = false,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling apiClient.fetchPurchaseItemList(TEST_MA_ID) itReturns listOf(
+                samplePurchaseItem
+            )
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onGetPurchaseItems(callbackObj.id)
+
+            val error =
+                MiniAppBridgeErrorModel(MiniAppInAppPurchaseErrorType.productNotFoundError.type)
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                Gson().toJson(error)
+            )
+        }
+    }
+
     @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
         shouldCreate: Boolean,
-        canPurchase: Boolean
+        canGetItems: Boolean,
+        canPurchase: Boolean,
+        canConsume: Boolean
     ): InAppPurchaseProvider {
         return if (shouldCreate) object :
             InAppPurchaseProvider {
@@ -185,6 +301,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
                 onSuccess: (productInfos: List<ProductInfo>) -> Unit,
                 onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
+                if (canGetItems) onSuccess(listOfProductFromGooglePlay)
+                else onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
             }
 
             override fun purchaseProductWith(
@@ -201,6 +319,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
                 onSuccess: (title: String, description: String) -> Unit,
                 onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
+                if (canConsume) onSuccess("", "")
+                else onError(MiniAppInAppPurchaseErrorType.consumeFailedError)
             }
 
             override fun onEndConnection() {}

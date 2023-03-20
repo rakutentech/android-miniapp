@@ -82,6 +82,8 @@ internal class InAppPurchaseBridgeDispatcher {
                     inAppPurchaseProvider.getAllProducts(
                         listOfAndroidStoreIds, successCallback, errorCallback
                     )
+                } else {
+                    genericErrorCallback(callbackId, ERR_EMPTY_LIST)
                 }
             } catch (e: Exception) {
                 genericErrorCallback(callbackId, e.message.toString())
@@ -360,11 +362,12 @@ internal class InAppPurchaseBridgeDispatcher {
     }
 
     companion object {
-        const val ERR_IN_APP_PURCHASE = "Cannot purchase item:"
+        const val ERR_IN_APP_PURCHASE = "InApp Purchase Error:"
         const val ERR_PRODUCT_ID_INVALID = "Invalid Product Id."
         const val ERR_INVALID_PURCHASE = "Invalid Purhcase."
-        const val ERR_PENDING_PURCHASE = "Pending Purchase"
-        const val ERR_CANCEL_PURCHASE = "Purchase Cancelled"
+        const val ERR_PENDING_PURCHASE = "Pending Purchase."
+        const val ERR_CANCEL_PURCHASE = "Purchase Cancelled."
+        const val ERR_EMPTY_LIST = "Empty product list."
         const val PLATFORM = "ANDROID"
     }
 }
