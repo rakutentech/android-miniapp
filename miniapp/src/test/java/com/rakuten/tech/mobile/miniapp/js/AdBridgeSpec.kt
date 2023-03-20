@@ -18,6 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
@@ -145,6 +146,7 @@ class ScreenBridgeSpec : BridgeCommon() {
             miniAppBridge.init(
                 activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock(), mock()
             )
+            miniAppBridge.setInAppPurchaseProvider(mock())
             miniAppBridge.allowScreenOrientation(true)
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_PORTRAIT))
             miniAppBridge.postMessage(createCallbackJsonStr(ScreenOrientation.LOCK_LANDSCAPE))

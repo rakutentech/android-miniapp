@@ -287,6 +287,54 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `onPurchaseItem postError should be if item is not available in cache`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = false,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns ""
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+
+            val error = "InApp Purchase Error: Invalid Product Id."
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                error
+            )
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `onPurchaseItem postError should be if throw any exception`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = false,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itThrows Exception("message")
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+
+            val errorMsg = "InApp Purchase Error: message"
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                errorMsg
+            )
+        }
+    }
+
     @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
         shouldCreate: Boolean,

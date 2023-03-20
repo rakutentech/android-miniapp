@@ -63,7 +63,8 @@ open class MiniAppMessageBridge {
 
     @VisibleForTesting
     internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
-    private val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
+    @VisibleForTesting
+    internal val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
 
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
