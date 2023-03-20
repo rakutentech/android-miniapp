@@ -186,7 +186,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             )
         }
     }
-
+    /** region: get all items */
     @ExperimentalCoroutinesApi
     @Test
     fun `postError should be called when fetch empty items`() {
@@ -287,6 +287,9 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
+    /** end region */
+
+    /** region: purchase item */
     @ExperimentalCoroutinesApi
     @Test
     fun `onPurchaseItem postError should be if item is not available in cache`() {
@@ -334,6 +337,34 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             )
         }
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `onPurchaseItem postError should be if failed to purchase using google billing`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(
+                shouldCreate = true,
+                canGetItems = false,
+                canPurchase = false,
+                canConsume = false
+            )
+        )
+        TestCoroutineScope().launch {
+            When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "123"
+            val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+            wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
+
+            val error = MiniAppBridgeErrorModel(MiniAppInAppPurchaseErrorType.purchaseFailedError.type)
+
+            verify(bridgeExecutor).postError(
+                callbackObj.id,
+                Gson().toJson(error)
+
+            )
+        }
+    }
+
+    /** end region */
 
     @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
