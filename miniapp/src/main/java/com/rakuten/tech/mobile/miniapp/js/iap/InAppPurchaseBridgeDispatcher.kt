@@ -153,43 +153,36 @@ internal class InAppPurchaseBridgeDispatcher {
         try {
             val callbackObj: ConsumePurchaseCallbackObj =
                 Gson().fromJson(jsonStr, ConsumePurchaseCallbackObj::class.java)
-            val androidStoreId =
-                miniAppIAPVerifier.getStoreIdByProductId(miniAppId, callbackObj.param.productId)
-            if (androidStoreId.isNotEmpty()) {
-                val record = miniAppIAPVerifier.getPurchaseRecordCache(
-                    miniAppId,
-                    androidStoreId,
-                    callbackObj.param.productTransactionId
-                )
-
-                if (record != null && checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
-                    consumePurchase(callbackId, record)
-                } else if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
-                    recordPurchase(
-                        androidStoreId = record.miniAppPurchaseRecord.productId,
-                        miniAppPurchaseRecord = record.miniAppPurchaseRecord
-                    ) { isRecorded, errorMsg ->
-                        if (isRecorded) {
-                            consumePurchase(callbackId, record)
-                        } else {
-                            genericErrorCallback(callbackId, errorMsg ?: "")
-                        }
-                    }
-                } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
-                    checkPurchaseState(record) { state ->
-                        when (state) {
-                            TransactionState.PURCHASED -> consumePurchase(callbackId, record)
-                            TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                            TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
-                        }
-                    }
-                } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
-                    genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                } else {
-                    genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
+            val androidStoreId = miniAppIAPVerifier.getStoreIdByProductId(miniAppId, callbackObj.param.productId)
+            val record = miniAppIAPVerifier.getPurchaseRecordCache(
+                miniAppId,
+                androidStoreId,
+                callbackObj.param.productTransactionId
+            )
+            if (record != null && checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
+                consumePurchase(callbackId, record)
+            } else if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
+                recordPurchase(
+                    androidStoreId = record.miniAppPurchaseRecord.productId,
+                    miniAppPurchaseRecord = record.miniAppPurchaseRecord
+                ) { isRecorded, errorMsg ->
+                    if (isRecorded)
+                        consumePurchase(callbackId, record)
+                    else
+                        genericErrorCallback(callbackId, errorMsg ?: "")
                 }
+            } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
+                checkPurchaseState(record) { state ->
+                    when (state) {
+                        TransactionState.PURCHASED -> consumePurchase(callbackId, record)
+                        TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+                        TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
+                    }
+                }
+            } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
+                genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
             } else {
-                genericErrorCallback(callbackId, ERR_PRODUCT_ID_INVALID)
+                genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
             }
         } catch (e: Exception) {
             genericErrorCallback(callbackId, e.message.toString())

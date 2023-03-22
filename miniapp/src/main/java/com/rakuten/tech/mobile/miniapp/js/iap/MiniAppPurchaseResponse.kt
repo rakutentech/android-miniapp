@@ -9,8 +9,7 @@ internal data class MiniAppPurchaseResponse(
 internal enum class TransactionState(val state: Int) {
     PURCHASED(0),
     CANCELLED(1),
-    PENDING(2),
-    DEFAULT(-1);
+    PENDING(2);
 
     companion object {
         fun getState(state: String): TransactionState {
@@ -18,7 +17,7 @@ internal enum class TransactionState(val state: Int) {
                 "PURCHASED" -> PURCHASED
                 "CANCELLED" -> CANCELLED
                 "PENDING" -> PENDING
-                else -> DEFAULT
+                else -> throw IllegalStateException("Invalid state value")
             }
         }
     }
