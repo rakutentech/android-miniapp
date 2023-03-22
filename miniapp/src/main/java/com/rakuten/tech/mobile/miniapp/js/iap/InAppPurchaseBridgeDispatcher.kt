@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp.js.iap
 
+import android.util.Log
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -24,7 +25,9 @@ private inline fun <T> whenHasInAppPurchase(callback: () -> T) {
     try {
         Class.forName("com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider")
         callback.invoke()
-    } catch (e: ClassNotFoundException) {}
+    } catch (e: ClassNotFoundException) {
+        Log.e("Missing Dependency", ":in-app-purchase")
+    }
 }
 
 @Suppress("TooGenericExceptionCaught", "TooManyFunctions", "LargeClass")
@@ -161,33 +164,29 @@ internal class InAppPurchaseBridgeDispatcher {
 
                 if (record != null && checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
                     consumePurchase(callbackId, record)
-                } else {
-                    if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
-                        // try to record again
-                        recordPurchase(
-                            androidStoreId = record.miniAppPurchaseRecord.productId,
-                            miniAppPurchaseRecord = record.miniAppPurchaseRecord
-                        ) { isRecorded, errorMsg ->
-                            if (isRecorded) {
-                                // consume it again
-                                consumePurchase(callbackId, record)
-                            } else {
-                                genericErrorCallback(callbackId, errorMsg ?: "")
-                            }
+                } else if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
+                    recordPurchase(
+                        androidStoreId = record.miniAppPurchaseRecord.productId,
+                        miniAppPurchaseRecord = record.miniAppPurchaseRecord
+                    ) { isRecorded, errorMsg ->
+                        if (isRecorded) {
+                            consumePurchase(callbackId, record)
+                        } else {
+                            genericErrorCallback(callbackId, errorMsg ?: "")
                         }
-                    } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
-                        checkPurchaseState(record) { state ->
-                            when (state) {
-                                TransactionState.PURCHASED -> consumePurchase(callbackId, record)
-                                TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                                TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
-                            }
-                        }
-                    } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
-                        genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                    } else {
-                        genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
                     }
+                } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
+                    checkPurchaseState(record) { state ->
+                        when (state) {
+                            TransactionState.PURCHASED -> consumePurchase(callbackId, record)
+                            TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+                            TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
+                        }
+                    }
+                } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
+                    genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+                } else {
+                    genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
                 }
             } else {
                 genericErrorCallback(callbackId, ERR_PRODUCT_ID_INVALID)
