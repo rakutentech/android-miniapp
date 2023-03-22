@@ -73,7 +73,6 @@ class InAppPurchaseProviderDefault(
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         callback(true)
                     } else callback(false)
-
                 }
 
                 override fun onBillingServiceDisconnected() {
