@@ -31,7 +31,7 @@ class InAppPurchaseProviderDefault(
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
     private var skuDetails: SkuDetails? = null
-    private lateinit var onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit
+    private lateinit var onSuccess: (purchaseData: PurchaseData) -> Unit
     private lateinit var onConsumeSuccess: (title: String, description: String) -> Unit
     private lateinit var onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
 
@@ -99,7 +99,7 @@ class InAppPurchaseProviderDefault(
 
     override fun purchaseProductWith(
         androidStoreId: String,
-        onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+        onSuccess: (purchaseData: PurchaseData) -> Unit,
         onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     ) {
         if (androidStoreId.isEmpty()) return
@@ -184,13 +184,13 @@ class InAppPurchaseProviderDefault(
                 transactionDate = purchase.purchaseTime
             )
             purchase.purchaseState
-            val purchasedProductResponse = PurchasedProductResponse(
+            val purchaseData = PurchaseData(
                 purchaseState = purchase.purchaseState,
                 purchasedProductInfo = purchasedProductInfo,
                 purchaseToken = purchase.purchaseToken,
                 transactionReceipt = purchase.originalJson,
             )
-            if (this::onError.isInitialized) onSuccess(purchasedProductResponse)
+            if (this::onError.isInitialized) onSuccess(purchaseData)
         } ?: run {
             if (this::onError.isInitialized)
                 onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)

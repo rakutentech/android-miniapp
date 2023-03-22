@@ -7,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppInAppPurchaseErrorType
 import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchaseData
 import com.rakuten.tech.mobile.miniapp.js.ConsumePurchaseCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
@@ -99,7 +99,7 @@ internal class InAppPurchaseBridgeDispatcher {
                     Gson().fromJson(jsonStr, PurchasedProductCallbackObj::class.java)
                 val androidStoreId = miniAppIAPVerifier.getStoreIdByProductId(miniAppId, callbackObj.param.productId)
                 if (androidStoreId.isNotEmpty()) {
-                    val successCallback = { response: PurchasedProductResponse ->
+                    val successCallback = { response: PurchaseData ->
                             // Create the record to send to platform
                             val miniAppPurchaseRecord = MiniAppPurchaseRecord(
                                 platform = PLATFORM,
@@ -233,15 +233,6 @@ internal class InAppPurchaseBridgeDispatcher {
     ) {
         scope.launch {
             try {
-                updatePurchaseRecordCache(
-                    androidStoreId = androidStoreId,
-                    transactionId = miniAppPurchaseRecord.transactionId,
-                    miniAppPurchaseRecord = miniAppPurchaseRecord,
-                    platformRecordStatus = PlatformRecordStatus.NOT_RECORDED,
-                    productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
-                    transactionState = TransactionState.PENDING,
-                    transactionToken = ""
-                )
                 val miniAppPurchaseResponse = apiClient.recordPurchase(miniAppId, miniAppPurchaseRecord)
                 updatePurchaseRecordCache(
                     androidStoreId = androidStoreId,
@@ -254,6 +245,15 @@ internal class InAppPurchaseBridgeDispatcher {
                 )
                 callback.invoke(true, null)
             } catch (e: Exception) {
+                updatePurchaseRecordCache(
+                    androidStoreId = androidStoreId,
+                    transactionId = miniAppPurchaseRecord.transactionId,
+                    miniAppPurchaseRecord = miniAppPurchaseRecord,
+                    platformRecordStatus = PlatformRecordStatus.NOT_RECORDED,
+                    productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
+                    transactionState = TransactionState.PENDING,
+                    transactionToken = ""
+                )
                 callback.invoke(false, e.message.toString())
             }
         }

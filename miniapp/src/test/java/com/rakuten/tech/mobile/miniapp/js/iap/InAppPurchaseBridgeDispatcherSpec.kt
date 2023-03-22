@@ -14,7 +14,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
 import com.rakuten.tech.mobile.miniapp.iap.ProductInfo
 import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductInfo
-import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductResponse
+import com.rakuten.tech.mobile.miniapp.iap.PurchaseData
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppInAppPurchaseErrorType
 import com.rakuten.tech.mobile.miniapp.js.CallbackObj
@@ -61,8 +61,8 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private val samplePurchaseItem = PurchaseItem(
         "123", "1234"
     )
-    private val purchasedProductResponse =
-        PurchasedProductResponse(
+    private val purchaseData =
+        PurchaseData(
             1,
             purchasedProductInfo,
             "",
@@ -82,12 +82,12 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
 
     private fun createPurchaseRequest() = MiniAppPurchaseRecord(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
-        productId = purchasedProductResponse.purchasedProductInfo.productInfo.id,
+        productId = purchaseData.purchasedProductInfo.productInfo.id,
         transactionState = TransactionState.PURCHASED.state,
-        transactionId = purchasedProductResponse.purchasedProductInfo.transactionId,
-        transactionDate = formatTransactionDate(purchasedProductResponse.purchasedProductInfo.transactionDate),
-        transactionReceipt = purchasedProductResponse.transactionReceipt,
-        purchaseToken = purchasedProductResponse.purchaseToken
+        transactionId = purchaseData.purchasedProductInfo.transactionId,
+        transactionDate = formatTransactionDate(purchaseData.purchasedProductInfo.transactionDate),
+        transactionReceipt = purchaseData.transactionReceipt,
+        purchaseToken = purchaseData.purchaseToken
     )
 
     private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(
@@ -386,10 +386,10 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
 
             override fun purchaseProductWith(
                 androidStoreId: String,
-                onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+                onSuccess: (purchaseData: PurchaseData) -> Unit,
                 onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
             ) {
-                if (canPurchase) onSuccess(purchasedProductResponse)
+                if (canPurchase) onSuccess(purchaseData)
                 else onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
             }
 

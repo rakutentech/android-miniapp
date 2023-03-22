@@ -20,12 +20,12 @@ interface InAppPurchaseProvider {
     /**
      * Triggered when user wants to purchase an item.
      * [androidStoreId] item to be purchased.
-     * Should invoke [onSuccess] with [PurchasedProductResponse] when user can purchase an item successfully.
+     * Should invoke [onSuccess] with [PurchaseData] when user can purchase an item successfully.
      * Should invoke [onError] when there was an error.
      */
     fun purchaseProductWith(
         androidStoreId: String,
-        onSuccess: (purchasedProductResponse: PurchasedProductResponse) -> Unit,
+        onSuccess: (purchaseData: PurchaseData) -> Unit,
         onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
     )
 
