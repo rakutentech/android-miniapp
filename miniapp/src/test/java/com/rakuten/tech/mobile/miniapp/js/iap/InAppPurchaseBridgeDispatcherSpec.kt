@@ -173,7 +173,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             )
         )
         TestCoroutineScope().launch {
-            When calling apiClient.purchaseItem(
+            When calling apiClient.recordPurchase(
                 TEST_MA_ID,
                 createPurchaseRequest()
             ) itReturns createMiniAppPurchaseResponse()

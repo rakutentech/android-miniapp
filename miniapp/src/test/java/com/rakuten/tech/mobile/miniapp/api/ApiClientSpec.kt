@@ -163,11 +163,11 @@ open class ApiClientSpec {
         val mockCall: Call<MiniAppPurchaseResponse> = mock()
         val response: Response<MiniAppPurchaseResponse> = Response.success(purchaseResponse)
         val request = createPurchaseRequest()
-        When calling mockIAPApi.purchaseItem(any(), any(), any()) itReturns mockCall
+        When calling mockIAPApi.recordPurchase(any(), any(), any()) itReturns mockCall
         When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
 
         val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
-        apiClient.purchaseItem(TEST_MA_ID, request) shouldBeEqualTo purchaseResponse
+        apiClient.recordPurchase(TEST_MA_ID, request) shouldBeEqualTo purchaseResponse
     }
 
     @Test

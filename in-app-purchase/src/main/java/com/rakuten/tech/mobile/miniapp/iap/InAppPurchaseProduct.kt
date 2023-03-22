@@ -13,7 +13,6 @@ data class ProductInfo(
 
 /** An object to include the price information of a [ProductInfo]. */
 @Keep
-
 data class ProductPrice(
     val currencyCode: String,
     val price: String

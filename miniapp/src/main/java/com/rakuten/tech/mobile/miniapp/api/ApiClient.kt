@@ -98,11 +98,11 @@ internal class ApiClient @VisibleForTesting constructor(
     }
 
     @Throws(MiniAppSdkException::class)
-    suspend fun purchaseItem(
+    suspend fun recordPurchase(
         appId: String,
         purchaseRequest: MiniAppPurchaseRecord
     ): MiniAppPurchaseResponse {
-        val request = inAppPurchaseApi.purchaseItem(
+        val request = inAppPurchaseApi.recordPurchase(
             hostId = hostId,
             miniAppId = appId,
             request = purchaseRequest

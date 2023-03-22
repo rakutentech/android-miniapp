@@ -17,7 +17,7 @@ internal interface InAppPurchaseApi {
     ): Call<MiniAppPurchaseItemListResponse>
 
     @POST("host/{hostId}/miniapp/{miniappId}/transaction")
-    fun purchaseItem(
+    fun recordPurchase(
         @Path("hostId") hostId: String,
         @Path("miniappId") miniAppId: String,
         @Body request: MiniAppPurchaseRecord
