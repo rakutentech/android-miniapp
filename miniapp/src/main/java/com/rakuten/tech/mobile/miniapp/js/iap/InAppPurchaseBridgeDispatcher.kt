@@ -159,7 +159,6 @@ internal class InAppPurchaseBridgeDispatcher {
                 androidStoreId,
                 callbackObj.param.productTransactionId
             )
-
             if (record != null) {
                 when (checkPurchaseStatus(record)) {
                     State.RECORDED_NOT_CONSUMED -> consumePurchase(callbackId, record)
@@ -173,11 +172,7 @@ internal class InAppPurchaseBridgeDispatcher {
                             genericErrorCallback(callbackId, errorMsg ?: "")
                     }
                     State.PENDING_PURCHASE -> checkPurchaseState(record) { state ->
-                        when (state) {
-                            TransactionState.PURCHASED -> consumePurchase(callbackId, record)
-                            TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                            TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
-                        }
+                        handleConsume(state, callbackId, record)
                     }
                     State.CANCEL_PURCHASE -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
                 }
@@ -186,6 +181,14 @@ internal class InAppPurchaseBridgeDispatcher {
             }
         } catch (e: Exception) {
             genericErrorCallback(callbackId, e.message.toString())
+        }
+    }
+
+    private fun handleConsume(state: TransactionState, callbackId: String, record: MiniAppPurchaseRecordCache) {
+        when (state) {
+            TransactionState.PURCHASED -> consumePurchase(callbackId, record)
+            TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+            TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
         }
     }
 
