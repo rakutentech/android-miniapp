@@ -72,7 +72,8 @@ class InAppPurchaseProviderDefault(
                 override fun onBillingSetupFinished(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         callback(true)
-                    }
+                    } else callback(false)
+
                 }
 
                 override fun onBillingServiceDisconnected() {
@@ -206,7 +207,7 @@ class InAppPurchaseProviderDefault(
         billingClient.consumeAsync(params) { billingResult, _ ->
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
-                    onConsumeSuccess("Consume", "successful")
+                    onConsumeSuccess("Success", "Product consume successfully")
                 }
                 else -> onError(MiniAppInAppPurchaseErrorType.consumeFailedError)
             }
