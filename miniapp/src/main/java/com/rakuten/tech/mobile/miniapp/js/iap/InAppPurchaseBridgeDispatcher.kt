@@ -160,30 +160,27 @@ internal class InAppPurchaseBridgeDispatcher {
                 callbackObj.param.productTransactionId
             )
 
-            if (record == null) {
-                genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
-            } else if (checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
-                consumePurchase(callbackId, record)
-            } else if (checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
-                recordPurchase(
-                    androidStoreId = record.miniAppPurchaseRecord.productId,
-                    miniAppPurchaseRecord = record.miniAppPurchaseRecord
-                ) { isRecorded, errorMsg ->
-                    if (isRecorded)
-                        consumePurchase(callbackId, record)
-                    else
-                        genericErrorCallback(callbackId, errorMsg ?: "")
-                }
-            } else if (checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
-                checkPurchaseState(record) { state ->
-                    when (state) {
-                        TransactionState.PURCHASED -> consumePurchase(callbackId, record)
-                        TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
-                        TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
+            if (record != null) {
+                when (checkPurchaseStatus(record)) {
+                    State.RECORDED_NOT_CONSUMED -> consumePurchase(callbackId, record)
+                    State.NOT_RECORDED_PURCHASED -> recordPurchase(
+                        androidStoreId = record.miniAppPurchaseRecord.productId,
+                        miniAppPurchaseRecord = record.miniAppPurchaseRecord
+                    ) { isRecorded, errorMsg ->
+                        if (isRecorded)
+                            consumePurchase(callbackId, record)
+                        else
+                            genericErrorCallback(callbackId, errorMsg ?: "")
                     }
+                    State.PENDING_PURCHASE -> checkPurchaseState(record) { state ->
+                        when (state) {
+                            TransactionState.PURCHASED -> consumePurchase(callbackId, record)
+                            TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
+                            TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
+                        }
+                    }
+                    State.CANCEL_PURCHASE -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
                 }
-            } else if (checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
-                genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
             } else {
                 genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
             }
@@ -313,16 +310,17 @@ internal class InAppPurchaseBridgeDispatcher {
         )
     }
 
-    private fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache, state: State): Boolean {
-        return when (state) {
-            State.RECORDED_NOT_CONSUMED -> record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
+    private fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache): State {
+        return when {
+            record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
                     record.transactionState == TransactionState.PURCHASED &&
-                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED
-            State.NOT_RECORDED_PURCHASED -> record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED &&
+                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED -> State.RECORDED_NOT_CONSUMED
+            record.platformRecordStatus == PlatformRecordStatus.NOT_RECORDED &&
                     record.transactionState == TransactionState.PURCHASED &&
-                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED
-            State.PENDING_PURCHASE -> record.transactionState == TransactionState.PENDING
-            State.CANCEL_PURCHASE -> record.transactionState == TransactionState.CANCELLED
+                    record.productConsumeStatus == ProductConsumeStatus.NOT_CONSUMED -> State.NOT_RECORDED_PURCHASED
+            record.transactionState == TransactionState.PENDING -> State.PENDING_PURCHASE
+            record.transactionState == TransactionState.CANCELLED -> State.CANCEL_PURCHASE
+            else -> throw IllegalStateException("Invalid purchase state")
         }
     }
 
