@@ -402,7 +402,9 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
                 else onError(MiniAppInAppPurchaseErrorType.consumeFailedError)
             }
 
-            override fun onEndConnection() {}
+            override fun onEndConnection() {
+                // for disconnecting the  billing client.
+            }
         } else {
             throw MiniAppSdkException("No method has been implemented.")
         }
