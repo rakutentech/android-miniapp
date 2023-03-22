@@ -159,9 +159,12 @@ internal class InAppPurchaseBridgeDispatcher {
                 androidStoreId,
                 callbackObj.param.productTransactionId
             )
-            if (record != null && checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
+
+            if (record == null) {
+                genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
+            } else if (checkPurchaseStatus(record, State.RECORDED_NOT_CONSUMED)) {
                 consumePurchase(callbackId, record)
-            } else if (record != null && checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
+            } else if (checkPurchaseStatus(record, State.NOT_RECORDED_PURCHASED)) {
                 recordPurchase(
                     androidStoreId = record.miniAppPurchaseRecord.productId,
                     miniAppPurchaseRecord = record.miniAppPurchaseRecord
@@ -171,7 +174,7 @@ internal class InAppPurchaseBridgeDispatcher {
                     else
                         genericErrorCallback(callbackId, errorMsg ?: "")
                 }
-            } else if (record != null && checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
+            } else if (checkPurchaseStatus(record, State.PENDING_PURCHASE)) {
                 checkPurchaseState(record) { state ->
                     when (state) {
                         TransactionState.PURCHASED -> consumePurchase(callbackId, record)
@@ -179,7 +182,7 @@ internal class InAppPurchaseBridgeDispatcher {
                         TransactionState.PENDING -> genericErrorCallback(callbackId, ERR_PENDING_PURCHASE)
                     }
                 }
-            } else if (record != null && checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
+            } else if (checkPurchaseStatus(record, State.CANCEL_PURCHASE)) {
                 genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
             } else {
                 genericErrorCallback(callbackId, ERR_INVALID_PURCHASE)
