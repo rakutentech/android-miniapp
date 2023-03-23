@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.api
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.js.iap.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody
@@ -24,6 +25,7 @@ open class ApiClientSpec {
     private val mockManifestApi: ManifestApi = mock()
     private val mockMetadataApi: MetadataApi = mock()
     private val mockDownloadApi: DownloadApi = mock()
+    private val mockIAPApi: InAppPurchaseApi = mock()
 
     private val miniAppInfo = MiniAppInfo(
         id = TEST_MA_ID,
@@ -32,6 +34,22 @@ open class ApiClientSpec {
         version = Version(TEST_MA_VERSION_TAG, TEST_MA_VERSION_ID),
         promotionalImageUrl = TEST_PROMOTIONAL_URL,
         promotionalText = TEST_PROMOTIONAL_TEXT
+    )
+
+    private val purchaseItemListResponse =
+        MiniAppPurchaseItemListResponse(listOf(PurchaseItem("123", "1234")))
+
+    private val purchaseResponse =
+        MiniAppPurchaseResponse("123", "1234", "0")
+
+    private fun createPurchaseRequest() = MiniAppPurchaseRecord(
+        platform = InAppPurchaseBridgeDispatcher.PLATFORM,
+        productId = "",
+        transactionState = TransactionState.PURCHASED.state,
+        transactionId = "",
+        transactionDate = "",
+        transactionReceipt = "",
+        purchaseToken = ""
     )
 
     private val previewMiniAppInfo = PreviewMiniAppInfo(
@@ -129,6 +147,41 @@ open class ApiClientSpec {
     }
 
     @Test
+    fun `should fetch inApp item list for a given appId`() = runBlockingTest {
+        val mockCall: Call<MiniAppPurchaseItemListResponse> = mock()
+        val response: Response<MiniAppPurchaseItemListResponse> = Response.success(purchaseItemListResponse)
+
+        When calling mockIAPApi.getPurchaseItems(any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.fetchPurchaseItemList(TEST_MA_ID) shouldBeEqualTo purchaseItemListResponse.items
+    }
+
+    @Test
+    fun `should record inApp item for a given appId`() = runBlockingTest {
+        val mockCall: Call<MiniAppPurchaseResponse> = mock()
+        val response: Response<MiniAppPurchaseResponse> = Response.success(purchaseResponse)
+        val request = createPurchaseRequest()
+        When calling mockIAPApi.recordPurchase(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.recordPurchase(TEST_MA_ID, request) shouldBeEqualTo purchaseResponse
+    }
+
+    @Test
+    fun `should return transaction status for a given token`() = runBlockingTest {
+        val mockCall: Call<MiniAppPurchaseResponse> = mock()
+        val response: Response<MiniAppPurchaseResponse> = Response.success(purchaseResponse)
+        When calling mockIAPApi.getTransactionStatus(any(), any(), any()) itReturns mockCall
+        When calling mockRequestExecutor.executeRequest(mockCall) itReturns response
+
+        val apiClient = createApiClient(appInfoApi = mockAppInfoApi)
+        apiClient.getTransactionStatus(TEST_MA_ID, "") shouldBeEqualTo purchaseResponse
+    }
+
+    @Test
     fun `fetchInfo should return only the first item`() = runBlockingTest {
         val mockCall: Call<List<MiniAppInfo>> = mock()
         val secondItem = miniAppInfo.copy()
@@ -197,6 +250,7 @@ open class ApiClientSpec {
         When calling mockRetrofitClient.create(AppInfoApi::class.java) itReturns mockAppInfoApi
         When calling mockRetrofitClient.create(ManifestApi::class.java) itReturns mockManifestApi
         When calling mockRetrofitClient.create(MetadataApi::class.java) itReturns mockMetadataApi
+        When calling mockRetrofitClient.create(InAppPurchaseApi::class.java) itReturns mockIAPApi
         When calling mockRetrofitClient.create(DownloadApi::class.java) itReturns mockDownloadApi
 
         ApiClient(mockRetrofitClient, false, TEST_HA_ID_PROJECT).downloadFile(TEST_URL_FILE)
@@ -241,6 +295,7 @@ open class ApiClientSpec {
         appInfoApi: AppInfoApi = mockAppInfoApi,
         manifestApi: ManifestApi = mockManifestApi,
         metadataApi: MetadataApi = mockMetadataApi,
+        inAppPurchaseApi: InAppPurchaseApi = mockIAPApi,
         downloadApi: DownloadApi = mockDownloadApi
     ) = ApiClient(
         retrofit = retrofit,
@@ -250,6 +305,7 @@ open class ApiClientSpec {
         appInfoApi = appInfoApi,
         manifestApi = manifestApi,
         metadataApi = metadataApi,
+        inAppPurchaseApi = inAppPurchaseApi,
         downloadApi = downloadApi
     )
 }

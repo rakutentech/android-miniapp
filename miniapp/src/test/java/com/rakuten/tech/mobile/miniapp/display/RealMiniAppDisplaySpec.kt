@@ -56,7 +56,8 @@ class RealMiniAppDisplaySpec {
                 miniAppAnalytics = mock(),
                 ratDispatcher = mock(),
                 secureStorageDispatcher = mock(),
-                enableH5Ads = false
+                enableH5Ads = false,
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -80,7 +81,8 @@ class RealMiniAppDisplaySpec {
             miniAppAnalytics = mock(),
             ratDispatcher = mock(),
             secureStorageDispatcher = mock(),
-            enableH5Ads = false
+            enableH5Ads = false,
+            miniAppIAPVerifier = mock()
         )
 
         realDisplay.miniAppInfo.apply {

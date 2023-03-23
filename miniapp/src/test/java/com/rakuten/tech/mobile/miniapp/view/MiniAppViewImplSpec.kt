@@ -46,6 +46,7 @@ class MiniAppViewImplSpec {
     fun setUp() {
         withRealActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -53,7 +54,8 @@ class MiniAppViewImplSpec {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
         miniAppConfig = MiniAppConfig(mock(), miniAppBridge, mock(), mock(), "")

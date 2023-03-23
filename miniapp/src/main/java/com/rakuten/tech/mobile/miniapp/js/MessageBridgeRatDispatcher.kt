@@ -42,6 +42,10 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
             ActionType.SECURE_STORAGE_REMOVE_ITEMS.action -> Actype.SECURE_STORAGE_REMOVE_ITEMS
             ActionType.SECURE_STORAGE_CLEAR.action -> Actype.SECURE_STORAGE_CLEAR
             ActionType.SECURE_STORAGE_SIZE.action -> Actype.SECURE_STORAGE_SIZE
+            ActionType.SET_CLOSE_ALERT.action -> Actype.SET_CLOSE_ALERT
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> Actype.GET_PURCHASE_ITEM_LIST
+            ActionType.PURCHASE_ITEM.action -> Actype.PURCHASE_ITEM
+            ActionType.CONSUME_PURCHASE.action -> Actype.CONSUME_PURCHASE
             ActionType.JSON_INFO.action -> Actype.JSON_INFO
             ActionType.CLOSE_MINIAPP.action -> Actype.CLOSE_MINIAPP
             else -> Actype.DEFAULT

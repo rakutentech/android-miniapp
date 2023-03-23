@@ -44,6 +44,7 @@ open class BaseChatBridgeDispatcherSpec {
         miniAppBridge = Mockito.spy(createMessageBridge())
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -51,7 +52,8 @@ open class BaseChatBridgeDispatcherSpec {
                 downloadedManifestCache = downloadedManifestCache,
                 miniAppId = TEST_MA.id,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }

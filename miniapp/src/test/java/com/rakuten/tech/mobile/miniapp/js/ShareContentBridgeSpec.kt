@@ -27,6 +27,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
     fun setupShareInfo() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -34,7 +35,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -54,6 +56,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -61,7 +64,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -74,6 +78,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             // When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -81,7 +86,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
@@ -96,6 +102,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -103,7 +110,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.dispatchNativeEvent(NativeEventType.EXTERNAL_WEBVIEW_CLOSE, "")
 
@@ -126,6 +134,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
             val webViewListener = createErrorWebViewListener(errMsg)
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -133,7 +142,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(shareContentJsonStr)
 
@@ -143,6 +153,7 @@ class ShareContentBridgeSpec : BridgeCommon() {
 
     @Test
     fun `postValue should not be called when using default method without Activity`() {
+        miniAppBridge.setComponentsIAPDispatcher(mock())
         miniAppBridge.init(
             activity = TestFilesDirActivity(),
             webViewListener = webViewListener,
@@ -150,7 +161,8 @@ class ShareContentBridgeSpec : BridgeCommon() {
             downloadedManifestCache = mock(),
             miniAppId = TEST_MA_ID,
             ratDispatcher = mock(),
-            secureStorageDispatcher = mock()
+            secureStorageDispatcher = mock(),
+            miniAppIAPVerifier = mock()
         )
         miniAppBridge.postMessage(shareContentJsonStr)
 

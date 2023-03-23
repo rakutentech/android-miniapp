@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
 import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
@@ -298,7 +299,8 @@ abstract class MiniApp internal constructor() {
                     context,
                     miniAppSdkConfig.maxStorageSizeLimitInBytes.toLong()
                 ),
-                enableH5Ads = miniAppSdkConfig.enableH5Ads
+                enableH5Ads = miniAppSdkConfig.enableH5Ads,
+                initMiniAppIAPVerifier = { MiniAppIAPVerifier(context) }
             )
         }
     }

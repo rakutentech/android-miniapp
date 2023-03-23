@@ -2,14 +2,13 @@ package com.rakuten.tech.mobile.miniapp.permission
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rakuten.tech.mobile.miniapp.MiniAppVerificationException
+import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
@@ -17,8 +16,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertFalse
 
 @Suppress("LongMethod", "LargeClass")
-@RunWith(AndroidJUnit4::class)
-class MiniAppCustomPermissionCacheSpec {
+class MiniAppCustomPermissionCacheSpec : RobolectricBaseSpec() {
     private lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val prefs = context.getSharedPreferences("test-cache", Context.MODE_PRIVATE)

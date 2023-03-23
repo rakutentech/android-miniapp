@@ -27,6 +27,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -34,7 +35,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
         }
     }
@@ -57,6 +59,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
             )
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                     activity = activity,
                     webViewListener = webViewListener,
@@ -64,7 +67,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                     downloadedManifestCache = mock(),
                     miniAppId = TEST_MA_ID,
                     ratDispatcher = mock(),
-                    secureStorageDispatcher = mock()
+                    secureStorageDispatcher = mock(),
+                    miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(hostEnvJsonStr)
             verify(bridgeExecutor).postValue(hostEnvCallbackObj.id, Gson().toJson(hostEnvironmentInfo))
@@ -80,6 +84,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
             val webViewListener = createErrorWebViewListener(infoErrMessage)
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
+            miniAppBridge.setComponentsIAPDispatcher(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -87,7 +92,8 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
                 downloadedManifestCache = mock(),
                 miniAppId = TEST_MA_ID,
                 ratDispatcher = mock(),
-                secureStorageDispatcher = mock()
+                secureStorageDispatcher = mock(),
+                miniAppIAPVerifier = mock()
             )
             miniAppBridge.postMessage(hostEnvJsonStr)
 

@@ -206,6 +206,7 @@ dependencies {
     implementation "com.microsoft.appcenter:appcenter-crashes:$appCenterSdkVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
+    implementation project(':in-app-purchase')
     testImplementation "junit:junit:$junit"
 }
 
