@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.iap
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -221,7 +222,8 @@ internal class InAppPurchaseBridgeDispatcher {
     }
 
     @Suppress("LongMethod")
-    private fun recordPurchase(
+    @VisibleForTesting
+    internal fun recordPurchase(
         androidStoreId: String,
         miniAppPurchaseRecord: MiniAppPurchaseRecord,
         callback: (isRecorded: Boolean, errorMsg: String?) -> Unit
