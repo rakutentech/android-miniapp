@@ -39,6 +39,8 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 @Suppress("LargeClass")
 class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
+    private val ERROR_CANCELLED_PURCHASE = "InApp Purchase Error: Purchase Cancelled."
+    private val ERROR_PENDING_PURCHASE = "InApp Purchase Error: Pending Purchase."
     private lateinit var miniAppBridge: MiniAppMessageBridge
     private val callbackObj = CallbackObj(
         action = ActionType.PURCHASE_ITEM.action,
@@ -398,7 +400,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         ) itReturns createRecordCache(TransactionState.CANCELLED)
         wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
 
-        val error = "InApp Purchase Error: Purchase Cancelled."
+        val error = ERROR_CANCELLED_PURCHASE
         verify(bridgeExecutor).postError(
             callbackObj.id,
             error
@@ -417,7 +419,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         wrapper.scope = TestCoroutineScope()
         wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
 
-        val error = "InApp Purchase Error: Pending Purchase."
+        val error = ERROR_PENDING_PURCHASE
         verify(bridgeExecutor).postError(
             callbackObj.id,
             error
@@ -444,7 +446,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.scope = TestCoroutineScope()
         wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
-        val error = "InApp Purchase Error: Purchase Cancelled."
+        val error = ERROR_CANCELLED_PURCHASE
         verify(bridgeExecutor).postError(
             callbackObj.id,
             error
@@ -471,7 +473,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         wrapper.scope = TestCoroutineScope()
         wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
-        val error = "InApp Purchase Error: Pending Purchase."
+        val error = ERROR_PENDING_PURCHASE
         verify(bridgeExecutor).postError(
             callbackObj.id,
             error
@@ -502,7 +504,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             callbackObj.id,
             record
         )
-        val error = "InApp Purchase Error: Pending Purchase."
+        val error = ERROR_PENDING_PURCHASE
         verify(bridgeExecutor).postError(
             callbackObj.id,
             Gson().toJson(MiniAppInAppPurchaseErrorType.consumeFailedError)
