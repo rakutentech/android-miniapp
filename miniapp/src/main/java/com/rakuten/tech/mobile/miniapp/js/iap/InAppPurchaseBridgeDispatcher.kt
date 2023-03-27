@@ -315,7 +315,8 @@ internal class InAppPurchaseBridgeDispatcher {
         )
     }
 
-    private fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache): State {
+    @VisibleForTesting
+    internal fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache): State {
         return when {
             record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
                     record.transactionState == TransactionState.PURCHASED &&
@@ -329,7 +330,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private enum class State {
+    @VisibleForTesting
+    internal enum class State {
         RECORDED_NOT_CONSUMED,
         NOT_RECORDED_PURCHASED,
         PENDING_PURCHASE,

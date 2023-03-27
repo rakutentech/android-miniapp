@@ -17,12 +17,7 @@ import com.rakuten.tech.mobile.miniapp.iap.PurchasedProductInfo
 import com.rakuten.tech.mobile.miniapp.iap.PurchaseData
 import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
 import com.rakuten.tech.mobile.miniapp.iap.MiniAppInAppPurchaseErrorType
-import com.rakuten.tech.mobile.miniapp.js.CallbackObj
-import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
-import com.rakuten.tech.mobile.miniapp.js.ActionType
-import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
-import com.rakuten.tech.mobile.miniapp.js.PurchasedProductCallbackObj
-import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage
+import com.rakuten.tech.mobile.miniapp.js.*
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -73,11 +68,19 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
     )
 
+    private val consumeJsonStr: String = Gson().toJson(
+        CallbackObj(
+            action = ActionType.CONSUME_PURCHASE.action,
+            param = ConsumePurchaseCallbackObj.Purchase("itemId","123"),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
     private val apiClient: ApiClient = mock()
     private val miniAppIAPVerifier: MiniAppIAPVerifier = mock()
     private val listOfProductFromGooglePlay = listOf(productInfo)
 
-    private fun createPurchaseRequest() = MiniAppPurchaseRecord(
+    private val record = MiniAppPurchaseRecord(
         platform = InAppPurchaseBridgeDispatcher.PLATFORM,
         productId = purchaseData.purchasedProductInfo.productInfo.id,
         transactionState = TransactionState.PURCHASED.state,
@@ -85,6 +88,14 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         transactionDate = formatTransactionDate(purchaseData.purchasedProductInfo.transactionDate),
         transactionReceipt = purchaseData.transactionReceipt,
         purchaseToken = purchaseData.purchaseToken
+    )
+
+    private val recordCache = MiniAppPurchaseRecordCache(
+        miniAppPurchaseRecord = record,
+        platformRecordStatus = PlatformRecordStatus.RECORDED,
+        productConsumeStatus = ProductConsumeStatus.CONSUMED,
+        transactionState = TransactionState.CANCELLED,
+        transactionToken = ""
     )
 
     private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(
@@ -157,7 +168,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         TestCoroutineScope().launch {
             When calling apiClient.recordPurchase(
                 TEST_MA_ID,
-                createPurchaseRequest()
+                record
             ) itReturns createMiniAppPurchaseResponse()
             val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
             wrapper.onPurchaseItem(callbackObj.id, purchaseJsonStr)
@@ -252,7 +263,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     /** end region */
 
     /** region: purchase item */
-    @ExperimentalCoroutinesApi
     @Test
     fun `onPurchaseItem postError should be if item is not available in cache`() {
         val provider = Mockito.spy(
@@ -269,7 +279,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `onPurchaseItem postError should be if throw any exception`() {
         val provider = Mockito.spy(
@@ -280,7 +289,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         verify(bridgeExecutor).postError(any(), any())
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `onPurchaseItem postError should be if failed to purchase using google billing`() {
         val provider = Mockito.spy(
@@ -317,7 +325,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `recordPurchase should be called any case`() {
         val provider = Mockito.spy(
@@ -331,6 +338,53 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     }
 
     /** end region */
+
+    /** region: consume purchase */
+    @Test
+    fun `onConsumePurchase postError should be called if throw any exception`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.onConsumePurchase(callbackObj.id, "")
+        verify(bridgeExecutor).postError(any(), any())
+    }
+
+    @Test
+    fun `onConsumePurchase postError should be called if record is not available in cache`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns ""
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+
+        val error = "InApp Purchase Error: Invalid Purhcase."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            error
+        )
+    }
+
+    @Test
+    fun `onConsumePurchase postError should be called if purhcase is cancelled`() {
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(TEST_MA_ID, "1234", "123") itReturns recordCache
+        When calling wrapper.checkPurchaseStatus(recordCache) itReturns InAppPurchaseBridgeDispatcher.State.CANCEL_PURCHASE
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+
+        val error = "InApp Purchase Error: Purchase Cancelled."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            error
+        )
+    }
+    /** end region */
+
 
     @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
