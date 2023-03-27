@@ -38,6 +38,7 @@ internal class InAppPurchaseBridgeDispatcher {
     private var isMiniAppComponentReady = false
     private lateinit var inAppPurchaseProvider: InAppPurchaseProvider
     private lateinit var apiClient: ApiClient
+    @VisibleForTesting
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
 
@@ -185,7 +186,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun handleConsume(state: TransactionState, callbackId: String, record: MiniAppPurchaseRecordCache) {
+    @VisibleForTesting
+    internal fun handleConsume(state: TransactionState, callbackId: String, record: MiniAppPurchaseRecordCache) {
         when (state) {
             TransactionState.PURCHASED -> consumePurchase(callbackId, record)
             TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
@@ -193,7 +195,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun consumePurchase(callbackId: String, record: MiniAppPurchaseRecordCache) {
+    @VisibleForTesting
+    internal fun consumePurchase(callbackId: String, record: MiniAppPurchaseRecordCache) {
         val successCallback = { title: String, description: String ->
             updatePurchaseRecordCache(
                 androidStoreId = record.miniAppPurchaseRecord.productId,
@@ -256,7 +259,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun checkPurchaseState(
+    @VisibleForTesting
+    internal fun checkPurchaseState(
         recordCache: MiniAppPurchaseRecordCache,
         callback: (state: TransactionState) -> Unit
     ) {

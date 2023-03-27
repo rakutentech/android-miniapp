@@ -9,6 +9,7 @@ import com.rakuten.tech.mobile.miniapp.RobolectricBaseSpec
 import com.rakuten.tech.mobile.miniapp.TEST_MA_ID
 import com.rakuten.tech.mobile.miniapp.TEST_CALLBACK_VALUE
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
+import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.iap.ProductPrice
@@ -22,15 +23,20 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
 import java.text.SimpleDateFormat
 import java.util.*
 
+@ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
 @Suppress("LargeClass")
 class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private lateinit var miniAppBridge: MiniAppMessageBridge
@@ -71,7 +77,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     private val consumeJsonStr: String = Gson().toJson(
         CallbackObj(
             action = ActionType.CONSUME_PURCHASE.action,
-            param = ConsumePurchaseCallbackObj.Purchase("itemId","123"),
+            param = ConsumePurchaseCallbackObj.Purchase("itemId", "123"),
             id = TEST_CALLBACK_ID
         )
     )
@@ -90,13 +96,31 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         purchaseToken = purchaseData.purchaseToken
     )
 
-    private val recordCache = MiniAppPurchaseRecordCache(
-        miniAppPurchaseRecord = record,
-        platformRecordStatus = PlatformRecordStatus.RECORDED,
-        productConsumeStatus = ProductConsumeStatus.CONSUMED,
-        transactionState = TransactionState.CANCELLED,
-        transactionToken = ""
-    )
+    private fun createRecordCache(state: TransactionState): MiniAppPurchaseRecordCache {
+        return when (state) {
+            TransactionState.PURCHASED -> MiniAppPurchaseRecordCache(
+                miniAppPurchaseRecord = record,
+                platformRecordStatus = PlatformRecordStatus.RECORDED,
+                productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
+                transactionState = TransactionState.PURCHASED,
+                transactionToken = ""
+            )
+            TransactionState.CANCELLED -> MiniAppPurchaseRecordCache(
+                miniAppPurchaseRecord = record,
+                platformRecordStatus = PlatformRecordStatus.RECORDED,
+                productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
+                transactionState = TransactionState.CANCELLED,
+                transactionToken = ""
+            )
+            TransactionState.PENDING -> MiniAppPurchaseRecordCache(
+                miniAppPurchaseRecord = record,
+                platformRecordStatus = PlatformRecordStatus.RECORDED,
+                productConsumeStatus = ProductConsumeStatus.NOT_CONSUMED,
+                transactionState = TransactionState.PENDING,
+                transactionToken = ""
+            )
+        }
+    }
 
     private fun createMiniAppPurchaseResponse() = MiniAppPurchaseResponse(
         "",
@@ -159,7 +183,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `postValue should be called when purchasing item successfully`() {
         val provider = Mockito.spy(
@@ -180,7 +203,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
     /** region: get all items */
-    @ExperimentalCoroutinesApi
     @Test
     fun `postError should be called when fetch empty items`() {
         val provider = Mockito.spy(
@@ -199,7 +221,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `postError should be called when throw exception`() {
         val provider = Mockito.spy(
@@ -218,7 +239,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `postValue should be called when successfully fetch items from google play console`() {
         val provider = Mockito.spy(
@@ -238,7 +258,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `postError should be called when failed to fetch items from google play console`() {
         val provider = Mockito.spy(
@@ -306,7 +325,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `onPurchaseItem postValue should be if successfully purchase using google billing`() {
         val provider = Mockito.spy(
@@ -373,8 +391,11 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
         )
         val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
         When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
-        When calling miniAppIAPVerifier.getPurchaseRecordCache(TEST_MA_ID, "1234", "123") itReturns recordCache
-        When calling wrapper.checkPurchaseStatus(recordCache) itReturns InAppPurchaseBridgeDispatcher.State.CANCEL_PURCHASE
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(
+            TEST_MA_ID,
+            "1234",
+            "123"
+        ) itReturns createRecordCache(TransactionState.CANCELLED)
         wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
 
         val error = "InApp Purchase Error: Purchase Cancelled."
@@ -383,8 +404,133 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
             error
         )
     }
-    /** end region */
 
+    @Test
+    fun `onConsumePurchase postError should be called if purhcase is pending`() {
+        val recordCache = createRecordCache(TransactionState.PENDING)
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(TEST_MA_ID, "1234", "123") itReturns recordCache
+        wrapper.scope = TestCoroutineScope()
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+
+        val error = "InApp Purchase Error: Pending Purchase."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            error
+        )
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun `onConsumePurchase postError should be called if purhcase is cancelled from api`() = runBlockingTest {
+        val record = createRecordCache(TransactionState.PENDING)
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(
+            TEST_MA_ID,
+            "1234",
+            "123"
+        ) itReturns record
+        When calling apiClient.getTransactionStatus(
+            TEST_MA_ID,
+            ""
+        ) itReturns MiniAppPurchaseResponse("", "", "CANCELLED")
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.scope = TestCoroutineScope()
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+        val error = "InApp Purchase Error: Purchase Cancelled."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            error
+        )
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun `onConsumePurchase postError should be called if purhcase is pending from api`() = runBlockingTest {
+        val record = createRecordCache(TransactionState.PENDING)
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(
+            TEST_MA_ID,
+            "1234",
+            "123"
+        ) itReturns record
+        When calling apiClient.getTransactionStatus(
+            TEST_MA_ID,
+            ""
+        ) itReturns MiniAppPurchaseResponse("", "", "PENDING")
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.scope = TestCoroutineScope()
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+        val error = "InApp Purchase Error: Pending Purchase."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            error
+        )
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun `consumePurchase should be called if purhcase is done from api`() = runBlockingTest {
+        val record = createRecordCache(TransactionState.PENDING)
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true)
+        )
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(
+            TEST_MA_ID,
+            "1234",
+            "123"
+        ) itReturns record
+        When calling apiClient.getTransactionStatus(
+            TEST_MA_ID,
+            ""
+        ) itReturns MiniAppPurchaseResponse("", "", "PURCHASED")
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.scope = TestCoroutineScope()
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+        verify(wrapper).consumePurchase(
+            callbackObj.id,
+            record
+        )
+        val error = "InApp Purchase Error: Pending Purchase."
+        verify(bridgeExecutor).postError(
+            callbackObj.id,
+            Gson().toJson(MiniAppInAppPurchaseErrorType.consumeFailedError)
+        )
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun `consumePurchase should be called if purhcase is done`() = runBlockingTest {
+        val record = createRecordCache(TransactionState.PURCHASED)
+        val provider = Mockito.spy(
+            createPurchaseProvider(shouldCreate = true, canConsume = true)
+        )
+        When calling miniAppIAPVerifier.getStoreIdByProductId(TEST_MA_ID, "itemId") itReturns "1234"
+        When calling miniAppIAPVerifier.getPurchaseRecordCache(TEST_MA_ID, "1234", "123") itReturns record
+        val wrapper = Mockito.spy(createIAPBridgeWrapper(provider))
+        wrapper.scope = TestCoroutineScope()
+        wrapper.onConsumePurchase(callbackObj.id, consumeJsonStr)
+        verify(wrapper).consumePurchase(
+            callbackObj.id,
+            record
+        )
+        verify(bridgeExecutor).postValue(
+            callbackObj.id,
+            Gson().toJson(MiniAppResponseInfo("", ""))
+        )
+    }
+    /** end region */
 
     @Suppress("EmptyFunctionBlock")
     private fun createPurchaseProvider(
