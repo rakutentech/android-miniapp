@@ -601,7 +601,7 @@ It is necessary to set `in-app-purchase` module for mini apps to purhcase produc
 The below implementation will allow host to handle in-app purchase when mini apps trigger a request.
 
 #### In-App purchase
-**API Docs:** [InAppPurchaseProvider](api/com.rakuten.tech.mobile.miniapp.iap/-in-app-purchase-provider/)
+**API Docs:** [MiniAppMessageBridge.setInAppPurchaseProvider](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-in-app-purchase-provider.html)
 
 Set the `InAppPurchaseProviderDefault` provided by `in-app-purchase`. This controller will handle all the in-app purchase related actions.
 ```kotlin
@@ -618,7 +618,7 @@ val inAppPurchaseProvider = object : InAppPurchaseProvider {
             onSuccess: (productInfos: List<ProductInfo>) -> Unit,
             onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
         ) {
-             //.. get all the products for google play console.
+             //.. Fetch the Product information from the Google play console for the list of `androidStoreIds` that is passed via MiniApp SDK.
         }
 
         override fun purchaseProductWith(
@@ -626,7 +626,7 @@ val inAppPurchaseProvider = object : InAppPurchaseProvider {
             onSuccess: (purchaseData: PurchaseData) -> Unit,
             onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
         ) {
-             //.. purhcase product with id.
+             //.. Initiate the Purchase Product flow for the given `androidStoreId`.
         }
 
         override fun consumePurchaseWIth(
@@ -634,7 +634,7 @@ val inAppPurchaseProvider = object : InAppPurchaseProvider {
             onSuccess: (title: String, description: String) -> Unit,
             onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
         ) {
-             //.. consume product by the purchase token.
+             //.. This interface is used to Acknwoledge/Consume the product which is `PURCHASED` already.
         }
 
         override fun onEndConnection() {
