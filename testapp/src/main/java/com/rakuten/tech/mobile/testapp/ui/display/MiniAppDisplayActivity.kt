@@ -26,6 +26,7 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.iap.*
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -93,6 +94,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     private var appInfo: MiniAppInfo? = null
     private var appUrl: String? = null
+    private var previousClickTimeMillis = 0L
 
     companion object {
         private const val appIdTag = "app_id_tag"
@@ -169,7 +171,10 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 true
             }
             R.id.settings_permission_mini_app -> {
-                launchCustomPermissionDialog()
+                singleSafeClick(previousClickTimeMillis) { tappedTime ->
+                    previousClickTimeMillis = tappedTime
+                    launchCustomPermissionDialog()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -322,6 +327,9 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
         val chatBridgeDispatcher = getChatBridgeDispatcher(chatWindow)
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+
+        // setup InAppPurchaseProvider
+        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseProviderDefault(this@MiniAppDisplayActivity))
         miniAppMessageBridge.setMiniAppCloseListener { withConfirmationAlert ->
             if (withConfirmationAlert) checkCloseAlert() else finish()
         }

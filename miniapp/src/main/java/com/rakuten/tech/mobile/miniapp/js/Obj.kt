@@ -168,3 +168,32 @@ internal data class JsonInfoCallbackObj(val param: JsonInfoParam) {
     internal data class JsonInfoParam(val jsonInfo: JsonInfo)
 }
 // end region
+
+// In-App Purchase region
+@Keep
+internal data class PurchasedProductCallbackObj(
+    val action: String,
+    val param: ProductItem,
+    var id: String
+) {
+
+    @Keep
+    internal data class ProductItem(
+        val productId: String
+    )
+}
+
+@Keep
+internal data class ConsumePurchaseCallbackObj(
+    val action: String,
+    val param: Purchase,
+    var id: String
+) {
+
+    @Keep
+    internal data class Purchase(
+        val productId: String,
+        val productTransactionId: String,
+    )
+}
+// end region

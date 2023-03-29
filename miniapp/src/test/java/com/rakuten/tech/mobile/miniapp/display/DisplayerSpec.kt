@@ -55,7 +55,8 @@ class DisplayerSpec {
             miniAppAnalytics = mock(),
             ratDispatcher = mock(),
             secureStorageDispatcher = mock(),
-            enableH5Ads = false
+            enableH5Ads = false,
+            miniAppIAPVerifier = mock()
         )
 
     private fun getMiniAppDisplayUrl(): MiniAppDisplay = Displayer(TEST_HA_NAME).createMiniAppDisplay(
@@ -69,6 +70,7 @@ class DisplayerSpec {
         miniAppAnalytics = mock(),
         ratDispatcher = mock(),
         secureStorageDispatcher = mock(),
-        enableH5Ads = false
+        enableH5Ads = false,
+        miniAppIAPVerifier = mock()
     )
 }

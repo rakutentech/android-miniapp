@@ -26,6 +26,9 @@ internal enum class ActionType(val action: String) {
     SECURE_STORAGE_CLEAR("clearSecureStorage"),
     SECURE_STORAGE_SIZE("getSecureStorageSize"),
     SET_CLOSE_ALERT("setCloseAlert"),
+    GET_PURCHASE_ITEM_LIST("getAllProducts"),
+    PURCHASE_ITEM("purchaseProductWith"),
+    CONSUME_PURCHASE("consumeProductWith"),
     JSON_INFO("sendJsonToHostapp"),
     CLOSE_MINIAPP("closeMiniApp")
 }

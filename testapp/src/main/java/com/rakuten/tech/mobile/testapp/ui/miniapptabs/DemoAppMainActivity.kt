@@ -15,7 +15,10 @@ import com.rakuten.tech.mobile.miniapp.view.MiniAppView
 import com.rakuten.tech.mobile.testapp.helper.clearAllCursorFocus
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.FeaturesFragment
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppListFragment
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.SettingsFragment
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
 
@@ -152,9 +155,15 @@ class DemoAppMainActivity : BaseActivity() {
 
     override fun onBackPressed() {
         getCurrentVisibleFragment()?.let { fragment ->
-            if (fragment is MiniAppDisplayFragment) {
-                fragment.onBackPressed()
-            } else super.onBackPressed()
+            when (fragment) {
+                is MiniAppDisplayFragment -> {
+                    fragment.onBackPressed()
+                }
+                is MiniAppListFragment, is FeaturesFragment, is SettingsFragment -> {
+                    finish()
+                }
+                else -> super.onBackPressed()
+            }
         }
     }
 

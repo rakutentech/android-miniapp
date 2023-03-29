@@ -3,22 +3,26 @@ package com.rakuten.tech.mobile.miniapp.api
 import androidx.annotation.VisibleForTesting
 import com.google.gson.annotations.SerializedName
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
-import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppHasNoPublishedVersionException
 import com.rakuten.tech.mobile.miniapp.PreviewMiniAppInfo
-import com.rakuten.tech.mobile.miniapp.MiniAppHostException
-import com.rakuten.tech.mobile.miniapp.MiniAppNetException
-import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
 import com.rakuten.tech.mobile.miniapp.sdkExceptionForInternalServerError
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.SSLCertificatePinningException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppHostException
+import com.rakuten.tech.mobile.miniapp.MiniAppTooManyRequestsError
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseItemListResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseRecord
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppPurchaseResponse
+import com.rakuten.tech.mobile.miniapp.js.iap.PurchaseItem
 import kotlinx.coroutines.delay
 import okhttp3.ResponseBody
+import retrofit2.Retrofit
+import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Converter
 import retrofit2.HttpException
-import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.http.Url
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -33,6 +37,7 @@ internal class ApiClient @VisibleForTesting constructor(
     private val downloadApi: DownloadApi = retrofit.create(DownloadApi::class.java),
     private val manifestApi: ManifestApi = retrofit.create(ManifestApi::class.java),
     private val metadataApi: MetadataApi = retrofit.create(MetadataApi::class.java),
+    private val inAppPurchaseApi: InAppPurchaseApi = retrofit.create(InAppPurchaseApi::class.java),
     private val requestExecutor: RetrofitRequestExecutor = RetrofitRequestExecutor(retrofit)
 ) {
 
@@ -78,6 +83,41 @@ internal class ApiClient @VisibleForTesting constructor(
         } else {
             throw MiniAppHasNoPublishedVersionException(appId)
         }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun fetchPurchaseItemList(appId: String): List<PurchaseItem> {
+        val request = inAppPurchaseApi.getPurchaseItems(
+            hostId = hostId,
+            miniAppId = appId,
+        )
+        val response = requestExecutor.executeRequest(request).body() as MiniAppPurchaseItemListResponse
+        return response.items.ifEmpty {
+            emptyList()
+        }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun recordPurchase(
+        appId: String,
+        purchaseRequest: MiniAppPurchaseRecord
+    ): MiniAppPurchaseResponse {
+        val request = inAppPurchaseApi.recordPurchase(
+            hostId = hostId,
+            miniAppId = appId,
+            request = purchaseRequest
+        )
+        return requestExecutor.executeRequest(request).body() as MiniAppPurchaseResponse
+    }
+
+    @Throws(MiniAppSdkException::class)
+    suspend fun getTransactionStatus(appId: String, token: String): MiniAppPurchaseResponse {
+        val request = inAppPurchaseApi.getTransactionStatus(
+            hostId = hostId,
+            miniAppId = appId,
+            transactionToken = token
+        )
+        return requestExecutor.executeRequest(request).body() as MiniAppPurchaseResponse
     }
 
     @Throws(MiniAppSdkException::class)

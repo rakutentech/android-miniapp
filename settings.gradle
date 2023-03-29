@@ -1,2 +1,5 @@
 include ':admob-latest'
-include ':analytics', ':testapp', ':miniapp'
+include ':analytics'
+include ':in-app-purchase'
+include ':miniapp'
+include ':testapp'

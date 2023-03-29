@@ -7,30 +7,34 @@ import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
-import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.CustomPermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppBridgeErrorModel
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloader
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProvider
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
+import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
-import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
+import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
 
 @Suppress(
@@ -59,6 +63,8 @@ open class MiniAppMessageBridge {
 
     @VisibleForTesting
     internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
+    @VisibleForTesting
+    internal val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
 
     @VisibleForTesting
     internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
@@ -69,6 +75,9 @@ open class MiniAppMessageBridge {
     internal lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
+    @VisibleForTesting
+    internal lateinit var apiClient: ApiClient
+
     @VisibleForTesting
     internal lateinit var miniAppCloseListener: (Boolean) -> Unit
 
@@ -83,7 +92,8 @@ open class MiniAppMessageBridge {
         downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String,
         ratDispatcher: MessageBridgeRatDispatcher,
-        secureStorageDispatcher: MiniAppSecureStorageDispatcher
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
+        miniAppIAPVerifier: MiniAppIAPVerifier
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -103,7 +113,7 @@ open class MiniAppMessageBridge {
             bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-
+        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId, apiClient, miniAppIAPVerifier)
         miniAppViewInitialized = true
     }
 
@@ -268,6 +278,17 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(
+                callbackObj.id
+            )
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
+                callbackObj.id,
+                jsonStr
+            )
+            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher.onConsumePurchase(
+                callbackObj.id,
+                jsonStr
+            )
             ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
         }
@@ -295,6 +316,13 @@ open class MiniAppMessageBridge {
      **/
     fun setChatBridgeDispatcher(bridgeDispatcher: ChatBridgeDispatcher) =
         chatBridge.setChatBridgeDispatcher(bridgeDispatcher)
+
+    /**
+     * Set implemented InAppPurchaseProvider.
+     * Can use the default provided class from sdk [InAppPurchaseProvider].
+     **/
+    fun setInAppPurchaseProvider(iapProvider: InAppPurchaseProvider) =
+        iapBridgeDispatcher.setInAppPurchaseProvider(iapProvider)
 
     /**
      * Dispatch Native events to miniapp.
@@ -474,6 +502,7 @@ open class MiniAppMessageBridge {
 
     internal fun onWebViewDetach() {
         screenBridgeDispatcher.releaseLock()
+        iapBridgeDispatcher.disconnectIAPBillingClient()
     }
 
     /** Allow miniapp to change screen orientation. The default setting is false. */
@@ -494,6 +523,10 @@ open class MiniAppMessageBridge {
             return
         }
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
+    }
+
+    internal fun setComponentsIAPDispatcher(apiClient: ApiClient) {
+        this.apiClient = apiClient
     }
 
     /** Allow Host app to receive the miniapp close event. */

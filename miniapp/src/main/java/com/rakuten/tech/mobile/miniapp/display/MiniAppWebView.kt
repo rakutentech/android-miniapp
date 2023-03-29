@@ -13,6 +13,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppScheme
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppH5AdsProvider
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
+import com.rakuten.tech.mobile.miniapp.js.iap.MiniAppIAPVerifier
 import com.rakuten.tech.mobile.miniapp.js.MessageBridgeRatDispatcher
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.MiniAppSecureStorageDispatcher
@@ -49,7 +50,8 @@ internal open class MiniAppWebView(
     val queryParams: String,
     val ratDispatcher: MessageBridgeRatDispatcher,
     val secureStorageDispatcher: MiniAppSecureStorageDispatcher,
-    val enableH5Ads: Boolean
+    val enableH5Ads: Boolean,
+    val miniAppIAPVerifier: MiniAppIAPVerifier
 ) : WebView(context), WebViewListener {
 
     protected var miniAppScheme = MiniAppScheme.schemeWithAppId(miniAppInfo.id)
@@ -111,7 +113,8 @@ internal open class MiniAppWebView(
             downloadedManifestCache = downloadedManifestCache,
             miniAppId = miniAppId,
             ratDispatcher = ratDispatcher,
-            secureStorageDispatcher = secureStorageDispatcher
+            secureStorageDispatcher = secureStorageDispatcher,
+            miniAppIAPVerifier = miniAppIAPVerifier
         )
 
         settings.allowUniversalAccessFromFileURLs = true

@@ -1,5 +1,17 @@
 ## CHANGELOG
 
+### 5.2.0 (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `in-app-purchase` module to support android billing sdk.
+- **Feature:** Added `InAppPurchaseProvider` to get/purchase/consume products, HostApp can also use `InAppPurchaseProviderDefault` when there is nothing to customize during In-app Purchase.
+  - `InAppPurchaseProvider.getAllProducts(androidStoreIds: List<String>, onSuccess: (productInfos: List<ProductInfo>) -> Unit, onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit)`
+  - `InAppPurchaseProvider.purchaseProductWith(androidStoreId: String, onSuccess: (purchaseData: PurchaseData) -> Unit, onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit`
+  - `InAppPurchaseProvider.consumePurchaseWIth(purhcaseToken: String, onSuccess: (title: String, description: String) -> Unit, onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit`
+  - `InAppPurchaseProvider.onEndConnection()`
+- **Feature:** Added `MiniAppMessageBridge.setInAppPurchaseProvider` interface to enable HostApp to receive events from a In-app Purchase action.
+- **Feature:** Added `MiniAppInAppPurchaseErrorType` to support predefined error types for In-app Purchase.
+- **Feature:** Added `MiniAppDisplay.sendJsonToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.
+
 ### 5.1.0 (2023-02-06)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.sendJsonToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.

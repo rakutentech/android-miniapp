@@ -5,10 +5,12 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.webkit.WebView
 import android.widget.TableLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -21,6 +23,7 @@ import com.rakuten.tech.mobile.miniapp.ads.AdMobDisplayer
 import com.rakuten.tech.mobile.miniapp.file.MiniAppCameraPermissionDispatcher
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileDownloaderDefault
+import com.rakuten.tech.mobile.miniapp.iap.InAppPurchaseProviderDefault
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import com.rakuten.tech.mobile.miniapp.navigator.ExternalResultHandler
@@ -69,9 +72,12 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
     private lateinit var miniAppFileChooser: MiniAppFileChooserDefault
     private lateinit var miniAppFileDownloader: MiniAppFileDownloaderDefault
     private val preloadMiniAppWindow by lazy { PreloadMiniAppWindow(requireActivity(), this) }
+    private var previousClickTimeMillis = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (ApplicationInfo.FLAG_DEBUGGABLE == 2)
+            WebView.setWebContentsDebuggingEnabled(true)
         isloadNew = true
     }
 
@@ -324,6 +330,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
         val chatBridgeDispatcher = getChatBridgeDispatcher(chatWindow)
         miniAppMessageBridge.setChatBridgeDispatcher(chatBridgeDispatcher)
         miniAppMessageBridge.setMiniAppFileDownloader(miniAppFileDownloader)
+
+        // setup InAppPurchaseProvider
+        miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseProviderDefault(requireActivity()))
     }
 
     fun handleOnActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -389,7 +398,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                 true
             }
             R.id.settings_permission_mini_app -> {
-                launchCustomPermissionDialog()
+                singleSafeClick(previousClickTimeMillis) { tappedTime ->
+                    previousClickTimeMillis = tappedTime
+                    launchCustomPermissionDialog()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
