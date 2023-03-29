@@ -583,6 +583,69 @@ Set the `AdMobDisplayer` provided by `admob-latest`. This controller will handle
 miniAppMessageBridge.setAdMobDisplayer(AdMobDisplayer(activityContext))
 ```
 
+### In-app Purchase Integration
+In case the host app wants to use In-app Purchase, Add the following to your `build.gradle` file:
+```groovy
+dependency {
+    implementation project(':in-app-purchase')
+}
+``` 
+
+**In-app Purchase Version**
+
+`in-app-purchase` module use billing client version 4.1.0.
+
+**API Docs:** [MiniAppMessageBridge.setInAppPurchaseProvider](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-in-app-purchase-provider.html)
+
+It is necessary to set `in-app-purchase` module for mini apps to purhcase products.
+The below implementation will allow host to handle in-app purchase when mini apps trigger a request.
+
+#### In-App purchase
+**API Docs:** [MiniAppMessageBridge.setInAppPurchaseProvider](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-in-app-purchase-provider.html)
+
+Set the `InAppPurchaseProviderDefault` provided by `in-app-purchase`. This controller will handle all the in-app purchase related actions.
+```kotlin
+miniAppMessageBridge.setInAppPurchaseProvider(InAppPurchaseProviderDefault(activityContext))
+
+```
+if Host app wants to handle all the in-app purchase billing actions, It can extend the 
+[InAppPurchaseProvider](api/com.rakuten.tech.mobile.miniapp.iap/-in-app-purchase-provider/) class and add it's own logic.
+```kotlin
+val inAppPurchaseProvider = object : InAppPurchaseProvider {
+        
+        override fun getAllProducts(
+            androidStoreIds: List<String>,
+            onSuccess: (productInfos: List<ProductInfo>) -> Unit,
+            onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
+        ) {
+             //.. Fetch the Product information from the Google play console for the list of `androidStoreIds` that is passed via MiniApp SDK.
+        }
+
+        override fun purchaseProductWith(
+            androidStoreId: String,
+            onSuccess: (purchaseData: PurchaseData) -> Unit,
+            onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
+        ) {
+             //.. Initiate the Purchase Product flow for the given `androidStoreId`.
+        }
+
+        override fun consumePurchaseWIth(
+            purhcaseToken: String,
+            onSuccess: (title: String, description: String) -> Unit,
+            onError: (errorType: MiniAppInAppPurchaseErrorType) -> Unit
+        ) {
+             //.. This interface is used to Acknwoledge/Consume the product which is `PURCHASED` already.
+        }
+
+        override fun onEndConnection() {
+             //.. disconnect the billing client.
+        }
+    }
+
+//.. set the provider.
+miniAppMessageBridge.setInAppPurchaseProvider(inAppPurchaseProvider)
+```
+
 ### Send Native Events
 **API Docs:** [miniAppMessageBridge.dispatchNativeEvent](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/dispatch-native-event.html)
 

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js.iap
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.MiniAppResponseInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
@@ -37,6 +38,7 @@ internal class InAppPurchaseBridgeDispatcher {
     private var isMiniAppComponentReady = false
     private lateinit var inAppPurchaseProvider: InAppPurchaseProvider
     private lateinit var apiClient: ApiClient
+    @VisibleForTesting
     internal var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
 
@@ -184,7 +186,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun handleConsume(state: TransactionState, callbackId: String, record: MiniAppPurchaseRecordCache) {
+    @VisibleForTesting
+    internal fun handleConsume(state: TransactionState, callbackId: String, record: MiniAppPurchaseRecordCache) {
         when (state) {
             TransactionState.PURCHASED -> consumePurchase(callbackId, record)
             TransactionState.CANCELLED -> genericErrorCallback(callbackId, ERR_CANCEL_PURCHASE)
@@ -192,7 +195,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun consumePurchase(callbackId: String, record: MiniAppPurchaseRecordCache) {
+    @VisibleForTesting
+    internal fun consumePurchase(callbackId: String, record: MiniAppPurchaseRecordCache) {
         val successCallback = { title: String, description: String ->
             updatePurchaseRecordCache(
                 androidStoreId = record.miniAppPurchaseRecord.productId,
@@ -221,7 +225,8 @@ internal class InAppPurchaseBridgeDispatcher {
     }
 
     @Suppress("LongMethod")
-    private fun recordPurchase(
+    @VisibleForTesting
+    internal fun recordPurchase(
         androidStoreId: String,
         miniAppPurchaseRecord: MiniAppPurchaseRecord,
         callback: (isRecorded: Boolean, errorMsg: String?) -> Unit
@@ -254,7 +259,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private fun checkPurchaseState(
+    @VisibleForTesting
+    internal fun checkPurchaseState(
         recordCache: MiniAppPurchaseRecordCache,
         callback: (state: TransactionState) -> Unit
     ) {
@@ -313,7 +319,8 @@ internal class InAppPurchaseBridgeDispatcher {
         )
     }
 
-    private fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache): State {
+    @VisibleForTesting
+    internal fun checkPurchaseStatus(record: MiniAppPurchaseRecordCache): State {
         return when {
             record.platformRecordStatus == PlatformRecordStatus.RECORDED &&
                     record.transactionState == TransactionState.PURCHASED &&
@@ -327,7 +334,8 @@ internal class InAppPurchaseBridgeDispatcher {
         }
     }
 
-    private enum class State {
+    @VisibleForTesting
+    internal enum class State {
         RECORDED_NOT_CONSUMED,
         NOT_RECORDED_PURCHASED,
         PENDING_PURCHASE,
