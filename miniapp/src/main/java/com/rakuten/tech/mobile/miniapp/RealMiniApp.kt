@@ -239,7 +239,7 @@ internal class RealMiniApp(
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
             if (this::miniAppMessageBridge.isInitialized)
-                miniAppMessageBridge.updateApiClient(it)
+                this.miniAppMessageBridge.updateApiClient(it)
         }
 
         miniAppDownloader.updateRequireSignatureVerification(newConfig.requireSignatureVerification)
