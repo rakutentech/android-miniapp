@@ -69,7 +69,8 @@ open class BaseRealMiniAppSpec {
                 ratDispatcher = ratDispatcher,
                 secureStorageDispatcher = secureStorageDispatcher,
                 enableH5Ads = false,
-                initMiniAppIAPVerifier = { miniAppIAPVerifier }
+                initMiniAppIAPVerifier = { miniAppIAPVerifier },
+                miniAppSdkConfig = miniAppSdkConfig
             ))
 
         When calling apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient

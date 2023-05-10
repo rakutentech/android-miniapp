@@ -30,6 +30,7 @@ internal class RealMiniApp(
     initDownloadedManifestCache: () -> DownloadedManifestCache,
     initManifestVerifier: () -> MiniAppManifestVerifier,
     initMiniAppIAPVerifier: () -> MiniAppIAPVerifier,
+    private var miniAppSdkConfig: MiniAppSdkConfig,
     private var miniAppAnalytics: MiniAppAnalytics,
     private var ratDispatcher: MessageBridgeRatDispatcher,
     private var secureStorageDispatcher: MiniAppSecureStorageDispatcher,
@@ -40,6 +41,7 @@ internal class RealMiniApp(
     private val downloadedManifestCache: DownloadedManifestCache by lazy { initDownloadedManifestCache() }
     private val manifestVerifier: MiniAppManifestVerifier by lazy { initManifestVerifier() }
     private val miniAppIAPVerifier: MiniAppIAPVerifier by lazy { initMiniAppIAPVerifier() }
+    private lateinit var miniAppMessageBridge: MiniAppMessageBridge
 
     override suspend fun listMiniApp(): List<MiniAppInfo> = miniAppInfoFetcher.fetchMiniAppList()
 
@@ -126,6 +128,10 @@ internal class RealMiniApp(
                 miniAppDownloader.getCachedMiniApp(appId)
             }
             verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+            this.miniAppMessageBridge = miniAppMessageBridge
+            val apiClient = apiClientRepository.getApiClientFor(miniAppSdkConfig)
+            if (apiClient != null)
+                miniAppMessageBridge.updateApiClient(apiClient)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
@@ -160,6 +166,10 @@ internal class RealMiniApp(
                 miniAppDownloader.getCachedMiniApp(appInfo)
             }
             verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
+            this.miniAppMessageBridge = miniAppMessageBridge
+            val apiClient = apiClientRepository.getApiClientFor(miniAppSdkConfig)
+            if (apiClient != null)
+                miniAppMessageBridge.updateApiClient(apiClient)
             displayer.createMiniAppDisplay(
                 basePath,
                 miniAppInfo,
@@ -188,6 +198,10 @@ internal class RealMiniApp(
         appUrl.isBlank() -> throw sdkExceptionForInvalidArguments()
         else -> {
             miniAppDownloader.validateHttpAppUrl(appUrl)
+            this.miniAppMessageBridge = miniAppMessageBridge
+            val apiClient = apiClientRepository.getApiClientFor(miniAppSdkConfig)
+            if (apiClient != null)
+                miniAppMessageBridge.updateApiClient(apiClient)
             displayer.createMiniAppDisplay(
                 appUrl,
                 miniAppMessageBridge,
@@ -215,13 +229,17 @@ internal class RealMiniApp(
         var nextApiClient = apiClientRepository.getApiClientFor(newConfig)
         if (nextApiClient == null) {
             nextApiClient = createApiClient(newConfig)
-            if (setConfigAsDefault)
+            if (setConfigAsDefault) {
                 apiClientRepository.registerApiClient(newConfig, nextApiClient)
+                miniAppSdkConfig = newConfig
+            }
         }
 
         nextApiClient.also {
             miniAppDownloader.updateApiClient(it)
             miniAppInfoFetcher.updateApiClient(it)
+            if (this::miniAppMessageBridge.isInitialized)
+                miniAppMessageBridge.updateApiClient(it)
         }
 
         miniAppDownloader.updateRequireSignatureVerification(newConfig.requireSignatureVerification)
