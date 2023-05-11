@@ -24,6 +24,7 @@ import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
@@ -149,6 +150,14 @@ open class MiniAppMessageBridge {
     /** Interface that should be implemented to return alphanumeric string that uniquely identifies a device. **/
     open fun getMauid(
         onSuccess: (mauId: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /** Interface that should be implemented to return theme colors that uniquely identifies a host. **/
+    open fun getHostAppThemeColors(
+        onSuccess: (themeColor: HostThemeColor) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -291,6 +300,7 @@ open class MiniAppMessageBridge {
             )
             ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
+            ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -379,6 +389,24 @@ open class MiniAppMessageBridge {
         getMauid(successCallback, errorCallback)
     } catch (e: Exception) {
         bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} ${e.message}")
+    }
+
+    private fun onGetHostAppThemeColors(callbackObj: CallbackObj) = try {
+        val successCallback = { themeColor: HostThemeColor ->
+            bridgeExecutor.postValue(callbackObj.id, Gson().toJson(themeColor))
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_THEME_COLOR} $message"
+            )
+        }
+
+        getHostAppThemeColors(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackObj.id,
+            "${ErrorBridgeMessage.ERR_THEME_COLOR} ${e.message}"
+        )
     }
 
     private fun onRequestDevicePermission(callbackObj: CallbackObj) {
@@ -551,6 +579,7 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_MESSAGING_UNIQUE_ID = "Cannot get messaging unique id:"
     const val ERR_MAUID = "Cannot get mauid:"
+    const val ERR_THEME_COLOR = "Cannot get theme color of host:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =

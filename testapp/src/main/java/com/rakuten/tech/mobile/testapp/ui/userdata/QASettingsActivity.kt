@@ -15,6 +15,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
@@ -120,6 +121,11 @@ class QASettingsActivity : BaseActivity() {
 
         val maxStorage = settings.maxStorageSizeLimitInBytes
         binding.edtMaxStorageLimit.setText("Current limit is $maxStorage Bytes")
+
+        // theme color
+        binding.edtPrimaryColor.setText(settings.colorTheme.primaryColor)
+        binding.edtSecondaryColor.setText(settings.colorTheme.secondaryColor)
+
 
         invalidateMaxStorageField()
     }
@@ -307,6 +313,17 @@ class QASettingsActivity : BaseActivity() {
         if (!upgradedSize.isNullOrEmpty() && upgradedSize.isDigitsOnly()) {
             settings.maxStorageSizeLimitInBytes = binding.edtMaxStorageLimit.text.toString()
         }
+
+        //Save color theme
+        var primaryColor = ""
+        var secondaryColor = ""
+        if (!binding.edtPrimaryColor.text.isNullOrEmpty()) {
+            primaryColor = binding.edtPrimaryColor.text.toString()
+        }
+        if (!binding.edtSecondaryColor.text.isNullOrEmpty()) {
+            secondaryColor = binding.edtSecondaryColor.text.toString()
+        }
+        settings.colorTheme = HostThemeColor(primaryColor, secondaryColor)
 
         // post tasks
         hideSoftKeyboard(binding.root)

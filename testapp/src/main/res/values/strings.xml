@@ -133,5 +133,7 @@
     <string name="error_send_json_to_mini_app_message_cannot_be_empty">Unable to send the message: The message cannot be empty</string>
     <string name="lb_general">General</string>
     <string name="add_new_email">Add new email</string>
+    <string name="hint_set_primary_color">Primary Color</string>
+    <string name="hint_set_secondary_color">Secondary Color</string>
 
 </resources>

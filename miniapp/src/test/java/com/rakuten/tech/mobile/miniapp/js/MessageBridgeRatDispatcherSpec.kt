@@ -45,6 +45,7 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.SECURE_STORAGE_SIZE.action to Actype.SECURE_STORAGE_SIZE,
         ActionType.JSON_INFO.action to Actype.JSON_INFO,
         ActionType.CLOSE_MINIAPP.action to Actype.CLOSE_MINIAPP,
+        ActionType.GET_HOST_APP_THEME_COLORS.action to Actype.GET_HOST_APP_THEME_COLORS,
         )
 
     @Test
