@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.2.1 (xxxx-xx-xx)
+### 5.2.1 (2023-05-23)
 **SDK**
 - **Fix:** Support In-app Purchase for old sdk implementation.
 
@@ -229,13 +229,13 @@
 **SDK**
 - **Removed:** Cleanup deprecated components before v3.0.0. Please replace usages in your code as follows:
 
-Before v3.0.0  |  v3.0.0
-------------- | -------------
-`isTestMode`  | `isPreviewMode`
-`rasAppId`  | `rasProjectId`
-`MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission`
-`getUserName(): String` | `getUserName(onSuccess, onError)`
-`getProfilePhoto(): String` | `getProfilePhoto(onSuccess, onError)`
+| Before v3.0.0                            | v3.0.0                                         |
+|------------------------------------------|------------------------------------------------|
+| `isTestMode`                             | `isPreviewMode`                                |
+| `rasAppId`                               | `rasProjectId`                                 |
+| `MiniAppMessageBridge.requestPermission` | `MiniAppMessageBridge.requestDevicePermission` |
+| `getUserName(): String`                  | `getUserName(onSuccess, onError)`              |
+| `getProfilePhoto(): String`              | `getProfilePhoto(onSuccess, onError)`          |
 
 - **Change:** Support Android 7 - API 24 as minimum version.
 - **Change:** Convert `UserInfoBridgeDispatcher` into interface. Usages in your code of `object : UserInfoBridgeDispatcher()` should be changed to `object : UserInfoBridgeDispatcher`.
