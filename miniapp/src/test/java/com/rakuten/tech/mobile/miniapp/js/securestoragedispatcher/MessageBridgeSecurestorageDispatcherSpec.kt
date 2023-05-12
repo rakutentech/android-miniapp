@@ -56,7 +56,7 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
             miniAppSecureStorageDispatcher.setMiniAppComponents(TEST_MA_ID)
 
             When calling miniappMessageBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniappMessageBridge.setComponentsIAPDispatcher(mock())
+            miniappMessageBridge.updateApiClient(mock())
             miniappMessageBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

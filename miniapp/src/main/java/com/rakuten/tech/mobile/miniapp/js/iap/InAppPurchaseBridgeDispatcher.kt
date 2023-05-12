@@ -356,6 +356,10 @@ internal class InAppPurchaseBridgeDispatcher {
         inAppPurchaseProvider.onEndConnection()
     }
 
+    internal fun updateApiClient(apiClient: ApiClient) {
+        this.apiClient = apiClient
+    }
+
     companion object {
         const val ERR_IN_APP_PURCHASE = "InApp Purchase Error:"
         const val ERR_PRODUCT_ID_INVALID = "Invalid Product Id."

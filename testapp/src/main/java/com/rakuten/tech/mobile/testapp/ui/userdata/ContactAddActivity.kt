@@ -189,18 +189,23 @@ class ContactAddActivity : BaseActivity() {
         val name = binding.edtContactName.text.toString()
         val email = binding.edtContactEmail.text.toString()
 
-        if (id.isEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_id))
-        } else if (name.isEmpty() && email.isNotEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name))
-        } else if (email.isEmpty() && name.isNotEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_email))
-        } else if (name.isEmpty() && email.isEmpty()) {
-            isVerified = false
-            showContactInputWarning(getString(R.string.userdata_error_empty_contact_name_email))
+        when {
+            id.isEmpty() -> {
+                isVerified = false
+                showContactInputWarning(getString(R.string.userdata_error_empty_contact_id))
+            }
+            name.isEmpty() && email.isNotEmpty() -> {
+                isVerified = false
+                showContactInputWarning(getString(R.string.userdata_error_empty_contact_name))
+            }
+            email.isEmpty() && name.isNotEmpty() -> {
+                isVerified = false
+                showContactInputWarning(getString(R.string.userdata_error_empty_contact_email))
+            }
+            name.isEmpty() && email.isEmpty() -> {
+                isVerified = false
+                showContactInputWarning(getString(R.string.userdata_error_empty_contact_name_email))
+            }
         }
 
         if (email.isNotEmpty() && !email.isEmailValid()) {

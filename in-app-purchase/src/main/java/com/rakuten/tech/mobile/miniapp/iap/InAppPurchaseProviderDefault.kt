@@ -37,17 +37,19 @@ class InAppPurchaseProviderDefault(
 
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                for (purchase in purchases) {
-                    handlePurchase(purchase)
-                }
-            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
-                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productPurchasedAlreadyError)
-            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_UNAVAILABLE) {
-                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
-            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-                if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.userCancelledPurchaseError)
-            } else if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
+            when {
+                billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null ->
+                    for (purchase in purchases) {
+                        handlePurchase(purchase)
+                    }
+                billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED ->
+                    if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productPurchasedAlreadyError)
+                billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_UNAVAILABLE ->
+                    if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.productNotFoundError)
+                billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED ->
+                    if (this::onError.isInitialized) onError(MiniAppInAppPurchaseErrorType.userCancelledPurchaseError)
+                this::onError.isInitialized -> onError(MiniAppInAppPurchaseErrorType.purchaseFailedError)
+            }
         }
 
     private val billingClient: BillingClient by lazy {
@@ -145,8 +147,9 @@ class InAppPurchaseProviderDefault(
         return skuDetailsList
     }
 
+    @Suppress("FunctionMaxLength")
     private fun createProductListFromSKuDetailList(skuDetailsList: List<SkuDetails>): List<ProductInfo> {
-        var productInfoList = ArrayList<ProductInfo>()
+        val productInfoList = ArrayList<ProductInfo>()
         for (skuDetails in skuDetailsList) {
             val productPrice = ProductPrice(skuDetails.priceCurrencyCode, skuDetails.price)
             val productInfo = ProductInfo(
@@ -205,9 +208,7 @@ class InAppPurchaseProviderDefault(
         val params = ConsumeParams.newBuilder().setPurchaseToken(purchaseToken).build()
         billingClient.consumeAsync(params) { billingResult, _ ->
             when (billingResult.responseCode) {
-                BillingClient.BillingResponseCode.OK -> {
-                    onConsumeSuccess("Success", "Product consume successfully")
-                }
+                BillingClient.BillingResponseCode.OK -> onConsumeSuccess("Success", "Product consume successfully")
                 else -> onError(MiniAppInAppPurchaseErrorType.consumeFailedError)
             }
         }

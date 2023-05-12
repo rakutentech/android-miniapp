@@ -6,7 +6,7 @@ import androidx.annotation.Keep
  * A class to provide the custom errors specific for in app purchase.
  */
 @Keep
-class MiniAppInAppPurchaseErrorType(val type: String? = null, val message: String? = null) {
+data class MiniAppInAppPurchaseErrorType(val type: String? = null, val message: String? = null) {
 
     companion object {
         private const val PurchaseFailedError = "PurchaseFailedError"
