@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
 import org.mockito.Mockito
@@ -70,6 +71,17 @@ open class BridgeCommon {
         ) {
             if (mockIsValid) {
                 onSuccess(TEST_CALLBACK_VALUE)
+            } else {
+                onError(testErrorMessage)
+            }
+        }
+
+        override fun getHostAppThemeColors(
+            onSuccess: (themeColor: HostThemeColor) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (mockIsValid) {
+                onSuccess(TEST_CALLBACK_THEME)
             } else {
                 onError(testErrorMessage)
             }

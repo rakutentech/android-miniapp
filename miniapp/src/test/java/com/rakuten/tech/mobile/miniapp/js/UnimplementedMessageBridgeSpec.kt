@@ -33,4 +33,9 @@ class UnimplementedMessageBridgeSpec : BridgeCommon() {
         val mockFunction: (Any) -> Unit = {}
         unimplementedMessageBridge.sendJsonToHostApp("", mockFunction, mockFunction)
     }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `getHostAppThemeColors should throw MiniAppSdkException when it is not implemented`() {
+        unimplementedMessageBridge.getHostAppThemeColors(mock(), mock())
+    }
 }

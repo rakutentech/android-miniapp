@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp
 
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import java.io.File
@@ -40,6 +41,7 @@ internal const val TEST_HA_SUBSCRIPTION_KEY = "test_subscription_key"
 
 internal const val TEST_CALLBACK_ID = "test_callback_id"
 internal const val TEST_CALLBACK_VALUE = "test_callback_value"
+internal val TEST_CALLBACK_THEME = HostThemeColor("", "")
 
 internal const val TEST_AD_UNIT_ID = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
 internal val TEST_LIST_PUBLIC_KEY_SSL = emptyList<String>()
