@@ -368,10 +368,10 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
     }
 
     override fun getHostAppThemeColors(
-        onSuccess: (themeColor: HostThemeColor) -> Unit,
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        onSuccess(HostThemeColor(primaryColor = "", secondaryColor = ""))
+        onSuccess(HostAppThemeColors(primaryColor = "", secondaryColor = ""))
     }
         
 }

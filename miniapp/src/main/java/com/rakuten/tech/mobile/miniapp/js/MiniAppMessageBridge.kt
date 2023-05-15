@@ -24,7 +24,7 @@ import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
@@ -157,7 +157,7 @@ open class MiniAppMessageBridge {
 
     /** Interface that should be implemented to return theme colors that uniquely identifies a host. **/
     open fun getHostAppThemeColors(
-        onSuccess: (themeColor: HostThemeColor) -> Unit,
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -392,7 +392,7 @@ open class MiniAppMessageBridge {
     }
 
     private fun onGetHostAppThemeColors(callbackObj: CallbackObj) = try {
-        val successCallback = { themeColor: HostThemeColor ->
+        val successCallback = { themeColor: HostAppThemeColors ->
             bridgeExecutor.postValue(callbackObj.id, Gson().toJson(themeColor))
         }
         val errorCallback = { message: String ->

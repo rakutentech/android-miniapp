@@ -6,7 +6,7 @@ import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalyticsConfig
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -84,8 +84,8 @@ class AppSettings private constructor(context: Context) {
             cache.tokenData = tokenData
         }
 
-    var colorTheme: HostThemeColor
-        get() = cache.colorTheme ?: HostThemeColor("", "")
+    var colorTheme: HostAppThemeColors
+        get() = cache.colorTheme ?: HostAppThemeColors("", "")
         set(colorTheme) {
             cache.colorTheme = colorTheme
         }

@@ -8,7 +8,7 @@ import androidx.annotation.Keep
  * @property secondaryColor The secondary color of the host app.
  */
 @Keep
-data class HostThemeColor(
+data class HostAppThemeColors(
     var primaryColor: String?,
     val secondaryColor: String?
 )

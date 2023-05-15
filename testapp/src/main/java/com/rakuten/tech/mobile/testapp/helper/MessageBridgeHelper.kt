@@ -7,7 +7,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -85,7 +85,7 @@ fun getMessageBridge(
     }
 
     override fun getHostAppThemeColors(
-        onSuccess: (themeColor: HostThemeColor) -> Unit,
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
         onError: (message: String) -> Unit
     ) {
         onSuccess(AppSettings.instance.colorTheme)

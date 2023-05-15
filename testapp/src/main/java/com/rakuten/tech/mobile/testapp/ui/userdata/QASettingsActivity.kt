@@ -15,7 +15,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
@@ -323,7 +323,7 @@ class QASettingsActivity : BaseActivity() {
         if (!binding.edtSecondaryColor.text.isNullOrEmpty()) {
             secondaryColor = binding.edtSecondaryColor.text.toString()
         }
-        settings.colorTheme = HostThemeColor(primaryColor, secondaryColor)
+        settings.colorTheme = HostAppThemeColors(primaryColor, secondaryColor)
 
         // post tasks
         hideSoftKeyboard(binding.root)

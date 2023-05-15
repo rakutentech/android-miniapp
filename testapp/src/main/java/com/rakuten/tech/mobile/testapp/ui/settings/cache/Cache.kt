@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
-import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostThemeColor
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -77,8 +77,8 @@ internal class Cache(
         set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
             .apply()
 
-    var colorTheme: HostThemeColor?
-        get() = gson.fromJson(prefs.getString(COLOR_THEME, null), HostThemeColor::class.java)
+    var colorTheme: HostAppThemeColors?
+        get() = gson.fromJson(prefs.getString(COLOR_THEME, null), HostAppThemeColors::class.java)
         set(colorTheme) = prefs.edit().putString(COLOR_THEME, gson.toJson(colorTheme))
             .apply()
 
