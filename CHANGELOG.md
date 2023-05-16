@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.2.1 (xxxx-xx-xx)
+**SDK**
+- **Fix:** Support In-app Purchase for old sdk implementation.
+
 ### 5.2.0 (2023-04-06)
 **SDK**
 - **Feature:** Added `in-app-purchase` module to support android billing sdk.
