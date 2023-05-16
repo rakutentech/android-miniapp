@@ -46,7 +46,7 @@ class MiniAppViewImplSpec {
     fun setUp() {
         withRealActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,

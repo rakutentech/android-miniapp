@@ -113,7 +113,13 @@ open class MiniAppMessageBridge {
             bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        iapBridgeDispatcher.setMiniAppComponents(bridgeExecutor, miniAppId, apiClient, miniAppIAPVerifier)
+        if (this::apiClient.isInitialized)
+            iapBridgeDispatcher.setMiniAppComponents(
+                bridgeExecutor,
+                miniAppId,
+                apiClient,
+                miniAppIAPVerifier
+            )
         miniAppViewInitialized = true
     }
 
@@ -525,8 +531,9 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
     }
 
-    internal fun setComponentsIAPDispatcher(apiClient: ApiClient) {
+    internal fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
+        iapBridgeDispatcher.updateApiClient(apiClient)
     }
 
     /** Allow Host app to receive the miniapp close event. */

@@ -44,7 +44,7 @@ class AdBridgeSpec : BridgeCommon() {
         val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
         When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -114,7 +114,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
             miniAppBridge.allowScreenOrientation(false)
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -142,7 +142,7 @@ class ScreenBridgeSpec : BridgeCommon() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock(), mock()
             )
@@ -181,7 +181,7 @@ class ScreenBridgeSpec : BridgeCommon() {
     fun `miniAppShouldClose value should be assigned properly`() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity, webViewListener, mock(), mock(), TEST_MA_ID, mock(), mock(), mock()
             )

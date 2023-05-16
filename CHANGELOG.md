@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.2.0 (xxxx-xx-xx)
+### 5.2.0 (2023-04-06)
 **SDK**
 - **Feature:** Added `in-app-purchase` module to support android billing sdk.
 - **Feature:** Added `InAppPurchaseProvider` to get/purchase/consume products, HostApp can also use `InAppPurchaseProviderDefault` when there is nothing to customize during In-app Purchase.

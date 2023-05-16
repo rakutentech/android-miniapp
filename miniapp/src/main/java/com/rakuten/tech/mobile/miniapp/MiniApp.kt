@@ -300,7 +300,8 @@ abstract class MiniApp internal constructor() {
                     miniAppSdkConfig.maxStorageSizeLimitInBytes.toLong()
                 ),
                 enableH5Ads = miniAppSdkConfig.enableH5Ads,
-                initMiniAppIAPVerifier = { MiniAppIAPVerifier(context) }
+                initMiniAppIAPVerifier = { MiniAppIAPVerifier(context) },
+                miniAppSdkConfig = defaultConfig
             )
         }
     }

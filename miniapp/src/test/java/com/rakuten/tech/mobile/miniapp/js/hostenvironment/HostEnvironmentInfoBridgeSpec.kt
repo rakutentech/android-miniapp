@@ -27,7 +27,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
@@ -59,7 +59,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
             )
             val miniAppBridge = Mockito.spy(createDefaultMiniAppMessageBridge())
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                     activity = activity,
                     webViewListener = webViewListener,
@@ -84,7 +84,7 @@ class HostEnvironmentInfoBridgeSpec : BridgeCommon() {
             val webViewListener = createErrorWebViewListener(infoErrMessage)
             val bridgeExecutor = Mockito.spy(miniAppBridge.createBridgeExecutor(webViewListener))
             When calling miniAppBridge.createBridgeExecutor(webViewListener) itReturns bridgeExecutor
-            miniAppBridge.setComponentsIAPDispatcher(mock())
+            miniAppBridge.updateApiClient(mock())
             miniAppBridge.init(
                 activity = activity,
                 webViewListener = webViewListener,
