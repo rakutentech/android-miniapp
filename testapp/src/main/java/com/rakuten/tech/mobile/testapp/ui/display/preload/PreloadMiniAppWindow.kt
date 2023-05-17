@@ -154,11 +154,11 @@ class PreloadMiniAppWindow(
         val manifestPermissions = ArrayList<PreloadManifestPermission>()
 
         manifest.requiredPermissions.forEach {
-            val permission = PreloadManifestPermission(it.first, true, it.second)
+            val permission = PreloadManifestPermission(it.first, true, it.second, it.third)
             manifestPermissions.add(permission)
         }
         manifest.optionalPermissions.forEach {
-            val permission = PreloadManifestPermission(it.first, false, it.second)
+            val permission = PreloadManifestPermission(it.first, false, it.second, it.third)
             manifestPermissions.add(permission)
         }
 

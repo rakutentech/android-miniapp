@@ -25,7 +25,7 @@ class DownloadedManifestCacheSpec {
     private val mockContext: Context = mock()
     private val demoManifest =
         MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)), listOf(),
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
     private val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, demoManifest)
@@ -123,7 +123,7 @@ class DownloadedManifestCacheSpec {
         )
         val demoOptionalManifest =
             MiniAppManifest(
-                listOf(), listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+                listOf(), listOf(Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason", false)),
                 TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
             )
         val cachedPermission = MiniAppCustomPermission(TEST_MA_ID, expected)

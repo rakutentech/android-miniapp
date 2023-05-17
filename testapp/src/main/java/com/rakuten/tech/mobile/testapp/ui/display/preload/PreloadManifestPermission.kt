@@ -8,5 +8,6 @@ data class PreloadManifestPermission(
     val type: MiniAppCustomPermissionType,
     val isRequired: Boolean,
     val reason: String,
+    val isOneTimePermission: Boolean,
     var optionalInfo: String = ""
 )

@@ -39,14 +39,14 @@ open class MiniAppDownloaderBaseSpec {
         version = Version(versionTag = TEST_MA_VERSION_TAG, versionId = TEST_ID_MINIAPP_VERSION)
     )
     internal val dummyManifest = MiniAppManifest(
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
-        listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "")),
+        listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "", false)),
+        listOf(Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "", false)),
         TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
     )
     internal val requiredPermissionObj =
-        MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason")
+        MetadataPermissionObj("rakuten.miniapp.user.USER_NAME", "reason", false)
     internal val optionalPermissionObj =
-        MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason")
+        MetadataPermissionObj("rakuten.miniapp.user.PROFILE_PHOTO", "reason", false)
 
     @Before
     fun setup() {
@@ -505,18 +505,18 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
                 )
             )
             val requiredPermission =
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
+                listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason for user name", false))
             val optionalPermission =
-                listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
+                listOf(Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo", false))
 
             When calling downloader.listOfPermissions(listOf(requiredPermissionObj)) itReturns requiredPermission
             When calling downloader.listOfPermissions(listOf(optionalPermissionObj)) itReturns optionalPermission
 
             val actual = downloader.prepareMiniAppManifest(metadataEntity, TEST_MA_VERSION_ID)
             val requiredPermissions =
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason for user name"))
+                listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason for user name", false))
             val optionalPermissions =
-                listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo"))
+                listOf(Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason for profile photo", false))
             val expected = MiniAppManifest(
                 requiredPermissions, optionalPermissions,
                 TEST_ATP_LIST, hashMapOf(), TEST_MA_VERSION_ID
@@ -547,7 +547,7 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     fun `listOfPermissions should return values correctly`() =
         runBlockingTest {
             val actual = downloader.listOfPermissions(listOf(requiredPermissionObj))
-            val expected = listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason"))
+            val expected = listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false))
 
             assertEquals(expected, actual)
         }
@@ -556,9 +556,9 @@ class MiniAppDownloaderSpec : MiniAppDownloaderBaseSpec() {
     fun `listOfPermissions should return empty when there is any unknown permission`() =
         runBlockingTest {
             val unknownPermissionObj =
-                MetadataPermissionObj("", "reason")
+                MetadataPermissionObj("", "reason", false)
             val actual = downloader.listOfPermissions(listOf(unknownPermissionObj))
-            val expected = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
+            val expected = ArrayList<Triple<MiniAppCustomPermissionType, String, Boolean>>()
 
             assertEquals(expected, actual)
         }

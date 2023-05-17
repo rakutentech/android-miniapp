@@ -59,8 +59,8 @@ class CustomPermissionBridgeSpec : BridgeCommon() {
     private val cachedManifest = CachedManifest(
         TEST_MA_VERSION_ID,
         MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "")),
-            listOf(Pair(MiniAppCustomPermissionType.LOCATION, "")),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "", false)),
+            listOf(Triple(MiniAppCustomPermissionType.LOCATION, "", false)),
             TEST_ATP_LIST, emptyMap(), TEST_MA_VERSION_ID
         )
     )

@@ -42,7 +42,7 @@ internal class ManifestApiCacheSpec {
     @Test
     fun `readManifest will return expected values`() {
         val cachedManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)), listOf(),
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         doReturn(cachedManifest).whenever(manifestCache)
@@ -54,7 +54,7 @@ internal class ManifestApiCacheSpec {
     @Test
     fun `storeManifest will invoke putString while storing the latest manifest`() {
         val newManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)), listOf(),
             TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         Mockito.`when`(mockEditor.clear()).thenReturn(mockEditor)

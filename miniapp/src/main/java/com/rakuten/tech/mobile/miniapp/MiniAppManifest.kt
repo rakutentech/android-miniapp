@@ -14,8 +14,8 @@ import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
  */
 @Keep
 data class MiniAppManifest(
-    val requiredPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
-    val optionalPermissions: List<Pair<MiniAppCustomPermissionType, String>>,
+    val requiredPermissions: List<Triple<MiniAppCustomPermissionType, String, Boolean>>,
+    val optionalPermissions: List<Triple<MiniAppCustomPermissionType, String, Boolean>>,
     val accessTokenPermissions: List<AccessTokenScope>,
     val customMetaData: Map<String, String>,
     val versionId: String

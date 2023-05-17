@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.display.preload
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +56,10 @@ class PreloadMiniAppPermissionAdapter :
                 )
             )
         }
+
+        // Just for testing.
+        // TODO: Need to remove when completed
+        holder.isOneTimePermissionCb.isChecked = manifestPermissions[position].isOneTimePermission
     }
 
     override fun getItemCount(): Int = manifestPermissions.size
@@ -93,6 +98,7 @@ class PreloadMiniAppPermissionAdapter :
         val permissionSwitch: SwitchCompat = itemView.manifestPermissionSwitch
         val permissionReason: TextView = itemView.permissionReason
         val permissionOptionalInfo: TextView = itemView.permissionOptionalInfo
+        val isOneTimePermissionCb: CheckBox = itemView.isOneTimePermissionCb
     }
 
     private fun permissionResultToText(isChecked: Boolean): MiniAppCustomPermissionResult {

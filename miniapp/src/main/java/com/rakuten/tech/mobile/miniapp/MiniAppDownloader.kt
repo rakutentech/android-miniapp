@@ -217,14 +217,14 @@ internal class MiniAppDownloader(
     @VisibleForTesting
     fun listOfPermissions(
         permissions: List<MetadataPermissionObj>
-    ): List<Pair<MiniAppCustomPermissionType, String>> {
-        val pairs = ArrayList<Pair<MiniAppCustomPermissionType, String>>()
+    ): List<Triple<MiniAppCustomPermissionType, String, Boolean>> {
+        val permissionList = ArrayList<Triple<MiniAppCustomPermissionType, String, Boolean>>()
         permissions.forEach {
             val permissionType = MiniAppCustomPermissionType.getValue(it.name ?: "")
             if (permissionType.type != MiniAppCustomPermissionType.UNKNOWN.type)
-                pairs.add(Pair(permissionType, it.reason ?: ""))
+                permissionList.add(Triple(permissionType, it.reason ?: "", it.isOneTimePermission ?: false))
         }
-        return pairs
+        return permissionList
     }
 
     @SuppressWarnings("LongMethod", "NestedBlockDepth", "ComplexMethod", "ThrowsCount")

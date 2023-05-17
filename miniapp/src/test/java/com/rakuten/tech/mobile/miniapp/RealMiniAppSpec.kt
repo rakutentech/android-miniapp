@@ -47,7 +47,7 @@ open class BaseRealMiniAppSpec {
     val miniAppFileChooser: MiniAppFileChooser = mock()
 
     val dummyManifest: MiniAppManifest = MiniAppManifest(
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")), listOf(),
+        listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)), listOf(),
         TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
     )
     internal var miniAppAnalytics: MiniAppAnalytics = MiniAppAnalytics(
@@ -542,8 +542,10 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     fun `checkToDownloadManifest will store manifest and hash properly`() =
         runBlockingTest {
             val manifest = MiniAppManifest(
-                    listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
-                            Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")), listOf(),
+                    listOf(
+                        Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false),
+                            Triple(MiniAppCustomPermissionType.CONTACT_LIST, "reason", false)
+                    ), listOf(),
                     TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
             )
             val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, manifest)
@@ -563,8 +565,8 @@ class RealMiniAppManifestSpec : BaseRealMiniAppSpec() {
     @Test
     fun `isManifestEqual will return false when api and downloaded manifest are not equal`() {
         val dummyApiManifest = MiniAppManifest(
-                listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
-                        Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+                listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false),
+                    Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason", false)),
                 listOf(),
                 TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )

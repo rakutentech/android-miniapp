@@ -46,5 +46,6 @@ internal data class MetadataResponse(
 @Keep
 internal data class MetadataPermissionObj(
     val name: String?,
-    val reason: String?
+    val reason: String?,
+    val isOneTimePermission: Boolean? = false
 )

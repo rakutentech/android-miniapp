@@ -31,7 +31,7 @@ open class MiniAppViewHandlerSpec {
     private var miniAppSdkConfig: MiniAppSdkConfig = mock()
     private var apiClient: ApiClient = mock()
     private val dummyManifest: MiniAppManifest = MiniAppManifest(
-        listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+        listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)),
         listOf(),
         TEST_ATP_LIST,
         mapOf(),
@@ -192,8 +192,8 @@ open class MiniAppViewHandlerSpec {
     fun `checkToDownloadManifest will store manifest and hash properly`() = runBlockingTest {
         val manifest = MiniAppManifest(
             listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")
+                Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false),
+                Triple(MiniAppCustomPermissionType.CONTACT_LIST, "reason", false)
             ), listOf(), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         val cachedManifest = CachedManifest(TEST_MA_VERSION_ID, manifest)
@@ -220,17 +220,17 @@ open class MiniAppViewHandlerSpec {
     fun `isManifestEqual will return false when api and downloaded manifest are not equal`() {
         val dummyApiManifest = MiniAppManifest(
             listOf(
-                Pair(MiniAppCustomPermissionType.USER_NAME, "reason"),
-                Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")
+                Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false),
+                Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason", false)
             ), listOf(
-                Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason"),
-                Pair(MiniAppCustomPermissionType.ACCESS_TOKEN, "reason")
+                Triple(MiniAppCustomPermissionType.CONTACT_LIST, "reason", false),
+                Triple(MiniAppCustomPermissionType.ACCESS_TOKEN, "reason", false)
             ), TEST_ATP_LIST, mapOf(), TEST_MA_VERSION_ID
         )
         miniAppViewHandler.isManifestEqual(dummyApiManifest, dummyManifest) shouldBeEqualTo false
 
         val diffMetaManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)),
             listOf(),
             TEST_ATP_LIST,
             mapOf(Pair("abc", "bcd")),
@@ -239,7 +239,7 @@ open class MiniAppViewHandlerSpec {
         miniAppViewHandler.isManifestEqual(diffMetaManifest, dummyManifest) shouldBeEqualTo false
 
         val diffReqPermManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason")),
+            listOf(Triple(MiniAppCustomPermissionType.PROFILE_PHOTO, "reason", false)),
             listOf(),
             TEST_ATP_LIST,
             mapOf(),
@@ -248,8 +248,8 @@ open class MiniAppViewHandlerSpec {
         miniAppViewHandler.isManifestEqual(diffReqPermManifest, dummyManifest) shouldBeEqualTo false
 
         val diffOptPermManifest = MiniAppManifest(
-            listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
-            listOf(Pair(MiniAppCustomPermissionType.CONTACT_LIST, "reason")),
+            listOf(Triple(MiniAppCustomPermissionType.USER_NAME, "reason", false)),
+            listOf(Triple(MiniAppCustomPermissionType.CONTACT_LIST, "reason", false)),
             TEST_ATP_LIST,
             mapOf(Pair("abc", "bcd")),
             TEST_MA_VERSION_ID
