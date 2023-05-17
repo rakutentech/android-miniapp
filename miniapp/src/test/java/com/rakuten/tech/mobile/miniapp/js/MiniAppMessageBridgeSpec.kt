@@ -37,7 +37,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val mauIdCallbackObj = CallbackObj(
         action = ActionType.GET_MAUID.action, param = null, id = TEST_CALLBACK_ID
     )
+
+    private val themeCallbackObj = CallbackObj(
+        action = ActionType.GET_HOST_APP_THEME_COLORS.action, param = null, id = TEST_CALLBACK_ID
+    )
+
     private val mauIdJsonStr = Gson().toJson(mauIdCallbackObj)
+    private val themeJsonStr = Gson().toJson(themeCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
@@ -180,6 +186,15 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
     }
+
+    /** region: device theme color*/
+    @Test
+    fun `should be able to return themeColor to miniapp`() {
+        miniAppBridge.postMessage(themeJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, Gson().toJson(TEST_CALLBACK_THEME))
+    }
+    /** end region*/
 
     /** region: device permission */
     @Test

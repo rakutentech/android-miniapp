@@ -273,6 +273,7 @@ There are some methods have a default implementation but the host app can overri
 | shareContent                 | ✅       |
 | getHostEnvironmentInfo       | ✅       |
 | sendJsonToHostApp            | 🚫       |
+| getHostAppThemeColors        | 🚫       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -364,6 +365,13 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         } else {
             onError(jsonStr)
         }
+    }
+
+    override fun getHostAppThemeColors(
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        onSuccess(HostAppThemeColors(primaryColor = "", secondaryColor = ""))
     }
         
 }
@@ -541,7 +549,11 @@ The default functionality will provide information using `HostEnvironmentInfo` o
 **API Docs:** [MiniAppMessageBridge.sendJsonToHostApp](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
 
 The MiniApp is able to send the Universal Bridge in `json` string format. 
-    
+
+### Get Host App Theme Colors
+**API Docs:** [MiniAppMessageBridge.getHostAppThemeColors](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-app-theme-colors.html)
+
+Your App should provide a primary and secondary color to the mini app which is the theme colors of the host app . The mini app can use those colors and change it's appearence.
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)

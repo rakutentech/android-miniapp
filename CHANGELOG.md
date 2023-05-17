@@ -1,5 +1,13 @@
 ## CHANGELOG
 
+### 5.x.x (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
+
+**Sample App**
+- **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
+- **Feature:** Added qa settings to test primary and secondary color.
+
 ### 5.2.0 (2023-04-06)
 **SDK**
 - **Feature:** Added `in-app-purchase` module to support android billing sdk.
