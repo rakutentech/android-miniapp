@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -74,6 +75,11 @@ internal class Cache(
     var tokenData: TokenData?
         get() = gson.fromJson(prefs.getString(TOKEN_DATA, null), TokenData::class.java)
         set(tokenData) = prefs.edit().putString(TOKEN_DATA, gson.toJson(tokenData))
+            .apply()
+
+    var colorTheme: HostAppThemeColors?
+        get() = gson.fromJson(prefs.getString(COLOR_THEME, null), HostAppThemeColors::class.java)
+        set(colorTheme) = prefs.edit().putString(COLOR_THEME, gson.toJson(colorTheme))
             .apply()
 
     var contacts: ArrayList<Contact>?
@@ -150,6 +156,7 @@ internal class Cache(
         private const val MAX_STORAGE_SIZE_LIMIT = "max_storage_size_limit"
         private const val IS_TEMP_CLEARED = "is_temp_cleared"
         private const val IS_TAB_1_CHECKED = "is_tab_1_checked"
+        private const val COLOR_THEME = "color_theme"
     }
 
     @Suppress("TooManyFunctions")

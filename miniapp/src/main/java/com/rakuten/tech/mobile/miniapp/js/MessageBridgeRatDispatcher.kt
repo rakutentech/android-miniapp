@@ -48,6 +48,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
             ActionType.CONSUME_PURCHASE.action -> Actype.CONSUME_PURCHASE
             ActionType.JSON_INFO.action -> Actype.JSON_INFO
             ActionType.CLOSE_MINIAPP.action -> Actype.CLOSE_MINIAPP
+            ActionType.GET_HOST_APP_THEME_COLORS.action -> Actype.GET_HOST_APP_THEME_COLORS
             else -> Actype.DEFAULT
         }
     }

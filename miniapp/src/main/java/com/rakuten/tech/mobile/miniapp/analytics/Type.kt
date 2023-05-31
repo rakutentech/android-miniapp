@@ -41,5 +41,6 @@ internal enum class Actype(val value: String) {
     CONSUME_PURCHASE("mini_app_consume_product_with"),
     JSON_INFO("mini_app_send_json_to_host_app"),
     CLOSE_MINIAPP("mini_app_close"),
+    GET_HOST_APP_THEME_COLORS("mini_app_get_host_app_theme_colors"),
     DEFAULT("")
 }

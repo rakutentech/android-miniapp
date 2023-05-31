@@ -32,14 +32,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/medium_16"
-                android:textOff="@string/lb_auth_failure_error"
-                android:textOn="@string/lb_auth_failure_error"
                 android:text="@string/lb_auth_failure_error"
                 android:textColor="@android:color/black"
+                android:textOff="@string/lb_auth_failure_error"
+                android:textOn="@string/lb_auth_failure_error"
                 android:textSize="@dimen/text_large_16"
                 app:actionType="change_status"
                 app:pageName="QA"
-                app:siteSection="Settings"/>
+                app:siteSection="Settings" />
 
             <View
                 android:layout_width="match_parent"
@@ -56,7 +56,7 @@
                 android:textSize="@dimen/text_large_16"
                 app:actionType="change_status"
                 app:pageName="QA"
-                app:siteSection="Settings"/>
+                app:siteSection="Settings" />
 
             <View
                 android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                 android:textSize="@dimen/text_large_16"
                 app:actionType="change_status"
                 app:pageName="QA"
-                app:siteSection="Settings"/>
+                app:siteSection="Settings" />
 
             <View
                 android:layout_width="match_parent"
@@ -197,12 +197,12 @@
                 android:layout_height="@dimen/large_44"
                 android:layout_margin="@dimen/medium_16"
                 android:background="@drawable/bg_red_curve"
+                android:enabled="false"
                 android:gravity="center"
                 android:padding="@dimen/small_4"
                 android:text="@string/action_clear_miniapp"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/text_large_16"
-                android:enabled="false"
                 app:actionType="change_status"
                 app:pageName="QA"
                 app:siteSection="Settings" />
@@ -287,6 +287,38 @@
                 app:actionType="change_status"
                 app:pageName="QA"
                 app:siteSection="Settings" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4"
+                app:endIconMode="clear_text">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtPrimaryColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_4"
+                    android:hint="@string/hint_set_primary_color"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_4"
+                app:endIconMode="clear_text">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtSecondaryColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_4"
+                    android:hint="@string/hint_set_secondary_color"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
     </ScrollView>

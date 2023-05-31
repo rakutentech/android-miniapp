@@ -1,5 +1,13 @@
 ## CHANGELOG
 
+### 5.x.x (xxxx-xx-xx)
+**SDK**
+- **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
+
+**Sample App**
+- **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
+- **Feature:** Added qa settings to test primary and secondary color.
+
 ### 5.2.1 (2023-05-23)
 **SDK**
 - **Fix:** Support In-app Purchase for old sdk implementation.
