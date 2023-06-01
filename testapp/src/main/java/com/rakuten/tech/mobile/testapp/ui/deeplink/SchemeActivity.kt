@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.testapp.ui.deeplink
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.rakuten.tech.mobile.miniapp.*
@@ -12,7 +13,9 @@ import com.rakuten.tech.mobile.testapp.ui.display.MiniAppDisplayActivity
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRCodeErrorType
 import com.rakuten.tech.mobile.testapp.ui.display.error.QRErrorWindow
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.DemoAppMainActivity
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
+import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 
 /**
  * This activity will be the gateway of all deeplink scheme.
@@ -30,17 +33,47 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
     @Suppress("TooGenericExceptionCaught")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        miniAppInfo = null
-        miniAppSdkConfig = createSdkConfig(
-            AppSettings.instance.newMiniAppSdkConfig.rasProjectId,
-            AppSettings.instance.newMiniAppSdkConfig.subscriptionKey
-        )
-        miniAppSdkConfig?.let { config ->
-            miniApp = MiniApp.instance(config, setConfigAsDefault = false)
-        }
-
         intent?.data?.let { data ->
-            if (data.pathSegments.size > 1) {
+            if (data.pathSegments.isNotEmpty() && data.pathSegments[0].equals(getString(R.string.settings_pathprefix).replace("/",""))) {
+                // setup settings
+                val tab = data.getQueryParameter("tab") ?: ""
+                val projectId = data.getQueryParameter("projectid") ?: ""
+                val subscriptionKey = data.getQueryParameter("subscription") ?: ""
+                // Save the keys to prefs
+                if(tab == "1") {
+                    AppSettings.instance.setTempTab1ConfigData(
+                        MiniAppConfigData(
+                            isProduction = AppSettings.instance.getCurrentTab1ConfigData().isProduction,
+                            isPreviewMode = AppSettings.instance.getCurrentTab1ConfigData().isPreviewMode,
+                            isVerificationRequired =AppSettings.instance.getCurrentTab1ConfigData().isVerificationRequired,
+                            projectId = projectId,
+                            subscriptionId = subscriptionKey
+                        )
+                    )
+
+                } else if (tab == "2") {
+                    AppSettings.instance.setTempTab2ConfigData(
+                        MiniAppConfigData(
+                            isProduction = AppSettings.instance.getCurrentTab2ConfigData().isProduction,
+                            isPreviewMode = AppSettings.instance.getCurrentTab2ConfigData().isPreviewMode,
+                            isVerificationRequired =AppSettings.instance.getCurrentTab2ConfigData().isVerificationRequired,
+                            projectId = projectId,
+                            subscriptionId = subscriptionKey
+                        )
+                    )
+                }
+                startActivity(Intent(this, DemoAppMainActivity::class.java))
+                finish()
+            } else if (data.pathSegments.size > 1) {
+                miniAppInfo = null
+                miniAppSdkConfig = createSdkConfig(
+                    AppSettings.instance.newMiniAppSdkConfig.rasProjectId,
+                    AppSettings.instance.newMiniAppSdkConfig.subscriptionKey
+                )
+                miniAppSdkConfig?.let { config ->
+                    miniApp = MiniApp.instance(config, setConfigAsDefault = false)
+                }
+
                 val code = data.pathSegments[1]
                 AppCoroutines.io {
                     try {

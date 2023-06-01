@@ -118,6 +118,7 @@
     <string name="miniappdemo_scheme">miniappdemo</string>
     <string name="miniappdemo_host">miniapp</string>
     <string name="miniappdemo_pathprefix">/preview/</string>
+    <string name="settings_pathprefix">/settings</string>
 
     <string name="deeplink_activity_error_empty">Empty deeplink, please try again.</string>
     <string name="deeplink_activity_input_hint">Input here</string>
