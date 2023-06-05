@@ -14,6 +14,7 @@ import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBind
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
 import com.rakuten.tech.mobile.testapp.helper.clearAllCursorFocus
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
+import com.rakuten.tech.mobile.testapp.ui.deeplink.INTENT_EXTRA_DEEPLINK
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.extensions.setupWithNavController
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.FeaturesFragment
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppDisplayFragment
@@ -36,6 +37,15 @@ class DemoAppMainActivity : BaseActivity() {
             setUpBottomNavigationBar()
         }
         launchMiniApps()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (intent.hasExtra(INTENT_EXTRA_DEEPLINK) &&
+            intent.getBooleanExtra(INTENT_EXTRA_DEEPLINK, false)
+        ) {
+            changeTabMenu(PAGE_SETTINGS)
+        }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

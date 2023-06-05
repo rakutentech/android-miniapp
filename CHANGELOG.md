@@ -7,6 +7,7 @@
 **Sample App**
 - **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
 - **Feature:** Added qa settings to test primary and secondary color.
+- **Feature:** Added Deeplink Support to change settings keys by QR code.
 
 ### 5.2.1 (2023-05-23)
 **SDK**

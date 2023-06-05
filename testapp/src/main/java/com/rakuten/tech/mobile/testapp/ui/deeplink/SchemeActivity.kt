@@ -20,6 +20,7 @@ import com.rakuten.tech.mobile.testapp.ui.settings.cache.MiniAppConfigData
 /**
  * This activity will be the gateway of all deeplink scheme.
  */
+const val INTENT_EXTRA_DEEPLINK = "isFromDeeplink"
 class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunchListener {
 
     override val pageName: String = this::class.simpleName ?: ""
@@ -39,13 +40,17 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                 val tab = data.getQueryParameter("tab") ?: ""
                 val projectId = data.getQueryParameter("projectid") ?: ""
                 val subscriptionKey = data.getQueryParameter("subscription") ?: ""
+                val isProduction = data.getBooleanQueryParameter("isProduction", false)
+                val isPreviewMode = data.getBooleanQueryParameter("isPreviewMode", false)
+                val isVerificationRequired = data.getBooleanQueryParameter("isVerificationRequired", false)
+
                 // Save the keys to prefs
                 if(tab == "1") {
                     AppSettings.instance.setTempTab1ConfigData(
                         MiniAppConfigData(
-                            isProduction = AppSettings.instance.getCurrentTab1ConfigData().isProduction,
-                            isPreviewMode = AppSettings.instance.getCurrentTab1ConfigData().isPreviewMode,
-                            isVerificationRequired =AppSettings.instance.getCurrentTab1ConfigData().isVerificationRequired,
+                            isProduction = isProduction,
+                            isPreviewMode = isPreviewMode,
+                            isVerificationRequired = isVerificationRequired,
                             projectId = projectId,
                             subscriptionId = subscriptionKey
                         )
@@ -54,15 +59,19 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                 } else if (tab == "2") {
                     AppSettings.instance.setTempTab2ConfigData(
                         MiniAppConfigData(
-                            isProduction = AppSettings.instance.getCurrentTab2ConfigData().isProduction,
-                            isPreviewMode = AppSettings.instance.getCurrentTab2ConfigData().isPreviewMode,
-                            isVerificationRequired =AppSettings.instance.getCurrentTab2ConfigData().isVerificationRequired,
+                            isProduction = isProduction,
+                            isPreviewMode = isPreviewMode,
+                            isVerificationRequired = isVerificationRequired,
                             projectId = projectId,
                             subscriptionId = subscriptionKey
                         )
                     )
                 }
-                startActivity(Intent(this, DemoAppMainActivity::class.java))
+                startActivity(
+                    Intent(this,
+                        DemoAppMainActivity::class.java
+                    ).putExtra(INTENT_EXTRA_DEEPLINK, false)
+                )
                 finish()
             } else if (data.pathSegments.size > 1) {
                 miniAppInfo = null
