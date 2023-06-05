@@ -42,7 +42,6 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                 val subscriptionKey = data.getQueryParameter("subscription") ?: ""
                 val isProduction = data.getBooleanQueryParameter("isProduction", false)
                 val isPreviewMode = data.getBooleanQueryParameter("isPreviewMode", false)
-                val isVerificationRequired = data.getBooleanQueryParameter("isVerificationRequired", false)
 
                 // Save the keys to prefs
                 if(tab == "1") {
@@ -50,7 +49,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                         MiniAppConfigData(
                             isProduction = isProduction,
                             isPreviewMode = isPreviewMode,
-                            isVerificationRequired = isVerificationRequired,
+                            isVerificationRequired =AppSettings.instance.getCurrentTab1ConfigData().isVerificationRequired,
                             projectId = projectId,
                             subscriptionId = subscriptionKey
                         )
@@ -61,7 +60,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                         MiniAppConfigData(
                             isProduction = isProduction,
                             isPreviewMode = isPreviewMode,
-                            isVerificationRequired = isVerificationRequired,
+                            isVerificationRequired =AppSettings.instance.getCurrentTab1ConfigData().isVerificationRequired,
                             projectId = projectId,
                             subscriptionId = subscriptionKey
                         )
@@ -70,7 +69,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                 startActivity(
                     Intent(this,
                         DemoAppMainActivity::class.java
-                    ).putExtra(INTENT_EXTRA_DEEPLINK, false)
+                    ).putExtra(INTENT_EXTRA_DEEPLINK, true)
                 )
                 finish()
             } else if (data.pathSegments.size > 1) {
