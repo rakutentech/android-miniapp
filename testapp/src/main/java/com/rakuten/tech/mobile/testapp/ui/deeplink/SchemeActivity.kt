@@ -60,7 +60,7 @@ class SchemeActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniAppLaunch
                         MiniAppConfigData(
                             isProduction = isProduction,
                             isPreviewMode = isPreviewMode,
-                            isVerificationRequired =AppSettings.instance.getCurrentTab1ConfigData().isVerificationRequired,
+                            isVerificationRequired =AppSettings.instance.getCurrentTab2ConfigData().isVerificationRequired,
                             projectId = projectId,
                             subscriptionId = subscriptionKey
                         )
