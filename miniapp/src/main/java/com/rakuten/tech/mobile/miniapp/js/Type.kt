@@ -31,7 +31,8 @@ internal enum class ActionType(val action: String) {
     CONSUME_PURCHASE("consumeProductWith"),
     JSON_INFO("sendJsonToHostapp"),
     CLOSE_MINIAPP("closeMiniApp"),
-    GET_HOST_APP_THEME_COLORS("getHostAppThemeColors")
+    GET_HOST_APP_THEME_COLORS("getHostAppThemeColors"),
+    GET_IS_DARK_MODE("isDarkMode")
 }
 
 internal enum class DialogType {
