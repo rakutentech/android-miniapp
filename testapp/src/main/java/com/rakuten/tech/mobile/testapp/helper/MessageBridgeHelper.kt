@@ -96,9 +96,8 @@ fun getMessageBridge(
         onSuccess: (isDarkMode: Boolean) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        val currentNightMode = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO -> onError("Not Activated") // Night mode is not active, we're using the light theme.
+        when (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> onSuccess(false) // Night mode is not active, we're using the light theme.
             Configuration.UI_MODE_NIGHT_YES -> onSuccess(true) // Night mode is active, we're using dark theme.
         }
     }

@@ -38,4 +38,9 @@ class UnimplementedMessageBridgeSpec : BridgeCommon() {
     fun `getHostAppThemeColors should throw MiniAppSdkException when it is not implemented`() {
         unimplementedMessageBridge.getHostAppThemeColors(mock(), mock())
     }
+
+    @Test(expected = MiniAppSdkException::class)
+    fun `getIsDarkMode should throw MiniAppSdkException when it is not implemented`() {
+        unimplementedMessageBridge.getIsDarkMode(mock(), mock())
+    }
 }
