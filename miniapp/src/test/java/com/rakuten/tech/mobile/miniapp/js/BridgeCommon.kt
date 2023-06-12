@@ -119,6 +119,17 @@ open class BridgeCommon {
                 onError.invoke(HostEnvironmentInfoError(infoErrMessage))
             }
         }
+
+        override fun getIsDarkMode(
+            onSuccess: (isDarkMode: Boolean) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (mockIsValid) {
+                onSuccess(true)
+            } else {
+                onError(testErrorMessage)
+            }
+        }
     }
 
     fun createDefaultMiniAppMessageBridge(): MiniAppMessageBridge =

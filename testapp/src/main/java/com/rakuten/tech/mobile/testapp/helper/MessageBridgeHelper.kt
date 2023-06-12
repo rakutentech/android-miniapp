@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.testapp.helper
 
 import android.app.Activity
+import android.content.res.Configuration
 import androidx.core.app.ActivityCompat
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
@@ -89,6 +90,16 @@ fun getMessageBridge(
         onError: (message: String) -> Unit
     ) {
         onSuccess(AppSettings.instance.colorTheme)
+    }
+
+    override fun getIsDarkMode(
+        onSuccess: (isDarkMode: Boolean) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        when (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> onSuccess(false) // Night mode is not active, we're using the light theme.
+            Configuration.UI_MODE_NIGHT_YES -> onSuccess(true) // Night mode is active, we're using dark theme.
+        }
     }
 }
 

@@ -202,6 +202,17 @@ open class MiniAppMessageBridge {
     }
 
     /**
+     * Get dark mode info from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getIsDarkMode(
+        onSuccess: (isDarkMode: Boolean) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
      * Share content info [ShareInfo]. This info is provided by mini app.
      * @param content The content property of [ShareInfo] object.
      * @param callback The executed action status should be notified back to mini app.
@@ -307,6 +318,7 @@ open class MiniAppMessageBridge {
             ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
             ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
+            ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -520,6 +532,18 @@ open class MiniAppMessageBridge {
             bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
         }
         getHostEnvironmentInfo(successCallback, errorCallback)
+    }
+
+    @SuppressWarnings("TooGenericExceptionCaught")
+    @VisibleForTesting
+    internal fun onGetIsDarkMode(callbackId: String) {
+        val successCallback = { isDarkMode: Boolean ->
+            bridgeExecutor.postValue(callbackId, isDarkMode.toString())
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, message)
+        }
+        getIsDarkMode(successCallback, errorCallback)
     }
 
     @VisibleForTesting

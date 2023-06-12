@@ -46,6 +46,7 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.JSON_INFO.action to Actype.JSON_INFO,
         ActionType.CLOSE_MINIAPP.action to Actype.CLOSE_MINIAPP,
         ActionType.GET_HOST_APP_THEME_COLORS.action to Actype.GET_HOST_APP_THEME_COLORS,
+        ActionType.GET_IS_DARK_MODE.action to Actype.GET_IS_DARK_MODE,
         )
 
     @Test

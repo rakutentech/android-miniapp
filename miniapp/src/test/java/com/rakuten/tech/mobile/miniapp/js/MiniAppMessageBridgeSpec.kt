@@ -42,8 +42,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         action = ActionType.GET_HOST_APP_THEME_COLORS.action, param = null, id = TEST_CALLBACK_ID
     )
 
+    private val darkModeCallbackObj = CallbackObj(
+        action = ActionType.GET_IS_DARK_MODE.action, param = null, id = TEST_CALLBACK_ID
+    )
+
     private val mauIdJsonStr = Gson().toJson(mauIdCallbackObj)
     private val themeJsonStr = Gson().toJson(themeCallbackObj)
+    private val darkModeJsonStr = Gson().toJson(darkModeCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
@@ -193,6 +198,13 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(themeJsonStr)
 
         verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, Gson().toJson(TEST_CALLBACK_THEME))
+    }
+
+    @Test
+    fun `should be able to return dark mode info to miniapp`() {
+        miniAppBridge.postMessage(darkModeJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, "true")
     }
     /** end region*/
 

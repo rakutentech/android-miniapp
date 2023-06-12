@@ -3,11 +3,13 @@
 ### 5.x.x (xxxx-xx-xx)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
+- **Feature:** Added `MiniAppMessageBridge.getIsDarkMode` in MiniAppMessageBridge for retrieving dark mode status.
 
 **Sample App**
 - **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
 - **Feature:** Added qa settings to test primary and secondary color.
 - **Feature:** Added Deeplink Support to change settings keys by QR code.
+- **Feature:** Added implementation of `MiniAppMessageBridge.getIsDarkMode`.
 
 ### 5.2.1 (2023-05-23)
 **SDK**

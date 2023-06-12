@@ -274,6 +274,7 @@ There are some methods have a default implementation but the host app can overri
 | getHostEnvironmentInfo       | ✅       |
 | sendJsonToHostApp            | 🚫       |
 | getHostAppThemeColors        | 🚫       |
+| getIsDarkMode                | 🚫       |
 
 The `UserInfoBridgeDispatcher`:
 
@@ -372,6 +373,16 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
         onError: (message: String) -> Unit
     ) {
         onSuccess(HostAppThemeColors(primaryColor = "", secondaryColor = ""))
+    }
+
+    override fun getIsDarkMode(
+        onSuccess: (isDarkMode: Boolean) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        when (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> onSuccess(false) // Night mode is not active, we're using the light theme.
+            Configuration.UI_MODE_NIGHT_YES -> onSuccess(true) // Night mode is active, we're using dark theme.
+        }
     }
         
 }
@@ -554,6 +565,11 @@ The MiniApp is able to send the Universal Bridge in `json` string format.
 **API Docs:** [MiniAppMessageBridge.getHostAppThemeColors](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-app-theme-colors.html)
 
 Your App should provide a primary and secondary color to the mini app which is the theme colors of the host app . The mini app can use those colors and change it's appearence.
+
+### Get Host App Dark Mode Status
+**API Docs:** [MiniAppMessageBridge.getIsDarkMode](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-is-dark-mode.html)
+
+Your App should provide boolean value true if dark mode enabled in the device and false if it is disabled.
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
