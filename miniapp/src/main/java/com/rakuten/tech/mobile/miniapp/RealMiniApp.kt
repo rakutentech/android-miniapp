@@ -320,4 +320,8 @@ internal class RealMiniApp(
         isPreviewMode = newConfig.isPreviewMode,
         sslPublicKeyList = newConfig.sslPinningPublicKeyList
     )
+
+    override suspend fun unzipBundle(fileName: String, miniAppId: String, versionId: String) {
+        miniAppDownloader.storeMiniAppBundle(fileName, miniAppId, versionId)
+    }
 }

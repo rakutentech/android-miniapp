@@ -65,6 +65,13 @@ abstract class MiniAppView internal constructor() {
     )
 
     /**
+     * load a mini app view from bundle.
+     * The mini app is downloaded, saved and provides a view when successful.
+     * @param onComplete parameters needed to callback when the miniapp is successfully loaded.
+     */
+    abstract fun loadFromBundle(onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit)
+
+    /**
      * Send a generic message to MiniApp using
      * [com.rakuten.tech.mobile.miniapp.js.NativeEventType.MINIAPP_RECEIVE_JSON_INFO].
      * @param message the content that will send to the MiniApp

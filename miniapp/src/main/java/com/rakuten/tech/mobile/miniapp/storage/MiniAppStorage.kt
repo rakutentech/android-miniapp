@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.InputStream
 
-private const val SUB_DIR_MINIAPP = "miniapp"
+internal const val SUB_DIR_MINIAPP = "miniapp"
 
 internal class MiniAppStorage(
     private val fileWriter: FileWriter,
@@ -35,6 +35,33 @@ internal class MiniAppStorage(
             throw MiniAppSdkException(error)
         }
     }
+
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun saveFileFromBundle(
+        fileName: String,
+        appId: String,
+        versionId: String,
+        inputStream: InputStream
+    ): String {
+        try {
+            val filePath = getBundleWritePath(appId, versionId)
+            fileWriter.unzip(
+                inputStream,
+                getAbsoluteWritePath(
+                    filePath,
+                    fileName
+                )
+            )
+            return filePath
+        } catch (error: Exception) {
+            // This should not happen unless BE sends in a differently "constructed" URL
+            // which differs in logic as that of LocalUrlParser
+            throw MiniAppSdkException(error)
+        }
+    }
+
+    fun getBundleWritePath(appId: String, versionId: String) =
+        "$hostAppBasePath/$SUB_DIR_MINIAPP/$appId/$versionId"
 
     @VisibleForTesting
     fun getAbsoluteWritePath(

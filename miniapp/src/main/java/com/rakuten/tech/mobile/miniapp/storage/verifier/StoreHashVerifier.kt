@@ -29,6 +29,9 @@ internal class StoreHashVerifier @VisibleForTesting constructor(
     fun verify(appId: String, directory: File): Boolean {
         val hash = calculateHash(directory)
         val storedHash = prefs.getString(appId, null) ?: ""
+        Log.e("StoreHashVerifier", hash)
+        Log.e("StoreHashVerifier", storedHash)
+
         return hash == storedHash
     }
 
@@ -37,6 +40,7 @@ internal class StoreHashVerifier @VisibleForTesting constructor(
         withContext(coroutineDispatcher) {
             async {
                 val hash = calculateHash(directory)
+                Log.e("StoreHashVerifier", hash)
                 prefs.edit().putString(appId, hash).apply()
             }
         }

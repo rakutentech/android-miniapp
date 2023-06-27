@@ -38,6 +38,13 @@ class MiniAppNotFoundException(serverMessage: String) :
  * Exception which is thrown when the provided project ID
  * does not have any mini app exist on the server.
  */
+class MiniAppBundleNotFoundException(errorMessage: String) :
+    MiniAppSdkException("$errorMessage: Server returned no mini app for the provided project ID.")
+
+/**
+ * Exception which is thrown when the provided project ID
+ * does not have any mini app exist on the server.
+ */
 class MiniAppHostException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Only the correct host has access to this token.")
 
@@ -58,6 +65,19 @@ internal class DevicePermissionsNotImplementedException :
  */
 internal class CustomPermissionsNotImplementedException :
     MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
+
+/**
+ * Exception which is thrown when the the appId and versionId is empty.
+ */
+class InvalidMiniAppInfoException : MiniAppSdkException("Provided Mini App info in invalid")
+
+/**
+ * Exception which is thrown when the server returns no published
+ * versions for the provided mini app ID.
+ */
+class MiniAppHasCorruptedException(appId: String) :
+    MiniAppSdkException("Server returned no published version info for the provided Mini App Id: $appId")
+
 
 /**
  * Exception which is thrown when the required permissions of the manifest are not granted.

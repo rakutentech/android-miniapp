@@ -1,14 +1,13 @@
 package com.rakuten.tech.mobile.miniapp.view
 
-import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.*
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class MiniAppViewImpl(
-    internal var miniAppParameters: MiniAppParameters,
+    private var miniAppParameters: MiniAppParameters,
     initMiniAppViewHandler: () -> MiniAppViewHandler,
 ) : MiniAppView() {
 
@@ -60,6 +59,46 @@ internal class MiniAppViewImpl(
                             ), null
                         )
                     }
+                }
+            } catch (miniAppSdkException: MiniAppSdkException) {
+                onComplete(null, miniAppSdkException)
+            }
+        }
+    }
+
+    @Throws(MiniAppSdkException::class)
+    override fun loadFromBundle(onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit) {
+        scope.launch {
+            try {
+                lateinit var miniAppInfo: MiniAppInfo
+                lateinit var config: MiniAppConfig
+                when (miniAppParameters) {
+                    is MiniAppParameters.DefaultParams -> {
+                        val generateMiniApp = MiniAppInfo(
+                            id = (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
+                            version = Version(
+                                versionTag = "",
+                                versionId = (miniAppParameters as MiniAppParameters.DefaultParams).miniAppVersion
+                            ),
+                            displayName = "",
+                            icon = "",
+                            promotionalImageUrl = "",
+                            promotionalText = ""
+                        )
+                        miniAppInfo = generateMiniApp
+                        config = (miniAppParameters as MiniAppParameters.DefaultParams).config
+                    }
+                    is MiniAppParameters.InfoParams -> {
+                        miniAppInfo =
+                            (miniAppParameters as MiniAppParameters.InfoParams).miniAppInfo
+                        config = (miniAppParameters as MiniAppParameters.InfoParams).config
+                    }
+                }
+                miniAppViewHandler.createMiniAppViewFromBundle(
+                    miniAppInfo = miniAppInfo,
+                    config = config
+                ) { miniAppDisplay, miniAppSdkException ->
+                    onComplete(miniAppDisplay, miniAppSdkException)
                 }
             } catch (miniAppSdkException: MiniAppSdkException) {
                 onComplete(null, miniAppSdkException)

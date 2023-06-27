@@ -224,6 +224,39 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
+    fun obtainMiniAppDisplayFromBundle(
+        context: Context,
+        appId: String,
+        versionId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooserDefault,
+    ) {
+        val miniAppView = MiniAppView.init(
+            createMiniAppDefaultParam(
+                context,
+                appId,
+                versionId,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser
+            )
+        )
+        miniAppView.loadFromBundle { display, miniAppSdkException ->
+            display?.let {
+                miniAppDisplay = it
+                viewModelScope.launch(Dispatchers.IO) {
+                    _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
+                }
+            } ?: kotlin.run {
+                miniAppSdkException?.let { e ->
+                    handleErrors(e)
+                }
+            }
+        }
+    }
+
     private fun handleErrors(e: MiniAppSdkException) {
         e.printStackTrace()
         when (e) {
@@ -256,6 +289,29 @@ class MiniAppDisplayViewModel constructor(
                 queryParams = AppSettings.instance.urlParameters
             ),
             miniAppInfo = miniAppInfo,
+            fromCache = false
+        )
+    }
+
+    private fun createMiniAppDefaultParam(
+        context: Context,
+        appId: String,
+        versionId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooser
+    ): MiniAppParameters {
+        return MiniAppParameters.DefaultParams(
+            context = context,
+            config = MiniAppConfig(
+                miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
+                queryParams = AppSettings.instance.urlParameters
+            ),
+            miniAppId = appId,
+            miniAppVersion = versionId,
             fromCache = false
         )
     }
