@@ -241,6 +241,18 @@ miniapp.load { miniAppDisplay, miniAppSdkException ->
     }       
 }
 ```
+To load the miniapp from Bundle following load function needed to call
+```kotlin
+miniapp.loadFromBundle { miniAppDisplay, miniAppSdkException ->
+    if(miniAppDisplay != null) {
+      val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+      // view could be added to show the miniapp
+      runOnUithread {
+        rootView.addView(miniAppView)
+      }    
+    }       
+}
+```
 
 **Note:** 
 * **Clean-up:** 
@@ -1123,23 +1135,33 @@ downloadedMiniApps.forEach {
 For a mini app, you can pass query parameters as String using `MiniApp.create` to be appended with miniapp's url.
 For example: `https://mscheme.1234/miniapp/index.html?param1=value1&param2=value2`
 
+To load the miniapp following load function needed to call
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
     //...
-        launch {
-            val miniAppDisplay = withContext(Dispatchers.IO) {
-                MiniApp.instance().create(
-                    appId = "mini_app_id",
-                    miniAppMessageBridge = miniAppMessageBridge,
-                    miniAppNavigator = miniAppNavigator,
-                    queryParams = "param1=value1&param2=value2"
-                )
-            }
-    //...
-        }
+        val param = MiniAppParameters.DefaultParams(
+        context = this,
+        config = MiniAppConfig(
+            miniAppSdkConfig = miniAppSdkConfig,
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = miniAppNavigator,
+            miniAppFileChooser = miniAppFileChooser,
+            queryParams = ""
+            ),
+            miniAppId = "id",
+            miniAppVersion = "version",
+            fromCache = false
+        )
+        
+       val miniapp = MiniAppView.init(param)
+       miniapp.load(queryParams = urlParameters) { display, exception ->
+       
+       }
+       //...    
     }
+
 }
 ```
 

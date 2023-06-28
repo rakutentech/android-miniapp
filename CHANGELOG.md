@@ -4,12 +4,16 @@
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
 - **Feature:** Added `MiniAppMessageBridge.getIsDarkMode` in MiniAppMessageBridge for retrieving dark mode status.
+- **Feature:** Added `MiniApp.unzipBundle` to load MiniApp from bundle. Host app can unzip a MiniApp bundle from asset folder into MiniApp file system.
+- **Feature:** Added `MiniAppView.loadFromBundle` to load MiniApp from already extracted MiniApp bundle.
+
 
 **Sample App**
 - **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
 - **Feature:** Added qa settings to test primary and secondary color.
 - **Feature:** Added Deeplink Support to change settings keys by QR code.
 - **Feature:** Added implementation of `MiniAppMessageBridge.getIsDarkMode`.
+- **Feature:** Added `MiniApp` button in Feature page to load a MiniApp from bundle.
 
 ### 5.2.1 (2023-05-23)
 **SDK**
