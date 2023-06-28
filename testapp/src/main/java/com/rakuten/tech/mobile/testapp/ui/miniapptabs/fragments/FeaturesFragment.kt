@@ -49,7 +49,7 @@ class FeaturesFragment : BaseFragment() {
         context?.let {
             MiniAppDisplayActivity.start(
                 context = it,
-                appId = BUNDLE_MINI_APP_ID+" ",
+                appId = BUNDLE_MINI_APP_ID,
                 versionId = BUNDLE_MINI_APP_VERSION_ID,
                 miniAppSdkConfig = createSdkConfig(
                     AppSettings.instance.newMiniAppSdkConfig.rasProjectId,

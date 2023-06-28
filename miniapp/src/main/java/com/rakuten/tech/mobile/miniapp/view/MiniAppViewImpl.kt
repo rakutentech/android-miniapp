@@ -1,6 +1,9 @@
 package com.rakuten.tech.mobile.miniapp.view
 
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.Version
 import com.rakuten.tech.mobile.miniapp.js.NativeEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +77,7 @@ internal class MiniAppViewImpl(
                 lateinit var config: MiniAppConfig
                 when (miniAppParameters) {
                     is MiniAppParameters.DefaultParams -> {
-                        val generateMiniApp = MiniAppInfo(
+                        miniAppInfo = MiniAppInfo(
                             id = (miniAppParameters as MiniAppParameters.DefaultParams).miniAppId,
                             version = Version(
                                 versionTag = "",
@@ -85,7 +88,6 @@ internal class MiniAppViewImpl(
                             promotionalImageUrl = "",
                             promotionalText = ""
                         )
-                        miniAppInfo = generateMiniApp
                         config = (miniAppParameters as MiniAppParameters.DefaultParams).config
                     }
                     is MiniAppParameters.InfoParams -> {

@@ -3,7 +3,18 @@ package com.rakuten.tech.mobile.miniapp.view
 import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
+import com.rakuten.tech.mobile.miniapp.MiniAppNetException
+import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
+import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
+import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppBundleNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppHasCorruptedException
+import com.rakuten.tech.mobile.miniapp.InvalidMiniAppInfoException
+import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
 import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
@@ -27,7 +38,7 @@ import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
 import java.io.File
 import java.util.Locale
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "TooManyFunctions")
 internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig
@@ -245,7 +256,7 @@ internal class MiniAppViewHandler(
         )
     }
 
-    @Throws(MiniAppSdkException::class)
+    @Suppress("LongMethod")
     suspend fun createMiniAppViewFromBundle(
         miniAppInfo: MiniAppInfo,
         config: MiniAppConfig,
@@ -281,13 +292,14 @@ internal class MiniAppViewHandler(
                     onComplete(null, MiniAppHasCorruptedException(miniAppInfo.id))
                 }
             } else {
-                onComplete(null, MiniAppBundleNotFoundException(""))
+                onComplete(null, MiniAppBundleNotFoundException())
             }
         } else {
             onComplete(null, InvalidMiniAppInfoException())
         }
     }
 
+    @Suppress("ExpressionBodySyntax")
     private fun isValidMiniAppInfo(appId: String, versionId: String): Boolean {
         return appId.isNotEmpty() && versionId.isNotEmpty()
     }
