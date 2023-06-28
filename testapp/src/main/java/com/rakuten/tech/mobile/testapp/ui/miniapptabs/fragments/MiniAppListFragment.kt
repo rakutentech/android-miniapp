@@ -15,17 +15,14 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.BUNDLE_MINI_APP_ID
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.BUNDLE_MINI_APP_VERSION_ID
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import com.rakuten.tech.mobile.testapp.ui.settings.OnSearchListener
-import kotlinx.coroutines.launch
 import java.util.*
 
 @Suppress("TooManyFunctions")
