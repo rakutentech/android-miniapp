@@ -234,10 +234,7 @@ internal class MiniAppViewHandler(
         } else {
             miniAppDownloader.getCachedMiniApp(miniAppInfo)
         }
-        Log.e("MiniAppViewHandler", basePath)
-        Log.e("MiniAppViewHandler", miniAppInfo.toString())
         config.miniAppMessageBridge.updateApiClient(apiClient)
-
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         return displayer.createMiniAppDisplay(
             basePath,

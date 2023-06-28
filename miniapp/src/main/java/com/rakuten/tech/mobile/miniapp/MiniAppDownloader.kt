@@ -204,7 +204,6 @@ internal class MiniAppDownloader(
     suspend fun storeMiniAppBundle(fileName: String, miniAppId: String, versionId: String) {
         val stream: InputStream = context.assets.open(fileName)
         val versionPath = storage.saveFileFromBundle(fileName, miniAppId, versionId, stream)
-        Log.e("MiniAppDownloader", versionPath)
         verifier.storeHashAsync(versionId, File(versionPath))
     }
 
