@@ -10,6 +10,7 @@ import java.io.InputStream
 
 internal const val SUB_DIR_MINIAPP = "miniapp"
 
+@Suppress("TooManyFunctions")
 internal class MiniAppStorage(
     private val fileWriter: FileWriter,
     private val basePath: File,
@@ -75,7 +76,8 @@ internal class MiniAppStorage(
     @VisibleForTesting
     internal fun getMiniAppPath(appId: String) = "${miniAppBasePath}$appId/"
 
-    fun getMiniAppVersionPath(appId: String, versionId: String) = "${getMiniAppPath(appId)}$versionId"
+    fun getMiniAppVersionPath(appId: String, versionId: String) =
+        "${getMiniAppPath(appId)}$versionId"
 
     fun removeApp(
         appId: String,
@@ -85,7 +87,11 @@ internal class MiniAppStorage(
         deleteDirectory(parentFile)
     }
 
-    suspend fun removeVersions(appId: String, exclusiveVersionId: String, appPath: String = getMiniAppPath(appId)) {
+    suspend fun removeVersions(
+        appId: String,
+        exclusiveVersionId: String,
+        appPath: String = getMiniAppPath(appId)
+    ) {
         val parentFile = File(appPath)
         if (parentFile.isDirectory && parentFile.listFiles() != null) {
             flow {
@@ -109,5 +115,17 @@ internal class MiniAppStorage(
 
     companion object {
         private val TAG = this::class.simpleName
+    }
+
+    @Suppress("ExpressionBodySyntax")
+    @VisibleForTesting
+    internal fun isValidMiniAppInfo(appId: String, versionId: String): Boolean {
+        return appId.isNotEmpty() && versionId.isNotEmpty()
+    }
+
+    @VisibleForTesting
+    internal fun isMiniAppAvailable(appId: String, versionId: String): Boolean {
+        val versionPath = getBundleWritePath(appId, versionId)
+        return File(versionPath).exists() && File(versionPath).isDirectory
     }
 }

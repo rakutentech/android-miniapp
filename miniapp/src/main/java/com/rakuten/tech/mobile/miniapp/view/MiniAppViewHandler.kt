@@ -62,8 +62,8 @@ internal class MiniAppViewHandler(
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     internal var miniAppIAPVerifier: MiniAppIAPVerifier
-    private var miniAppStorage: MiniAppStorage
-    private var miniAppVerifier: CachedMiniAppVerifier
+    internal var miniAppStorage: MiniAppStorage
+    internal var miniAppVerifier: CachedMiniAppVerifier
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
@@ -259,8 +259,8 @@ internal class MiniAppViewHandler(
         config: MiniAppConfig,
         onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
     ) {
-        if (isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
-            if (isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
+        if (miniAppStorage.isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
+            if (miniAppStorage.isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
                 val versionPath = miniAppStorage.getBundleWritePath(
                     miniAppInfo.id,
                     miniAppInfo.version.versionId
@@ -294,16 +294,6 @@ internal class MiniAppViewHandler(
         } else {
             onComplete(null, InvalidMiniAppInfoException())
         }
-    }
-
-    @Suppress("ExpressionBodySyntax")
-    private fun isValidMiniAppInfo(appId: String, versionId: String): Boolean {
-        return appId.isNotEmpty() && versionId.isNotEmpty()
-    }
-
-    private fun isMiniAppAvailable(appId: String, versionId: String): Boolean {
-        val versionPath = miniAppStorage.getBundleWritePath(appId, versionId)
-        return File(versionPath).exists() && File(versionPath).isDirectory
     }
 
     suspend fun createMiniAppViewWithUrl(
