@@ -67,7 +67,7 @@ internal class CustomPermissionsNotImplementedException :
 /**
  * Exception which is thrown when the the appId or versionId is empty.
  */
-class InvalidMiniAppInfoException : MiniAppSdkException("Provided Mini App info is invalid")
+class InvalidMiniAppInfoException : MiniAppSdkException("Provided Mini App info is invalid.")
 
 /**
  * Exception which is thrown when the MiniApp bundle is corrupted.
