@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.*
@@ -25,6 +26,7 @@ import kotlin.test.assertTrue
 
 @Suppress("LargeClass")
 open class MiniAppDownloaderBaseSpec {
+    internal val context: Context = mock()
     internal val apiClient: ApiClient = mock()
     private val miniAppAnalytics: MiniAppAnalytics = mock()
     internal val storage: MiniAppStorage = mock()
@@ -60,7 +62,8 @@ open class MiniAppDownloaderBaseSpec {
                 initVerifier = { verifier },
                 initManifestApiCache = { manifestApiCache },
                 initSignatureVerifier = { signatureVerifier },
-                coroutineDispatcher = dispatcher
+                coroutineDispatcher = dispatcher,
+                context = context
             )
         )
         downloader.updateApiClient(apiClient)

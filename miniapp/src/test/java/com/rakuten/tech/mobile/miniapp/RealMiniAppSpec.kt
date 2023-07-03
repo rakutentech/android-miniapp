@@ -91,6 +91,13 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
         verify(miniAppInfoFetcher).fetchMiniAppList()
     }
 
+    @Test
+    fun `unzipBundle should invoke storeMiniAppBundle when calling`() = runBlockingTest {
+        realMiniApp.unzipBundle("test_file_name", TEST_MA_ID, TEST_MA_VERSION_ID)
+
+        verify(miniAppDownloader).storeMiniAppBundle("test_file_name", TEST_MA_ID, TEST_MA_VERSION_ID)
+    }
+
     /** region: RealMiniApp.fetchInfo */
     @Test(expected = MiniAppSdkException::class)
     fun `fetchInfo should throw exception when app id is invalid`() = runBlockingTest {
