@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
@@ -197,3 +198,10 @@ internal data class ConsumePurchaseCallbackObj(
     )
 }
 // end region
+
+@Keep
+internal data class MaAnalyticsCallbackObj(
+    val action: String,
+    val param: MAAnalyticsInfo,
+    var id: String
+)

@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -202,6 +203,18 @@ open class MiniAppMessageBridge {
     }
 
     /**
+     * handle analytics from MiniApp.
+     * @param analyticsInfo that is sent from the MiniApp
+     **/
+    open fun didReceiveMAAnalytics(
+        analyticsInfo: MAAnalyticsInfo,
+        onSuccess: (message: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
      * Get dark mode info from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
@@ -319,6 +332,7 @@ open class MiniAppMessageBridge {
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
             ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
             ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
+            ActionType.SEND_MA_ANALYTICS.action -> onDidReceiveMAAnalytics(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -581,6 +595,18 @@ open class MiniAppMessageBridge {
             return
         }
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
+    }
+
+    private fun onDidReceiveMAAnalytics(callbackId: String, jsonStr: String) {
+        val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MaAnalyticsCallbackObj::class.java)
+
+        val successCallback = { message: String ->
+            bridgeExecutor.postValue(callbackId, message)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, message)
+        }
+        didReceiveMAAnalytics(maAnalyticsCallbackObj.param, successCallback, errorCallback)
     }
 
     internal fun updateApiClient(apiClient: ApiClient) {
