@@ -15,10 +15,10 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
-import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
+import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListener
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModel
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.viewModel.MiniAppListViewModelFactory
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
@@ -46,7 +46,6 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,

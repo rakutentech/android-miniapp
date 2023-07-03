@@ -32,6 +32,15 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 abstract class MiniApp internal constructor() {
 
     /**
+     * unzip and store a MiniApp bundle from asset folder of host app.
+     * @param fileName will be the name of the file in asset folder.
+     * @param miniAppId will be the id of the MiniApp.
+     * @param versionId will be the version of the MiniApp.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract suspend fun unzipBundle(fileName: String, miniAppId: String, versionId: String)
+
+    /**
      * Fetches and lists out the mini applications available in the MiniApp Ecosystem.
      * @return [List] of type [MiniAppInfo] when obtained successfully
      * @throws [MiniAppSdkException] when fetching fails from the BE server for any reason.
@@ -280,6 +289,7 @@ abstract class MiniApp internal constructor() {
                 apiClientRepository = apiClientRepository,
                 displayer = Displayer(defaultConfig.hostAppUserAgentInfo),
                 miniAppDownloader = MiniAppDownloader(
+                    context = context,
                     apiClient = apiClient,
                     miniAppAnalytics = miniAppAnalytics,
                     requireSignatureVerification = miniAppSdkConfig.requireSignatureVerification,

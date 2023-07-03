@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
@@ -22,8 +23,11 @@ import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.MiniAppListFragm
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments.SettingsFragment
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.android.synthetic.main.mini_app_main_layout.*
+import kotlinx.coroutines.launch
 
 val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
+val BUNDLE_MINI_APP_ID = "404e46b4-263d-4768-b2ec-8a423224bead"
+val BUNDLE_MINI_APP_VERSION_ID = "4c3365a8-7192-4b2e-a290-101ad5987f2e"
 
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
@@ -31,6 +35,14 @@ class DemoAppMainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //unzip the bundle
+        launch {
+            MiniApp.instance().unzipBundle(
+                fileName = "js-miniapp-sample.zip",
+                miniAppId = BUNDLE_MINI_APP_ID,
+                versionId = BUNDLE_MINI_APP_VERSION_ID
+            )
+        }
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_main_layout)
         setContentView(binding.root)
         if (savedInstanceState == null) {

@@ -35,6 +35,11 @@ class MiniAppNotFoundException(serverMessage: String) :
     MiniAppSdkException("$serverMessage: Server returned no mini app for the provided project ID.")
 
 /**
+ * Exception which is thrown when the MiniApp Bundle is missing.
+ */
+class MiniAppBundleNotFoundException : MiniAppSdkException("MiniApp bundle is not available.")
+
+/**
  * Exception which is thrown when the provided project ID
  * does not have any mini app exist on the server.
  */
@@ -58,6 +63,17 @@ internal class DevicePermissionsNotImplementedException :
  */
 internal class CustomPermissionsNotImplementedException :
     MiniAppSdkException(ErrorBridgeMessage.NO_IMPLEMENT_CUSTOM_PERMISSION)
+
+/**
+ * Exception which is thrown when the the appId or versionId is empty.
+ */
+class InvalidMiniAppInfoException : MiniAppSdkException("Provided Mini App info is invalid.")
+
+/**
+ * Exception which is thrown when the MiniApp bundle is corrupted.
+ */
+class MiniAppHasCorruptedException(appId: String) :
+    MiniAppSdkException("MiniApp bundle is corrupted: $appId")
 
 /**
  * Exception which is thrown when the required permissions of the manifest are not granted.

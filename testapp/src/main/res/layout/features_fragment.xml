@@ -39,6 +39,24 @@
                     android:layout_height="@dimen/horizontal_divider_height"
                     android:background="@color/bg_section" />
 
+                <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.CustomButtonViewWithArrow
+                    android:id="@+id/btnLoadFromBundle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> fragment.openMiniAppFromBundle()}"
+                    app:actionType="open"
+                    app:icon="@drawable/ic_feature_url_miniapp"
+                    app:pageName="feature"
+                    app:rightArrowEnable="true"
+                    app:siteSection="Top"
+                    app:titleDetails="@string/action_load_miniapp_from_bundle"
+                    app:titleLabel="@string/title_bundle_miniapp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/horizontal_divider_height"
+                    android:background="@color/bg_section" />
+
             </LinearLayout>
 
         </ScrollView>

@@ -21,6 +21,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import java.io.File
 import java.util.*
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
@@ -70,6 +72,8 @@ open class MiniAppViewHandlerSpec {
         miniAppViewHandler.downloadedManifestCache = mock()
         miniAppViewHandler.miniAppDownloader = mock()
         miniAppViewHandler.displayer = mock()
+        miniAppViewHandler.miniAppVerifier = mock()
+        miniAppViewHandler.miniAppStorage = mock()
 
         When calling miniAppViewHandler.downloadedManifestCache
             .readDownloadedManifest(TEST_MA_ID) itReturns cachedManifest
@@ -324,13 +328,115 @@ open class MiniAppViewHandlerSpec {
             )
         }
 
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke createMiniAppDisplay when when all checks passed`() =
+        runBlockingTest {
+            withMiniAppViewHandler { _, testMiniAppInfo ->
+                When calling miniAppViewHandler.miniAppStorage.isValidMiniAppInfo(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns true
+                When calling miniAppViewHandler.miniAppStorage.isMiniAppAvailable(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns true
+                When calling miniAppViewHandler.miniAppVerifier.verify(any(), any()) itReturns true
+
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit =
+                    { display, _ ->
+                        assertEquals(display, miniAppViewHandler.displayer.createMiniAppDisplay(
+                            "test/path",
+                            testMiniAppInfo,
+                            miniAppConfig.miniAppMessageBridge,
+                            null,
+                            null,
+                            miniAppViewHandler.miniAppCustomPermissionCache,
+                            miniAppViewHandler.downloadedManifestCache,
+                            "",
+                            miniAppViewHandler.miniAppAnalytics,
+                            miniAppViewHandler.ratDispatcher,
+                            miniAppViewHandler.secureStorageDispatcher,
+                            false,
+                            miniAppViewHandler.miniAppIAPVerifier
+                        ))
+                    }
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+            }
+        }
+
+    @Test
+    @Suppress("LongMethod")
+    fun `should invoke MiniAppBundleNotFoundException when the bundle is not available in files`() =
+        runBlockingTest {
+            withMiniAppViewHandler { _, testMiniAppInfo ->
+                When calling miniAppViewHandler.miniAppStorage.isValidMiniAppInfo(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns true
+                When calling miniAppViewHandler.miniAppStorage.isMiniAppAvailable(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns false
+
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit =
+                    { _, miniAppSdkException ->
+                        assertTrue { miniAppSdkException is MiniAppBundleNotFoundException }
+                    }
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+            }
+        }
+
+    @Suppress("LongMethod")
+    fun `should invoke InvalidMiniAppInfoException when id and versionId invalid`() =
+        runBlockingTest {
+            withMiniAppViewHandler { _, testMiniAppInfo ->
+                When calling miniAppViewHandler.miniAppStorage.isValidMiniAppInfo(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns false
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit =
+                    { _, miniAppSdkException ->
+                        assertTrue { miniAppSdkException is InvalidMiniAppInfoException }
+                    }
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+            }
+        }
+
+    @Suppress("LongMethod")
+    fun `should invoke MiniAppHasCorruptedException when verify hash has failed`() =
+        runBlockingTest {
+            withMiniAppViewHandler { _, testMiniAppInfo ->
+                When calling miniAppViewHandler.miniAppStorage.isValidMiniAppInfo(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns true
+                When calling miniAppViewHandler.miniAppStorage.isMiniAppAvailable(
+                    TEST_MA_ID,
+                    TEST_MA_VERSION_ID
+                ) itReturns true
+                When calling miniAppViewHandler.miniAppVerifier.verify(any(), any()) itReturns false
+
+                val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit =
+                    { _, miniAppSdkException ->
+                        assertTrue { miniAppSdkException is MiniAppHasCorruptedException }
+                    }
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+            }
+        }
+
     private suspend fun withMiniAppViewHandler(onReady: suspend (Pair<String, MiniAppInfo>, MiniAppInfo) -> Unit) {
         onGettingManifestWhileCreate()
         val getMiniAppResult = Pair(TEST_BASE_PATH, TEST_MA)
         val testVersion = Version("", TEST_MA_VERSION_ID)
         val testMiniAppInfo = TEST_MA.copy(id = TEST_MA_ID, version = testVersion)
+        val testVersionPath = "test/path"
 
         When calling miniAppViewHandler.miniAppDownloader.getMiniApp(testMiniAppInfo) itReturns getMiniAppResult
+        When calling miniAppViewHandler.miniAppStorage.getBundleWritePath(
+            TEST_MA_ID,
+            TEST_MA_VERSION_ID
+        ) itReturns testVersionPath
         When calling miniAppConfig.miniAppMessageBridge itReturns miniAppMessageBridge
         When calling miniAppConfig.queryParams itReturns ""
         onReady(getMiniAppResult, testMiniAppInfo)
@@ -368,7 +474,6 @@ open class MiniAppViewHandlerSpec {
     @Suppress("LongMethod")
     fun `should invoke displayer createMiniAppDisplay while mini app view creation by miniAppInfo from cache`() =
         runBlockingTest {
-
             withMiniAppViewHandler { getMiniAppResult, testMiniAppInfo ->
                 val cachedMiniApp: Pair<String, MiniAppInfo> = mock()
                 When calling miniAppViewHandler.miniAppDownloader.getCachedMiniApp(TEST_MA_ID) itReturns cachedMiniApp

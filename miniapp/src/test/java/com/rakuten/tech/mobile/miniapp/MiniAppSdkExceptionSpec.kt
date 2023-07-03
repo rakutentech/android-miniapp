@@ -79,4 +79,22 @@ class MiniAppSdkExceptionSpec {
         val exception = sdkExceptionForInvalidArguments("message")
         exception.message shouldBeEqualTo "Invalid arguments: message"
     }
+
+    @Test
+    fun `MiniAppBundleNotFoundException should provide proper error message`() {
+        val exception = MiniAppBundleNotFoundException()
+        exception.message shouldBeEqualTo "MiniApp bundle is not available."
+    }
+
+    @Test
+    fun `InvalidMiniAppInfoException should provide proper error message`() {
+        val exception = InvalidMiniAppInfoException()
+        exception.message shouldBeEqualTo "Provided Mini App info is invalid."
+    }
+
+    @Test
+    fun `MiniAppHasCorruptedException should provide proper error message`() {
+        val exception = MiniAppHasCorruptedException(TEST_MA_ID)
+        exception.message shouldBeEqualTo "MiniApp bundle is corrupted: $TEST_MA_ID"
+    }
 }
