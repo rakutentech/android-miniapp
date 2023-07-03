@@ -3,6 +3,8 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.app.Activity
 import android.content.res.Configuration
 import androidx.core.app.ActivityCompat
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsActionType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsEventType
 import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
@@ -108,7 +110,7 @@ fun getMessageBridge(
         onSuccess: (message: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
-        super.didReceiveMAAnalytics(analyticsInfo, onSuccess, onError)
+        FileUtils.saveMiniAppAnalyticLogs(activity, analyticsInfo)
     }
 }
 

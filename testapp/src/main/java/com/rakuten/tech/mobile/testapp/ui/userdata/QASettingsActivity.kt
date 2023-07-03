@@ -18,6 +18,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.QaSettingsActivityBinding
+import com.rakuten.tech.mobile.testapp.helper.FileUtils
 import com.rakuten.tech.mobile.testapp.helper.MiniAppBluetoothDelegate
 import com.rakuten.tech.mobile.testapp.helper.hideSoftKeyboard
 import com.rakuten.tech.mobile.testapp.helper.showToastMessage
@@ -126,6 +127,7 @@ class QASettingsActivity : BaseActivity() {
         binding.edtPrimaryColor.setText(settings.colorTheme.primaryColor)
         binding.edtSecondaryColor.setText(settings.colorTheme.secondaryColor)
 
+        binding.tvAnalyticsLogs.text = FileUtils.getMiniAppAnalyticLogs(this)
 
         invalidateMaxStorageField()
     }

@@ -10,9 +10,13 @@ import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.rakuten.tech.mobile.miniapp.MiniApp
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsActionType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsEventType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppMainLayoutBinding
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
+import com.rakuten.tech.mobile.testapp.helper.FileUtils
 import com.rakuten.tech.mobile.testapp.helper.clearAllCursorFocus
 import com.rakuten.tech.mobile.testapp.ui.base.BaseActivity
 import com.rakuten.tech.mobile.testapp.ui.deeplink.INTENT_EXTRA_DEEPLINK
@@ -43,6 +47,7 @@ class DemoAppMainActivity : BaseActivity() {
                 versionId = BUNDLE_MINI_APP_VERSION_ID
             )
         }
+
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_main_layout)
         setContentView(binding.root)
         if (savedInstanceState == null) {

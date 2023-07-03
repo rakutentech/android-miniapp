@@ -288,6 +288,16 @@
                 app:pageName="QA"
                 app:siteSection="Settings" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/bg_section"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/theme_colors" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -319,7 +329,25 @@
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/bg_section"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/mini_app_analytics" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_analytics_logs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4"
+                android:text="@string/universal_bridge" />
         </LinearLayout>
     </ScrollView>
 </layout>
