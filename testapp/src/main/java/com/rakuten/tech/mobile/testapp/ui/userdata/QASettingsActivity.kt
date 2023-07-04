@@ -127,7 +127,7 @@ class QASettingsActivity : BaseActivity() {
         binding.edtPrimaryColor.setText(settings.colorTheme.primaryColor)
         binding.edtSecondaryColor.setText(settings.colorTheme.secondaryColor)
 
-        binding.tvAnalyticsLogs.text = FileUtils.getMiniAppAnalyticLogs(this)
+        binding.tvAnalyticsLogs.text = FileUtils.getAnalyticLogs(this)
 
         invalidateMaxStorageField()
     }

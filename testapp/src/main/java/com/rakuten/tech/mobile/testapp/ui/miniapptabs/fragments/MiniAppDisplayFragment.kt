@@ -83,6 +83,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onDetach() {
         super.onDetach()
+        context?.let {
+            FileUtils.miniAppCloseLogs(it, appId)
+        }
         if (this::miniAppDisplay.isInitialized) {
             miniAppDisplay.destroyView()
         }
@@ -103,6 +106,9 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             false
         )
         loadMiniApp()
+        context?.let {
+            FileUtils.miniAppOpenLogs(it, appId)
+        }
         return binding.root
     }
 

@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.analytics
 
 import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 
 /**
  * Mini App Analytics info type
@@ -19,21 +20,30 @@ data class MAAnalyticsInfo(
  * Action Type
  */
 @Keep
-enum class MAAnalyticsActionType(val type: String) {
-    OPEN("open"),
-    CLOSE("close"),
-    ADD("add"),
-    DELETE("delete"),
-    CHANGE("change")
+enum class MAAnalyticsActionType {
+    @SerializedName("open")
+    OPEN,
+    @SerializedName("close")
+    CLOSE,
+    @SerializedName("add")
+    ADD,
+    @SerializedName("delete")
+    DELETE,
+    @SerializedName("change")
+    CHANGE
 }
 
 /**
  * Event Type
  */
 @Keep
-enum class MAAnalyticsEventType(val type: String) {
-    APPEAR("appear"),
-    CLICK("click"),
-    ERROR("error"),
-    CUSTOM("custom"),
+enum class MAAnalyticsEventType {
+    @SerializedName("appear")
+    APPEAR,
+    @SerializedName("click")
+    CLICK,
+    @SerializedName("error")
+    ERROR,
+    @SerializedName("custom")
+    CUSTOM,
 }

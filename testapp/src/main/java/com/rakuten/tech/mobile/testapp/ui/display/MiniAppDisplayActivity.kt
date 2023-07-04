@@ -262,6 +262,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 }
             }
 
+        FileUtils.miniAppOpenLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
+
         setupMiniAppMessageBridge()
 
         miniAppNavigator = object : MiniAppNavigator {
@@ -433,6 +435,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
+                                FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: "")
                                 finish()
                             }
                         }
@@ -443,8 +446,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     .setMessage(closeAlertInfo.description)
                     .setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show()
-            } else finish()
+            } else {
+                FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
+                finish()
+            }
         } catch (e: NullPointerException) {
+            FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
             finish()
         }
     }

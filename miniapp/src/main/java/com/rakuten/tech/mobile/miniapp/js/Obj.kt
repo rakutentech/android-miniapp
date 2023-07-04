@@ -202,6 +202,11 @@ internal data class ConsumePurchaseCallbackObj(
 @Keep
 internal data class MaAnalyticsCallbackObj(
     val action: String,
-    val param: MAAnalyticsInfo,
-    var id: String
-)
+    val param: Param,
+    var id: String,
+){
+    @Keep
+    internal data class Param(
+        val analyticsInfo: MAAnalyticsInfo
+    )
+}

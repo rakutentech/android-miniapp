@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -599,14 +600,17 @@ open class MiniAppMessageBridge {
 
     private fun onDidReceiveMAAnalytics(callbackId: String, jsonStr: String) {
         val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MaAnalyticsCallbackObj::class.java)
-
         val successCallback = { message: String ->
             bridgeExecutor.postValue(callbackId, message)
         }
         val errorCallback = { message: String ->
             bridgeExecutor.postError(callbackId, message)
         }
-        didReceiveMAAnalytics(maAnalyticsCallbackObj.param, successCallback, errorCallback)
+        didReceiveMAAnalytics(
+            maAnalyticsCallbackObj.param.analyticsInfo,
+            successCallback,
+            errorCallback
+        )
     }
 
     internal fun updateApiClient(apiClient: ApiClient) {
