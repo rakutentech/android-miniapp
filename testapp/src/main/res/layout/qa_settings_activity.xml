@@ -339,15 +339,20 @@
                 android:paddingBottom="@dimen/small_4"
                 android:text="@string/mini_app_analytics" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_analytics_logs"
+            <com.rakuten.tech.mobile.testapp.analytics.rat_wrapper.RATButton
+                android:id="@+id/btnShowLogs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/medium_16"
-                android:paddingTop="@dimen/small_4"
-                android:paddingEnd="@dimen/medium_16"
-                android:paddingBottom="@dimen/small_4"
-                android:text="@string/universal_bridge" />
+                android:layout_height="@dimen/large_44"
+                android:layout_margin="@dimen/medium_16"
+                android:background="@drawable/bg_red_curve"
+                android:gravity="center"
+                android:padding="@dimen/small_4"
+                android:text="@string/action_analytics_log"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_large_16"
+                app:actionType="change_status"
+                app:pageName="QA"
+                app:siteSection="Settings" />
         </LinearLayout>
     </ScrollView>
 </layout>

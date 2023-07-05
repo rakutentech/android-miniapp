@@ -140,5 +140,6 @@
     <string name="hint_set_secondary_color">Secondary Color</string>
     <string name="theme_colors">Theme Colors</string>
     <string name="mini_app_analytics">MiniApp Analytics Logs</string>
+    <string name="action_analytics_log">Logs</string>
 
 </resources>
