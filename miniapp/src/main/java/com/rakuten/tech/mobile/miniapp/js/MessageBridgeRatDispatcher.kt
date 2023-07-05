@@ -14,7 +14,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
         )
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "LongMethod")
     @VisibleForTesting
     internal fun getAcType(action: String): Actype {
         return when (action) {

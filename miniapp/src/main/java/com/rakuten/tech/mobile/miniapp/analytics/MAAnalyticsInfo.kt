@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
 /**
- * Mini App Analytics info type
+ * Mini App Analytics info type.
  */
 @Keep
 data class MAAnalyticsInfo(
@@ -17,7 +17,7 @@ data class MAAnalyticsInfo(
 )
 
 /**
- * Action Type
+ * Action Type.
  */
 @Keep
 enum class MAAnalyticsActionType {
@@ -34,7 +34,7 @@ enum class MAAnalyticsActionType {
 }
 
 /**
- * Event Type
+ * Event Type.
  */
 @Keep
 enum class MAAnalyticsEventType {
