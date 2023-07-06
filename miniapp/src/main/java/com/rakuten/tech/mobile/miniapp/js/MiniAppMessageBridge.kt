@@ -660,5 +660,5 @@ internal object ErrorBridgeMessage {
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
-    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying send MiniApp analytic info:"
+    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying send MiniApp analytics info:"
 }
