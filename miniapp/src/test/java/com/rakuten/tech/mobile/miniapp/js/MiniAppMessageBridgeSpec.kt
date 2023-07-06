@@ -4,6 +4,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsActionType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsEventType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -60,6 +63,25 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val hostEnvInfoCallbackObj = CallbackObj(
         action = ActionType.GET_HOST_ENVIRONMENT_INFO.action, param = null, id = TEST_CALLBACK_ID
     )
+
+    private fun createAnalyticsInfoCallbackJsonStr(maAnalyticsInfo: MAAnalyticsInfo) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.SEND_MA_ANALYTICS.action,
+            param = MaAnalyticsCallbackObj.Param(maAnalyticsInfo),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    private val testAnalyticInfo = MAAnalyticsInfo(
+        actionType = MAAnalyticsActionType.ADD,
+        eventType = MAAnalyticsEventType.APPEAR,
+        data = TEST_DATA,
+        pageName = "",
+        componentName = "",
+        elementType = ""
+    )
+
+    private val sendAnalyticsJsonStr = createAnalyticsInfoCallbackJsonStr(testAnalyticInfo)
 
     @Before
     fun setup() {
@@ -406,6 +428,33 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(miniAppCloseJsonStr)
     }
 
+    /** region: MiniApp analytics info */
+    @Test
+    fun `miniAppBridge should call onDidReceiveMAAnalytics if universal bridge json is valid`() {
+        miniAppBridge.postMessage(sendAnalyticsJsonStr)
+        verify(miniAppBridge).onDidReceiveMAAnalytics(
+            TEST_CALLBACK_ID, sendAnalyticsJsonStr
+        )
+    }
+
+    @Test
+    fun `miniAppBridge should call didReceiveMAAnalytics if universal bridge json is valid`() {
+        miniAppBridge.postMessage(sendAnalyticsJsonStr)
+        verify(miniAppBridge).didReceiveMAAnalytics(
+            eq(testAnalyticInfo),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
+    }
+
+    @Test
+    fun `should invoke onError if analytic info is empty`() {
+        val errorMessage = "${ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO} null"
+        miniAppBridge.onDidReceiveMAAnalytics(TEST_CALLBACK_ID, "")
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errorMessage)
+    }
+    /** end region */
+
     @Test
     fun `all error bridge messages should be expected`() {
         assertEquals("no implementation by the Host App.", ErrorBridgeMessage.NO_IMPL)
@@ -431,6 +480,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("Cannot request screen action:", ErrorBridgeMessage.ERR_SCREEN_ACTION)
         assertEquals(
             "Cannot get host environment info:", ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
+        )
+        assertEquals(
+            "An error occurred while trying send MiniApp analytic info:", ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO
         )
     }
 }
