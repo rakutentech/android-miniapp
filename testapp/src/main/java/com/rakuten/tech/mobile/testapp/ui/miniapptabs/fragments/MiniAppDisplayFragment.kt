@@ -106,9 +106,6 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
             false
         )
         loadMiniApp()
-        context?.let {
-            FileUtils.miniAppOpenLogs(it, appId)
-        }
         return binding.root
     }
 
@@ -212,6 +209,10 @@ class MiniAppDisplayFragment : BaseFragment(), PreloadMiniAppWindow.PreloadMiniA
                     }
                 }
             }
+        }
+        // logs for MiniApp is launched.
+        context?.let {
+            FileUtils.miniAppOpenLogs(it, appId)
         }
     }
 
