@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
+
         <variable
             name="activity"
             type="com.rakuten.tech.mobile.testapp.ui.userdata.QAAnalyticsLogsActivity" />
     </data>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_analytics_logs"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/medium_16"
-            android:paddingTop="@dimen/small_4"
-            android:paddingEnd="@dimen/medium_16"
-            android:paddingBottom="@dimen/small_4" />
-    </LinearLayout>
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_analytics_logs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/medium_16"
+                android:paddingTop="@dimen/small_4"
+                android:paddingEnd="@dimen/medium_16"
+                android:paddingBottom="@dimen/small_4" />
+        </LinearLayout>
+    </ScrollView>
 </layout>
