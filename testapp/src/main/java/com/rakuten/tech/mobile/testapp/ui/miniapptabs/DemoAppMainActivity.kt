@@ -43,6 +43,7 @@ class DemoAppMainActivity : BaseActivity() {
                 versionId = BUNDLE_MINI_APP_VERSION_ID
             )
         }
+
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_main_layout)
         setContentView(binding.root)
         if (savedInstanceState == null) {
