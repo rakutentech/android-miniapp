@@ -68,7 +68,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private fun createAnalyticsInfoCallbackJsonStr(maAnalyticsInfo: MAAnalyticsInfo) = Gson().toJson(
         CallbackObj(
             action = ActionType.SEND_MA_ANALYTICS.action,
-            param = MaAnalyticsCallbackObj.Param(maAnalyticsInfo),
+            param = MAAnalyticsCallbackObj.Param(maAnalyticsInfo),
             id = TEST_CALLBACK_ID
         )
     )
@@ -483,7 +483,7 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             "Cannot get host environment info:", ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
         )
         assertEquals(
-            "An error occurred while trying send MiniApp analytics info:", ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO
+            "An error occurred while trying to send MiniApp analytics info:", ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO
         )
     }
 }

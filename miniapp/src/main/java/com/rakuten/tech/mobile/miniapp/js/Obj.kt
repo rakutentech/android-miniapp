@@ -200,7 +200,7 @@ internal data class ConsumePurchaseCallbackObj(
 // end region
 
 @Keep
-internal data class MaAnalyticsCallbackObj(
+internal data class MAAnalyticsCallbackObj(
     val action: String,
     val param: Param,
     var id: String,

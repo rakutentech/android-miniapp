@@ -520,7 +520,7 @@ open class MiniAppMessageBridge {
         sendJsonToHostApp(
             jsonStr = jsonInfoCallbackObj.param.jsonInfo.content,
             onSuccess = { value ->
-                bridgeExecutor.postValue(callbackId, value.toString()) //
+                bridgeExecutor.postValue(callbackId, value)
             },
             onError = { message ->
                 bridgeExecutor.postError(
@@ -599,7 +599,7 @@ open class MiniAppMessageBridge {
 
     @VisibleForTesting
     internal fun onDidReceiveMAAnalytics(callbackId: String, jsonStr: String) = try {
-        val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MaAnalyticsCallbackObj::class.java)
+        val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MAAnalyticsCallbackObj::class.java)
         val successCallback = { message: String ->
             bridgeExecutor.postValue(callbackId, message)
         }
@@ -660,5 +660,5 @@ internal object ErrorBridgeMessage {
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
-    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying send MiniApp analytics info:"
+    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying to send MiniApp analytics info:"
 }
