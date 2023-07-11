@@ -176,6 +176,7 @@ internal data class UniversalBridgeInfoCallbackObj(val param: UniversalBridgeInf
     @Keep
     internal data class UniversalBridgeInfoParam(val universalBridgeInfo: UniversalBridgeInfo)
 }
+
 // end region
 
 // In-App Purchase region
