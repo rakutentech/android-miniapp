@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.helper
 import android.app.Activity
 import android.content.res.Configuration
 import androidx.core.app.ActivityCompat
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppAccessTokenError
 import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.MessageToContact
@@ -100,6 +101,14 @@ fun getMessageBridge(
             Configuration.UI_MODE_NIGHT_NO -> onSuccess(false) // Night mode is not active, we're using the light theme.
             Configuration.UI_MODE_NIGHT_YES -> onSuccess(true) // Night mode is active, we're using dark theme.
         }
+    }
+
+    override fun didReceiveMAAnalytics(
+        analyticsInfo: MAAnalyticsInfo,
+        onSuccess: (message: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        FileUtils.saveMiniAppAnalyticLogs(activity, analyticsInfo)
     }
 }
 

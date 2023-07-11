@@ -33,6 +33,7 @@ internal enum class ActionType(val action: String) {
     CLOSE_MINIAPP("closeMiniApp"),
     GET_HOST_APP_THEME_COLORS("getHostAppThemeColors"),
     GET_IS_DARK_MODE("isDarkMode"),
+    SEND_MA_ANALYTICS("sendAnalytics"),
     UNIVERSAL_BRIDGE_INFO("sendInfoToHostapp")
 }
 

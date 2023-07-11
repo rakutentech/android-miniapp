@@ -126,6 +126,9 @@ class QASettingsActivity : BaseActivity() {
         binding.edtPrimaryColor.setText(settings.colorTheme.primaryColor)
         binding.edtSecondaryColor.setText(settings.colorTheme.secondaryColor)
 
+        binding.btnShowLogs.setOnClickListener {
+            QAAnalyticsLogsActivity.start(this)
+        }
 
         invalidateMaxStorageField()
     }

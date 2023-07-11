@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -192,11 +193,23 @@ open class MiniAppMessageBridge {
 
     /**
      * handle Universal Bridge that represented as a json from MiniApp.
-     * @param jsonStr: JSON/String that is sent from the MiniApp
+     * @param jsonStr: JSON/String that is sent from the MiniApp.
      **/
     open fun sendJsonToHostApp(
         jsonStr: String,
         onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
+     * handle analytics from MiniApp.
+     * @param analyticsInfo that is sent from the MiniApp.
+     **/
+    open fun didReceiveMAAnalytics(
+        analyticsInfo: MAAnalyticsInfo,
+        onSuccess: (message: String) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -213,7 +226,7 @@ open class MiniAppMessageBridge {
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
-
+      
     /**
      * Get dark mode info from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
@@ -333,6 +346,7 @@ open class MiniAppMessageBridge {
             ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
             ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
             ActionType.UNIVERSAL_BRIDGE_INFO.action -> onGetIsDarkMode(callbackObj.id)
+            ActionType.SEND_MA_ANALYTICS.action -> onDidReceiveMAAnalytics(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -520,7 +534,7 @@ open class MiniAppMessageBridge {
         sendJsonToHostApp(
             jsonStr = jsonInfoCallbackObj.param.jsonInfo.content,
             onSuccess = { value ->
-                bridgeExecutor.postValue(callbackId, value.toString())
+                bridgeExecutor.postValue(callbackId, value)
             },
             onError = { message ->
                 bridgeExecutor.postError(
@@ -618,6 +632,26 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
     }
 
+    @VisibleForTesting
+    internal fun onDidReceiveMAAnalytics(callbackId: String, jsonStr: String) = try {
+        val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MAAnalyticsCallbackObj::class.java)
+        val successCallback = { message: String ->
+            bridgeExecutor.postValue(callbackId, message)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, message)
+        }
+        didReceiveMAAnalytics(
+            maAnalyticsCallbackObj.param.analyticsInfo,
+            successCallback,
+            errorCallback
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackId, "${ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO} ${e.message}"
+        )
+    }
+
     internal fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
         iapBridgeDispatcher.updateApiClient(apiClient)
@@ -662,4 +696,5 @@ internal object ErrorBridgeMessage {
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
+    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying to send MiniApp analytics info:"
 }

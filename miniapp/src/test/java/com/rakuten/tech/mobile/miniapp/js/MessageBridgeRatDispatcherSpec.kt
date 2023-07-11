@@ -48,6 +48,7 @@ class MessageBridgeRatDispatcherSpec {
         ActionType.GET_HOST_APP_THEME_COLORS.action to Actype.GET_HOST_APP_THEME_COLORS,
         ActionType.GET_IS_DARK_MODE.action to Actype.GET_IS_DARK_MODE,
         ActionType.UNIVERSAL_BRIDGE_INFO to Actype.RECEIVE_UNIVERSAL_BRIDGE_INFO,
+        ActionType.SEND_MA_ANALYTICS.action to Actype.SEND_MA_ANALYTICS,
         )
 
     @Test

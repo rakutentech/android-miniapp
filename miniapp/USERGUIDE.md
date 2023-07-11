@@ -287,6 +287,8 @@ There are some methods have a default implementation but the host app can overri
 | sendJsonToHostApp            | 🚫       |
 | getHostAppThemeColors        | 🚫       |
 | getIsDarkMode                | 🚫       |
+| didReceiveMAAnalytics        | 🚫       |
+
 
 The `UserInfoBridgeDispatcher`:
 
@@ -579,6 +581,11 @@ The MiniApp is able to send the Universal Bridge in `json` string format.
 Your App should provide a primary and secondary color to the mini app which is the theme colors of the host app . The mini app can use those colors and change it's appearence.
 
 ### Get Host App Dark Mode Status
+**API Docs:** [MiniAppMessageBridge.didReceiveMAAnalytics](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/did-receive-ma-analytics.html)
+
+Your App can receive analytics events from miniapp with this interface.
+
+### Get Analytics From MiniApp
 **API Docs:** [MiniAppMessageBridge.getIsDarkMode](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-is-dark-mode.html)
 
 Your App should provide boolean value true if dark mode enabled in the device and false if it is disabled.
