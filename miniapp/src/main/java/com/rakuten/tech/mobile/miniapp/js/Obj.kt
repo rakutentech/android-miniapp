@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.js
 
 import androidx.annotation.Keep
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
+import com.rakuten.tech.mobile.miniapp.js.universalbridge.UniversalBridgeInfo
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 
 @Keep
@@ -167,6 +168,19 @@ internal data class JsonInfoCallbackObj(val param: JsonInfoParam) {
     @Keep
     internal data class JsonInfoParam(val jsonInfo: JsonInfo)
 }
+//
+//@Keep
+//internal data class UniversalBridgeInfo(val universalbridgeinfo: String)
+
+@Keep
+internal data class UniversalBridgeInfoCallbackObj(val param: UniversalBridgeInfoParam) {
+
+    @Keep
+    internal data class UniversalBridgeInfoParam(val universalbridgeinfo: UniversalBridgeInfo)
+}
+
+
+
 // end region
 
 // In-App Purchase region

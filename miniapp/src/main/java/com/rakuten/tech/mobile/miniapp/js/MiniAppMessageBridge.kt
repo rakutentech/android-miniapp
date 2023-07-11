@@ -29,6 +29,7 @@ import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridgeDispatcher
+import com.rakuten.tech.mobile.miniapp.js.universalbridge.UniversalBridgeInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -202,6 +203,18 @@ open class MiniAppMessageBridge {
     }
 
     /**
+     * Handle Universal Bridge interface that sends UniversalBridgeInfo from a Miniapp
+     * @param universalBridgeInfo: UniversalBridgeInfo that is sent from the MiniApp
+     **/
+    open fun sendInfoToHostApp(
+        universalBridgeInfo: UniversalBridgeInfo,
+        onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
      * Get dark mode info from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
      */
@@ -319,6 +332,7 @@ open class MiniAppMessageBridge {
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
             ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
             ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
+            ActionType.UNIVERSAL_BRIDGE_INFO.action -> onGetIsDarkMode(callbackObj.id)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -521,6 +535,27 @@ open class MiniAppMessageBridge {
         )
     }
 
+    @VisibleForTesting
+    internal fun onSendInfoToHostApp(callbackId: String, jsonStr: String) = try {
+        val jsonInfoCallbackObj = Gson().fromJson(jsonStr, UniversalBridgeInfoCallbackObj::class.java)
+        sendInfoToHostApp(
+            universalBridgeInfo = jsonInfoCallbackObj.param.universalbridgeinfo,
+            onSuccess = { value ->
+                bridgeExecutor.postValue(callbackId, value.toString())
+            },
+            onError = { message ->
+                bridgeExecutor.postError(
+                    callbackId,
+                    message
+                )
+            }
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackId, "${ErrorBridgeMessage.ERR_JSON_INFO} ${e.message}"
+        )
+    }
+
     @SuppressWarnings("TooGenericExceptionCaught")
     @VisibleForTesting
     internal fun onGetHostEnvironmentInfo(callbackId: String) {
@@ -618,6 +653,7 @@ internal object ErrorBridgeMessage {
     const val NO_IMPLEMENT_CUSTOM_PERMISSION =
         "The `MiniAppMessageBridge.requestCustomPermissions` $NO_IMPL"
     const val NO_IMPLEMENT_JSON_INFO = "The `MiniAppMessageBridge.sendJsonToHostApp` $NO_IMPL"
+    const val NO_IMPLEMENT_UNIVERSAL_INFO = "The `MiniAppMessageBridge.sendInfoToHostApp` $NO_IMPL"
     const val ERR_SHARE_CONTENT = "Cannot share content:"
     const val ERR_JSON_INFO = "Cannot send jsonInfo:"
     const val ERR_LOAD_AD = "Cannot load ad:"

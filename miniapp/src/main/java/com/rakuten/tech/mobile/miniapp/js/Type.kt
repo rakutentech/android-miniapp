@@ -32,7 +32,8 @@ internal enum class ActionType(val action: String) {
     JSON_INFO("sendJsonToHostapp"),
     CLOSE_MINIAPP("closeMiniApp"),
     GET_HOST_APP_THEME_COLORS("getHostAppThemeColors"),
-    GET_IS_DARK_MODE("isDarkMode")
+    GET_IS_DARK_MODE("isDarkMode"),
+    UNIVERSAL_BRIDGE_INFO("sendInfoToHostapp")
 }
 
 internal enum class DialogType {

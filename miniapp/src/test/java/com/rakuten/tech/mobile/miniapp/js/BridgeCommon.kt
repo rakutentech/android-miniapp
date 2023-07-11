@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
+import com.rakuten.tech.mobile.miniapp.js.universalbridge.UniversalBridgeInfo
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
 import org.mockito.Mockito
@@ -166,6 +167,21 @@ open class BridgeCommon {
                         onSuccess(it)
                         return
                     }
+                }
+                onError(ErrorBridgeMessage.ERR_JSON_INFO)
+            }
+
+            override fun sendInfoToHostApp(
+                universalBridgeInfo: UniversalBridgeInfo,
+                onSuccess: (jsonStr: String) -> Unit,
+                onError: (message: String) -> Unit
+            ) {
+                universalBridgeInfo.let {
+                    onSuccess("it")
+//                    if (it.contains("content")) {
+//                        onSuccess(it)
+//                        return
+//                    }
                 }
                 onError(ErrorBridgeMessage.ERR_JSON_INFO)
             }

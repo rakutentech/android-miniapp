@@ -6,7 +6,7 @@
 - **Feature:** Added `MiniAppMessageBridge.getIsDarkMode` in MiniAppMessageBridge for retrieving dark mode status.
 - **Feature:** Added `MiniApp.unzipBundle` to load MiniApp from bundle. Host app can unzip a MiniApp bundle from asset folder into MiniApp file system.
 - **Feature:** Added `MiniAppView.loadFromBundle` to load MiniApp from already extracted MiniApp bundle.
-
+- **Feature:** Added `MiniAppDisplay.sendInfoToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.
 
 **Sample App**
 - **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.

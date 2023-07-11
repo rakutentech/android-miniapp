@@ -43,5 +43,6 @@ internal enum class Actype(val value: String) {
     CLOSE_MINIAPP("mini_app_close"),
     GET_HOST_APP_THEME_COLORS("mini_app_get_host_app_theme_colors"),
     GET_IS_DARK_MODE("mini_app_get_is_dark_mode"),
+    RECEIVE_UNIVERSAL_BRIDGE_INFO("mini_app_send_info_to_host_app"),
     DEFAULT("")
 }
