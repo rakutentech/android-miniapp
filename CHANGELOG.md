@@ -15,7 +15,7 @@
 - **Feature:** Added Deeplink Support to change settings keys by QR code.
 - **Feature:** Added implementation of `MiniAppMessageBridge.getIsDarkMode`.
 - **Feature:** Added `MiniApp` button in Feature page to load a MiniApp from bundle.
-- **Feature:** Added `Logs` in `QA` page to show the analytics events come from miniapp.
+- **Feature:** Added `Logs` in `QA` page to show the analytics events come from MiniApp.
 
 ### 5.2.1 (2023-05-23)
 **SDK**
