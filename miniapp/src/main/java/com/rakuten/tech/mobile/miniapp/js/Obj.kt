@@ -168,9 +168,6 @@ internal data class JsonInfoCallbackObj(val param: JsonInfoParam) {
     @Keep
     internal data class JsonInfoParam(val jsonInfo: JsonInfo)
 }
-//
-//@Keep
-//internal data class UniversalBridgeInfo(val universalbridgeinfo: String)
 
 @Keep
 internal data class UniversalBridgeInfoCallbackObj(val param: UniversalBridgeInfoParam) {

@@ -177,11 +177,7 @@ open class BridgeCommon {
                 onError: (message: String) -> Unit
             ) {
                 universalBridgeInfo.let {
-                    onSuccess("it")
-//                    if (it.contains("content")) {
-//                        onSuccess(it)
-//                        return
-//                    }
+                    onSuccess("Success")
                 }
                 onError(ErrorBridgeMessage.ERR_JSON_INFO)
             }
