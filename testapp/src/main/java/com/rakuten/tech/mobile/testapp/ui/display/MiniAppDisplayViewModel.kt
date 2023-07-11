@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 
 private const val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
 private const val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
+private const val MINI_APP_CORRUPTED_ERROR = "MiniApp Bundle is corrupted or altered."
+private const val NO_BUNDLE_FOUND_ERROR = "No Mini App bundle found for the provided App ID and version ID."
+private const val INVALID_MINI_APP_ERROR = "No Mini App found for the provided App ID or Version ID."
 
 class MiniAppDisplayViewModel constructor(
     private val miniapp: MiniApp
@@ -224,6 +227,39 @@ class MiniAppDisplayViewModel constructor(
         }
     }
 
+    @Suppress("LongParameterList")
+    fun obtainMiniAppDisplayFromBundle(
+        context: Context,
+        appId: String,
+        versionId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooserDefault,
+    ) {
+        val miniAppView = MiniAppView.init(
+            createMiniAppDefaultParam(
+                context,
+                appId,
+                versionId,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser
+            )
+        )
+        miniAppView.loadFromBundle { display, miniAppSdkException ->
+            display?.let {
+                miniAppDisplay = it
+                viewModelScope.launch(Dispatchers.IO) {
+                    _miniAppView.postValue(miniAppDisplay.getMiniAppView(context))
+                }
+            } ?: kotlin.run {
+                miniAppSdkException?.let { e ->
+                    handleErrors(e)
+                }
+            }
+        }
+    }
+
     private fun handleErrors(e: MiniAppSdkException) {
         e.printStackTrace()
         when (e) {
@@ -233,6 +269,12 @@ class MiniAppDisplayViewModel constructor(
                 _errorData.postValue(NO_MINI_APP_FOUND_ERROR)
             is MiniAppTooManyRequestsError ->
                 _containTooManyRequestsError.postValue(true)
+            is MiniAppBundleNotFoundException ->
+                _errorData.postValue(NO_BUNDLE_FOUND_ERROR)
+            is MiniAppHasCorruptedException ->
+                _errorData.postValue(MINI_APP_CORRUPTED_ERROR)
+            is InvalidMiniAppInfoException ->
+                _errorData.postValue(INVALID_MINI_APP_ERROR)
             else -> {
                 _errorData.postValue(e.message)
             }
@@ -256,6 +298,29 @@ class MiniAppDisplayViewModel constructor(
                 queryParams = AppSettings.instance.urlParameters
             ),
             miniAppInfo = miniAppInfo,
+            fromCache = false
+        )
+    }
+
+    private fun createMiniAppDefaultParam(
+        context: Context,
+        appId: String,
+        versionId: String,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator,
+        miniAppFileChooser: MiniAppFileChooser
+    ): MiniAppParameters {
+        return MiniAppParameters.DefaultParams(
+            context = context,
+            config = MiniAppConfig(
+                miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig,
+                miniAppMessageBridge = miniAppMessageBridge,
+                miniAppNavigator = miniAppNavigator,
+                miniAppFileChooser = miniAppFileChooser,
+                queryParams = AppSettings.instance.urlParameters
+            ),
+            miniAppId = appId,
+            miniAppVersion = versionId,
             fromCache = false
         )
     }

@@ -12,6 +12,7 @@ import com.rakuten.tech.mobile.miniapp.DevicePermissionsNotImplementedException
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.ads.MiniAppAdDisplayer
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.closealert.MiniAppCloseAlertInfo
 import com.rakuten.tech.mobile.miniapp.display.WebViewListener
@@ -24,6 +25,7 @@ import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.isValidLocale
 import com.rakuten.tech.mobile.miniapp.js.iap.InAppPurchaseBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.userinfo.UserInfoBridge
@@ -160,6 +162,14 @@ open class MiniAppMessageBridge {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
 
+    /** Interface that should be implemented to return theme colors that uniquely identifies a host. **/
+    open fun getHostAppThemeColors(
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
     /** Post device permission request from external. **/
     open fun requestDevicePermission(
         miniAppPermissionType: MiniAppDevicePermissionType,
@@ -182,11 +192,34 @@ open class MiniAppMessageBridge {
 
     /**
      * handle Universal Bridge that represented as a json from MiniApp.
-     * @param jsonStr: JSON/String that is sent from the MiniApp
+     * @param jsonStr: JSON/String that is sent from the MiniApp.
      **/
     open fun sendJsonToHostApp(
         jsonStr: String,
         onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
+     * handle analytics from MiniApp.
+     * @param analyticsInfo that is sent from the MiniApp.
+     **/
+    open fun didReceiveMAAnalytics(
+        analyticsInfo: MAAnalyticsInfo,
+        onSuccess: (message: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
+    }
+
+    /**
+     * Get dark mode info from host app.
+     * You can also throw an [Exception] from this method to pass an error message to the mini app.
+     */
+    open fun getIsDarkMode(
+        onSuccess: (isDarkMode: Boolean) -> Unit,
         onError: (message: String) -> Unit
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
@@ -297,6 +330,9 @@ open class MiniAppMessageBridge {
             )
             ActionType.JSON_INFO.action -> onSendJsonToHostApp(callbackObj.id, jsonStr)
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
+            ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
+            ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
+            ActionType.SEND_MA_ANALYTICS.action -> onDidReceiveMAAnalytics(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
     }
@@ -387,6 +423,24 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackObj.id, "${ErrorBridgeMessage.ERR_MAUID} ${e.message}")
     }
 
+    private fun onGetHostAppThemeColors(callbackObj: CallbackObj) = try {
+        val successCallback = { themeColor: HostAppThemeColors ->
+            bridgeExecutor.postValue(callbackObj.id, Gson().toJson(themeColor))
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(
+                callbackObj.id, "${ErrorBridgeMessage.ERR_THEME_COLOR} $message"
+            )
+        }
+
+        getHostAppThemeColors(successCallback, errorCallback)
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackObj.id,
+            "${ErrorBridgeMessage.ERR_THEME_COLOR} ${e.message}"
+        )
+    }
+
     private fun onRequestDevicePermission(callbackObj: CallbackObj) {
         try {
             val permissionParam = Gson().fromJson<DevicePermission>(
@@ -466,7 +520,7 @@ open class MiniAppMessageBridge {
         sendJsonToHostApp(
             jsonStr = jsonInfoCallbackObj.param.jsonInfo.content,
             onSuccess = { value ->
-                bridgeExecutor.postValue(callbackId, value.toString())
+                bridgeExecutor.postValue(callbackId, value)
             },
             onError = { message ->
                 bridgeExecutor.postError(
@@ -492,6 +546,18 @@ open class MiniAppMessageBridge {
             bridgeExecutor.postError(callbackId, Gson().toJson(errorBridgeModel))
         }
         getHostEnvironmentInfo(successCallback, errorCallback)
+    }
+
+    @SuppressWarnings("TooGenericExceptionCaught")
+    @VisibleForTesting
+    internal fun onGetIsDarkMode(callbackId: String) {
+        val successCallback = { isDarkMode: Boolean ->
+            bridgeExecutor.postValue(callbackId, isDarkMode.toString())
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, message)
+        }
+        getIsDarkMode(successCallback, errorCallback)
     }
 
     @VisibleForTesting
@@ -531,6 +597,26 @@ open class MiniAppMessageBridge {
         bridgeExecutor.postError(callbackId, ErrorBridgeMessage.ERR_CLOSE_ALERT)
     }
 
+    @VisibleForTesting
+    internal fun onDidReceiveMAAnalytics(callbackId: String, jsonStr: String) = try {
+        val maAnalyticsCallbackObj = Gson().fromJson(jsonStr, MAAnalyticsCallbackObj::class.java)
+        val successCallback = { message: String ->
+            bridgeExecutor.postValue(callbackId, message)
+        }
+        val errorCallback = { message: String ->
+            bridgeExecutor.postError(callbackId, message)
+        }
+        didReceiveMAAnalytics(
+            maAnalyticsCallbackObj.param.analyticsInfo,
+            successCallback,
+            errorCallback
+        )
+    } catch (e: Exception) {
+        bridgeExecutor.postError(
+            callbackId, "${ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO} ${e.message}"
+        )
+    }
+
     internal fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
         iapBridgeDispatcher.updateApiClient(apiClient)
@@ -558,6 +644,7 @@ internal object ErrorBridgeMessage {
     const val ERR_UNIQUE_ID = "Cannot get unique id:"
     const val ERR_MESSAGING_UNIQUE_ID = "Cannot get messaging unique id:"
     const val ERR_MAUID = "Cannot get mauid:"
+    const val ERR_THEME_COLOR = "Cannot get theme color of host:"
     const val ERR_REQ_DEVICE_PERMISSION = "Cannot request device permission:"
     const val ERR_REQ_CUSTOM_PERMISSION = "Cannot request custom permissions:"
     const val NO_IMPLEMENT_DEVICE_PERMISSION =
@@ -573,4 +660,5 @@ internal object ErrorBridgeMessage {
     const val ERR_GET_ENVIRONMENT_INFO = "Cannot get host environment info:"
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
+    const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying to send MiniApp analytics info:"
 }

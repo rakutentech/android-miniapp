@@ -3,16 +3,20 @@ package com.rakuten.tech.mobile.miniapp.view
 import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.R
-import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppNetException
 import com.rakuten.tech.mobile.miniapp.RequiredPermissionsNotGrantedException
 import com.rakuten.tech.mobile.miniapp.MiniAppNotFoundException
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
-import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
-import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
+import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
+import com.rakuten.tech.mobile.miniapp.MiniAppBundleNotFoundException
+import com.rakuten.tech.mobile.miniapp.MiniAppHasCorruptedException
+import com.rakuten.tech.mobile.miniapp.InvalidMiniAppInfoException
+import com.rakuten.tech.mobile.miniapp.R
+import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
+import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -31,9 +35,10 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
+import java.io.File
 import java.util.Locale
 
-@Suppress("LargeClass")
+@Suppress("LargeClass", "TooManyFunctions")
 internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig
@@ -57,6 +62,8 @@ internal class MiniAppViewHandler(
     internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
     internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
     internal var miniAppIAPVerifier: MiniAppIAPVerifier
+    internal var miniAppStorage: MiniAppStorage
+    internal var miniAppVerifier: CachedMiniAppVerifier
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
@@ -68,12 +75,13 @@ internal class MiniAppViewHandler(
     )
 
     private fun initMiniAppDownloader() = MiniAppDownloader(
+        context = context,
         apiClient = apiClient,
         miniAppAnalytics = miniAppAnalytics,
         requireSignatureVerification = config.requireSignatureVerification,
-        initStorage = { MiniAppStorage(FileWriter(), context.filesDir) },
+        initStorage = { miniAppStorage },
         initStatus = { MiniAppStatus(context) },
-        initVerifier = { CachedMiniAppVerifier(context) },
+        initVerifier = { miniAppVerifier },
         initManifestApiCache = { ManifestApiCache(context) },
         initSignatureVerifier = { signatureVerifier }
     )
@@ -86,6 +94,8 @@ internal class MiniAppViewHandler(
         miniAppManifestVerifier = MiniAppManifestVerifier(context)
         miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
         miniAppIAPVerifier = MiniAppIAPVerifier(context)
+        miniAppStorage = MiniAppStorage(FileWriter(), context.filesDir)
+        miniAppVerifier = CachedMiniAppVerifier(context)
 
         apiClientRepository = ApiClientRepository().apply {
             registerApiClient(config, apiClient)
@@ -224,8 +234,8 @@ internal class MiniAppViewHandler(
         } else {
             miniAppDownloader.getCachedMiniApp(miniAppInfo)
         }
-        verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         config.miniAppMessageBridge.updateApiClient(apiClient)
+        verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         return displayer.createMiniAppDisplay(
             basePath,
             miniAppInfo,
@@ -241,6 +251,49 @@ internal class MiniAppViewHandler(
             enableH5Ads,
             miniAppIAPVerifier
         )
+    }
+
+    @Suppress("LongMethod")
+    suspend fun createMiniAppViewFromBundle(
+        miniAppInfo: MiniAppInfo,
+        config: MiniAppConfig,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
+    ) {
+        if (miniAppStorage.isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
+            if (miniAppStorage.isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
+                val versionPath = miniAppStorage.getBundleWritePath(
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId
+                )
+                val (basePath, miniAppInfo) = Pair(versionPath, miniAppInfo)
+                if (miniAppVerifier.verify(miniAppInfo.version.versionId, File(versionPath))) {
+                    config.miniAppMessageBridge.updateApiClient(apiClient)
+                    onComplete(
+                        displayer.createMiniAppDisplay(
+                            basePath,
+                            miniAppInfo,
+                            config.miniAppMessageBridge,
+                            config.miniAppNavigator,
+                            config.miniAppFileChooser,
+                            miniAppCustomPermissionCache,
+                            downloadedManifestCache,
+                            config.queryParams,
+                            miniAppAnalytics,
+                            ratDispatcher,
+                            secureStorageDispatcher,
+                            enableH5Ads,
+                            miniAppIAPVerifier
+                        ), null
+                    )
+                } else {
+                    onComplete(null, MiniAppHasCorruptedException(miniAppInfo.id))
+                }
+            } else {
+                onComplete(null, MiniAppBundleNotFoundException())
+            }
+        } else {
+            onComplete(null, InvalidMiniAppInfoException())
+        }
     }
 
     suspend fun createMiniAppViewWithUrl(

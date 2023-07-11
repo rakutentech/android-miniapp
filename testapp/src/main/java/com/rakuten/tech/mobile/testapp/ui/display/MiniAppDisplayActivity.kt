@@ -17,6 +17,7 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.rakuten.tech.mobile.miniapp.MiniApp
@@ -93,26 +94,35 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
     )
 
     private var appInfo: MiniAppInfo? = null
+    private var appId: String? = null
+    private var versionId: String? = null
+    private var fromBundle = false
     private var appUrl: String? = null
     private var previousClickTimeMillis = 0L
 
     companion object {
         private const val appIdTag = "app_id_tag"
+        private const val versionIdTag = "version_id_tag"
         private const val miniAppTag = "mini_app_tag"
         private const val appUrlTag = "app_url_tag"
         private const val sdkConfigTag = "sdk_config_tag"
         private const val updateTypeTag = "update_type_tag"
+        private const val fromBundleTypeTag = "from_bundle_type_tag"
         private const val isFromMiniAppByUrlActivityTag = "is_from_miniapp_by_url_tag"
 
         fun start(
             context: Context,
             appId: String,
+            versionId: String = "",
             miniAppSdkConfig: MiniAppSdkConfig? = null,
-            updatetype: Boolean = false
+            updatetype: Boolean = false,
+            fromBundle: Boolean = false
         ) {
             context.startActivity(Intent(context, MiniAppDisplayActivity::class.java).apply {
                 putExtra(appIdTag, appId)
+                putExtra(versionIdTag, versionId)
                 putExtra(updateTypeTag, updatetype)
+                putExtra(fromBundleTypeTag, fromBundle)
                 miniAppSdkConfig?.let { putExtra(sdkConfigTag, it) }
             })
         }
@@ -150,6 +160,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.miniapp_display_menu, menu)
+        menu.findItem(R.id.share_mini_app).isVisible = !fromBundle
+        menu.findItem(R.id.settings_permission_mini_app).isVisible = !fromBundle
         return true
     }
 
@@ -207,10 +219,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
 
         //Three different ways to get miniapp.
         appInfo = intent.getParcelableExtra(miniAppTag)
-        val appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
+        appId = intent.getStringExtra(appIdTag) ?: appInfo?.id
+        versionId = intent.getStringExtra(versionIdTag)
         appUrl = intent.getStringExtra(appUrlTag)
         var miniAppSdkConfig = intent.getParcelableExtra<MiniAppSdkConfig>(sdkConfigTag)
         val updateType = intent.getBooleanExtra(updateTypeTag, false)
+        fromBundle = intent.getBooleanExtra(fromBundleTypeTag, false)
 
         if (miniAppSdkConfig == null)
             miniAppSdkConfig = AppSettings.instance.newMiniAppSdkConfig
@@ -247,6 +261,8 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     )
                 }
             }
+
+        FileUtils.miniAppOpenLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
 
         setupMiniAppMessageBridge()
 
@@ -306,6 +322,17 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                 miniAppNavigator,
                 miniAppFileChooser,
                 AppSettings.instance.urlParameters
+            )
+        }
+        if(fromBundle){
+            supportActionBar?.title = "MiniApp"
+            viewModel.obtainMiniAppDisplayFromBundle(
+                context = this@MiniAppDisplayActivity,
+                appId = appId!!,
+                versionId = versionId!!,
+                miniAppMessageBridge,
+                miniAppNavigator,
+                miniAppFileChooser,
             )
         }
     }
@@ -408,6 +435,7 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
+                                FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: "")
                                 finish()
                             }
                         }
@@ -418,8 +446,12 @@ class MiniAppDisplayActivity : BaseActivity(), PreloadMiniAppWindow.PreloadMiniA
                     .setMessage(closeAlertInfo.description)
                     .setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show()
-            } else finish()
+            } else {
+                FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
+                finish()
+            }
         } catch (e: NullPointerException) {
+            FileUtils.miniAppCloseLogs(this, appId ?: appInfo?.id ?: appUrl ?: "")
             finish()
         }
     }

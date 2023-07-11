@@ -118,7 +118,7 @@ class MiniAppViewImplSpec {
     }
 
     @Test
-    fun `miniAppParameters fromCache should be true whe the load fromCache parameter is true`() =
+    fun `miniAppParameters fromCache should be true when the load fromCache parameter is true`() =
         runBlocking {
             withMiniAppDefaultParams { miniAppViewImpl ->
                 val onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit = spy { _, _ -> }

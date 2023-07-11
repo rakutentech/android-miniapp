@@ -7,6 +7,7 @@ import com.rakuten.tech.mobile.miniapp.display.WebViewListener
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfoError
+import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
 import com.rakuten.tech.mobile.miniapp.permission.*
 import org.junit.Assert
 import org.mockito.Mockito
@@ -75,6 +76,17 @@ open class BridgeCommon {
             }
         }
 
+        override fun getHostAppThemeColors(
+            onSuccess: (themeColor: HostAppThemeColors) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (mockIsValid) {
+                onSuccess(TEST_CALLBACK_THEME)
+            } else {
+                onError(testErrorMessage)
+            }
+        }
+
         override fun requestDevicePermission(
             miniAppPermissionType: MiniAppDevicePermissionType,
             callback: (isGranted: Boolean) -> Unit
@@ -105,6 +117,17 @@ open class BridgeCommon {
             } else {
                 val infoErrMessage = "{\"type\":\"$ERR_GET_ENVIRONMENT_INFO $TEST_ERROR_MSG\"}"
                 onError.invoke(HostEnvironmentInfoError(infoErrMessage))
+            }
+        }
+
+        override fun getIsDarkMode(
+            onSuccess: (isDarkMode: Boolean) -> Unit,
+            onError: (message: String) -> Unit
+        ) {
+            if (mockIsValid) {
+                onSuccess(true)
+            } else {
+                onError(testErrorMessage)
             }
         }
     }

@@ -67,6 +67,9 @@
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QASettingsActivity"
             android:label="@string/action_qa" />
         <activity
+            android:name="com.rakuten.tech.mobile.testapp.ui.userdata.QAAnalyticsLogsActivity"
+            android:label="@string/action_analytics_log" />
+        <activity
             android:name="com.rakuten.tech.mobile.testapp.ui.userdata.AccessTokenActivity"
             android:label="@string/lb_access_token" />
         <activity
@@ -88,6 +91,10 @@
                 <data
                     android:host="@string/miniappdemo_host"
                     android:pathPrefix="@string/miniappdemo_pathprefix"
+                    android:scheme="@string/miniappdemo_scheme" />
+                <data
+                    android:host="@string/miniappdemo_host"
+                    android:pathPrefix="@string/settings_pathprefix"
                     android:scheme="@string/miniappdemo_scheme" />
             </intent-filter>
         </activity>

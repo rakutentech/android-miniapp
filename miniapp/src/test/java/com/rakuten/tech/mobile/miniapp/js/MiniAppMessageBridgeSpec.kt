@@ -4,6 +4,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.Gson
 import com.rakuten.tech.mobile.miniapp.*
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsActionType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsEventType
+import com.rakuten.tech.mobile.miniapp.analytics.MAAnalyticsInfo
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostEnvironmentInfo
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppDevicePermissionType
@@ -20,6 +23,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import kotlin.test.assertEquals
+import org.mockito.kotlin.eq
 
 @RunWith(AndroidJUnit4::class)
 @Suppress("LongMethod", "LargeClass")
@@ -37,7 +41,18 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val mauIdCallbackObj = CallbackObj(
         action = ActionType.GET_MAUID.action, param = null, id = TEST_CALLBACK_ID
     )
+
+    private val themeCallbackObj = CallbackObj(
+        action = ActionType.GET_HOST_APP_THEME_COLORS.action, param = null, id = TEST_CALLBACK_ID
+    )
+
+    private val darkModeCallbackObj = CallbackObj(
+        action = ActionType.GET_IS_DARK_MODE.action, param = null, id = TEST_CALLBACK_ID
+    )
+
     private val mauIdJsonStr = Gson().toJson(mauIdCallbackObj)
+    private val themeJsonStr = Gson().toJson(themeCallbackObj)
+    private val darkModeJsonStr = Gson().toJson(darkModeCallbackObj)
 
     private val permissionCallbackObj = CallbackObj(
         action = ActionType.REQUEST_PERMISSION.action,
@@ -49,6 +64,25 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
     private val hostEnvInfoCallbackObj = CallbackObj(
         action = ActionType.GET_HOST_ENVIRONMENT_INFO.action, param = null, id = TEST_CALLBACK_ID
     )
+
+    private fun createAnalyticsInfoCallbackJsonStr(maAnalyticsInfo: MAAnalyticsInfo) = Gson().toJson(
+        CallbackObj(
+            action = ActionType.SEND_MA_ANALYTICS.action,
+            param = MAAnalyticsCallbackObj.Param(maAnalyticsInfo),
+            id = TEST_CALLBACK_ID
+        )
+    )
+
+    private val testAnalyticInfo = MAAnalyticsInfo(
+        actionType = MAAnalyticsActionType.ADD,
+        eventType = MAAnalyticsEventType.APPEAR,
+        data = TEST_DATA,
+        pageName = "",
+        componentName = "",
+        elementType = ""
+    )
+
+    private val sendAnalyticsJsonStr = createAnalyticsInfoCallbackJsonStr(testAnalyticInfo)
 
     @Before
     fun setup() {
@@ -180,6 +214,22 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
             verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errMsg)
         }
     }
+
+    /** region: device theme color*/
+    @Test
+    fun `should be able to return themeColor to miniapp`() {
+        miniAppBridge.postMessage(themeJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, Gson().toJson(TEST_CALLBACK_THEME))
+    }
+
+    @Test
+    fun `should be able to return dark mode info to miniapp`() {
+        miniAppBridge.postMessage(darkModeJsonStr)
+
+        verify(bridgeExecutor).postValue(TEST_CALLBACK_ID, "true")
+    }
+    /** end region*/
 
     /** region: device permission */
     @Test
@@ -379,6 +429,33 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         miniAppBridge.postMessage(miniAppCloseJsonStr)
     }
 
+    /** region: MiniApp analytics info */
+    @Test
+    fun `miniAppBridge should call onDidReceiveMAAnalytics if universal bridge json is valid`() {
+        miniAppBridge.postMessage(sendAnalyticsJsonStr)
+        verify(miniAppBridge).onDidReceiveMAAnalytics(
+            TEST_CALLBACK_ID, sendAnalyticsJsonStr
+        )
+    }
+
+    @Test
+    fun `miniAppBridge should call didReceiveMAAnalytics if universal bridge json is valid`() {
+        miniAppBridge.postMessage(sendAnalyticsJsonStr)
+        verify(miniAppBridge).didReceiveMAAnalytics(
+            eq(testAnalyticInfo),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
+    }
+
+    @Test
+    fun `should invoke onError if analytic info is empty`() {
+        val errorMessage = "${ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO} null"
+        miniAppBridge.onDidReceiveMAAnalytics(TEST_CALLBACK_ID, "")
+        verify(bridgeExecutor).postError(TEST_CALLBACK_ID, errorMessage)
+    }
+    /** end region */
+
     @Test
     fun `all error bridge messages should be expected`() {
         assertEquals("no implementation by the Host App.", ErrorBridgeMessage.NO_IMPL)
@@ -404,6 +481,9 @@ class MiniAppMessageBridgeSpec : BridgeCommon() {
         assertEquals("Cannot request screen action:", ErrorBridgeMessage.ERR_SCREEN_ACTION)
         assertEquals(
             "Cannot get host environment info:", ErrorBridgeMessage.ERR_GET_ENVIRONMENT_INFO
+        )
+        assertEquals(
+            "An error occurred while trying to send MiniApp analytics info:", ErrorBridgeMessage.ERR_MA_ANALYTIC_INFO
         )
     }
 }

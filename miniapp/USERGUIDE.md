@@ -241,6 +241,18 @@ miniapp.load { miniAppDisplay, miniAppSdkException ->
     }       
 }
 ```
+To load the miniapp from Bundle following load function needed to call
+```kotlin
+miniapp.loadFromBundle { miniAppDisplay, miniAppSdkException ->
+    if(miniAppDisplay != null) {
+      val miniAppView = miniAppDisplay.getMiniAppView(this@MiniAppActivity)
+      // view could be added to show the miniapp
+      runOnUithread {
+        rootView.addView(miniAppView)
+      }    
+    }       
+}
+```
 
 **Note:** 
 * **Clean-up:** 
@@ -273,6 +285,10 @@ There are some methods have a default implementation but the host app can overri
 | shareContent                 | ✅       |
 | getHostEnvironmentInfo       | ✅       |
 | sendJsonToHostApp            | 🚫       |
+| getHostAppThemeColors        | 🚫       |
+| getIsDarkMode                | 🚫       |
+| didReceiveMAAnalytics        | 🚫       |
+
 
 The `UserInfoBridgeDispatcher`:
 
@@ -363,6 +379,23 @@ val miniAppMessageBridge = object: MiniAppMessageBridge() {
             onSuccess(jsonStr)
         } else {
             onError(jsonStr)
+        }
+    }
+
+    override fun getHostAppThemeColors(
+        onSuccess: (themeColor: HostAppThemeColors) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        onSuccess(HostAppThemeColors(primaryColor = "", secondaryColor = ""))
+    }
+
+    override fun getIsDarkMode(
+        onSuccess: (isDarkMode: Boolean) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        when (activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> onSuccess(false) // Night mode is not active, we're using the light theme.
+            Configuration.UI_MODE_NIGHT_YES -> onSuccess(true) // Night mode is active, we're using dark theme.
         }
     }
         
@@ -541,7 +574,21 @@ The default functionality will provide information using `HostEnvironmentInfo` o
 **API Docs:** [MiniAppMessageBridge.sendJsonToHostApp](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/send-json-to-host-app.html)
 
 The MiniApp is able to send the Universal Bridge in `json` string format. 
-    
+
+### Get Host App Theme Colors
+**API Docs:** [MiniAppMessageBridge.getHostAppThemeColors](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-host-app-theme-colors.html)
+
+Your App should provide a primary and secondary color to the mini app which is the theme colors of the host app . The mini app can use those colors and change it's appearence.
+
+### Get Host App Dark Mode Status
+**API Docs:** [MiniAppMessageBridge.didReceiveMAAnalytics](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/did-receive-ma-analytics.html)
+
+Your App can receive analytics events from miniapp with this interface.
+
+### Get Analytics From MiniApp
+**API Docs:** [MiniAppMessageBridge.getIsDarkMode](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/get-is-dark-mode.html)
+
+Your App should provide boolean value true if dark mode enabled in the device and false if it is disabled.
 
 ### User Info
 **API Docs:** [MiniAppMessageBridge.setUserInfoBridgeDispatcher](api/com.rakuten.tech.mobile.miniapp.js/-mini-app-message-bridge/set-user-info-bridge-dispatcher.html)
@@ -1095,23 +1142,33 @@ downloadedMiniApps.forEach {
 For a mini app, you can pass query parameters as String using `MiniApp.create` to be appended with miniapp's url.
 For example: `https://mscheme.1234/miniapp/index.html?param1=value1&param2=value2`
 
+To load the miniapp following load function needed to call
 ```kotlin
 class MiniAppActivity : Activity(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
     //...
-        launch {
-            val miniAppDisplay = withContext(Dispatchers.IO) {
-                MiniApp.instance().create(
-                    appId = "mini_app_id",
-                    miniAppMessageBridge = miniAppMessageBridge,
-                    miniAppNavigator = miniAppNavigator,
-                    queryParams = "param1=value1&param2=value2"
-                )
-            }
-    //...
-        }
+        val param = MiniAppParameters.DefaultParams(
+        context = this,
+        config = MiniAppConfig(
+            miniAppSdkConfig = miniAppSdkConfig,
+            miniAppMessageBridge = miniAppMessageBridge,
+            miniAppNavigator = miniAppNavigator,
+            miniAppFileChooser = miniAppFileChooser,
+            queryParams = ""
+            ),
+            miniAppId = "id",
+            miniAppVersion = "version",
+            fromCache = false
+        )
+        
+       val miniapp = MiniAppView.init(param)
+       miniapp.load(queryParams = urlParameters) { display, exception ->
+       
+       }
+       //...    
     }
+
 }
 ```
 

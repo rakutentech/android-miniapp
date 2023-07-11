@@ -14,7 +14,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
         )
     }
 
-    @Suppress("ComplexMethod")
+    @Suppress("ComplexMethod", "LongMethod")
     @VisibleForTesting
     internal fun getAcType(action: String): Actype {
         return when (action) {
@@ -48,6 +48,9 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
             ActionType.CONSUME_PURCHASE.action -> Actype.CONSUME_PURCHASE
             ActionType.JSON_INFO.action -> Actype.JSON_INFO
             ActionType.CLOSE_MINIAPP.action -> Actype.CLOSE_MINIAPP
+            ActionType.GET_HOST_APP_THEME_COLORS.action -> Actype.GET_HOST_APP_THEME_COLORS
+            ActionType.GET_IS_DARK_MODE.action -> Actype.GET_IS_DARK_MODE
+            ActionType.SEND_MA_ANALYTICS.action -> Actype.SEND_MA_ANALYTICS
             else -> Actype.DEFAULT
         }
     }

@@ -61,7 +61,9 @@
 
     <string name="action_display">Display</string>
     <string name="action_go_input_url">URL</string>
+    <string name="title_bundle_miniapp">MiniApp</string>
     <string name="action_go_input_url_details">Open a miniapp via url</string>
+    <string name="action_load_miniapp_from_bundle">Load MiniApp From Bundle</string>
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">CANCEL</string>
@@ -118,6 +120,7 @@
     <string name="miniappdemo_scheme">miniappdemo</string>
     <string name="miniappdemo_host">miniapp</string>
     <string name="miniappdemo_pathprefix">/preview/</string>
+    <string name="settings_pathprefix">/settings</string>
 
     <string name="deeplink_activity_error_empty">Empty deeplink, please try again.</string>
     <string name="deeplink_activity_input_hint">Input here</string>
@@ -133,5 +136,10 @@
     <string name="error_send_json_to_mini_app_message_cannot_be_empty">Unable to send the message: The message cannot be empty</string>
     <string name="lb_general">General</string>
     <string name="add_new_email">Add new email</string>
+    <string name="hint_set_primary_color">Primary Color</string>
+    <string name="hint_set_secondary_color">Secondary Color</string>
+    <string name="theme_colors">Theme Colors</string>
+    <string name="mini_app_analytics">MiniApp Analytics Logs</string>
+    <string name="action_analytics_log">Logs</string>
 
 </resources>

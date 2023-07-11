@@ -1,27 +1,28 @@
 package com.rakuten.tech.mobile.miniapp
 
+import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.analytics.Actype
 import com.rakuten.tech.mobile.miniapp.analytics.Etype
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
-import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
-import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
+import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
+import com.rakuten.tech.mobile.miniapp.api.MetadataPermissionObj
 import com.rakuten.tech.mobile.miniapp.api.ManifestEntity
 import com.rakuten.tech.mobile.miniapp.api.ManifestHeader
-import com.rakuten.tech.mobile.miniapp.api.MetadataEntity
 import com.rakuten.tech.mobile.miniapp.api.UpdatableApiClient
+import com.rakuten.tech.mobile.miniapp.api.ManifestApiCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.signatureverifier.SignatureVerifier
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.MiniAppStorage
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Job
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -31,6 +32,7 @@ import java.net.URL
 
 @Suppress("SwallowedException", "TooManyFunctions", "LargeClass", "MaxLineLength")
 internal class MiniAppDownloader(
+    private var context: Context,
     private var apiClient: ApiClient,
     private val miniAppAnalytics: MiniAppAnalytics,
     private var requireSignatureVerification: Boolean = false,
@@ -197,6 +199,12 @@ internal class MiniAppDownloader(
                 throw MiniAppTooManyRequestsError(error.message)
             }
         }
+    }
+
+    suspend fun storeMiniAppBundle(fileName: String, miniAppId: String, versionId: String) {
+        val stream: InputStream = context.assets.open(fileName)
+        val versionPath = storage.saveFileFromBundle(fileName, miniAppId, versionId, stream)
+        verifier.storeHashAsync(versionId, File(versionPath))
     }
 
     @VisibleForTesting
