@@ -216,7 +216,7 @@ open class MiniAppMessageBridge {
     }
 
     /**
-     * Handle Universal Bridge interface that sends UniversalBridgeInfo from a Miniapp
+     * Handle Universal Bridge interface that sends UniversalBridgeInfo from a Miniapp.
      * @param universalBridgeInfo: UniversalBridgeInfo that is sent from the MiniApp
      **/
     open fun sendInfoToHostApp(
@@ -226,7 +226,7 @@ open class MiniAppMessageBridge {
     ) {
         throw MiniAppSdkException(ErrorBridgeMessage.NO_IMPL)
     }
-      
+
     /**
      * Get dark mode info from host app.
      * You can also throw an [Exception] from this method to pass an error message to the mini app.
