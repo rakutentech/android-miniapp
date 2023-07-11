@@ -50,6 +50,7 @@ internal class MessageBridgeRatDispatcher(private val miniAppAnalytics: MiniAppA
             ActionType.CLOSE_MINIAPP.action -> Actype.CLOSE_MINIAPP
             ActionType.GET_HOST_APP_THEME_COLORS.action -> Actype.GET_HOST_APP_THEME_COLORS
             ActionType.GET_IS_DARK_MODE.action -> Actype.GET_IS_DARK_MODE
+            ActionType.UNIVERSAL_BRIDGE_INFO.action -> Actype.RECEIVE_UNIVERSAL_BRIDGE_INFO
             ActionType.SEND_MA_ANALYTICS.action -> Actype.SEND_MA_ANALYTICS
             else -> Actype.DEFAULT
         }
