@@ -10,6 +10,7 @@ import com.rakuten.tech.mobile.miniapp.js.MessageToContact
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.js.chat.ChatBridgeDispatcher
 import com.rakuten.tech.mobile.miniapp.js.hostenvironment.HostAppThemeColors
+import com.rakuten.tech.mobile.miniapp.js.universalbridge.UniversalBridgeInfo
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Contact
 import com.rakuten.tech.mobile.miniapp.js.userinfo.Points
 import com.rakuten.tech.mobile.miniapp.js.userinfo.TokenData
@@ -82,6 +83,24 @@ fun getMessageBridge(
             }
             if (activity.isAvailable) {
                 activity.showToastMessage(message)
+            }
+        }
+    }
+
+    override fun sendInfoToHostApp(
+        universalBridgeInfo: UniversalBridgeInfo,
+        onSuccess: (jsonStr: String) -> Unit,
+        onError: (message: String) -> Unit
+    ) {
+        universalBridgeInfo.let {
+            if(it != null) {
+                val message: String = "Key: " + it.key + ", Value: " +  it.value + ", Description: " + it.description
+                onSuccess("SUCCESS")
+                if (activity.isAvailable) {
+                    activity.showToastMessage(message)
+                }
+            } else {
+                onError(activity.getString(R.string.error_send_json_to_host_app_please_try_again))
             }
         }
     }

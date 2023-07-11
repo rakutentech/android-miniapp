@@ -345,7 +345,7 @@ open class MiniAppMessageBridge {
             ActionType.CLOSE_MINIAPP.action -> onCloseMiniApp(callbackObj)
             ActionType.GET_HOST_APP_THEME_COLORS.action -> onGetHostAppThemeColors(callbackObj)
             ActionType.GET_IS_DARK_MODE.action -> onGetIsDarkMode(callbackObj.id)
-            ActionType.UNIVERSAL_BRIDGE_INFO.action -> onGetIsDarkMode(callbackObj.id)
+            ActionType.UNIVERSAL_BRIDGE_INFO.action -> onSendInfoToHostApp(callbackObj.id, jsonStr)
             ActionType.SEND_MA_ANALYTICS.action -> onDidReceiveMAAnalytics(callbackObj.id, jsonStr)
         }
         if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
@@ -553,7 +553,7 @@ open class MiniAppMessageBridge {
     internal fun onSendInfoToHostApp(callbackId: String, jsonStr: String) = try {
         val jsonInfoCallbackObj = Gson().fromJson(jsonStr, UniversalBridgeInfoCallbackObj::class.java)
         sendInfoToHostApp(
-            universalBridgeInfo = jsonInfoCallbackObj.param.universalbridgeinfo,
+            universalBridgeInfo = jsonInfoCallbackObj.param.universalBridgeInfo,
             onSuccess = { value ->
                 bridgeExecutor.postValue(callbackId, value.toString())
             },
