@@ -99,6 +99,10 @@ allprojects {
             versionSeparator = ''
             versionIncrementer 'incrementMinor'
         }
+        nextVersion {
+            suffix = 'alpha'
+            separator = '-'
+        }
     }
 
     project.version = scmVersion.version
