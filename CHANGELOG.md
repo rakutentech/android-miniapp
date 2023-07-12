@@ -1,22 +1,5 @@
 ## CHANGELOG
 
-### 5.3.0 (xxxx-xx-xx)
-**SDK**
-- **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
-- **Feature:** Added `MiniAppMessageBridge.getIsDarkMode` in MiniAppMessageBridge for retrieving dark mode status.
-- **Feature:** Added `MiniApp.unzipBundle` to load MiniApp from bundle. Host app can unzip a MiniApp bundle from asset folder into MiniApp file system.
-- **Feature:** Added `MiniAppView.loadFromBundle` to load MiniApp from already extracted MiniApp bundle.
-- **Feature:** Added `MiniAppMessageBridge.didReceiveMAAnalytics` to receive analytics from MiniApp.
-- **Feature:** Added `MiniAppDisplay.sendInfoToHostApp` interface to provide `Universal Bridge` for sending messages from a MiniApp to the HostApp.
-
-**Sample App**
-- **Feature:** Added implementation of `MiniAppMessageBridge.getHostAppThemeColors`.
-- **Feature:** Added qa settings to test primary and secondary color.
-- **Feature:** Added Deeplink Support to change settings keys by QR code.
-- **Feature:** Added implementation of `MiniAppMessageBridge.getIsDarkMode`.
-- **Feature:** Added `MiniApp` button in Feature page to load a MiniApp from bundle.
-- **Feature:** Added `Logs` in `QA` page to show the analytics events come from miniapp.
-
 ### 5.3.0-alpha (2023-07-12)
 ⚠️ This version is an internal release. It is not fully tested and can produce unexpected behaviors. Due to potential changes, the full change log will be provided with the final version. Adding a dependancy to this alpha version is discouraged.
 This version improves MiniApp loading from cache and brings several UI improvements features and deprecation.
