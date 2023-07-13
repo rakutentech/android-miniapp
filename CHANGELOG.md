@@ -17,6 +17,10 @@
 - **Feature:** Added `MiniApp` button in Feature page to load a MiniApp from bundle.
 - **Feature:** Added `Logs` in `QA` page to show the analytics events come from miniapp.
 
+### 5.3.0-alpha (2023-07-12)
+⚠️ This version is an internal release. It is not fully tested and can produce unexpected behaviors. Due to potential changes, the full change log will be provided with the final version. Adding a dependancy to this alpha version is discouraged.
+This version improves MiniApp loading from cache and brings several UI improvements features and deprecation.
+
 ### 5.2.1 (2023-05-23)
 **SDK**
 - **Fix:** Support In-app Purchase for old sdk implementation.
