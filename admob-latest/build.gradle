@@ -56,8 +56,4 @@ afterEvaluate {
         }
     }
 }
-def isSnapshot = project.version.contains('-')
-if (isSnapshot) {
-    ext["MAVEN_CENTRAL_IS_SNAPSHOT"] = true
-}
 apply from: '../config/publish/maven-central.gradle'
