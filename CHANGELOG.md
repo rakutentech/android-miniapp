@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.3.0 (2023-07-25)
+### 5.3.0 (2023-07-26)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
 - **Feature:** Added `MiniAppMessageBridge.getIsDarkMode` in MiniAppMessageBridge for retrieving dark mode status.
