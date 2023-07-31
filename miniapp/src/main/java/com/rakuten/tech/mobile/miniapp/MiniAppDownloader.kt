@@ -201,7 +201,7 @@ internal class MiniAppDownloader(
         }
     }
 
-    fun saveManifestForMiniAppBundle(appId: String, versionId: String, languageCode: String, manifest: MiniAppManifest) {
+    internal fun saveManifestForMiniAppBundle(appId: String, versionId: String, languageCode: String, manifest: MiniAppManifest) {
         manifestApiCache.storeManifest(
             appId,
             versionId,
