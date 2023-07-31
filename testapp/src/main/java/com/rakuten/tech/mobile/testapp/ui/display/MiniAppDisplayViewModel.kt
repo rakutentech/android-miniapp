@@ -8,12 +8,17 @@ import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooser
 import com.rakuten.tech.mobile.miniapp.file.MiniAppFileChooserDefault
 import com.rakuten.tech.mobile.miniapp.js.MiniAppMessageBridge
 import com.rakuten.tech.mobile.miniapp.navigator.MiniAppNavigator
+import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermission
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
+import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
 import com.rakuten.tech.mobile.miniapp.view.MiniAppConfig
 import com.rakuten.tech.mobile.miniapp.view.MiniAppParameters
 import com.rakuten.tech.mobile.miniapp.view.MiniAppView
 import com.rakuten.tech.mobile.testapp.ui.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 private const val NO_PUBLISHED_VERSION_ERROR = "No published version for the provided Mini App ID."
 private const val NO_MINI_APP_FOUND_ERROR = "No Mini App found for the provided Project ID."
@@ -246,7 +251,8 @@ class MiniAppDisplayViewModel constructor(
                 miniAppFileChooser
             )
         )
-        miniAppView.loadFromBundle { display, miniAppSdkException ->
+
+        miniAppView.loadFromBundle(manifest = createMiniAppManifestFor(appId, versionId)) { display, miniAppSdkException ->
             display?.let {
                 miniAppDisplay = it
                 viewModelScope.launch(Dispatchers.IO) {
@@ -258,6 +264,57 @@ class MiniAppDisplayViewModel constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Save the permissions.
+     * */
+    private fun storeManifestPermission(
+        appId: String,
+        permissions: List<Pair<MiniAppCustomPermissionType, MiniAppCustomPermissionResult>>
+    ) {
+        // store values in SDK cache
+        val permissionsWhenAccept = MiniAppCustomPermission(
+            miniAppId = appId, pairValues = permissions
+        )
+        miniapp.setCustomPermissions(permissionsWhenAccept)
+    }
+
+    /**
+     * Create a manifest file manually.
+     * */
+    private fun createMiniAppManifestFor(appId: String, versionId: String): MiniAppManifest {
+        // Save the permissions manually
+        storeManifestPermission(
+            appId = appId,
+            permissions = listOf(
+                Pair(
+                    MiniAppCustomPermissionType.ACCESS_TOKEN,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+            )
+        )
+        return MiniAppManifest(
+            requiredPermissions = emptyList(),
+            optionalPermissions = listOf(
+                Pair(
+                    MiniAppCustomPermissionType.ACCESS_TOKEN,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                )
+            ),
+            accessTokenPermissions = listOf(
+                AccessTokenScope(
+                    "rae",
+                    listOf("idinfo_read_openid", "memberinfo_read_point")
+                ),
+                AccessTokenScope(
+                    "api-c",
+                    listOf("your_service_scope_here")
+                ),
+            ),
+            customMetaData = emptyMap(),
+            versionId = versionId
+        )
     }
 
     private fun handleErrors(e: MiniAppSdkException) {

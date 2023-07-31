@@ -1,6 +1,7 @@
 package com.rakuten.tech.mobile.miniapp.view
 
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.Version
@@ -70,7 +71,10 @@ internal class MiniAppViewImpl(
     }
 
     @Throws(MiniAppSdkException::class)
-    override fun loadFromBundle(onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit) {
+    override fun loadFromBundle(
+        manifest: MiniAppManifest? ,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
+    ) {
         scope.launch {
             try {
                 lateinit var miniAppInfo: MiniAppInfo
@@ -98,7 +102,8 @@ internal class MiniAppViewImpl(
                 }
                 miniAppViewHandler.createMiniAppViewFromBundle(
                     miniAppInfo = miniAppInfo,
-                    config = config
+                    config = config,
+                    manifest = manifest,
                 ) { miniAppDisplay, miniAppSdkException ->
                     onComplete(miniAppDisplay, miniAppSdkException)
                 }
