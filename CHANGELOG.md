@@ -1,5 +1,11 @@
 ## CHANGELOG
 
+### 5.3.1 (XXXX-XX-XX)
+**SDK**
+- **Feature:** Added `manisfest` parameter to pass a manifest file while calling `MiniAppView.loadFromBundle`.
+**Sample App**
+- **Update:** Updated implementation of `MiniAppView.loadFromBundle` with the `manifest` parameter.
+
 ### 5.3.0 (2023-07-26)
 **SDK**
 - **Feature:** Added `MiniAppMessageBridge.getHostAppThemeColors` in MiniAppMessageBridge for retrieving primary and secondary theme color.
