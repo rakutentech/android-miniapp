@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.view
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
+import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 
@@ -67,9 +68,13 @@ abstract class MiniAppView internal constructor() {
     /**
      * load a mini app view from bundle.
      * The mini app is downloaded, saved and provides a view when successful.
+     * @param manifest the parameters will be appended with the miniapp manifest.
      * @param onComplete parameters needed to callback when the miniapp is successfully loaded.
      */
-    abstract fun loadFromBundle(onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit)
+    abstract fun loadFromBundle(
+        manifest: MiniAppManifest? = null,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
+    )
 
     /**
      * Send a generic message to MiniApp using

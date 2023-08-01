@@ -201,6 +201,15 @@ internal class MiniAppDownloader(
         }
     }
 
+    internal fun saveManifestForMiniAppBundle(appId: String, versionId: String, languageCode: String, manifest: MiniAppManifest) {
+        manifestApiCache.storeManifest(
+            appId,
+            versionId,
+            languageCode,
+            manifest
+        )
+    }
+
     suspend fun storeMiniAppBundle(fileName: String, miniAppId: String, versionId: String) {
         val stream: InputStream = context.assets.open(fileName)
         val versionPath = storage.saveFileFromBundle(fileName, miniAppId, versionId, stream)

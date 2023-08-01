@@ -361,7 +361,7 @@ open class MiniAppViewHandlerSpec {
                             miniAppViewHandler.miniAppIAPVerifier
                         ))
                     }
-                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, null, onComplete)
             }
         }
 
@@ -383,7 +383,7 @@ open class MiniAppViewHandlerSpec {
                     { _, miniAppSdkException ->
                         assertTrue { miniAppSdkException is MiniAppBundleNotFoundException }
                     }
-                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, null, onComplete)
             }
         }
 
@@ -399,7 +399,7 @@ open class MiniAppViewHandlerSpec {
                     { _, miniAppSdkException ->
                         assertTrue { miniAppSdkException is InvalidMiniAppInfoException }
                     }
-                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, null, onComplete)
             }
         }
 
@@ -421,7 +421,7 @@ open class MiniAppViewHandlerSpec {
                     { _, miniAppSdkException ->
                         assertTrue { miniAppSdkException is MiniAppHasCorruptedException }
                     }
-                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, onComplete)
+                miniAppViewHandler.createMiniAppViewFromBundle(testMiniAppInfo, miniAppConfig, null, onComplete)
             }
         }
 
