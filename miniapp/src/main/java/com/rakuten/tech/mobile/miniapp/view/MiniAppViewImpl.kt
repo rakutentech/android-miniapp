@@ -72,7 +72,7 @@ internal class MiniAppViewImpl(
 
     @Throws(MiniAppSdkException::class)
     override fun loadFromBundle(
-        manifest: MiniAppManifest? ,
+        manifest: MiniAppManifest?,
         onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
     ) {
         scope.launch {
