@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.3.1 (XXXX-XX-XX)
+### 5.3.1 (2023-07-02)
 **SDK**
 - **Feature:** Added `manifest` parameter to pass a `MiniAppManifest` object while calling `MiniAppView.loadFromBundle`.
 **Sample App**
