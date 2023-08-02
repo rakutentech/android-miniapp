@@ -289,7 +289,35 @@ class MiniAppDisplayViewModel constructor(
             appId = appId,
             permissions = listOf(
                 Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
                     MiniAppCustomPermissionType.ACCESS_TOKEN,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.SEND_MESSAGE,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.LOCATION,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.POINTS,
+                    MiniAppCustomPermissionResult.ALLOWED
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.FILE_DOWNLOAD,
                     MiniAppCustomPermissionResult.ALLOWED
                 ),
             )
@@ -298,9 +326,33 @@ class MiniAppDisplayViewModel constructor(
             requiredPermissions = emptyList(),
             optionalPermissions = listOf(
                 Pair(
+                    MiniAppCustomPermissionType.USER_NAME,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.PROFILE_PHOTO,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.CONTACT_LIST,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
+                Pair(
                     MiniAppCustomPermissionType.ACCESS_TOKEN,
                     MiniAppCustomPermissionResult.ALLOWED.name
-                )
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.SEND_MESSAGE,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.LOCATION,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
+                Pair(
+                    MiniAppCustomPermissionType.POINTS,
+                    MiniAppCustomPermissionResult.ALLOWED.name
+                ),
             ),
             accessTokenPermissions = listOf(
                 AccessTokenScope(
