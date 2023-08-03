@@ -257,9 +257,22 @@ internal class MiniAppViewHandler(
     suspend fun createMiniAppViewFromBundle(
         miniAppInfo: MiniAppInfo,
         config: MiniAppConfig,
-        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit
+        manifest: MiniAppManifest?,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit,
     ) {
         if (miniAppStorage.isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
+            if (manifest != null) {
+                miniAppDownloader.saveManifestForMiniAppBundle(
+                    appId = miniAppInfo.id,
+                    versionId = miniAppInfo.version.versionId,
+                    languageCode = "",
+                    manifest = manifest
+                )
+                downloadedManifestCache.storeDownloadedManifest(
+                    miniAppId = miniAppInfo.id,
+                    CachedManifest(miniAppInfo.id, manifest)
+                )
+            }
             if (miniAppStorage.isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
                 val versionPath = miniAppStorage.getBundleWritePath(
                     miniAppInfo.id,
