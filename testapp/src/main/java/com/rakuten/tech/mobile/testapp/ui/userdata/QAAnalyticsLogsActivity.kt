@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.testapp.ui.userdata
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import com.rakuten.tech.mobile.miniapp.testapp.R
@@ -40,6 +41,11 @@ class QAAnalyticsLogsActivity : BaseActivity() {
         binding.tvAnalyticsLogs.text = FileUtils.getAnalyticLogs(this)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.settings_qa_logs_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         return when (item.itemId) {
@@ -47,8 +53,17 @@ class QAAnalyticsLogsActivity : BaseActivity() {
                 exitPage()
                 return true
             }
+            R.id.qa_logs_clear -> {
+                clearLogs()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun clearLogs(){
+        FileUtils.deleteLogs(this)
+        binding.tvAnalyticsLogs.text = ""
     }
 
     override fun onBackPressed() {
