@@ -24,6 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.net.ConnectException
@@ -215,10 +216,28 @@ internal class MiniAppDownloader(
         )
     }
 
-    suspend fun storeMiniAppBundle(fileName: String, miniAppId: String, versionId: String) {
-        val stream: InputStream = context.assets.open(fileName)
-        val versionPath = storage.saveFileFromBundle(fileName, miniAppId, versionId, stream)
-        verifier.storeHashAsync(versionId, File(versionPath))
+    suspend fun storeMiniAppBundle(
+        fileName: String,
+        miniAppId: String,
+        versionId: String,
+        completionHandler: ((success: Boolean, MiniAppSdkException?) -> Unit)?
+    ) {
+        try {
+            val stream: InputStream = context.assets.open(fileName)
+            val versionPath = storage.saveFileFromBundle(fileName, miniAppId, versionId, stream)
+            verifier.storeHashAsync(versionId, File(versionPath))
+            completionHandler?.let {
+                it.invoke(true, null)
+            }
+        } catch (e: MiniAppSdkException){
+            completionHandler?.let {
+                it.invoke(false, e)
+            }
+        } catch (e: FileNotFoundException){
+            completionHandler?.let {
+                it.invoke(false, MiniAppBundleNotFoundException())
+            }
+        }
     }
 
     @VisibleForTesting
@@ -284,25 +303,67 @@ internal class MiniAppDownloader(
         }
     }
 
+    @SuppressWarnings("LongMethod", "NestedBlockDepth", "ComplexMethod", "ThrowsCount")
+    internal suspend fun downloadMiniApp(
+        appId: String,
+        versionId: String,
+    ): String {
+        val manifest = fetchManifest(appId, versionId)
+        val baseSavePath = storage.getMiniAppVersionPath(appId, versionId)
+        when {
+            doesManifestFileExist(manifest.first) -> {
+                for (file in manifest.first.files) {
+                    try {
+                        checkSignatureValidation(
+                            file = file,
+                            versionId = versionId,
+                            manifest = manifest,
+                            appId = appId
+                        )
+                        storage.saveFile(
+                            file,
+                            baseSavePath,
+                            apiClient.downloadFile(file).byteStream()
+                        )
+                    } catch (error: MiniAppTooManyRequestsError) {
+                        removeMiniApp(appId, versionId, TOO_MANY_REQUEST_ERR_LOG)
+                        throw MiniAppTooManyRequestsError(error.message)
+                    }
+                }
+                return baseSavePath
+            }
+            // If backend functions correctly, this should never happen
+            else -> throw sdkExceptionForInternalServerError()
+        }
+    }
+
+    @VisibleForTesting
+    internal fun isMiniAppAvailable(appId: String, versionId: String): Boolean {
+        return storage.isMiniAppAvailable(appId, versionId)
+    }
     private suspend fun checkSignatureValidation(
         file: String,
         versionId: String,
         manifest: Pair<ManifestEntity, ManifestHeader>,
-        miniAppInfo: MiniAppInfo,
+        miniAppInfo: MiniAppInfo? = null,
         appId: String
     ) {
         if (isSignatureValid(apiClient.downloadFile(file).byteStream(), versionId, manifest)) {
-            miniAppAnalytics.sendAnalytics(
-                eType = Etype.CLICK,
-                actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
-                miniAppInfo = miniAppInfo
-            )
+            if (miniAppInfo != null) {
+                miniAppAnalytics.sendAnalytics(
+                    eType = Etype.CLICK,
+                    actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                    miniAppInfo = miniAppInfo
+                )
+            }
         } else {
-            miniAppAnalytics.sendAnalytics(
-                eType = Etype.CLICK,
-                actype = Actype.SIGNATURE_VALIDATION_FAIL,
-                miniAppInfo = miniAppInfo
-            )
+            if (miniAppInfo != null) {
+                miniAppAnalytics.sendAnalytics(
+                    eType = Etype.CLICK,
+                    actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                    miniAppInfo = miniAppInfo
+                )
+            }
             if (requireSignatureVerification) {
                 removeMiniApp(
                     appId, versionId, "$SIGNATURE_VERIFICATION_ERR " +

@@ -321,7 +321,48 @@ internal class RealMiniApp(
         sslPublicKeyList = newConfig.sslPinningPublicKeyList
     )
 
-    override suspend fun unzipBundle(fileName: String, miniAppId: String, versionId: String) {
-        miniAppDownloader.storeMiniAppBundle(fileName, miniAppId, versionId)
+    override suspend fun unzipBundle(
+        fileName: String,
+        miniAppId: String,
+        versionId: String,
+        completionHandler: ((success: Boolean, MiniAppSdkException?) -> Unit)?
+    ) {
+        miniAppDownloader.storeMiniAppBundle(fileName, miniAppId, versionId, completionHandler)
+    }
+
+    override suspend fun downloadMiniApp(
+        miniAppId: String,
+        versionId: String,
+        completionHandler: (success: Boolean, MiniAppSdkException?) -> Unit
+    ) {
+        if (miniAppId.isEmpty()) {
+            completionHandler.invoke(false, MiniAppSdkException("Invalid MiniApp ID"))
+            return
+        }
+        if (versionId.isEmpty()) {
+            completionHandler.invoke(false, MiniAppSdkException("Invalid Version ID"))
+            return
+        }
+        try {
+            val downloadedPath = miniAppDownloader.downloadMiniApp(
+                appId = miniAppId,
+                versionId = versionId
+            )
+            if (downloadedPath.isNotEmpty()) {
+                completionHandler(true, null)
+            } else {
+                completionHandler(
+                    false,
+                    MiniAppSdkException("Something went wrong during the download")
+                )
+            }
+        } catch (e: MiniAppSdkException) {
+            completionHandler(false, e)
+        }
+
+    }
+
+    override fun isMiniAppAvailable(miniAppId: String, versionId: String): Boolean {
+        return miniAppDownloader.isMiniAppAvailable(miniAppId, versionId)
     }
 }

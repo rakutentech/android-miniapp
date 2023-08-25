@@ -38,7 +38,33 @@ abstract class MiniApp internal constructor() {
      * @param versionId will be the version of the MiniApp.
      */
     @Throws(MiniAppSdkException::class)
-    abstract suspend fun unzipBundle(fileName: String, miniAppId: String, versionId: String)
+    abstract suspend fun unzipBundle(
+        fileName: String,
+        miniAppId: String,
+        versionId: String,
+        completionHandler: ((success: Boolean, MiniAppSdkException?) -> Unit)? = null
+    )
+
+    /**
+     * download and store a MiniApp.
+     * @param miniAppId will be the id of the MiniApp.
+     * @param versionId will be the version of the MiniApp.
+     * @param completionHandler callback when the miniapp is successfully downloaded.
+     */
+    abstract suspend fun downloadMiniApp(
+        miniAppId: String,
+        versionId: String,
+        completionHandler: (success: Boolean, MiniAppSdkException?) -> Unit,
+    )
+
+    /**
+     * Check and return TRUE if the MiniApp is available for a given miniAppId and versionId.
+     * @param miniAppId will be the id of the MiniApp.
+     * @param versionId will be the version of the MiniApp.
+     */
+    @Throws(MiniAppSdkException::class)
+    abstract fun isMiniAppAvailable(miniAppId: String, versionId: String): Boolean
+
 
     /**
      * Fetches and lists out the mini applications available in the MiniApp Ecosystem.

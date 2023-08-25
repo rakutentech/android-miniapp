@@ -298,6 +298,7 @@ internal class MiniAppViewHandler(
                             miniAppIAPVerifier
                         ), null
                     )
+                    miniAppStorage.removeVersions(miniAppInfo.id, miniAppInfo.version.versionId)
                 } else {
                     onComplete(null, MiniAppHasCorruptedException(miniAppInfo.id))
                 }
