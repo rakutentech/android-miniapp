@@ -338,7 +338,7 @@ internal class MiniAppDownloader(
     }
 
     @VisibleForTesting
-    internal fun isMiniAppAvailable(appId: String, versionId: String): Boolean {
+    internal fun isMiniAppCacheAvailable(appId: String, versionId: String): Boolean {
         return storage.isMiniAppAvailable(appId, versionId)
     }
 

@@ -362,6 +362,6 @@ internal class RealMiniApp(
     }
 
     override fun isMiniAppCacheAvailable(miniAppId: String, versionId: String): Boolean {
-        return miniAppDownloader.isMiniAppAvailable(miniAppId, versionId)
+        return miniAppDownloader.isMiniAppCacheAvailable(miniAppId, versionId)
     }
 }
