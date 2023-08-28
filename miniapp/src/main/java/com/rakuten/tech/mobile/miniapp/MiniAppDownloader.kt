@@ -325,9 +325,8 @@ internal class MiniAppDownloader(
                             baseSavePath,
                             apiClient.downloadFile(file).byteStream()
                         )
-                    } catch (error: MiniAppTooManyRequestsError) {
-                        removeMiniApp(appId, versionId, TOO_MANY_REQUEST_ERR_LOG)
-                        throw MiniAppTooManyRequestsError(error.message)
+                    } catch (error: MiniAppSdkException) {
+                        throw error
                     }
                 }
                 return baseSavePath
