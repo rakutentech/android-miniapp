@@ -33,6 +33,13 @@ class FileUtils {
             )
         }
 
+        fun deleteLogs(context: Context) {
+            val logFile =
+                File(context.filesDir, "$ANALYTIC_LOG_FOLDER_NAME/$ANALYTIC_LOG_FILE_NAME")
+            if (logFile.exists())
+                logFile.delete()
+        }
+
         fun getAnalyticLogs(context: Context): String {
             val logFile =
                 File(context.filesDir, "$ANALYTIC_LOG_FOLDER_NAME/$ANALYTIC_LOG_FILE_NAME")
