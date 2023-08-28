@@ -45,7 +45,7 @@ class DemoAppMainActivity : BaseActivity() {
                     fileName = "js-miniapp-sample.zip",
                     miniAppId = BUNDLE_MINI_APP_ID,
                     versionId = BUNDLE_MINI_APP_VERSION_ID
-                ) { success, miniAppSdkException ->
+                ) { success, _ ->
                     if (success) {
                         Log.i("success", "Unzip bundle successful.")
                     } else {

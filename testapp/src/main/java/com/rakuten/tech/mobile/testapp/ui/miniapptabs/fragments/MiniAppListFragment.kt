@@ -1,10 +1,8 @@
 package com.rakuten.tech.mobile.testapp.ui.miniapptabs.fragments
 
-import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
