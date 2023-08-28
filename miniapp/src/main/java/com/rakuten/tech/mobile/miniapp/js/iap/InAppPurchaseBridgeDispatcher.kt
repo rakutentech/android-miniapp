@@ -260,6 +260,7 @@ internal class InAppPurchaseBridgeDispatcher {
     }
 
     @VisibleForTesting
+    @Suppress("SwallowedException")
     internal fun checkPurchaseState(
         recordCache: MiniAppPurchaseRecordCache,
         callback: (state: TransactionState) -> Unit

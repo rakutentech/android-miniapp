@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +17,7 @@ import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.testapp.R
 import com.rakuten.tech.mobile.miniapp.testapp.databinding.MiniAppListFragmentBinding
+import com.rakuten.tech.mobile.testapp.helper.showAlertDialog
 import com.rakuten.tech.mobile.testapp.ui.base.BaseFragment
 import com.rakuten.tech.mobile.testapp.ui.display.preload.PreloadMiniAppWindow
 import com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter.MiniAppListAdapter
@@ -134,6 +137,36 @@ class MiniAppListFragment : BaseFragment(), MiniAppListener, OnSearchListener,
                 )
             }
         }
+    }
+
+    override fun onMiniAppItemLongClick(itemView: View, miniAppInfo: MiniAppInfo) {
+        val popupMenu = PopupMenu(context!!, itemView)
+        popupMenu.menuInflater.inflate(R.menu.miniapp_list_option_menu, popupMenu.menu)
+        popupMenu.gravity = Gravity.RIGHT
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.btn_download -> {
+                    viewModel.downloadMiniApp(miniAppInfo.id, miniAppInfo.version.versionId) {
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                R.id.btn_check_available -> {
+                    viewModel.checkMiniApp(miniAppInfo.id, miniAppInfo.version.versionId) {
+                        requireActivity().runOnUiThread {
+                            showAlertDialog(
+                                requireActivity(),
+                                "Info",
+                                it
+                            )
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu.show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

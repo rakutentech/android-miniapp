@@ -26,8 +26,8 @@ import kotlinx.android.synthetic.main.mini_app_main_layout.*
 import kotlinx.coroutines.launch
 
 val miniAppIdAndViewMap = hashMapOf<Pair<Int, String>, MiniAppView>()
-val BUNDLE_MINI_APP_ID = "404e46b4-263d-4768-b2ec-8a423224bead"
-val BUNDLE_MINI_APP_VERSION_ID = "4c3365a8-7192-4b2e-a290-101ad5987f2e"
+val BUNDLE_MINI_APP_ID = "bundle_miniapp_id"
+val BUNDLE_MINI_APP_VERSION_ID = "bundle_miniapp_version_id"
 
 class DemoAppMainActivity : BaseActivity() {
     private var currentNavController: LiveData<NavController>? = null
@@ -37,11 +37,24 @@ class DemoAppMainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         //unzip the bundle
         launch {
-            MiniApp.instance().unzipBundle(
-                fileName = "js-miniapp-sample.zip",
-                miniAppId = BUNDLE_MINI_APP_ID,
-                versionId = BUNDLE_MINI_APP_VERSION_ID
-            )
+            if (!MiniApp
+                    .instance()
+                    .isMiniAppCacheAvailable(BUNDLE_MINI_APP_ID, BUNDLE_MINI_APP_VERSION_ID)
+            ) {
+                MiniApp.instance().unzipBundle(
+                    fileName = "js-miniapp-sample.zip",
+                    miniAppId = BUNDLE_MINI_APP_ID,
+                    versionId = BUNDLE_MINI_APP_VERSION_ID
+                ) { success, _ ->
+                    if (success) {
+                        Log.i("success", "Unzip bundle successful.")
+                    } else {
+                        Log.e("error", "Failed to unzip bundle.")
+                    }
+                }
+            } else {
+                Log.i("success", "Unzip bundle already available.")
+            }
         }
 
         binding = DataBindingUtil.setContentView(this, R.layout.mini_app_main_layout)

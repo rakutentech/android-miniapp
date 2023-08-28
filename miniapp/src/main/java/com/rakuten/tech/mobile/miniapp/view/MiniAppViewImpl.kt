@@ -70,6 +70,7 @@ internal class MiniAppViewImpl(
         }
     }
 
+    @Suppress("LongMethod")
     @Throws(MiniAppSdkException::class)
     override fun loadFromBundle(
         manifest: MiniAppManifest?,

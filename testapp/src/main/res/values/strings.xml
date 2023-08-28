@@ -65,6 +65,8 @@
     <string name="action_go_input_url_details">Open a miniapp via url</string>
     <string name="action_load_miniapp_from_bundle">Load MiniApp From Bundle</string>
     <string name="action_save">Save</string>
+    <string name="action_miniapp_download">Download</string>
+    <string name="action_check_available">Already available?</string>
     <string name="action_clear">Clear</string>
     <string name="action_add">Add</string>
     <string name="action_cancel">CANCEL</string>
