@@ -40,4 +40,34 @@ class MiniAppListViewModel constructor(
                 _errorData.postValue(error.message)
             }
         }
+
+    fun downloadMiniApp(
+        appId: String,
+        versionId: String,
+        completionHandler: (message: String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            miniapp.downloadMiniApp(appId, versionId) { success, miniAppSdkException ->
+                if (success) {
+                    completionHandler.invoke("MiniApp is downloaded successfully")
+                } else {
+                    miniAppSdkException?.let {
+                        completionHandler.invoke("MiniApp is failed to download + {${it.message}}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun checkMiniApp(
+        appId: String, versionId: String, completionHandler: (message: String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val isMiniAppAvailable = miniapp.isMiniAppCacheAvailable(appId, versionId)
+            if (isMiniAppAvailable)
+                completionHandler.invoke("MiniApp is Available")
+            else
+                completionHandler.invoke("MiniApp is not Available")
+        }
+    }
 }

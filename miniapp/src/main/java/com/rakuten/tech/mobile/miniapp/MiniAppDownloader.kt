@@ -229,11 +229,11 @@ internal class MiniAppDownloader(
             completionHandler?.let {
                 it.invoke(true, null)
             }
-        } catch (e: MiniAppSdkException){
+        } catch (e: MiniAppSdkException) {
             completionHandler?.let {
                 it.invoke(false, e)
             }
-        } catch (e: FileNotFoundException){
+        } catch (e: FileNotFoundException) {
             completionHandler?.let {
                 it.invoke(false, MiniAppBundleNotFoundException())
             }
@@ -341,6 +341,8 @@ internal class MiniAppDownloader(
     internal fun isMiniAppAvailable(appId: String, versionId: String): Boolean {
         return storage.isMiniAppAvailable(appId, versionId)
     }
+
+    @Suppress("LongMethod")
     private suspend fun checkSignatureValidation(
         file: String,
         versionId: String,
@@ -355,6 +357,13 @@ internal class MiniAppDownloader(
                     actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
                     miniAppInfo = miniAppInfo
                 )
+            } else {
+                miniAppAnalytics.sendAnalytics(
+                    eType = Etype.CLICK,
+                    actype = Actype.SIGNATURE_VALIDATION_SUCCESS,
+                    appId = appId,
+                    versionId = versionId
+                )
             }
         } else {
             if (miniAppInfo != null) {
@@ -362,6 +371,13 @@ internal class MiniAppDownloader(
                     eType = Etype.CLICK,
                     actype = Actype.SIGNATURE_VALIDATION_FAIL,
                     miniAppInfo = miniAppInfo
+                )
+            } else {
+                miniAppAnalytics.sendAnalytics(
+                    eType = Etype.CLICK,
+                    actype = Actype.SIGNATURE_VALIDATION_FAIL,
+                    appId = appId,
+                    versionId = versionId
                 )
             }
             if (requireSignatureVerification) {

@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.testapp.ui.miniapptabs.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
@@ -92,6 +93,7 @@ private class MiniAppDiffCallback : DiffUtil.ItemCallback<MiniAppInfo>() {
 
 interface MiniAppListener {
     fun onMiniAppItemClick(miniAppInfo: MiniAppInfo)
+    fun onMiniAppItemLongClick(itemView: View, miniAppInfo: MiniAppInfo)
 }
 
 class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -105,6 +107,10 @@ class MiniAppsListViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHo
             binding.tvVersion.isSelected = true
             binding.itemRoot.setOnClickListener {
                 miniAppListener.onMiniAppItemClick(miniAppInfo)
+            }
+            binding.itemRoot.setOnLongClickListener {
+                miniAppListener.onMiniAppItemLongClick(it, miniAppInfo)
+                return@setOnLongClickListener true
             }
         }
     }

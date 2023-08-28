@@ -36,6 +36,7 @@ abstract class MiniApp internal constructor() {
      * @param fileName will be the name of the file in asset folder.
      * @param miniAppId will be the id of the MiniApp.
      * @param versionId will be the version of the MiniApp.
+     * @param completionHandler callback when the bundle is successfully unzipped.
      */
     @Throws(MiniAppSdkException::class)
     abstract suspend fun unzipBundle(
@@ -49,7 +50,7 @@ abstract class MiniApp internal constructor() {
      * download and store a MiniApp.
      * @param miniAppId will be the id of the MiniApp.
      * @param versionId will be the version of the MiniApp.
-     * @param completionHandler callback when the miniapp is successfully downloaded.
+     * @param completionHandler callback when the MiniApp is successfully downloaded.
      */
     abstract suspend fun downloadMiniApp(
         miniAppId: String,
@@ -63,8 +64,7 @@ abstract class MiniApp internal constructor() {
      * @param versionId will be the version of the MiniApp.
      */
     @Throws(MiniAppSdkException::class)
-    abstract fun isMiniAppAvailable(miniAppId: String, versionId: String): Boolean
-
+    abstract fun isMiniAppCacheAvailable(miniAppId: String, versionId: String): Boolean
 
     /**
      * Fetches and lists out the mini applications available in the MiniApp Ecosystem.

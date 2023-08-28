@@ -359,10 +359,9 @@ internal class RealMiniApp(
         } catch (e: MiniAppSdkException) {
             completionHandler(false, e)
         }
-
     }
 
-    override fun isMiniAppAvailable(miniAppId: String, versionId: String): Boolean {
+    override fun isMiniAppCacheAvailable(miniAppId: String, versionId: String): Boolean {
         return miniAppDownloader.isMiniAppAvailable(miniAppId, versionId)
     }
 }

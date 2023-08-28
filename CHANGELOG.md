@@ -1,5 +1,14 @@
 ## CHANGELOG
 
+### 5.4.0 (2023-08-29)
+**SDK**
+- **Feature:** Added a new interface `downloadMiniApp` to download Miniapp from platform in background if needed.
+- **Feature:** Added a utility method `isMiniAppCacheAvailable()` to know if Miniapp has beend downloaded properly.
+- **Refactor:** Updated unzip Miniapp method with optional completion handler that will let the host app know if the download is success.
+
+**Sample App**
+- **Feature:** Added Menu in list view to Download and check if Miniapp is downloaded already.
+
 ### 5.3.1 (2023-07-02)
 **SDK**
 - **Feature:** Added `manifest` parameter to pass a `MiniAppManifest` object while calling `MiniAppView.loadFromBundle`.

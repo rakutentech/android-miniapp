@@ -95,7 +95,7 @@ class RealMiniAppSpec : BaseRealMiniAppSpec() {
     fun `unzipBundle should invoke storeMiniAppBundle when calling`() = runBlockingTest {
         realMiniApp.unzipBundle("test_file_name", TEST_MA_ID, TEST_MA_VERSION_ID)
 
-        verify(miniAppDownloader).storeMiniAppBundle("test_file_name", TEST_MA_ID, TEST_MA_VERSION_ID)
+        verify(miniAppDownloader).storeMiniAppBundle("test_file_name", TEST_MA_ID, TEST_MA_VERSION_ID, null)
     }
 
     /** region: RealMiniApp.fetchInfo */

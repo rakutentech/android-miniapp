@@ -19,7 +19,7 @@ private inline fun <T> whenHasAnalytics(callback: () -> T) {
 }
 
 /** Only init when analytics dependency is provided. */
-@Suppress("SwallowedException", "TooGenericExceptionCaught")
+@Suppress("SwallowedException", "TooGenericExceptionCaught", "StringLiteralDuplication")
 internal class MiniAppAnalytics(
     val rasProjectId: String,
     private val configs: List<MiniAppAnalyticsConfig>
@@ -71,6 +71,32 @@ internal class MiniAppAnalytics(
             )
         }
 
+        /** common function to create params to send to tracker. */
+        @Suppress("LongMethod", "LongParameterList")
+        @VisibleForTesting
+        internal fun createParams(
+            rasProjectId: String,
+            acc: Int,
+            aid: Int,
+            actype: Actype,
+            appId: String,
+            versionId: String
+        ): Map<String, Any> {
+
+            val cp = JSONObject()
+                .put("mini_app_project_id", rasProjectId)
+                .put("mini_app_sdk_version", BuildConfig.VERSION_NAME)
+                .put("mini_app_id", appId)
+                .put("mini_app_version_id", versionId)
+
+            return mapOf<String, Any>(
+                "acc" to acc,
+                "aid" to aid,
+                "actype" to actype.value,
+                "cp" to cp
+            )
+        }
+
         /** common function to send to tracker. */
         private fun trackEvent(eType: Etype, params: Map<String, Any>) = whenHasAnalytics {
             RatTracker.event(eType.value, params).track()
@@ -97,6 +123,35 @@ internal class MiniAppAnalytics(
                 aid = aid,
                 actype = actype,
                 miniAppInfo = miniAppInfo
+            )
+            trackEvent(eType, hostAppParams)
+        }
+    } catch (e: Exception) {
+        Log.e("MiniAppAnalytics", e.message.orEmpty())
+    }
+
+    @Suppress("LongMethod")
+    internal fun sendAnalytics(eType: Etype, actype: Actype, appId: String, versionId: String) = try {
+        // Send to this acc/aid
+        val params = createParams(
+            rasProjectId = rasProjectId,
+            acc = BuildConfig.ANALYTICS_ACC,
+            aid = BuildConfig.ANALYTICS_AID,
+            actype = actype,
+            appId = appId,
+            versionId = versionId
+        )
+        trackEvent(eType, params)
+
+        // Send to all the external acc/aid added by host app
+        for ((acc, aid) in configs) {
+            val hostAppParams = createParams(
+                rasProjectId = rasProjectId,
+                acc = acc,
+                aid = aid,
+                actype = actype,
+                appId = appId,
+                versionId = versionId
             )
             trackEvent(eType, hostAppParams)
         }
