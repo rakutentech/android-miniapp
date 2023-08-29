@@ -22,7 +22,7 @@ internal class MiniAppStorage(
     private val miniAppBasePath
         get() = "$hostAppBasePath/$SUB_DIR_MINIAPP/"
 
-    @Suppress("TooGenericExceptionCaqqught")
+    @Suppress("TooGenericExceptionCaught")
     suspend fun saveFile(
         source: String,
         basePath: String,
