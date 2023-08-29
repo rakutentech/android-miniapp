@@ -1,6 +1,6 @@
 ## CHANGELOG
 
-### 5.4.0 (2023-08-29)
+### 5.4.0 (2023-08-28)
 **SDK**
 - **Feature:** Added a new interface `downloadMiniApp` to download Miniapp from platform in background if needed.
 - **Feature:** Added a utility method `isMiniAppCacheAvailable()` to know if Miniapp has beend downloaded properly.
