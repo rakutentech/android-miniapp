@@ -17,6 +17,7 @@ internal class MiniAppStorage(
     private val urlToFileInfoParser: UrlToFileInfoParser = UrlToFileInfoParser()
 ) {
     private val hostAppBasePath = basePath.path
+    private val manifestFile = "manifest.txt"
 
     private val miniAppBasePath
         get() = "$hostAppBasePath/$SUB_DIR_MINIAPP/"
@@ -99,7 +100,10 @@ internal class MiniAppStorage(
                     if (!file.absolutePath.endsWith(exclusiveVersionId))
                         emit(file)
                 }
-            }.collect { file -> deleteDirectory(file) }
+            }.collect { file ->
+                if (file.name != manifestFile)
+                    deleteDirectory(file)
+            }
         }
     }
 
