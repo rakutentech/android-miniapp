@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.4.2 (2023-08-29)
+**SDK**
+- **Fix:** Store hash on successfull download of Miniapp in background.
+
 ### 5.4.1 (2023-08-29)
 **SDK**
 - **Fix:** Prevent manifest file being deleted when `MiniAppView.loadFromBundle` being called.
