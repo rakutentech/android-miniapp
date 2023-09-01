@@ -329,6 +329,7 @@ internal class MiniAppDownloader(
                         throw error
                     }
                 }
+                verifier.storeHashAsync(versionId, File(baseSavePath))
                 return baseSavePath
             }
             // If backend functions correctly, this should never happen
