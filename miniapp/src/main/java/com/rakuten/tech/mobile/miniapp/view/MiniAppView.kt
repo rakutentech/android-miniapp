@@ -2,7 +2,6 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig

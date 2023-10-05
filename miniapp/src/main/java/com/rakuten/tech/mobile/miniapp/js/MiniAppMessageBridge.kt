@@ -65,9 +65,9 @@ open class MiniAppMessageBridge {
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     @VisibleForTesting
-    internal val miniAppFileDownloadDispatcher:MiniAppFileDownloadDispatcher? = null
+    internal val miniAppFileDownloadDispatcher: MiniAppFileDownloadDispatcher? = null
     @VisibleForTesting
-    internal val iapBridgeDispatcher:InAppPurchaseBridgeDispatcher? = null
+    internal val iapBridgeDispatcher: InAppPurchaseBridgeDispatcher? = null
 
     @VisibleForTesting
     internal var ratDispatcher: MessageBridgeRatDispatcher? = null

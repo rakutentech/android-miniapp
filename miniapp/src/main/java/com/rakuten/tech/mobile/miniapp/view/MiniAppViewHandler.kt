@@ -12,7 +12,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppInfo
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkException
 import com.rakuten.tech.mobile.miniapp.MiniAppBundleNotFoundException
-import com.rakuten.tech.mobile.miniapp.MiniAppHasCorruptedException
 import com.rakuten.tech.mobile.miniapp.InvalidMiniAppInfoException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
@@ -35,7 +34,6 @@ import com.rakuten.tech.mobile.miniapp.storage.MiniAppStatus
 import com.rakuten.tech.mobile.miniapp.storage.FileWriter
 import com.rakuten.tech.mobile.miniapp.storage.verifier.CachedMiniAppVerifier
 import com.rakuten.tech.mobile.miniapp.storage.verifier.MiniAppManifestVerifier
-import java.io.File
 import java.util.Locale
 
 @Suppress("LargeClass", "TooManyFunctions")
@@ -172,6 +170,7 @@ internal class MiniAppViewHandler(
                         config.queryParams
                     ), null
                 )
+                miniAppStorage.removeVersions(miniAppInfo.id, miniAppInfo.version.versionId)
             } else {
                 onComplete(null, MiniAppBundleNotFoundException())
             }
