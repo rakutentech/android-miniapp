@@ -141,7 +141,7 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     @Test
     fun `secureStorage should call insertItems when secureStorageCallbackObj is valid`() {
         val secureStorage: MiniAppSecureStorage = mock()
-        When calling miniappMessageBridge.miniAppSecureStorageDispatcher.miniAppSecureStorage itReturns secureStorage
+        When calling miniappMessageBridge.miniAppSecureStorageDispatcher?.miniAppSecureStorage itReturns secureStorage
         val callbackJson = getSecureStorageCallBackToJsonStr(secureStorageCallbackObj)
         miniappMessageBridge.postMessage(callbackJson)
         verify(secureStorage).insertItems(
@@ -154,7 +154,7 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     @Test
     fun `bridgeExecutor should call postError when secureStorageCallbackObj is not valid`() {
         val bridgeExecutor: MiniAppBridgeExecutor = mock()
-        When calling miniappMessageBridge.miniAppSecureStorageDispatcher.bridgeExecutor itReturns bridgeExecutor
+        When calling miniappMessageBridge.miniAppSecureStorageDispatcher?.bridgeExecutor itReturns bridgeExecutor
         miniappMessageBridge.postMessage(Gson().toJson(secureStorageCallbackFailObj))
         verify(bridgeExecutor).postError(
             secureStorageCallbackFailObj.id,
