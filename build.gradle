@@ -97,7 +97,7 @@ allprojects {
         tag {
             prefix = 'v'
             versionSeparator = ''
-            versionIncrementer 'incrementPatch'
+            versionIncrementer 'incrementMinor'
         }
     }
     project.version = scmVersion.version
