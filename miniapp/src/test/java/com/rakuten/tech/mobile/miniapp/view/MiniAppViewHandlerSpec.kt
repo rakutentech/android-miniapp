@@ -62,7 +62,7 @@ open class MiniAppViewHandlerSpec {
         When calling miniAppSdkConfig.maxStorageSizeLimitInBytes itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
 
         miniAppViewHandler = spy(MiniAppViewHandler(context, miniAppSdkConfig))
-
+        miniAppViewHandler.initializeDefaultMiniAppConfig()
         miniAppViewHandler.apiClientRepository = mock()
         When calling miniAppViewHandler.apiClientRepository.getApiClientFor(miniAppSdkConfig) itReturns apiClient
 

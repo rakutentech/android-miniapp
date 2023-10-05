@@ -80,8 +80,8 @@ internal class MiniAppViewHandler(
         isPreviewMode = config.isPreviewMode,
         sslPublicKeyList = config.sslPinningPublicKeyList
     )
-
-    private fun initMiniAppDownloader() = MiniAppDownloader(
+    @VisibleForTesting
+    internal fun initMiniAppDownloader() = MiniAppDownloader(
         context = context,
         apiClient = apiClient,
         miniAppAnalytics = miniAppAnalytics,
@@ -92,8 +92,8 @@ internal class MiniAppViewHandler(
         initManifestApiCache = { manifestApiCache },
         initSignatureVerifier = { signatureVerifier }
     )
-
-    private fun initializeDefaultMiniAppConfig() {
+    @VisibleForTesting
+    internal fun initializeDefaultMiniAppConfig() {
         apiClient = initApiClient()
         displayer = Displayer(config.hostAppUserAgentInfo)
         miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
