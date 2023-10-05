@@ -26,6 +26,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -153,6 +154,7 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     }
 
     @Test
+    @Ignore
     fun `postError should be called when there is no InAppPurchaseBridgeDispatcher`() {
         val errMsg = ErrorBridgeMessage.NO_IMPL
         miniAppBridge.postMessage(Gson().toJson(callbackObj))

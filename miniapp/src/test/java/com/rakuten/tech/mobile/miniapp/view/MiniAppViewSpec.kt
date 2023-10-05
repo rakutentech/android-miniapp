@@ -139,17 +139,20 @@ open class MiniAppViewSpec {
         When calling instance.createMiniAppView(
             context,
             defaultParameters,
-            miniAppSdkConfig
+            miniAppSdkConfig,
+            false
         ) itReturns miniAppView
         When calling instance.createMiniAppView(
             context,
             infoParameters,
-            miniAppSdkConfig
+            miniAppSdkConfig,
+            false
         ) itReturns miniAppView
         When calling instance.createMiniAppView(
             context,
             urlParameters,
-            miniAppSdkConfig
+            miniAppSdkConfig,
+            false
         ) itReturns miniAppView
         return instance
     }
