@@ -76,4 +76,24 @@ internal class Displayer(private val hostAppUserAgentInfo: String) {
         enableH5Ads = enableH5Ads,
         miniAppIAPVerifier = miniAppIAPVerifier
     )
+
+    @Suppress("LongParameterList")
+    fun createMiniAppDisplayForBundle(
+        basePath: String,
+        miniAppInfo: MiniAppInfo,
+        miniAppMessageBridge: MiniAppMessageBridge,
+        miniAppNavigator: MiniAppNavigator?,
+        miniAppCustomPermissionCache: MiniAppCustomPermissionCache,
+        downloadedManifestCache: DownloadedManifestCache,
+        queryParams: String,
+    ): MiniAppDisplay = BundleMiniAppDisplay(
+        basePath = basePath,
+        miniAppInfo = miniAppInfo,
+        miniAppMessageBridge = miniAppMessageBridge,
+        miniAppNavigator = miniAppNavigator,
+        hostAppUserAgentInfo = hostAppUserAgentInfo,
+        miniAppCustomPermissionCache = miniAppCustomPermissionCache,
+        downloadedManifestCache = downloadedManifestCache,
+        queryParams = queryParams
+    )
 }

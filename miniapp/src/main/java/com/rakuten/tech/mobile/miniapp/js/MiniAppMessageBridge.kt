@@ -65,17 +65,17 @@ open class MiniAppMessageBridge {
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     @VisibleForTesting
-    internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
+    internal val miniAppFileDownloadDispatcher:MiniAppFileDownloadDispatcher? = null
     @VisibleForTesting
-    internal val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
+    internal val iapBridgeDispatcher:InAppPurchaseBridgeDispatcher? = null
 
     @VisibleForTesting
-    internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
+    internal var ratDispatcher: MessageBridgeRatDispatcher? = null
     private lateinit var screenBridgeDispatcher: ScreenBridgeDispatcher
     private var allowScreenOrientation = false
 
     @VisibleForTesting
-    internal lateinit var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher
+    internal var miniAppSecureStorageDispatcher: MiniAppSecureStorageDispatcher? = null
 
     private var miniAppCloseAlertInfo: MiniAppCloseAlertInfo? = null
     @VisibleForTesting
@@ -94,9 +94,9 @@ open class MiniAppMessageBridge {
         customPermissionCache: MiniAppCustomPermissionCache,
         downloadedManifestCache: DownloadedManifestCache,
         miniAppId: String,
-        ratDispatcher: MessageBridgeRatDispatcher,
-        secureStorageDispatcher: MiniAppSecureStorageDispatcher,
-        miniAppIAPVerifier: MiniAppIAPVerifier
+        ratDispatcher: MessageBridgeRatDispatcher?,
+        secureStorageDispatcher: MiniAppSecureStorageDispatcher?,
+        miniAppIAPVerifier: MiniAppIAPVerifier?
     ) {
         this.activity = activity
         this.miniAppId = miniAppId
@@ -108,16 +108,16 @@ open class MiniAppMessageBridge {
         this.ratDispatcher = ratDispatcher
         this.miniAppSecureStorageDispatcher = secureStorageDispatcher
         adBridgeDispatcher.setBridgeExecutor(bridgeExecutor)
-        miniAppFileDownloadDispatcher.setBridgeExecutor(activity, bridgeExecutor)
-        miniAppFileDownloadDispatcher.setMiniAppComponents(miniAppId, customPermissionCache)
-        miniAppSecureStorageDispatcher.bridgeExecutor = bridgeExecutor
-        miniAppSecureStorageDispatcher.setMiniAppComponents(miniAppId)
+        miniAppFileDownloadDispatcher?.setBridgeExecutor(activity, bridgeExecutor)
+        miniAppFileDownloadDispatcher?.setMiniAppComponents(miniAppId, customPermissionCache)
+        miniAppSecureStorageDispatcher?.bridgeExecutor = bridgeExecutor
+        miniAppSecureStorageDispatcher?.setMiniAppComponents(miniAppId)
         userInfoBridge.setMiniAppComponents(
             bridgeExecutor, customPermissionCache, downloadedManifestCache, miniAppId
         )
         chatBridge.setMiniAppComponents(bridgeExecutor, customPermissionCache, miniAppId)
-        if (this::apiClient.isInitialized)
-            iapBridgeDispatcher.setMiniAppComponents(
+        if (this::apiClient.isInitialized && miniAppIAPVerifier != null)
+            iapBridgeDispatcher?.setMiniAppComponents(
                 bridgeExecutor,
                 miniAppId,
                 apiClient,
@@ -127,7 +127,7 @@ open class MiniAppMessageBridge {
     }
 
     internal fun onJsInjectionDone() {
-        miniAppSecureStorageDispatcher.onLoad()
+        miniAppSecureStorageDispatcher?.onLoad()
     }
 
     @VisibleForTesting
@@ -311,33 +311,33 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
-            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher?.onFileDownload(
                 callbackObj.id, jsonStr
             )
-            ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher.onSetItems(
+            ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher?.onSetItems(
                 callbackObj.id, jsonStr
             )
-            ActionType.SECURE_STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher.onGetItem(
+            ActionType.SECURE_STORAGE_GET_ITEM.action -> miniAppSecureStorageDispatcher?.onGetItem(
                 callbackObj.id, jsonStr
             )
-            ActionType.SECURE_STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher.onRemoveItems(
+            ActionType.SECURE_STORAGE_REMOVE_ITEMS.action -> miniAppSecureStorageDispatcher?.onRemoveItems(
                 callbackObj.id, jsonStr
             )
-            ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher.onClearAll(
+            ActionType.SECURE_STORAGE_CLEAR.action -> miniAppSecureStorageDispatcher?.onClearAll(
                 callbackObj.id
             )
-            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher.onSize(
+            ActionType.SECURE_STORAGE_SIZE.action -> miniAppSecureStorageDispatcher?.onSize(
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
-            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher?.onGetPurchaseItems(
                 callbackObj.id
             )
-            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher?.onPurchaseItem(
                 callbackObj.id,
                 jsonStr
             )
-            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher.onConsumePurchase(
+            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher?.onConsumePurchase(
                 callbackObj.id,
                 jsonStr
             )
@@ -348,7 +348,7 @@ open class MiniAppMessageBridge {
             ActionType.UNIVERSAL_BRIDGE_INFO.action -> onSendInfoToHostApp(callbackObj.id, jsonStr)
             ActionType.SEND_MA_ANALYTICS.action -> onDidReceiveMAAnalytics(callbackObj.id, jsonStr)
         }
-        if (this::ratDispatcher.isInitialized) ratDispatcher.sendAnalyticsSdkFeature(callbackObj.action)
+        if (ratDispatcher != null) ratDispatcher?.sendAnalyticsSdkFeature(callbackObj.action)
     }
 
     /** Set implemented ads displayer. Can use the default provided class from sdk [AdMobDisplayer]. **/
@@ -357,7 +357,7 @@ open class MiniAppMessageBridge {
 
     /** Set implemented file downloader. Can use the default provided class from sdk [MiniAppFileDownloaderDefault]. **/
     fun setMiniAppFileDownloader(miniAppFileDownloader: MiniAppFileDownloader) =
-        miniAppFileDownloadDispatcher.setFileDownloader(miniAppFileDownloader)
+        miniAppFileDownloadDispatcher?.setFileDownloader(miniAppFileDownloader)
 
     /**
      * Set implemented userInfoBridgeDispatcher.
@@ -378,7 +378,7 @@ open class MiniAppMessageBridge {
      * Can use the default provided class from sdk [InAppPurchaseProvider].
      **/
     fun setInAppPurchaseProvider(iapProvider: InAppPurchaseProvider) =
-        iapBridgeDispatcher.setInAppPurchaseProvider(iapProvider)
+        iapBridgeDispatcher?.setInAppPurchaseProvider(iapProvider)
 
     /**
      * Dispatch Native events to miniapp.
@@ -609,7 +609,7 @@ open class MiniAppMessageBridge {
 
     internal fun onWebViewDetach() {
         screenBridgeDispatcher.releaseLock()
-        iapBridgeDispatcher.disconnectIAPBillingClient()
+        iapBridgeDispatcher?.disconnectIAPBillingClient()
     }
 
     /** Allow miniapp to change screen orientation. The default setting is false. */
@@ -654,7 +654,7 @@ open class MiniAppMessageBridge {
 
     internal fun updateApiClient(apiClient: ApiClient) {
         this.apiClient = apiClient
-        iapBridgeDispatcher.updateApiClient(apiClient)
+        iapBridgeDispatcher?.updateApiClient(apiClient)
     }
 
     /** Allow Host app to receive the miniapp close event. */

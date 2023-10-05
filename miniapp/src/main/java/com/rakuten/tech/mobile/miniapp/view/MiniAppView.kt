@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.miniapp.view
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.rakuten.tech.mobile.miniapp.MiniApp
 import com.rakuten.tech.mobile.miniapp.MiniAppDisplay
 import com.rakuten.tech.mobile.miniapp.MiniAppManifest
 import com.rakuten.tech.mobile.miniapp.MiniAppSdkConfig
@@ -22,31 +23,35 @@ abstract class MiniAppView internal constructor() {
         fun init(miniAppParameters: MiniAppParameters): MiniAppView {
             var context: Context? = null
             var config: MiniAppConfig? = null
+            var fromBundle = false
             when (miniAppParameters) {
                 is MiniAppParameters.DefaultParams -> {
                     context = miniAppParameters.context
                     config = miniAppParameters.config
+                    fromBundle = miniAppParameters.fromBundle
                 }
                 is MiniAppParameters.InfoParams -> {
                     context = miniAppParameters.context
                     config = miniAppParameters.config
+                    fromBundle = miniAppParameters.fromBundle
                 }
                 is MiniAppParameters.UrlParams -> {
                     context = miniAppParameters.context
                     config = miniAppParameters.config
                 }
             }
-            return createMiniAppView(context, miniAppParameters, config.miniAppSdkConfig)
+            return createMiniAppView(context, miniAppParameters, config.miniAppSdkConfig, fromBundle)
         }
 
         @VisibleForTesting
         internal fun createMiniAppView(
             context: Context,
             miniAppParameters: MiniAppParameters,
-            miniAppSdkConfig: MiniAppSdkConfig
+            miniAppSdkConfig: MiniAppSdkConfig,
+            fromBundle: Boolean
         ): MiniAppView {
             instance = MiniAppViewImpl(miniAppParameters) {
-                MiniAppViewHandler(context, miniAppSdkConfig)
+                MiniAppViewHandler(context, miniAppSdkConfig, fromBundle)
             }
             return instance
         }

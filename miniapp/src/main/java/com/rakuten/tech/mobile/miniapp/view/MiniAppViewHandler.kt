@@ -43,27 +43,36 @@ internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig
 ) {
+    constructor(context: Context, config: MiniAppSdkConfig, fromBundle: Boolean) : this(context, config) {
+        if (fromBundle) {
+            initializeMiniAppBundleConfig()
+        } else {
+            initializeDefaultMiniAppConfig()
+        }
+    }
+
     @VisibleForTesting
-    internal var displayer: Displayer
-    private var miniAppInfoFetcher: MiniAppInfoFetcher
+    internal lateinit var displayer: Displayer
+    private lateinit var miniAppInfoFetcher: MiniAppInfoFetcher
     @VisibleForTesting
-    internal var miniAppManifestVerifier: MiniAppManifestVerifier
+    internal lateinit var miniAppManifestVerifier: MiniAppManifestVerifier
     @VisibleForTesting
-    internal var apiClientRepository: ApiClientRepository
+    internal lateinit var apiClientRepository: ApiClientRepository
     private lateinit var miniAppParameters: MiniAppParameters
     internal var enableH5Ads: Boolean = config.enableH5Ads
-    internal var apiClient: ApiClient
-    internal var miniAppAnalytics: MiniAppAnalytics
+    internal lateinit var apiClient: ApiClient
+    internal lateinit var miniAppAnalytics: MiniAppAnalytics
     @VisibleForTesting
-    internal var miniAppDownloader: MiniAppDownloader
-    internal var signatureVerifier: SignatureVerifier
-    internal var ratDispatcher: MessageBridgeRatDispatcher
-    internal var downloadedManifestCache: DownloadedManifestCache
-    internal var secureStorageDispatcher: MiniAppSecureStorageDispatcher
-    internal var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
-    internal var miniAppIAPVerifier: MiniAppIAPVerifier
-    internal var miniAppStorage: MiniAppStorage
-    internal var miniAppVerifier: CachedMiniAppVerifier
+    internal lateinit var miniAppDownloader: MiniAppDownloader
+    internal lateinit var signatureVerifier: SignatureVerifier
+    internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
+    internal lateinit var downloadedManifestCache: DownloadedManifestCache
+    internal lateinit var secureStorageDispatcher: MiniAppSecureStorageDispatcher
+    internal lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
+    internal lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
+    internal lateinit var miniAppStorage: MiniAppStorage
+    internal lateinit var miniAppVerifier: CachedMiniAppVerifier
+    internal lateinit var manifestApiCache: ManifestApiCache
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
@@ -82,11 +91,11 @@ internal class MiniAppViewHandler(
         initStorage = { miniAppStorage },
         initStatus = { MiniAppStatus(context) },
         initVerifier = { miniAppVerifier },
-        initManifestApiCache = { ManifestApiCache(context) },
+        initManifestApiCache = { manifestApiCache },
         initSignatureVerifier = { signatureVerifier }
     )
 
-    init {
+    private fun initializeDefaultMiniAppConfig() {
         apiClient = initApiClient()
         displayer = Displayer(config.hostAppUserAgentInfo)
         miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
@@ -114,6 +123,74 @@ internal class MiniAppViewHandler(
         secureStorageDispatcher = MiniAppSecureStorageDispatcher(
             context,
             config.maxStorageSizeLimitInBytes.toLong()
+        )
+        manifestApiCache = ManifestApiCache(context)
+    }
+    private fun initializeMiniAppBundleConfig() {
+        displayer = Displayer(config.hostAppUserAgentInfo)
+        downloadedManifestCache = DownloadedManifestCache(context)
+        miniAppManifestVerifier = MiniAppManifestVerifier(context)
+        miniAppStorage = MiniAppStorage(FileWriter(), context.filesDir)
+        manifestApiCache = ManifestApiCache(context)
+        miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
+    }
+
+    @Suppress("LongMethod")
+    suspend fun createMiniAppViewFromBundle(
+        miniAppInfo: MiniAppInfo,
+        config: MiniAppConfig,
+        manifest: MiniAppManifest?,
+        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit,
+    ) {
+        if (miniAppStorage.isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
+            if (manifest != null) {
+                saveManifestForMiniAppBundle(
+                    appId = miniAppInfo.id,
+                    versionId = miniAppInfo.version.versionId,
+                    languageCode = "",
+                    manifest = manifest
+                )
+                downloadedManifestCache.storeDownloadedManifest(
+                    miniAppId = miniAppInfo.id,
+                    CachedManifest(miniAppInfo.id, manifest)
+                )
+            }
+            if (miniAppStorage.isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
+                val versionPath = miniAppStorage.getBundleWritePath(
+                    miniAppInfo.id,
+                    miniAppInfo.version.versionId
+                )
+                val (basePath, miniAppInfo) = Pair(versionPath, miniAppInfo)
+                onComplete(
+                    displayer.createMiniAppDisplayForBundle(
+                        basePath,
+                        miniAppInfo,
+                        config.miniAppMessageBridge,
+                        config.miniAppNavigator,
+                        miniAppCustomPermissionCache,
+                        downloadedManifestCache,
+                        config.queryParams
+                    ), null
+                )
+            } else {
+                onComplete(null, MiniAppBundleNotFoundException())
+            }
+        } else {
+            onComplete(null, InvalidMiniAppInfoException())
+        }
+    }
+
+    internal fun saveManifestForMiniAppBundle(
+        appId: String,
+        versionId: String,
+        languageCode: String,
+        manifest: MiniAppManifest
+    ) {
+        manifestApiCache.storeManifest(
+            appId,
+            versionId,
+            languageCode,
+            manifest
         )
     }
 
@@ -207,6 +284,7 @@ internal class MiniAppViewHandler(
         }
         verifyManifest(miniAppInfo.id, miniAppInfo.version.versionId, fromCache)
         config.miniAppMessageBridge.updateApiClient(apiClient)
+
         return displayer.createMiniAppDisplay(
             basePath,
             miniAppInfo,
@@ -251,63 +329,6 @@ internal class MiniAppViewHandler(
             enableH5Ads,
             miniAppIAPVerifier
         )
-    }
-
-    @Suppress("LongMethod")
-    suspend fun createMiniAppViewFromBundle(
-        miniAppInfo: MiniAppInfo,
-        config: MiniAppConfig,
-        manifest: MiniAppManifest?,
-        onComplete: (MiniAppDisplay?, MiniAppSdkException?) -> Unit,
-    ) {
-        if (miniAppStorage.isValidMiniAppInfo(miniAppInfo.id, miniAppInfo.version.versionId)) {
-            if (manifest != null) {
-                miniAppDownloader.saveManifestForMiniAppBundle(
-                    appId = miniAppInfo.id,
-                    versionId = miniAppInfo.version.versionId,
-                    languageCode = "",
-                    manifest = manifest
-                )
-                downloadedManifestCache.storeDownloadedManifest(
-                    miniAppId = miniAppInfo.id,
-                    CachedManifest(miniAppInfo.id, manifest)
-                )
-            }
-            if (miniAppStorage.isMiniAppAvailable(miniAppInfo.id, miniAppInfo.version.versionId)) {
-                val versionPath = miniAppStorage.getBundleWritePath(
-                    miniAppInfo.id,
-                    miniAppInfo.version.versionId
-                )
-                val (basePath, miniAppInfo) = Pair(versionPath, miniAppInfo)
-                if (miniAppVerifier.verify(miniAppInfo.version.versionId, File(versionPath))) {
-                    config.miniAppMessageBridge.updateApiClient(apiClient)
-                    onComplete(
-                        displayer.createMiniAppDisplay(
-                            basePath,
-                            miniAppInfo,
-                            config.miniAppMessageBridge,
-                            config.miniAppNavigator,
-                            config.miniAppFileChooser,
-                            miniAppCustomPermissionCache,
-                            downloadedManifestCache,
-                            config.queryParams,
-                            miniAppAnalytics,
-                            ratDispatcher,
-                            secureStorageDispatcher,
-                            enableH5Ads,
-                            miniAppIAPVerifier
-                        ), null
-                    )
-                    miniAppStorage.removeVersions(miniAppInfo.id, miniAppInfo.version.versionId)
-                } else {
-                    onComplete(null, MiniAppHasCorruptedException(miniAppInfo.id))
-                }
-            } else {
-                onComplete(null, MiniAppBundleNotFoundException())
-            }
-        } else {
-            onComplete(null, InvalidMiniAppInfoException())
-        }
     }
 
     suspend fun createMiniAppViewWithUrl(
