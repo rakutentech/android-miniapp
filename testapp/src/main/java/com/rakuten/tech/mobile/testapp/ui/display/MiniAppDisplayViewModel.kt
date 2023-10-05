@@ -430,7 +430,8 @@ class MiniAppDisplayViewModel constructor(
             ),
             miniAppId = appId,
             miniAppVersion = versionId,
-            fromCache = false
+            fromCache = false,
+            fromBundle = true
         )
     }
 

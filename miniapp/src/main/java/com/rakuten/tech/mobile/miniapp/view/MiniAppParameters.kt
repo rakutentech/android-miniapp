@@ -20,7 +20,8 @@ sealed class MiniAppParameters {
         val config: MiniAppConfig,
         val miniAppId: String,
         val miniAppVersion: String,
-        var fromCache: Boolean = false
+        var fromCache: Boolean = false,
+        var fromBundle: Boolean = false
     ) : MiniAppParameters()
 
     /**
@@ -35,7 +36,8 @@ sealed class MiniAppParameters {
         val context: Context,
         val config: MiniAppConfig,
         val miniAppInfo: MiniAppInfo,
-        var fromCache: Boolean = false
+        var fromCache: Boolean = false,
+        var fromBundle: Boolean = false
     ) : MiniAppParameters()
 
     /**
