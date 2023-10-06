@@ -15,7 +15,6 @@ import com.rakuten.tech.mobile.miniapp.MiniAppBundleNotFoundException
 import com.rakuten.tech.mobile.miniapp.InvalidMiniAppInfoException
 import com.rakuten.tech.mobile.miniapp.R
 import com.rakuten.tech.mobile.miniapp.MiniAppDownloader
-import com.rakuten.tech.mobile.miniapp.MiniAppInfoFetcher
 import com.rakuten.tech.mobile.miniapp.analytics.MiniAppAnalytics
 import com.rakuten.tech.mobile.miniapp.api.ApiClient
 import com.rakuten.tech.mobile.miniapp.api.ApiClientRepository
@@ -41,36 +40,51 @@ internal class MiniAppViewHandler(
     val context: Context,
     val config: MiniAppSdkConfig
 ) {
-    constructor(context: Context, config: MiniAppSdkConfig, fromBundle: Boolean) : this(context, config) {
-        if (fromBundle) {
-            initializeMiniAppBundleConfig()
-        } else {
-            initializeDefaultMiniAppConfig()
+    @VisibleForTesting
+    internal val displayer: Displayer by lazy { Displayer(config.hostAppUserAgentInfo) }
+
+    @VisibleForTesting
+    internal val miniAppManifestVerifier: MiniAppManifestVerifier by lazy { MiniAppManifestVerifier(context) }
+
+    @VisibleForTesting
+    internal val apiClientRepository: ApiClientRepository by lazy {
+        ApiClientRepository().apply {
+            registerApiClient(config, apiClient)
         }
+    }
+    internal var enableH5Ads: Boolean = config.enableH5Ads
+    internal val apiClient: ApiClient by lazy { initApiClient() }
+    internal val miniAppAnalytics: MiniAppAnalytics by lazy {
+        MiniAppAnalytics(
+            config.rasProjectId,
+            config.miniAppAnalyticsConfigList
+        )
     }
 
     @VisibleForTesting
-    internal lateinit var displayer: Displayer
-    private lateinit var miniAppInfoFetcher: MiniAppInfoFetcher
-    @VisibleForTesting
-    internal lateinit var miniAppManifestVerifier: MiniAppManifestVerifier
-    @VisibleForTesting
-    internal lateinit var apiClientRepository: ApiClientRepository
-    private lateinit var miniAppParameters: MiniAppParameters
-    internal var enableH5Ads: Boolean = config.enableH5Ads
-    internal lateinit var apiClient: ApiClient
-    internal lateinit var miniAppAnalytics: MiniAppAnalytics
-    @VisibleForTesting
-    internal lateinit var miniAppDownloader: MiniAppDownloader
-    internal lateinit var signatureVerifier: SignatureVerifier
-    internal lateinit var ratDispatcher: MessageBridgeRatDispatcher
-    internal lateinit var downloadedManifestCache: DownloadedManifestCache
-    internal lateinit var secureStorageDispatcher: MiniAppSecureStorageDispatcher
-    internal lateinit var miniAppCustomPermissionCache: MiniAppCustomPermissionCache
-    internal lateinit var miniAppIAPVerifier: MiniAppIAPVerifier
-    internal lateinit var miniAppStorage: MiniAppStorage
-    internal lateinit var miniAppVerifier: CachedMiniAppVerifier
-    internal lateinit var manifestApiCache: ManifestApiCache
+    internal val miniAppDownloader: MiniAppDownloader by lazy { initMiniAppDownloader() }
+    private val signatureVerifier: SignatureVerifier by lazy {
+        SignatureVerifier.init(
+            context = context,
+            baseUrl = config.baseUrl + "keys/",
+            subscriptionKey = config.subscriptionKey
+        )!!
+    }
+    internal val ratDispatcher: MessageBridgeRatDispatcher by lazy { MessageBridgeRatDispatcher(miniAppAnalytics) }
+    internal val downloadedManifestCache: DownloadedManifestCache by lazy { DownloadedManifestCache(context) }
+    internal val secureStorageDispatcher: MiniAppSecureStorageDispatcher by lazy {
+        MiniAppSecureStorageDispatcher(
+            context,
+            config.maxStorageSizeLimitInBytes.toLong()
+        )
+    }
+    internal val miniAppCustomPermissionCache: MiniAppCustomPermissionCache by lazy {
+        MiniAppCustomPermissionCache(context)
+    }
+    internal val miniAppIAPVerifier: MiniAppIAPVerifier by lazy { MiniAppIAPVerifier(context) }
+    internal val miniAppStorage: MiniAppStorage by lazy { MiniAppStorage(FileWriter(), context.filesDir) }
+    internal val miniAppVerifier: CachedMiniAppVerifier by lazy { CachedMiniAppVerifier(context) }
+    private val manifestApiCache: ManifestApiCache by lazy { ManifestApiCache(context) }
 
     @VisibleForTesting
     internal fun initApiClient() = ApiClient(
@@ -92,46 +106,6 @@ internal class MiniAppViewHandler(
         initManifestApiCache = { manifestApiCache },
         initSignatureVerifier = { signatureVerifier }
     )
-    @VisibleForTesting
-    internal fun initializeDefaultMiniAppConfig() {
-        apiClient = initApiClient()
-        displayer = Displayer(config.hostAppUserAgentInfo)
-        miniAppInfoFetcher = MiniAppInfoFetcher(apiClient)
-        downloadedManifestCache = DownloadedManifestCache(context)
-        miniAppManifestVerifier = MiniAppManifestVerifier(context)
-        miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
-        miniAppIAPVerifier = MiniAppIAPVerifier(context)
-        miniAppStorage = MiniAppStorage(FileWriter(), context.filesDir)
-        miniAppVerifier = CachedMiniAppVerifier(context)
-
-        apiClientRepository = ApiClientRepository().apply {
-            registerApiClient(config, apiClient)
-        }
-        signatureVerifier = SignatureVerifier.init(
-            context = context,
-            baseUrl = config.baseUrl + "keys/",
-            subscriptionKey = config.subscriptionKey
-        )!!
-        miniAppAnalytics = MiniAppAnalytics(
-            config.rasProjectId,
-            config.miniAppAnalyticsConfigList
-        )
-        miniAppDownloader = initMiniAppDownloader()
-        ratDispatcher = MessageBridgeRatDispatcher(miniAppAnalytics)
-        secureStorageDispatcher = MiniAppSecureStorageDispatcher(
-            context,
-            config.maxStorageSizeLimitInBytes.toLong()
-        )
-        manifestApiCache = ManifestApiCache(context)
-    }
-    private fun initializeMiniAppBundleConfig() {
-        displayer = Displayer(config.hostAppUserAgentInfo)
-        downloadedManifestCache = DownloadedManifestCache(context)
-        miniAppManifestVerifier = MiniAppManifestVerifier(context)
-        miniAppStorage = MiniAppStorage(FileWriter(), context.filesDir)
-        manifestApiCache = ManifestApiCache(context)
-        miniAppCustomPermissionCache = MiniAppCustomPermissionCache(context)
-    }
 
     @Suppress("LongMethod")
     suspend fun createMiniAppViewFromBundle(
@@ -179,7 +153,7 @@ internal class MiniAppViewHandler(
         }
     }
 
-    internal fun saveManifestForMiniAppBundle(
+    private fun saveManifestForMiniAppBundle(
         appId: String,
         versionId: String,
         languageCode: String,
