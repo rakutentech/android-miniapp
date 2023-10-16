@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Base64
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -65,9 +66,9 @@ open class MiniAppMessageBridge {
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     @VisibleForTesting
-    internal val miniAppFileDownloadDispatcher: MiniAppFileDownloadDispatcher? = null
+    internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
     @VisibleForTesting
-    internal val iapBridgeDispatcher: InAppPurchaseBridgeDispatcher? = null
+    internal val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
 
     @VisibleForTesting
     internal var ratDispatcher: MessageBridgeRatDispatcher? = null
@@ -126,6 +127,7 @@ open class MiniAppMessageBridge {
         miniAppViewInitialized = true
     }
 
+    @VisibleForTesting
     internal fun onJsInjectionDone() {
         miniAppSecureStorageDispatcher?.onLoad()
     }
@@ -311,7 +313,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
-            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher?.onFileDownload(
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
                 callbackObj.id, jsonStr
             )
             ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher?.onSetItems(
@@ -330,14 +332,14 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
-            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher?.onGetPurchaseItems(
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(
                 callbackObj.id
             )
-            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher?.onPurchaseItem(
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
                 callbackObj.id,
                 jsonStr
             )
-            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher?.onConsumePurchase(
+            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher.onConsumePurchase(
                 callbackObj.id,
                 jsonStr
             )
@@ -384,8 +386,12 @@ open class MiniAppMessageBridge {
      * Dispatch Native events to miniapp.
      **/
     fun dispatchNativeEvent(eventType: NativeEventType, value: String = "") {
+        var encodedMessage = value
+        if (eventType == NativeEventType.MINIAPP_RECEIVE_JSON_INFO) {
+            encodedMessage = value.base64Encoded()
+        }
         if (this::bridgeExecutor.isInitialized) bridgeExecutor.dispatchEvent(
-            eventType = eventType.value, value = value
+            eventType = eventType.value, value = encodedMessage
         )
     }
 
@@ -697,4 +703,12 @@ internal object ErrorBridgeMessage {
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
     const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying to send MiniApp analytics info:"
+}
+
+/**
+ * encode the string into base64.
+ */
+@Suppress("ExpressionBodySyntax")
+fun String.base64Encoded(): String {
+    return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.DEFAULT)
 }
