@@ -37,12 +37,6 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
         createMiniAppMessageBridge(true)
     )
 
-    private fun getMockSecureStorageDispatcher(): MiniAppSecureStorageDispatcher {
-        val secureStorageDispatcher: MiniAppSecureStorageDispatcher = mock()
-        When calling miniappMessageBridge.miniAppSecureStorageDispatcher itReturns secureStorageDispatcher
-        return secureStorageDispatcher
-    }
-
     @Before
     fun setup() {
         ActivityScenario.launch(TestActivity::class.java).onActivity { activity ->
@@ -75,71 +69,60 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onLoad when onJsInjectionDone`() {
-        val secureStorageDispatcher: MiniAppSecureStorageDispatcher = mock()
-        When calling miniappMessageBridge.miniAppSecureStorageDispatcher itReturns secureStorageDispatcher
         miniappMessageBridge.onJsInjectionDone()
-        verify(secureStorageDispatcher).onLoad()
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onLoad()
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onGetItem when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson =
             getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_GET_ITEM))
+        When calling miniappMessageBridge.miniAppSecureStorageDispatcher?.miniAppSecureStorage itReturns mock()
         miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onGetItem(
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onGetItem(
             secureStorageCallbackObj.id,
             callbackJson
         )
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onRemoveItems when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson =
             getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_REMOVE_ITEMS))
         miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onRemoveItems(
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onRemoveItems(
             secureStorageCallbackObj.id,
             callbackJson
         )
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onClearAll when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson =
             getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_CLEAR))
         miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onClearAll(
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onClearAll(
             secureStorageCallbackObj.id
         )
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onSize when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson =
             getCallbackObjToJsonStr(getCallbackObject(ActionType.SECURE_STORAGE_SIZE))
+        When calling miniappMessageBridge.miniAppSecureStorageDispatcher?.miniAppSecureStorage itReturns mock()
         miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onSize(
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onSize(
             secureStorageCallbackObj.id
         )
     }
 
     @Test
-    @Ignore
     fun `secureStorageDispatcher should call onSetItems when secureStorageCallbackObj is valid`() {
-        val secureStorageDispatcher = getMockSecureStorageDispatcher()
         val callbackJson = getSecureStorageCallBackToJsonStr(secureStorageCallbackObj)
         miniappMessageBridge.postMessage(callbackJson)
-        verify(secureStorageDispatcher).onSetItems(
+        verify(miniappMessageBridge.miniAppSecureStorageDispatcher)?.onSetItems(
             secureStorageCallbackObj.id,
             callbackJson
         )
@@ -193,7 +176,8 @@ class MessageBridgeSecurestorageDispatcherSpec : BridgeCommon() {
         val testNativeEventType = NativeEventType.MINIAPP_ON_PAUSE
         miniappMessageBridge.dispatchNativeEvent(testNativeEventType)
         verify(bridgeExecutor).dispatchEvent(
-            testNativeEventType.value, ""
+            testNativeEventType.value,
+            ""
         )
     }
 }

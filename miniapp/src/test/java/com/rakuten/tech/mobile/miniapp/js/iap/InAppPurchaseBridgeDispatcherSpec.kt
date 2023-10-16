@@ -154,7 +154,6 @@ class InAppPurchaseBridgeDispatcherSpec : RobolectricBaseSpec() {
     }
 
     @Test
-    @Ignore
     fun `postError should be called when there is no InAppPurchaseBridgeDispatcher`() {
         val errMsg = ErrorBridgeMessage.NO_IMPL
         miniAppBridge.postMessage(Gson().toJson(callbackObj))
