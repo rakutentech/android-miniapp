@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.util.Base64
+import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -40,6 +41,7 @@ import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatch
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import java.nio.charset.Charset
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -710,5 +712,33 @@ internal object ErrorBridgeMessage {
  */
 @Suppress("ExpressionBodySyntax")
 fun String.base64Encoded(): String {
-    return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.DEFAULT)
+    return Base64.encodeToString(
+        encodeToNonLossyAscii(this).toByteArray(charset("UTF-8")),
+        Base64.DEFAULT
+    )
+}
+
+/**
+ * convert the unicode/octal characters.
+ */
+private fun encodeToNonLossyAscii(original: String): String {
+    val asciiCharset = Charset.forName("US-ASCII")
+    if (asciiCharset.newEncoder().canEncode(original)) {
+        return original
+    }
+    val stringBuffer = StringBuffer()
+    for (element in original) {
+        if (element.code < 128) {
+            stringBuffer.append(element)
+        } else if (element.code < 256) {
+            val octal = Integer.toOctalString(element.code)
+            stringBuffer.append("\\")
+            stringBuffer.append(octal)
+        } else {
+            val hex = Integer.toHexString(element.code)
+            stringBuffer.append("\\u")
+            stringBuffer.append(hex)
+        }
+    }
+    return stringBuffer.toString()
 }
