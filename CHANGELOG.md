@@ -1,8 +1,12 @@
 ## CHANGELOG
 
+### 5.6.0 (2023-10-05)
+**SDK**
+- **Update:** Improve loading MiniApp from bundle loading time by adding lazy initials.
+
 ### 5.5.0 (2023-10-05)
 **SDK**
-- **Fix:** Improve loading MiniApp from bundle loading time by removing few checks
+- **Fix:** Improve loading MiniApp from bundle loading time by removing few checks.
 
 ### 5.4.2 (2023-08-29)
 **SDK**
