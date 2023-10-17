@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.util.Base64
-import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -711,11 +710,13 @@ internal object ErrorBridgeMessage {
  * encode the string into base64.
  */
 @Suppress("ExpressionBodySyntax")
-fun String.base64Encoded(): String {
-    return Base64.encodeToString(
+fun String.base64Encoded(): String = try {
+    Base64.encodeToString(
         encodeToNonLossyAscii(this).toByteArray(charset("UTF-8")),
         Base64.DEFAULT
     )
+} catch (e: Exception) {
+    ""
 }
 
 /**
