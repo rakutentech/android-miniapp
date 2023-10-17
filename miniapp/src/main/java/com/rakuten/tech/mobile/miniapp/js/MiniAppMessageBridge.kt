@@ -67,9 +67,9 @@ open class MiniAppMessageBridge {
     private val adBridgeDispatcher = AdBridgeDispatcher()
 
     @VisibleForTesting
-    internal val miniAppFileDownloadDispatcher = MiniAppFileDownloadDispatcher()
+    internal val miniAppFileDownloadDispatcher: MiniAppFileDownloadDispatcher? = null
     @VisibleForTesting
-    internal val iapBridgeDispatcher = InAppPurchaseBridgeDispatcher()
+    internal val iapBridgeDispatcher: InAppPurchaseBridgeDispatcher? = null
 
     @VisibleForTesting
     internal var ratDispatcher: MessageBridgeRatDispatcher? = null
@@ -128,7 +128,6 @@ open class MiniAppMessageBridge {
         miniAppViewInitialized = true
     }
 
-    @VisibleForTesting
     internal fun onJsInjectionDone() {
         miniAppSecureStorageDispatcher?.onLoad()
     }
@@ -314,7 +313,7 @@ open class MiniAppMessageBridge {
                 callbackObj.id, jsonStr
             )
             ActionType.GET_HOST_ENVIRONMENT_INFO.action -> onGetHostEnvironmentInfo(callbackObj.id)
-            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher.onFileDownload(
+            ActionType.FILE_DOWNLOAD.action -> miniAppFileDownloadDispatcher?.onFileDownload(
                 callbackObj.id, jsonStr
             )
             ActionType.SECURE_STORAGE_SET_ITEMS.action -> miniAppSecureStorageDispatcher?.onSetItems(
@@ -333,14 +332,14 @@ open class MiniAppMessageBridge {
                 callbackObj.id
             )
             ActionType.SET_CLOSE_ALERT.action -> onMiniAppShouldClose(callbackObj.id, jsonStr)
-            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher.onGetPurchaseItems(
+            ActionType.GET_PURCHASE_ITEM_LIST.action -> iapBridgeDispatcher?.onGetPurchaseItems(
                 callbackObj.id
             )
-            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher.onPurchaseItem(
+            ActionType.PURCHASE_ITEM.action -> iapBridgeDispatcher?.onPurchaseItem(
                 callbackObj.id,
                 jsonStr
             )
-            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher.onConsumePurchase(
+            ActionType.CONSUME_PURCHASE.action -> iapBridgeDispatcher?.onConsumePurchase(
                 callbackObj.id,
                 jsonStr
             )
