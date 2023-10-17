@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.miniapp.js
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Base64
 import android.webkit.JavascriptInterface
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
@@ -39,6 +40,7 @@ import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatch
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
+import java.nio.charset.Charset
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -384,8 +386,12 @@ open class MiniAppMessageBridge {
      * Dispatch Native events to miniapp.
      **/
     fun dispatchNativeEvent(eventType: NativeEventType, value: String = "") {
+        var encodedMessage = value
+        if (eventType == NativeEventType.MINIAPP_RECEIVE_JSON_INFO) {
+            encodedMessage = value.base64Encoded()
+        }
         if (this::bridgeExecutor.isInitialized) bridgeExecutor.dispatchEvent(
-            eventType = eventType.value, value = value
+            eventType = eventType.value, value = encodedMessage
         )
     }
 
@@ -697,4 +703,42 @@ internal object ErrorBridgeMessage {
     const val ERR_CLOSE_ALERT = "An error occurred while setting close alert info."
     const val ERR_CLOSE_MINIAPP = "An error occurred while trying to close the MiniApp."
     const val ERR_MA_ANALYTIC_INFO = "An error occurred while trying to send MiniApp analytics info:"
+}
+
+/**
+ * encode the string into base64.
+ */
+@Suppress("ExpressionBodySyntax")
+fun String.base64Encoded(): String = try {
+    Base64.encodeToString(
+        encodeToNonLossyAscii(this).toByteArray(charset("UTF-8")),
+        Base64.DEFAULT
+    )
+} catch (e: Exception) {
+    ""
+}
+
+/**
+ * convert the unicode/octal characters.
+ */
+private fun encodeToNonLossyAscii(original: String): String {
+    val asciiCharset = Charset.forName("US-ASCII")
+    if (asciiCharset.newEncoder().canEncode(original)) {
+        return original
+    }
+    val stringBuffer = StringBuffer()
+    for (element in original) {
+        if (element.code < 128) {
+            stringBuffer.append(element)
+        } else if (element.code < 256) {
+            val octal = Integer.toOctalString(element.code)
+            stringBuffer.append("\\")
+            stringBuffer.append(octal)
+        } else {
+            val hex = Integer.toHexString(element.code)
+            stringBuffer.append("\\u")
+            stringBuffer.append(hex)
+        }
+    }
+    return stringBuffer.toString()
 }
