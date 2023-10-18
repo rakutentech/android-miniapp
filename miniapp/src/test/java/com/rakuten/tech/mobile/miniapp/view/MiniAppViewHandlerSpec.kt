@@ -14,7 +14,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.*
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.spy
@@ -28,11 +27,21 @@ import kotlin.test.assertTrue
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass", "DeferredResultUnused", "MaxLineLength")
-@Ignore
 open class MiniAppViewHandlerSpec {
     private lateinit var miniAppViewHandler: MiniAppViewHandler
     private val context: Context = ApplicationProvider.getApplicationContext()
-    private var miniAppSdkConfig: MiniAppSdkConfig = mock()
+    private var miniAppSdkConfig: MiniAppSdkConfig = MiniAppSdkConfig(
+        baseUrl = TEST_BASE_URL,
+        rasProjectId = TEST_HA_ID_PROJECT,
+        subscriptionKey = TEST_HA_SUBSCRIPTION_KEY,
+        miniAppAnalyticsConfigList = TEST_HA_ANALYTICS_CONFIGS,
+        hostAppUserAgentInfo = "",
+        maxStorageSizeLimitInBytes = TEST_MAX_STORAGE_SIZE_IN_BYTES,
+        sslPinningPublicKeyList = emptyList(),
+        isPreviewMode = true,
+        requireSignatureVerification = false,
+        hostAppVersionId = ""
+    )
     private var apiClient: ApiClient = mock()
     private val dummyManifest: MiniAppManifest = MiniAppManifest(
         listOf(Pair(MiniAppCustomPermissionType.USER_NAME, "reason")),
@@ -55,13 +64,6 @@ open class MiniAppViewHandlerSpec {
     @Before
     fun setup() {
         FakeAndroidKeyStore.setup
-
-        When calling miniAppSdkConfig.baseUrl itReturns TEST_BASE_URL
-        When calling miniAppSdkConfig.rasProjectId itReturns TEST_HA_ID_PROJECT
-        When calling miniAppSdkConfig.subscriptionKey itReturns TEST_HA_SUBSCRIPTION_KEY
-        When calling miniAppSdkConfig.miniAppAnalyticsConfigList itReturns TEST_HA_ANALYTICS_CONFIGS
-        When calling miniAppSdkConfig.hostAppUserAgentInfo itReturns ""
-        When calling miniAppSdkConfig.maxStorageSizeLimitInBytes itReturns TEST_MAX_STORAGE_SIZE_IN_BYTES
 
         miniAppViewHandler = spy(MiniAppViewHandler(context, miniAppSdkConfig))
         When calling miniAppViewHandler.apiClientRepository itReturns mock()
