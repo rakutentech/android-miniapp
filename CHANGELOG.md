@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.7.0 (2023-10-18)
+**SDK**
+- **Fix:** Fix for unicode issue in contacts.
+
 ### 5.6.0 (2023-10-05)
 **SDK**
 - **Update:** Improve loading MiniApp from bundle loading time by adding lazy initials.
