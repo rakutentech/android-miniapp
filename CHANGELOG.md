@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.7.1 (2023-10-18)
+**SDK**
+- **Fix:** Fix for unicode issue in js bridge.
+
 ### 5.7.0 (2023-10-18)
 **SDK**
 - **Fix:** Fix for unicode issue in contacts.
