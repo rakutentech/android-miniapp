@@ -202,7 +202,7 @@ class UserInfoBridgeSpec {
 
         userInfoBridgeWrapper.onGetUserName(userNameCallbackObj.id)
 
-        verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME)
+        verify(bridgeExecutor).postValue(userNameCallbackObj.id, TEST_USER_NAME.base64Encoded())
     }
     /** end region */
 
