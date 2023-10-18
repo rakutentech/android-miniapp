@@ -708,7 +708,7 @@ internal object ErrorBridgeMessage {
 /**
  * encode the string into base64.
  */
-@Suppress("ExpressionBodySyntax")
+@Suppress("ExpressionBodySyntax", "SwallowedException", "TooGenericExceptionCaught")
 fun String.base64Encoded(): String = try {
     Base64.encodeToString(
         encodeToNonLossyAscii(this).toByteArray(charset("UTF-8")),
@@ -721,6 +721,7 @@ fun String.base64Encoded(): String = try {
 /**
  * convert the unicode/octal characters.
  */
+@Suppress("MagicNumber")
 private fun encodeToNonLossyAscii(original: String): String {
     val asciiCharset = Charset.forName("US-ASCII")
     if (asciiCharset.newEncoder().canEncode(original)) {
