@@ -8,6 +8,7 @@ import com.rakuten.tech.mobile.miniapp.errors.MiniAppPointsError
 import com.rakuten.tech.mobile.miniapp.js.AccessTokenCallbackObj
 import com.rakuten.tech.mobile.miniapp.js.ErrorBridgeMessage.NO_IMPL
 import com.rakuten.tech.mobile.miniapp.js.MiniAppBridgeExecutor
+import com.rakuten.tech.mobile.miniapp.js.base64Encoded
 import com.rakuten.tech.mobile.miniapp.permission.AccessTokenScope
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionCache
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionType
@@ -53,7 +54,12 @@ internal class UserInfoBridge {
         try {
             if (customPermissionCache.hasPermission(miniAppId, MiniAppCustomPermissionType.USER_NAME)) {
                 // asynchronously retrieve user name
-                val successCallback = { userName: String -> bridgeExecutor.postValue(callbackId, userName) }
+                val successCallback = { userName: String ->
+                    bridgeExecutor.postValue(
+                        callbackId,
+                        userName.base64Encoded()
+                    )
+                }
                 val errorCallback = { message: String ->
                     bridgeExecutor.postError(callbackId, "$ERR_GET_USER_NAME $message")
                 }
