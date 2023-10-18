@@ -40,7 +40,6 @@ import com.rakuten.tech.mobile.miniapp.permission.CustomPermissionBridgeDispatch
 import com.rakuten.tech.mobile.miniapp.permission.MiniAppCustomPermissionResult
 import com.rakuten.tech.mobile.miniapp.permission.ui.MiniAppCustomPermissionWindow
 import com.rakuten.tech.mobile.miniapp.storage.DownloadedManifestCache
-import java.nio.charset.Charset
 
 @Suppress(
     "TooGenericExceptionCaught",
@@ -711,35 +710,9 @@ internal object ErrorBridgeMessage {
 @Suppress("ExpressionBodySyntax", "SwallowedException", "TooGenericExceptionCaught")
 fun String.base64Encoded(): String = try {
     Base64.encodeToString(
-        encodeToNonLossyAscii(this).toByteArray(charset("UTF-8")),
+        this.toByteArray(charset("UTF-8")),
         Base64.DEFAULT
     )
 } catch (e: Exception) {
     ""
-}
-
-/**
- * convert the unicode/octal characters.
- */
-@Suppress("MagicNumber")
-private fun encodeToNonLossyAscii(original: String): String {
-    val asciiCharset = Charset.forName("US-ASCII")
-    if (asciiCharset.newEncoder().canEncode(original)) {
-        return original
-    }
-    val stringBuffer = StringBuffer()
-    for (element in original) {
-        if (element.code < 128) {
-            stringBuffer.append(element)
-        } else if (element.code < 256) {
-            val octal = Integer.toOctalString(element.code)
-            stringBuffer.append("\\")
-            stringBuffer.append(octal)
-        } else {
-            val hex = Integer.toHexString(element.code)
-            stringBuffer.append("\\u")
-            stringBuffer.append(hex)
-        }
-    }
-    return stringBuffer.toString()
 }
