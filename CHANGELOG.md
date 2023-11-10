@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 5.7.2 (2023-11-10)
+**SDK**
+- **Fix:** Fix for file download issue.
+
 ### 5.7.1 (2023-10-18)
 **SDK**
 - **Fix:** Fix for unicode issue in js bridge.
